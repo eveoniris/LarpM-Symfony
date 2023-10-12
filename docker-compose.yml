@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+###> doctrine/doctrine-bundle ###
+  database:
+    image: mariadb:10.11
+    ports:
+      - "30202:3306"
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: larpm
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
+
+  app:
+    build: .
+    depends_on:
+      - database
+    ports:
+      - "8082:8000"
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www/html/
+    networks:
+      - dev
+
+  mailer:
+    image: schickling/mailcatcher
+    ports: [ 1025, 1080 ]
+    networks:
+      - dev
+
+volumes:
+###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###
+
+networks:
+  dev:
