@@ -1,0 +1,125 @@
+{% extends "layout.twig" %}
+
+{% block title %}Backgrounds{% endblock title %}
+
+{% block content %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Liste des backgrounds</li>
+	</ol>
+	
+	<div class="well well-sm">
+		{% if paginator.totalItems == 1 %}
+        	<strong>1</strong> background trouvé.
+    	{% else %}
+        	<strong>{{ paginator.totalItems }}</strong> backgrounds trouvés.
+    	{% endif %}
+
+    	Montre <strong>{{ paginator.currentPageFirstItem }} - {{ paginator.currentPageLastItem }}</strong>.
+    	
+		<div class="btn-toolbar" role="toolbar" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter un background" href="{{ path('background.add') }}"><i class="fa fa-plus"></i></a>
+			</div>
+			
+			<form class="form form-inline" action="{{ path('background.list') }}" method="POST" {{ form_enctype(form) }}>
+				{% form_theme form 'Form/bootstrap_3_horizontal_layout.html.twig' %}
+				<div class="form-group">
+					<div class="input-group">
+						{{ form_widget(form.value) }}
+					</div>
+					<div class="input-group">					
+						{{ form_widget(form.type) }}
+						<div class="input-group-btn">
+							<button type="submit" class="btn btn-default" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
+							<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('background.list') }}"><i class="fa fa-refresh"></i></a>
+						</div>
+					</div>
+				</div>						
+					
+				{{ form_rest(form) }}
+		   	</form>
+		</div>
+		
+		{{ paginator|raw }}
+		
+		<div class="pull-right">
+			<a href="{{ path('background.print') }}" class="btn btn-primary navbar-btn">Imprimer tous les backgrounds de groupe</a>
+			<a href="{{ path('background.personnage.print') }}" class="btn btn-primary navbar-btn">Imprimer tous les backgrounds personnels</a>
+		</div>
+		
+		<table class="table table-striped table-bordered table-condensed table-hover">
+			<thead>
+				<tr>
+					<th>
+						{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'id' %}
+							<a href="{{ path('background.list', {'order_by': 'id', 'order_dir': 'DESC'}) }}">
+						{%  else %}
+							<a href="{{ path('background.list', {'order_by': 'id', 'order_dir': 'ASC'}) }}">
+						{% endif %}
+							#	
+						{% if app.request.get('order_by') == 'id'  %}
+							{% if app.request.get('order_dir') == 'ASC' %}
+								<span class="caret"></span>
+							{%else%}
+								<span class="dropup">
+	 									<span class="caret"></span>
+								</span>
+							{% endif %}
+						{% endif %}
+						</a>
+					</th>
+					<th>
+						{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'titre' %}
+							<a href="{{ path('background.list', {'order_by': 'titre', 'order_dir': 'DESC'}) }}">
+						{%  else %}
+							<a href="{{ path('background.list', {'order_by': 'titre', 'order_dir': 'ASC'}) }}">
+						{% endif %}
+							Titre	
+						{% if app.request.get('order_by') == 'titre'  %}
+							{% if app.request.get('order_dir') == 'ASC' %}
+								<span class="caret"></span>
+							{%else%}
+								<span class="dropup">
+	 									<span class="caret"></span>
+								</span>
+							{% endif %}
+						{% endif %}
+						</a>
+					</th>
+					<th>
+						Groupe
+					</th>
+					<th>
+						Création
+					</th>
+					<th>
+						Dernière modification
+					</th>
+					<th>
+						Auteur
+					</th>
+					<th>
+						Visibilité
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for background in backgrounds %}
+				<tr>
+					<td><a href="{{ path('background.update', {'background':background.id}) }}">{{ background.id }}</td>
+					<td><a href="{{ path('background.detail', {'background':background.id}) }}">{{ background.titre }}</td>
+					<td><a href="{{ path('groupe.detail', {'index': background.groupe.id}) }}">{{ background.groupe.nom }}</td>
+					<td>{{ background.creationDate|date('Y-m-d') }}</td>
+					<td>{{ background.updateDate|date('Y-m-d') }}</td>
+					<td>{{ background.user.displayName }}</td>
+					<td>{{ background.visibility|explainVisibility }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{{ paginator|raw }}
+	</div>
+	
+{% endblock content %}

@@ -1,0 +1,36 @@
+{% extends "layout.twig" %}
+
+{% block title %}Religion{% endblock title %}
+
+{% block content %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li><a href="{{ path("religion") }}">Liste des religions</a></li>
+		<li class="active">Liste des adresses mails</li>
+	</ol>
+
+	<div class="well well-sm">
+		<table>
+		<thead>
+			<tr>
+				<th>Religion</th>
+				<th>Mails</th>
+			</tr>
+		</thead>
+		<tbody>
+		{%  for religion in religions %}
+			<tr>
+				<td>{{ religion.label }}</td>
+				<td>
+			{% for personnageReligion in religion.personnagesReligions %}
+				{{ personnageReligion.personnage.user.email }},&nbsp;
+			{% endfor %}
+				</td>
+			</tr>
+		{%  endfor %}
+		</tbody>
+		</table>
+	</div>
+	
+{% endblock content %}

@@ -1,0 +1,72 @@
+{% extends "layout.twig" %}
+
+{% block title %}Lieu de restauration{% endblock title %}
+
+{% block content %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Liste des lieux de restauration</li>
+	</ol>
+
+
+	<nav class="navbar navbar-default" style="padding-right: 5px;">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2" aria-expanded="false">
+		        <span class="sr-only">Toggle navigation</span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+			</button>
+			<span class="navbar-brand">
+			</span>
+		</div>
+		<div id="bs-example-navbar-collapse-2" class="collapse navbar-collapse">
+			<ul class="nav navbar-nav navbar-right">
+				<a class="btn btn-primary navbar-btn" href="{{ path('restauration.add') }}">Ajouter un lieu de restauration</a>
+			</ul>
+		</div>
+	</nav>
+	
+		<table class="table table-condensed table-striped table-bordered">
+			<thead>
+				<tr>
+					<th>Label</th>
+					<th>Description</th>
+					<th>Quantité</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for restauration in restaurations %}
+					<tr>
+						<td>{{ restauration.label }}</td>
+						<td>{{ restauration.description|markdown }}</td>
+						<td>
+							{% for userByGn in restauration.userByGn %}
+								{{ userByGn.gn.label }} : {{ userByGn.count }}<br />
+							{% endfor %}
+						</td>
+						<td>
+							<div class="btn-group" role="group" aria-label="...">
+						  		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		      						Action
+		      						<span class="caret"></span>
+		    					</button>
+		    					<ul class="dropdown-menu">
+		    						<li><a href="{{ path('restauration.users',{'restauration':restauration.id}) }}">Utilisateurs</a></li>
+		    						<li><a href="{{ path('restauration.users.export',{'restauration':restauration.id}) }}">Exporter les utilisateurs</a></li>
+		    						<li><a href="{{ path('restauration.restrictions',{'restauration':restauration.id}) }}">Restrictions</a></li>
+		    						<li><a href="{{ path('restauration.update',{'restauration':restauration.id}) }}">Modifier</a></li>
+		    						<li><a href="{{ path('restauration.detail',{'restauration':restauration.id}) }}">Détail</a></li>
+		    						<li><a href="{{ path('restauration.delete',{'restauration':restauration.id}) }}">Supprimer</a></li>
+					  			</ul>
+					  		</div>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+	
+{% endblock %}
