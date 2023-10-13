@@ -27,19 +27,13 @@ services:
     restart: unless-stopped
     volumes:
       - ./:/var/www/html/
-    networks:
-      - dev
 
   mailer:
     image: schickling/mailcatcher
     ports: [ 1025, 1080 ]
-    networks:
-      - dev
 
 volumes:
 ###> doctrine/doctrine-bundle ###
   database_data:
 ###< doctrine/doctrine-bundle ###
 
-networks:
-  dev:

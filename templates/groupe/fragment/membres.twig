@@ -1,0 +1,72 @@
+<div class="row">
+	{% for session in groupe.groupeGns|reverse %}
+		<div class="col-md-4">
+	   		<h6><i class="fa fa-circle"></i> {{ session.gn }}</h6>
+
+			<p>
+			{% if not session.code %}
+			Le groupe n'a pas encore de code.
+			{% else %}
+			Le code du groupe est : <strong>{{ session.code }}</strong>
+			{% endif %}
+			</p>
+
+	   		<div class="white-box">
+	   		{% for participant in session.participants %}
+	   			{{ participant.user.email }},&nbsp;
+	   		{% endfor %}
+	   		</div>
+
+	   		<ul class="media-list">
+			{% for participant in session.participants %}
+				<li class="media">
+		    		<div class="media-left">
+		    			{% if participant.personnage %}
+		    				<a href="{{ path('personnage.admin.detail', {'personnage': participant.personnage.id}) }}">
+			    			{% if participant.personnage.trombineUrl %}
+								<img class="media-object" height="96" width="96" src="{{ path('personnage.trombine', {'personnage' : participant.personnage.id }) }}" />
+							{% else %}
+								<img class="media-object" height="96" width="96" src="{{ app.request.basepath }}/img/no_trombine.png" />
+							{% endif %}
+							</a>
+						{% else %}
+							<img class="media-object" height="96" width="96" src="{{ app.request.basepath }}/img/no_trombine.png" />
+						{% endif %}
+		    		</div>
+		    		<div class="media-body">
+		    			<h6>
+		    				{% if participant.user.etatCivil %}
+								{{ participant.user.etatCivil.nom }} {{ participant.user.etatCivil.prenom }}
+							{% else %}
+								N'a pas encore rempli ses informations administratives
+							{% endif %}
+							-- {{ participant.user.email }}
+						</h6>
+
+						<p>
+							{% if participant.personnage %}
+								#{{ participant.personnage.id }} - {{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}
+								- {{ participant.personnage.classeName }} <a href="{{ path('participant.personnage.remove', {'participant': participant.id, 'personnage': participant.personnage.id}) }}">Retirer le personnage (cela ne retirera pas le joueur du groupe)</a>
+							{% else %}
+								N'a pas encore créé son personnage
+							{% endif %}
+						</p>
+						<p>
+							{% if participant.billet %}
+								<span class="text-success">{{ participant.billet }}</span>
+							{% else %}
+								<span class="text-danger">Ce joueur n'a pas encore de billet.</span>
+							{% endif %}
+						</p>
+						<p>
+							{% if session in participant.groupeGns %}
+								<span class="text-success">Chef de groupe</span>
+							{% endif %}
+						</p>
+		    		</div>
+		    	</li>
+			{% endfor %}
+			</ul>
+		</div>
+	{% endfor %}
+</div>

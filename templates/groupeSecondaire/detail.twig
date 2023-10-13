@@ -1,0 +1,178 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li><a href="{{ path("groupeSecondaire.admin.list") }}">Liste des groupes secondaires</a></li>
+		<li class="active">Détail de {{ groupeSecondaire.label }}</li>
+	</ol>
+
+
+	<div class="well well-sm bs-component">
+		<h4>
+			{% if groupeSecondaire.secret %}<span style="color:red;">Secret</span> - {% endif %}{{ groupeSecondaire.label }}
+		</h4>
+	</div>
+
+	<div class="panel panel-default">
+		<div class="panel-heading">Informations</div>
+		<div class="panel-body">
+			<div class="list-group">
+				<div class="list-group-item">
+					<h6>Description (publique)</h6>
+					<p>{{ groupeSecondaire.description|markdown }}</p>
+				</div>
+				<div class="list-group-item">
+					<h6>Description (secrete)</h6>
+					<p>{{ groupeSecondaire.descriptionSecrete|markdown }}</p>
+				</div>
+				
+				<div class="list-group-item">
+					<h6>Matériel</h6>
+					<p>{{ groupeSecondaire.materiel }}</p>
+					<p>
+						<a href="{{ path('groupeSecondaire.materiel.update', {'groupeSecondaire': groupeSecondaire.id}) }}">Modifier</a><br />
+						<a href="{{ path('groupeSecondaire.materiel.print', {'groupeSecondaire': groupeSecondaire.id}) }}">Impression</a>
+					</p>
+				</div>
+				<div class="list-group-item">
+					<h6>Documents</h6>
+					Ajouter
+				</div>
+				<div class="list-group-item">
+					<h6>Objets</h6>
+					Ajouter
+				</div>
+				
+				<div class="list-group-item">
+					<div class="list-group-item-heading">
+						<h6>Responsable</h6>
+					</div>
+					<div class="list-group-item-text">
+					{% if groupeSecondaire.responsable %}
+						<ul>
+						<li>Personnage : {{ groupeSecondaire.responsable }}</li>
+						{% if groupeSecondaire.responsable.user %}
+						<li>Joueur : <a href="{{ path('user.view', {'id' : groupeSecondaire.responsable.user.id}) }}">{{ groupeSecondaire.responsable.user.username }}</a></li>
+						{% endif %}
+						</ul>
+					{%  else %}
+						<p class="text-warning">Attention, ce groupe n'a pas de responsable !</p>
+					{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+		
+	<div class="panel panel-default">
+		<div class="panel-heading">Intrigues</div>
+		<div class="panel-body">
+			<div class="list-group">
+				{% for intrigueHasGroupeSecondaire in groupeSecondaire.intrigueHasGroupeSecondaires %}
+				<a class="list-group-item" href="{{ path('intrigue.detail', {'intrigue': intrigueHasGroupeSecondaire.intrigue.id }) }}">
+					{{ intrigueHasGroupeSecondaire.intrigue.titre }}
+				</a>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+		
+	<div class="panel panel-default">
+		<div class="panel-heading">Liste des postulants</div>
+		<div class="panel-body">
+		
+			<div class="list-group">
+				{% for postulant in groupeSecondaire.postulants %}
+					{% if postulant.personnage.participeTo(gn) %}
+						<div class="list-group-item">
+							<h6 class="list-group-item-heading">
+								<a href="{{ path('personnage.admin.detail', {'personnage':postulant.personnage.id}) }}">{{ postulant.personnage.publicname }}</a>
+							</h6>
+							{% if postulant.personnage.groupe %}<p class="list-group-item-text">Groupe : <a href="{{ path('groupe.detail', {'index': postulant.personnage.groupe.id}) }}">{{ postulant.personnage.groupe.nom }}</a></p>{% endif %}
+							{% if postulant.personnage.user %}<p class="list-group-item-text">Utilisateur : <a href="{{ path('user.view', {'id': postulant.personnage.user.id}) }}">{{ postulant.personnage.user.username }}</a></p>{% endif %}
+							<p class="list-group-item-text">Date de la demande : {{ postulant.date|date('Y-m-d') }}</p>
+							<p class="list-group-item-text">{{ postulant.explanation|markdown }}</p>
+							<p class="list-group-item-text"><a href="{{ path('groupeSecondaire.admin.postulant.accept', {'groupe': groupeSecondaire.id,'postulant': postulant.id}) }}">Accepter cette candidature</a></p>
+							<p class="list-group-item-text"><a href="{{ path('groupeSecondaire.admin.postulant.remove', {'groupe': groupeSecondaire.id,'postulant': postulant.id}) }}">Supprimer cette candidature</a></p>
+						</div>
+					{% endif %}
+				{% endfor %}		
+			</div>
+		</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">Liste des membres ({{groupeSecondaire.getActifs(gn)}}/{{groupeSecondaire.membres|length}})</div>
+		
+		<div class="panel-body">					
+			<a href="{{ path('groupeSecondaire.admin.newMembre', {'groupeSecondaire': groupeSecondaire.id}) }}">Ajouter un membre</a>
+			<div class="list-group">
+				{% for membre in groupeSecondaire.membres %}
+					<div class="list-group-item">
+						<div class="list-group-item-heading">
+							<h6 class="list-group-item-heading">{% if membre.personnage.vivant == 0 %}💀 {% endif %}<a href="{{ path('personnage.admin.detail', {'personnage': membre.personnage.id}) }}">{{ membre.personnage.identityByLabel(gn.getLabel()) }}</a></h6>
+							{% if membre.personnage.participeTo(gn) %}
+							<span class="text-success">Inscrit à {{ gn.label }}</span><br />
+							{% else %}
+							<span class="text-info">Personnage pas inscrit à {{ gn.label }}</span><br />
+							{% endif %}
+						</div>
+						<div class="list-group-item-text">
+							{% if membre.secret %}
+								<p class="text-danger">A accès aux secrets du groupe</p>
+								<a href="{{ path('groupeSecondaire.admin.secret.off', {'groupe': groupeSecondaire.id , 'membre':membre.id}) }}">
+									Retirer l'accès aux secrets
+								</a>
+							{% else %}
+								<p>N'a pas accès aux secrets du groupe</p>
+								<a href="{{ path('groupeSecondaire.admin.secret.on', {'groupe': groupeSecondaire.id , 'membre':membre.id}) }}">
+									Donner accès aux secrets
+								</a>
+							{% endif %}
+						</div>
+						<div class="list-group-item-text">
+							<a href="{{ path('groupeSecondaire.admin.member.remove', {'groupe': groupeSecondaire.id, 'membre': membre.id}) }}">
+								Retirer ce membre.
+							</a>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">Email</div>
+		<div class="panel-body">
+			<div class="list-group">
+				{% for membre in groupeSecondaire.membres %}
+					{% if membre.personnage.participeTo(gn) %}
+						{{ membre.personnage.user.email }},&nbsp;
+					{% endif %}
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">Forum associé</div>
+		<div class="panel-body">
+			<a href="{{ path('forum.topic',{'index': groupeSecondaire.topic.id}) }}">
+				<i class="fa fa-comment"></i>
+				Forum groupe secondaire "{{ groupeSecondaire.label }}"</a>
+		</div>
+	</div>
+		
+
+				
+	<div class="list-group-item">
+		<div class="btn-group" role="group" aria-label="...">
+			<a  class="btn btn-primary" role="button" href="{{ path('groupeSecondaire.admin.update', {'groupe' : groupeSecondaire.id}) }}">Modifier</a>
+		</div>
+  	</div>
+	
+			
+
+{% endblock content %}

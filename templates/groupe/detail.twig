@@ -1,0 +1,172 @@
+{% extends "layout.twig" %}
+
+{% block title %}{{ groupe.nom}}{% endblock title %}
+{% block content %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li><a href="{{ path("groupe.admin.list") }}">Liste des groupes</a></li>
+		<li class="active">{{ groupe.nom }}</li>
+	</ol>
+						
+			<div class="well well-sm">
+
+				<div class="row">
+					<div class="col-md-8">
+						<div class="header">
+							<h5>{{ groupe.numero|default('?') }} - {{ groupe.nom }}</h5>
+						</div>
+								
+								
+						<div>
+						  	<!-- Nav tabs -->
+							<ul class="nav nav-tabs" role="tablist">
+	    						<li role="presentation" class="active"><a href="#detail" aria-controls="detail" role="tab" data-toggle="tab">Détail</a></li>
+	    						<li role="presentation"><a href="#membres" aria-controls="membres" role="tab" data-toggle="tab">Membres</a></li>
+	    						<li role="presentation"><a href="#enveloppe" aria-controls="enveloppe" role="tab" data-toggle="tab">Enveloppe</a></li>
+	    						<li role="presentation"><a href="#domaine" aria-controls="domaine" role="tab" data-toggle="tab">Jeu de domaine</a></li>
+	    					</ul>
+	    					
+	    					<!-- Tab panes -->
+							<div class="tab-content">
+								<div role="tabpanel" class="tab-pane active" id="detail">
+									{% include 'admin/groupe/fragment/detail.twig' with {'groupe': groupe} %}
+								</div>
+								<div role="tabpanel" class="tab-pane" id="membres">
+									{% include 'admin/groupe/fragment/membres.twig' with {'groupe': groupe} %}
+								</div>
+								<div role="tabpanel" class="tab-pane" id="enveloppe">
+									{% include 'admin/groupe/fragment/enveloppe.twig' with {'groupe': groupe} %}
+								</div>
+								<div role="tabpanel" class="tab-pane" id="domaine">
+									{% include 'admin/groupe/fragment/domaine.twig' with {'groupe': groupe} %}
+								</div>
+							</div>
+						</div>
+    				
+						
+					</div>
+					<div class="col-md-4">
+						<ul class="list-group">
+							<li class="list-group-item">
+								<div class="btn-group" role="group" aria-label="...">
+									<div class="btn-group">
+										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										    <i class="fa fa-print"></i>
+	  									</button>
+	  									<ul class="dropdown-menu">
+	  										<li><a href="{{ path('groupe.print.materiel.groupe', {'groupe' : groupe.id}) }}">Matériel necessaire (groupe)</a></li>
+	  										<li><a href="{{ path('groupe.print.materiel', {'groupe' : groupe.id}) }}">Matériel necessaire (personnages)</a></li>
+											<li><a href="{{ path('groupe.print.perso', {'groupe' : groupe.id}) }}">Fiche de perso</a></li>
+											<li><a href="{{ path('groupe.print.background', {'groupe' : groupe.id}) }}">Background</a></li>
+	  									</ul>
+	  								</div>
+									<a role="button" class="btn btn-default" href="{{ path('groupe.restauration', {'groupe' : groupe.id}) }}">
+										<i class="fa fa-coffee"></i>
+	  								</a>
+								</div>
+							
+							</li>												
+						</ul>		
+						
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								Backgrounds
+								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter" href="{{ path('background.add', {'groupe': groupe.id}) }}"><i class="fa fa-plus"></i></a>
+							</div>
+							<div class="panel-body">
+								<div class="list-group">
+									{% for background in groupe.backgrounds %}
+										<div class="list-group-item">
+											<div class="list-group-item-heading">
+												<h6>
+													{% if background.gn %}
+														GN {{ background.gn.label }} -&nbsp;
+													{% endif %}
+													<a href="{{ path('background.detail', {'background': background.id})  }}">{{ background.titre|default('Pas de titre') }}</a>
+												
+													<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+														<div class="btn-group" role="group" aria-label="...">
+															<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('background.update', {'background': background.id}) }}"><i class="fa fa-pencil"></i></a>
+															<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('background.delete', {'background': background.id}) }}"><i class="fa fa-eraser"></i></a>
+														</div>
+													</div>
+												</h6>
+											</div>
+											<p class="list-group-item-text text-warning">
+									    		{{ background.visibility|explainVisibility }}
+									    	</p>
+									    	<p class="list-group-item-text">
+									    		Auteur : {{ background.user.username }}
+									    	</p>
+									    	<p class="list-group-item-text">
+									    		Création  : {{ background.creationDate|date('Y-m-d H:i:s') }}
+									    	</p>
+									    	<p class="list-group-item-text">
+									    		Dernière modification  : {{ background.updateDate|date('Y-m-d H:i:s') }}
+									    	</p>
+								    	</div>
+							    	{% endfor %}
+							    </div>
+						    </div>	
+						</div>
+						
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								Debriefings
+								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter" href="{{ path('debriefing.add', {'groupe': groupe.id}) }}"><i class="fa fa-plus"></i></a>
+							</div>
+							<div class="panel-body">
+								<div class="list-group">
+									{% for debriefing in groupe.debriefings %}
+										<div class="list-group-item">
+											<div class="list-group-item-heading">
+												<h6>
+													{% if debriefing.gn %}
+														GN {{ debriefing.gn.label }} -&nbsp;
+													{% endif %}
+													<a href="{{ path('debriefing.detail', {'debriefing': debriefing.id})  }}">{{ debriefing.titre|default('Pas de titre') }}</a>
+												
+													<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+														<div class="btn-group" role="group" aria-label="...">
+															<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('debriefing.update', {'debriefing': debriefing.id}) }}"><i class="fa fa-pencil"></i></a>
+															<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('debriefing.delete', {'debriefing': debriefing.id}) }}"><i class="fa fa-eraser"></i></a>
+														</div>
+													</div>
+												</h6>
+											</div>
+											<p class="list-group-item-text text-warning">
+									    		{{ debriefing.visibility|explainVisibility }}
+									    	</p>
+									    	<p class="list-group-item-text">
+									    		Scenariste : {{ debriefing.user.username }}
+									    	</p>
+									    	<p class="list-group-item-text">
+									    		Auteur :
+													{% if debriefing.player is null %}
+														Non renseigné
+													{% else %}
+														{{ debriefing.player.displayName }}
+													{% endif %}
+									    	</p>
+									    	<p class="list-group-item-text">
+									    		Création  : {{ debriefing.creationDate|date('Y-m-d H:i:s') }}
+									    	</p>
+									    	<p class="list-group-item-text">
+									    		Dernière modification  : {{ debriefing.updateDate|date('Y-m-d H:i:s') }}
+									    	</p>
+								    	</div>
+							    	{% endfor %}
+							    </div>
+						    </div>	
+						</div>
+						
+						
+										
+					</div>
+				</div>
+			</div>			
+	
+	<ul>
+
+{% endblock %}

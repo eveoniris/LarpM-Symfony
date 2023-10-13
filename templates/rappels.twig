@@ -1,0 +1,17 @@
+{% extends "layout.twig" %}
+
+{% block title %}Rappels{% endblock title %}
+
+{% block content %}
+
+<ul class="list-group" id="haut">
+	<li class="list-group-item"><a href="#usersWithoutEtatCivil">Liste des utilisateurs sans etat-civil ({{ usersWithoutEtatCivil|length }})</a></li>
+</ul>
+<ul class="list-group">
+	<li class="list-group-item" id="usersWithoutEtatCivil"><strong>Liste des utilisateurs sans etat-civil :</strong><br />
+		{% for user in usersWithoutEtatCivil %}<code>{{ user.email }}</code><br />{% endfor %}
+		<a id="haut">Revenir en haut</a>
+	</li>
+</ul>
+
+{% endblock content %}
