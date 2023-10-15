@@ -10,56 +10,46 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Appelation
- *
- * @Table(name="appelation", indexes={@Index(name="fk_territoire_denomination_territoire_denomination1_idx", columns={"appelation_id"})})
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"base":"BaseAppelation", "extended":"Appelation"})
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'appelation')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseAppelation', 'extended' => 'Appelation'])]
 class BaseAppelation
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[Column(name: 'label', type: 'string', length: 45)]
+    protected string $label = '';
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[Column(name: 'description', type: 'text', nullable: true)]
+    protected string $description;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $titre;
+    #[Column(name: 'titre', type: 'string', length: 45, nullable: true)]
+    protected string $titre = '';
 
-    /**
-     * @OneToMany(targetEntity="Appelation", mappedBy="appelation")
-     * @JoinColumn(name="id", referencedColumnName="appelation_id", nullable=false)
-     */
-    protected $appelations;
+    #[OneToMany(mappedBy: 'appelation', targetEntity: Appelation::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id', nullable: 'false')]
+    protected ArrayCollection $appelations;
 
-    /**
-     * @OneToMany(targetEntity="Territoire", mappedBy="appelation")
-     * @JoinColumn(name="id", referencedColumnName="appelation_id", nullable=false)
-     */
-    protected $territoires;
+    #[OneToMany(mappedBy: 'appelation', targetEntity: Territoire::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id', nullable: 'false')]
+    protected ArrayCollection $territoires;
 
-    /**
-     * @ManyToOne(targetEntity="Appelation", inversedBy="appelations")
-     * @JoinColumn(name="appelation_id", referencedColumnName="id")
-     */
-    protected $appelation;
+    #[ManyToOne(targetEntity: Appelation::class, inversedBy: 'appelations')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id')]
+    protected Appelation $appelation;
 
     public function __construct()
     {
@@ -67,195 +57,106 @@ class BaseAppelation
         $this->territoires = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param integer $id
-     * @return \App\Entity\Appelation
-     */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return integer
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of label.
-     *
-     * @param string $label
-     * @return \App\Entity\Appelation
-     */
-    public function setLabel($label)
+    public function setLabel(string $label): string
     {
         $this->label = $label;
 
         return $this;
     }
 
-    /**
-     * Get the value of label.
-     *
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
 
-    /**
-     * Set the value of description.
-     *
-     * @param string $description
-     * @return \App\Entity\Appelation
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): string
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * Get the value of description.
-     *
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * Set the value of titre.
-     *
-     * @param string $titre
-     * @return \App\Entity\Appelation
-     */
-    public function setTitre($titre)
+    public function setTitre(string $titre): self
     {
         $this->titre = $titre;
 
         return $this;
     }
 
-    /**
-     * Get the value of titre.
-     *
-     * @return string
-     */
-    public function getTitre()
+    public function getTitre(): string
     {
         return $this->titre;
     }
 
-    /**
-     * Add Appelation entity to collection (one to many).
-     *
-     * @param \App\Entity\Appelation $appelation
-     * @return \App\Entity\Appelation
-     */
-    public function addAppelation(Appelation $appelation)
+    public function addAppelation(Appelation $appelation): self
     {
         $this->appelations[] = $appelation;
 
         return $this;
     }
 
-    /**
-     * Remove Appelation entity from collection (one to many).
-     *
-     * @param \App\Entity\Appelation $appelation
-     * @return \App\Entity\Appelation
-     */
-    public function removeAppelation(Appelation $appelation)
+    public function removeAppelation(Appelation $appelation): self
     {
         $this->appelations->removeElement($appelation);
 
         return $this;
     }
 
-    /**
-     * Get Appelation entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getAppelations()
+    public function getAppelations(): Collection
     {
         return $this->appelations;
     }
 
-    /**
-     * Add Territoire entity to collection (one to many).
-     *
-     * @param \App\Entity\Territoire $territoire
-     * @return \App\Entity\Appelation
-     */
-    public function addTerritoire(Territoire $territoire)
+    public function addTerritoire(Territoire $territoire): self
     {
         $this->territoires[] = $territoire;
 
         return $this;
     }
 
-    /**
-     * Remove Territoire entity from collection (one to many).
-     *
-     * @param \App\Entity\Territoire $territoire
-     * @return \App\Entity\Appelation
-     */
-    public function removeTerritoire(Territoire $territoire)
+    public function removeTerritoire(Territoire $territoire): self
     {
         $this->territoires->removeElement($territoire);
 
         return $this;
     }
 
-    /**
-     * Get Territoire entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getTerritoires()
+    public function getTerritoires(): Collection
     {
         return $this->territoires;
     }
 
-    /**
-     * Set Appelation entity (many to one).
-     *
-     * @param \App\Entity\Appelation $appelation
-     * @return \App\Entity\Appelation
-     */
-    public function setAppelation(Appelation $appelation = null)
+    public function setAppelation(Appelation $appelation = null): self
     {
         $this->appelation = $appelation;
 
         return $this;
     }
 
-    /**
-     * Get Appelation entity (many to one).
-     *
-     * @return \App\Entity\Appelation
-     */
-    public function getAppelation()
+    public function getAppelation(): self
     {
         return $this->appelation;
     }
 
     public function __sleep()
     {
-        return array('id', 'appelation_id', 'label', 'description', 'titre');
+        return ['id', 'appelation_id', 'label', 'description', 'titre'];
     }
 }
