@@ -3,236 +3,141 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Age
- *
- * @Table(name="age")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"base":"BaseAge", "extended":"Age"})
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'age')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseAge', 'extended' => 'Age'])]
 class BaseAge
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=100)
-     */
-    protected $label;
+    #[Column(type: 'string', length: 100)]
+    protected string $label = '';
 
-    /**
-     * @Column(type="string", length=450, nullable=true)
-     */
-    protected $description;
+    #[Column(type: 'string', length: 450, nullable: true)]
+    protected string $description = '';
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $bonus;
+    #[Column(type: 'integer', nullable: true)]
+    protected ?int $bonus = null;
 
-    /**
-     * @Column(type="boolean")
-     */
-    protected $enableCreation;
+    #[Column(type: 'boolean')]
+    protected bool $enableCreation = false;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $minimumValue;
+    #[Column(type: 'integer')]
+    protected int $minimumValue = 0;
 
-    /**
-     * @OneToMany(targetEntity="Personnage", mappedBy="age")
-     * @JoinColumn(name="id", referencedColumnName="age_id", nullable=false)
-     */
-    protected $personnages;
+    #[OneToMany(mappedBy: 'age', targetEntity: Personnage::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'age_id', nullable: 'false')]
+    protected ArrayCollection $personnages;
 
     public function __construct()
     {
         $this->personnages = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param integer $id
-     * @return \App\Entity\Age
-     */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return integer
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of label.
-     *
-     * @param string $label
-     * @return \App\Entity\Age
-     */
-    public function setLabel($label)
+    public function setLabel(string $label): self
     {
         $this->label = $label;
 
         return $this;
     }
 
-    /**
-     * Get the value of label.
-     *
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
 
-    /**
-     * Set the value of description.
-     *
-     * @param string $description
-     * @return \App\Entity\Age
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * Get the value of description.
-     *
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * Set the value of bonus.
-     *
-     * @param integer $bonus
-     * @return \App\Entity\Age
-     */
-    public function setBonus($bonus)
+    public function setBonus(bool $bonus): self
     {
         $this->bonus = $bonus;
 
         return $this;
     }
 
-    /**
-     * Get the value of bonus.
-     *
-     * @return integer
-     */
-    public function getBonus()
+    public function getBonus(): int
     {
         return $this->bonus;
     }
 
-    /**
-     * Set the value of enableCreation.
-     *
-     * @param boolean $enableCreation
-     * @return \App\Entity\Age
-     */
-    public function setEnableCreation($enableCreation)
+    public function setEnableCreation(bool $enableCreation): self
     {
         $this->enableCreation = $enableCreation;
 
         return $this;
     }
 
-    /**
-     * Get the value of enableCreation.
-     *
-     * @return boolean
-     */
-    public function getEnableCreation()
+    public function getEnableCreation(): bool
     {
         return $this->enableCreation;
     }
 
-    /**
-     * Set the value of minimumValue.
-     *
-     * @param integer $minimumValue
-     * @return \App\Entity\Age
-     */
-    public function setMinimumValue($minimumValue)
+    public function setMinimumValue(int $minimumValue): self
     {
         $this->minimumValue = $minimumValue;
 
         return $this;
     }
 
-    /**
-     * Get the value of minimumValue.
-     *
-     * @return integer
-     */
-    public function getMinimumValue()
+    public function getMinimumValue(): int
     {
         return $this->minimumValue;
     }
 
-    /**
-     * Add Personnage entity to collection (one to many).
-     *
-     * @param \App\Entity\Personnage $personnage
-     * @return \App\Entity\Age
-     */
-    public function addPersonnage(Personnage $personnage)
+    public function addPersonnage(Personnage $personnage): self
     {
         $this->personnages[] = $personnage;
 
         return $this;
     }
 
-    /**
-     * Remove Personnage entity from collection (one to many).
-     *
-     * @param \App\Entity\Personnage $personnage
-     * @return \App\Entity\Age
-     */
-    public function removePersonnage(Personnage $personnage)
+    public function removePersonnage(Personnage $personnage): self
     {
         $this->personnages->removeElement($personnage);
 
         return $this;
     }
 
-    /**
-     * Get Personnage entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getPersonnages()
+    public function getPersonnages(): ArrayCollection|\Doctrine\Common\Collections\Collection
     {
         return $this->personnages;
     }
 
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'bonus', 'enableCreation', 'minimumValue');
+        return ['id', 'label', 'description', 'bonus', 'enableCreation', 'minimumValue'];
     }
 }

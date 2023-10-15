@@ -3,11 +3,14 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'objectif')]
@@ -17,10 +20,10 @@ use Doctrine\ORM\Mapping\Id;
 class BaseObjectif
 {
     #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
-    protected int $id;
+    protected ?int $id = null;
 
-    #[Column(name: '`text`', type: 'string', length: 450)]
-    protected string $text;
+    #[Column(name: 'text', type: 'string', length: 450)]
+    protected string $text = '';
 
     #[Column(type: 'datetime')]
     protected \DateTime $date_creation;
@@ -28,144 +31,78 @@ class BaseObjectif
     #[Column(type: 'datetime')]
     protected \DateTime $date_update;
 
-    /**
-     * @OneToMany(targetEntity="IntrigueHasObjectif", mappedBy="objectif", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="id", referencedColumnName="objectif_id", nullable=false)
-     */
-    protected $intrigueHasObjectifs;
+    #[OneToMany(mappedBy: 'objectif', targetEntity: IntrigueHasObjectif::class, cascade: ['persist', 'remove'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'objectif_id', nullable: 'false')]
+    protected ArrayCollection $intrigueHasObjectifs;
 
     public function __construct()
     {
         $this->intrigueHasObjectifs = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Objectif
-     */
-    public function setId($id)
+    public function setId($id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of text.
-     *
-     * @param string $text
-     *
-     * @return \App\Entity\Objectif
-     */
-    public function setText($text)
+    public function setText($text): self
     {
         $this->text = $text;
 
         return $this;
     }
 
-    /**
-     * Get the value of text.
-     *
-     * @return string
-     */
-    public function getText()
+    public function getText(): string
     {
         return $this->text;
     }
 
-    /**
-     * Set the value of date_creation.
-     *
-     * @param \DateTime $date_creation
-     *
-     * @return \App\Entity\Objectif
-     */
-    public function setDateCreation($date_creation)
+    public function setDateCreation($date_creation): self
     {
         $this->date_creation = $date_creation;
 
         return $this;
     }
 
-    /**
-     * Get the value of date_creation.
-     *
-     * @return \DateTime
-     */
-    public function getDateCreation()
+    public function getDateCreation(): \DateTime
     {
         return $this->date_creation;
     }
 
-    /**
-     * Set the value of date_update.
-     *
-     * @param \DateTime $date_update
-     *
-     * @return \App\Entity\Objectif
-     */
-    public function setDateUpdate($date_update)
+    public function setDateUpdate($date_update): self
     {
         $this->date_update = $date_update;
 
         return $this;
     }
 
-    /**
-     * Get the value of date_update.
-     *
-     * @return \DateTime
-     */
-    public function getDateUpdate()
+    public function getDateUpdate(): \DateTime
     {
         return $this->date_update;
     }
 
-    /**
-     * Add IntrigueHasObjectif entity to collection (one to many).
-     *
-     * @return \App\Entity\Objectif
-     */
-    public function addIntrigueHasObjectif(IntrigueHasObjectif $intrigueHasObjectif)
+    public function addIntrigueHasObjectif(IntrigueHasObjectif $intrigueHasObjectif): self
     {
         $this->intrigueHasObjectifs[] = $intrigueHasObjectif;
 
         return $this;
     }
 
-    /**
-     * Remove IntrigueHasObjectif entity from collection (one to many).
-     *
-     * @return \App\Entity\Objectif
-     */
-    public function removeIntrigueHasObjectif(IntrigueHasObjectif $intrigueHasObjectif)
+    public function removeIntrigueHasObjectif(IntrigueHasObjectif $intrigueHasObjectif): self
     {
         $this->intrigueHasObjectifs->removeElement($intrigueHasObjectif);
 
         return $this;
     }
 
-    /**
-     * Get IntrigueHasObjectif entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getIntrigueHasObjectifs()
+    public function getIntrigueHasObjectifs(): Collection
     {
         return $this->intrigueHasObjectifs;
     }
