@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,35 +23,33 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Repository\ReligionRepository
- * 
+ * LarpManager\Repository\ReligionRepository.
+ *
  * @author kevin
  */
 class ReligionRepository extends EntityRepository
 {
-	/**
-	 * Find all religions ordered by label
-	 * @return ArrayCollection $religions
-	 */
-	public function findAllOrderedByLabel()
-	{
-		$religions = $this->getEntityManager()
-				->createQuery('SELECT r FROM App\Entity\Religion r ORDER BY r.label ASC')
-				->getResult();
-		
-		return $religions;
-	}
+    /**
+     * Find all religions ordered by label.
+     *
+     * @return ArrayCollection $religions
+     */
+    public function findAllOrderedByLabel()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT r FROM App\Entity\Religion r ORDER BY r.label ASC')
+            ->getResult();
+    }
 
-	/**
-	 * Find all public religions ordered by label
-	 * @return ArrayCollection $religions
-	 */
-	public function findAllPublicOrderedByLabel()
-	{
-		$religions = $this->getEntityManager()
-				->createQuery('SELECT r FROM App\Entity\Religion r WHERE r.secret = 0 ORDER BY r.label ASC')
-				->getResult();
-		
-		return $religions;
-	}	
+    /**
+     * Find all public religions ordered by label.
+     *
+     * @return ArrayCollection $religions
+     */
+    public function findAllPublicOrderedByLabel()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT r FROM App\Entity\Religion r WHERE r.secret = 0 ORDER BY r.label ASC')
+            ->getResult();
+    }
 }

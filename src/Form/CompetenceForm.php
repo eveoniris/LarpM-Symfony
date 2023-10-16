@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,74 +23,66 @@ namespace App\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use App\Entity\CompetenceAttribute;
 
 /**
- * LarpManager\Form\CompetenceForm
+ * LarpManager\Form\CompetenceForm.
  *
  * @author kevin
- *
  */
 class CompetenceForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('competenceFamily','entity', array(
-					'label' => 'Famille',
-					'required' => true,
-					'class' => 'App\Entity\CompetenceFamily',
-					'property' => 'label',
-				))
-				->add('level','entity', array(
-					'label' => 'Niveau',
-					'required' => true,
-					'class' => 'App\Entity\Level',
-					'property' => 'label',
-				))								
-				->add('description','textarea', array(
-					'required' => false,
-					'attr' => array(
-							'class' => 'tinymce'
-					),
-				))
-				->add('document','file', array(
-					'label' => 'Téléversez un document',
-					'required' => true,
-					'mapped' => false
-				))
-				->add('materiel','textarea', array(
-					'label' => 'Matériel necessaire',
-					'required' => false,
-					'attr' => array(
-							'class' => 'tinymce'
-					),
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Competence',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'competence';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('competenceFamily', 'entity', [
+            'label' => 'Famille',
+            'required' => true,
+            'class' => \App\Entity\CompetenceFamily::class,
+            'property' => 'label',
+        ])
+            ->add('level', 'entity', [
+                'label' => 'Niveau',
+                'required' => true,
+                'class' => \App\Entity\Level::class,
+                'property' => 'label',
+            ])
+            ->add('description', 'textarea', [
+                'required' => false,
+                'attr' => [
+                    'class' => 'tinymce',
+                ],
+            ])
+            ->add('document', 'file', [
+                'label' => 'Téléversez un document',
+                'required' => true,
+                'mapped' => false,
+            ])
+            ->add('materiel', 'textarea', [
+                'label' => 'Matériel necessaire',
+                'required' => false,
+                'attr' => [
+                    'class' => 'tinymce',
+                ],
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Competence::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'competence';
+    }
 }

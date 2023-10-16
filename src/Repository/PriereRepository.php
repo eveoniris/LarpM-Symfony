@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,21 +20,18 @@
 
 namespace App\Repository;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * LarpManager\Repository\SortRepository
- * 
+ * LarpManager\Repository\SortRepository.
+ *
  * @author Gectou4
  */
 class PriereRepository extends EntityRepository
 {
     /**
-     * Trouve le nombre de prières correspondant aux critères de recherche
-     *
-     * @param ?string $type
+     * Trouve le nombre de prières correspondant aux critères de recherche.
      */
     public function findCount(?string $type, $value)
     {
@@ -45,12 +42,7 @@ class PriereRepository extends EntityRepository
     }
 
     /**
-     * Trouve les prières correspondant aux critères de recherche
-     *
-     * @param ?string $type
-     * @param array $order
-     * @param int $limit
-     * @param int $offset
+     * Trouve les prières correspondant aux critères de recherche.
      */
     public function findList(?string $type, $value, array $order = [], int $limit = 50, int $offset = 0)
     {
@@ -62,24 +54,18 @@ class PriereRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @param string|null $type
-     * @param $value
-     * @return QueryBuilder
-     */
     protected function getQueryBuilder(?string $type, $value): QueryBuilder
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('p');
-        $qb->from('App\Entity\Priere','p');
+        $qb->from(\App\Entity\Priere::class, 'p');
 
         // retire les caractères non imprimable d'une chaine UTF-8
-        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars($value));
+        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars((string) $value));
 
-        if ($type && $value)
-        {
-            switch ($type){
+        if ($type && $value) {
+            switch ($type) {
                 case 'label':
                     $qb->andWhere('p.label LIKE :value');
                     $qb->setParameter('value', '%'.$value.'%');
@@ -89,7 +75,7 @@ class PriereRepository extends EntityRepository
                     $qb->setParameter('value', '%'.$value.'%');
                     break;
                 case 'sphere':
-                    $qb->join('p.sphere','s');
+                    $qb->join('p.sphere', 's');
                     $qb->andWhere('s.label LIKE :value');
                     $qb->setParameter('value', '%'.$value.'%');
                     break;

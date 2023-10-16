@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,54 +23,44 @@ namespace App\Form\GroupeSecondaire;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Doctrine\ORM\EntityRepository;
-
 
 /**
- * LarpManager\Form\Groupe\GroupeEnvelopeForm
+ * LarpManager\Form\Groupe\GroupeEnvelopeForm.
  *
  * @author kevin
- *
  */
 class GroupeSecondaireMaterielForm extends AbstractType
 {
-	/**
-	 * Contruction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('materiel','textarea', array(
-				'label' => 'Contenu libre de l\'enveloppe',
-				'required' => false,
-				'attr' => array(
-						'row' => 9,
-				),
-			))
-			->add('save','submit', array('label' => "Sauvegarder"));
-	}
-	
-	/**
-	 * Définition de l'entité conercné
-	 *
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\SecondaryGroup',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'groupeSecondaireMateriel';
-	}
-	
-	
+    /**
+     * Contruction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('materiel', 'textarea', [
+            'label' => "Contenu libre de l'enveloppe",
+            'required' => false,
+            'attr' => [
+                'row' => 9,
+            ],
+        ])
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+    }
+
+    /**
+     * Définition de l'entité conercné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\SecondaryGroup::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'groupeSecondaireMateriel';
+    }
 }

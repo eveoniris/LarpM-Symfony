@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\SecondaryGroup
+ * App\Entity\SecondaryGroup.
  *
  * @Table(name="secondary_group", indexes={@Index(name="fk_secondary_groupe_secondary_group_type1_idx", columns={"secondary_group_type_id"}), @Index(name="fk_secondary_group_personnage1_idx", columns={"personnage_id"}), @Index(name="fk_secondary_group_topic1_idx", columns={"topic_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseSecondaryGroup", "extended":"SecondaryGroup"})
  */
 class BaseSecondaryGroup
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -55,37 +60,44 @@ class BaseSecondaryGroup
 
     /**
      * @OneToMany(targetEntity="IntrigueHasGroupeSecondaire", mappedBy="secondaryGroup")
+     *
      * @JoinColumn(name="id", referencedColumnName="secondary_group_id", nullable=false)
      */
     protected $intrigueHasGroupeSecondaires;
 
     /**
      * @OneToMany(targetEntity="Membre", mappedBy="secondaryGroup")
+     *
      * @JoinColumn(name="id", referencedColumnName="secondary_group_id", nullable=false)
+     *
      * @OrderBy({"id" = "ASC",})
      */
     protected $membres;
 
     /**
      * @OneToMany(targetEntity="Postulant", mappedBy="secondaryGroup")
+     *
      * @JoinColumn(name="id", referencedColumnName="secondary_group_id", nullable=false)
      */
     protected $postulants;
 
     /**
      * @ManyToOne(targetEntity="SecondaryGroupType", inversedBy="secondaryGroups")
+     *
      * @JoinColumn(name="secondary_group_type_id", referencedColumnName="id", nullable=false)
      */
     protected $secondaryGroupType;
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="secondaryGroups")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id")
      */
     protected $personnage;
 
     /**
      * @ManyToOne(targetEntity="Topic", inversedBy="secondaryGroups")
+     *
      * @JoinColumn(name="topic_id", referencedColumnName="id", nullable=false)
      */
     protected $topic;
@@ -100,10 +112,11 @@ class BaseSecondaryGroup
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\SecondaryGroup
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -113,7 +126,7 @@ class BaseSecondaryGroup
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -124,6 +137,7 @@ class BaseSecondaryGroup
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\SecondaryGroup
      */
     public function setLabel($label)
@@ -147,6 +161,7 @@ class BaseSecondaryGroup
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\SecondaryGroup
      */
     public function setDescription($description)
@@ -170,6 +185,7 @@ class BaseSecondaryGroup
      * Set the value of description_secrete.
      *
      * @param string $description_secrete
+     *
      * @return \App\Entity\SecondaryGroup
      */
     public function setDescriptionSecrete($description_secrete)
@@ -192,7 +208,8 @@ class BaseSecondaryGroup
     /**
      * Set the value of secret.
      *
-     * @param boolean $secret
+     * @param bool $secret
+     *
      * @return \App\Entity\SecondaryGroup
      */
     public function setSecret($secret)
@@ -205,7 +222,7 @@ class BaseSecondaryGroup
     /**
      * Get the value of secret.
      *
-     * @return boolean
+     * @return bool
      */
     public function getSecret()
     {
@@ -216,6 +233,7 @@ class BaseSecondaryGroup
      * Set the value of materiel.
      *
      * @param string $materiel
+     *
      * @return \App\Entity\SecondaryGroup
      */
     public function setMateriel($materiel)
@@ -238,7 +256,6 @@ class BaseSecondaryGroup
     /**
      * Add IntrigueHasGroupeSecondaire entity to collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasGroupeSecondaire $intrigueHasGroupeSecondaire
      * @return \App\Entity\SecondaryGroup
      */
     public function addIntrigueHasGroupeSecondaire(IntrigueHasGroupeSecondaire $intrigueHasGroupeSecondaire)
@@ -251,7 +268,6 @@ class BaseSecondaryGroup
     /**
      * Remove IntrigueHasGroupeSecondaire entity from collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasGroupeSecondaire $intrigueHasGroupeSecondaire
      * @return \App\Entity\SecondaryGroup
      */
     public function removeIntrigueHasGroupeSecondaire(IntrigueHasGroupeSecondaire $intrigueHasGroupeSecondaire)
@@ -274,7 +290,6 @@ class BaseSecondaryGroup
     /**
      * Add Membre entity to collection (one to many).
      *
-     * @param \App\Entity\Membre $membre
      * @return \App\Entity\SecondaryGroup
      */
     public function addMembre(Membre $membre)
@@ -287,7 +302,6 @@ class BaseSecondaryGroup
     /**
      * Remove Membre entity from collection (one to many).
      *
-     * @param \App\Entity\Membre $membre
      * @return \App\Entity\SecondaryGroup
      */
     public function removeMembre(Membre $membre)
@@ -310,7 +324,6 @@ class BaseSecondaryGroup
     /**
      * Add Postulant entity to collection (one to many).
      *
-     * @param \App\Entity\Postulant $postulant
      * @return \App\Entity\SecondaryGroup
      */
     public function addPostulant(Postulant $postulant)
@@ -323,7 +336,6 @@ class BaseSecondaryGroup
     /**
      * Remove Postulant entity from collection (one to many).
      *
-     * @param \App\Entity\Postulant $postulant
      * @return \App\Entity\SecondaryGroup
      */
     public function removePostulant(Postulant $postulant)
@@ -346,7 +358,6 @@ class BaseSecondaryGroup
     /**
      * Set SecondaryGroupType entity (many to one).
      *
-     * @param \App\Entity\SecondaryGroupType $secondaryGroupType
      * @return \App\Entity\SecondaryGroup
      */
     public function setSecondaryGroupType(SecondaryGroupType $secondaryGroupType = null)
@@ -369,7 +380,6 @@ class BaseSecondaryGroup
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\SecondaryGroup
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -392,7 +402,6 @@ class BaseSecondaryGroup
     /**
      * Set Topic entity (many to one).
      *
-     * @param \App\Entity\Topic $topic
      * @return \App\Entity\SecondaryGroup
      */
     public function setTopic(Topic $topic = null)
@@ -414,6 +423,6 @@ class BaseSecondaryGroup
 
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'secondary_group_type_id', 'personnage_id', 'topic_id', 'description_secrete', 'secret', 'materiel');
+        return ['id', 'label', 'description', 'secondary_group_type_id', 'personnage_id', 'topic_id', 'description_secrete', 'secret', 'materiel'];
     }
 }

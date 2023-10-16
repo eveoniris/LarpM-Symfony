@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,48 +27,46 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseDocument;
-
 /**
- * App\Entity\Document
+ * App\Entity\Document.
  *
  * @Entity(repositoryClass="LarpManager\Repository\DocumentRepository")
  */
-class Document extends BaseDocument
+class Document extends BaseDocument implements \Stringable
 {
-	public function __toString()
-	{
-		return $this->getIdentity();
-	}
-	
-	/**
-	 * Constructeur
-	 */
-	public function __construct()
-	{
-		$this->setCreationDate(new \Datetime('now'));
-		$this->setUpdateDate(new \Datetime('now'));
-		$this->setImpression(false);
-	}
-	
-	/**
-	 * Fourni la description du document au bon format pour impression
-	 */
-	public function getDescriptionRaw()
-	{
-		return html_entity_decode(strip_tags($this->getDescription()));
-	}
-	
-	/**
-	 * Fourni l'identité d'un document (code + titre)
-	 */
-	public function getIdentity()
-	{
-		return $this->getCode(). ' ' .$this->getTitre();
-	}
+    public function __toString(): string
+    {
+        return (string) $this->getIdentity();
+    }
 
-	public function getPrintLabel()
-	{
-		return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getCode()));
-	}		
+    /**
+     * Constructeur.
+     */
+    public function __construct()
+    {
+        $this->setCreationDate(new \DateTime('now'));
+        $this->setUpdateDate(new \DateTime('now'));
+        $this->setImpression(false);
+    }
+
+    /**
+     * Fourni la description du document au bon format pour impression.
+     */
+    public function getDescriptionRaw(): string
+    {
+        return html_entity_decode(strip_tags($this->getDescription()));
+    }
+
+    /**
+     * Fourni l'identité d'un document (code + titre).
+     */
+    public function getIdentity(): string
+    {
+        return $this->getCode().' '.$this->getTitre();
+    }
+
+    public function getPrintLabel(): ?string
+    {
+        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getCode()));
+    }
 }

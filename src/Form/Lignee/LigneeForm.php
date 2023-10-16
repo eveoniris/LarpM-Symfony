@@ -10,48 +10,43 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\LigneeForm
- * Formulaire de mis à jour de lignée
- * @author gerald
+ * Formulaire de mis à jour de lignée.
  *
+ * @author gerald
  */
 class LigneeForm extends AbstractType
 {
     /**
-     * Construction du formulaire
-     *
-     * @param FormBuilderInterface $builder
-     * @param array $options
+     * Construction du formulaire.
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', TextType::class, array(
-                    'required' => true,
-                    'attr' => array(
-                        'placeholder' => 'Nom de la lignée'
-                     )
-            )
+        $builder->add('nom', TextType::class, [
+                'required' => true,
+                'attr' => [
+                    'placeholder' => 'Nom de la lignée',
+                ],
+            ]
         )
-            ->add('description', TextareaType::class, array(
-                    'required' => false,
-                    'attr' => array(
-                        'placeholder' => 'Description de la lignée (aperçu et/ou effet de jeu)'
-                    )
-            ));
+            ->add('description', TextareaType::class, [
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'Description de la lignée (aperçu et/ou effet de jeu)',
+                ],
+            ]);
     }
 
     /**
-     * Définition de l'entité concernée
-     *
-     * @param OptionsResolver $resolver
+     * Définition de l'entité concernée.
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
     }
 
     /**
-     * Nom du formulaire
+     * Nom du formulaire.
      */
-    public function getName()
+    public function getName(): string
     {
         return 'ligneeUpdate';
     }

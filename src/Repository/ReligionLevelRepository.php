@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,22 +23,21 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Repository\ReligionLevelRepository
- * 
+ * LarpManager\Repository\ReligionLevelRepository.
+ *
  * @author kevin
  */
 class ReligionLevelRepository extends EntityRepository
 {
-	/**
-	 * trouve tous les niveaux de religion classé par index
-	 * @return ArrayCollection $religionLevels
-	 */
-	public function findAllOrderedByIndex()
-	{
-		$religionLevels = $this->getEntityManager()
-				->createQuery('SELECT rl FROM App\Entity\ReligionLevel rl ORDER BY rl.index ASC')
-				->getResult();
-		
-		return $religionLevels;
-	}
+    /**
+     * trouve tous les niveaux de religion classé par index.
+     *
+     * @return ArrayCollection $religionLevels
+     */
+    public function findAllOrderedByIndex()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT rl FROM App\Entity\ReligionLevel rl ORDER BY rl.index ASC')
+            ->getResult();
+    }
 }

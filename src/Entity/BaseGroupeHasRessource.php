@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\GroupeHasRessource
+ * App\Entity\GroupeHasRessource.
  *
  * @Table(name="groupe_has_ressource", indexes={@Index(name="fk_groupe_has_ressource_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_groupe_has_ressource_ressource1_idx", columns={"ressource_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseGroupeHasRessource", "extended":"GroupeHasRessource"})
  */
 class BaseGroupeHasRessource
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -33,12 +38,14 @@ class BaseGroupeHasRessource
 
     /**
      * @ManyToOne(targetEntity="Groupe", inversedBy="groupeHasRessources", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)
      */
     protected $groupe;
 
     /**
      * @ManyToOne(targetEntity="Ressource", inversedBy="groupeHasRessources")
+     *
      * @JoinColumn(name="ressource_id", referencedColumnName="id", nullable=false)
      */
     protected $ressource;
@@ -50,7 +57,8 @@ class BaseGroupeHasRessource
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\GroupeHasRessource
      */
     public function setId($id)
@@ -63,7 +71,7 @@ class BaseGroupeHasRessource
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -73,7 +81,8 @@ class BaseGroupeHasRessource
     /**
      * Set the value of quantite.
      *
-     * @param integer $quantite
+     * @param int $quantite
+     *
      * @return \App\Entity\GroupeHasRessource
      */
     public function setQuantite($quantite)
@@ -86,7 +95,7 @@ class BaseGroupeHasRessource
     /**
      * Get the value of quantite.
      *
-     * @return integer
+     * @return int
      */
     public function getQuantite()
     {
@@ -96,7 +105,6 @@ class BaseGroupeHasRessource
     /**
      * Set Groupe entity (many to one).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\GroupeHasRessource
      */
     public function setGroupe(Groupe $groupe = null)
@@ -119,7 +127,6 @@ class BaseGroupeHasRessource
     /**
      * Set Ressource entity (many to one).
      *
-     * @param \App\Entity\Ressource $ressource
      * @return \App\Entity\GroupeHasRessource
      */
     public function setRessource(Ressource $ressource = null)
@@ -141,6 +148,6 @@ class BaseGroupeHasRessource
 
     public function __sleep()
     {
-        return array('id', 'quantite', 'groupe_id', 'ressource_id');
+        return ['id', 'quantite', 'groupe_id', 'ressource_id'];
     }
 }

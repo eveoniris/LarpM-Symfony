@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,36 +24,32 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
- * LarpManager\Form\UserForm
+ * LarpManager\Form\UserForm.
  *
  * @author kevin
- *
  */
 class UserForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('email','email', array(
-					'label' => 'Adresse email',
-					'required' => true
-				))
-				->add('name','text', array(
-					'label' => 'Nom ou pseudo',
-					'required' => true
-				));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */	
-	public function getName()
-	{
-		return 'User';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('email', 'email', [
+            'label' => 'Adresse email',
+            'required' => true,
+        ])
+            ->add('name', 'text', [
+                'label' => 'Nom ou pseudo',
+                'required' => true,
+            ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'User';
+    }
 }

@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Intrigue
+ * App\Entity\Intrigue.
  *
  * @Table(name="intrigue", indexes={@Index(name="fk_intrigue_User1_idx", columns={"User_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseIntrigue", "extended":"Intrigue"})
  */
 class BaseIntrigue
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -65,54 +70,63 @@ class BaseIntrigue
 
     /**
      * @OneToMany(targetEntity="IntrigueHasEvenement", mappedBy="intrigue", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="intrigue_id", nullable=false)
      */
     protected $intrigueHasEvenements;
 
     /**
      * @OneToMany(targetEntity="IntrigueHasGroupe", mappedBy="intrigue", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="intrigue_id", nullable=false)
      */
     protected $intrigueHasGroupes;
 
     /**
      * @OneToMany(targetEntity="IntrigueHasGroupeSecondaire", mappedBy="intrigue", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="intrigue_id", nullable=false)
      */
     protected $intrigueHasGroupeSecondaires;
 
     /**
      * @OneToMany(targetEntity="IntrigueHasLieu", mappedBy="intrigue", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="intrigue_id", nullable=false)
      */
     protected $intrigueHasLieus;
 
     /**
      * @OneToMany(targetEntity="IntrigueHasDocument", mappedBy="intrigue", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="intrigue_id", nullable=false)
      */
     protected $intrigueHasDocuments;
 
     /**
      * @OneToMany(targetEntity="IntrigueHasModification", mappedBy="intrigue", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="intrigue_id", nullable=false)
      */
     protected $intrigueHasModifications;
 
     /**
      * @OneToMany(targetEntity="IntrigueHasObjectif", mappedBy="intrigue", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="intrigue_id", nullable=false)
      */
     protected $intrigueHasObjectifs;
 
     /**
      * @OneToMany(targetEntity="Relecture", mappedBy="intrigue", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="intrigue_id", nullable=false)
      */
     protected $relectures;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="intrigues")
+     *
      * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
      */
     protected $User;
@@ -132,10 +146,11 @@ class BaseIntrigue
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Intrigue
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -145,7 +160,7 @@ class BaseIntrigue
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -156,6 +171,7 @@ class BaseIntrigue
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Intrigue
      */
     public function setDescription($description)
@@ -179,6 +195,7 @@ class BaseIntrigue
      * Set the value of titre.
      *
      * @param string $titre
+     *
      * @return \App\Entity\Intrigue
      */
     public function setTitre($titre)
@@ -202,6 +219,7 @@ class BaseIntrigue
      * Set the value of text.
      *
      * @param string $text
+     *
      * @return \App\Entity\Intrigue
      */
     public function setText($text)
@@ -225,6 +243,7 @@ class BaseIntrigue
      * Set the value of resolution.
      *
      * @param string $resolution
+     *
      * @return \App\Entity\Intrigue
      */
     public function setResolution($resolution)
@@ -248,6 +267,7 @@ class BaseIntrigue
      * Set the value of date_creation.
      *
      * @param \DateTime $date_creation
+     *
      * @return \App\Entity\Intrigue
      */
     public function setDateCreation($date_creation)
@@ -271,6 +291,7 @@ class BaseIntrigue
      * Set the value of date_update.
      *
      * @param \DateTime $date_update
+     *
      * @return \App\Entity\Intrigue
      */
     public function setDateUpdate($date_update)
@@ -294,6 +315,7 @@ class BaseIntrigue
      * Set the value of state.
      *
      * @param string $state
+     *
      * @return \App\Entity\Intrigue
      */
     public function setState($state)
@@ -316,7 +338,6 @@ class BaseIntrigue
     /**
      * Add IntrigueHasEvenement entity to collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasEvenement $intrigueHasEvenement
      * @return \App\Entity\Intrigue
      */
     public function addIntrigueHasEvenement(IntrigueHasEvenement $intrigueHasEvenement)
@@ -329,7 +350,6 @@ class BaseIntrigue
     /**
      * Remove IntrigueHasEvenement entity from collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasEvenement $intrigueHasEvenement
      * @return \App\Entity\Intrigue
      */
     public function removeIntrigueHasEvenement(IntrigueHasEvenement $intrigueHasEvenement)
@@ -352,7 +372,6 @@ class BaseIntrigue
     /**
      * Add IntrigueHasGroupe entity to collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasGroupe $intrigueHasGroupe
      * @return \App\Entity\Intrigue
      */
     public function addIntrigueHasGroupe(IntrigueHasGroupe $intrigueHasGroupe)
@@ -365,7 +384,6 @@ class BaseIntrigue
     /**
      * Remove IntrigueHasGroupe entity from collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasGroupe $intrigueHasGroupe
      * @return \App\Entity\Intrigue
      */
     public function removeIntrigueHasGroupe(IntrigueHasGroupe $intrigueHasGroupe)
@@ -388,7 +406,6 @@ class BaseIntrigue
     /**
      * Add IntrigueHasGroupeSecondaire entity to collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasGroupeSecondaire $intrigueHasGroupeSecondaire
      * @return \App\Entity\Intrigue
      */
     public function addIntrigueHasGroupeSecondaire(IntrigueHasGroupeSecondaire $intrigueHasGroupeSecondaire)
@@ -401,7 +418,6 @@ class BaseIntrigue
     /**
      * Remove IntrigueHasGroupeSecondaire entity from collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasGroupeSecondaire $intrigueHasGroupeSecondaire
      * @return \App\Entity\Intrigue
      */
     public function removeIntrigueHasGroupeSecondaire(IntrigueHasGroupeSecondaire $intrigueHasGroupeSecondaire)
@@ -424,7 +440,6 @@ class BaseIntrigue
     /**
      * Add IntrigueHasLieu entity to collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasLieu $intrigueHasLieu
      * @return \App\Entity\Intrigue
      */
     public function addIntrigueHasLieu(IntrigueHasLieu $intrigueHasLieu)
@@ -437,7 +452,6 @@ class BaseIntrigue
     /**
      * Remove IntrigueHasLieu entity from collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasLieu $intrigueHasLieu
      * @return \App\Entity\Intrigue
      */
     public function removeIntrigueHasLieu(IntrigueHasLieu $intrigueHasLieu)
@@ -460,7 +474,6 @@ class BaseIntrigue
     /**
      * Add IntrigueHasDocument entity to collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasDocument $intrigueHasDocument
      * @return \App\Entity\Intrigue
      */
     public function addIntrigueHasDocument(IntrigueHasDocument $intrigueHasDocument)
@@ -473,7 +486,6 @@ class BaseIntrigue
     /**
      * Remove IntrigueHasDocument entity from collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasDocument $intrigueHasDocument
      * @return \App\Entity\Intrigue
      */
     public function removeIntrigueHasDocument(IntrigueHasDocument $intrigueHasDocument)
@@ -492,10 +504,10 @@ class BaseIntrigue
     {
         return $this->intrigueHasDocuments;
     }
+
     /**
      * Add IntrigueHasModification entity to collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasModification $intrigueHasModification
      * @return \App\Entity\Intrigue
      */
     public function addIntrigueHasModification(IntrigueHasModification $intrigueHasModification)
@@ -508,7 +520,6 @@ class BaseIntrigue
     /**
      * Remove IntrigueHasModification entity from collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasModification $intrigueHasModification
      * @return \App\Entity\Intrigue
      */
     public function removeIntrigueHasModification(IntrigueHasModification $intrigueHasModification)
@@ -531,7 +542,6 @@ class BaseIntrigue
     /**
      * Add IntrigueHasObjectif entity to collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasObjectif $intrigueHasObjectif
      * @return \App\Entity\Intrigue
      */
     public function addIntrigueHasObjectif(IntrigueHasObjectif $intrigueHasObjectif)
@@ -544,7 +554,6 @@ class BaseIntrigue
     /**
      * Remove IntrigueHasObjectif entity from collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasObjectif $intrigueHasObjectif
      * @return \App\Entity\Intrigue
      */
     public function removeIntrigueHasObjectif(IntrigueHasObjectif $intrigueHasObjectif)
@@ -567,7 +576,6 @@ class BaseIntrigue
     /**
      * Add Relecture entity to collection (one to many).
      *
-     * @param \App\Entity\Relecture $relecture
      * @return \App\Entity\Intrigue
      */
     public function addRelecture(Relecture $relecture)
@@ -580,7 +588,6 @@ class BaseIntrigue
     /**
      * Remove Relecture entity from collection (one to many).
      *
-     * @param \App\Entity\Relecture $relecture
      * @return \App\Entity\Intrigue
      */
     public function removeRelecture(Relecture $relecture)
@@ -603,7 +610,6 @@ class BaseIntrigue
     /**
      * Set User entity (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Intrigue
      */
     public function setUser(User $User = null)
@@ -625,6 +631,6 @@ class BaseIntrigue
 
     public function __sleep()
     {
-        return array('id', 'description', 'titre', 'text', 'resolution', 'date_creation', 'date_update', 'User_id', 'state');
+        return ['id', 'description', 'titre', 'text', 'resolution', 'date_creation', 'date_update', 'User_id', 'state'];
     }
 }

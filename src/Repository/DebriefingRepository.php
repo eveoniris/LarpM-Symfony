@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,32 +23,27 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Repository\DebriefingRepository
+ * LarpManager\Repository\DebriefingRepository.
  *
  * @author kevin
  */
 class DebriefingRepository extends EntityRepository
 {
+    /**
+     * Trouve les debriefing correspondant aux critères de recherche.
+     */
+    public function findCount(array $criteria = [])
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
 
-	/**
-	 * Trouve les debriefing correspondant aux critères de recherche
-	 *
-	 * @param array $criteria
-	 * @param array $options
-	 */
-	public function findCount(array $criteria = array())
-	{
-		$qb = $this->getEntityManager()->createQueryBuilder();
-		
-		$qb->select($qb->expr()->count('d'));
-		$qb->from('App\Entity\Debriefing','d');
-		
-		foreach ( $criteria as $criter )
-		{
+        $qb->select($qb->expr()->count('d'));
+        $qb->from(\App\Entity\Debriefing::class, 'd');
+
+        foreach ($criteria as $criter) {
             $qb->andWhere('?1');
             $qb->setParameter(1, $criter);
-		}
-		
-		return $qb->getQuery()->getSingleScalarResult();
-	}
+        }
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }

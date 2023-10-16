@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
@@ -25,30 +25,29 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\Type\ProprietaireType
+ * LarpManager\Form\Type\ProprietaireType.
  *
  * @author kevin
- *
  */
 class ProprietaireType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('nom','text')
-				->add('adresse','text', array('required' => false))
-				->add('mail','text', array('required' => false))
-				->add('tel','text', array('required' => false));
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('nom', 'text')
+            ->add('adresse', 'text', ['required' => false])
+            ->add('mail', 'text', ['required' => false])
+            ->add('tel', 'text', ['required' => false]);
+    }
 
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\Proprietaire',
-		));
-	}
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\Proprietaire::class,
+        ]);
+    }
 
-	public function getName()
-	{
-		return 'proprietaire';
-	}
+    public function getName(): string
+    {
+        return 'proprietaire';
+    }
 }

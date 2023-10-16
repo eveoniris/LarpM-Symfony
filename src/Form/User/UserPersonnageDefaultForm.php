@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,63 +20,57 @@
 
 namespace App\Form\User;
 
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Form\User\UserPersonnageDefaultForm
+ * LarpManager\Form\User\UserPersonnageDefaultForm.
  *
  * @author kevin
- *
  */
 class UserPersonnageDefaultForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('personnage','entity', array(
-					'required' => false,
-					'label' => 'Choisissez votre personnage par défaut. Ce personnage sera utilisé pour signer vos messages',
-					'multiple' => false,
-					'expanded' => true,
-					'class' => 'App\Entity\Personnage',
-					'property' => 'identity',
-					'placeholder' => 'Aucun',
-					'empty_data'  => null,
-					'query_builder' => function(EntityRepository $er) use ($options) {
-						return $er->createQueryBuilder('p')
-							->join('p.User', 'u')
-							->where('u.id = :UserId')
-							->setParameter('UserId', $options['User_id']);
-					},
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 * 
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\User',
-				'User_id' => null,
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'UserPersonnageDefault';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('personnage', 'entity', [
+            'required' => false,
+            'label' => 'Choisissez votre personnage par défaut. Ce personnage sera utilisé pour signer vos messages',
+            'multiple' => false,
+            'expanded' => true,
+            'class' => \App\Entity\Personnage::class,
+            'property' => 'identity',
+            'placeholder' => 'Aucun',
+            'empty_data' => null,
+            'query_builder' => static function (EntityRepository $er) use ($options) {
+                return $er->createQueryBuilder('p')
+                    ->join('p.User', 'u')
+                    ->where('u.id = :UserId')
+                    ->setParameter('UserId', $options['User_id']);
+            },
+        ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => \App\Entity\User::class,
+            'User_id' => null,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'UserPersonnageDefault';
+    }
 }

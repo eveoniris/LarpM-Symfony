@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\User
+ * App\Entity\User.
  *
  * @Table(name="`User`", indexes={@Index(name="fk_User_etat_civil1_idx", columns={"etat_civil_id"}), @Index(name="fk_User_personnage_secondaire1_idx", columns={"personnage_secondaire_id"}), @Index(name="fk_User_personnage1_idx", columns={"personnage_id"})}, uniqueConstraints={@UniqueConstraint(name="email_UNIQUE", columns={"email"}), @UniqueConstraint(name="Username_UNIQUE", columns={"Username"}), @UniqueConstraint(name="id_UNIQUE", columns={"id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseUser", "extended":"User"})
  */
 class BaseUser
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -90,157 +95,184 @@ class BaseUser
 
     /**
      * @OneToMany(targetEntity="Background", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $backgrounds;
 
     /**
      * @OneToMany(targetEntity="Billet", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="createur_id", nullable=false)
      */
     protected $billets;
 
     /**
      * @OneToMany(targetEntity="Debriefing", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $debriefings;
 
     /**
      * @OneToMany(targetEntity="Document", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $documents;
 
     /**
      * @OneToMany(targetEntity="Groupe", mappedBy="UserRelatedByScenaristeId")
+     *
      * @JoinColumn(name="id", referencedColumnName="scenariste_id", nullable=false)
      */
     protected $groupeRelatedByScenaristeIds;
 
     /**
      * @OneToMany(targetEntity="Groupe", mappedBy="UserRelatedByResponsableId")
+     *
      * @JoinColumn(name="id", referencedColumnName="responsable_id", nullable=false)
      */
     protected $groupeRelatedByResponsableIds;
 
     /**
      * @OneToMany(targetEntity="Intrigue", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $intrigues;
 
     /**
      * @OneToMany(targetEntity="IntrigueHasModification", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $intrigueHasModifications;
 
     /**
      * @OneToMany(targetEntity="Message", mappedBy="UserRelatedByAuteur")
+     *
      * @JoinColumn(name="id", referencedColumnName="auteur", nullable=false)
      */
     protected $messageRelatedByAuteurs;
 
     /**
      * @OneToMany(targetEntity="Message", mappedBy="UserRelatedByDestinataire")
+     *
      * @JoinColumn(name="id", referencedColumnName="destinataire", nullable=false)
+     *
      * @OrderBy({"update_date":"DESC"})
      */
     protected $messageRelatedByDestinataires;
 
     /**
      * @OneToMany(targetEntity="Notification", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $notifications;
 
     /**
      * @OneToMany(targetEntity="Objet", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="responsable_id", nullable=false)
      */
     protected $objets;
 
     /**
      * @OneToMany(targetEntity="Participant", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $participants;
 
     /**
      * @OneToMany(targetEntity="Personnage", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $personnages;
 
     /**
      * @OneToMany(targetEntity="PersonnageBackground", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $personnageBackgrounds;
 
     /**
      * @OneToMany(targetEntity="Post", mappedBy="UserRelatedByUserId")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $postRelatedByUserIds;
 
     /**
      * @OneToMany(targetEntity="PostView", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $postViews;
 
     /**
      * @OneToMany(targetEntity="Question", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $questions;
 
     /**
      * @OneToMany(targetEntity="Relecture", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $relectures;
 
     /**
      * @OneToMany(targetEntity="Restriction", mappedBy="UserRelatedByAuteurId")
+     *
      * @JoinColumn(name="id", referencedColumnName="auteur_id", nullable=false)
      */
     protected $restrictionRelatedByAuteurIds;
 
     /**
      * @OneToMany(targetEntity="Rumeur", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $rumeurs;
 
     /**
      * @OneToMany(targetEntity="Topic", mappedBy="User")
+     *
      * @JoinColumn(name="id", referencedColumnName="User_id", nullable=false)
      */
     protected $topics;
 
     /**
      * @OneToOne(targetEntity="EtatCivil", inversedBy="User", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="etat_civil_id", referencedColumnName="id")
      */
     protected $etatCivil;
 
     /**
      * @ManyToOne(targetEntity="PersonnageSecondaire", inversedBy="Users", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="personnage_secondaire_id", referencedColumnName="id")
      */
     protected $personnageSecondaire;
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="Users")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id")
      */
     protected $personnage;
 
     /**
      * @ManyToMany(targetEntity="Restriction", inversedBy="Users")
+     *
      * @JoinTable(name="User_has_restriction",
      *     joinColumns={@JoinColumn(name="User_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="restriction_id", referencedColumnName="id", nullable=false)}
@@ -284,10 +316,11 @@ class BaseUser
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\User
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -297,7 +330,7 @@ class BaseUser
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -308,9 +341,10 @@ class BaseUser
      * Set the value of email.
      *
      * @param string $email
+     *
      * @return \App\Entity\User
      */
-    public function setEmail($email)
+    public function setEmail($email): static
     {
         $this->email = $email;
 
@@ -331,9 +365,10 @@ class BaseUser
      * Set the value of password.
      *
      * @param string $password
+     *
      * @return \App\Entity\User
      */
-    public function setPassword($password)
+    public function setPassword($password): static
     {
         $this->password = $password;
 
@@ -354,9 +389,10 @@ class BaseUser
      * Set the value of salt.
      *
      * @param string $salt
+     *
      * @return \App\Entity\User
      */
-    public function setSalt($salt)
+    public function setSalt($salt): static
     {
         $this->salt = $salt;
 
@@ -377,9 +413,10 @@ class BaseUser
      * Set the value of rights.
      *
      * @param string $rights
+     *
      * @return \App\Entity\User
      */
-    public function setRights($rights)
+    public function setRights($rights): static
     {
         $this->rights = $rights;
 
@@ -400,9 +437,10 @@ class BaseUser
      * Set the value of creation_date.
      *
      * @param \DateTime $creation_date
+     *
      * @return \App\Entity\User
      */
-    public function setCreationDate($creation_date)
+    public function setCreationDate($creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -423,9 +461,10 @@ class BaseUser
      * Set the value of Username.
      *
      * @param string $Username
+     *
      * @return \App\Entity\User
      */
-    public function setUsername($Username)
+    public function setUsername($Username): static
     {
         $this->Username = $Username;
 
@@ -445,10 +484,11 @@ class BaseUser
     /**
      * Set the value of isEnabled.
      *
-     * @param boolean $isEnabled
+     * @param bool $isEnabled
+     *
      * @return \App\Entity\User
      */
-    public function setIsEnabled($isEnabled)
+    public function setIsEnabled($isEnabled): static
     {
         $this->isEnabled = $isEnabled;
 
@@ -458,7 +498,7 @@ class BaseUser
     /**
      * Get the value of isEnabled.
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsEnabled()
     {
@@ -469,9 +509,10 @@ class BaseUser
      * Set the value of confirmationToken.
      *
      * @param string $confirmationToken
+     *
      * @return \App\Entity\User
      */
-    public function setConfirmationToken($confirmationToken)
+    public function setConfirmationToken($confirmationToken): static
     {
         $this->confirmationToken = $confirmationToken;
 
@@ -491,10 +532,11 @@ class BaseUser
     /**
      * Set the value of timePasswordResetRequested.
      *
-     * @param integer $timePasswordResetRequested
+     * @param int $timePasswordResetRequested
+     *
      * @return \App\Entity\User
      */
-    public function setTimePasswordResetRequested($timePasswordResetRequested)
+    public function setTimePasswordResetRequested($timePasswordResetRequested): static
     {
         $this->timePasswordResetRequested = $timePasswordResetRequested;
 
@@ -504,7 +546,7 @@ class BaseUser
     /**
      * Get the value of timePasswordResetRequested.
      *
-     * @return integer
+     * @return int
      */
     public function getTimePasswordResetRequested()
     {
@@ -515,9 +557,10 @@ class BaseUser
      * Set the value of trombineUrl.
      *
      * @param string $trombineUrl
+     *
      * @return \App\Entity\User
      */
-    public function setTrombineUrl($trombineUrl)
+    public function setTrombineUrl($trombineUrl): static
     {
         $this->trombineUrl = $trombineUrl;
 
@@ -538,9 +581,10 @@ class BaseUser
      * Set the value of lastConnectionDate.
      *
      * @param \DateTime $lastConnectionDate
+     *
      * @return \App\Entity\User
      */
-    public function setLastConnectionDate($lastConnectionDate)
+    public function setLastConnectionDate($lastConnectionDate): static
     {
         $this->lastConnectionDate = $lastConnectionDate;
 
@@ -560,10 +604,11 @@ class BaseUser
     /**
      * Set the value of coeur.
      *
-     * @param integer $coeur
+     * @param int $coeur
+     *
      * @return \App\Entity\User
      */
-    public function setCoeur($coeur)
+    public function setCoeur($coeur): static
     {
         $this->coeur = $coeur;
 
@@ -573,7 +618,7 @@ class BaseUser
     /**
      * Get the value of coeur.
      *
-     * @return integer
+     * @return int
      */
     public function getCoeur()
     {
@@ -583,10 +628,9 @@ class BaseUser
     /**
      * Add Background entity to collection (one to many).
      *
-     * @param \App\Entity\Background $background
      * @return \App\Entity\User
      */
-    public function addBackground(Background $background)
+    public function addBackground(Background $background): static
     {
         $this->backgrounds[] = $background;
 
@@ -596,10 +640,9 @@ class BaseUser
     /**
      * Remove Background entity from collection (one to many).
      *
-     * @param \App\Entity\Background $background
      * @return \App\Entity\User
      */
-    public function removeBackground(Background $background)
+    public function removeBackground(Background $background): static
     {
         $this->backgrounds->removeElement($background);
 
@@ -619,10 +662,9 @@ class BaseUser
     /**
      * Add Billet entity to collection (one to many).
      *
-     * @param \App\Entity\Billet $billet
      * @return \App\Entity\User
      */
-    public function addBillet(Billet $billet)
+    public function addBillet(Billet $billet): static
     {
         $this->billets[] = $billet;
 
@@ -632,10 +674,9 @@ class BaseUser
     /**
      * Remove Billet entity from collection (one to many).
      *
-     * @param \App\Entity\Billet $billet
      * @return \App\Entity\User
      */
-    public function removeBillet(Billet $billet)
+    public function removeBillet(Billet $billet): static
     {
         $this->billets->removeElement($billet);
 
@@ -655,10 +696,9 @@ class BaseUser
     /**
      * Add Debriefing entity to collection (one to many).
      *
-     * @param \App\Entity\Debriefing $debriefing
      * @return \App\Entity\User
      */
-    public function addDebriefing(Debriefing $debriefing)
+    public function addDebriefing(Debriefing $debriefing): static
     {
         $this->debriefings[] = $debriefing;
 
@@ -668,10 +708,9 @@ class BaseUser
     /**
      * Remove Debriefing entity from collection (one to many).
      *
-     * @param \App\Entity\Debriefing $debriefing
      * @return \App\Entity\User
      */
-    public function removeDebriefing(Debriefing $debriefing)
+    public function removeDebriefing(Debriefing $debriefing): static
     {
         $this->debriefings->removeElement($debriefing);
 
@@ -691,10 +730,9 @@ class BaseUser
     /**
      * Add Document entity to collection (one to many).
      *
-     * @param \App\Entity\Document $document
      * @return \App\Entity\User
      */
-    public function addDocument(Document $document)
+    public function addDocument(Document $document): static
     {
         $this->documents[] = $document;
 
@@ -704,10 +742,9 @@ class BaseUser
     /**
      * Remove Document entity from collection (one to many).
      *
-     * @param \App\Entity\Document $document
      * @return \App\Entity\User
      */
-    public function removeDocument(Document $document)
+    public function removeDocument(Document $document): static
     {
         $this->documents->removeElement($document);
 
@@ -727,10 +764,9 @@ class BaseUser
     /**
      * Add Groupe entity related by `scenariste_id` to collection (one to many).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\User
      */
-    public function addGroupeRelatedByScenaristeId(Groupe $groupe)
+    public function addGroupeRelatedByScenaristeId(Groupe $groupe): static
     {
         $this->groupeRelatedByScenaristeIds[] = $groupe;
 
@@ -740,10 +776,9 @@ class BaseUser
     /**
      * Remove Groupe entity related by `scenariste_id` from collection (one to many).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\User
      */
-    public function removeGroupeRelatedByScenaristeId(Groupe $groupe)
+    public function removeGroupeRelatedByScenaristeId(Groupe $groupe): static
     {
         $this->groupeRelatedByScenaristeIds->removeElement($groupe);
 
@@ -763,10 +798,9 @@ class BaseUser
     /**
      * Add Groupe entity related by `responsable_id` to collection (one to many).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\User
      */
-    public function addGroupeRelatedByResponsableId(Groupe $groupe)
+    public function addGroupeRelatedByResponsableId(Groupe $groupe): static
     {
         $this->groupeRelatedByResponsableIds[] = $groupe;
 
@@ -776,10 +810,9 @@ class BaseUser
     /**
      * Remove Groupe entity related by `responsable_id` from collection (one to many).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\User
      */
-    public function removeGroupeRelatedByResponsableId(Groupe $groupe)
+    public function removeGroupeRelatedByResponsableId(Groupe $groupe): static
     {
         $this->groupeRelatedByResponsableIds->removeElement($groupe);
 
@@ -799,10 +832,9 @@ class BaseUser
     /**
      * Add Intrigue entity to collection (one to many).
      *
-     * @param \App\Entity\Intrigue $intrigue
      * @return \App\Entity\User
      */
-    public function addIntrigue(Intrigue $intrigue)
+    public function addIntrigue(Intrigue $intrigue): static
     {
         $this->intrigues[] = $intrigue;
 
@@ -812,10 +844,9 @@ class BaseUser
     /**
      * Remove Intrigue entity from collection (one to many).
      *
-     * @param \App\Entity\Intrigue $intrigue
      * @return \App\Entity\User
      */
-    public function removeIntrigue(Intrigue $intrigue)
+    public function removeIntrigue(Intrigue $intrigue): static
     {
         $this->intrigues->removeElement($intrigue);
 
@@ -835,10 +866,9 @@ class BaseUser
     /**
      * Add IntrigueHasModification entity to collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasModification $intrigueHasModification
      * @return \App\Entity\User
      */
-    public function addIntrigueHasModification(IntrigueHasModification $intrigueHasModification)
+    public function addIntrigueHasModification(IntrigueHasModification $intrigueHasModification): static
     {
         $this->intrigueHasModifications[] = $intrigueHasModification;
 
@@ -848,10 +878,9 @@ class BaseUser
     /**
      * Remove IntrigueHasModification entity from collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasModification $intrigueHasModification
      * @return \App\Entity\User
      */
-    public function removeIntrigueHasModification(IntrigueHasModification $intrigueHasModification)
+    public function removeIntrigueHasModification(IntrigueHasModification $intrigueHasModification): static
     {
         $this->intrigueHasModifications->removeElement($intrigueHasModification);
 
@@ -871,10 +900,9 @@ class BaseUser
     /**
      * Add Message entity related by `auteur` to collection (one to many).
      *
-     * @param \App\Entity\Message $message
      * @return \App\Entity\User
      */
-    public function addMessageRelatedByAuteur(Message $message)
+    public function addMessageRelatedByAuteur(Message $message): static
     {
         $this->messageRelatedByAuteurs[] = $message;
 
@@ -884,10 +912,9 @@ class BaseUser
     /**
      * Remove Message entity related by `auteur` from collection (one to many).
      *
-     * @param \App\Entity\Message $message
      * @return \App\Entity\User
      */
-    public function removeMessageRelatedByAuteur(Message $message)
+    public function removeMessageRelatedByAuteur(Message $message): static
     {
         $this->messageRelatedByAuteurs->removeElement($message);
 
@@ -907,10 +934,9 @@ class BaseUser
     /**
      * Add Message entity related by `destinataire` to collection (one to many).
      *
-     * @param \App\Entity\Message $message
      * @return \App\Entity\User
      */
-    public function addMessageRelatedByDestinataire(Message $message)
+    public function addMessageRelatedByDestinataire(Message $message): static
     {
         $this->messageRelatedByDestinataires[] = $message;
 
@@ -920,10 +946,9 @@ class BaseUser
     /**
      * Remove Message entity related by `destinataire` from collection (one to many).
      *
-     * @param \App\Entity\Message $message
      * @return \App\Entity\User
      */
-    public function removeMessageRelatedByDestinataire(Message $message)
+    public function removeMessageRelatedByDestinataire(Message $message): static
     {
         $this->messageRelatedByDestinataires->removeElement($message);
 
@@ -943,10 +968,9 @@ class BaseUser
     /**
      * Add Notification entity to collection (one to many).
      *
-     * @param \App\Entity\Notification $notification
      * @return \App\Entity\User
      */
-    public function addNotification(Notification $notification)
+    public function addNotification(Notification $notification): static
     {
         $this->notifications[] = $notification;
 
@@ -956,10 +980,9 @@ class BaseUser
     /**
      * Remove Notification entity from collection (one to many).
      *
-     * @param \App\Entity\Notification $notification
      * @return \App\Entity\User
      */
-    public function removeNotification(Notification $notification)
+    public function removeNotification(Notification $notification): static
     {
         $this->notifications->removeElement($notification);
 
@@ -979,10 +1002,9 @@ class BaseUser
     /**
      * Add Objet entity to collection (one to many).
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\User
      */
-    public function addObjet(Objet $objet)
+    public function addObjet(Objet $objet): static
     {
         $this->objets[] = $objet;
 
@@ -992,10 +1014,9 @@ class BaseUser
     /**
      * Remove Objet entity from collection (one to many).
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\User
      */
-    public function removeObjet(Objet $objet)
+    public function removeObjet(Objet $objet): static
     {
         $this->objets->removeElement($objet);
 
@@ -1015,10 +1036,9 @@ class BaseUser
     /**
      * Add Participant entity to collection (one to many).
      *
-     * @param \App\Entity\Participant $participant
      * @return \App\Entity\User
      */
-    public function addParticipant(Participant $participant)
+    public function addParticipant(Participant $participant): static
     {
         $this->participants[] = $participant;
 
@@ -1028,10 +1048,9 @@ class BaseUser
     /**
      * Remove Participant entity from collection (one to many).
      *
-     * @param \App\Entity\Participant $participant
      * @return \App\Entity\User
      */
-    public function removeParticipant(Participant $participant)
+    public function removeParticipant(Participant $participant): static
     {
         $this->participants->removeElement($participant);
 
@@ -1051,10 +1070,9 @@ class BaseUser
     /**
      * Add Personnage entity to collection (one to many).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\User
      */
-    public function addPersonnage(Personnage $personnage)
+    public function addPersonnage(Personnage $personnage): static
     {
         $this->personnages[] = $personnage;
 
@@ -1064,10 +1082,9 @@ class BaseUser
     /**
      * Remove Personnage entity from collection (one to many).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\User
      */
-    public function removePersonnage(Personnage $personnage)
+    public function removePersonnage(Personnage $personnage): static
     {
         $this->personnages->removeElement($personnage);
 
@@ -1087,10 +1104,9 @@ class BaseUser
     /**
      * Add PersonnageBackground entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnageBackground $personnageBackground
      * @return \App\Entity\User
      */
-    public function addPersonnageBackground(PersonnageBackground $personnageBackground)
+    public function addPersonnageBackground(PersonnageBackground $personnageBackground): static
     {
         $this->personnageBackgrounds[] = $personnageBackground;
 
@@ -1100,10 +1116,9 @@ class BaseUser
     /**
      * Remove PersonnageBackground entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnageBackground $personnageBackground
      * @return \App\Entity\User
      */
-    public function removePersonnageBackground(PersonnageBackground $personnageBackground)
+    public function removePersonnageBackground(PersonnageBackground $personnageBackground): static
     {
         $this->personnageBackgrounds->removeElement($personnageBackground);
 
@@ -1123,10 +1138,9 @@ class BaseUser
     /**
      * Add Post entity related by `User_id` to collection (one to many).
      *
-     * @param \App\Entity\Post $post
      * @return \App\Entity\User
      */
-    public function addPostRelatedByUserId(Post $post)
+    public function addPostRelatedByUserId(Post $post): static
     {
         $this->postRelatedByUserIds[] = $post;
 
@@ -1136,10 +1150,9 @@ class BaseUser
     /**
      * Remove Post entity related by `User_id` from collection (one to many).
      *
-     * @param \App\Entity\Post $post
      * @return \App\Entity\User
      */
-    public function removePostRelatedByUserId(Post $post)
+    public function removePostRelatedByUserId(Post $post): static
     {
         $this->postRelatedByUserIds->removeElement($post);
 
@@ -1159,10 +1172,9 @@ class BaseUser
     /**
      * Add PostView entity to collection (one to many).
      *
-     * @param \App\Entity\PostView $postView
      * @return \App\Entity\User
      */
-    public function addPostView(PostView $postView)
+    public function addPostView(PostView $postView): static
     {
         $this->postViews[] = $postView;
 
@@ -1172,10 +1184,9 @@ class BaseUser
     /**
      * Remove PostView entity from collection (one to many).
      *
-     * @param \App\Entity\PostView $postView
      * @return \App\Entity\User
      */
-    public function removePostView(PostView $postView)
+    public function removePostView(PostView $postView): static
     {
         $this->postViews->removeElement($postView);
 
@@ -1195,10 +1206,9 @@ class BaseUser
     /**
      * Add Question entity to collection (one to many).
      *
-     * @param \App\Entity\Question $question
      * @return \App\Entity\User
      */
-    public function addQuestion(Question $question)
+    public function addQuestion(Question $question): static
     {
         $this->questions[] = $question;
 
@@ -1208,10 +1218,9 @@ class BaseUser
     /**
      * Remove Question entity from collection (one to many).
      *
-     * @param \App\Entity\Question $question
      * @return \App\Entity\User
      */
-    public function removeQuestion(Question $question)
+    public function removeQuestion(Question $question): static
     {
         $this->questions->removeElement($question);
 
@@ -1231,10 +1240,9 @@ class BaseUser
     /**
      * Add Relecture entity to collection (one to many).
      *
-     * @param \App\Entity\Relecture $relecture
      * @return \App\Entity\User
      */
-    public function addRelecture(Relecture $relecture)
+    public function addRelecture(Relecture $relecture): static
     {
         $this->relectures[] = $relecture;
 
@@ -1244,10 +1252,9 @@ class BaseUser
     /**
      * Remove Relecture entity from collection (one to many).
      *
-     * @param \App\Entity\Relecture $relecture
      * @return \App\Entity\User
      */
-    public function removeRelecture(Relecture $relecture)
+    public function removeRelecture(Relecture $relecture): static
     {
         $this->relectures->removeElement($relecture);
 
@@ -1267,10 +1274,9 @@ class BaseUser
     /**
      * Add Restriction entity related by `auteur_id` to collection (one to many).
      *
-     * @param \App\Entity\Restriction $restriction
      * @return \App\Entity\User
      */
-    public function addRestrictionRelatedByAuteurId(Restriction $restriction)
+    public function addRestrictionRelatedByAuteurId(Restriction $restriction): static
     {
         $this->restrictionRelatedByAuteurIds[] = $restriction;
 
@@ -1280,10 +1286,9 @@ class BaseUser
     /**
      * Remove Restriction entity related by `auteur_id` from collection (one to many).
      *
-     * @param \App\Entity\Restriction $restriction
      * @return \App\Entity\User
      */
-    public function removeRestrictionRelatedByAuteurId(Restriction $restriction)
+    public function removeRestrictionRelatedByAuteurId(Restriction $restriction): static
     {
         $this->restrictionRelatedByAuteurIds->removeElement($restriction);
 
@@ -1303,10 +1308,9 @@ class BaseUser
     /**
      * Add Rumeur entity to collection (one to many).
      *
-     * @param \App\Entity\Rumeur $rumeur
      * @return \App\Entity\User
      */
-    public function addRumeur(Rumeur $rumeur)
+    public function addRumeur(Rumeur $rumeur): static
     {
         $this->rumeurs[] = $rumeur;
 
@@ -1316,10 +1320,9 @@ class BaseUser
     /**
      * Remove Rumeur entity from collection (one to many).
      *
-     * @param \App\Entity\Rumeur $rumeur
      * @return \App\Entity\User
      */
-    public function removeRumeur(Rumeur $rumeur)
+    public function removeRumeur(Rumeur $rumeur): static
     {
         $this->rumeurs->removeElement($rumeur);
 
@@ -1339,10 +1342,9 @@ class BaseUser
     /**
      * Add Topic entity to collection (one to many).
      *
-     * @param \App\Entity\Topic $topic
      * @return \App\Entity\User
      */
-    public function addTopic(Topic $topic)
+    public function addTopic(Topic $topic): static
     {
         $this->topics[] = $topic;
 
@@ -1352,10 +1354,9 @@ class BaseUser
     /**
      * Remove Topic entity from collection (one to many).
      *
-     * @param \App\Entity\Topic $topic
      * @return \App\Entity\User
      */
-    public function removeTopic(Topic $topic)
+    public function removeTopic(Topic $topic): static
     {
         $this->topics->removeElement($topic);
 
@@ -1375,10 +1376,9 @@ class BaseUser
     /**
      * Set EtatCivil entity (one to one).
      *
-     * @param \App\Entity\EtatCivil $etatCivil
      * @return \App\Entity\User
      */
-    public function setEtatCivil(EtatCivil $etatCivil)
+    public function setEtatCivil(EtatCivil $etatCivil): static
     {
         $this->etatCivil = $etatCivil;
 
@@ -1398,10 +1398,9 @@ class BaseUser
     /**
      * Set PersonnageSecondaire entity (many to one).
      *
-     * @param \App\Entity\PersonnageSecondaire $personnageSecondaire
      * @return \App\Entity\User
      */
-    public function setPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire = null)
+    public function setPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire = null): static
     {
         $this->personnageSecondaire = $personnageSecondaire;
 
@@ -1421,10 +1420,9 @@ class BaseUser
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\User
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -1444,10 +1442,9 @@ class BaseUser
     /**
      * Add Restriction entity to collection.
      *
-     * @param \App\Entity\Restriction $restriction
      * @return \App\Entity\User
      */
-    public function addRestriction(Restriction $restriction)
+    public function addRestriction(Restriction $restriction): static
     {
         $restriction->addUser($this);
         $this->restrictions[] = $restriction;
@@ -1458,10 +1455,9 @@ class BaseUser
     /**
      * Remove Restriction entity from collection.
      *
-     * @param \App\Entity\Restriction $restriction
      * @return \App\Entity\User
      */
-    public function removeRestriction(Restriction $restriction)
+    public function removeRestriction(Restriction $restriction): static
     {
         $restriction->removeUser($this);
         $this->restrictions->removeElement($restriction);
@@ -1482,10 +1478,9 @@ class BaseUser
     /**
      * Add Post entity to collection.
      *
-     * @param \App\Entity\Post $post
      * @return \App\Entity\User
      */
-    public function addPost(Post $post)
+    public function addPost(Post $post): static
     {
         $this->posts[] = $post;
 
@@ -1495,10 +1490,9 @@ class BaseUser
     /**
      * Remove Post entity from collection.
      *
-     * @param \App\Entity\Post $post
      * @return \App\Entity\User
      */
-    public function removePost(Post $post)
+    public function removePost(Post $post): static
     {
         $this->posts->removeElement($post);
 
@@ -1517,6 +1511,6 @@ class BaseUser
 
     public function __sleep()
     {
-        return array('id', 'email', 'password', 'salt', 'rights', 'creation_date', 'Username', 'isEnabled', 'confirmationToken', 'timePasswordResetRequested', 'etat_civil_id', 'trombineUrl', 'personnage_secondaire_id', 'lastConnectionDate', 'personnage_id', 'coeur');
+        return ['id', 'email', 'password', 'salt', 'rights', 'creation_date', 'Username', 'isEnabled', 'confirmationToken', 'timePasswordResetRequested', 'etat_civil_id', 'trombineUrl', 'personnage_secondaire_id', 'lastConnectionDate', 'personnage_id', 'coeur'];
     }
 }

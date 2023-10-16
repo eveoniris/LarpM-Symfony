@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,74 +27,71 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseSecondaryGroup;
-
 /**
- * App\Entity\SecondaryGroup
+ * App\Entity\SecondaryGroup.
  *
  * @Entity(repositoryClass="LarpManager\Repository\SecondaryGroupRepository")
  */
-class SecondaryGroup extends BaseSecondaryGroup
+class SecondaryGroup extends BaseSecondaryGroup implements \Stringable
 {
-	
-	public function __toString()
-	{
-		return $this->getLabel();	
-	}
-	
-	/**
-	 * Fourni le personnage responsable du groupe
-	 */
-	public function getResponsable()
-	{
-		return $this->getPersonnage();
-	}
-	
-	/**
-	 * Défini le personnage responsable du groupe
-	 * @param Personnage $personnage
-	 */
-	public function setResponsable(Personnage $personnage)
-	{
-		$this->setPersonnage($personnage);
-		return $this;
-	}
-	
-	/**
-	 * Vérifie si un personnage est membre du groupe
-	 * 
-	 * @param Personnage $personnage
-	 */
-	public function isMembre(Personnage $personnage)
-	{
-		foreach ( $this->getMembres() as $membre)
-		{
-			if ( $membre->getPersonnage() == $personnage) return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Vérifie si un personnage est postulant à ce groupe
-	 * 
-	 * @param Personnage $personnage
-	 */
-	public function isPostulant(Personnage $personnage)
-	{
-		foreach ( $this->getPostulants() as $postulant)
-		{
-			if ( $postulant->getPersonnage() == $personnage) return true;
-		}
-		return false;
-	}
+    public function __toString(): string
+    {
+        return $this->getLabel();
+    }
 
-	public function getActifs(Gn $gn)
-	{
-		$count_actifs = 0;
-		foreach ($this->getMembres() as $membre)
-		{
-			$count_actifs += intval($membre->getPersonnage()->participeTo($gn));
-		}
-		return $count_actifs;
-	}
+    /**
+     * Fourni le personnage responsable du groupe.
+     */
+    public function getResponsable()
+    {
+        return $this->getPersonnage();
+    }
+
+    /**
+     * Défini le personnage responsable du groupe.
+     */
+    public function setResponsable(Personnage $personnage): static
+    {
+        $this->setPersonnage($personnage);
+
+        return $this;
+    }
+
+    /**
+     * Vérifie si un personnage est membre du groupe.
+     */
+    public function isMembre(Personnage $personnage): bool
+    {
+        foreach ($this->getMembres() as $membre) {
+            if ($membre->getPersonnage() == $personnage) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Vérifie si un personnage est postulant à ce groupe.
+     */
+    public function isPostulant(Personnage $personnage): bool
+    {
+        foreach ($this->getPostulants() as $postulant) {
+            if ($postulant->getPersonnage() == $personnage) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getActifs(Gn $gn): int
+    {
+        $count_actifs = 0;
+        foreach ($this->getMembres() as $membre) {
+            $count_actifs += (int) $membre->getPersonnage()->participeTo($gn);
+        }
+
+        return $count_actifs;
+    }
 }

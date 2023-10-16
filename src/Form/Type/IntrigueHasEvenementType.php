@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,40 +17,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Form\Type;
 
+use LarpManager\Form\Type\EvenementType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use LarpManager\Form\Type\EvenementType;
-
 /**
- * LarpManager\Form\Type\IntrigueHasEvenementType
+ * LarpManager\Form\Type\IntrigueHasEvenementType.
  *
  * @author kevin
- *
  */
 class IntrigueHasEvenementType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('evenement',EvenementType::class, array(
-					'label' => 'Ajouter un événement concerné par cette intrigue',
-					'required' => true,
-				));
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('evenement', EvenementType::class, [
+            'label' => 'Ajouter un événement concerné par cette intrigue',
+            'required' => true,
+        ]);
+    }
 
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\IntrigueHasEvenement',
-		));
-	}
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\IntrigueHasEvenement::class,
+        ]);
+    }
 
-	public function getName()
-	{
-		return 'intrigueHasEvenement';
-	}
+    public function getName(): string
+    {
+        return 'intrigueHasEvenement';
+    }
 }

@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,30 +27,28 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseToken;
-
 /**
- * App\Entity\Token
+ * App\Entity\Token.
  *
  * @Entity(repositoryClass="LarpManager\Repository\TokenRepository")
  */
 class Token extends BaseToken
 {
-	/**
-	 * Fourni la description sans les tags html de mise en forme
-	 */
-	public function getDescriptionRaw()
-	{
-		return html_entity_decode(strip_tags($this->getDescription()));
-	}
-	
-	public function getExportValue()
-	{
-		return array(
-			$this->getId(),
-			$this->getLabel(),
-			$this->getTag(),
-			utf8_decode($this->getDescriptionRaw()),
-		);
-	}
+    /**
+     * Fourni la description sans les tags html de mise en forme.
+     */
+    public function getDescriptionRaw(): string
+    {
+        return html_entity_decode(strip_tags($this->getDescription()));
+    }
+
+    public function getExportValue(): array
+    {
+        return [
+            $this->getId(),
+            $this->getLabel(),
+            $this->getTag(),
+            mb_convert_encoding((string) $this->getDescriptionRaw(), 'ISO-8859-1'),
+        ];
+    }
 }

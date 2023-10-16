@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -22,24 +21,27 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseBillet', 'extended' => 'Billet'])]
 class BaseBillet
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'label', type: 'string')]
+    #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING)]
     protected string $label = '';
 
-    #[Column(name: 'text', type: 'string', nullable: true)]
+    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
     protected string $description = '';
 
-    #[Column(type: 'datetime')]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $creation_date;
 
-    #[Column(type: 'datetime')]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $update_date;
 
-    #[Column(type: 'boolean')]
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     protected bool $fedegn = false;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Participant>|\App\Entity\Participant[]
+     */
     #[OneToMany(mappedBy: 'billet', targetEntity: Participant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'billet_id', nullable: 'false')]
     protected ?ArrayCollection $participants = null;

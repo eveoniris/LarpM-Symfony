@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,37 +27,31 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseEtatCivil;
-
 /**
- * App\Entity\EtatCivil
- *
+ * App\Entity\EtatCivil.
  */
-class EtatCivil extends BaseEtatCivil
+class EtatCivil extends BaseEtatCivil implements \Stringable
 {
     /**
-     * Constructeur
+     * Constructeur.
      */
     public function __construct()
     {
         parent::__construct();
-        $this->setCreationDate(new \Datetime('NOW'));
-        $this->setUpdateDate(new \Datetime('NOW'));
+        $this->setCreationDate(new \DateTime('NOW'));
+        $this->setUpdateDate(new \DateTime('NOW'));
     }
-    
-    public function __toString()
+
+    public function __toString(): string
     {
         return $this->getFullName();
     }
-    
+
     /**
-     * Retourne le nom complet
-     * @return string
+     * Retourne le nom complet.
      */
     public function getFullName(): string
     {
-        return $this->getNom(). ' ' . $this->getPrenom();
+        return $this->getNom().' '.$this->getPrenom();
     }
-    
-    
 }

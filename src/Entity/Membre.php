@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,22 +27,18 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseMembre;
-
 /**
- * App\Entity\Membre
- *
+ * App\Entity\Membre.
  */
 class Membre extends BaseMembre
 {
-	/**
-	 * Determine si le membre est le chef du groupe
-	 */
-	public function isChief()
-	{
-		$chef = $this->getSecondaryGroup()->getPersonnage();
-		if ( $chef == $this->getPersonnage() ) return true;
-		return false;
-	}
+    /**
+     * Determine si le membre est le chef du groupe.
+     */
+    public function isChief(): bool
+    {
+        $chef = $this->getSecondaryGroup()->getPersonnage();
 
+        return $chef == $this->getPersonnage();
+    }
 }

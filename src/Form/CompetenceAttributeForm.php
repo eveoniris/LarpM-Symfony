@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,57 +23,47 @@ namespace App\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use App\Entity\AttributeType;
 
 /**
- * LarpManager\Form\CompetenceAttributeForm
+ * LarpManager\Form\CompetenceAttributeForm.
  *
  * @author Jérôme
- *
  */
 class CompetenceAttributeForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder 
-	 * @param array $options 
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder
-				->add('attributeType','entity', array(
-					'label' => 'Type',
-					'required' => true,
-					'class' => 'App\Entity\AttributeType',
-					'property' => 'label',
-				))								
-				->add('value', 'text', array(
-					'required' => true,
-				    'label' => 'Nombre'
-				    
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\CompetenceAttribute',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'competenceAttribute';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('attributeType', 'entity', [
+                'label' => 'Type',
+                'required' => true,
+                'class' => \App\Entity\AttributeType::class,
+                'property' => 'label',
+            ])
+            ->add('value', 'text', [
+                'required' => true,
+                'label' => 'Nombre',
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\CompetenceAttribute::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'competenceAttribute';
+    }
 }

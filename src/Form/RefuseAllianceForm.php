@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,49 +25,42 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\AgeForm
+ * LarpManager\Form\AgeForm.
  *
  * @author kevin
- *
  */
 class RefuseAllianceForm extends AbstractType
 {
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('messageAllie', 'textarea', [
+            'label' => 'Un petit mot pour expliquer votre démarche',
+            'required' => true,
+            'attr' => [
+                'class' => 'tinymce',
+                'rows' => 9,
+                'help' => 'Ce texte sera transmis au chef de groupe concerné.'],
+        ]);
+    }
 
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('messageAllie','textarea', array(
-				'label' => 'Un petit mot pour expliquer votre démarche',
-				'required' => true,
-				'attr' => array(
-						'class' => 'tinymce',
-						'rows' => 9,
-						'help' => 'Ce texte sera transmis au chef de groupe concerné.'),
-		));
-	}
+    /**
+     * Définition de la classe d'entité concernée.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\GroupeAllie::class,
+        ]);
+    }
 
-	/**
-	 * Définition de la classe d'entité concernée
-	 *
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\GroupeAllie',
-		));
-	}
-
-	/**
-	 * Nom du formlaire
-	 */
-	public function getName()
-	{
-		return 'refuseAlliance';
-	}
+    /**
+     * Nom du formlaire.
+     */
+    public function getName(): string
+    {
+        return 'refuseAlliance';
+    }
 }

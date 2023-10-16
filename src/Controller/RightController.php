@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,32 +17,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
 use Silex\Application;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * LarpManager\Controllers\RightController
+ * LarpManager\Controllers\RightController.
  *
  * @author kevin
- *
  */
 class RightController
-{	
-	/**
-	 * Liste des droits
-	 * 
-	 * @param Request $request
-	 * @param Application $app
-	 * @return View $view
-	 */
-	public function listAction(Request $request, Application $app)
-	{
-		$rights = $app['larp.manager']->getAvailableRoles();
-		
-		return $app['twig']->render('admin/right/list.twig', array(
-				'rights' => $rights));
-	}
+{
+    /**
+     * Liste des droits.
+     *
+     * @return View $view
+     */
+    public function listAction(Request $request, Application $app)
+    {
+        $rights = $app['larp.manager']->getAvailableRoles();
+
+        return $app['twig']->render('admin/right/list.twig', [
+            'rights' => $rights]);
+    }
 }

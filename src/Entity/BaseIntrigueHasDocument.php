@@ -10,30 +10,37 @@
 namespace App\Entity;
 
 /**
- * App\Entity\IntrigueHasDocument
+ * App\Entity\IntrigueHasDocument.
  *
  * @Table(name="intrigue_has_document", indexes={@Index(name="fk_intrigue_has_document_intrigue1_idx", columns={"intrigue_id"}), @Index(name="fk_intrigue_has_document_document1_idx", columns={"document_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseIntrigueHasDocument", "extended":"IntrigueHasDocument"})
  */
 class BaseIntrigueHasDocument
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
      * @ManyToOne(targetEntity="Intrigue", inversedBy="intrigueHasDocuments", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="intrigue_id", referencedColumnName="id", nullable=false)
      */
     protected $intrigue;
 
     /**
      * @ManyToOne(targetEntity="Document", inversedBy="intrigueHasDocuments")
+     *
      * @JoinColumn(name="document_id", referencedColumnName="id", nullable=false)
      */
     protected $document;
@@ -45,7 +52,8 @@ class BaseIntrigueHasDocument
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\IntrigueHasDocument
      */
     public function setId($id)
@@ -58,7 +66,7 @@ class BaseIntrigueHasDocument
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -68,7 +76,6 @@ class BaseIntrigueHasDocument
     /**
      * Set Intrigue entity (many to one).
      *
-     * @param \App\Entity\Intrigue $intrigue
      * @return \App\Entity\IntrigueHasDocument
      */
     public function setIntrigue(Intrigue $intrigue = null)
@@ -91,7 +98,6 @@ class BaseIntrigueHasDocument
     /**
      * Set Document entity (many to one).
      *
-     * @param \App\Entity\Document $document
      * @return \App\Entity\IntrigueHasDocument
      */
     public function setDocument(Document $document = null)
@@ -113,6 +119,6 @@ class BaseIntrigueHasDocument
 
     public function __sleep()
     {
-        return array('id', 'intrigue_id', 'document_id');
+        return ['id', 'intrigue_id', 'document_id'];
     }
 }

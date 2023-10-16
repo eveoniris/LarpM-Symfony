@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,32 +27,30 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseGroupeAllie;
-
 /**
- * App\Entity\GroupeAllie
+ * App\Entity\GroupeAllie.
  *
  * @Entity(repositoryClass="LarpManager\Repository\GroupeAllieRepository")
  */
 class GroupeAllie extends BaseGroupeAllie
 {
-	public function setGroupe($groupe)
-	{
-		return $this->setGroupeRelatedByGroupeId($groupe);
-	}
-	
-	public function getGroupe()
-	{
-		return $this->getGroupeRelatedByGroupeId();
-	}
-	
-	public function setRequestedGroupe($groupe)
-	{
-		return $this->setGroupeRelatedByGroupeAllieId($groupe);
-	}
-	
-	public function getRequestedGroupe()
-	{
-		return $this->getGroupeRelatedByGroupeAllieId();
-	}
+    public function setGroupe(Groupe $groupe)
+    {
+        return $this->setGroupeRelatedByGroupeId($groupe);
+    }
+
+    public function getGroupe()
+    {
+        return $this->getGroupeRelatedByGroupeId();
+    }
+
+    public function setRequestedGroupe(Groupe $groupe)
+    {
+        return $this->setGroupeRelatedByGroupeAllieId($groupe);
+    }
+
+    public function getRequestedGroupe()
+    {
+        return $this->getGroupeRelatedByGroupeAllieId();
+    }
 }

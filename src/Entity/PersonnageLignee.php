@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,42 +27,40 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePersonnageLignee;
-
 /**
- * App\Entity\PersonnageLignee
- *
+ * App\Entity\PersonnageLignee.
  */
 class PersonnageLignee extends BasePersonnageLignee
 {
-	/**
-	 * Fourni la liste des descendants directs
-	 */
-	public function getDescendants()
-	{
-		$descendants = array();
-		// TODO: getDescendants
-		$descendants[] = null;
+    /**
+     * Fourni la liste des descendants directs.
+     */
+    public function getDescendants(): null
+    {
+        $descendants = [];
+        // TODO: getDescendants
+        $descendants[] = null;
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Trouve tous les descendants correspondant au personnage
-	 * @return ArrayCollection $classes
-	 */
-	public function getDescendantsByPersonnage($personnage_id)
-	{
-		$qb = $this->createQueryBuilder();
-		
-		$qb->select('d');
-		$qb->from('App\Entity\PersonnageChronologie','d');
-		$qb->join('d.personnage','p');
-		$qb->where('(d.parent1 = :personnage1 OR d.parent2 = :personnage2)');
-		$qb->orderBy('d.id','DESC');
-		$qb->setParameter('personnage1', $personnage_id);
-		$qb->setParameter('personnage2', $personnage_id);
-		
-		return $qb->getQuery()->getResult();
-	}	
+    /**
+     * Trouve tous les descendants correspondant au personnage.
+     *
+     * @return ArrayCollection $classes
+     */
+    public function getDescendantsByPersonnage($personnage_id)
+    {
+        $qb = $this->createQueryBuilder();
+
+        $qb->select('d');
+        $qb->from(\App\Entity\PersonnageChronologie::class, 'd');
+        $qb->join('d.personnage', 'p');
+        $qb->where('(d.parent1 = :personnage1 OR d.parent2 = :personnage2)');
+        $qb->orderBy('d.id', 'DESC');
+        $qb->setParameter('personnage1', $personnage_id);
+        $qb->setParameter('personnage2', $personnage_id);
+
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,41 +17,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-
 /**
- * LarpManager\Form\Type\IntrigueHasDocumentType
+ * LarpManager\Form\Type\IntrigueHasDocumentType.
  *
  * @author Kevin F.
- *
  */
 class IntrigueHasDocumentType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('document','entity', array(
-					'label' => 'Ajouter un document concernant cette intrigue',
-					'required' => true,
-					'class' => 'App\Entity\Document',
-					'property' => 'titre',
-				));
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('document', 'entity', [
+            'label' => 'Ajouter un document concernant cette intrigue',
+            'required' => true,
+            'class' => \App\Entity\Document::class,
+            'property' => 'titre',
+        ]);
+    }
 
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\IntrigueHasDocument',
-		));
-	}
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\IntrigueHasDocument::class,
+        ]);
+    }
 
-	public function getName()
-	{
-		return 'intrigueHasDocument';
-	}
+    public function getName(): string
+    {
+        return 'intrigueHasDocument';
+    }
 }

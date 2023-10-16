@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Quality
+ * App\Entity\Quality.
  *
  * @Table(name="quality")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseQuality", "extended":"Quality"})
  */
 class BaseQuality
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -40,12 +45,14 @@ class BaseQuality
 
     /**
      * @OneToMany(targetEntity="Item", mappedBy="quality")
+     *
      * @JoinColumn(name="id", referencedColumnName="quality_id", nullable=false)
      */
     protected $items;
 
     /**
      * @OneToMany(targetEntity="QualityValeur", mappedBy="quality", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="quality_id", nullable=false)
      */
     protected $qualityValeurs;
@@ -59,10 +66,11 @@ class BaseQuality
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Quality
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -72,7 +80,7 @@ class BaseQuality
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -83,6 +91,7 @@ class BaseQuality
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Quality
      */
     public function setLabel($label)
@@ -105,7 +114,8 @@ class BaseQuality
     /**
      * Set the value of numero.
      *
-     * @param integer $numero
+     * @param int $numero
+     *
      * @return \App\Entity\Quality
      */
     public function setNumero($numero)
@@ -118,7 +128,7 @@ class BaseQuality
     /**
      * Get the value of numero.
      *
-     * @return integer
+     * @return int
      */
     public function getNumero()
     {
@@ -128,7 +138,6 @@ class BaseQuality
     /**
      * Add Item entity to collection (one to many).
      *
-     * @param \App\Entity\Item $item
      * @return \App\Entity\Quality
      */
     public function addItem(Item $item)
@@ -141,7 +150,6 @@ class BaseQuality
     /**
      * Remove Item entity from collection (one to many).
      *
-     * @param \App\Entity\Item $item
      * @return \App\Entity\Quality
      */
     public function removeItem(Item $item)
@@ -164,7 +172,6 @@ class BaseQuality
     /**
      * Add QualityValeur entity to collection (one to many).
      *
-     * @param \App\Entity\QualityValeur $qualityValeur
      * @return \App\Entity\Quality
      */
     public function addQualityValeur(QualityValeur $qualityValeur)
@@ -177,7 +184,6 @@ class BaseQuality
     /**
      * Remove QualityValeur entity from collection (one to many).
      *
-     * @param \App\Entity\QualityValeur $qualityValeur
      * @return \App\Entity\Quality
      */
     public function removeQualityValeur(QualityValeur $qualityValeur)
@@ -199,6 +205,6 @@ class BaseQuality
 
     public function __sleep()
     {
-        return array('id', 'label', 'numero');
+        return ['id', 'label', 'numero'];
     }
 }

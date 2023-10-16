@@ -9,18 +9,15 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseTechnologie;
-
 /**
- * App\Entity\Technologie
+ * App\Entity\Technologie.
  *
  * @Entity(repositoryClass="LarpManager\Repository\TechnologieRepository")
  */
 class Technologie extends BaseTechnologie
 {
-
-    public function getPrintLabel()
-	{
-		return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
-	}
+    public function getPrintLabel(): ?string
+    {
+        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
+    }
 }

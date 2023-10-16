@@ -9,26 +9,24 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseDebriefing;
-
 /**
- * App\Entity\Debriefing
+ * App\Entity\Debriefing.
  *
  * @Entity(repositoryClass="LarpManager\Repository\DebriefingRepository")
  */
 class Debriefing extends BaseDebriefing
 {
-	/**
-	 * Définir la date de création et la date de mise à jour lors de la création d'un nouveau debriefing
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-		$this->setUpdateDate(new \Datetime('NOW'));
-		$this->setCreationDate(new \Datetime('NOW'));
-	}
+    /**
+     * Définir la date de création et la date de mise à jour lors de la création d'un nouveau debriefing.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setUpdateDate(new \DateTime('NOW'));
+        $this->setCreationDate(new \DateTime('NOW'));
+    }
 
-    public function getPrintTitre()
+    public function getPrintTitre(): ?string
     {
         return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getTitre()));
     }

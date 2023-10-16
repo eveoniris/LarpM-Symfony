@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,47 +25,41 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\TopicForm
- * 
- * @author kevin
+ * LarpManager\Form\TopicForm.
  *
+ * @author kevin
  */
 class TopicForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('title','text', array(
-					'required' => true,	
-				))
-				->add('description','textarea', array(
-					'required' => false,
-					'attr' => array('rows' => 9),
-				));
-	}
-	
-	/**
-	 * Définition de la classe d'entité concernée
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Topic',
-		));
-	}
-	
-	/**
-	 * Nom du formlaire
-	 */
-	public function getName()
-	{
-		return 'topic';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('title', 'text', [
+            'required' => true,
+        ])
+            ->add('description', 'textarea', [
+                'required' => false,
+                'attr' => ['rows' => 9],
+            ]);
+    }
+
+    /**
+     * Définition de la classe d'entité concernée.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Topic::class,
+        ]);
+    }
+
+    /**
+     * Nom du formlaire.
+     */
+    public function getName(): string
+    {
+        return 'topic';
+    }
 }

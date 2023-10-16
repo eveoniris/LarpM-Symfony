@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,94 +28,90 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use App\Entity\BaseLangue;
 
 /**
- * App\Entity\Langue
+ * App\Entity\Langue.
  *
  * @Entity(repositoryClass="LarpManager\Repository\LangueRepository")
  */
-class Langue extends BaseLangue
+class Langue extends BaseLangue implements \Stringable
 {
-	
-	/**
-	 * @ManyToMany(targetEntity="Territoire", mappedBy="langues")
-	 */
-	protected $territoireSecondaires;
-	
-	public function __construct()
-	{
-		$this->territoireSecondaires = new ArrayCollection();
-		parent::__construct();
-	}
-	
-	public function __toString()
-	{
-		return $this->getLabel();
-	}
-	
-	public function getFullDescription()
-	{
-		return $this->getLabel() . ' : '.$this->getDescription();
-	}
-	
-	public function getTerritoireSecondaires()
-	{
-		return $this->territoireSecondaires;
-	}
-	
-	public function addTerritoireSecondaire(Territoire $territoire)
-	{
-		$this->territoireSecondaires[] = $territoire;
-		return $this;
-	}
-	
-	public function removeTerritoireSecondaire(Territoire $territoire)
-	{
-		$this->territoireSecondaires->removeElement($territoire);
-		return $this;
-		
-	}
-		
-	/**
-	 * Fourni la liste des territoires ou la langue est la langue principale.
-	 */
-	public function getTerritoirePrincipaux()
-	{
-		return $this->getTerritoires();
-	}
-	
-	/**
-	 * Fourni la catégorie de la langue
-	 * @return string
-	 */
-	public function getCategorie(): string
-	{
-		$unknown = 'Inconnue';
-		if ($this->getDiffusion() === null)
-		{
-			return $unknown;
-		}
-		switch ( $this->getDiffusion() )
-		{
-			case 2: return 'Commune';
-			case 1: return 'Courante';
-			case 0: return 'Rare';
-			default : return $unknown;
-		}
-	}
-	
-	/**
-	 * Renvoie le libellé de diffusion, incluant la catégorie
-	 * @return string
-	 */
-	public function getDiffusionLabel() : string
-	{
-		return ($this->getDiffusion() !== null ? $this->getDiffusion().' - ' : '').$this->getCategorie();
-	}
+    /**
+     * @ManyToMany(targetEntity="Territoire", mappedBy="langues")
+     */
+    protected $territoireSecondaires;
 
-	public function getPrintLabel()
-	{
-		return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
-	}	
+    public function __construct()
+    {
+        $this->territoireSecondaires = new ArrayCollection();
+        parent::__construct();
+    }
+
+    public function __toString(): string
+    {
+        return $this->getLabel();
+    }
+
+    public function getFullDescription(): string
+    {
+        return $this->getLabel().' : '.$this->getDescription();
+    }
+
+    public function getTerritoireSecondaires()
+    {
+        return $this->territoireSecondaires;
+    }
+
+    public function addTerritoireSecondaire(Territoire $territoire): static
+    {
+        $this->territoireSecondaires[] = $territoire;
+
+        return $this;
+    }
+
+    public function removeTerritoireSecondaire(Territoire $territoire): static
+    {
+        $this->territoireSecondaires->removeElement($territoire);
+
+        return $this;
+    }
+
+    /**
+     * Fourni la liste des territoires ou la langue est la langue principale.
+     */
+    public function getTerritoirePrincipaux()
+    {
+        return $this->getTerritoires();
+    }
+
+    /**
+     * Fourni la catégorie de la langue.
+     */
+    public function getCategorie(): string
+    {
+        $unknown = 'Inconnue';
+        if (null === $this->getDiffusion()) {
+            return $unknown;
+        }
+
+        return match ($this->getDiffusion()) {
+            2 => 'Commune',
+            1 => 'Courante',
+            0 => 'Rare',
+            default => $unknown,
+        };
+    }
+
+    /**
+     * Renvoie le libellé de diffusion, incluant la catégorie.
+     */
+    public function getDiffusionLabel(): string
+    {
+        return (null !== $this->getDiffusion() ? $this->getDiffusion().' - ' : '').$this->getCategorie();
+    }
+
+    public function getPrintLabel(): ?string
+    {
+        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
+    }
 }

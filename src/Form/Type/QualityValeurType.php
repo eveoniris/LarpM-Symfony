@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
@@ -25,36 +25,35 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\Type\QualityValeurType
+ * LarpManager\Form\Type\QualityValeurType.
  *
  * @author kevin
- *
  */
 class QualityValeurType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('monnaie','entity', array(
-					'label' => 'Choisissez la monnaie',
-					'required' => true,
-					'class' => 'App\Entity\Monnaie',
-					'property' => 'label',
-				))
-				->add('nombre','integer', array(
-					'label' => 'Quantité',
-					'required' => true,
-				));
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('monnaie', 'entity', [
+            'label' => 'Choisissez la monnaie',
+            'required' => true,
+            'class' => \App\Entity\Monnaie::class,
+            'property' => 'label',
+        ])
+            ->add('nombre', 'integer', [
+                'label' => 'Quantité',
+                'required' => true,
+            ]);
+    }
 
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\QualityValeur',
-		));
-	}
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\QualityValeur::class,
+        ]);
+    }
 
-	public function getName()
-	{
-		return 'qualityValeur';
-	}
+    public function getName(): string
+    {
+        return 'qualityValeur';
+    }
 }

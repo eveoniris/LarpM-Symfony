@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\TitreTerritoire
+ * App\Entity\TitreTerritoire.
  *
  * @Table(name="titre_territoire", indexes={@Index(name="fk_titre_territoire_titre1_idx", columns={"titre_id"}), @Index(name="fk_titre_territoire_territoire1_idx", columns={"territoire_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseTitreTerritoire", "extended":"TitreTerritoire"})
  */
 class BaseTitreTerritoire
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -33,12 +38,14 @@ class BaseTitreTerritoire
 
     /**
      * @ManyToOne(targetEntity="Titre", inversedBy="titreTerritoires")
+     *
      * @JoinColumn(name="titre_id", referencedColumnName="id", nullable=false)
      */
     protected $titre;
 
     /**
      * @ManyToOne(targetEntity="Territoire", inversedBy="titreTerritoires")
+     *
      * @JoinColumn(name="territoire_id", referencedColumnName="id", nullable=false)
      */
     protected $territoire;
@@ -50,7 +57,8 @@ class BaseTitreTerritoire
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\TitreTerritoire
      */
     public function setId($id)
@@ -63,7 +71,7 @@ class BaseTitreTerritoire
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -74,6 +82,7 @@ class BaseTitreTerritoire
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\TitreTerritoire
      */
     public function setLabel($label)
@@ -96,7 +105,6 @@ class BaseTitreTerritoire
     /**
      * Set Titre entity (many to one).
      *
-     * @param \App\Entity\Titre $titre
      * @return \App\Entity\TitreTerritoire
      */
     public function setTitre(Titre $titre = null)
@@ -119,7 +127,6 @@ class BaseTitreTerritoire
     /**
      * Set Territoire entity (many to one).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\TitreTerritoire
      */
     public function setTerritoire(Territoire $territoire = null)
@@ -141,6 +148,6 @@ class BaseTitreTerritoire
 
     public function __sleep()
     {
-        return array('id', 'label', 'titre_id', 'territoire_id');
+        return ['id', 'label', 'titre_id', 'territoire_id'];
     }
 }

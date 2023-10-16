@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,43 +23,36 @@ namespace App\Form\Rumeur;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Form\Groupe\RumeurDeleteForm
+ * LarpManager\Form\Groupe\RumeurDeleteForm.
  *
  * @author kevin
- *
  */
 class RumeurDeleteForm extends AbstractType
 {
-	/**
-	 * Contruction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-	}
+    /**
+     * Contruction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+    }
 
-	/**
-	 * Définition de l'entité conercné
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\rumeur',
-		));
-	}
+    /**
+     * Définition de l'entité conercné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\rumeur::class,
+        ]);
+    }
 
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'rumeurDelete';
-	}
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'rumeurDelete';
+    }
 }

@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Gn
+ * App\Entity\Gn.
  *
  * @Table(name="gn", indexes={@Index(name="fk_gn_topic1_idx", columns={"topic_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseGn", "extended":"Gn"})
  */
 class BaseGn
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -90,54 +95,63 @@ class BaseGn
 
     /**
      * @OneToMany(targetEntity="Annonce", mappedBy="gn")
+     *
      * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
      */
     protected $annonces;
 
     /**
      * @OneToMany(targetEntity="Background", mappedBy="gn")
+     *
      * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
      */
     protected $backgrounds;
 
     /**
      * @OneToMany(targetEntity="Billet", mappedBy="gn")
+     *
      * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
      */
     protected $billets;
 
     /**
      * @OneToMany(targetEntity="Debriefing", mappedBy="gn")
+     *
      * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
      */
     protected $debriefings;
 
     /**
      * @OneToMany(targetEntity="GroupeGn", mappedBy="gn")
+     *
      * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
      */
     protected $groupeGns;
 
     /**
      * @OneToMany(targetEntity="Participant", mappedBy="gn", cascade={"persist"})
+     *
      * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
      */
     protected $participants;
 
     /**
      * @OneToMany(targetEntity="PersonnageBackground", mappedBy="gn")
+     *
      * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
      */
     protected $personnageBackgrounds;
 
     /**
      * @OneToMany(targetEntity="Rumeur", mappedBy="gn")
+     *
      * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
      */
     protected $rumeurs;
 
     /**
      * @ManyToOne(targetEntity="Topic", inversedBy="gns", cascade={"persist"})
+     *
      * @JoinColumn(name="topic_id", referencedColumnName="id", nullable=false)
      */
     protected $topic;
@@ -157,10 +171,11 @@ class BaseGn
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Gn
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -170,7 +185,7 @@ class BaseGn
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -181,6 +196,7 @@ class BaseGn
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Gn
      */
     public function setLabel($label)
@@ -203,7 +219,8 @@ class BaseGn
     /**
      * Set the value of xp_creation.
      *
-     * @param integer $xp_creation
+     * @param int $xp_creation
+     *
      * @return \App\Entity\Gn
      */
     public function setXpCreation($xp_creation)
@@ -216,7 +233,7 @@ class BaseGn
     /**
      * Get the value of xp_creation.
      *
-     * @return integer
+     * @return int
      */
     public function getXpCreation()
     {
@@ -226,7 +243,8 @@ class BaseGn
     /**
      * Set the value of date_jeu.
      *
-     * @param integer $date_jeu
+     * @param int $date_jeu
+     *
      * @return \App\Entity\Gn
      */
     public function setDateJeu($date_jeu)
@@ -239,7 +257,7 @@ class BaseGn
     /**
      * Get the value of date_jeu.
      *
-     * @return integer
+     * @return int
      */
     public function getDateJeu()
     {
@@ -250,6 +268,7 @@ class BaseGn
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Gn
      */
     public function setDescription($description)
@@ -273,6 +292,7 @@ class BaseGn
      * Set the value of date_debut.
      *
      * @param \DateTime $date_debut
+     *
      * @return \App\Entity\Gn
      */
     public function setDateDebut($date_debut)
@@ -296,6 +316,7 @@ class BaseGn
      * Set the value of date_fin.
      *
      * @param \DateTime $date_fin
+     *
      * @return \App\Entity\Gn
      */
     public function setDateFin($date_fin)
@@ -319,6 +340,7 @@ class BaseGn
      * Set the value of date_installation_joueur.
      *
      * @param \DateTime $date_installation_joueur
+     *
      * @return \App\Entity\Gn
      */
     public function setDateInstallationJoueur($date_installation_joueur)
@@ -342,6 +364,7 @@ class BaseGn
      * Set the value of date_fin_orga.
      *
      * @param \DateTime $date_fin_orga
+     *
      * @return \App\Entity\Gn
      */
     public function setDateFinOrga($date_fin_orga)
@@ -365,6 +388,7 @@ class BaseGn
      * Set the value of adresse.
      *
      * @param string $adresse
+     *
      * @return \App\Entity\Gn
      */
     public function setAdresse($adresse)
@@ -387,7 +411,8 @@ class BaseGn
     /**
      * Set the value of actif.
      *
-     * @param boolean $actif
+     * @param bool $actif
+     *
      * @return \App\Entity\Gn
      */
     public function setActif($actif)
@@ -400,7 +425,7 @@ class BaseGn
     /**
      * Get the value of actif.
      *
-     * @return boolean
+     * @return bool
      */
     public function getActif()
     {
@@ -411,6 +436,7 @@ class BaseGn
      * Set the value of billetterie.
      *
      * @param string $billetterie
+     *
      * @return \App\Entity\Gn
      */
     public function setBilletterie($billetterie)
@@ -434,6 +460,7 @@ class BaseGn
      * Set the value of conditions_inscription.
      *
      * @param string $conditions_inscription
+     *
      * @return \App\Entity\Gn
      */
     public function setConditionsInscription($conditions_inscription)
@@ -456,7 +483,6 @@ class BaseGn
     /**
      * Add Annonce entity to collection (one to many).
      *
-     * @param \App\Entity\Annonce $annonce
      * @return \App\Entity\Gn
      */
     public function addAnnonce(Annonce $annonce)
@@ -469,7 +495,6 @@ class BaseGn
     /**
      * Remove Annonce entity from collection (one to many).
      *
-     * @param \App\Entity\Annonce $annonce
      * @return \App\Entity\Gn
      */
     public function removeAnnonce(Annonce $annonce)
@@ -492,7 +517,6 @@ class BaseGn
     /**
      * Add Background entity to collection (one to many).
      *
-     * @param \App\Entity\Background $background
      * @return \App\Entity\Gn
      */
     public function addBackground(Background $background)
@@ -505,7 +529,6 @@ class BaseGn
     /**
      * Remove Background entity from collection (one to many).
      *
-     * @param \App\Entity\Background $background
      * @return \App\Entity\Gn
      */
     public function removeBackground(Background $background)
@@ -528,7 +551,6 @@ class BaseGn
     /**
      * Add Billet entity to collection (one to many).
      *
-     * @param \App\Entity\Billet $billet
      * @return \App\Entity\Gn
      */
     public function addBillet(Billet $billet)
@@ -541,7 +563,6 @@ class BaseGn
     /**
      * Remove Billet entity from collection (one to many).
      *
-     * @param \App\Entity\Billet $billet
      * @return \App\Entity\Gn
      */
     public function removeBillet(Billet $billet)
@@ -564,7 +585,6 @@ class BaseGn
     /**
      * Add Debriefing entity to collection (one to many).
      *
-     * @param \App\Entity\Debriefing $debriefing
      * @return \App\Entity\Gn
      */
     public function addDebriefing(Debriefing $debriefing)
@@ -577,7 +597,6 @@ class BaseGn
     /**
      * Remove Debriefing entity from collection (one to many).
      *
-     * @param \App\Entity\Debriefing $debriefing
      * @return \App\Entity\Gn
      */
     public function removeDebriefing(Debriefing $debriefing)
@@ -600,7 +619,6 @@ class BaseGn
     /**
      * Add GroupeGn entity to collection (one to many).
      *
-     * @param \App\Entity\GroupeGn $groupeGn
      * @return \App\Entity\Gn
      */
     public function addGroupeGn(GroupeGn $groupeGn)
@@ -613,7 +631,6 @@ class BaseGn
     /**
      * Remove GroupeGn entity from collection (one to many).
      *
-     * @param \App\Entity\GroupeGn $groupeGn
      * @return \App\Entity\Gn
      */
     public function removeGroupeGn(GroupeGn $groupeGn)
@@ -636,7 +653,6 @@ class BaseGn
     /**
      * Add Participant entity to collection (one to many).
      *
-     * @param \App\Entity\Participant $participant
      * @return \App\Entity\Gn
      */
     public function addParticipant(Participant $participant)
@@ -649,7 +665,6 @@ class BaseGn
     /**
      * Remove Participant entity from collection (one to many).
      *
-     * @param \App\Entity\Participant $participant
      * @return \App\Entity\Gn
      */
     public function removeParticipant(Participant $participant)
@@ -672,7 +687,6 @@ class BaseGn
     /**
      * Add PersonnageBackground entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnageBackground $personnageBackground
      * @return \App\Entity\Gn
      */
     public function addPersonnageBackground(PersonnageBackground $personnageBackground)
@@ -685,7 +699,6 @@ class BaseGn
     /**
      * Remove PersonnageBackground entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnageBackground $personnageBackground
      * @return \App\Entity\Gn
      */
     public function removePersonnageBackground(PersonnageBackground $personnageBackground)
@@ -708,7 +721,6 @@ class BaseGn
     /**
      * Add Rumeur entity to collection (one to many).
      *
-     * @param \App\Entity\Rumeur $rumeur
      * @return \App\Entity\Gn
      */
     public function addRumeur(Rumeur $rumeur)
@@ -721,7 +733,6 @@ class BaseGn
     /**
      * Remove Rumeur entity from collection (one to many).
      *
-     * @param \App\Entity\Rumeur $rumeur
      * @return \App\Entity\Gn
      */
     public function removeRumeur(Rumeur $rumeur)
@@ -744,7 +755,6 @@ class BaseGn
     /**
      * Set Topic entity (many to one).
      *
-     * @param \App\Entity\Topic $topic
      * @return \App\Entity\Gn
      */
     public function setTopic(Topic $topic = null)
@@ -766,6 +776,6 @@ class BaseGn
 
     public function __sleep()
     {
-        return array('id', 'label', 'xp_creation', 'description', 'date_debut', 'date_fin', 'date_installation_joueur', 'date_fin_orga', 'adresse', 'topic_id', 'actif', 'billetterie', 'conditions_inscription');
+        return ['id', 'label', 'xp_creation', 'description', 'date_debut', 'date_fin', 'date_installation_joueur', 'date_fin_orga', 'adresse', 'topic_id', 'actif', 'billetterie', 'conditions_inscription'];
     }
 }

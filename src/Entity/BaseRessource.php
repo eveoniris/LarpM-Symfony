@@ -9,7 +9,6 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping\Index;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -18,6 +17,7 @@ use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -25,7 +25,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
 /**
- * App\Entity\Ressource
+ * App\Entity\Ressource.
  */
 #[Table(name: 'ressource')]
 #[Index(name: 'fk_ressource_rarete1_idx', columns: ['rarete_id'])]
@@ -65,20 +65,17 @@ class BaseRessource
 
     #[ManyToOne(targetEntity: 'Rarete', inversedBy: 'ressources')]
     #[JoinColumn(name: 'rarete_id', referencedColumnName: 'id', nullable: false)]
-    protected $rarete;
+    protected \App\Entity\Rarete $rarete;
 
     public function __construct()
     {
         $this->groupeHasRessources = new ArrayCollection();
         $this->personnageRessources = new ArrayCollection();
-        $this->technologiesRessources= new ArrayCollection();
+        $this->technologiesRessources = new ArrayCollection();
     }
 
     /**
      * Set the value of id.
-     *
-     * @param integer $id
-     * @return Ressource
      */
     public function setId(int $id): Ressource
     {
@@ -89,8 +86,6 @@ class BaseRessource
 
     /**
      * Get the value of id.
-     *
-     * @return integer
      */
     public function getId(): int
     {
@@ -99,9 +94,6 @@ class BaseRessource
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     * @return Ressource
      */
     public function setLabel(string $label): Ressource
     {
@@ -112,8 +104,6 @@ class BaseRessource
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -122,9 +112,6 @@ class BaseRessource
 
     /**
      * Add GroupeHasRessource entity to collection (one to many).
-     *
-     * @param GroupeHasRessource $groupeHasRessource
-     * @return Ressource
      */
     public function addGroupeHasRessource(GroupeHasRessource $groupeHasRessource): Ressource
     {
@@ -135,9 +122,6 @@ class BaseRessource
 
     /**
      * Remove GroupeHasRessource entity from collection (one to many).
-     *
-     * @param GroupeHasRessource $groupeHasRessource
-     * @return Ressource
      */
     public function removeGroupeHasRessource(GroupeHasRessource $groupeHasRessource): Ressource
     {
@@ -158,9 +142,6 @@ class BaseRessource
 
     /**
      * Add PersonnageRessource entity to collection (one to many).
-     *
-     * @param PersonnageRessource $personnageRessource
-     * @return Ressource
      */
     public function addPersonnageRessource(PersonnageRessource $personnageRessource): Ressource
     {
@@ -171,9 +152,6 @@ class BaseRessource
 
     /**
      * Remove PersonnageRessource entity from collection (one to many).
-     *
-     * @param PersonnageRessource $personnageRessource
-     * @return Ressource
      */
     public function removePersonnageRessource(PersonnageRessource $personnageRessource): Ressource
     {
@@ -194,9 +172,6 @@ class BaseRessource
 
     /**
      * Add TechnologiesRessources entity to collection (one to many).
-     *
-     * @param TechnologiesRessources $technologieRessource
-     * @return Ressource
      */
     public function addTechnologieRessource(TechnologiesRessources $technologieRessource): Ressource
     {
@@ -207,9 +182,6 @@ class BaseRessource
 
     /**
      * Remove TechnologiesRessources entity from collection (one to many).
-     *
-     * @param TechnologiesRessources $technologieRessource
-     * @return Ressource
      */
     public function removeTechnologieRessource(TechnologiesRessources $technologieRessource): Ressource
     {
@@ -230,9 +202,6 @@ class BaseRessource
 
     /**
      * Set Rarete entity (many to one).
-     *
-     * @param Rarete|null $rarete
-     * @return Ressource
      */
     public function setRarete(Rarete $rarete = null): Ressource
     {
@@ -243,8 +212,6 @@ class BaseRessource
 
     /**
      * Get Rarete entity (many to one).
-     *
-     * @return Rarete
      */
     public function getRarete(): Rarete
     {
@@ -253,6 +220,6 @@ class BaseRessource
 
     public function __sleep()
     {
-        return array('id', 'label', 'rarete_id');
+        return ['id', 'label', 'rarete_id'];
     }
 }

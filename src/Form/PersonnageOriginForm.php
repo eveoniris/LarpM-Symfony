@@ -7,53 +7,47 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\PersonnageOriginForm
+ * LarpManager\Form\PersonnageOriginForm.
  *
  * @author kevin
- *
  */
 class PersonnageOriginForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('territoire','entity', array(
-					'required' => true,
-					'label' => 'Votre origine',
-					'class' => 'App\Entity\Territoire',
-					'property' => 'nom',
-					'query_builder' => function(\LarpManager\Repository\TerritoireRepository $er) {
-						$qb = $er->createQueryBuilder('t');
-						$qb->andWhere('t.territoire IS NULL');
-						$qb->orderBy('t.nom', 'ASC');
-						return $qb;
-					}
-				));
-	}
-	
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('territoire', 'entity', [
+            'required' => true,
+            'label' => 'Votre origine',
+            'class' => \App\Entity\Territoire::class,
+            'property' => 'nom',
+            'query_builder' => static function (\LarpManager\Repository\TerritoireRepository $er) {
+                $qb = $er->createQueryBuilder('t');
+                $qb->andWhere('t.territoire IS NULL');
+                $qb->orderBy('t.nom', 'ASC');
 
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\Personnage',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'personnageOrigin';
-	}
+                return $qb;
+            },
+        ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => \App\Entity\Personnage::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'personnageOrigin';
+    }
 }

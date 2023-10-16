@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,51 +20,49 @@
 
 namespace App\Form\Stock;
 
+use LarpManager\Form\Type\TagType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use LarpManager\Form\Type\TagType;
-
 /**
- * LarpManager\Form\Type\ObjetTagForm
+ * LarpManager\Form\Type\ObjetTagForm.
  *
  * @author kevin
- *
  */
 class ObjetTagForm extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('tags', 'entity',  array(
-					'label' => 'Choisissez les tags appliqués à cet objet',
-					'required' => false,
-					'multiple' => true,
-					'property' => 'nom',
-					'expanded' => true,
-					'class' => 'App\Entity\Tag'
-				))
-				->add('news', 'collection', array(
-					'label' => 'Ou créez-en de nouveaux',
-					'allow_add' => true,
-					'allow_delete' => true,
-					'by_reference' => false,
-					'type' => new TagType(),
-					'mapped' => false,
-				))
-				->add('valider','submit', array('label' => 'valider'));	
-	}
-	
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Objet',
-				'cascade_validation' => true,
-		));
-	}
-	
-	public function getName()
-	{
-		return 'objetTag';
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('tags', 'entity', [
+            'label' => 'Choisissez les tags appliqués à cet objet',
+            'required' => false,
+            'multiple' => true,
+            'property' => 'nom',
+            'expanded' => true,
+            'class' => \App\Entity\Tag::class,
+        ])
+            ->add('news', 'collection', [
+                'label' => 'Ou créez-en de nouveaux',
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'type' => new TagType(),
+                'mapped' => false,
+            ])
+            ->add('valider', 'submit', ['label' => 'valider']);
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Objet::class,
+            'cascade_validation' => true,
+        ]);
+    }
+
+    public function getName(): string
+    {
+        return 'objetTag';
+    }
 }

@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,24 +17,27 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseAge', 'extended' => 'Age'])]
 class BaseAge
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: 'string', length: 100)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
     protected string $label = '';
 
-    #[Column(type: 'string', length: 450, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 450, nullable: true)]
     protected string $description = '';
 
-    #[Column(type: 'integer', nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
     protected ?int $bonus = null;
 
-    #[Column(type: 'boolean')]
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     protected bool $enableCreation = false;
 
-    #[Column(type: 'integer')]
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected int $minimumValue = 0;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Personnage>|\App\Entity\Personnage[]
+     */
     #[OneToMany(mappedBy: 'age', targetEntity: Personnage::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'age_id', nullable: 'false')]
     protected ArrayCollection $personnages;

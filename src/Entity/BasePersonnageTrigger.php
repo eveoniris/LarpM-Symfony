@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\PersonnageTrigger
+ * App\Entity\PersonnageTrigger.
  *
  * @Table(name="personnage_trigger", indexes={@Index(name="fk_trigger_personnage1_idx", columns={"personnage_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePersonnageTrigger", "extended":"PersonnageTrigger"})
  */
 class BasePersonnageTrigger
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -38,6 +43,7 @@ class BasePersonnageTrigger
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="personnageTriggers")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
@@ -49,7 +55,8 @@ class BasePersonnageTrigger
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\PersonnageTrigger
      */
     public function setId($id)
@@ -62,7 +69,7 @@ class BasePersonnageTrigger
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -73,6 +80,7 @@ class BasePersonnageTrigger
      * Set the value of tag.
      *
      * @param string $tag
+     *
      * @return \App\Entity\PersonnageTrigger
      */
     public function setTag($tag)
@@ -95,7 +103,8 @@ class BasePersonnageTrigger
     /**
      * Set the value of done.
      *
-     * @param boolean $done
+     * @param bool $done
+     *
      * @return \App\Entity\PersonnageTrigger
      */
     public function setDone($done)
@@ -108,7 +117,7 @@ class BasePersonnageTrigger
     /**
      * Get the value of done.
      *
-     * @return boolean
+     * @return bool
      */
     public function getDone()
     {
@@ -118,7 +127,6 @@ class BasePersonnageTrigger
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\PersonnageTrigger
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -140,6 +148,6 @@ class BasePersonnageTrigger
 
     public function __sleep()
     {
-        return array('id', 'personnage_id', 'tag', 'done');
+        return ['id', 'personnage_id', 'tag', 'done'];
     }
 }

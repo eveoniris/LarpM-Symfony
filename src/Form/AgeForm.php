@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,59 +25,53 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\AgeForm
- * 
- * @author kevin
+ * LarpManager\Form\AgeForm.
  *
+ * @author kevin
  */
 class AgeForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text', array(
-					'required' => true,	
-				))
-				->add('description','textarea', array(
-					'required' => false,	
-				))
-				->add('enableCreation','choice', array(
-						'required' => true,
-						'choices' => array(true => 'Oui', false => 'Non'),
-						'label' => 'Disponible lors de la création d\'un personnage',
-				))
-				->add('bonus','integer', array(
-					'label' => 'XP en bonus',
-					'required' => true,	
-				))
-				->add('minimumValue','integer', array(
-					'label' => 'Age de départ',
-					'required' => true,	
-				));
-	}
-	
-	/**
-	 * Définition de la classe d'entité concernée
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Age',
-		));
-	}
-	
-	/**
-	 * Nom du formlaire
-	 */
-	public function getName()
-	{
-		return 'age';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text', [
+            'required' => true,
+        ])
+            ->add('description', 'textarea', [
+                'required' => false,
+            ])
+            ->add('enableCreation', 'choice', [
+                'required' => true,
+                'choices' => [true => 'Oui', false => 'Non'],
+                'label' => 'Disponible lors de la création d\'un personnage',
+            ])
+            ->add('bonus', 'integer', [
+                'label' => 'XP en bonus',
+                'required' => true,
+            ])
+            ->add('minimumValue', 'integer', [
+                'label' => 'Age de départ',
+                'required' => true,
+            ]);
+    }
+
+    /**
+     * Définition de la classe d'entité concernée.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Age::class,
+        ]);
+    }
+
+    /**
+     * Nom du formlaire.
+     */
+    public function getName(): string
+    {
+        return 'age';
+    }
 }

@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,46 +25,40 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\ParticipantPersonnageSecondaireForm
- * 
- * @author kevin
+ * LarpManager\Form\ParticipantPersonnageSecondaireForm.
  *
+ * @author kevin
  */
 class ParticipantPersonnageSecondaireForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('personnageSecondaire','entity', array(
-						'label' => 'Choisissez un archétype',
-						'required' => true,
-						'expanded' => true,
-						'class' => 'App\Entity\PersonnageSecondaire',
-						'property' => 'label'));
-	}
-	
-	/**
-	 * Définition de la classe d'entité concernée
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Participant',
-		));
-	}
-	
-	/**
-	 * Nom du formlaire
-	 */
-	public function getName()
-	{
-		return 'participantPersonnageSecondaire';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('personnageSecondaire', 'entity', [
+            'label' => 'Choisissez un archétype',
+            'required' => true,
+            'expanded' => true,
+            'class' => \App\Entity\PersonnageSecondaire::class,
+            'property' => 'label']);
+    }
+
+    /**
+     * Définition de la classe d'entité concernée.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Participant::class,
+        ]);
+    }
+
+    /**
+     * Nom du formlaire.
+     */
+    public function getName(): string
+    {
+        return 'participantPersonnageSecondaire';
+    }
 }

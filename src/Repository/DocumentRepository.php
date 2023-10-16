@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,30 +24,28 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * LarpManager\Repository\DocumentRepository
- *  
+ * LarpManager\Repository\DocumentRepository.
+ *
  * @author kevin
  */
 class DocumentRepository extends EntityRepository
 {
-	/**
-	 * Find all classes ordered by label
-	 * @deprecated
-	 * @return ArrayCollection $classes
-	 */
-	public function findAllOrderedByCode()
-	{
-		$documents = $this->getEntityManager()
-				->createQuery('SELECT d FROM App\Entity\Document d ORDER BY d.code ASC')
-				->getResult();
-		
-		return $documents;
-	}
+    /**
+     * Find all classes ordered by label.
+     *
+     * @return ArrayCollection $classes
+     *
+     * @deprecated
+     */
+    public function findAllOrderedByCode()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT d FROM App\Entity\Document d ORDER BY d.code ASC')
+            ->getResult();
+    }
 
     /**
-     * Trouve le nombre de documents correspondant aux critères de recherche
-     *
-     * @param ?string $type
+     * Trouve le nombre de documents correspondant aux critères de recherche.
      */
     public function findCount(?string $type, $value)
     {
@@ -58,13 +56,9 @@ class DocumentRepository extends EntityRepository
     }
 
     /**
-     * Trouve les documents correspondant aux critères de recherche
-     *
-     * @param array $order
-     * @param int $limit
-     * @param int $offset
+     * Trouve les documents correspondant aux critères de recherche.
      */
-    public function findList(?string $type, $value, array $order = ['by' =>  'titre', 'dir' => 'ASC'], int $limit = 50, int $offset = 0)
+    public function findList(?string $type, $value, array $order = ['by' => 'titre', 'dir' => 'ASC'], int $limit = 50, int $offset = 0)
     {
         $qb = $this->getQueryBuilder($type, $value);
         $qb->setFirstResult($offset);
@@ -74,24 +68,18 @@ class DocumentRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @param string|null $type
-     * @param $value
-     * @return QueryBuilder
-     */
     protected function getQueryBuilder(?string $type, $value): QueryBuilder
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('d');
-        $qb->from('App\Entity\Document','d');
+        $qb->from(\App\Entity\Document::class, 'd');
 
         // retire les caractères non imprimable d'une chaine UTF-8
-        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars($value));
+        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars((string) $value));
 
-        if ($type && $value)
-        {
-            switch ($type){
+        if ($type && $value) {
+            switch ($type) {
                 case 'titre':
                     $qb->andWhere('d.titre LIKE :value');
                     $qb->setParameter('value', '%'.$value.'%');

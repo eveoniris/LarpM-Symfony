@@ -10,79 +10,80 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OrderBy;
 
-/**
- * App\Entity\Competence
- *
- * @Table(name="competence", indexes={@Index(name="fk_competence_niveau_competence1_idx", columns={"competence_family_id"}), @Index(name="fk_competence_niveau_niveau1_idx", columns={"level_id"})})
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"base":"BaseCompetence", "extended":"Competence"})
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'competence')]
+#[ORM\Index(columns: ['competence_family_id'], name: 'fk_competence_niveau_competence1_idx')]
+#[ORM\Index(columns: ['level_id'], name: 'fk_competence_niveau_niveau1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseCompetence', 'extended' => 'Competence'])]
 class BaseCompetence
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    protected ?int $id = null;
+
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $description = null;
+
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, length: 45, nullable: true)]
+    protected ?string $documentUrl = null;
+
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $materiel = null;
 
     /**
-     * @Column(type="text", nullable=true)
+     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\CompetenceAttribute>|\App\Entity\CompetenceAttribute[]
      */
-    protected $description;
+    #[OneToMany(mappedBy: 'competence', targetEntity: CompetenceAttribute::class, cascade: ['all'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
+    protected ArrayCollection $competenceAttributes;
 
     /**
-     * @Column(type="string", length=45, nullable=true)
+     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\ExperienceUsage>|\App\Entity\ExperienceUsage[]
      */
-    protected $documentUrl;
+    #[OneToMany(mappedBy: 'competence', targetEntity: ExperienceUsage::class, cascade: ['all'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
+    protected ArrayCollection $experienceUsages;
 
     /**
-     * @Column(type="text", nullable=true)
+     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\PersonnageSecondaireCompetence>|\App\Entity\PersonnageSecondaireCompetence[]
      */
-    protected $materiel;
+    #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageSecondaireCompetence::class, cascade: ['persist'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
+    protected ArrayCollection $personnageSecondaireCompetences;
 
-    /**
-     * @OneToMany(targetEntity="CompetenceAttribute", mappedBy="competence", cascade={"all"})
-     * @JoinColumn(name="id", referencedColumnName="competence_id", nullable=false)
-     */
-    protected $competenceAttributes;
+    #[ManyToOne(targetEntity: CompetenceFamily::class, cascade: ['persist'], inversedBy: 'competences')]
+    #[JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'competence_family_label', referencedColumnName: 'label', nullable: 'false')]
+    #[OrderBy(['competence_family_label' => \Doctrine\Common\Collections\Criteria::ASC])]
+    protected CompetenceFamily $competenceFamily;
 
-    /**
-     * @OneToMany(targetEntity="ExperienceUsage", mappedBy="competence")
-     * @JoinColumn(name="id", referencedColumnName="competence_id", nullable=false)
-     */
-    protected $experienceUsages;
+    #[ManyToOne(targetEntity: Level::class, cascade: ['persist'], inversedBy: 'competences')]
+    #[JoinColumn(name: 'level_id', referencedColumnName: 'id')]
+    protected ?Level $level = null;
 
-    /**
-     * @OneToMany(targetEntity="PersonnageSecondaireCompetence", mappedBy="competence", cascade={"persist"})
-     * @JoinColumn(name="id", referencedColumnName="competence_id", nullable=false)
-     */
-    protected $personnageSecondaireCompetences;
-
-    /**
-     * @ManyToOne(targetEntity="CompetenceFamily", inversedBy="competences", cascade={"persist"})
-     * @JoinColumn(name="competence_family_id", referencedColumnName="id", nullable=false)
-     * @JoinColumn(name="competence_family_label", referencedColumnName="label", nullable=false)
-     * @OrderBy({"competence_family_label" = "ASC",})
-     */
-    protected $competenceFamily;
-
-    /**
-     * @ManyToOne(targetEntity="Level", inversedBy="competences", cascade={"persist"})
-     * @JoinColumn(name="level_id", referencedColumnName="id")
-     */
-    protected $level;
-
-    /**
-     * @ManyToMany(targetEntity="Personnage", inversedBy="competences")
-     * @JoinTable(name="personnages_competences",
-     *     joinColumns={@JoinColumn(name="competence_id", referencedColumnName="id", nullable=false)},
-     *     inverseJoinColumns={@JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)}
-     * )
-     */
-    protected $personnages;
+    #[ManyToMany(targetEntity: Personnage::class, inversedBy: 'competences')]
+    #[ORM\JoinTable(
+        name: 'personnages_competences',
+        /* TODO check Attributes on JonTable on ManyToMany
+         joinColumns: [
+            ['JoinColumn' => ['name' => 'competence_id', 'referencedColumnName' => 'id', 'nullable' => false]],
+        ],
+        inverseJoinColumns: [
+            ['JoinColumn' => ['name' => 'personnage_id', 'referencedColumnName' => 'id', 'nullable' => false]],
+        ]*/
+    )]
+    protected ArrayCollection $personnages;
 
     public function __construct()
     {
@@ -92,259 +93,136 @@ class BaseCompetence
         $this->personnages = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param integer $id
-     * @return \App\Entity\Competence
-     */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return integer
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of description.
-     *
-     * @param string $description
-     * @return \App\Entity\Competence
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * Get the value of description.
-     *
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
-    /**
-     * Set the value of documentUrl.
-     *
-     * @param string $documentUrl
-     * @return \App\Entity\Competence
-     */
-    public function setDocumentUrl($documentUrl)
+    public function setDocumentUrl(string $documentUrl): self
     {
         $this->documentUrl = $documentUrl;
 
         return $this;
     }
 
-    /**
-     * Get the value of documentUrl.
-     *
-     * @return string
-     */
-    public function getDocumentUrl()
+    public function getDocumentUrl(): string
     {
-        return $this->documentUrl;
+        return $this->documentUrl ?? '';
     }
 
-    /**
-     * Set the value of materiel.
-     *
-     * @param string $materiel
-     * @return \App\Entity\Competence
-     */
-    public function setMateriel($materiel)
+    public function setMateriel(string $materiel): self
     {
         $this->materiel = $materiel;
 
         return $this;
     }
 
-    /**
-     * Get the value of materiel.
-     *
-     * @return string
-     */
-    public function getMateriel()
+    public function getMateriel(): string
     {
-        return $this->materiel;
+        return $this->materiel ?? '';
     }
 
-    /**
-     * Add CompetenceAttribute entity to collection (one to many).
-     *
-     * @param \App\Entity\CompetenceAttribute $competenceAttribute
-     * @return \App\Entity\Competence
-     */
-    public function addCompetenceAttribute(CompetenceAttribute $competenceAttribute)
+    public function addCompetenceAttribute(CompetenceAttribute $competenceAttribute): self
     {
         $this->competenceAttributes[] = $competenceAttribute;
 
         return $this;
     }
 
-    /**
-     * Remove CompetenceAttribute entity from collection (one to many).
-     *
-     * @param \App\Entity\CompetenceAttribute $competenceAttribute
-     * @return \App\Entity\Competence
-     */
-    public function removeCompetenceAttribute(CompetenceAttribute $competenceAttribute)
+    public function removeCompetenceAttribute(CompetenceAttribute $competenceAttribute): self
     {
         $this->competenceAttributes->removeElement($competenceAttribute);
 
         return $this;
     }
 
-    /**
-     * Get CompetenceAttribute entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\ArrayCollection
-     */
-    public function getCompetenceAttributes()
+    public function getCompetenceAttributes(): ArrayCollection
     {
         return $this->competenceAttributes;
     }
 
-    /**
-     * Add ExperienceUsage entity to collection (one to many).
-     *
-     * @param \App\Entity\ExperienceUsage $experienceUsage
-     * @return \App\Entity\Competence
-     */
-    public function addExperienceUsage(ExperienceUsage $experienceUsage)
+    public function addExperienceUsage(ExperienceUsage $experienceUsage): self
     {
         $this->experienceUsages[] = $experienceUsage;
 
         return $this;
     }
 
-    /**
-     * Remove ExperienceUsage entity from collection (one to many).
-     *
-     * @param \App\Entity\ExperienceUsage $experienceUsage
-     * @return \App\Entity\Competence
-     */
-    public function removeExperienceUsage(ExperienceUsage $experienceUsage)
+    public function removeExperienceUsage(ExperienceUsage $experienceUsage): self
     {
         $this->experienceUsages->removeElement($experienceUsage);
 
         return $this;
     }
 
-    /**
-     * Get ExperienceUsage entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getExperienceUsages()
+    public function getExperienceUsages(): ArrayCollection
     {
         return $this->experienceUsages;
     }
 
-    /**
-     * Add PersonnageSecondaireCompetence entity to collection (one to many).
-     *
-     * @param \App\Entity\PersonnageSecondaireCompetence $personnageSecondaireCompetence
-     * @return \App\Entity\Competence
-     */
-    public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence)
+    public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): self
     {
         $this->personnageSecondaireCompetences[] = $personnageSecondaireCompetence;
 
         return $this;
     }
 
-    /**
-     * Remove PersonnageSecondaireCompetence entity from collection (one to many).
-     *
-     * @param \App\Entity\PersonnageSecondaireCompetence $personnageSecondaireCompetence
-     * @return \App\Entity\Competence
-     */
-    public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence)
+    public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): self
     {
         $this->personnageSecondaireCompetences->removeElement($personnageSecondaireCompetence);
 
         return $this;
     }
 
-    /**
-     * Get PersonnageSecondaireCompetence entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getPersonnageSecondaireCompetences()
+    public function getPersonnageSecondaireCompetences(): ArrayCollection
     {
         return $this->personnageSecondaireCompetences;
     }
 
-    /**
-     * Set CompetenceFamily entity (many to one).
-     *
-     * @param \App\Entity\CompetenceFamily $competenceFamily
-     * @return \App\Entity\Competence
-     */
-    public function setCompetenceFamily(CompetenceFamily $competenceFamily = null)
+    public function setCompetenceFamily(CompetenceFamily $competenceFamily = null): self
     {
         $this->competenceFamily = $competenceFamily;
 
         return $this;
     }
 
-    /**
-     * Get CompetenceFamily entity (many to one).
-     *
-     * @return \App\Entity\CompetenceFamily
-     */
-    public function getCompetenceFamily()
+    public function getCompetenceFamily(): ?CompetenceFamily
     {
         return $this->competenceFamily;
     }
 
-    /**
-     * Set Level entity (many to one).
-     *
-     * @param \App\Entity\Level $level
-     * @return \App\Entity\Competence
-     */
-    public function setLevel(Level $level = null)
+    public function setLevel(Level $level = null): self
     {
         $this->level = $level;
 
         return $this;
     }
 
-    /**
-     * Get Level entity (many to one).
-     *
-     * @return \App\Entity\Level
-     */
-    public function getLevel()
+    public function getLevel(): ?Level
     {
         return $this->level;
     }
 
-    /**
-     * Add Personnage entity to collection.
-     *
-     * @param \App\Entity\Personnage $personnage
-     * @return \App\Entity\Competence
-     */
-    public function addPersonnage(Personnage $personnage)
+    public function addPersonnage(Personnage $personnage): self
     {
         $personnage->addCompetence($this);
         $this->personnages[] = $personnage;
@@ -352,13 +230,7 @@ class BaseCompetence
         return $this;
     }
 
-    /**
-     * Remove Personnage entity from collection.
-     *
-     * @param \App\Entity\Personnage $personnage
-     * @return \App\Entity\Competence
-     */
-    public function removePersonnage(Personnage $personnage)
+    public function removePersonnage(Personnage $personnage): self
     {
         $personnage->removeCompetence($this);
         $this->personnages->removeElement($personnage);
@@ -366,18 +238,13 @@ class BaseCompetence
         return $this;
     }
 
-    /**
-     * Get Personnage entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getPersonnages()
+    public function getPersonnages(): ArrayCollection
     {
         return $this->personnages;
     }
 
     public function __sleep()
     {
-        return array('id', 'description', 'competence_family_id', 'level_id', 'documentUrl', 'materiel');
+        return ['id', 'description', 'competence_family_id', 'level_id', 'documentUrl', 'materiel'];
     }
 }

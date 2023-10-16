@@ -9,8 +9,9 @@ class Background extends BaseBackground
 {
     public function __construct()
     {
+        parent::__construct();
         $this->setUpdateDate(new \DateTime('NOW'));
-        if (empty($this->creation_date)) {
+        if (!$this->creation_date instanceof \DateTime) {
             $this->setCreationDate(new \DateTime('NOW'));
         }
     }

@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,51 +27,48 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseCompetenceFamily;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 /**
- * App\Entity\CompetenceFamily
+ * App\Entity\CompetenceFamily.
  *
  * @Entity(repositoryClass="LarpManager\Repository\CompetenceFamilyRepository")
  */
-class CompetenceFamily extends BaseCompetenceFamily
+class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
 {
-    public static $LITTERATURE = "Littérature";
-
-	/**
-	 * @ManyToMany(targetEntity="Classe", mappedBy="competenceFamilyFavorites")
-	 */
-	protected $classeFavorites;
-	
-	/**
-	 * @ManyToMany(targetEntity="Classe", mappedBy="competenceFamilyNormales")
-	 */
-	protected $classeNormales;
-	
-	/**
-	 * @ManyToMany(targetEntity="Classe", mappedBy="competenceFamilyCreations")
-	 */
-	protected $classeCreations;
-	
-	public function __construct()
-	{
-		$this->classeFavorites = new ArrayCollection();
-		$this->classeNormales = new ArrayCollection();
-		$this->classeCreations = new ArrayCollection();
-		
-		parent::__construct();
-	}
-	
-	public function __toString()
-	{
-		return $this->getLabel() ?? '';
-	}
+    public static $LITTERATURE = 'Littérature';
 
     /**
-     * Surcharge pour gérer le cas ou le parent retourne une valeur null pour un String attendu
+     * @ManyToMany(targetEntity="Classe", mappedBy="competenceFamilyFavorites")
+     */
+    protected $classeFavorites;
+
+    /**
+     * @ManyToMany(targetEntity="Classe", mappedBy="competenceFamilyNormales")
+     */
+    protected $classeNormales;
+
+    /**
+     * @ManyToMany(targetEntity="Classe", mappedBy="competenceFamilyCreations")
+     */
+    protected $classeCreations;
+
+    public function __construct()
+    {
+        $this->classeFavorites = new ArrayCollection();
+        $this->classeNormales = new ArrayCollection();
+        $this->classeCreations = new ArrayCollection();
+
+        parent::__construct();
+    }
+
+    public function __toString(): string
+    {
+        return $this->getLabel() ?? '';
+    }
+
+    /**
+     * Surcharge pour gérer le cas ou le parent retourne une valeur null pour un String attendu.
      */
     public function getLabel(): string
     {
@@ -79,7 +76,7 @@ class CompetenceFamily extends BaseCompetenceFamily
     }
 
     /**
-     * Surcharge pour gérer le cas ou le parent retourne une valeur null pour un String attendu
+     * Surcharge pour gérer le cas ou le parent retourne une valeur null pour un String attendu.
      */
     public function getDescription(): string
     {
@@ -87,170 +84,156 @@ class CompetenceFamily extends BaseCompetenceFamily
     }
 
     /**
-	 * Fourni la compétence de premier niveau d'une famille de compétence
-	 * @return Competence $competenceFirst
-	 */
-	public function getFirstCompetence()
-	{
-		$minimumIndex = null ;
-		$competenceFirst = null;
-		
-		foreach ( $this->getCompetences() as $competence )
-		{
-			if ( $minimumIndex == null )
-			{
-				$competenceFirst = $competence;
-				$minimumIndex = $competence->getLevel()->getIndex();
-			}
-			else if ( $competence->getLevel()->getIndex() < $minimumIndex )
-			{
-				$competenceFirst = $competence;
-				$minimumIndex = $competence->getLevel()->getIndex();
-			}
-		}
-		
-		return $competenceFirst;
-	}
-	
-	/**
-	 * Fourni la compétence de plus haut niveau d'une famille de compétence
-	 */
-	public function getLastCompetence()
-	{
-		$maximumIndex = null ;
-		$competenceLast = null;
-		
-		foreach ( $this->getCompetences() as $competence )
-		{
-			if ( $maximumIndex == null )
-			{
-				$competenceLast = $competence;
-				$maximumIndex = $competence->getLevel()->getIndex();
-			}
-			else if ( $competence->getLevel()->getIndex() > $maximumIndex )
-			{
-				$competenceLast = $competence;
-				$maximumIndex = $competence->getLevel()->getIndex();
-			}
-		}
-		
-		return $competenceLast;
-	}
-	
-	
-	/**
-	 * Add Classe entity to collection.
-	 *
-	 * @param \App\Entity\Classe $classe
-	 * @return \App\Entity\CompetenceFamily
-	 */
-	public function addClasseFavorite(Classe $classe)
-	{
-		$this->classeFavorites[] = $classe;
-	
-		return $this;
-	}
-	
-	/**
-	 * Remove Classe entity from collection.
-	 *
-	 * @param \App\Entity\Classe $classe
-	 * @return \App\Entity\CompetenceFamily
-	 */
-	public function removeClasseFavorite(Classe $classe)
-	{
-		$this->classeFavorites->removeElement($classe);
-	
-		return $this;
-	}
-	
-	/**
-	 * Get Objet entity collection.
-	 *
-	 * @return \Doctrine\Common\Collections\Collection
-	 */
-	public function getClasseFavorites()
-	{
-		return $this->classeFavorites;
-	}
-	
-	/**
-	 * Add Classe entity to collection.
-	 *
-	 * @param \App\Entity\Classe $classe
-	 * @return \App\Entity\CompetenceFamily
-	 */
-	public function addClasseNormale(Classe $classe)
-	{
-		$this->classeNormales[] = $classe;
-	
-		return $this;
-	}
-	
-	/**
-	 * Remove Classe entity from collection.
-	 *
-	 * @param \App\Entity\Classe $classe
-	 * @return \App\Entity\CompetenceFamily
-	 */
-	public function removeClasseNormale(Classe $classe)
-	{
-		$this->classeNormales->removeElement($classe);
-	
-		return $this;
-	}
-	
-	/**
-	 * Get Objet entity collection.
-	 *
-	 * @return \Doctrine\Common\Collections\Collection
-	 */
-	public function getClasseNormales()
-	{
-		return $this->classeNormales;
-	}
-	
-	/**
-	 * Add Classe entity to collection.
-	 *
-	 * @param \App\Entity\Classe $classe
-	 * @return \App\Entity\CompetenceFamily
-	 */
-	public function addClasseCreation(Classe $classe)
-	{
-		$this->classeCreations[] = $classe;
-	
-		return $this;
-	}
-	
-	/**
-	 * Remove Classe entity from collection.
-	 *
-	 * @param \App\Entity\Classe $classe
-	 * @return \App\Entity\CompetenceFamily
-	 */
-	public function removeClasseCreation(Classe $classe)
-	{
-		$this->classeCreations->removeElement($classe);
-	
-		return $this;
-	}
-	
-	/**
-	 * Get Objet entity collection.
-	 *
-	 * @return \Doctrine\Common\Collections\Collection
-	 */
-	public function getClasseCreations()
-	{
-		return $this->classeCreations;
-	}
-	
-	/**
-	 * Fourni la description débarassé de sa mise en forme
-	 */
-	public function getDescriptionRaw()
-	{
-		return strip_tags($this->getDescription());
-	}
+     * Fourni la compétence de premier niveau d'une famille de compétence.
+     *
+     * @return Competence $competenceFirst
+     */
+    public function getFirstCompetence()
+    {
+        $minimumIndex = null;
+        $competenceFirst = null;
+
+        foreach ($this->getCompetences() as $competence) {
+            if (null == $minimumIndex) {
+                $competenceFirst = $competence;
+                $minimumIndex = $competence->getLevel()->getIndex();
+            } elseif ($competence->getLevel()->getIndex() < $minimumIndex) {
+                $competenceFirst = $competence;
+                $minimumIndex = $competence->getLevel()->getIndex();
+            }
+        }
+
+        return $competenceFirst;
+    }
+
+    /**
+     * Fourni la compétence de plus haut niveau d'une famille de compétence.
+     */
+    public function getLastCompetence()
+    {
+        $maximumIndex = null;
+        $competenceLast = null;
+
+        foreach ($this->getCompetences() as $competence) {
+            if (null == $maximumIndex) {
+                $competenceLast = $competence;
+                $maximumIndex = $competence->getLevel()->getIndex();
+            } elseif ($competence->getLevel()->getIndex() > $maximumIndex) {
+                $competenceLast = $competence;
+                $maximumIndex = $competence->getLevel()->getIndex();
+            }
+        }
+
+        return $competenceLast;
+    }
+
+    /**
+     * Add Classe entity to collection.
+     *
+     * @return \App\Entity\CompetenceFamily
+     */
+    public function addClasseFavorite(Classe $classe): static
+    {
+        $this->classeFavorites[] = $classe;
+
+        return $this;
+    }
+
+    /**
+     * Remove Classe entity from collection.
+     *
+     * @return \App\Entity\CompetenceFamily
+     */
+    public function removeClasseFavorite(Classe $classe): static
+    {
+        $this->classeFavorites->removeElement($classe);
+
+        return $this;
+    }
+
+    /**
+     * Get Objet entity collection.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getClasseFavorites()
+    {
+        return $this->classeFavorites;
+    }
+
+    /**
+     * Add Classe entity to collection.
+     *
+     * @return \App\Entity\CompetenceFamily
+     */
+    public function addClasseNormale(Classe $classe): static
+    {
+        $this->classeNormales[] = $classe;
+
+        return $this;
+    }
+
+    /**
+     * Remove Classe entity from collection.
+     *
+     * @return \App\Entity\CompetenceFamily
+     */
+    public function removeClasseNormale(Classe $classe): static
+    {
+        $this->classeNormales->removeElement($classe);
+
+        return $this;
+    }
+
+    /**
+     * Get Objet entity collection.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getClasseNormales()
+    {
+        return $this->classeNormales;
+    }
+
+    /**
+     * Add Classe entity to collection.
+     *
+     * @return \App\Entity\CompetenceFamily
+     */
+    public function addClasseCreation(Classe $classe): static
+    {
+        $this->classeCreations[] = $classe;
+
+        return $this;
+    }
+
+    /**
+     * Remove Classe entity from collection.
+     *
+     * @return \App\Entity\CompetenceFamily
+     */
+    public function removeClasseCreation(Classe $classe): static
+    {
+        $this->classeCreations->removeElement($classe);
+
+        return $this;
+    }
+
+    /**
+     * Get Objet entity collection.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getClasseCreations()
+    {
+        return $this->classeCreations;
+    }
+
+    /**
+     * Fourni la description débarassé de sa mise en forme.
+     */
+    public function getDescriptionRaw(): string
+    {
+        return strip_tags($this->getDescription());
+    }
 }

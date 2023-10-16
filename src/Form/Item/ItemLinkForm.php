@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,75 +25,67 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\Monnaie\ItemForm
+ * LarpManager\Form\Monnaie\ItemForm.
  *
  * @author kevin
- *
  */
 class ItemLinkForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('personnage','entity', array(
-						'required' => false,
-						'mapped' => false,
-						'label' => 'Personnage',
-						'class' => 'App\Entity\Personnage',
-						'property' => 'nom',
-						'attr' => array(
-							'help' => 'Personnage qui possède cet objet',
-						),					
-				))
-				->add('groupe','entity', array(
-						'required' => false,
-						'mapped' => false,
-						'label' => 'Groupe',
-						'class' => 'App\Entity\Groupe',
-						'property' => 'nom',
-						'attr' => array(
-							'help' => 'Groupe qui possède cet objet',
-						),
-				))
-				->add('lieu','entity', array(
-						'required' => false,
-						'mapped' => false,
-						'label' => 'Lieu',
-						'class' => 'App\Entity\Lieu',
-						'property' => 'label',
-						'attr' => array(
-							'help' => 'Lieu ou est entreposé cet objet',
-						),
-				))
-				->add('submit', 'submit', array(
-						'label' => 'Valider',
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Item',
-		));
-	}
-	
-	/**
-	 * 
-	 * 
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'item';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('personnage', 'entity', [
+            'required' => false,
+            'mapped' => false,
+            'label' => 'Personnage',
+            'class' => \App\Entity\Personnage::class,
+            'property' => 'nom',
+            'attr' => [
+                'help' => 'Personnage qui possède cet objet',
+            ],
+        ])
+            ->add('groupe', 'entity', [
+                'required' => false,
+                'mapped' => false,
+                'label' => 'Groupe',
+                'class' => \App\Entity\Groupe::class,
+                'property' => 'nom',
+                'attr' => [
+                    'help' => 'Groupe qui possède cet objet',
+                ],
+            ])
+            ->add('lieu', 'entity', [
+                'required' => false,
+                'mapped' => false,
+                'label' => 'Lieu',
+                'class' => \App\Entity\Lieu::class,
+                'property' => 'label',
+                'attr' => [
+                    'help' => 'Lieu ou est entreposé cet objet',
+                ],
+            ])
+            ->add('submit', 'submit', [
+                'label' => 'Valider',
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Item::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'item';
+    }
 }

@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,47 +21,44 @@
 namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use App\Entity\Lignee;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * LarpManager\Repository\LigneesRepository
- *  
+ * LarpManager\Repository\LigneesRepository.
+ *
  * @author Kevin F.
  */
 class LigneesRepository extends EntityRepository
 {
-	/**
-	 * Trouve toutes les lignées
-	 */	
-	public function findAll()
-	{
-		$qb = $this->getEntityManager()->createQueryBuilder();
-		
-		$qb->select('l');
-		$qb->from('App\Entity\Lignee','l');
-		$qb->orderBy('l.id','ASC');
-		return $qb->getQuery()->getResult();
-	}
-
     /**
-     * Recherche d'une liste de lignees
-     *
-     * @param unknown $type
-     * @param unknown $value
-     * @param array $order
-     * @param unknown $limit
-     * @param unknown $offset
+     * Trouve toutes les lignées.
      */
-    public function findList($type, $value, array $order = array(), $limit, $offset)
+    public function findAll()
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('l');
-        $qb->from('App\Entity\Lignee','l');
-        if ( $type && $value)
-        {
-            switch ($type){
+        $qb->from(\App\Entity\Lignee::class, 'l');
+        $qb->orderBy('l.id', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Recherche d'une liste de lignees.
+     *
+     * @param unknown $type
+     * @param unknown $value
+     * @param unknown $limit
+     * @param unknown $offset
+     */
+    public function findList($type, $value, $limit, $offset, array $order = [])
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select('l');
+        $qb->from(\App\Entity\Lignee::class, 'l');
+        if ($type && $value) {
+            switch ($type) {
                 case 'id':
                     $qb->andWhere('l.id = :value');
                     $qb->setParameter('value', $value);
@@ -81,21 +78,17 @@ class LigneesRepository extends EntityRepository
     }
 
     /**
-     * Retourne le nombre de résultats correspondant à un critère
-     *
-     * @param array $criteria
-     * @param array $options
+     * Retourne le nombre de résultats correspondant à un critère.
      */
-    public function findCount($type, $value)
+    public function findCount($type, ?string $value)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select($qb->expr()->count('l'));
-        $qb->from('App\Entity\Lignee','l');
+        $qb->from(\App\Entity\Lignee::class, 'l');
 
-        if ( $type && $value)
-        {
-            switch ($type){
+        if ($type && $value) {
+            switch ($type) {
                 case 'id':
                     $qb->andWhere('l.id = :value');
                     $qb->setParameter('value', $value);
@@ -105,7 +98,6 @@ class LigneesRepository extends EntityRepository
                     $qb->setParameter('value', '%'.$value.'%');
                     break;
             }
-
         }
 
         return $qb->getQuery()->getSingleScalarResult();

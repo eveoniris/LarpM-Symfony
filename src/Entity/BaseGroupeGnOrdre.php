@@ -9,18 +9,28 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\GroupeGnOrdre
+ * App\Entity\GroupeGnOrdre.
  *
  * @Table(name="groupe_gn_ordre")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseGroupeGnOrdre", "extended":"GroupeGnOrdre"})
  */
 class BaseGroupeGnOrdre
 {
     /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     */
+    public $participants;
+    public $groupeGn;
+    /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -37,12 +47,14 @@ class BaseGroupeGnOrdre
 
     /**
      * @ManyToOne(targetEntity="GroupeGn", inversedBy="groupeGnOrdre")
+     *
      * @JoinColumn(name="groupe_gn_id", referencedColumnName="id", nullable=false)
      */
     protected $groupe_gn;
 
     /**
      * @ManyToOne(targetEntity="Territoire", inversedBy="groupeGnOrdre")
+     *
      * @JoinColumn(name="cible_id", referencedColumnName="id")
      */
     protected $cible;
@@ -55,7 +67,8 @@ class BaseGroupeGnOrdre
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\GroupeGnOrdre
      */
     public function setId($id)
@@ -68,7 +81,7 @@ class BaseGroupeGnOrdre
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -78,7 +91,8 @@ class BaseGroupeGnOrdre
     /**
      * Set the value of ordre.
      *
-     * @param boolean $ordre
+     * @param bool $ordre
+     *
      * @return \App\Entity\GroupeGnOrdre
      */
     public function setOrdre($ordre)
@@ -91,7 +105,7 @@ class BaseGroupeGnOrdre
     /**
      * Get the value of ordre.
      *
-     * @return boolean
+     * @return bool
      */
     public function getOrdre()
     {
@@ -101,7 +115,8 @@ class BaseGroupeGnOrdre
     /**
      * Set the value of extra.
      *
-     * @param boolean $extra
+     * @param bool $extra
+     *
      * @return \App\Entity\GroupeGnOrdre
      */
     public function setExtra($extra)
@@ -114,7 +129,7 @@ class BaseGroupeGnOrdre
     /**
      * Get the value of extra.
      *
-     * @return boolean
+     * @return bool
      */
     public function getExtra()
     {
@@ -124,10 +139,10 @@ class BaseGroupeGnOrdre
     /**
      * Set the value of cible.
      *
-     * @param boolean $cible
+     * @param bool $cible
+     *
      * @return \App\Entity\GroupeGnOrdre
      */
-
     public function setCible($cible)
     {
         $this->cible = $cible;
@@ -148,7 +163,6 @@ class BaseGroupeGnOrdre
     /**
      * Set GroupeGn entity (many to one).
      *
-     * @param \App\Entity\GroupeGn $groupeGn
      * @return \App\Entity\GroupeGnOrdre
      */
     public function setGroupeGN(GroupeGN $groupeGN)
@@ -170,6 +184,6 @@ class BaseGroupeGnOrdre
 
     public function __sleep()
     {
-        return array('id', 'ordre', 'groupe_gn_id', 'cible_id');
+        return ['id', 'ordre', 'groupe_gn_id', 'cible_id'];
     }
 }

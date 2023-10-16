@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Statut
+ * App\Entity\Statut.
  *
  * @Table(name="statut")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseStatut", "extended":"Statut"})
  */
 class BaseStatut
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -40,6 +45,7 @@ class BaseStatut
 
     /**
      * @OneToMany(targetEntity="Item", mappedBy="statut")
+     *
      * @JoinColumn(name="id", referencedColumnName="statut_id", nullable=false)
      */
     protected $items;
@@ -52,10 +58,11 @@ class BaseStatut
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Statut
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -65,7 +72,7 @@ class BaseStatut
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -76,6 +83,7 @@ class BaseStatut
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Statut
      */
     public function setLabel($label)
@@ -99,6 +107,7 @@ class BaseStatut
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Statut
      */
     public function setDescription($description)
@@ -121,7 +130,6 @@ class BaseStatut
     /**
      * Add Item entity to collection (one to many).
      *
-     * @param \App\Entity\Item $item
      * @return \App\Entity\Statut
      */
     public function addItem(Item $item)
@@ -134,7 +142,6 @@ class BaseStatut
     /**
      * Remove Item entity from collection (one to many).
      *
-     * @param \App\Entity\Item $item
      * @return \App\Entity\Statut
      */
     public function removeItem(Item $item)
@@ -156,6 +163,6 @@ class BaseStatut
 
     public function __sleep()
     {
-        return array('id', 'label', 'description');
+        return ['id', 'label', 'description'];
     }
 }

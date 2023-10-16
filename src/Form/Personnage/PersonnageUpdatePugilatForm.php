@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,48 +25,42 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\PersonnageUpdatePugilatForm
+ * LarpManager\Form\PersonnageUpdatePugilatForm.
  *
  * @author Kevin F.
- *
  */
 class PersonnageUpdatePugilatForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('pugilat','integer', array(
-					'required' => true,
-					'label' => 'Combien de points de Pugilat voulez-vous ajouter ? (indiquez une valeur négative pour retirer des points)',
-					'mapped' => false,
-					'attr' => array('max' => 6),
-				))
-				->add('explication','textarea', array(
-					'required' => true,
-					'mapped' => false,
-					'label' => 'Donnez une explication',
-				));
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('pugilat', 'integer', [
+            'required' => true,
+            'label' => 'Combien de points de Pugilat voulez-vous ajouter ? (indiquez une valeur négative pour retirer des points)',
+            'mapped' => false,
+            'attr' => ['max' => 6],
+        ])
+            ->add('explication', 'textarea', [
+                'required' => true,
+                'mapped' => false,
+                'label' => 'Donnez une explication',
+            ]);
+    }
 
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-	}
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+    }
 
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'personnageUpdatePugilat';
-	}
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'personnageUpdatePugilat';
+    }
 }

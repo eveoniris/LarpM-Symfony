@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,29 +24,30 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * LarpManager\Repository\ObjetRepository
+ * LarpManager\Repository\ObjetRepository.
  *
  * @author kevin
  */
 class ObjetRepository extends EntityRepository
 {
-    public const CRIT_WITHOUT = -1;
+    final public const CRIT_WITHOUT = -1;
 
     /**
-     * Trouve tous les objets
+     * Trouve tous les objets.
      */
     public function findAll()
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('o');
-        $qb->from('App\Entity\Objet', 'o');
+        $qb->from(\App\Entity\Objet::class, 'o');
         $qb->orderBy('o.id', 'DESC');
+
         return $qb->getQuery()->getResult();
     }
 
     /**
-     * Trouve le nombre d'objets correspondant aux critères de recherche
+     * Trouve le nombre d'objets correspondant aux critères de recherche.
      */
     public function findCount(array $criteria)
     {
@@ -57,35 +58,31 @@ class ObjetRepository extends EntityRepository
     }
 
     /**
-     * Trouve les objets correspondant aux critères de recherche
+     * Trouve les objets correspondant aux critères de recherche.
      */
     public function findList(array $criteria, array $order = [], int $limit = 50, int $offset = 0)
     {
         $qb = $this->getQueryBuilder($criteria);
         $qb->setFirstResult($offset);
         $qb->setMaxResults($limit);
-        $qb->orderBy('o.' . $order['by'], $order['dir']);
+        $qb->orderBy('o.'.$order['by'], $order['dir']);
 
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @param array $criteria
-     * @return QueryBuilder
-     */
     protected function getQueryBuilder(array $criteria): QueryBuilder
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('o');
-        $qb->from('App\Entity\Objet', 'o', 'o');
+        $qb->from(\App\Entity\Objet::class, 'o', 'o');
         $qb->join('o.photo', 'p');
 
         $allowed = ['nom', 'description', 'numero'];
         foreach ($allowed as $field) {
             if ($criteria[$field] ?? false) {
-                $qb->andWhere('o.' . $field . ' LIKE :field ');
-                $qb->setParameter('field', '%' . $criteria[$field] . '%');
+                $qb->andWhere('o.'.$field.' LIKE :field ');
+                $qb->setParameter('field', '%'.$criteria[$field].'%');
             }
         }
 
@@ -93,9 +90,9 @@ class ObjetRepository extends EntityRepository
             $criter = $criteria['tag'];
 
             if (is_numeric($criter)) {
-                $criter = (int)$criter;
+                $criter = (int) $criter;
 
-                if ($criter === -1) {
+                if (-1 === $criter) {
                     $qb->leftjoin('o.tags', 't');
                     $qb->andWhere('t.id is null');
                 } else {
@@ -119,8 +116,8 @@ class ObjetRepository extends EntityRepository
             $criter = $criteria['rangement'];
 
             if (is_numeric($criter)) {
-                $criter = (int)$criter;
-                if ($criter === -1) {
+                $criter = (int) $criter;
+                if (-1 === $criter) {
                     $qb->leftjoin('o.rangement', 'r');
                     $qb->andWhere('r.id is null');
                 } else {

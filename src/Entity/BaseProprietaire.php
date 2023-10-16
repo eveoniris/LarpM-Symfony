@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Proprietaire
+ * App\Entity\Proprietaire.
  *
  * @Table(name="proprietaire")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseProprietaire", "extended":"Proprietaire"})
  */
 class BaseProprietaire
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -50,6 +55,7 @@ class BaseProprietaire
 
     /**
      * @OneToMany(targetEntity="Objet", mappedBy="proprietaire")
+     *
      * @JoinColumn(name="id", referencedColumnName="proprietaire_id", nullable=false)
      */
     protected $objets;
@@ -62,10 +68,11 @@ class BaseProprietaire
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Proprietaire
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -75,7 +82,7 @@ class BaseProprietaire
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -86,6 +93,7 @@ class BaseProprietaire
      * Set the value of nom.
      *
      * @param string $nom
+     *
      * @return \App\Entity\Proprietaire
      */
     public function setNom($nom)
@@ -109,6 +117,7 @@ class BaseProprietaire
      * Set the value of adresse.
      *
      * @param string $adresse
+     *
      * @return \App\Entity\Proprietaire
      */
     public function setAdresse($adresse)
@@ -132,6 +141,7 @@ class BaseProprietaire
      * Set the value of mail.
      *
      * @param string $mail
+     *
      * @return \App\Entity\Proprietaire
      */
     public function setMail($mail)
@@ -155,6 +165,7 @@ class BaseProprietaire
      * Set the value of tel.
      *
      * @param string $tel
+     *
      * @return \App\Entity\Proprietaire
      */
     public function setTel($tel)
@@ -177,7 +188,6 @@ class BaseProprietaire
     /**
      * Add Objet entity to collection (one to many).
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\Proprietaire
      */
     public function addObjet(Objet $objet)
@@ -190,7 +200,6 @@ class BaseProprietaire
     /**
      * Remove Objet entity from collection (one to many).
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\Proprietaire
      */
     public function removeObjet(Objet $objet)
@@ -212,6 +221,6 @@ class BaseProprietaire
 
     public function __sleep()
     {
-        return array('id', 'nom', 'adresse', 'mail', 'tel');
+        return ['id', 'nom', 'adresse', 'mail', 'tel'];
     }
 }

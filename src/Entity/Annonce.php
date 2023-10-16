@@ -9,6 +9,7 @@ class Annonce extends BaseAnnonce
 {
     public function __construct()
     {
+        parent::__construct();
         $this->setCreationDate(new \DateTime('NOW'));
         $this->setUpdateDate(new \DateTime('NOW'));
     }

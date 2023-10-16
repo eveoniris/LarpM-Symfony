@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,35 +23,33 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Repository\ConstructionRepository
- * 
+ * LarpManager\Repository\ConstructionRepository.
+ *
  * @author Kevin F.
  */
 class ConstructionRepository extends EntityRepository
 {
-	/**
-	 * Find all constructions ordered by label
-	 * @return ArrayCollection $constructions
-	 */
-	public function findAllOrderedByLabel()
-	{
-		$constructions = $this->getEntityManager()
-				->createQuery('SELECT r FROM App\Entity\Construction r ORDER BY r.label ASC')
-				->getResult();
-		
-		return $constructions;
-	}
+    /**
+     * Find all constructions ordered by label.
+     *
+     * @return ArrayCollection $constructions
+     */
+    public function findAllOrderedByLabel()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT r FROM App\Entity\Construction r ORDER BY r.label ASC')
+            ->getResult();
+    }
 
-	/**
-	* Find all constructions ordered by label
-	* @return ArrayCollection $constructions
-	*/
-   public function findAll()
-   {
-	   $constructions = $this->getEntityManager()
-			   ->createQuery('SELECT r FROM App\Entity\Construction r ORDER BY r.label ASC')
-			   ->getResult();
-	   
-	   return $constructions;
-   }
+    /**
+     * Find all constructions ordered by label.
+     *
+     * @return ArrayCollection $constructions
+     */
+    public function findAll()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT r FROM App\Entity\Construction r ORDER BY r.label ASC')
+            ->getResult();
+    }
 }

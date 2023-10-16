@@ -10,30 +10,37 @@
 namespace App\Entity;
 
 /**
- * App\Entity\IntrigueHasGroupe
+ * App\Entity\IntrigueHasGroupe.
  *
  * @Table(name="intrigue_has_groupe", indexes={@Index(name="fk_intrigue_has_groupe_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_intrigue_has_groupe_intrigue1_idx", columns={"intrigue_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseIntrigueHasGroupe", "extended":"IntrigueHasGroupe"})
  */
 class BaseIntrigueHasGroupe
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
      * @ManyToOne(targetEntity="Intrigue", inversedBy="intrigueHasGroupes", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="intrigue_id", referencedColumnName="id", nullable=false)
      */
     protected $intrigue;
 
     /**
      * @ManyToOne(targetEntity="Groupe", inversedBy="intrigueHasGroupes")
+     *
      * @JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)
      */
     protected $groupe;
@@ -45,7 +52,8 @@ class BaseIntrigueHasGroupe
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\IntrigueHasGroupe
      */
     public function setId($id)
@@ -58,7 +66,7 @@ class BaseIntrigueHasGroupe
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -68,7 +76,6 @@ class BaseIntrigueHasGroupe
     /**
      * Set Intrigue entity (many to one).
      *
-     * @param \App\Entity\Intrigue $intrigue
      * @return \App\Entity\IntrigueHasGroupe
      */
     public function setIntrigue(Intrigue $intrigue = null)
@@ -91,7 +98,6 @@ class BaseIntrigueHasGroupe
     /**
      * Set Groupe entity (many to one).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\IntrigueHasGroupe
      */
     public function setGroupe(Groupe $groupe = null)
@@ -113,6 +119,6 @@ class BaseIntrigueHasGroupe
 
     public function __sleep()
     {
-        return array('id', 'intrigue_id', 'groupe_id');
+        return ['id', 'intrigue_id', 'groupe_id'];
     }
 }

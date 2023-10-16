@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,67 +17,62 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace App\Form\Participant;
 
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Form\Participant\ParticipantGroupeForm
+ * LarpManager\Form\Participant\ParticipantGroupeForm.
  *
  * @author kevin
- *
  */
 class ParticipantGroupeForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('groupeGn','entity', array(
-				'label' => 'Choisissez le groupe a affecter à cet utilisateur',
-				'multiple' => false,
-				'expanded' => true,
-				'required' => true,
-				'class' => 'App\Entity\GroupeGn',
-				'property' => 'groupe.nom',
-				'query_builder' => function(EntityRepository $er) use ($options) {
-					$qb = $er->createQueryBuilder('gg');
-					$qb->join('gg.groupe', 'g');
-					$qb->join('gg.gn', 'gn');
-					$qb->orderBy('g.nom', 'ASC');
-					$qb->where('gn.id = :gnId');
-					$qb->setParameter('gnId', $options['gnId']);
-					return $qb;
-				}
-		));
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('groupeGn', 'entity', [
+            'label' => 'Choisissez le groupe a affecter à cet utilisateur',
+            'multiple' => false,
+            'expanded' => true,
+            'required' => true,
+            'class' => \App\Entity\GroupeGn::class,
+            'property' => 'groupe.nom',
+            'query_builder' => static function (EntityRepository $er) use ($options) {
+                $qb = $er->createQueryBuilder('gg');
+                $qb->join('gg.groupe', 'g');
+                $qb->join('gg.gn', 'gn');
+                $qb->orderBy('g.nom', 'ASC');
+                $qb->where('gn.id = :gnId');
+                $qb->setParameter('gnId', $options['gnId']);
 
+                return $qb;
+            },
+        ]);
+    }
 
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-		 	'class' => 'App\Entity\Participant',
-			'gnId' => null,
-		 ));
-	}
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Participant::class,
+            'gnId' => null,
+        ]);
+    }
 
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'participantGroupe';
-	}
-} 
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'participantGroupe';
+    }
+}

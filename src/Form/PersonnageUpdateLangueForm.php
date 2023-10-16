@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,57 +20,50 @@
 
 namespace App\Form;
 
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Form\PersonnageUpdateLangueForm
+ * LarpManager\Form\PersonnageUpdateLangueForm.
  *
  * @author kevin
- *
  */
 class PersonnageUpdateLangueForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * Seul les éléments ne dépendant pas des points d'expérience sont modifiables
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('langues','entity', array(
-				'required' => true,
-				'multiple' => true,
-				'expanded' => true,
-				'class' => 'App\Entity\Langue',
-				'choice_label' => 'label',
-				'label' => 'Choisissez les langues du personnage',
-				'mapped' => false,
-				'query_builder' => function(EntityRepository $repository) { 
-					return $repository->createQueryBuilder('l')->addOrderBy('l.secret', 'ASC')->addOrderBy('l.diffusion', 'DESC')->addOrderBy('l.label', 'ASC');
-				}
-		));
+    /**
+     * Construction du formulaire
+     * Seul les éléments ne dépendant pas des points d'expérience sont modifiables.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('langues', 'entity', [
+            'required' => true,
+            'multiple' => true,
+            'expanded' => true,
+            'class' => \App\Entity\Langue::class,
+            'choice_label' => 'label',
+            'label' => 'Choisissez les langues du personnage',
+            'mapped' => false,
+            'query_builder' => static function (EntityRepository $repository) {
+                return $repository->createQueryBuilder('l')->addOrderBy('l.secret', 'ASC')->addOrderBy('l.diffusion', 'DESC')->addOrderBy('l.label', 'ASC');
+            },
+        ]);
+    }
 
-	}
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+    }
 
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-	}
-
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'personnageUpdateLangue';
-	}
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'personnageUpdateLangue';
+    }
 }

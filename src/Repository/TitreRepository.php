@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,22 +23,21 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Repository\TitreRepository
+ * LarpManager\Repository\TitreRepository.
  *
  * @author kevin
  */
 class TitreRepository extends EntityRepository
 {
-	/**
-	 * Trouve tous les titres classé par renommé
-	 * @return ArrayCollection $sorts
-	 */
-	public function findByRenomme()
-	{
-		$titres = $this->getEntityManager()
-			->createQuery('SELECT t FROM App\Entity\Titre t ORDER BY t.renomme ASC')
-			->getResult();
-
-		return $titres;
-	}
+    /**
+     * Trouve tous les titres classé par renommé.
+     *
+     * @return ArrayCollection $sorts
+     */
+    public function findByRenomme()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT t FROM App\Entity\Titre t ORDER BY t.renomme ASC')
+            ->getResult();
+    }
 }

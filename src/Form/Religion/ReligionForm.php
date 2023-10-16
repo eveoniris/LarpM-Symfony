@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,96 +25,88 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\ReligionForm
+ * LarpManager\Form\ReligionForm.
  *
  * @author kevin
- *
  */
 class ReligionForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text', array(
-					'label' => 'Label',
-					'required' => true,
-				))
-				->add('description','textarea', array(
-					'label' => 'Description rapide',
-					'required' => false,
-					'attr' => array(
-							'class' => 'tinymce',
-							'rows' => 10),
-				))
-				->add('description_orga','textarea', array(
-						'label' => 'Description pour les ORGAS',
-						'required' => false,
-						'attr' => array(
-								'class' => 'tinymce',
-								'rows' => 10),
-				))
-				->add('description_pratiquant','textarea', array(
-						'label' => 'Description pour les PRATIQUANTS',
-						'required' => false,
-						'attr' => array(
-								'class' => 'tinymce',
-								'rows' => 10),
-				))
-				->add('description_fervent','textarea', array(
-						'label' => 'Description pour les FERVENTS',
-						'required' => false,
-						'attr' => array(
-								'class' => 'tinymce',
-								'rows' => 10),
-				))
-				->add('description_fanatique','textarea', array(
-						'label' => 'Description pour les FANATIQUES',
-						'required' => false,
-						'attr' => array(
-								'class' => 'tinymce',
-								'rows' => 10),
-				))
-				->add('spheres', 'entity', array(
-					'label' => 'Sphères',
-					'multiple' => true,
-					'expanded' => true,
-					'class' => 'App\Entity\Sphere',
-					'choice_label' => 'label',
-				))
-				->add('secret', 'choice', array(
-					'required' => true,
-					'choices' => array(
-							false => 'Religion publique',
-							true => 'Religion secrète',
-							
-					),
-					'label' => 'Secret'
-				))				
-				;
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 * 
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\Religion',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'religion';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text', [
+            'label' => 'Label',
+            'required' => true,
+        ])
+            ->add('description', 'textarea', [
+                'label' => 'Description rapide',
+                'required' => false,
+                'attr' => [
+                    'class' => 'tinymce',
+                    'rows' => 10],
+            ])
+            ->add('description_orga', 'textarea', [
+                'label' => 'Description pour les ORGAS',
+                'required' => false,
+                'attr' => [
+                    'class' => 'tinymce',
+                    'rows' => 10],
+            ])
+            ->add('description_pratiquant', 'textarea', [
+                'label' => 'Description pour les PRATIQUANTS',
+                'required' => false,
+                'attr' => [
+                    'class' => 'tinymce',
+                    'rows' => 10],
+            ])
+            ->add('description_fervent', 'textarea', [
+                'label' => 'Description pour les FERVENTS',
+                'required' => false,
+                'attr' => [
+                    'class' => 'tinymce',
+                    'rows' => 10],
+            ])
+            ->add('description_fanatique', 'textarea', [
+                'label' => 'Description pour les FANATIQUES',
+                'required' => false,
+                'attr' => [
+                    'class' => 'tinymce',
+                    'rows' => 10],
+            ])
+            ->add('spheres', 'entity', [
+                'label' => 'Sphères',
+                'multiple' => true,
+                'expanded' => true,
+                'class' => \App\Entity\Sphere::class,
+                'choice_label' => 'label',
+            ])
+            ->add('secret', 'choice', [
+                'required' => true,
+                'choices' => [
+                    false => 'Religion publique',
+                    true => 'Religion secrète',
+                ],
+                'label' => 'Secret',
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => \App\Entity\Religion::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'religion';
+    }
 }

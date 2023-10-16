@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,54 +25,47 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\Monnaie\MonnaieForm
+ * LarpManager\Form\Monnaie\MonnaieForm.
  *
  * @author kevin
- *
  */
 class MonnaieForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text', array(
-					'label' => 'Label',
-					'required' => true,
-				))
-				->add('description','textarea', array(
-					'required' => true,
-					'label' => 'Description',
-					'attr' => array(
-						'rows' => 9,
-						'class' => 'tinymce',
-						'help' => 'Quelques mots pour décrire cette monnaie',
-					),
-					
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Monnaie',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'monnaie';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text', [
+            'label' => 'Label',
+            'required' => true,
+        ])
+            ->add('description', 'textarea', [
+                'required' => true,
+                'label' => 'Description',
+                'attr' => [
+                    'rows' => 9,
+                    'class' => 'tinymce',
+                    'help' => 'Quelques mots pour décrire cette monnaie',
+                ],
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Monnaie::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'monnaie';
+    }
 }

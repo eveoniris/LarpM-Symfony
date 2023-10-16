@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity(repositoryClass: 'LarpManager\Repository\BilletRepository')]
-class Billet extends BaseBillet
+class Billet extends BaseBillet implements \Stringable
 {
     public function __construct()
     {
@@ -16,7 +16,7 @@ class Billet extends BaseBillet
         $this->setFedegn(false);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getGn()?->getLabel().' - '.$this->getLabel();
     }

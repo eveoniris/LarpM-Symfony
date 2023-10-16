@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,41 +25,34 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\RequestForm
+ * LarpManager\Form\RequestForm.
  *
  * @author kevin
- *
  */
 class CancelRequestedAllianceForm extends AbstractType
 {
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+    }
 
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-	}
+    /**
+     * Définition de la classe d'entité concernée.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\GroupeAllie::class,
+        ]);
+    }
 
-	/**
-	 * Définition de la classe d'entité concernée
-	 *
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\GroupeAllie',
-		));
-	}
-
-	/**
-	 * Nom du formlaire
-	 */
-	public function getName()
-	{
-		return 'cancelRequestedAlliance';
-	}
+    /**
+     * Nom du formlaire.
+     */
+    public function getName(): string
+    {
+        return 'cancelRequestedAlliance';
+    }
 }

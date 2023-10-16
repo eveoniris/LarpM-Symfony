@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,38 +24,32 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
- * LarpManager\Form\PersonnageXpForm
+ * LarpManager\Form\PersonnageXpForm.
  *
  * @author kevin
- *
  */
 class PersonnageXpForm extends AbstractType
 {
-	
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('xp','integer', array(
-				'label' => 'Expérience à ajouter',
-				'required' => true,
-			))
-			->add('explanation','text', array(
-				'label' => 'Explication',
-				'required' => true,
-			));
-	
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'personnageXp';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('xp', 'integer', [
+            'label' => 'Expérience à ajouter',
+            'required' => true,
+        ])
+            ->add('explanation', 'text', [
+                'label' => 'Explication',
+                'required' => true,
+            ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'personnageXp';
+    }
 }

@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Evenement
+ * App\Entity\Evenement.
  *
  * @Table(name="evenement")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseEvenement", "extended":"Evenement"})
  */
 class BaseEvenement
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -50,6 +55,7 @@ class BaseEvenement
 
     /**
      * @OneToMany(targetEntity="IntrigueHasEvenement", mappedBy="evenement", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="evenement_id", nullable=false)
      */
     protected $intrigueHasEvenements;
@@ -62,10 +68,11 @@ class BaseEvenement
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Evenement
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -75,7 +82,7 @@ class BaseEvenement
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -86,6 +93,7 @@ class BaseEvenement
      * Set the value of text.
      *
      * @param string $text
+     *
      * @return \App\Entity\Evenement
      */
     public function setText($text)
@@ -109,6 +117,7 @@ class BaseEvenement
      * Set the value of date.
      *
      * @param string $date
+     *
      * @return \App\Entity\Evenement
      */
     public function setDate($date)
@@ -132,6 +141,7 @@ class BaseEvenement
      * Set the value of date_creation.
      *
      * @param \DateTime $date_creation
+     *
      * @return \App\Entity\Evenement
      */
     public function setDateCreation($date_creation)
@@ -155,6 +165,7 @@ class BaseEvenement
      * Set the value of date_update.
      *
      * @param \DateTime $date_update
+     *
      * @return \App\Entity\Evenement
      */
     public function setDateUpdate($date_update)
@@ -177,7 +188,6 @@ class BaseEvenement
     /**
      * Add IntrigueHasEvenement entity to collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasEvenement $intrigueHasEvenement
      * @return \App\Entity\Evenement
      */
     public function addIntrigueHasEvenement(IntrigueHasEvenement $intrigueHasEvenement)
@@ -190,7 +200,6 @@ class BaseEvenement
     /**
      * Remove IntrigueHasEvenement entity from collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasEvenement $intrigueHasEvenement
      * @return \App\Entity\Evenement
      */
     public function removeIntrigueHasEvenement(IntrigueHasEvenement $intrigueHasEvenement)
@@ -212,6 +221,6 @@ class BaseEvenement
 
     public function __sleep()
     {
-        return array('id', 'text', 'date', 'date_creation', 'date_update');
+        return ['id', 'text', 'date', 'date_creation', 'date_update'];
     }
 }

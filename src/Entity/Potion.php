@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,22 +27,20 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePotion;
-
 /**
- * App\Entity\Potion
+ * App\Entity\Potion.
  *
  * @Entity(repositoryClass="LarpManager\Repository\PotionRepository")
  */
 class Potion extends BasePotion
 {
-	public function getFullLabel()
-	{
-		return $this->getNumero() .' - '. $this->getLabel() .' - Niveau '. $this->getNiveau();
-	}
+    public function getFullLabel(): string
+    {
+        return $this->getNumero().' - '.$this->getLabel().' - Niveau '.$this->getNiveau();
+    }
 
-	public function getPrintLabel()
-	{
-		return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getNumero() .'_'. $this->getLabel() .'_'. $this->getNiveau()));
-	}
+    public function getPrintLabel(): string|array|null
+    {
+        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getNumero().'_'.$this->getLabel().'_'.$this->getNiveau()));
+    }
 }

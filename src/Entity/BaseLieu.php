@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Lieu
+ * App\Entity\Lieu.
  *
  * @Table(name="lieu")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseLieu", "extended":"Lieu"})
  */
 class BaseLieu
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -40,12 +45,14 @@ class BaseLieu
 
     /**
      * @OneToMany(targetEntity="IntrigueHasLieu", mappedBy="lieu")
+     *
      * @JoinColumn(name="id", referencedColumnName="lieu_id", nullable=false)
      */
     protected $intrigueHasLieus;
 
     /**
      * @ManyToMany(targetEntity="Document", inversedBy="lieus")
+     *
      * @JoinTable(name="lieu_has_document",
      *     joinColumns={@JoinColumn(name="lieu_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="document_id", referencedColumnName="id", nullable=false)}
@@ -62,7 +69,8 @@ class BaseLieu
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Lieu
      */
     public function setId($id)
@@ -75,7 +83,7 @@ class BaseLieu
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -86,6 +94,7 @@ class BaseLieu
      * Set the value of nom.
      *
      * @param string $nom
+     *
      * @return \App\Entity\Lieu
      */
     public function setNom($nom)
@@ -109,6 +118,7 @@ class BaseLieu
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Lieu
      */
     public function setDescription($description)
@@ -131,7 +141,6 @@ class BaseLieu
     /**
      * Add IntrigueHasLieu entity to collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasLieu $intrigueHasLieu
      * @return \App\Entity\Lieu
      */
     public function addIntrigueHasLieu(IntrigueHasLieu $intrigueHasLieu)
@@ -144,7 +153,6 @@ class BaseLieu
     /**
      * Remove IntrigueHasLieu entity from collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasLieu $intrigueHasLieu
      * @return \App\Entity\Lieu
      */
     public function removeIntrigueHasLieu(IntrigueHasLieu $intrigueHasLieu)
@@ -167,7 +175,6 @@ class BaseLieu
     /**
      * Add Document entity to collection.
      *
-     * @param \App\Entity\Document $document
      * @return \App\Entity\Lieu
      */
     public function addDocument(Document $document)
@@ -181,7 +188,6 @@ class BaseLieu
     /**
      * Remove Document entity from collection.
      *
-     * @param \App\Entity\Document $document
      * @return \App\Entity\Lieu
      */
     public function removeDocument(Document $document)
@@ -204,6 +210,6 @@ class BaseLieu
 
     public function __sleep()
     {
-        return array('id', 'nom', 'description');
+        return ['id', 'nom', 'description'];
     }
 }

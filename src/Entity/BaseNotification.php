@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\Notification
+ * App\Entity\Notification.
  *
  * @Table(name="notification", indexes={@Index(name="fk_notification_User1_idx", columns={"User_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseNotification", "extended":"Notification"})
  */
 class BaseNotification
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -43,6 +48,7 @@ class BaseNotification
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="notifications")
+     *
      * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
      */
     protected $User;
@@ -54,7 +60,8 @@ class BaseNotification
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Notification
      */
     public function setId($id)
@@ -67,7 +74,7 @@ class BaseNotification
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -78,6 +85,7 @@ class BaseNotification
      * Set the value of text.
      *
      * @param string $text
+     *
      * @return \App\Entity\Notification
      */
     public function setText($text)
@@ -101,6 +109,7 @@ class BaseNotification
      * Set the value of date.
      *
      * @param \DateTime $date
+     *
      * @return \App\Entity\Notification
      */
     public function setDate($date)
@@ -124,6 +133,7 @@ class BaseNotification
      * Set the value of url.
      *
      * @param string $url
+     *
      * @return \App\Entity\Notification
      */
     public function setUrl($url)
@@ -146,7 +156,6 @@ class BaseNotification
     /**
      * Set User entity (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Notification
      */
     public function setUser(User $User = null)
@@ -168,6 +177,6 @@ class BaseNotification
 
     public function __sleep()
     {
-        return array('id', 'text', 'date', 'User_id', 'url');
+        return ['id', 'text', 'date', 'User_id', 'url'];
     }
 }

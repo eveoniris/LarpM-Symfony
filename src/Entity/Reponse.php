@@ -9,18 +9,16 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseReponse;
-
 /**
- * App\Entity\Reponse
- *
+ * App\Entity\Reponse.
  */
 class Reponse extends BaseReponse
 {
-	public function setReponse($reponse)
-	{
-		$hash = sha1($reponse);
-		parent::setReponse($hash);
-		return $this;
-	}
+    public function setReponse($reponse): static
+    {
+        $hash = sha1($reponse);
+        parent::setReponse($hash);
+
+        return $this;
+    }
 }

@@ -7,24 +7,30 @@
 namespace App\Entity;
 
 /**
- * App\Entity\PersonnageChronologie
+ * App\Entity\PersonnageChronologie.
  *
  * @Table(name="personnages_chronologie")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePersonnageChronologie", "extended":"PersonnageChronologie"})
  */
 class BasePersonnageChronologie
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="PersonnageChronologie")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
@@ -46,7 +52,8 @@ class BasePersonnageChronologie
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\PersonnageChronologie
      */
     public function setId($id)
@@ -59,7 +66,7 @@ class BasePersonnageChronologie
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -70,6 +77,7 @@ class BasePersonnageChronologie
      * Set the value of evenement.
      *
      * @param string $evenement
+     *
      * @return \App\Entity\PersonnageChronologie
      */
     public function setEvenement($evenement)
@@ -92,7 +100,6 @@ class BasePersonnageChronologie
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\PersonnageChronologie
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -115,7 +122,8 @@ class BasePersonnageChronologie
     /**
      * Set the value of annee.
      *
-     * @param integer $annee
+     * @param int $annee
+     *
      * @return \App\Entity\PersonnageChronologie
      */
     public function setAnnee($annee)
@@ -128,15 +136,15 @@ class BasePersonnageChronologie
     /**
      * Get the value of annee.
      *
-     * @return integer
+     * @return int
      */
     public function getAnnee()
     {
         return $this->annee;
     }
-    
+
     public function __sleep()
     {
-        return array('id', 'personnage_id', 'evenement', 'annee');
+        return ['id', 'personnage_id', 'evenement', 'annee'];
     }
 }

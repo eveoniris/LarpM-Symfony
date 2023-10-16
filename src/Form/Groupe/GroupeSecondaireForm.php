@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,93 +26,89 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\GroupeSecondaireForm
+ * LarpManager\Form\GroupeSecondaireForm.
  *
  * @author kevin
- *
  */
 class GroupeSecondaireForm extends AbstractType
 {
-	/**
-	 * Contruction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text')
-				->add('description','textarea', array(
-						'required' => true,
-						'label' => 'Description',
-						'attr' => array(
-								'rows' => 9,
-								'class' => 'tinymce')
-				))
-				->add('description_secrete','textarea', array(
-						'required' => true,
-						'label' => 'Description des secrets',
-						'attr' => array(
-								'rows' => 9,
-								'class' => 'tinymce',
-								'help' => 'les secrets ne sont accessibles qu\'aux membres selectionnés par le scénariste')
-				))
-                ->add('scenariste','entity', array(
-                    'label' => 'Scénariste',
-                    'required' => false,
-                    'class' => 'App\Entity\User',
-                    'property' => 'name',
-                    'query_builder' => function(EntityRepository $er) {
-                        $qb = $er->createQueryBuilder('u');
-                        $qb->join('u.etatCivil', 'ec');
-                        $qb->where($qb->expr()->orX(
-                            $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
-                            $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%'))));
-                        $qb->orderBy('ec.nom', 'ASC');
-                        return $qb;
-                    }
-                ))
-                ->add('responsable', 'entity', array(
-                    'required' => false,
-                    'label' => 'Chef du groupe',
-                    'class' => 'App\Entity\Personnage',
-                    'query_builder' => function(EntityRepository $er) {
-                        $qb = $er->createQueryBuilder('u');
-                        $qb->orderBy('u.nom', 'ASC');
-                        $qb->orderBy('u.surnom', 'ASC');
-                        return $qb;
-                    },
-                    'property' => 'identity',
-                ))
-				->add('secondaryGroupType','entity', array(
-						'label' => 'Type',
-						'required' => true,
-						'class' => 'App\Entity\SecondaryGroupType',
-						'property' => 'label',
-				))
-				->add('secret','checkbox', array(
-						'label' => 'Cochez cette case pour rendre le groupe secret (visible uniquement par les joueurs membres)',
-						'required' => false,
-				));
-	}
+    /**
+     * Contruction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text')
+            ->add('description', 'textarea', [
+                'required' => true,
+                'label' => 'Description',
+                'attr' => [
+                    'rows' => 9,
+                    'class' => 'tinymce'],
+            ])
+            ->add('description_secrete', 'textarea', [
+                'required' => true,
+                'label' => 'Description des secrets',
+                'attr' => [
+                    'rows' => 9,
+                    'class' => 'tinymce',
+                    'help' => 'les secrets ne sont accessibles qu\'aux membres selectionnés par le scénariste'],
+            ])
+            ->add('scenariste', 'entity', [
+                'label' => 'Scénariste',
+                'required' => false,
+                'class' => \App\Entity\User::class,
+                'property' => 'name',
+                'query_builder' => static function (EntityRepository $er) {
+                    $qb = $er->createQueryBuilder('u');
+                    $qb->join('u.etatCivil', 'ec');
+                    $qb->where($qb->expr()->orX(
+                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
+                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%'))));
+                    $qb->orderBy('ec.nom', 'ASC');
 
-	/**
-	 * Définition de l'entité conercné
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\SecondaryGroup',
-		));
-	}
+                    return $qb;
+                },
+            ])
+            ->add('responsable', 'entity', [
+                'required' => false,
+                'label' => 'Chef du groupe',
+                'class' => \App\Entity\Personnage::class,
+                'query_builder' => static function (EntityRepository $er) {
+                    $qb = $er->createQueryBuilder('u');
+                    $qb->orderBy('u.nom', 'ASC');
+                    $qb->orderBy('u.surnom', 'ASC');
 
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'secondaryGroup';
-	}
+                    return $qb;
+                },
+                'property' => 'identity',
+            ])
+            ->add('secondaryGroupType', 'entity', [
+                'label' => 'Type',
+                'required' => true,
+                'class' => \App\Entity\SecondaryGroupType::class,
+                'property' => 'label',
+            ])
+            ->add('secret', 'checkbox', [
+                'label' => 'Cochez cette case pour rendre le groupe secret (visible uniquement par les joueurs membres)',
+                'required' => false,
+            ]);
+    }
+
+    /**
+     * Définition de l'entité conercné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\SecondaryGroup::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'secondaryGroup';
+    }
 }

@@ -8,37 +8,37 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class NiveauForm extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text', array(
-					'required' => true,	)
-				)
-				->add('niveau','integer', array(
-					'required' => true,	)
-				)
-				->add('cout_favori','integer', array(
-						'label' => "Coût favori",
-						'required' => true,	)
-				)
-				->add('cout','integer', array(
-					'label' => "Coût normal",
-					'required' => true,	)
-				)
-				->add('cout_meconu','integer', array(
-					'label' => "Coût méconnu",
-					'required' => true,	)
-				);
-	}
-	
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data' => 'App\Entity\Niveau',
-		));
-	}
-	
-	public function getName()
-	{
-		return 'niveauForm';
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text', [
+                'required' => true, ]
+        )
+            ->add('niveau', 'integer', [
+                    'required' => true, ]
+            )
+            ->add('cout_favori', 'integer', [
+                    'label' => 'Coût favori',
+                    'required' => true, ]
+            )
+            ->add('cout', 'integer', [
+                    'label' => 'Coût normal',
+                    'required' => true, ]
+            )
+            ->add('cout_meconu', 'integer', [
+                    'label' => 'Coût méconnu',
+                    'required' => true, ]
+            );
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data' => 'App\Entity\Niveau',
+        ]);
+    }
+
+    public function getName(): string
+    {
+        return 'niveauForm';
+    }
 }

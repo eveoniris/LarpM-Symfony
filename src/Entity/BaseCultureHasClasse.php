@@ -10,29 +10,35 @@
 namespace App\Entity;
 
 /**
- * App\Entity\CultureHasClasse
+ * App\Entity\CultureHasClasse.
  *
  * @Table(name="culture_has_classe", indexes={@Index(name="fk_culture_has_classe_culture1_idx", columns={"culture_id"}), @Index(name="fk_culture_has_classe_classe1_idx", columns={"classe_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseCultureHasClasse", "extended":"CultureHasClasse"})
  */
 class BaseCultureHasClasse
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
      */
     protected $id;
 
     /**
      * @ManyToOne(targetEntity="Culture", inversedBy="cultureHasClasses")
+     *
      * @JoinColumn(name="culture_id", referencedColumnName="id", nullable=false)
      */
     protected $culture;
 
     /**
      * @ManyToOne(targetEntity="Classe", inversedBy="cultureHasClasses")
+     *
      * @JoinColumn(name="classe_id", referencedColumnName="id", nullable=false)
      */
     protected $classe;
@@ -44,7 +50,8 @@ class BaseCultureHasClasse
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\CultureHasClasse
      */
     public function setId($id)
@@ -57,7 +64,7 @@ class BaseCultureHasClasse
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -67,7 +74,6 @@ class BaseCultureHasClasse
     /**
      * Set Culture entity (many to one).
      *
-     * @param \App\Entity\Culture $culture
      * @return \App\Entity\CultureHasClasse
      */
     public function setCulture(Culture $culture = null)
@@ -90,7 +96,6 @@ class BaseCultureHasClasse
     /**
      * Set Classe entity (many to one).
      *
-     * @param \App\Entity\Classe $classe
      * @return \App\Entity\CultureHasClasse
      */
     public function setClasse(Classe $classe = null)
@@ -112,6 +117,6 @@ class BaseCultureHasClasse
 
     public function __sleep()
     {
-        return array('id', 'culture_id', 'classe_id');
+        return ['id', 'culture_id', 'classe_id'];
     }
 }

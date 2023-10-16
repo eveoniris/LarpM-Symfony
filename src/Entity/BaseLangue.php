@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Langue
+ * App\Entity\Langue.
  *
  * @Table(name="langue", indexes={@Index(name="groupe_langue_id_idx", columns={"groupe_langue_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseLangue", "extended":"Langue"})
  */
 class BaseLangue
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -45,18 +50,21 @@ class BaseLangue
 
     /**
      * @OneToMany(targetEntity="PersonnageLangues", mappedBy="langue")
+     *
      * @JoinColumn(name="id", referencedColumnName="langue_id", nullable=false)
      */
     protected $personnageLangues;
 
     /**
      * @OneToMany(targetEntity="Territoire", mappedBy="langue")
+     *
      * @JoinColumn(name="id", referencedColumnName="langue_id", nullable=false)
      */
     protected $territoires;
 
     /**
      * @ManyToOne(targetEntity="GroupeLangue", inversedBy="langues")
+     *
      * @JoinColumn(name="groupe_langue_id", referencedColumnName="id", nullable=false)
      */
     protected $groupeLangue;
@@ -86,10 +94,11 @@ class BaseLangue
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Langue
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -99,7 +108,7 @@ class BaseLangue
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -110,6 +119,7 @@ class BaseLangue
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Langue
      */
     public function setLabel($label)
@@ -133,6 +143,7 @@ class BaseLangue
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Langue
      */
     public function setDescription($description)
@@ -155,7 +166,8 @@ class BaseLangue
     /**
      * Set the value of diffusion.
      *
-     * @param integer $diffusion
+     * @param int $diffusion
+     *
      * @return \App\Entity\Langue
      */
     public function setDiffusion($diffusion)
@@ -168,7 +180,7 @@ class BaseLangue
     /**
      * Get the value of diffusion.
      *
-     * @return integer
+     * @return int
      */
     public function getDiffusion()
     {
@@ -178,7 +190,6 @@ class BaseLangue
     /**
      * Add PersonnageLangues entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnageLangues $personnageLangues
      * @return \App\Entity\Langue
      */
     public function addPersonnageLangues(PersonnageLangues $personnageLangues)
@@ -191,7 +202,6 @@ class BaseLangue
     /**
      * Remove PersonnageLangues entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnageLangues $personnageLangues
      * @return \App\Entity\Langue
      */
     public function removePersonnageLangues(PersonnageLangues $personnageLangues)
@@ -205,6 +215,7 @@ class BaseLangue
      * Get PersonnageLangues entity collection (one to many).
      *
      * @return \Doctrine\Common\Collections\Collection
+     *
      * @OrderBy({"secret" = "ASC", "diffusion" = "DESC", "label" = "ASC"})
      */
     public function getPersonnageLangues()
@@ -215,7 +226,6 @@ class BaseLangue
     /**
      * Add Territoire entity to collection (one to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Langue
      */
     public function addTerritoire(Territoire $territoire)
@@ -228,7 +238,6 @@ class BaseLangue
     /**
      * Remove Territoire entity from collection (one to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Langue
      */
     public function removeTerritoire(Territoire $territoire)
@@ -251,7 +260,6 @@ class BaseLangue
     /**
      * Set GroupeLangue entity (many to one).
      *
-     * @param \App\Entity\GroupeLangue $groupeLangue
      * @return \App\Entity\Langue
      */
     public function setGroupeLangue(GroupeLangue $groupeLangue = null)
@@ -274,7 +282,6 @@ class BaseLangue
     /**
      * Add Document entity to collection.
      *
-     * @param \App\Entity\Document $document
      * @return \App\Entity\Langue
      */
     public function addDocument(Document $document)
@@ -287,7 +294,6 @@ class BaseLangue
     /**
      * Remove Document entity from collection.
      *
-     * @param \App\Entity\Document $document
      * @return \App\Entity\Langue
      */
     public function removeDocument(Document $document)
@@ -310,7 +316,8 @@ class BaseLangue
     /**
      * Set the value of secret.
      *
-     * @param boolean $secret
+     * @param bool $secret
+     *
      * @return \App\Entity\Langue
      */
     public function setSecret($secret)
@@ -323,7 +330,7 @@ class BaseLangue
     /**
      * Get the value of secret.
      *
-     * @return boolean
+     * @return bool
      */
     public function getSecret()
     {
@@ -334,6 +341,7 @@ class BaseLangue
      * Set the value of documentUrl.
      *
      * @param string $documentUrl
+     *
      * @return \App\Entity\Langue
      */
     public function setDocumentUrl($documentUrl)
@@ -355,6 +363,6 @@ class BaseLangue
 
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'diffusion', 'groupe_langue_id', 'secret');
+        return ['id', 'label', 'description', 'diffusion', 'groupe_langue_id', 'secret'];
     }
 }

@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Groupe
+ * App\Entity\Groupe.
  *
  * @Table(name="groupe", indexes={@Index(name="fk_groupe_Users1_idx", columns={"scenariste_id"}), @Index(name="fk_groupe_User2_idx", columns={"responsable_id"}), @Index(name="fk_groupe_topic1_idx", columns={"topic_id"}), @Index(name="fk_groupe_territoire1_idx", columns={"territoire_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseGroupe", "extended":"Groupe"})
  */
 class BaseGroupe
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -85,122 +90,143 @@ class BaseGroupe
 
     /**
      * @OneToMany(targetEntity="Background", mappedBy="groupe")
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
      */
     protected $backgrounds;
 
     /**
      * @OneToMany(targetEntity="Debriefing", mappedBy="groupe")
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
      */
     protected $debriefings;
 
     /**
      * @OneToMany(targetEntity="GroupeAllie", mappedBy="groupeRelatedByGroupeId")
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
      */
     protected $groupeAllieRelatedByGroupeIds;
 
     /**
      * @OneToMany(targetEntity="GroupeAllie", mappedBy="groupeRelatedByGroupeAllieId")
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_allie_id", nullable=false)
      */
     protected $groupeAllieRelatedByGroupeAllieIds;
 
     /**
      * @OneToMany(targetEntity="GroupeClasse", mappedBy="groupe", cascade={"persist"})
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
      */
     protected $groupeClasses;
 
     /**
      * @OneToMany(targetEntity="GroupeEnemy", mappedBy="groupeRelatedByGroupeId")
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
      */
     protected $groupeEnemyRelatedByGroupeIds;
 
     /**
      * @OneToMany(targetEntity="GroupeEnemy", mappedBy="groupeRelatedByGroupeEnemyId")
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_enemy_id", nullable=false)
      */
     protected $groupeEnemyRelatedByGroupeEnemyIds;
 
     /**
      * @OneToMany(targetEntity="GroupeGn", mappedBy="groupe")
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
      */
     protected $groupeGns;
 
     /**
      * @OneToMany(targetEntity="GroupeHasIngredient", mappedBy="groupe", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
      */
     protected $groupeHasIngredients;
 
     /**
      * @OneToMany(targetEntity="GroupeHasRessource", mappedBy="groupe", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
      */
     protected $groupeHasRessources;
 
     /**
      * @OneToMany(targetEntity="IntrigueHasGroupe", mappedBy="groupe")
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
      */
     protected $intrigueHasGroupes;
 
     /**
      * @OneToMany(targetEntity="Personnage", mappedBy="groupe")
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
      */
     protected $personnages;
 
     /**
      * @OneToMany(targetEntity="Territoire", mappedBy="groupe")
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
      */
     protected $territoires;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="groupeRelatedByScenaristeIds")
+     *
      * @JoinColumn(name="scenariste_id", referencedColumnName="id")
      */
     protected $UserRelatedByScenaristeId;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="groupeRelatedByResponsableIds")
+     *
      * @JoinColumn(name="responsable_id", referencedColumnName="id")
      */
     protected $UserRelatedByResponsableId;
 
     /**
      * @ManyToOne(targetEntity="Topic", inversedBy="groupes")
+     *
      * @JoinColumn(name="topic_id", referencedColumnName="id", nullable=false)
      */
     protected $topic;
 
     /**
      * @ManyToOne(targetEntity="Territoire", inversedBy="groupes")
+     *
      * @JoinColumn(name="territoire_id", referencedColumnName="id")
      */
     protected $territoire;
 
     /**
      * @ManyToMany(targetEntity="Document", inversedBy="groupes")
+     *
      * @JoinTable(name="groupe_has_document",
      *     joinColumns={@JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="document_id", referencedColumnName="id", nullable=false)}
      * )
+     *
      * @OrderBy({"code" = "ASC",})
      */
     protected $documents;
 
     /**
      * @ManyToMany(targetEntity="Item", inversedBy="groupes")
+     *
      * @JoinTable(name="groupe_has_item",
      *     joinColumns={@JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="item_id", referencedColumnName="id", nullable=false)}
      * )
+     *
      * @OrderBy({"label" = "ASC",})
      */
     protected $items;
@@ -227,10 +253,11 @@ class BaseGroupe
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Groupe
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -240,7 +267,7 @@ class BaseGroupe
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -251,6 +278,7 @@ class BaseGroupe
      * Set the value of nom.
      *
      * @param string $nom
+     *
      * @return \App\Entity\Groupe
      */
     public function setNom($nom)
@@ -274,6 +302,7 @@ class BaseGroupe
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Groupe
      */
     public function setDescription($description)
@@ -296,7 +325,8 @@ class BaseGroupe
     /**
      * Set the value of numero.
      *
-     * @param integer $numero
+     * @param int $numero
+     *
      * @return \App\Entity\Groupe
      */
     public function setNumero($numero)
@@ -309,7 +339,7 @@ class BaseGroupe
     /**
      * Get the value of numero.
      *
-     * @return integer
+     * @return int
      */
     public function getNumero()
     {
@@ -320,6 +350,7 @@ class BaseGroupe
      * Set the value of code.
      *
      * @param string $code
+     *
      * @return \App\Entity\Groupe
      */
     public function setCode($code)
@@ -342,7 +373,8 @@ class BaseGroupe
     /**
      * Set the value of jeu_maritime.
      *
-     * @param boolean $jeu_maritime
+     * @param bool $jeu_maritime
+     *
      * @return \App\Entity\Groupe
      */
     public function setJeuMaritime($jeu_maritime)
@@ -355,7 +387,7 @@ class BaseGroupe
     /**
      * Get the value of jeu_maritime.
      *
-     * @return boolean
+     * @return bool
      */
     public function getJeuMaritime()
     {
@@ -365,7 +397,8 @@ class BaseGroupe
     /**
      * Set the value of jeu_strategique.
      *
-     * @param boolean $jeu_strategique
+     * @param bool $jeu_strategique
+     *
      * @return \App\Entity\Groupe
      */
     public function setJeuStrategique($jeu_strategique)
@@ -378,7 +411,7 @@ class BaseGroupe
     /**
      * Get the value of jeu_strategique.
      *
-     * @return boolean
+     * @return bool
      */
     public function getJeuStrategique()
     {
@@ -388,7 +421,8 @@ class BaseGroupe
     /**
      * Set the value of classe_open.
      *
-     * @param integer $classe_open
+     * @param int $classe_open
+     *
      * @return \App\Entity\Groupe
      */
     public function setClasseOpen($classe_open)
@@ -401,7 +435,7 @@ class BaseGroupe
     /**
      * Get the value of classe_open.
      *
-     * @return integer
+     * @return int
      */
     public function getClasseOpen()
     {
@@ -411,7 +445,8 @@ class BaseGroupe
     /**
      * Set the value of pj.
      *
-     * @param boolean $pj
+     * @param bool $pj
+     *
      * @return \App\Entity\Groupe
      */
     public function setPj($pj)
@@ -424,7 +459,7 @@ class BaseGroupe
     /**
      * Get the value of pj.
      *
-     * @return boolean
+     * @return bool
      */
     public function getPj()
     {
@@ -435,6 +470,7 @@ class BaseGroupe
      * Set the value of materiel.
      *
      * @param string $materiel
+     *
      * @return \App\Entity\Groupe
      */
     public function setMateriel($materiel)
@@ -457,7 +493,8 @@ class BaseGroupe
     /**
      * Set the value of lock.
      *
-     * @param boolean $lock
+     * @param bool $lock
+     *
      * @return \App\Entity\Groupe
      */
     public function setLock($lock)
@@ -470,7 +507,7 @@ class BaseGroupe
     /**
      * Get the value of lock.
      *
-     * @return boolean
+     * @return bool
      */
     public function getLock()
     {
@@ -480,7 +517,8 @@ class BaseGroupe
     /**
      * Set the value of richesse.
      *
-     * @param integer $richesse
+     * @param int $richesse
+     *
      * @return \App\Entity\Groupe
      */
     public function setRichesse($richesse)
@@ -493,7 +531,7 @@ class BaseGroupe
     /**
      * Get the value of richesse.
      *
-     * @return integer
+     * @return int
      */
     public function getRichesse()
     {
@@ -503,7 +541,6 @@ class BaseGroupe
     /**
      * Add Background entity to collection (one to many).
      *
-     * @param \App\Entity\Background $background
      * @return \App\Entity\Groupe
      */
     public function addBackground(Background $background)
@@ -516,7 +553,6 @@ class BaseGroupe
     /**
      * Remove Background entity from collection (one to many).
      *
-     * @param \App\Entity\Background $background
      * @return \App\Entity\Groupe
      */
     public function removeBackground(Background $background)
@@ -539,7 +575,6 @@ class BaseGroupe
     /**
      * Add Debriefing entity to collection (one to many).
      *
-     * @param \App\Entity\Debriefing $debriefing
      * @return \App\Entity\Groupe
      */
     public function addDebriefing(Debriefing $debriefing)
@@ -552,7 +587,6 @@ class BaseGroupe
     /**
      * Remove Debriefing entity from collection (one to many).
      *
-     * @param \App\Entity\Debriefing $debriefing
      * @return \App\Entity\Groupe
      */
     public function removeDebriefing(Debriefing $debriefing)
@@ -575,7 +609,6 @@ class BaseGroupe
     /**
      * Add GroupeAllie entity related by `groupe_id` to collection (one to many).
      *
-     * @param \App\Entity\GroupeAllie $groupeAllie
      * @return \App\Entity\Groupe
      */
     public function addGroupeAllieRelatedByGroupeId(GroupeAllie $groupeAllie)
@@ -588,7 +621,6 @@ class BaseGroupe
     /**
      * Remove GroupeAllie entity related by `groupe_id` from collection (one to many).
      *
-     * @param \App\Entity\GroupeAllie $groupeAllie
      * @return \App\Entity\Groupe
      */
     public function removeGroupeAllieRelatedByGroupeId(GroupeAllie $groupeAllie)
@@ -611,7 +643,6 @@ class BaseGroupe
     /**
      * Add GroupeAllie entity related by `groupe_allie_id` to collection (one to many).
      *
-     * @param \App\Entity\GroupeAllie $groupeAllie
      * @return \App\Entity\Groupe
      */
     public function addGroupeAllieRelatedByGroupeAllieId(GroupeAllie $groupeAllie)
@@ -624,7 +655,6 @@ class BaseGroupe
     /**
      * Remove GroupeAllie entity related by `groupe_allie_id` from collection (one to many).
      *
-     * @param \App\Entity\GroupeAllie $groupeAllie
      * @return \App\Entity\Groupe
      */
     public function removeGroupeAllieRelatedByGroupeAllieId(GroupeAllie $groupeAllie)
@@ -647,7 +677,6 @@ class BaseGroupe
     /**
      * Add GroupeClasse entity to collection (one to many).
      *
-     * @param \App\Entity\GroupeClasse $groupeClasse
      * @return \App\Entity\Groupe
      */
     public function addGroupeClasse(GroupeClasse $groupeClasse)
@@ -660,7 +689,6 @@ class BaseGroupe
     /**
      * Remove GroupeClasse entity from collection (one to many).
      *
-     * @param \App\Entity\GroupeClasse $groupeClasse
      * @return \App\Entity\Groupe
      */
     public function removeGroupeClasse(GroupeClasse $groupeClasse)
@@ -683,7 +711,6 @@ class BaseGroupe
     /**
      * Add GroupeEnemy entity related by `groupe_id` to collection (one to many).
      *
-     * @param \App\Entity\GroupeEnemy $groupeEnemy
      * @return \App\Entity\Groupe
      */
     public function addGroupeEnemyRelatedByGroupeId(GroupeEnemy $groupeEnemy)
@@ -696,7 +723,6 @@ class BaseGroupe
     /**
      * Remove GroupeEnemy entity related by `groupe_id` from collection (one to many).
      *
-     * @param \App\Entity\GroupeEnemy $groupeEnemy
      * @return \App\Entity\Groupe
      */
     public function removeGroupeEnemyRelatedByGroupeId(GroupeEnemy $groupeEnemy)
@@ -719,7 +745,6 @@ class BaseGroupe
     /**
      * Add GroupeEnemy entity related by `groupe_enemy_id` to collection (one to many).
      *
-     * @param \App\Entity\GroupeEnemy $groupeEnemy
      * @return \App\Entity\Groupe
      */
     public function addGroupeEnemyRelatedByGroupeEnemyId(GroupeEnemy $groupeEnemy)
@@ -732,7 +757,6 @@ class BaseGroupe
     /**
      * Remove GroupeEnemy entity related by `groupe_enemy_id` from collection (one to many).
      *
-     * @param \App\Entity\GroupeEnemy $groupeEnemy
      * @return \App\Entity\Groupe
      */
     public function removeGroupeEnemyRelatedByGroupeEnemyId(GroupeEnemy $groupeEnemy)
@@ -755,7 +779,6 @@ class BaseGroupe
     /**
      * Add GroupeGn entity to collection (one to many).
      *
-     * @param \App\Entity\GroupeGn $groupeGn
      * @return \App\Entity\Groupe
      */
     public function addGroupeGn(GroupeGn $groupeGn)
@@ -768,7 +791,6 @@ class BaseGroupe
     /**
      * Remove GroupeGn entity from collection (one to many).
      *
-     * @param \App\Entity\GroupeGn $groupeGn
      * @return \App\Entity\Groupe
      */
     public function removeGroupeGn(GroupeGn $groupeGn)
@@ -791,7 +813,6 @@ class BaseGroupe
     /**
      * Add GroupeHasIngredient entity to collection (one to many).
      *
-     * @param \App\Entity\GroupeHasIngredient $groupeHasIngredient
      * @return \App\Entity\Groupe
      */
     public function addGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient)
@@ -804,7 +825,6 @@ class BaseGroupe
     /**
      * Remove GroupeHasIngredient entity from collection (one to many).
      *
-     * @param \App\Entity\GroupeHasIngredient $groupeHasIngredient
      * @return \App\Entity\Groupe
      */
     public function removeGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient)
@@ -827,7 +847,6 @@ class BaseGroupe
     /**
      * Add GroupeHasRessource entity to collection (one to many).
      *
-     * @param \App\Entity\GroupeHasRessource $groupeHasRessource
      * @return \App\Entity\Groupe
      */
     public function addGroupeHasRessource(GroupeHasRessource $groupeHasRessource)
@@ -840,7 +859,6 @@ class BaseGroupe
     /**
      * Remove GroupeHasRessource entity from collection (one to many).
      *
-     * @param \App\Entity\GroupeHasRessource $groupeHasRessource
      * @return \App\Entity\Groupe
      */
     public function removeGroupeHasRessource(GroupeHasRessource $groupeHasRessource)
@@ -863,7 +881,6 @@ class BaseGroupe
     /**
      * Add IntrigueHasGroupe entity to collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasGroupe $intrigueHasGroupe
      * @return \App\Entity\Groupe
      */
     public function addIntrigueHasGroupe(IntrigueHasGroupe $intrigueHasGroupe)
@@ -876,7 +893,6 @@ class BaseGroupe
     /**
      * Remove IntrigueHasGroupe entity from collection (one to many).
      *
-     * @param \App\Entity\IntrigueHasGroupe $intrigueHasGroupe
      * @return \App\Entity\Groupe
      */
     public function removeIntrigueHasGroupe(IntrigueHasGroupe $intrigueHasGroupe)
@@ -899,7 +915,6 @@ class BaseGroupe
     /**
      * Add Personnage entity to collection (one to many).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Groupe
      */
     public function addPersonnage(Personnage $personnage)
@@ -912,7 +927,6 @@ class BaseGroupe
     /**
      * Remove Personnage entity from collection (one to many).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Groupe
      */
     public function removePersonnage(Personnage $personnage)
@@ -935,7 +949,6 @@ class BaseGroupe
     /**
      * Add Territoire entity to collection (one to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Groupe
      */
     public function addTerritoire(Territoire $territoire)
@@ -948,7 +961,6 @@ class BaseGroupe
     /**
      * Remove Territoire entity from collection (one to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Groupe
      */
     public function removeTerritoire(Territoire $territoire)
@@ -971,7 +983,6 @@ class BaseGroupe
     /**
      * Set User entity related by `scenariste_id` (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Groupe
      */
     public function setUserRelatedByScenaristeId(User $User = null)
@@ -994,7 +1005,6 @@ class BaseGroupe
     /**
      * Set User entity related by `responsable_id` (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Groupe
      */
     public function setUserRelatedByResponsableId(User $User = null)
@@ -1017,7 +1027,6 @@ class BaseGroupe
     /**
      * Set Topic entity (many to one).
      *
-     * @param \App\Entity\Topic $topic
      * @return \App\Entity\Groupe
      */
     public function setTopic(Topic $topic = null)
@@ -1040,7 +1049,6 @@ class BaseGroupe
     /**
      * Set Territoire entity (many to one).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Groupe
      */
     public function setTerritoire(Territoire $territoire = null)
@@ -1063,7 +1071,6 @@ class BaseGroupe
     /**
      * Add Document entity to collection.
      *
-     * @param \App\Entity\Document $document
      * @return \App\Entity\Groupe
      */
     public function addDocument(Document $document)
@@ -1077,7 +1084,6 @@ class BaseGroupe
     /**
      * Remove Document entity from collection.
      *
-     * @param \App\Entity\Document $document
      * @return \App\Entity\Groupe
      */
     public function removeDocument(Document $document)
@@ -1101,7 +1107,6 @@ class BaseGroupe
     /**
      * Add Item entity to collection.
      *
-     * @param \App\Entity\Item $item
      * @return \App\Entity\Groupe
      */
     public function addItem(Item $item)
@@ -1115,7 +1120,6 @@ class BaseGroupe
     /**
      * Remove Item entity from collection.
      *
-     * @param \App\Entity\Item $item
      * @return \App\Entity\Groupe
      */
     public function removeItem(Item $item)
@@ -1138,6 +1142,6 @@ class BaseGroupe
 
     public function __sleep()
     {
-        return array('id', 'nom', 'description', 'numero', 'code', 'jeu_maritime', 'jeu_strategique', 'scenariste_id', 'classe_open', 'responsable_id', 'topic_id', 'pj', 'materiel', 'lock', 'territoire_id', 'richesse');
+        return ['id', 'nom', 'description', 'numero', 'code', 'jeu_maritime', 'jeu_strategique', 'scenariste_id', 'classe_open', 'responsable_id', 'topic_id', 'pj', 'materiel', 'lock', 'territoire_id', 'richesse'];
     }
 }

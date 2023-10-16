@@ -6,15 +6,22 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * App\Entity\Personnage
+ * App\Entity\Personnage.
  *
  * @Table(name="personnage", indexes={@Index(name="fk_personnage_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_personnage_archetype1_idx", columns={"classe_id"}), @Index(name="fk_personnage_age1_idx", columns={"age_id"}), @Index(name="fk_personnage_genre1_idx", columns={"genre_id"}), @Index(name="fk_personnage_territoire1_idx", columns={"territoire_id"}), @Index(name="fk_personnage_User1_idx", columns={"User_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePersonnage", "extended":"Personnage"})
  */
 class BasePersonnage
 {
+    /**
+     * @var int
+     */
+    public $pugilat;
     #[ORM\Id, ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER), ORM\GeneratedValue]
     protected int $id;
 
@@ -81,252 +88,298 @@ class BasePersonnage
     /**
      * @Column(type="boolean", nullable=true)
      */
-    protected $sensible;    
+    protected $sensible;
 
     /**
      * @OneToMany(targetEntity="ExperienceGain", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $experienceGains;
 
     /**
      * @OneToMany(targetEntity="ExperienceUsage", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $experienceUsages;
 
     /**
      * @OneToMany(targetEntity="HeroismeHistory", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $heroismeHistories;
 
     /**
      * @OneToMany(targetEntity="Membre", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $membres;
 
     /**
      * @OneToMany(targetEntity="Participant", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $participants;
 
     /**
      * @OneToMany(targetEntity="PersonnageBackground", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $personnageBackgrounds;
 
     /**
      * @OneToMany(targetEntity="PersonnageHasToken", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $personnageHasTokens;
 
     /**
      * @OneToMany(targetEntity="PersonnageIngredient", mappedBy="personnage", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $personnageIngredients;
 
     /**
      * @OneToMany(targetEntity="PersonnageLangues", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
+     *
      * @OrderBy({"langue" = "ASC"})
      */
     protected $personnageLangues;
 
     /**
      * @OneToMany(targetEntity="PersonnageRessource", mappedBy="personnage", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $personnageRessources;
 
     /**
      * @OneToMany(targetEntity="PersonnageTrigger", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $personnageTriggers;
 
     /**
      * @OneToMany(targetEntity="PersonnagesReligions", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $personnagesReligions;
 
     /**
      * @OneToMany(targetEntity="Postulant", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $postulants;
 
     /**
      * @OneToMany(targetEntity="RenommeHistory", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $renommeHistories;
 
     /**
      * @OneToMany(targetEntity="SecondaryGroup", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $secondaryGroups;
 
     /**
      * @OneToMany(targetEntity="User", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $Users;
 
     /**
      * @ManyToOne(targetEntity="Groupe", inversedBy="personnages")
+     *
      * @JoinColumn(name="groupe_id", referencedColumnName="id")
      */
     protected $groupe;
 
     /**
      * @ManyToOne(targetEntity="Classe", inversedBy="personnages")
+     *
      * @JoinColumn(name="classe_id", referencedColumnName="id", nullable=false)
      */
     protected $classe;
 
     /**
      * @ManyToOne(targetEntity="Age", inversedBy="personnages")
+     *
      * @JoinColumn(name="age_id", referencedColumnName="id", nullable=false)
      */
     protected $age;
 
     /**
      * @ManyToOne(targetEntity="Genre", inversedBy="personnages")
+     *
      * @JoinColumn(name="genre_id", referencedColumnName="id", nullable=false)
      */
     protected $genre;
 
     /**
      * @ManyToOne(targetEntity="Territoire", inversedBy="personnages")
+     *
      * @JoinColumn(name="territoire_id", referencedColumnName="id")
      */
     protected $territoire;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="personnages")
+     *
      * @JoinColumn(name="User_id", referencedColumnName="id")
      */
     protected $User;
 
     /**
      * @ManyToMany(targetEntity="Document", inversedBy="personnages")
+     *
      * @JoinTable(name="personnage_has_document",
      *     joinColumns={@JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="Document_id", referencedColumnName="id", nullable=false)}
      * )
+     *
      * @OrderBy({"code" = "ASC",})
      */
     protected $documents;
 
     /**
      * @ManyToMany(targetEntity="Item", inversedBy="personnages")
+     *
      * @JoinTable(name="personnage_has_item",
      *     joinColumns={@JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="item_id", referencedColumnName="id", nullable=false)}
      * )
+     *
      * @OrderBy({"label" = "ASC",})
      */
     protected $items;
 
     /**
      * @ManyToMany(targetEntity="Technologie", inversedBy="personnages")
+     *
      * @JoinTable(name="personnage_has_technologie",
      *     joinColumns={@JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="technologie_id", referencedColumnName="id", nullable=false)}
      * )
+     *
      * @OrderBy({"label" = "ASC",})
      */
     protected $technologies;
 
     /**
      * @ManyToMany(targetEntity="Religion", inversedBy="personnages")
+     *
      * @JoinTable(name="personnage_religion_description",
      *     joinColumns={@JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="religion_id", referencedColumnName="id", nullable=false)}
      * )
+     *
      * @OrderBy({"label" = "ASC",})
      */
     protected $religions;
 
     /**
      * @ManyToMany(targetEntity="Competence", mappedBy="personnages")
+     *
      * @OrderBy({"competenceFamily" = "ASC", "level" = "ASC"})
      */
     protected $competences;
 
     /**
      * @ManyToMany(targetEntity="Domaine", inversedBy="personnages")
+     *
      * @JoinTable(name="personnages_domaines",
      *     joinColumns={@JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="domaine_id", referencedColumnName="id", nullable=false)}
      * )
+     *
      * @OrderBy({"label" = "ASC",})
      */
     protected $domaines;
 
     /**
      * @ManyToMany(targetEntity="Potion", inversedBy="personnages")
+     *
      * @JoinTable(name="personnages_potions",
      *     joinColumns={@JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="potion_id", referencedColumnName="id", nullable=false)}
      * )
+     *
      * @OrderBy({"label" = "ASC", "niveau" = "ASC",})
      */
     protected $potions;
 
     /**
      * @ManyToMany(targetEntity="Priere", mappedBy="personnages")
+     *
      * @JoinTable(name="personnages_prieres",
      *     joinColumns={@JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="priere_id", referencedColumnName="id", nullable=false)}
      * )
+     *
      * @OrderBy({"sphere" = "ASC", "niveau" = "ASC",})
      */
     protected $prieres;
 
     /**
      * @ManyToMany(targetEntity="Sort", inversedBy="personnages")
+     *
      * @JoinTable(name="personnages_sorts",
      *     joinColumns={@JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="sort_id", referencedColumnName="id", nullable=false)}
      * )
+     *
      * @OrderBy({"label" = "ASC", "niveau" = "ASC",})
      */
     protected $sorts;
 
     /**
      * @ManyToMany(targetEntity="Connaissance", inversedBy="personnages")
+     *
      * @JoinTable(name="personnages_connaissances",
      *     joinColumns={@JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="connaissance_id", referencedColumnName="id", nullable=false)}
      * )
+     *
      * @OrderBy({"label" = "ASC", "niveau" = "ASC",})
      */
     protected $connaissances;
 
     /**
      * @OneToMany(targetEntity="PugilatHistory", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $pugilatHistories;
 
     /**
      * @OneToMany(targetEntity="PersonnageChronologie", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
+     *
      * @OrderBy({"annee" = "ASC", "id" = "ASC",})
      */
     protected $personnageChronologie;
 
     /**
      * @OneToMany(targetEntity="PersonnageLignee", mappedBy="personnage")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
      */
     protected $personnageLignee;
@@ -367,10 +420,9 @@ class BasePersonnage
     /**
      * Set the value of id.
      *
-     * @param integer $id
      * @return \App\Entity\Personnage
      */
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
 
@@ -380,7 +432,7 @@ class BasePersonnage
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -391,6 +443,7 @@ class BasePersonnage
      * Set the value of nom.
      *
      * @param string $nom
+     *
      * @return \App\Entity\Personnage
      */
     public function setNom($nom)
@@ -414,6 +467,7 @@ class BasePersonnage
      * Set the value of surnom.
      *
      * @param string $surnom
+     *
      * @return \App\Entity\Personnage
      */
     public function setSurnom($surnom)
@@ -436,7 +490,8 @@ class BasePersonnage
     /**
      * Set the value of intrigue.
      *
-     * @param boolean $intrigue
+     * @param bool $intrigue
+     *
      * @return \App\Entity\Personnage
      */
     public function setIntrigue($intrigue)
@@ -449,7 +504,7 @@ class BasePersonnage
     /**
      * Get the value of intrigue.
      *
-     * @return boolean
+     * @return bool
      */
     public function getIntrigue()
     {
@@ -459,7 +514,8 @@ class BasePersonnage
     /**
      * Set the value of sensible.
      *
-     * @param boolean $sensible
+     * @param bool $sensible
+     *
      * @return \App\Entity\Personnage
      */
     public function setSensible($sensible)
@@ -472,7 +528,7 @@ class BasePersonnage
     /**
      * Get the value of sensible.
      *
-     * @return boolean
+     * @return bool
      */
     public function getSensible()
     {
@@ -482,7 +538,8 @@ class BasePersonnage
     /**
      * Set the value of renomme.
      *
-     * @param integer $renomme
+     * @param int $renomme
+     *
      * @return \App\Entity\Personnage
      */
     public function setRenomme($renomme)
@@ -495,7 +552,7 @@ class BasePersonnage
     /**
      * Get the value of renomme.
      *
-     * @return integer
+     * @return int
      */
     public function getRenomme()
     {
@@ -506,6 +563,7 @@ class BasePersonnage
      * Set the value of photo.
      *
      * @param string $photo
+     *
      * @return \App\Entity\Personnage
      */
     public function setPhoto($photo)
@@ -528,7 +586,8 @@ class BasePersonnage
     /**
      * Set the value of xp.
      *
-     * @param integer $xp
+     * @param int $xp
+     *
      * @return \App\Entity\Personnage
      */
     public function setXp($xp)
@@ -541,7 +600,7 @@ class BasePersonnage
     /**
      * Get the value of xp.
      *
-     * @return integer
+     * @return int
      */
     public function getXp()
     {
@@ -552,6 +611,7 @@ class BasePersonnage
      * Set the value of materiel.
      *
      * @param string $materiel
+     *
      * @return \App\Entity\Personnage
      */
     public function setMateriel($materiel)
@@ -574,7 +634,8 @@ class BasePersonnage
     /**
      * Set the value of vivant.
      *
-     * @param boolean $vivant
+     * @param bool $vivant
+     *
      * @return \App\Entity\Personnage
      */
     public function setVivant($vivant)
@@ -587,7 +648,7 @@ class BasePersonnage
     /**
      * Get the value of vivant.
      *
-     * @return boolean
+     * @return bool
      */
     public function getVivant()
     {
@@ -597,7 +658,8 @@ class BasePersonnage
     /**
      * Set the value of age_reel.
      *
-     * @param integer $age_reel
+     * @param int $age_reel
+     *
      * @return \App\Entity\Personnage
      */
     public function setAgeReel($age_reel)
@@ -610,7 +672,7 @@ class BasePersonnage
     /**
      * Get the value of age_reel.
      *
-     * @return integer
+     * @return int
      */
     public function getAgeReel()
     {
@@ -621,6 +683,7 @@ class BasePersonnage
      * Set the value of trombineUrl.
      *
      * @param string $trombineUrl
+     *
      * @return \App\Entity\Personnage
      */
     public function setTrombineUrl($trombineUrl)
@@ -643,7 +706,8 @@ class BasePersonnage
     /**
      * Set the value of richesse.
      *
-     * @param integer $richesse
+     * @param int $richesse
+     *
      * @return \App\Entity\Personnage
      */
     public function setRichesse($richesse)
@@ -656,7 +720,7 @@ class BasePersonnage
     /**
      * Get the value of richesse.
      *
-     * @return integer
+     * @return int
      */
     public function getRichesse()
     {
@@ -666,7 +730,8 @@ class BasePersonnage
     /**
      * Set the value of heroisme.
      *
-     * @param integer $heroisme
+     * @param int $heroisme
+     *
      * @return \App\Entity\Personnage
      */
     public function setHeroisme($heroisme)
@@ -679,9 +744,8 @@ class BasePersonnage
     /**
      * Get the value of heroisme.
      *
-     * @return integer
+     * @return int
      */
-
     public function getHeroisme()
     {
         // return $this->heroisme;
@@ -691,7 +755,8 @@ class BasePersonnage
     /**
      * Set the value of pugilat.
      *
-     * @param integer $pugilat
+     * @param int $pugilat
+     *
      * @return \App\Entity\Personnage
      */
     public function setPugilat($pugilat)
@@ -704,7 +769,6 @@ class BasePersonnage
     /**
      * Add ExperienceGain entity to collection (one to many).
      *
-     * @param \App\Entity\ExperienceGain $experienceGain
      * @return \App\Entity\Personnage
      */
     public function addExperienceGain(ExperienceGain $experienceGain)
@@ -717,7 +781,6 @@ class BasePersonnage
     /**
      * Remove ExperienceGain entity from collection (one to many).
      *
-     * @param \App\Entity\ExperienceGain $experienceGain
      * @return \App\Entity\Personnage
      */
     public function removeExperienceGain(ExperienceGain $experienceGain)
@@ -740,7 +803,6 @@ class BasePersonnage
     /**
      * Add ExperienceUsage entity to collection (one to many).
      *
-     * @param \App\Entity\ExperienceUsage $experienceUsage
      * @return \App\Entity\Personnage
      */
     public function addExperienceUsage(ExperienceUsage $experienceUsage)
@@ -753,7 +815,6 @@ class BasePersonnage
     /**
      * Remove ExperienceUsage entity from collection (one to many).
      *
-     * @param \App\Entity\ExperienceUsage $experienceUsage
      * @return \App\Entity\Personnage
      */
     public function removeExperienceUsage(ExperienceUsage $experienceUsage)
@@ -776,7 +837,6 @@ class BasePersonnage
     /**
      * Add HeroismeHistory entity to collection (one to many).
      *
-     * @param \App\Entity\HeroismeHistory $heroismeHistory
      * @return \App\Entity\Personnage
      */
     public function addHeroismeHistory(HeroismeHistory $heroismeHistory)
@@ -789,7 +849,6 @@ class BasePersonnage
     /**
      * Remove HeroismeHistory entity from collection (one to many).
      *
-     * @param \App\Entity\HeroismeHistory $heroismeHistory
      * @return \App\Entity\Personnage
      */
     public function removeHeroismeHistory(HeroismeHistory $heroismeHistory)
@@ -809,11 +868,9 @@ class BasePersonnage
         return $this->heroismeHistories;
     }
 
-
     /**
      * Add PugilatHistory entity to collection (one to many).
      *
-     * @param \App\Entity\PugilatHistory $pugilatHistory
      * @return \App\Entity\Personnage
      */
     public function addPugilatHistory(PugilatHistory $pugilatHistory)
@@ -826,7 +883,6 @@ class BasePersonnage
     /**
      * Remove PugilatHistory entity from collection (one to many).
      *
-     * @param \App\Entity\PugilatHistory $pugilatHistory
      * @return \App\Entity\Personnage
      */
     public function removePugilatHistory(PugilatHistory $pugilatHistory)
@@ -849,7 +905,6 @@ class BasePersonnage
     /**
      * Add Membre entity to collection (one to many).
      *
-     * @param \App\Entity\Membre $membre
      * @return \App\Entity\Personnage
      */
     public function addMembre(Membre $membre)
@@ -862,7 +917,6 @@ class BasePersonnage
     /**
      * Remove Membre entity from collection (one to many).
      *
-     * @param \App\Entity\Membre $membre
      * @return \App\Entity\Personnage
      */
     public function removeMembre(Membre $membre)
@@ -885,7 +939,6 @@ class BasePersonnage
     /**
      * Add Participant entity to collection (one to many).
      *
-     * @param \App\Entity\Participant $participant
      * @return \App\Entity\Personnage
      */
     public function addParticipant(Participant $participant)
@@ -898,7 +951,6 @@ class BasePersonnage
     /**
      * Remove Participant entity from collection (one to many).
      *
-     * @param \App\Entity\Participant $participant
      * @return \App\Entity\Personnage
      */
     public function removeParticipant(Participant $participant)
@@ -921,7 +973,6 @@ class BasePersonnage
     /**
      * Add PersonnageBackground entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnageBackground $personnageBackground
      * @return \App\Entity\Personnage
      */
     public function addPersonnageBackground(PersonnageBackground $personnageBackground)
@@ -934,7 +985,6 @@ class BasePersonnage
     /**
      * Remove PersonnageBackground entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnageBackground $personnageBackground
      * @return \App\Entity\Personnage
      */
     public function removePersonnageBackground(PersonnageBackground $personnageBackground)
@@ -957,7 +1007,6 @@ class BasePersonnage
     /**
      * Add PersonnageHasToken entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnageHasToken $personnageHasToken
      * @return \App\Entity\Personnage
      */
     public function addPersonnageHasToken(PersonnageHasToken $personnageHasToken)
@@ -970,7 +1019,6 @@ class BasePersonnage
     /**
      * Remove PersonnageHasToken entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnageHasToken $personnageHasToken
      * @return \App\Entity\Personnage
      */
     public function removePersonnageHasToken(PersonnageHasToken $personnageHasToken)
@@ -993,7 +1041,6 @@ class BasePersonnage
     /**
      * Add PersonnageIngredient entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnageIngredient $personnageIngredient
      * @return \App\Entity\Personnage
      */
     public function addPersonnageIngredient(PersonnageIngredient $personnageIngredient)
@@ -1006,7 +1053,6 @@ class BasePersonnage
     /**
      * Remove PersonnageIngredient entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnageIngredient $personnageIngredient
      * @return \App\Entity\Personnage
      */
     public function removePersonnageIngredient(PersonnageIngredient $personnageIngredient)
@@ -1029,7 +1075,6 @@ class BasePersonnage
     /**
      * Add PersonnageLangues entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnageLangues $personnageLangues
      * @return \App\Entity\Personnage
      */
     public function addPersonnageLangues(PersonnageLangues $personnageLangues)
@@ -1042,7 +1087,6 @@ class BasePersonnage
     /**
      * Remove PersonnageLangues entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnageLangues $personnageLangues
      * @return \App\Entity\Personnage
      */
     public function removePersonnageLangues(PersonnageLangues $personnageLangues)
@@ -1056,6 +1100,7 @@ class BasePersonnage
      * Get PersonnageLangues entity collection (one to many).
      *
      * @return \Doctrine\Common\Collections\Collection
+     *
      * @OrderBy({"secret"="ASC", "diffusion"="DESC", "label"="ASC"})
      */
     public function getPersonnageLangues()
@@ -1066,7 +1111,6 @@ class BasePersonnage
     /**
      * Add PersonnageRessource entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnageRessource $personnageRessource
      * @return \App\Entity\Personnage
      */
     public function addPersonnageRessource(PersonnageRessource $personnageRessource)
@@ -1079,7 +1123,6 @@ class BasePersonnage
     /**
      * Remove PersonnageRessource entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnageRessource $personnageRessource
      * @return \App\Entity\Personnage
      */
     public function removePersonnageRessource(PersonnageRessource $personnageRessource)
@@ -1102,7 +1145,6 @@ class BasePersonnage
     /**
      * Add PersonnageTrigger entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnageTrigger $personnageTrigger
      * @return \App\Entity\Personnage
      */
     public function addPersonnageTrigger(PersonnageTrigger $personnageTrigger)
@@ -1115,7 +1157,6 @@ class BasePersonnage
     /**
      * Remove PersonnageTrigger entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnageTrigger $personnageTrigger
      * @return \App\Entity\Personnage
      */
     public function removePersonnageTrigger(PersonnageTrigger $personnageTrigger)
@@ -1138,7 +1179,6 @@ class BasePersonnage
     /**
      * Add PersonnagesReligions entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnagesReligions $personnagesReligions
      * @return \App\Entity\Personnage
      */
     public function addPersonnagesReligions(PersonnagesReligions $personnagesReligions)
@@ -1151,7 +1191,6 @@ class BasePersonnage
     /**
      * Remove PersonnagesReligions entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnagesReligions $personnagesReligions
      * @return \App\Entity\Personnage
      */
     public function removePersonnagesReligions(PersonnagesReligions $personnagesReligions)
@@ -1169,9 +1208,10 @@ class BasePersonnage
     public function getPersonnagesReligions()
     {
         $iterator = $this->personnagesReligions->getIterator();
-        $iterator->uasort(function (PersonnagesReligions $a, PersonnagesReligions $b) {
+        $iterator->uasort(static function (PersonnagesReligions $a, PersonnagesReligions $b): int {
             return $a->getReligionLevel() <=> $b->getReligionLevel();
         });
+
         return new ArrayCollection(iterator_to_array($iterator));
         // return $this->personnagesReligions;
     }
@@ -1179,7 +1219,6 @@ class BasePersonnage
     /**
      * Add Postulant entity to collection (one to many).
      *
-     * @param \App\Entity\Postulant $postulant
      * @return \App\Entity\Personnage
      */
     public function addPostulant(Postulant $postulant)
@@ -1192,7 +1231,6 @@ class BasePersonnage
     /**
      * Remove Postulant entity from collection (one to many).
      *
-     * @param \App\Entity\Postulant $postulant
      * @return \App\Entity\Personnage
      */
     public function removePostulant(Postulant $postulant)
@@ -1215,7 +1253,6 @@ class BasePersonnage
     /**
      * Add RenommeHistory entity to collection (one to many).
      *
-     * @param \App\Entity\RenommeHistory $renommeHistory
      * @return \App\Entity\Personnage
      */
     public function addRenommeHistory(RenommeHistory $renommeHistory)
@@ -1228,7 +1265,6 @@ class BasePersonnage
     /**
      * Remove RenommeHistory entity from collection (one to many).
      *
-     * @param \App\Entity\RenommeHistory $renommeHistory
      * @return \App\Entity\Personnage
      */
     public function removeRenommeHistory(RenommeHistory $renommeHistory)
@@ -1251,7 +1287,6 @@ class BasePersonnage
     /**
      * Add SecondaryGroup entity to collection (one to many).
      *
-     * @param \App\Entity\SecondaryGroup $secondaryGroup
      * @return \App\Entity\Personnage
      */
     public function addSecondaryGroup(SecondaryGroup $secondaryGroup)
@@ -1264,7 +1299,6 @@ class BasePersonnage
     /**
      * Remove SecondaryGroup entity from collection (one to many).
      *
-     * @param \App\Entity\SecondaryGroup $secondaryGroup
      * @return \App\Entity\Personnage
      */
     public function removeSecondaryGroup(SecondaryGroup $secondaryGroup)
@@ -1287,7 +1321,6 @@ class BasePersonnage
     /**
      * Add User entity to collection (one to many).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Personnage
      */
     public function addUser(User $User)
@@ -1300,7 +1333,6 @@ class BasePersonnage
     /**
      * Remove User entity from collection (one to many).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Personnage
      */
     public function removeUser(User $User)
@@ -1323,7 +1355,6 @@ class BasePersonnage
     /**
      * Set Groupe entity (many to one).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\Personnage
      */
     public function setGroupe(Groupe $groupe = null)
@@ -1346,7 +1377,6 @@ class BasePersonnage
     /**
      * Set Classe entity (many to one).
      *
-     * @param \App\Entity\Classe $classe
      * @return \App\Entity\Personnage
      */
     public function setClasse(Classe $classe = null)
@@ -1369,7 +1399,6 @@ class BasePersonnage
     /**
      * Set Age entity (many to one).
      *
-     * @param \App\Entity\Age $age
      * @return \App\Entity\Personnage
      */
     public function setAge(Age $age = null)
@@ -1392,7 +1421,6 @@ class BasePersonnage
     /**
      * Set Genre entity (many to one).
      *
-     * @param \App\Entity\Genre $genre
      * @return \App\Entity\Personnage
      */
     public function setGenre(Genre $genre = null)
@@ -1415,7 +1443,6 @@ class BasePersonnage
     /**
      * Set Territoire entity (many to one).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Personnage
      */
     public function setTerritoire(Territoire $territoire = null)
@@ -1438,7 +1465,6 @@ class BasePersonnage
     /**
      * Set User entity (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Personnage
      */
     public function setUser(User $User = null)
@@ -1461,7 +1487,6 @@ class BasePersonnage
     /**
      * Add Document entity to collection.
      *
-     * @param \App\Entity\Document $document
      * @return \App\Entity\Personnage
      */
     public function addDocument(Document $document)
@@ -1475,7 +1500,6 @@ class BasePersonnage
     /**
      * Remove Document entity from collection.
      *
-     * @param \App\Entity\Document $document
      * @return \App\Entity\Personnage
      */
     public function removeDocument(Document $document)
@@ -1499,7 +1523,6 @@ class BasePersonnage
     /**
      * Add Item entity to collection.
      *
-     * @param \App\Entity\Item $item
      * @return \App\Entity\Personnage
      */
     public function addItem(Item $item)
@@ -1513,7 +1536,6 @@ class BasePersonnage
     /**
      * Remove Item entity from collection.
      *
-     * @param \App\Entity\Item $item
      * @return \App\Entity\Personnage
      */
     public function removeItem(Item $item)
@@ -1537,7 +1559,6 @@ class BasePersonnage
     /**
      * Add Technologie entity to collection.
      *
-     * @param \App\Entity\Technologie $technologie
      * @return \App\Entity\Personnage
      */
     public function addTechnologie(Technologie $technologie)
@@ -1551,7 +1572,6 @@ class BasePersonnage
     /**
      * Remove Technologie entity from collection.
      *
-     * @param \App\Entity\Technologie $technologie
      * @return \App\Entity\Personnage
      */
     public function removeTechnologie(Technologie $technologie)
@@ -1575,7 +1595,6 @@ class BasePersonnage
     /**
      * Add Religion entity to collection.
      *
-     * @param \App\Entity\Religion $religion
      * @return \App\Entity\Personnage
      */
     public function addReligion(Religion $religion)
@@ -1589,7 +1608,6 @@ class BasePersonnage
     /**
      * Remove Religion entity from collection.
      *
-     * @param \App\Entity\Religion $religion
      * @return \App\Entity\Personnage
      */
     public function removeReligion(Religion $religion)
@@ -1613,7 +1631,6 @@ class BasePersonnage
     /**
      * Add Competence entity to collection.
      *
-     * @param \App\Entity\Competence $competence
      * @return \App\Entity\Personnage
      */
     public function addCompetence(Competence $competence)
@@ -1626,7 +1643,6 @@ class BasePersonnage
     /**
      * Remove Competence entity from collection.
      *
-     * @param \App\Entity\Competence $competence
      * @return \App\Entity\Personnage
      */
     public function removeCompetence(Competence $competence)
@@ -1644,9 +1660,10 @@ class BasePersonnage
     public function getCompetences()
     {
         $iterator = $this->competences->getIterator();
-        $iterator->uasort(function (Competence $a, Competence $b) {
+        $iterator->uasort(static function (Competence $a, Competence $b): int {
             return $a->getCompetenceFamily()->getLabel() <=> $b->getCompetenceFamily()->getLabel();
         });
+
         return new ArrayCollection(iterator_to_array($iterator));
         // return $this->competences;
     }
@@ -1654,7 +1671,6 @@ class BasePersonnage
     /**
      * Add Domaine entity to collection.
      *
-     * @param \App\Entity\Domaine $domaine
      * @return \App\Entity\Personnage
      */
     public function addDomaine(Domaine $domaine)
@@ -1668,7 +1684,6 @@ class BasePersonnage
     /**
      * Remove Domaine entity from collection.
      *
-     * @param \App\Entity\Domaine $domaine
      * @return \App\Entity\Personnage
      */
     public function removeDomaine(Domaine $domaine)
@@ -1692,7 +1707,6 @@ class BasePersonnage
     /**
      * Add Potion entity to collection.
      *
-     * @param \App\Entity\Potion $potion
      * @return \App\Entity\Personnage
      */
     public function addPotion(Potion $potion)
@@ -1706,7 +1720,6 @@ class BasePersonnage
     /**
      * Remove Potion entity from collection.
      *
-     * @param \App\Entity\Potion $potion
      * @return \App\Entity\Personnage
      */
     public function removePotion(Potion $potion)
@@ -1730,7 +1743,6 @@ class BasePersonnage
     /**
      * Add Priere entity to collection.
      *
-     * @param \App\Entity\Priere $priere
      * @return \App\Entity\Personnage
      */
     public function addPriere(Priere $priere)
@@ -1743,7 +1755,6 @@ class BasePersonnage
     /**
      * Remove Priere entity from collection.
      *
-     * @param \App\Entity\Priere $priere
      * @return \App\Entity\Personnage
      */
     public function removePriere(Priere $priere)
@@ -1766,7 +1777,6 @@ class BasePersonnage
     /**
      * Add Sort entity to collection.
      *
-     * @param \App\Entity\Sort $sort
      * @return \App\Entity\Personnage
      */
     public function addSort(Sort $sort)
@@ -1780,7 +1790,6 @@ class BasePersonnage
     /**
      * Remove Sort entity from collection.
      *
-     * @param \App\Entity\Sort $sort
      * @return \App\Entity\Personnage
      */
     public function removeSort(Sort $sort)
@@ -1804,7 +1813,6 @@ class BasePersonnage
     /**
      * Add Connaissance entity to collection.
      *
-     * @param \App\Entity\Connaissance $connaissance
      * @return \App\Entity\Personnage
      */
     public function addConnaissance(Connaissance $connaissance)
@@ -1818,7 +1826,6 @@ class BasePersonnage
     /**
      * Remove Connaissance entity from collection.
      *
-     * @param \App\Entity\Connaissance $connaissance
      * @return \App\Entity\Personnage
      */
     public function removeConnaissance(Connaissance $connaissance)
@@ -1861,9 +1868,9 @@ class BasePersonnage
 
     public function __sleep()
     {
-        return array('id', 'nom', 'surnom', 'intrigue', 'groupe_id', 'classe_id', 'age_id', 'genre_id', 'renomme', 'photo', 'xp', 'territoire_id', 'materiel', 'vivant', 'age_reel', 'trombineUrl', 'User_id', 'richesse', 'heroisme');
+        return ['id', 'nom', 'surnom', 'intrigue', 'groupe_id', 'classe_id', 'age_id', 'genre_id', 'renomme', 'photo', 'xp', 'territoire_id', 'materiel', 'vivant', 'age_reel', 'trombineUrl', 'User_id', 'richesse', 'heroisme'];
     }
-    
+
     /**
      * @return la prochaine partipcipation
      */
@@ -1871,15 +1878,13 @@ class BasePersonnage
     {
         $now = new \DateTime();
         $prochain = null;
-        
+
         foreach ($this->participants as $p) {
-            if($now < $p->getGn()->getDateFin()) {
-                if($prochain == null || $prochain->getGn()->getDateDebut() > $p->getGn()->getDateDebut() ) {
-                    $prochain = $p;
-                }
+            if ($now < $p->getGn()->getDateFin() && (null == $prochain || $prochain->getGn()->getDateDebut() > $p->getGn()->getDateDebut())) {
+                $prochain = $p;
             }
         }
+
         return $prochain;
     }
-
 }

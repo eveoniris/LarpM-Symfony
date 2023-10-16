@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,40 +17,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Form\Type;
 
+use LarpManager\Form\Type\TagType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use LarpManager\Form\Type\TagType;
-
 /**
- * LarpManager\Form\Type\ObjetTagType
+ * LarpManager\Form\Type\ObjetTagType.
  *
  * @author kevin
- *
  */
 class ObjetTagType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('tag',TagType::class, array(
-					'label' => 'Ajouter un tag',
-					'required' => true,
-				));
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('tag', TagType::class, [
+            'label' => 'Ajouter un tag',
+            'required' => true,
+        ]);
+    }
 
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\ObjetTag',
-		));
-	}
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => 'App\Entity\ObjetTag',
+        ]);
+    }
 
-	public function getName()
-	{
-		return 'ObjetTag';
-	}
+    public function getName(): string
+    {
+        return 'ObjetTag';
+    }
 }

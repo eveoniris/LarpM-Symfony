@@ -35,10 +35,8 @@ class AttributeTypeRepository extends EntityRepository
      */
     public function findAllOrderedByLabel()
     {
-        $attributes = $this->getEntityManager()
+        return $this->getEntityManager()
         ->createQuery('SELECT cf FROM App\Entity\AttributeType cf ORDER BY cf.label ASC')
         ->getResult();
-        
-        return $attributes;
     }
 }

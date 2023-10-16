@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\ExperienceGain
+ * App\Entity\ExperienceGain.
  *
  * @Table(name="experience_gain", indexes={@Index(name="fk_experience_gain_personnage1_idx", columns={"personnage_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseExperienceGain", "extended":"ExperienceGain"})
  */
 class BaseExperienceGain
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -43,6 +48,7 @@ class BaseExperienceGain
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="experienceGains")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
@@ -54,7 +60,8 @@ class BaseExperienceGain
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\ExperienceGain
      */
     public function setId($id)
@@ -67,7 +74,7 @@ class BaseExperienceGain
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -78,6 +85,7 @@ class BaseExperienceGain
      * Set the value of explanation.
      *
      * @param string $explanation
+     *
      * @return \App\Entity\ExperienceGain
      */
     public function setExplanation($explanation)
@@ -101,6 +109,7 @@ class BaseExperienceGain
      * Set the value of operation_date.
      *
      * @param \DateTime $operation_date
+     *
      * @return \App\Entity\ExperienceGain
      */
     public function setOperationDate($operation_date)
@@ -123,7 +132,8 @@ class BaseExperienceGain
     /**
      * Set the value of xp_gain.
      *
-     * @param integer $xp_gain
+     * @param int $xp_gain
+     *
      * @return \App\Entity\ExperienceGain
      */
     public function setXpGain($xp_gain)
@@ -136,7 +146,7 @@ class BaseExperienceGain
     /**
      * Get the value of xp_gain.
      *
-     * @return integer
+     * @return int
      */
     public function getXpGain()
     {
@@ -146,7 +156,6 @@ class BaseExperienceGain
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\ExperienceGain
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -168,6 +177,6 @@ class BaseExperienceGain
 
     public function __sleep()
     {
-        return array('id', 'explanation', 'operation_date', 'xp_gain', 'personnage_id');
+        return ['id', 'explanation', 'operation_date', 'xp_gain', 'personnage_id'];
     }
 }

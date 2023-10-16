@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\ExperienceUsage
+ * App\Entity\ExperienceUsage.
  *
  * @Table(name="experience_usage", indexes={@Index(name="fk_experience_usage_competence1_idx", columns={"competence_id"}), @Index(name="fk_experience_usage_personnage1_idx", columns={"personnage_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseExperienceUsage", "extended":"ExperienceUsage"})
  */
 class BaseExperienceUsage
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -38,12 +43,14 @@ class BaseExperienceUsage
 
     /**
      * @ManyToOne(targetEntity="Competence", inversedBy="experienceUsages")
+     *
      * @JoinColumn(name="competence_id", referencedColumnName="id", nullable=false)
      */
     protected $competence;
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="experienceUsages")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
@@ -55,7 +62,8 @@ class BaseExperienceUsage
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\ExperienceUsage
      */
     public function setId($id)
@@ -68,7 +76,7 @@ class BaseExperienceUsage
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -79,6 +87,7 @@ class BaseExperienceUsage
      * Set the value of operation_date.
      *
      * @param \DateTime $operation_date
+     *
      * @return \App\Entity\ExperienceUsage
      */
     public function setOperationDate($operation_date)
@@ -101,7 +110,8 @@ class BaseExperienceUsage
     /**
      * Set the value of xp_use.
      *
-     * @param integer $xp_use
+     * @param int $xp_use
+     *
      * @return \App\Entity\ExperienceUsage
      */
     public function setXpUse($xp_use)
@@ -114,7 +124,7 @@ class BaseExperienceUsage
     /**
      * Get the value of xp_use.
      *
-     * @return integer
+     * @return int
      */
     public function getXpUse()
     {
@@ -124,7 +134,6 @@ class BaseExperienceUsage
     /**
      * Set Competence entity (many to one).
      *
-     * @param \App\Entity\Competence $competence
      * @return \App\Entity\ExperienceUsage
      */
     public function setCompetence(Competence $competence = null)
@@ -147,7 +156,6 @@ class BaseExperienceUsage
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\ExperienceUsage
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -169,6 +177,6 @@ class BaseExperienceUsage
 
     public function __sleep()
     {
-        return array('id', 'operation_date', 'xp_use', 'competence_id', 'personnage_id');
+        return ['id', 'operation_date', 'xp_use', 'competence_id', 'personnage_id'];
     }
 }

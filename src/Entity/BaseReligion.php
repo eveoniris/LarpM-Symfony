@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Religion
+ * App\Entity\Religion.
  *
  * @Table(name="religion", indexes={@Index(name="fk_religion_topic1_idx", columns={"topic_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseReligion", "extended":"Religion"})
  */
 class BaseReligion
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -70,24 +75,28 @@ class BaseReligion
 
     /**
      * @OneToMany(targetEntity="PersonnagesReligions", mappedBy="religion")
+     *
      * @JoinColumn(name="id", referencedColumnName="religion_id", nullable=false)
      */
     protected $personnagesReligions;
 
     /**
      * @OneToMany(targetEntity="ReligionDescription", mappedBy="religion")
+     *
      * @JoinColumn(name="id", referencedColumnName="religion_id", nullable=false)
      */
     protected $religionDescriptions;
 
     /**
      * @OneToMany(targetEntity="Territoire", mappedBy="religion")
+     *
      * @JoinColumn(name="id", referencedColumnName="religion_id", nullable=false)
      */
     protected $territoires;
 
     /**
      * @ManyToOne(targetEntity="Topic", inversedBy="religions")
+     *
      * @JoinColumn(name="topic_id", referencedColumnName="id", nullable=false)
      */
     protected $topic;
@@ -114,10 +123,11 @@ class BaseReligion
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Religion
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -127,7 +137,7 @@ class BaseReligion
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -138,6 +148,7 @@ class BaseReligion
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Religion
      */
     public function setLabel($label)
@@ -161,6 +172,7 @@ class BaseReligion
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Religion
      */
     public function setDescription($description)
@@ -184,6 +196,7 @@ class BaseReligion
      * Set the value of blason.
      *
      * @param string $blason
+     *
      * @return \App\Entity\Religion
      */
     public function setBlason($blason)
@@ -207,6 +220,7 @@ class BaseReligion
      * Set the value of description_orga.
      *
      * @param string $description_orga
+     *
      * @return \App\Entity\Religion
      */
     public function setDescriptionOrga($description_orga)
@@ -230,6 +244,7 @@ class BaseReligion
      * Set the value of description_fervent.
      *
      * @param string $description_fervent
+     *
      * @return \App\Entity\Religion
      */
     public function setDescriptionFervent($description_fervent)
@@ -253,6 +268,7 @@ class BaseReligion
      * Set the value of description_pratiquant.
      *
      * @param string $description_pratiquant
+     *
      * @return \App\Entity\Religion
      */
     public function setDescriptionPratiquant($description_pratiquant)
@@ -276,6 +292,7 @@ class BaseReligion
      * Set the value of description_fanatique.
      *
      * @param string $description_fanatique
+     *
      * @return \App\Entity\Religion
      */
     public function setDescriptionFanatique($description_fanatique)
@@ -298,7 +315,8 @@ class BaseReligion
     /**
      * Set the value of secret.
      *
-     * @param integer $secret
+     * @param int $secret
+     *
      * @return \App\Entity\Religion
      */
     public function setSecret($secret)
@@ -311,7 +329,7 @@ class BaseReligion
     /**
      * Get the value of secret.
      *
-     * @return integer
+     * @return int
      */
     public function getSecret()
     {
@@ -321,7 +339,6 @@ class BaseReligion
     /**
      * Add PersonnagesReligions entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnagesReligions $personnagesReligions
      * @return \App\Entity\Religion
      */
     public function addPersonnagesReligions(PersonnagesReligions $personnagesReligions)
@@ -334,7 +351,6 @@ class BaseReligion
     /**
      * Remove PersonnagesReligions entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnagesReligions $personnagesReligions
      * @return \App\Entity\Religion
      */
     public function removePersonnagesReligions(PersonnagesReligions $personnagesReligions)
@@ -357,7 +373,6 @@ class BaseReligion
     /**
      * Add ReligionDescription entity to collection (one to many).
      *
-     * @param \App\Entity\ReligionDescription $religionDescription
      * @return \App\Entity\Religion
      */
     public function addReligionDescription(ReligionDescription $religionDescription)
@@ -370,7 +385,6 @@ class BaseReligion
     /**
      * Remove ReligionDescription entity from collection (one to many).
      *
-     * @param \App\Entity\ReligionDescription $religionDescription
      * @return \App\Entity\Religion
      */
     public function removeReligionDescription(ReligionDescription $religionDescription)
@@ -393,7 +407,6 @@ class BaseReligion
     /**
      * Add Territoire entity to collection (one to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Religion
      */
     public function addTerritoire(Territoire $territoire)
@@ -406,7 +419,6 @@ class BaseReligion
     /**
      * Remove Territoire entity from collection (one to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Religion
      */
     public function removeTerritoire(Territoire $territoire)
@@ -429,7 +441,6 @@ class BaseReligion
     /**
      * Set Topic entity (many to one).
      *
-     * @param \App\Entity\Topic $topic
      * @return \App\Entity\Religion
      */
     public function setTopic(Topic $topic = null)
@@ -452,7 +463,6 @@ class BaseReligion
     /**
      * Add Personnage entity to collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Religion
      */
     public function addPersonnage(Personnage $personnage)
@@ -465,7 +475,6 @@ class BaseReligion
     /**
      * Remove Personnage entity from collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Religion
      */
     public function removePersonnage(Personnage $personnage)
@@ -488,7 +497,6 @@ class BaseReligion
     /**
      * Add Sphere entity to collection.
      *
-     * @param \App\Entity\Sphere $sphere
      * @return \App\Entity\Religion
      */
     public function addSphere(Sphere $sphere)
@@ -501,7 +509,6 @@ class BaseReligion
     /**
      * Remove Sphere entity from collection.
      *
-     * @param \App\Entity\Sphere $sphere
      * @return \App\Entity\Religion
      */
     public function removeSphere(Sphere $sphere)
@@ -523,6 +530,6 @@ class BaseReligion
 
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'topic_id', 'blason', 'description_orga', 'description_fervent', 'description_pratiquant', 'description_fanatique', 'secret');
+        return ['id', 'label', 'description', 'topic_id', 'blason', 'description_orga', 'description_fervent', 'description_pratiquant', 'description_fanatique', 'secret'];
     }
 }

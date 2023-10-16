@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Restriction
+ * App\Entity\Restriction.
  *
  * @Table(name="restriction", indexes={@Index(name="fk_restriction_User1_idx", columns={"auteur_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseRestriction", "extended":"Restriction"})
  */
 class BaseRestriction
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -45,6 +50,7 @@ class BaseRestriction
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="restrictionRelatedByAuteurIds")
+     *
      * @JoinColumn(name="auteur_id", referencedColumnName="id", nullable=false)
      */
     protected $UserRelatedByAuteurId;
@@ -62,10 +68,11 @@ class BaseRestriction
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Restriction
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -75,7 +82,7 @@ class BaseRestriction
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -86,6 +93,7 @@ class BaseRestriction
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Restriction
      */
     public function setLabel($label)
@@ -109,6 +117,7 @@ class BaseRestriction
      * Set the value of creation_date.
      *
      * @param \DateTime $creation_date
+     *
      * @return \App\Entity\Restriction
      */
     public function setCreationDate($creation_date)
@@ -132,6 +141,7 @@ class BaseRestriction
      * Set the value of update_date.
      *
      * @param \DateTime $update_date
+     *
      * @return \App\Entity\Restriction
      */
     public function setUpdateDate($update_date)
@@ -154,7 +164,6 @@ class BaseRestriction
     /**
      * Set User entity related by `auteur_id` (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Restriction
      */
     public function setUserRelatedByAuteurId(User $User = null)
@@ -177,7 +186,6 @@ class BaseRestriction
     /**
      * Add User entity to collection.
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Restriction
      */
     public function addUser(User $User)
@@ -190,7 +198,6 @@ class BaseRestriction
     /**
      * Remove User entity from collection.
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Restriction
      */
     public function removeUser(User $User)
@@ -212,6 +219,6 @@ class BaseRestriction
 
     public function __sleep()
     {
-        return array('id', 'label', 'creation_date', 'update_date', 'auteur_id');
+        return ['id', 'label', 'creation_date', 'update_date', 'auteur_id'];
     }
 }

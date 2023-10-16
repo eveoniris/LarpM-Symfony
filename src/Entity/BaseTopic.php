@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Topic
+ * App\Entity\Topic.
  *
  * @Table(name="topic", indexes={@Index(name="fk_topic_topic1_idx", columns={"topic_id"}), @Index(name="fk_topic_User1_idx", columns={"User_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseTopic", "extended":"Topic"})
  */
 class BaseTopic
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -65,54 +70,63 @@ class BaseTopic
 
     /**
      * @OneToMany(targetEntity="Gn", mappedBy="topic", cascade={"persist"})
+     *
      * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
      */
     protected $gns;
 
     /**
      * @OneToMany(targetEntity="Groupe", mappedBy="topic")
+     *
      * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
      */
     protected $groupes;
 
     /**
      * @OneToMany(targetEntity="Post", mappedBy="topic")
+     *
      * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
      */
     protected $posts;
 
     /**
      * @OneToMany(targetEntity="Religion", mappedBy="topic")
+     *
      * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
      */
     protected $religions;
 
     /**
      * @OneToMany(targetEntity="SecondaryGroup", mappedBy="topic")
+     *
      * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
      */
     protected $secondaryGroups;
 
     /**
      * @OneToMany(targetEntity="Territoire", mappedBy="topic")
+     *
      * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
      */
     protected $territoires;
 
     /**
      * @OneToMany(targetEntity="Topic", mappedBy="topic")
+     *
      * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
      */
     protected $topics;
 
     /**
      * @ManyToOne(targetEntity="Topic", inversedBy="topics")
+     *
      * @JoinColumn(name="topic_id", referencedColumnName="id")
      */
     protected $topic;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="topics")
+     *
      * @JoinColumn(name="User_id", referencedColumnName="id")
      */
     protected $User;
@@ -131,7 +145,8 @@ class BaseTopic
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Topic
      */
     public function setId($id)
@@ -144,7 +159,7 @@ class BaseTopic
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -155,6 +170,7 @@ class BaseTopic
      * Set the value of title.
      *
      * @param string $title
+     *
      * @return \App\Entity\Topic
      */
     public function setTitle($title)
@@ -178,6 +194,7 @@ class BaseTopic
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Topic
      */
     public function setDescription($description)
@@ -201,6 +218,7 @@ class BaseTopic
      * Set the value of creation_date.
      *
      * @param \DateTime $creation_date
+     *
      * @return \App\Entity\Topic
      */
     public function setCreationDate($creation_date)
@@ -224,6 +242,7 @@ class BaseTopic
      * Set the value of update_date.
      *
      * @param \DateTime $update_date
+     *
      * @return \App\Entity\Topic
      */
     public function setUpdateDate($update_date)
@@ -247,6 +266,7 @@ class BaseTopic
      * Set the value of right.
      *
      * @param string $right
+     *
      * @return \App\Entity\Topic
      */
     public function setRight($right)
@@ -269,7 +289,8 @@ class BaseTopic
     /**
      * Set the value of object_id.
      *
-     * @param integer $object_id
+     * @param int $object_id
+     *
      * @return \App\Entity\Topic
      */
     public function setObjectId($object_id)
@@ -282,7 +303,7 @@ class BaseTopic
     /**
      * Get the value of object_id.
      *
-     * @return integer
+     * @return int
      */
     public function getObjectId()
     {
@@ -293,6 +314,7 @@ class BaseTopic
      * Set the value of key.
      *
      * @param string $key
+     *
      * @return \App\Entity\Topic
      */
     public function setKey($key)
@@ -315,7 +337,6 @@ class BaseTopic
     /**
      * Add Gn entity to collection (one to many).
      *
-     * @param \App\Entity\Gn $gn
      * @return \App\Entity\Topic
      */
     public function addGn(Gn $gn)
@@ -328,7 +349,6 @@ class BaseTopic
     /**
      * Remove Gn entity from collection (one to many).
      *
-     * @param \App\Entity\Gn $gn
      * @return \App\Entity\Topic
      */
     public function removeGn(Gn $gn)
@@ -351,7 +371,6 @@ class BaseTopic
     /**
      * Add Groupe entity to collection (one to many).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\Topic
      */
     public function addGroupe(Groupe $groupe)
@@ -364,7 +383,6 @@ class BaseTopic
     /**
      * Remove Groupe entity from collection (one to many).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\Topic
      */
     public function removeGroupe(Groupe $groupe)
@@ -387,7 +405,6 @@ class BaseTopic
     /**
      * Add Post entity to collection (one to many).
      *
-     * @param \App\Entity\Post $post
      * @return \App\Entity\Topic
      */
     public function addPost(Post $post)
@@ -400,7 +417,6 @@ class BaseTopic
     /**
      * Remove Post entity from collection (one to many).
      *
-     * @param \App\Entity\Post $post
      * @return \App\Entity\Topic
      */
     public function removePost(Post $post)
@@ -423,7 +439,6 @@ class BaseTopic
     /**
      * Add Religion entity to collection (one to many).
      *
-     * @param \App\Entity\Religion $religion
      * @return \App\Entity\Topic
      */
     public function addReligion(Religion $religion)
@@ -436,7 +451,6 @@ class BaseTopic
     /**
      * Remove Religion entity from collection (one to many).
      *
-     * @param \App\Entity\Religion $religion
      * @return \App\Entity\Topic
      */
     public function removeReligion(Religion $religion)
@@ -459,7 +473,6 @@ class BaseTopic
     /**
      * Add SecondaryGroup entity to collection (one to many).
      *
-     * @param \App\Entity\SecondaryGroup $secondaryGroup
      * @return \App\Entity\Topic
      */
     public function addSecondaryGroup(SecondaryGroup $secondaryGroup)
@@ -472,7 +485,6 @@ class BaseTopic
     /**
      * Remove SecondaryGroup entity from collection (one to many).
      *
-     * @param \App\Entity\SecondaryGroup $secondaryGroup
      * @return \App\Entity\Topic
      */
     public function removeSecondaryGroup(SecondaryGroup $secondaryGroup)
@@ -495,7 +507,6 @@ class BaseTopic
     /**
      * Add Territoire entity to collection (one to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Topic
      */
     public function addTerritoire(Territoire $territoire)
@@ -508,7 +519,6 @@ class BaseTopic
     /**
      * Remove Territoire entity from collection (one to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Topic
      */
     public function removeTerritoire(Territoire $territoire)
@@ -531,7 +541,6 @@ class BaseTopic
     /**
      * Add Topic entity to collection (one to many).
      *
-     * @param \App\Entity\Topic $topic
      * @return \App\Entity\Topic
      */
     public function addTopic(Topic $topic)
@@ -544,7 +553,6 @@ class BaseTopic
     /**
      * Remove Topic entity from collection (one to many).
      *
-     * @param \App\Entity\Topic $topic
      * @return \App\Entity\Topic
      */
     public function removeTopic(Topic $topic)
@@ -567,7 +575,6 @@ class BaseTopic
     /**
      * Set Topic entity (many to one).
      *
-     * @param \App\Entity\Topic $topic
      * @return \App\Entity\Topic
      */
     public function setTopic(Topic $topic = null)
@@ -590,7 +597,6 @@ class BaseTopic
     /**
      * Set User entity (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Topic
      */
     public function setUser(User $User = null)
@@ -612,6 +618,6 @@ class BaseTopic
 
     public function __sleep()
     {
-        return array('id', 'title', 'description', 'creation_date', 'update_date', 'topic_id', 'User_id', 'right', 'object_id', 'key');
+        return ['id', 'title', 'description', 'creation_date', 'update_date', 'topic_id', 'User_id', 'right', 'object_id', 'key'];
     }
 }

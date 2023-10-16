@@ -1,118 +1,113 @@
 <?php
-/** 
- * LarpManager - A Live Action Role Playing Manager 
- * Copyright (C) 2016 Kevin Polez 
- * This program is free software: you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation, either version 3 of the License, or 
- * (at your option) any later version. 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- * GNU General Public License for more details. 
- * You should have received a copy of the GNU General Public License 
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+/**
+ * LarpManager - A Live Action Role Playing Manager
+ * Copyright (C) 2016 Kevin Polez
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
+
 namespace App\Controller;
 
-use DoctrineProxy\__CG__\App\Entity\Participant;
+use App\Entity\Gn;
+use App\Entity\Loi;
 use App\Entity\Personnage;
-use Symfony\Component\HttpFoundation\Request;
-use Silex\Application;
-use LarpManager\Form\Gn\GnForm;
+use Doctrine\Common\Collections\ArrayCollection;
+use DoctrineProxy\__CG__\App\Entity\Participant;
+use JasonGrimes\Paginator;
 use LarpManager\Form\Gn\GnDeleteForm;
+use LarpManager\Form\Gn\GnForm;
 use LarpManager\Form\ParticipantFindForm;
 use LarpManager\Form\PersonnageFindForm;
-use App\Entity\Gn;
-use JasonGrimes\Paginator;
-use Doctrine\Common\Collections\ArrayCollection;
-use App\Entity\Loi;
+use Silex\Application;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * * LarpManager\Controllers\GnController * * @author kevin *
  */
 class GnController
 {
-
     /**
-     * Affiche la liste des gns 
-     * @param Request $request 
-     * @param Application $app
+     * Affiche la liste des gns.
      */
     public function listAction(Request $request, Application $app)
     {
-        $gns = $app['orm.em']->getRepository('\App\Entity\Gn')->findAll();
-        return $app['twig']->render('gn/list.twig', array(
-            'gns' => $gns
-        ));
+        $gns = $app['orm.em']->getRepository('\\'.\App\Entity\Gn::class)->findAll();
+
+        return $app['twig']->render('gn/list.twig', [
+            'gns' => $gns,
+        ]);
     }
 
     /**
-     * 
-     * Detail d'un gn 
-     * @param Request $request 
-     * @param Application $app
+     * Detail d'un gn.
      */
     public function detailAction(Request $request, Application $app, Gn $gn)
     {
         $participant = $app['User']->getParticipant($gn);
-        
-        if($participant != null && $participant->getBesoinValidationCi()) {
+
+        if (null != $participant && $participant->getBesoinValidationCi()) {
             // L'utilisateur n'a pas validé les CG.
-            return $app->redirect($app['url_generator']->generate('User.gn.validationci', array(
-                'gn' => $gn->getId()
-            )), 303);            
+            return $app->redirect($app['url_generator']->generate('User.gn.validationci', [
+                'gn' => $gn->getId(),
+            ]), 303);
         }
-                
-        $repo = $app['orm.em']->getRepository('App\Entity\Question');
+
+        $repo = $app['orm.em']->getRepository(\App\Entity\Question::class);
         $questions = $repo->findByParticipant($participant);
-        return $app['twig']->render('gn/detail.twig', array(
+
+        return $app['twig']->render('gn/detail.twig', [
             'gn' => $gn,
             'participant' => $participant,
-            'questions' => $questions
-        ));
+            'questions' => $questions,
+        ]);
     }
 
     /**
-     * 
-     * Fiche de personnage d'un participant au GN 
-     * @param Request $request 
-     * @param Application $app 
-     * @param Gn $gn
+     * Fiche de personnage d'un participant au GN.
      */
     public function personnageAction(Request $request, Application $app, Gn $gn)
     {
         $participant = $app['User']->getParticipant($gn);
         $personnage = $participant->getPersonnage();
-        if (! $personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous n\'avez pas encore de personnage.');
-            return $app->redirect($app['url_generator']->generate('gn.detail', array(
-                'gn' => $gn->getId()
-            )), 303);
+        if (!$personnage) {
+            $app['session']->getFlashBag()->add('error', "Vous n'avez pas encore de personnage.");
+
+            return $app->redirect($app['url_generator']->generate('gn.detail', [
+                'gn' => $gn->getId(),
+            ]), 303);
         }
+
         $lois = $app['orm.em']->getRepository(Loi::class)->findAll();
-        $descendants =  $app['orm.em']->getRepository(Personnage::class)->findDescendants($personnage);
-        return $app['twig']->render('public/personnage/detail.twig', array(
+        $descendants = $app['orm.em']->getRepository(Personnage::class)->findDescendants($personnage);
+
+        return $app['twig']->render('public/personnage/detail.twig', [
             'personnage' => $personnage,
             'participant' => $participant,
             'lois' => $lois,
-            'descendants' => $descendants
-        ));
+            'descendants' => $descendants,
+        ]);
     }
 
     /**
-     * 
-     * Les personnages present pendant le jeu
+     * Les personnages present pendant le jeu.
      */
     public function personnagesAction(Request $request, Application $app, Gn $gn)
     {
         $order_by = $request->get('order_by') ?: 'id';
-        $order_dir = $request->get('order_dir') == 'DESC' ? 'DESC' : 'ASC';
+        $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
         $limit = (int) ($request->get('limit') ?: 50);
         $page = (int) ($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
-        $criteria = array();
-        $criteria[] = "gn.id = " . $gn->getId();
+        $criteria = [];
+        $criteria[] = 'gn.id = '.$gn->getId();
         $form = $app['form.factory']->createBuilder(new PersonnageFindForm())->getForm();
         $form->handleRequest($request);
         if ($form->isValid()) {
@@ -120,130 +115,120 @@ class GnController
             $type = $data['type'];
             $value = $data['value'];
             switch ($type) {
-				case 'nom':
-				    // $criteria[] = new LikeExpression("p.nom", "%$value%");
-				    $criteria["nom"] = "LOWER(p.nom) LIKE '%".preg_replace('/[\'"<>=*;]/', '', strtolower($value))."%'";
-					break;
-				case 'id':
-				    // $criteria[] = new EqualExpression("p.id", $value);
-				    $criteria["id"] = "p.id = ".preg_replace('/[^\d]/', '', $value);
-					break;	
+                case 'nom':
+                    // $criteria[] = new LikeExpression("p.nom", "%$value%");
+                    $criteria['nom'] = "LOWER(p.nom) LIKE '%".preg_replace('/[\'"<>=*;]/', '', strtolower((string) $value))."%'";
+                    break;
+                case 'id':
+                    // $criteria[] = new EqualExpression("p.id", $value);
+                    $criteria['id'] = 'p.id = '.preg_replace('/[^\d]/', '', (string) $value);
+                    break;
             }
         }
-        $repo = $app['orm.em']->getRepository('\App\Entity\Personnage');
-        $personnages = $repo->findList($criteria, array(
+
+        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Personnage::class);
+        $personnages = $repo->findList($criteria, [
             'by' => $order_by,
-            'dir' => $order_dir
-        ), $limit, $offset);
+            'dir' => $order_dir,
+        ], $limit, $offset);
         $numResults = $repo->findCount($criteria);
-        $paginator = new Paginator($numResults, $limit, $page, $app['url_generator']->generate('gn.personnages', array(
-            'gn' => $gn->getId()
-        )) . '?page=(:num)&limit=' . $limit . '&order_by=' . $order_by . '&order_dir=' . $order_dir);
-        return $app['twig']->render('gn/personnages.twig', array(
+        $paginator = new Paginator($numResults, $limit, $page, $app['url_generator']->generate('gn.personnages', [
+                'gn' => $gn->getId(),
+            ]).'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir);
+
+        return $app['twig']->render('gn/personnages.twig', [
             'gn' => $gn,
             'personnages' => $personnages,
             'paginator' => $paginator,
             'numResults' => $numResults,
-            'form' => $form->createView()
-        ));
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
-     * 
-     * Impression des backgrounds des chefs de groupe 
-     * @param Request $request 
-     * @param Application $app 
-     * @param Gn $gn
+     * Impression des backgrounds des chefs de groupe.
      */
     public function backgroundsChefAction(Request $request, Application $app, Gn $gn)
     {
         $groupes = $gn->getGroupes();
         $iterator = $groupes->getIterator();
-        $iterator->uasort(function ($a, $b) {
-            return ($a->getNumero() < $b->getNumero()) ? - 1 : 1;
+        $iterator->uasort(static function ($a, $b): int {
+            return ($a->getNumero() < $b->getNumero()) ? -1 : 1;
         });
         $groupes = new ArrayCollection(iterator_to_array($iterator));
-        return $app['twig']->render('gn/backgroundsChef.twig', array(
+
+        return $app['twig']->render('gn/backgroundsChef.twig', [
             'gn' => $gn,
-            'groupes' => $groupes
-        ));
+            'groupes' => $groupes,
+        ]);
     }
 
     /**
-     * Impression des backgrounds des groupes 
-     * @param Request $request 
-     * @param Application $app 
-     * @param Gn $gn
+     * Impression des backgrounds des groupes.
      */
     public function backgroundsGroupeAction(Request $request, Application $app, Gn $gn)
     {
         $groupes = $gn->getGroupes();
         $iterator = $groupes->getIterator();
-        $iterator->uasort(function ($a, $b) {
-            return ($a->getNumero() < $b->getNumero()) ? - 1 : 1;
+        $iterator->uasort(static function ($a, $b): int {
+            return ($a->getNumero() < $b->getNumero()) ? -1 : 1;
         });
         $groupes = new ArrayCollection(iterator_to_array($iterator));
-        return $app['twig']->render('gn/backgroundsGroupe.twig', array(
+
+        return $app['twig']->render('gn/backgroundsGroupe.twig', [
             'gn' => $gn,
-            'groupes' => $groupes
-        ));
+            'groupes' => $groupes,
+        ]);
     }
 
     /**
-     * 
-     * Impression des backgrounds des chefs de groupe 
-     * @param Request $request 
-     * @param Application $app 
-     * @param Gn $gn
+     * Impression des backgrounds des chefs de groupe.
      */
     public function backgroundsMembresAction(Request $request, Application $app, Gn $gn)
     {
         $groupes = $gn->getGroupes();
         $iterator = $groupes->getIterator();
-        $iterator->uasort(function ($a, $b) {
-            return ($a->getNumero() < $b->getNumero()) ? - 1 : 1;
+        $iterator->uasort(static function ($a, $b): int {
+            return ($a->getNumero() < $b->getNumero()) ? -1 : 1;
         });
         $groupes = new ArrayCollection(iterator_to_array($iterator));
-        return $app['twig']->render('gn/backgroundsMembres.twig', array(
+
+        return $app['twig']->render('gn/backgroundsMembres.twig', [
             'gn' => $gn,
-            'groupes' => $groupes
-        ));
+            'groupes' => $groupes,
+        ]);
     }
 
     /**
-     * 
-     * Gestion des billets d'un GN 
-     * @param Request $request 
-     * @param Application $app
+     * Gestion des billets d'un GN.
      */
     public function billetAction(Request $request, Application $app, Gn $gn)
     {
         $participant = null;
-        return $app['twig']->render('gn/billet.twig', array(
+
+        return $app['twig']->render('gn/billet.twig', [
             'gn' => $gn,
-            'participant' => $participant
-        ));
+            'participant' => $participant,
+        ]);
     }
 
     /**
-     * 
-     * affiche le formulaire d'ajout d'un gn 
-     * Lorsqu'un GN est créé, son forum associé doit lui aussi être créé
-     * @param Request $request 
-     * @param Application $app
+     * affiche le formulaire d'ajout d'un gn
+     * Lorsqu'un GN est créé, son forum associé doit lui aussi être créé.
      */
     public function addAction(Request $request, Application $app)
     {
         $form = $app['form.factory']->createBuilder(new GnForm(), new Gn())
-            ->add('save', 'submit', array(
-            'label' => "Sauvegarder"
-        ))
+            ->add('save', 'submit', [
+                'label' => 'Sauvegarder',
+            ])
             ->getForm();
         $form->handleRequest($request);
         if ($form->isValid()) {
             $gn = $form->getData();
             /**
-             * Création du topic associé à ce gn 
+             * Création du topic associé à ce gn.
+             *
              * @var \App\Entity\Topic $topic
              */
             $topic = new \App\Entity\Topic();
@@ -259,186 +244,164 @@ class GnController
             $app['orm.em']->persist($gn);
             $app['orm.em']->flush();
             $app['session']->getFlashBag()->add('success', 'Le gn a été ajouté.');
+
             return $app->redirect($app['url_generator']->generate('gn.list'), 303);
         }
-        return $app['twig']->render('gn/add.twig', array(
-            'form' => $form->createView()
-        ));
+
+        return $app['twig']->render('gn/add.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
-     * Liste des participants à un jeu n'ayant pas encore de billets
-     *
-     * @param Request $request
-     * @param Application $app
-     * @param Gn $gn
+     * Liste des participants à un jeu n'ayant pas encore de billets.
      */
     public function participantsWithoutBilletAction(Request $request, Application $app, Gn $gn)
     {
         $participants = $gn->getParticipantsWithoutBillet();
-        return $app['twig']->render('gn/participantswithoutbillet.twig', array(
+
+        return $app['twig']->render('gn/participantswithoutbillet.twig', [
             'gn' => $gn,
-            'participants' => $participants
-        ));
+            'participants' => $participants,
+        ]);
     }
 
     /**
-     * Liste des participants à un jeu ayant un billet mais pas encore de groupe
-     *
-     * @param Request $request
-     * @param Application $app
-     * @param Gn $gn
+     * Liste des participants à un jeu ayant un billet mais pas encore de groupe.
      */
     public function participantsWithoutGroupAction(Request $request, Application $app, Gn $gn)
     {
         $participants = $gn->getParticipantsWithoutGroup();
 
-        return $app['twig']->render('gn/participantswithoutgroup.twig', array(
+        return $app['twig']->render('gn/participantswithoutgroup.twig', [
             'gn' => $gn,
-            'participants' => $participants
-        ));
+            'participants' => $participants,
+        ]);
     }
 
     /**
-     * Liste des participants à un jeu ayant un billet mais pas encore de personnage
-     *
-     * @param Request $request
-     * @param Application $app
-     * @param Gn $gn
+     * Liste des participants à un jeu ayant un billet mais pas encore de personnage.
      */
     public function participantsWithoutPersoAction(Request $request, Application $app, Gn $gn)
     {
         $participants = $gn->getParticipantsWithoutPerso();
-        return $app['twig']->render('gn/participantswithoutperso.twig', array(
+
+        return $app['twig']->render('gn/participantswithoutperso.twig', [
             'gn' => $gn,
-            'participants' => $participants
-        ));
+            'participants' => $participants,
+        ]);
     }
 
     /**
-     * Liste des participants à un jeu ayant un billet mais pas encore de groupe au format CSV
-     *
-     * @param Request $request
-     * @param Application $app
-     * @param Gn $gn
+     * Liste des participants à un jeu ayant un billet mais pas encore de groupe au format CSV.
      */
-    public function participantsWithoutGroupCSVAction(Request $request, Application $app, Gn $gn)
+    public function participantsWithoutGroupCSVAction(Request $request, Application $app, Gn $gn): void
     {
         $participants = $gn->getParticipantsWithoutGroup();
-        header("Content-Type: text/csv");
-        header("Content-Disposition: attachment; filename=eveoniris_participants_sans_groupe_" . date("Ymd") . ".csv");
-        header("Pragma: no-cache");
-        header("Expires: 0");
-        $output = fopen("php://output", "w");
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename=eveoniris_participants_sans_groupe_'.date('Ymd').'.csv');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        $output = fopen('php://output', 'w');
         // header
-        fputcsv($output, array(
+        fputcsv($output, [
             'Nom',
             'Prénom',
-            'Email'
-        ), ';');
+            'Email',
+        ], ';');
         foreach ($participants as $participant) {
-            $line = array();
-            $line[] = utf8_decode($participant->getUser()
+            $line = [];
+            $line[] = mb_convert_encoding((string) $participant->getUser()
                 ->getEtatCivil()
-                ->getNom());
-            $line[] = utf8_decode($participant->getUser()
+                ->getNom(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $participant->getUser()
                 ->getEtatCivil()
-                ->getPrenom());
-            $line[] = utf8_decode($participant->getUser()->getEmail());
+                ->getPrenom(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $participant->getUser()->getEmail(), 'ISO-8859-1');
             fputcsv($output, $line, ';');
         }
+
         fclose($output);
-        exit();
+        exit;
     }
 
     /**
-     * Liste des participants à un jeu n'ayant pas encore de billets au format CSV
-     *
-     * @param Request $request
-     * @param Application $app
-     * @param Gn $gn
+     * Liste des participants à un jeu n'ayant pas encore de billets au format CSV.
      */
-    public function participantsWithoutBilletCSVAction(Request $request, Application $app, Gn $gn)
+    public function participantsWithoutBilletCSVAction(Request $request, Application $app, Gn $gn): void
     {
         $participants = $gn->getParticipantsWithoutBillet();
-        header("Content-Type: text/csv");
-        header("Content-Disposition: attachment; filename=eveoniris_participants_sans_billet_" . date("Ymd") . ".csv");
-        header("Pragma: no-cache");
-        header("Expires: 0");
-        $output = fopen("php://output", "w");
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename=eveoniris_participants_sans_billet_'.date('Ymd').'.csv');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        $output = fopen('php://output', 'w');
         // header
-        fputcsv($output, array(
+        fputcsv($output, [
             'Nom',
             'Prénom',
-            'Email'
-        ), ';');
+            'Email',
+        ], ';');
         foreach ($participants as $participant) {
-            $line = array();
-            $line[] = utf8_decode($participant->getUser()
+            $line = [];
+            $line[] = mb_convert_encoding((string) $participant->getUser()
                 ->getEtatCivil()
-                ->getNom());
-            $line[] = utf8_decode($participant->getUser()
+                ->getNom(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $participant->getUser()
                 ->getEtatCivil()
-                ->getPrenom());
-            $line[] = utf8_decode($participant->getUser()->getEmail());
+                ->getPrenom(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $participant->getUser()->getEmail(), 'ISO-8859-1');
             fputcsv($output, $line, ';');
         }
+
         fclose($output);
-        exit();
+        exit;
     }
 
     /**
-     * Liste des participants à un jeu n'ayant pas encore de personnage au format CSV
-     *
-     * @param Request $request
-     * @param Application $app
-     * @param Gn $gn
+     * Liste des participants à un jeu n'ayant pas encore de personnage au format CSV.
      */
-    public function participantsWithoutPersoCSVAction(Request $request, Application $app, Gn $gn)
+    public function participantsWithoutPersoCSVAction(Request $request, Application $app, Gn $gn): void
     {
         $participants = $gn->getParticipantsWithoutPerso();
 
-        header("Content-Type: text/csv");
-        header("Content-Disposition: attachment; filename=eveoniris_participants_sans_perso_" . date("Ymd") . ".csv");
-        header("Pragma: no-cache");
-        header("Expires: 0");
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename=eveoniris_participants_sans_perso_'.date('Ymd').'.csv');
+        header('Pragma: no-cache');
+        header('Expires: 0');
 
-        $output = fopen("php://output", "w");
+        $output = fopen('php://output', 'w');
 
         // header
-        fputcsv($output, array(
+        fputcsv($output, [
             'Nom',
             'Prénom',
-            'Email'
-        ), ';');
+            'Email',
+        ], ';');
 
         foreach ($participants as $participant) {
-            $line = array();
-            $line[] = utf8_decode($participant->getUser()
+            $line = [];
+            $line[] = mb_convert_encoding((string) $participant->getUser()
                 ->getEtatCivil()
-                ->getNom());
-            $line[] = utf8_decode($participant->getUser()
+                ->getNom(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $participant->getUser()
                 ->getEtatCivil()
-                ->getPrenom());
-            $line[] = utf8_decode($participant->getUser()->getEmail());
+                ->getPrenom(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $participant->getUser()->getEmail(), 'ISO-8859-1');
             fputcsv($output, $line, ';');
         }
 
         fclose($output);
-        exit();
+        exit;
     }
 
     /**
-     * Liste des participants à un jeu
-     *
-     * @param Request $request
-     * @param Application $app
-     * @param Gn $gn
+     * Liste des participants à un jeu.
      */
     public function participantsAction(Request $request, Application $app, Gn $gn)
     {
         $order_by = $request->get('order_by') ?: 'ec.nom';
-        $order_dir = $request->get('order_dir') == 'DESC' ? 'DESC' : 'ASC';
+        $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
         $limit = (int) ($request->get('limit') ?: 50);
         $page = (int) ($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
@@ -446,7 +409,7 @@ class GnController
         // nombre de participant au total
         $qbTotal = $app['orm.em']->createQueryBuilder();
         $qbTotal->select('COUNT(p.id)')
-            ->from('\App\Entity\Participant', 'p')
+            ->from('\\'.\App\Entity\Participant::class, 'p')
             ->join('p.gn', 'gn')
             ->join('p.User', 'u')
             ->join('u.etatCivil', 'ec')
@@ -456,7 +419,7 @@ class GnController
         // liste des participants à afficher
         $qb = $app['orm.em']->createQueryBuilder();
         $qb->select('p')
-            ->from('\App\Entity\Participant', 'p')
+            ->from('\\'.\App\Entity\Participant::class, 'p')
             ->join('p.gn', 'gn')
             ->join('p.User', 'u')
             ->join('u.etatCivil', 'ec')
@@ -474,103 +437,99 @@ class GnController
 
             switch ($data['type']) {
                 case 'nom':
-                    $qb->andWhere("ec.nom LIKE :value");
-                    $qbTotal->andWhere("ec.nom LIKE :value");
+                    $qb->andWhere('ec.nom LIKE :value');
+                    $qbTotal->andWhere('ec.nom LIKE :value');
                     break;
                 case 'email':
-                    $qb->andWhere("u.email LIKE :value");
-                    $qbTotal->andWhere("u.email LIKE :value");
+                    $qb->andWhere('u.email LIKE :value');
+                    $qbTotal->andWhere('u.email LIKE :value');
                     break;
             }
-            $qb->setParameter('value', '%' . $data['value'] . '%');
-            $qbTotal->setParameter('value', '%' . $data['value'] . '%');
+
+            $qb->setParameter('value', '%'.$data['value'].'%');
+            $qbTotal->setParameter('value', '%'.$data['value'].'%');
         }
 
         $participants = $qb->getQuery()->getResult();
         $count = $qbTotal->getQuery()->getSingleScalarResult();
 
-        $paginator = new Paginator($count, $limit, $page, $app['url_generator']->generate('gn.participants', array(
-            'gn' => $gn->getId()
-        )) . '?page=(:num)&limit=' . $limit . '&order_by=' . $order_by . '&order_dir=' . $order_dir);
+        $paginator = new Paginator($count, $limit, $page, $app['url_generator']->generate('gn.participants', [
+                'gn' => $gn->getId(),
+            ]).'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir);
 
-        return $app['twig']->render('gn/participants.twig', array(
+        return $app['twig']->render('gn/participants.twig', [
             'gn' => $gn,
             'participants' => $participants,
             'paginator' => $paginator,
-            'form' => $form->createView()
-        ));
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
-     * Génére le fichier à envoyer à la FédéGN
-     *
-     * @param Request $request
-     * @param Application $app
-     * @param Gn $gn
+     * Génére le fichier à envoyer à la FédéGN.
      */
-    public function fedegnAction(Request $request, Application $app, Gn $gn)
+    public function fedegnAction(Request $request, Application $app, Gn $gn): void
     {
         $participants = $gn->getParticipantsFedeGn();
-        header("Content-Type: text/csv");
-        header("Content-Disposition: attachment; filename=eveoniris_fedegn_" . date("Ymd") . ".csv");
-        header("Pragma: no-cache");
-        header("Expires: 0");
-        $output = fopen("php://output", "w");
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename=eveoniris_fedegn_'.date('Ymd').'.csv');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        $output = fopen('php://output', 'w');
         // header
-        fputcsv($output, array(
+        fputcsv($output, [
             'Nom',
             'Prénom',
             'Email',
             'Date de naissance',
-            'fedegn'
-        ), ';');
+            'fedegn',
+        ], ';');
         foreach ($participants as $participant) {
-            $line = array();
-            $line[] = utf8_decode($participant->getUser()
+            $line = [];
+            $line[] = mb_convert_encoding((string) $participant->getUser()
                 ->getEtatCivil()
-                ->getNom());
-            $line[] = utf8_decode($participant->getUser()
+                ->getNom(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $participant->getUser()
                 ->getEtatCivil()
-                ->getPrenom());
-            $line[] = utf8_decode($participant->getUser()->getEmail());
+                ->getPrenom(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $participant->getUser()->getEmail(), 'ISO-8859-1');
             if ($participant->getUser()
                 ->getEtatCivil()
                 ->getDateNaissance()) {
-                $line[] = utf8_decode($participant->getUser()
+                $line[] = mb_convert_encoding((string) $participant->getUser()
                     ->getEtatCivil()
                     ->getDateNaissance()
-                    ->format('Y-m-d'));
+                    ->format('Y-m-d'), 'ISO-8859-1');
             } else {
                 $line[] = '?';
             }
+
             if ($participant->getUser()
                 ->getEtatCivil()
                 ->getFedeGn()) {
-                $line[] = utf8_decode($participant->getUser()
+                $line[] = mb_convert_encoding((string) $participant->getUser()
                     ->getEtatCivil()
-                    ->getFedeGn());
+                    ->getFedeGn(), 'ISO-8859-1');
             } else {
                 $line[] = '?';
             }
+
             fputcsv($output, $line, ';');
         }
+
         fclose($output);
-        exit();
+        exit;
     }
 
     /**
-     * Suppression d'un GN
-     *
-     * @param Request $request
-     * @param Application $app
-     * @param Gn $gn
+     * Suppression d'un GN.
      */
     public function deleteAction(Request $request, Application $app, Gn $gn)
     {
         $form = $app['form.factory']->createBuilder(new GnDeleteForm(), $gn)
-            ->add('delete', 'submit', array(
-            'label' => "Supprimer"
-        ))
+            ->add('delete', 'submit', [
+                'label' => 'Supprimer',
+            ])
             ->getForm();
         $form->handleRequest($request);
         if ($form->isValid()) {
@@ -578,26 +537,25 @@ class GnController
             $app['orm.em']->remove($gn);
             $app['orm.em']->flush();
             $app['session']->getFlashBag()->add('success', 'Le gn a été supprimé.');
+
             return $app->redirect($app['url_generator']->generate('gn.list'));
         }
-        return $app['twig']->render('gn/delete.twig', array(
+
+        return $app['twig']->render('gn/delete.twig', [
             'gn' => $gn,
-            'form' => $form->createView()
-        ));
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
-     * Met à jour un gn *
-     *
-     * @param Request $request
-     * @param Application $app
+     * Met à jour un gn *.
      */
     public function updateAction(Request $request, Application $app, Gn $gn)
     {
         $form = $app['form.factory']->createBuilder(new GnForm(), $gn)
-            ->add('update', 'submit', array(
-            'label' => "Sauvegarder"
-        ))
+            ->add('update', 'submit', [
+                'label' => 'Sauvegarder',
+            ])
             ->getForm();
         $form->handleRequest($request);
         if ($form->isValid()) {
@@ -608,105 +566,97 @@ class GnController
 
             return $app->redirect($app['url_generator']->generate('gn.list'));
         }
-        return $app['twig']->render('gn/update.twig', array(
+
+        return $app['twig']->render('gn/update.twig', [
             'gn' => $gn,
-            'form' => $form->createView()
-        ));
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
-     * Affiche la billetterie d'un GN
-     *
-     * @param Application $app
-     * @param Request $request
-     * @param Gn $gn
+     * Affiche la billetterie d'un GN.
      */
     public function billetterieAction(Application $app, Request $request, Gn $gn)
     {
         $groupeGns = $gn->getGroupeGnsPj();
         $iterator = $groupeGns->getIterator();
-        $iterator->uasort(function ($a, $b) {
+        $iterator->uasort(static function ($a, $b): int {
             return ($a->getGroupe()
-                ->getNumero() < $b->getGroupe()
-                ->getNumero()) ? - 1 : 1;
+                    ->getNumero() < $b->getGroupe()
+                    ->getNumero()) ? -1 : 1;
         });
         $groupeGns = new ArrayCollection(iterator_to_array($iterator));
-        return $app['twig']->render('gn/billetterie.twig', array(
+
+        return $app['twig']->render('gn/billetterie.twig', [
             'gn' => $gn,
-            'groupeGns' => $groupeGns
-        ));
+            'groupeGns' => $groupeGns,
+        ]);
     }
 
     /**
-     * Liste des personnages renommé prévu sur le jeu
+     * Liste des personnages renommé prévu sur le jeu.
      */
     public function renomAction(Request $request, Application $app, Gn $gn)
     { // trouver tous les personnages participants au prochain GN et ayant une renommé supérieur à 10
         $personnages = $gn->getPersonnagesRenom(10);
-        return $app['twig']->render('gn/renom.twig', array(
+
+        return $app['twig']->render('gn/renom.twig', [
             'personnages' => $personnages,
-            'gn' => $gn
-        ));
+            'gn' => $gn,
+        ]);
     }
 
     /**
-     * Liste des pnjs prévu sur le jeu
+     * Liste des pnjs prévu sur le jeu.
      */
     public function pnjsAction(Request $request, Application $app, Gn $gn)
     {
         $pnjs = $gn->getParticipantsPnj();
-        return $app['twig']->render('gn/pnjs.twig', array(
+
+        return $app['twig']->render('gn/pnjs.twig', [
             'pnjs' => $pnjs,
-            'gn' => $gn
-        ));
+            'gn' => $gn,
+        ]);
     }
 
     /**
-     * Liste des groupes prévu sur le jeu 
-     * @param Request $request 
-     * @param Application $app 
-     * @param Participant $participant
+     * Liste des groupes prévu sur le jeu.
      */
     public function groupesAction(Request $request, Application $app, Gn $gn)
     {
         $groupes = $gn->getGroupes();
         $iterator = $groupes->getIterator();
-        $iterator->uasort(function ($a, $b) {
-            return ($a->getNumero() < $b->getNumero()) ? - 1 : 1;
+        $iterator->uasort(static function ($a, $b): int {
+            return ($a->getNumero() < $b->getNumero()) ? -1 : 1;
         });
         $groupes = new ArrayCollection(iterator_to_array($iterator));
-        return $app['twig']->render('gn/groupes.twig', array(
+
+        return $app['twig']->render('gn/groupes.twig', [
             'groupes' => $groupes,
-            'gn' => $gn
-        ));
+            'gn' => $gn,
+        ]);
     }
 
     /**
-     * 
-     * Liste des groupes réservés 
-     * @param Request $request 
-     * @param Application $app 
-     * @param Participant $participant
+     * Liste des groupes réservés.
      */
     public function groupesReservesAction(Request $request, Application $app, Gn $gn)
     {
         $groupes = $gn->getGroupesReserves();
         $iterator = $groupes->getIterator();
-        $iterator->uasort(function ($a, $b) {
-            return ($a->getNumero() < $b->getNumero()) ? - 1 : 1;
+        $iterator->uasort(static function ($a, $b): int {
+            return ($a->getNumero() < $b->getNumero()) ? -1 : 1;
         });
         $groupes = new ArrayCollection(iterator_to_array($iterator));
-        return $app['twig']->render('admin/gn/groupes.twig', array(
+
+        return $app['twig']->render('admin/gn/groupes.twig', [
             'groupes' => $groupes,
-            'gn' => $gn
-        ));
+            'gn' => $gn,
+        ]);
     }
 
     /**
-     * Liste des groupes recherchant des joueurs 
-     * @param Request $request 
-     * @param Application $app 
-     * @param Gn $gn
+     * Liste des groupes recherchant des joueurs.
      */
     public function groupesPlacesAction(Request $request, Application $app, Gn $gn)
     {
@@ -718,51 +668,45 @@ class GnController
                 $groupesPlaces[] = $groupe;
             }
         }
+
         $iterator = $groupesPlaces->getIterator();
-        $iterator->uasort(function ($a, $b) {
-            return ($a->getNumero() < $b->getNumero()) ? - 1 : 1;
+        $iterator->uasort(static function ($a, $b): int {
+            return ($a->getNumero() < $b->getNumero()) ? -1 : 1;
         });
         $groupesPlaces = new ArrayCollection(iterator_to_array($iterator));
-        return $app['twig']->render('gn/groupesPlaces.twig', array(
+
+        return $app['twig']->render('gn/groupesPlaces.twig', [
             'groupes' => $groupesPlaces,
-            'gn' => $gn
-        ));
+            'gn' => $gn,
+        ]);
     }
 
-	/**
-	 * Impression fiche de perso pour le gn
-	 *
-	 * @param Request $request
-	 * @param Application $app
-	 * @param Gn $gn
-	 */
-	public function printPersoAction(Request $request, Application $app, Gn $gn)
-	{
-		$participants = $gn->getParticipantsWithBillet();
-		$quetes = new ArrayCollection();
-		
-		return $app['twig']->render('admin/gn/printPerso.twig', array(
-				'gn' => $gn,
-				'participants' => $participants,
-				'quetes' => $quetes,
-		));
-	}
+    /**
+     * Impression fiche de perso pour le gn.
+     */
+    public function printPersoAction(Request $request, Application $app, Gn $gn)
+    {
+        $participants = $gn->getParticipantsWithBillet();
+        $quetes = new ArrayCollection();
 
-	/**
-	 * Impression fiche de perso pour le gn
-	 *
-	 * @param Request $request
-	 * @param Application $app
-	 * @param Gn $gn
-	 */
-	public function printInterAction(Request $request, Application $app, Gn $gn)
-	{
-		$participants = $gn->getParticipantsInterGN();
-		$quetes = new ArrayCollection();
-		
-		return $app['twig']->render('admin/gn/printInter.twig', array(
-				'participants' => $participants,
-				'quetes' => $quetes,
-		));
-	}    
+        return $app['twig']->render('admin/gn/printPerso.twig', [
+            'gn' => $gn,
+            'participants' => $participants,
+            'quetes' => $quetes,
+        ]);
+    }
+
+    /**
+     * Impression fiche de perso pour le gn.
+     */
+    public function printInterAction(Request $request, Application $app, Gn $gn)
+    {
+        $participants = $gn->getParticipantsInterGN();
+        $quetes = new ArrayCollection();
+
+        return $app['twig']->render('admin/gn/printInter.twig', [
+            'participants' => $participants,
+            'quetes' => $quetes,
+        ]);
+    }
 }

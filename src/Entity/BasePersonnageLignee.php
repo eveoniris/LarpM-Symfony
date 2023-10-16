@@ -7,42 +7,51 @@
 namespace App\Entity;
 
 /**
- * App\Entity\PersonnageLignee
+ * App\Entity\PersonnageLignee.
  *
  * @Table(name="personnages_lignee")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePersonnageLignee", "extended":"PersonnageLignee"})
  */
 class BasePersonnageLignee
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="PersonnageLignee")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="PersonnageLignee")
+     *
      * @JoinColumn(name="parent1_id", referencedColumnName="id", nullable=false)
      */
     protected $parent1;
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="PersonnageLignee")
+     *
      * @JoinColumn(name="parent2_id", referencedColumnName="id", nullable=false)
      */
     protected $parent2;
 
     /**
      * @ManyToOne(targetEntity="Lignee", inversedBy="PersonnageLignee")
+     *
      * @JoinColumn(name="lignee_id", referencedColumnName="id", nullable=false)
      */
     protected $lignee;
@@ -54,7 +63,8 @@ class BasePersonnageLignee
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\PersonnageLignee
      */
     public function setId($id)
@@ -67,7 +77,7 @@ class BasePersonnageLignee
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -77,7 +87,6 @@ class BasePersonnageLignee
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\PersonnageLignee
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -100,7 +109,6 @@ class BasePersonnageLignee
     /**
      * Set Parent1 entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\PersonnageLignee
      */
     public function setParent1(Personnage $parent1 = null)
@@ -123,7 +131,6 @@ class BasePersonnageLignee
     /**
      * Set Parent2 entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\PersonnageLignee
      */
     public function setParent2(Personnage $parent2 = null)
@@ -146,7 +153,6 @@ class BasePersonnageLignee
     /**
      * Set Lignee entity (many to one).
      *
-     * @param \App\Entity\Lignee $lignee
      * @return \App\Entity\PersonnageLignee
      */
     public function setLignee(Lignee $lignee = null)
@@ -168,6 +174,6 @@ class BasePersonnageLignee
 
     public function __sleep()
     {
-        return array('id', 'personnage_id', 'parent1_id', 'parent2_id', 'ligne_id');
+        return ['id', 'personnage_id', 'parent1_id', 'parent2_id', 'ligne_id'];
     }
 }

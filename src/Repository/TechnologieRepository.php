@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,35 +23,33 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Repository\TechnologieRepository
- * 
+ * LarpManager\Repository\TechnologieRepository.
+ *
  * @author Kevin F.
  */
 class TechnologieRepository extends EntityRepository
 {
-	/**
-	 * Find all public technologies ordered by label
-	 * @return ArrayCollection $technologies
-	 */
-	public function findPublicOrderedByLabel()
-	{
-		$technologies = $this->getEntityManager()
-				->createQuery('SELECT r FROM App\Entity\Technologie r WHERE r.secret = 0 ORDER BY r.label ASC')
-				->getResult();
-		
-		return $technologies;
-	}
+    /**
+     * Find all public technologies ordered by label.
+     *
+     * @return ArrayCollection $technologies
+     */
+    public function findPublicOrderedByLabel()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT r FROM App\Entity\Technologie r WHERE r.secret = 0 ORDER BY r.label ASC')
+            ->getResult();
+    }
 
-	/**
-	 * Find all technologies ordered by label
-	 * @return ArrayCollection $technologies
-	 */
-	public function findAllOrderedByLabel()
-	{
-		$technologies = $this->getEntityManager()
-				->createQuery('SELECT r FROM App\Entity\Technologie r ORDER BY r.label ASC')
-				->getResult();
-		
-		return $technologies;
-	}
+    /**
+     * Find all technologies ordered by label.
+     *
+     * @return ArrayCollection $technologies
+     */
+    public function findAllOrderedByLabel()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT r FROM App\Entity\Technologie r ORDER BY r.label ASC')
+            ->getResult();
+    }
 }

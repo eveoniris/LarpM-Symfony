@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,52 +25,46 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\PriereFindForm
+ * LarpManager\Form\PriereFindForm.
  *
  * @author Gectou4
- *
  */
 class PriereFindForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('value','text', array(
-					'required' => true,	
-					'label' => 'Recherche',
-				))
-				->add('type','choice', array(
-					'required' => true,
-					'choices' => array(
-						'label' => 'Nom',
-						'description' => 'Description',
-						'annonce' => 'Annonce',
-						'sphere' => 'Sphere',
-						'id' => 'ID',
-					),
-					'label' => 'Type',
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concernée
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'priereFind';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('value', 'text', [
+            'required' => true,
+            'label' => 'Recherche',
+        ])
+            ->add('type', 'choice', [
+                'required' => true,
+                'choices' => [
+                    'label' => 'Nom',
+                    'description' => 'Description',
+                    'annonce' => 'Annonce',
+                    'sphere' => 'Sphere',
+                    'id' => 'ID',
+                ],
+                'label' => 'Type',
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concernée.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'priereFind';
+    }
 }

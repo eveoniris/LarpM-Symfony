@@ -10,30 +10,37 @@
 namespace App\Entity;
 
 /**
- * App\Entity\IntrigueHasObjectif
+ * App\Entity\IntrigueHasObjectif.
  *
  * @Table(name="intrigue_has_objectif", indexes={@Index(name="fk_intrigue_has_objectif_objectif1_idx", columns={"objectif_id"}), @Index(name="fk_intrigue_has_objectif_intrigue1_idx", columns={"intrigue_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseIntrigueHasObjectif", "extended":"IntrigueHasObjectif"})
  */
 class BaseIntrigueHasObjectif
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
      * @ManyToOne(targetEntity="Intrigue", inversedBy="intrigueHasObjectifs", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="intrigue_id", referencedColumnName="id", nullable=false)
      */
     protected $intrigue;
 
     /**
      * @ManyToOne(targetEntity="Objectif", inversedBy="intrigueHasObjectifs", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="objectif_id", referencedColumnName="id", nullable=false)
      */
     protected $objectif;
@@ -45,7 +52,8 @@ class BaseIntrigueHasObjectif
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\IntrigueHasObjectif
      */
     public function setId($id)
@@ -58,7 +66,7 @@ class BaseIntrigueHasObjectif
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -68,7 +76,6 @@ class BaseIntrigueHasObjectif
     /**
      * Set Intrigue entity (many to one).
      *
-     * @param \App\Entity\Intrigue $intrigue
      * @return \App\Entity\IntrigueHasObjectif
      */
     public function setIntrigue(Intrigue $intrigue = null)
@@ -91,7 +98,6 @@ class BaseIntrigueHasObjectif
     /**
      * Set Objectif entity (many to one).
      *
-     * @param \App\Entity\Objectif $objectif
      * @return \App\Entity\IntrigueHasObjectif
      */
     public function setObjectif(Objectif $objectif = null)
@@ -113,6 +119,6 @@ class BaseIntrigueHasObjectif
 
     public function __sleep()
     {
-        return array('id', 'intrigue_id', 'objectif_id');
+        return ['id', 'intrigue_id', 'objectif_id'];
     }
 }

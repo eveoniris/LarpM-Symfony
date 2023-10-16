@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,57 +23,50 @@ namespace App\Form\Personnage;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Form\Personnage\PersonnageEditForm
+ * LarpManager\Form\Personnage\PersonnageEditForm.
  *
  * @author kevin
- *
  */
 class PersonnageEditForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('surnom','text', array(
-						'required' => false,
-						'label' => ''
-				))
-				->add('intrigue','choice', array(
-						'required' => true,
-						'choices' => array(true => 'Oui', false => 'Non'),
-						'label' => 'Participer aux intrigues'
-				))
-				->add('sensible','choice', array(
-						'required' => true,
-						'choices' => array(false => 'Non', true => 'Oui'),
-						'label' => 'Personnage sensible'
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 * 
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\Personnage',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'personnageEdit';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('surnom', 'text', [
+            'required' => false,
+            'label' => '',
+        ])
+            ->add('intrigue', 'choice', [
+                'required' => true,
+                'choices' => [true => 'Oui', false => 'Non'],
+                'label' => 'Participer aux intrigues',
+            ])
+            ->add('sensible', 'choice', [
+                'required' => true,
+                'choices' => [false => 'Non', true => 'Oui'],
+                'label' => 'Personnage sensible',
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => \App\Entity\Personnage::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'personnageEdit';
+    }
 }

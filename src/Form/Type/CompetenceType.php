@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
@@ -25,32 +25,31 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\Type\CompetenceType
+ * LarpManager\Form\Type\CompetenceType.
  *
  * @author kevin
- *
  */
 class CompetenceType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('competence','entity', array(
-					'label' => false,
-					'required' => true,
-					'property' => 'nom',
-					'class' => 'App\Entity\Competence',
-				));
-	}
-	
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\PersonnageCompetence',
-		));
-	}
-	
-	public function getName()
-	{
-		return 'personnageCompetence';
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('competence', 'entity', [
+            'label' => false,
+            'required' => true,
+            'property' => 'nom',
+            'class' => \App\Entity\Competence::class,
+        ]);
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\App\Entity\PersonnageCompetence',
+        ]);
+    }
+
+    public function getName(): string
+    {
+        return 'personnageCompetence';
+    }
 }

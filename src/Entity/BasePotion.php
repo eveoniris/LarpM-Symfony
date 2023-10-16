@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Potion
+ * App\Entity\Potion.
  *
  * @Table(name="potion")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePotion", "extended":"Potion"})
  */
 class BasePotion
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -71,10 +76,11 @@ class BasePotion
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Potion
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -84,7 +90,7 @@ class BasePotion
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -95,6 +101,7 @@ class BasePotion
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Potion
      */
     public function setLabel($label)
@@ -118,6 +125,7 @@ class BasePotion
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Potion
      */
     public function setDescription($description)
@@ -141,6 +149,7 @@ class BasePotion
      * Set the value of documentUrl.
      *
      * @param string $documentUrl
+     *
      * @return \App\Entity\Potion
      */
     public function setDocumentUrl($documentUrl)
@@ -163,7 +172,8 @@ class BasePotion
     /**
      * Set the value of niveau.
      *
-     * @param integer $niveau
+     * @param int $niveau
+     *
      * @return \App\Entity\Potion
      */
     public function setNiveau($niveau)
@@ -176,7 +186,7 @@ class BasePotion
     /**
      * Get the value of niveau.
      *
-     * @return integer
+     * @return int
      */
     public function getNiveau()
     {
@@ -187,6 +197,7 @@ class BasePotion
      * Set the value of numero.
      *
      * @param string $numero
+     *
      * @return \App\Entity\Potion
      */
     public function setNumero($numero)
@@ -209,7 +220,8 @@ class BasePotion
     /**
      * Set the value of secret.
      *
-     * @param boolean $secret
+     * @param bool $secret
+     *
      * @return \App\Entity\Potion
      */
     public function setSecret($secret)
@@ -222,7 +234,7 @@ class BasePotion
     /**
      * Get the value of secret.
      *
-     * @return boolean
+     * @return bool
      */
     public function getSecret()
     {
@@ -232,7 +244,6 @@ class BasePotion
     /**
      * Add Personnage entity to collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Potion
      */
     public function addPersonnage(Personnage $personnage)
@@ -245,7 +256,6 @@ class BasePotion
     /**
      * Remove Personnage entity from collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Potion
      */
     public function removePersonnage(Personnage $personnage)
@@ -267,6 +277,6 @@ class BasePotion
 
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'documentUrl', 'niveau', 'numero', 'secret');
+        return ['id', 'label', 'description', 'documentUrl', 'niveau', 'numero', 'secret'];
     }
 }

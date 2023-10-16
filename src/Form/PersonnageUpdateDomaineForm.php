@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,50 +25,43 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\PersonnageUpdateDomaineForm
+ * LarpManager\Form\PersonnageUpdateDomaineForm.
  *
  * @author kevin
- *
  */
 class PersonnageUpdateDomaineForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * Seul les éléments ne dépendant pas des points d'expérience sont modifiables
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('domaines','entity', array(
-				'required' => true,
-				'multiple' => true,
-				'expanded' => true,
-				'class' => 'App\Entity\Domaine',
-				'choice_label' => 'label',
-				'label' => 'Choisissez les domaines de magie du personnage'
-		));
+    /**
+     * Construction du formulaire
+     * Seul les éléments ne dépendant pas des points d'expérience sont modifiables.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('domaines', 'entity', [
+            'required' => true,
+            'multiple' => true,
+            'expanded' => true,
+            'class' => \App\Entity\Domaine::class,
+            'choice_label' => 'label',
+            'label' => 'Choisissez les domaines de magie du personnage',
+        ]);
+    }
 
-	}
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => \App\Entity\Personnage::class,
+        ]);
+    }
 
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\Personnage',
-		));
-	}
-
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'personnageUpdateDomaine';
-	}
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'personnageUpdateDomaine';
+    }
 }

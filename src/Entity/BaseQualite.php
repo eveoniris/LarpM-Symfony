@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Qualite
+ * App\Entity\Qualite.
  *
  * @Table(name="qualite")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseQualite", "extended":"Qualite"})
  */
 class BaseQualite
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -40,12 +45,14 @@ class BaseQualite
 
     /**
      * @OneToMany(targetEntity="Item", mappedBy="qualite")
+     *
      * @JoinColumn(name="id", referencedColumnName="qualite_id", nullable=false)
      */
     protected $items;
 
     /**
      * @OneToMany(targetEntity="QualiteValeur", mappedBy="qualite")
+     *
      * @JoinColumn(name="id", referencedColumnName="qualite_id", nullable=false)
      */
     protected $qualiteValeurs;
@@ -59,10 +66,11 @@ class BaseQualite
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Qualite
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -72,7 +80,7 @@ class BaseQualite
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -83,6 +91,7 @@ class BaseQualite
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Qualite
      */
     public function setLabel($label)
@@ -105,7 +114,8 @@ class BaseQualite
     /**
      * Set the value of numero.
      *
-     * @param integer $numero
+     * @param int $numero
+     *
      * @return \App\Entity\Qualite
      */
     public function setNumero($numero)
@@ -118,7 +128,7 @@ class BaseQualite
     /**
      * Get the value of numero.
      *
-     * @return integer
+     * @return int
      */
     public function getNumero()
     {
@@ -128,7 +138,6 @@ class BaseQualite
     /**
      * Add Item entity to collection (one to many).
      *
-     * @param \App\Entity\Item $item
      * @return \App\Entity\Qualite
      */
     public function addItem(Item $item)
@@ -141,7 +150,6 @@ class BaseQualite
     /**
      * Remove Item entity from collection (one to many).
      *
-     * @param \App\Entity\Item $item
      * @return \App\Entity\Qualite
      */
     public function removeItem(Item $item)
@@ -164,7 +172,6 @@ class BaseQualite
     /**
      * Add QualiteValeur entity to collection (one to many).
      *
-     * @param \App\Entity\QualiteValeur $qualiteValeur
      * @return \App\Entity\Qualite
      */
     public function addQualiteValeur(QualiteValeur $qualiteValeur)
@@ -177,7 +184,6 @@ class BaseQualite
     /**
      * Remove QualiteValeur entity from collection (one to many).
      *
-     * @param \App\Entity\QualiteValeur $qualiteValeur
      * @return \App\Entity\Qualite
      */
     public function removeQualiteValeur(QualiteValeur $qualiteValeur)
@@ -199,6 +205,6 @@ class BaseQualite
 
     public function __sleep()
     {
-        return array('id', 'label', 'numero');
+        return ['id', 'label', 'numero'];
     }
 }

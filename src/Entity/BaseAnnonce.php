@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -17,27 +16,31 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseAnnonce', 'extended' => 'Annonce'])]
 class BaseAnnonce
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'title', type: 'string', length: 45)]
+    #[Column(name: 'title', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $title = '';
 
-    #[Column(name: 'text', type: 'text')]
+    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::TEXT)]
     protected string $text = '';
 
-    #[Column(type: 'datetime')]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected ?\DateTime $creation_date = null;
 
-    #[Column(type: 'datetime')]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected ?\DateTime $update_date = null;
 
-    #[Column(type: 'boolean')]
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     protected bool $archive = false;
 
     #[ManyToOne(targetEntity: Gn::class, inversedBy: 'annonces')]
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id')]
     protected ?Gn $gn = null;
+
+    public function __construct()
+    {
+    }
 
     public function setId(int $id): self
     {

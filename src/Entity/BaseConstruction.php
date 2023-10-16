@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Construction
+ * App\Entity\Construction.
  *
  * @Table(name="construction")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseConstruction", "extended":"Construction"})
  */
 class BaseConstruction
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -56,10 +61,11 @@ class BaseConstruction
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Construction
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -69,7 +75,7 @@ class BaseConstruction
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -80,6 +86,7 @@ class BaseConstruction
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Construction
      */
     public function setLabel($label)
@@ -103,6 +110,7 @@ class BaseConstruction
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Construction
      */
     public function setDescription($description)
@@ -125,7 +133,8 @@ class BaseConstruction
     /**
      * Set the value of defense.
      *
-     * @param integer $defense
+     * @param int $defense
+     *
      * @return \App\Entity\Construction
      */
     public function setDefense($defense)
@@ -138,7 +147,7 @@ class BaseConstruction
     /**
      * Get the value of defense.
      *
-     * @return integer
+     * @return int
      */
     public function getDefense()
     {
@@ -148,7 +157,6 @@ class BaseConstruction
     /**
      * Add Territoire entity to collection.
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Construction
      */
     public function addTerritoire(Territoire $territoire)
@@ -161,7 +169,6 @@ class BaseConstruction
     /**
      * Remove Territoire entity from collection.
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Construction
      */
     public function removeTerritoire(Territoire $territoire)
@@ -183,6 +190,6 @@ class BaseConstruction
 
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'defense');
+        return ['id', 'label', 'description', 'defense'];
     }
 }

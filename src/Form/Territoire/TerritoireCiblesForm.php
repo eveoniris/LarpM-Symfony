@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,60 +20,55 @@
 
 namespace App\Form\Territoire;
 
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Form\Territoire\TerritoireCiblesForm
+ * LarpManager\Form\Territoire\TerritoireCiblesForm.
  *
  * @author kevin
- *
  */
 class TerritoireCiblesForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('territoireCibles','entity', array(
-					'required' => false,
-					'label' => 'Territoire',
-					'class' => 'App\Entity\Territoire',
-					'multiple' => true,
-					'expanded' => true,
-					'mapped' => true,
-					'property' => 'nom',
-					'query_builder' => function(EntityRepository $er) {
-                                                $qb = $er->createQueryBuilder('t');
-                                                $qb->where('t.territoire IS NULL');
-                                                return $qb;
-                                        },
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 * 
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\Territoire',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'territoireCibles';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('territoireCibles', 'entity', [
+            'required' => false,
+            'label' => 'Territoire',
+            'class' => \App\Entity\Territoire::class,
+            'multiple' => true,
+            'expanded' => true,
+            'mapped' => true,
+            'property' => 'nom',
+            'query_builder' => static function (EntityRepository $er) {
+                $qb = $er->createQueryBuilder('t');
+                $qb->where('t.territoire IS NULL');
+
+                return $qb;
+            },
+        ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => \App\Entity\Territoire::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'territoireCibles';
+    }
 }

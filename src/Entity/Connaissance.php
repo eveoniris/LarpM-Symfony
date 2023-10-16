@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,22 +27,20 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseConnaissance;
-
 /**
- * App\Entity\Connaissance
+ * App\Entity\Connaissance.
  *
  * @Entity(repositoryClass="LarpManager\Repository\ConnaissanceRepository")
  */
 class Connaissance extends BaseConnaissance
 {
-	public function getFullLabel()
-	{
-		return $this->getLabel();
-	}
+    public function getFullLabel()
+    {
+        return $this->getLabel();
+    }
 
-	public function getPrintLabel()
-	{
-		return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
-	}	
+    public function getPrintLabel(): ?string
+    {
+        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
+    }
 }

@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,82 +20,75 @@
 
 namespace App\Form\GroupeGn;
 
+use LarpManager\Repository\ParticipantRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use LarpManager\Repository\PersonnageRepository;
-use LarpManager\Repository\ParticipantRepository;
 
 /**
- * LarpManager\Form\GroupeGn\GroupeGnOrdreForm
+ * LarpManager\Form\GroupeGn\GroupeGnOrdreForm.
  *
  * @author Kevin F.
- *
  */
 class GroupeGnOrdreForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder
-			->add('initiative', 'integer', array(
-				'required' => false
-			))
-			->add('bateaux', 'integer', array(
-				'required' => false
-			))
-			->add('agents', 'integer', array(
-				'required' => false
-			))
-			->add('sieges', 'integer', array(
-				'required' => false,
-				'label' => 'Armes de Siège'
-			))
-			->add('suzerain','entity', array(
-				'required' => false,
-				'class' => 'App\Entity\Participant',
-				'property' => 'personnage.nom',
-				'query_builder' => function(ParticipantRepository $er) use ($options) {
-					$qb = $er->createQueryBuilder('p');
-					$qb->join('p.personnage', 'u');
-					$qb->join('p.groupeGn', 'gg');
-					$qb->orderBy('u.nom', 'ASC');
-					$qb->where('gg.id = :groupeGnId');
-					$qb->setParameter('groupeGnId', $options['groupeGnId']);
-					return $qb;
-				},
-				'attr' => array(
-						'class'	=> 'selectpicker',
-						'data-live-search' => 'true',
-						'placeholder' => 'Responsable',
-				),
-			))
-		;
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-			'class' => 'App\Entity\GroupeGn',
-            'groupeGnId' => false,
-		));
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('initiative', 'integer', [
+                'required' => false,
+            ])
+            ->add('bateaux', 'integer', [
+                'required' => false,
+            ])
+            ->add('agents', 'integer', [
+                'required' => false,
+            ])
+            ->add('sieges', 'integer', [
+                'required' => false,
+                'label' => 'Armes de Siège',
+            ])
+            ->add('suzerain', 'entity', [
+                'required' => false,
+                'class' => \App\Entity\Participant::class,
+                'property' => 'personnage.nom',
+                'query_builder' => static function (ParticipantRepository $er) use ($options) {
+                    $qb = $er->createQueryBuilder('p');
+                    $qb->join('p.personnage', 'u');
+                    $qb->join('p.groupeGn', 'gg');
+                    $qb->orderBy('u.nom', 'ASC');
+                    $qb->where('gg.id = :groupeGnId');
+                    $qb->setParameter('groupeGnId', $options['groupeGnId']);
 
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'groupeGnOrdre';
-	}
+                    return $qb;
+                },
+                'attr' => [
+                    'class' => 'selectpicker',
+                    'data-live-search' => 'true',
+                    'placeholder' => 'Responsable',
+                ],
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\GroupeGn::class,
+            'groupeGnId' => false,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'groupeGnOrdre';
+    }
 }

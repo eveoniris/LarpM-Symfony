@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,38 +21,33 @@
 namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use App\Entity\Age;
 
 /**
- * LarpManager\Repository\AgeRepository
- *  
+ * LarpManager\Repository\AgeRepository.
+ *
  * @author kevin
  */
 class AgeRepository extends EntityRepository
 {
-	/**
-	 * Trouve tous les ages classé par index
-	 * 
-	 * @return ArrayCollection $ages
-	 */
-	public function findAllOrderedByLabel()
-	{
-		$ages = $this->getEntityManager()
-				->createQuery('SELECT a FROM App\Entity\Age a ORDER BY a.label ASC')
-				->getResult();
-		
-		return $ages;
-	}
-	
-	/**
-	 * Fourni tous les ages disponible à la création d'un personnage
-	 */
-	public function findAllOnCreation()
-	{
-		$ages = $this->getEntityManager()
-		->createQuery('SELECT a FROM App\Entity\Age a WHERE a.enableCreation = true ORDER BY a.label ASC')
-		->getResult();
-		
-		return $ages;
-	}
+    /**
+     * Trouve tous les ages classé par index.
+     *
+     * @return ArrayCollection $ages
+     */
+    public function findAllOrderedByLabel()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT a FROM App\Entity\Age a ORDER BY a.label ASC')
+            ->getResult();
+    }
+
+    /**
+     * Fourni tous les ages disponible à la création d'un personnage.
+     */
+    public function findAllOnCreation()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT a FROM App\Entity\Age a WHERE a.enableCreation = true ORDER BY a.label ASC')
+            ->getResult();
+    }
 }

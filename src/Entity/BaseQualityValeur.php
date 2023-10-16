@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\QualityValeur
+ * App\Entity\QualityValeur.
  *
  * @Table(name="quality_valeur", indexes={@Index(name="fk_quality_valeur_qualite1_idx", columns={"quality_id"}), @Index(name="fk_quality_valeur_monnaie1_idx", columns={"monnaie_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseQualityValeur", "extended":"QualityValeur"})
  */
 class BaseQualityValeur
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -33,12 +38,14 @@ class BaseQualityValeur
 
     /**
      * @ManyToOne(targetEntity="Quality", inversedBy="qualityValeurs", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="quality_id", referencedColumnName="id", nullable=false)
      */
     protected $quality;
 
     /**
      * @ManyToOne(targetEntity="Monnaie", inversedBy="qualityValeurs")
+     *
      * @JoinColumn(name="monnaie_id", referencedColumnName="id", nullable=false)
      */
     protected $monnaie;
@@ -50,7 +57,8 @@ class BaseQualityValeur
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\QualityValeur
      */
     public function setId($id)
@@ -63,7 +71,7 @@ class BaseQualityValeur
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -73,7 +81,8 @@ class BaseQualityValeur
     /**
      * Set the value of nombre.
      *
-     * @param integer $nombre
+     * @param int $nombre
+     *
      * @return \App\Entity\QualityValeur
      */
     public function setNombre($nombre)
@@ -86,7 +95,7 @@ class BaseQualityValeur
     /**
      * Get the value of nombre.
      *
-     * @return integer
+     * @return int
      */
     public function getNombre()
     {
@@ -96,7 +105,6 @@ class BaseQualityValeur
     /**
      * Set Quality entity (many to one).
      *
-     * @param \App\Entity\Quality $quality
      * @return \App\Entity\QualityValeur
      */
     public function setQuality(Quality $quality = null)
@@ -119,7 +127,6 @@ class BaseQualityValeur
     /**
      * Set Monnaie entity (many to one).
      *
-     * @param \App\Entity\Monnaie $monnaie
      * @return \App\Entity\QualityValeur
      */
     public function setMonnaie(Monnaie $monnaie = null)
@@ -141,6 +148,6 @@ class BaseQualityValeur
 
     public function __sleep()
     {
-        return array('id', 'quality_id', 'monnaie_id', 'nombre');
+        return ['id', 'quality_id', 'monnaie_id', 'nombre'];
     }
 }

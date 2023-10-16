@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Domaine
+ * App\Entity\Domaine.
  *
  * @Table(name="domaine")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseDomaine", "extended":"Domaine"})
  */
 class BaseDomaine
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -40,7 +45,9 @@ class BaseDomaine
 
     /**
      * @OneToMany(targetEntity="Sort", mappedBy="domaine")
+     *
      * @JoinColumn(name="id", referencedColumnName="domaine_id", nullable=false)
+     *
      * @OrderBy({"label" = "ASC", "niveau" = "ASC",})
      */
     protected $sorts;
@@ -59,10 +66,11 @@ class BaseDomaine
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Domaine
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -72,7 +80,7 @@ class BaseDomaine
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -83,6 +91,7 @@ class BaseDomaine
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Domaine
      */
     public function setLabel($label)
@@ -106,6 +115,7 @@ class BaseDomaine
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Domaine
      */
     public function setDescription($description)
@@ -128,7 +138,6 @@ class BaseDomaine
     /**
      * Add Sort entity to collection (one to many).
      *
-     * @param \App\Entity\Sort $sort
      * @return \App\Entity\Domaine
      */
     public function addSort(Sort $sort)
@@ -141,7 +150,6 @@ class BaseDomaine
     /**
      * Remove Sort entity from collection (one to many).
      *
-     * @param \App\Entity\Sort $sort
      * @return \App\Entity\Domaine
      */
     public function removeSort(Sort $sort)
@@ -164,7 +172,6 @@ class BaseDomaine
     /**
      * Add Personnage entity to collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Domaine
      */
     public function addPersonnage(Personnage $personnage)
@@ -177,7 +184,6 @@ class BaseDomaine
     /**
      * Remove Personnage entity from collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Domaine
      */
     public function removePersonnage(Personnage $personnage)
@@ -199,6 +205,6 @@ class BaseDomaine
 
     public function __sleep()
     {
-        return array('id', 'label', 'description');
+        return ['id', 'label', 'description'];
     }
 }

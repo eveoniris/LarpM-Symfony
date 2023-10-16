@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,60 +23,51 @@ namespace App\Form\Loi;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Doctrine\ORM\EntityRepository;
-
-use LarpManager\Form\Type\ClasseType;
 
 /**
- * LarpManager\Form\Groupe\LoiForm
+ * LarpManager\Form\Groupe\LoiForm.
  *
  * @author kevin
- *
  */
 class LoiForm extends AbstractType
 {
-	/**
-	 * Contruction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text')
-				->add('description','textarea', array(
-						'required' => false,
-						'label' => 'Description succinte',
-						'attr' => array(
-							'class' => 'tinymce',
-							'row' => 9,
-						),
-				))
-				->add('document','file', array(
-						'label' => 'Téléversez un document',
-						'required' => true,
-						'mapped' => false
-				))
-				->add('submit', 'submit', array('label' => 'Valider'));
-	}
+    /**
+     * Contruction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text')
+            ->add('description', 'textarea', [
+                'required' => false,
+                'label' => 'Description succinte',
+                'attr' => [
+                    'class' => 'tinymce',
+                    'row' => 9,
+                ],
+            ])
+            ->add('document', 'file', [
+                'label' => 'Téléversez un document',
+                'required' => true,
+                'mapped' => false,
+            ])
+            ->add('submit', 'submit', ['label' => 'Valider']);
+    }
 
-	/**
-	 * Définition de l'entité conercné
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\Loi',
-		));
-	}
+    /**
+     * Définition de l'entité conercné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\Loi::class,
+        ]);
+    }
 
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'loi';
-	}
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'loi';
+    }
 }

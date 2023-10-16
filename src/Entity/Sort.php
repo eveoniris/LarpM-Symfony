@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,22 +27,20 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseSort;
-
 /**
- * App\Entity\Sort
+ * App\Entity\Sort.
  *
  * @Entity(repositoryClass="LarpManager\Repository\SortRepository")
  */
 class Sort extends BaseSort
 {
-	public function getFullLabel()
-	{
-		return $this->getLabel() .' - '. $this->getDomaine()->getLabel() .' Niveau '. $this->getNiveau();
-	}
+    public function getFullLabel(): string
+    {
+        return $this->getLabel().' - '.$this->getDomaine()->getLabel().' Niveau '.$this->getNiveau();
+    }
 
-	public function getPrintLabel()
-	{
-		return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel() .'_'. $this->getDomaine()->getLabel() .'_'. $this->getNiveau()));
-	}	
+    public function getPrintLabel(): string|array|null
+    {
+        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel().'_'.$this->getDomaine()->getLabel().'_'.$this->getNiveau()));
+    }
 }

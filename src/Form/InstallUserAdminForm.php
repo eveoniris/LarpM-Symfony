@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,34 +22,29 @@ namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\InstallUserAdminForm
+ * LarpManager\Form\InstallUserAdminForm.
  *
  * @author kevin
- *
  */
 class InstallUserAdminForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */	
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('name','text', array('required' => true))
-		->add('email','email', array('required' => true))
-		->add('password','password', array('required' => true));
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('name', 'text', ['required' => true])
+            ->add('email', 'email', ['required' => true])
+            ->add('password', 'password', ['required' => true]);
+    }
 
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'installUserAdminForm';
-	}
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'installUserAdminForm';
+    }
 }

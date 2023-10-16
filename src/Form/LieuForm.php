@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,54 +27,48 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
- * LarpManager\Form\LieuForm
- * 
- * @author kevin
+ * LarpManager\Form\LieuForm.
  *
+ * @author kevin
  */
 class LieuForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('nom','text', array(
-					'required' => true,
-                    'attr' => ['maxlength' => 45],
-                    'constraints' => [
-                            new Length(['max' => 45]),
-                            new NotBlank(),
-                        ],
-				))
-				->add('description','textarea', array(
-					'required' => true,
-					'attr' => array(
-						'class'=> 'tinymce',
-						'rows' => 9),
-				));
-	}
-	
-	/**
-	 * Définition de la classe d'entité concernée
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Lieu',
-		));
-	}
-	
-	/**
-	 * Nom du formlaire
-	 */
-	public function getName()
-	{
-		return 'lieu';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('nom', 'text', [
+            'required' => true,
+            'attr' => ['maxlength' => 45],
+            'constraints' => [
+                new Length(['max' => 45]),
+                new NotBlank(),
+            ],
+        ])
+            ->add('description', 'textarea', [
+                'required' => true,
+                'attr' => [
+                    'class' => 'tinymce',
+                    'rows' => 9],
+            ]);
+    }
+
+    /**
+     * Définition de la classe d'entité concernée.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Lieu::class,
+        ]);
+    }
+
+    /**
+     * Nom du formlaire.
+     */
+    public function getName(): string
+    {
+        return 'lieu';
+    }
 }

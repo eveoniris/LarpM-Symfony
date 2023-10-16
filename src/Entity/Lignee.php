@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,29 +18,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * 
- * 
- * 
- * 
- */
-
 namespace App\Entity;
 
-use App\Entity\BaseLignee;
-
 /**
- * App\Entity\Lignee
+ * App\Entity\Lignee.
  *
  * @Entity(repositoryClass="LarpManager\Repository\LigneesRepository")
  */
-class Lignee extends BaseLignee
+class Lignee extends BaseLignee implements \Stringable
 {
-	/**
-	 * Affichage
-	 */
-	public function __toString()
-	{
-		return $this->getNom();
-	}
+    /**
+     * Affichage.
+     */
+    public function __toString(): string
+    {
+        return $this->getNom();
+    }
 }

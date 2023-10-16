@@ -10,30 +10,37 @@
 namespace App\Entity;
 
 /**
- * App\Entity\IntrigueHasEvenement
+ * App\Entity\IntrigueHasEvenement.
  *
  * @Table(name="intrigue_has_evenement", indexes={@Index(name="fk_intrigue_has_evenement_evenement1_idx", columns={"evenement_id"}), @Index(name="fk_intrigue_has_evenement_intrigue1_idx", columns={"intrigue_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseIntrigueHasEvenement", "extended":"IntrigueHasEvenement"})
  */
 class BaseIntrigueHasEvenement
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
      * @ManyToOne(targetEntity="Intrigue", inversedBy="intrigueHasEvenements", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="intrigue_id", referencedColumnName="id", nullable=false)
      */
     protected $intrigue;
 
     /**
      * @ManyToOne(targetEntity="Evenement", inversedBy="intrigueHasEvenements", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="evenement_id", referencedColumnName="id", nullable=false)
      */
     protected $evenement;
@@ -45,7 +52,8 @@ class BaseIntrigueHasEvenement
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\IntrigueHasEvenement
      */
     public function setId($id)
@@ -58,7 +66,7 @@ class BaseIntrigueHasEvenement
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -68,7 +76,6 @@ class BaseIntrigueHasEvenement
     /**
      * Set Intrigue entity (many to one).
      *
-     * @param \App\Entity\Intrigue $intrigue
      * @return \App\Entity\IntrigueHasEvenement
      */
     public function setIntrigue(Intrigue $intrigue = null)
@@ -91,7 +98,6 @@ class BaseIntrigueHasEvenement
     /**
      * Set Evenement entity (many to one).
      *
-     * @param \App\Entity\Evenement $evenement
      * @return \App\Entity\IntrigueHasEvenement
      */
     public function setEvenement(Evenement $evenement = null)
@@ -113,6 +119,6 @@ class BaseIntrigueHasEvenement
 
     public function __sleep()
     {
-        return array('id', 'intrigue_id', 'evenement_id');
+        return ['id', 'intrigue_id', 'evenement_id'];
     }
 }

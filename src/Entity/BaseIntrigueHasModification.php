@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\IntrigueHasModification
+ * App\Entity\IntrigueHasModification.
  *
  * @Table(name="intrigue_has_modification", indexes={@Index(name="fk_intrigue_has_modification_intrigue1_idx", columns={"intrigue_id"}), @Index(name="fk_intrigue_has_modification_User1_idx", columns={"User_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseIntrigueHasModification", "extended":"IntrigueHasModification"})
  */
 class BaseIntrigueHasModification
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -33,12 +38,14 @@ class BaseIntrigueHasModification
 
     /**
      * @ManyToOne(targetEntity="Intrigue", inversedBy="intrigueHasModifications", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="intrigue_id", referencedColumnName="id", nullable=false)
      */
     protected $intrigue;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="intrigueHasModifications")
+     *
      * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
      */
     protected $User;
@@ -50,7 +57,8 @@ class BaseIntrigueHasModification
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\IntrigueHasModification
      */
     public function setId($id)
@@ -63,7 +71,7 @@ class BaseIntrigueHasModification
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -74,6 +82,7 @@ class BaseIntrigueHasModification
      * Set the value of date.
      *
      * @param \DateTime $date
+     *
      * @return \App\Entity\IntrigueHasModification
      */
     public function setDate($date)
@@ -96,7 +105,6 @@ class BaseIntrigueHasModification
     /**
      * Set Intrigue entity (many to one).
      *
-     * @param \App\Entity\Intrigue $intrigue
      * @return \App\Entity\IntrigueHasModification
      */
     public function setIntrigue(Intrigue $intrigue = null)
@@ -119,7 +127,6 @@ class BaseIntrigueHasModification
     /**
      * Set User entity (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\IntrigueHasModification
      */
     public function setUser(User $User = null)
@@ -141,6 +148,6 @@ class BaseIntrigueHasModification
 
     public function __sleep()
     {
-        return array('id', 'date', 'intrigue_id', 'User_id');
+        return ['id', 'date', 'intrigue_id', 'User_id'];
     }
 }

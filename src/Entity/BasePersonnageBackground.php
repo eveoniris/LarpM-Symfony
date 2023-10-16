@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\PersonnageBackground
+ * App\Entity\PersonnageBackground.
  *
  * @Table(name="personnage_background", indexes={@Index(name="fk_personnage_background_personnage1_idx", columns={"personnage_id"}), @Index(name="fk_personnage_background_User1_idx", columns={"User_id"}), @Index(name="fk_personnage_background_gn1_idx", columns={"gn_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePersonnageBackground", "extended":"PersonnageBackground"})
  */
 class BasePersonnageBackground
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -48,18 +53,21 @@ class BasePersonnageBackground
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="personnageBackgrounds")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="personnageBackgrounds")
+     *
      * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
      */
     protected $User;
 
     /**
      * @ManyToOne(targetEntity="Gn", inversedBy="personnageBackgrounds")
+     *
      * @JoinColumn(name="gn_id", referencedColumnName="id", nullable=false)
      */
     protected $gn;
@@ -71,7 +79,8 @@ class BasePersonnageBackground
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\PersonnageBackground
      */
     public function setId($id)
@@ -84,7 +93,7 @@ class BasePersonnageBackground
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -95,6 +104,7 @@ class BasePersonnageBackground
      * Set the value of text.
      *
      * @param string $text
+     *
      * @return \App\Entity\PersonnageBackground
      */
     public function setText($text)
@@ -118,6 +128,7 @@ class BasePersonnageBackground
      * Set the value of visibility.
      *
      * @param string $visibility
+     *
      * @return \App\Entity\PersonnageBackground
      */
     public function setVisibility($visibility)
@@ -141,6 +152,7 @@ class BasePersonnageBackground
      * Set the value of creation_date.
      *
      * @param \DateTime $creation_date
+     *
      * @return \App\Entity\PersonnageBackground
      */
     public function setCreationDate($creation_date)
@@ -164,6 +176,7 @@ class BasePersonnageBackground
      * Set the value of update_date.
      *
      * @param \DateTime $update_date
+     *
      * @return \App\Entity\PersonnageBackground
      */
     public function setUpdateDate($update_date)
@@ -186,7 +199,6 @@ class BasePersonnageBackground
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\PersonnageBackground
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -209,7 +221,6 @@ class BasePersonnageBackground
     /**
      * Set User entity (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\PersonnageBackground
      */
     public function setUser(User $User = null)
@@ -232,7 +243,6 @@ class BasePersonnageBackground
     /**
      * Set Gn entity (many to one).
      *
-     * @param \App\Entity\Gn $gn
      * @return \App\Entity\PersonnageBackground
      */
     public function setGn(Gn $gn = null)
@@ -254,6 +264,6 @@ class BasePersonnageBackground
 
     public function __sleep()
     {
-        return array('id', 'personnage_id', 'text', 'visibility', 'creation_date', 'update_date', 'User_id', 'gn_id');
+        return ['id', 'personnage_id', 'text', 'visibility', 'creation_date', 'update_date', 'User_id', 'gn_id'];
     }
 }

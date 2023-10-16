@@ -9,32 +9,28 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseRumeur;
-
 /**
- * App\Entity\Rumeur
+ * App\Entity\Rumeur.
  *
  * @Entity(repositoryClass="LarpManager\Repository\RumeurRepository")
  */
 class Rumeur extends BaseRumeur
 {
-	/**
-	 * Constructeur. Met en place la date de création et de mise à jour de la rumeur
-	 */
-	function __construct()
-	{
-		$this->setCreationDate(new \Datetime('NOW'));
-		$this->setUpdateDate(new \Datetime('NOW'));
-		parent::__construct();
-	}
-	
-	function getVisibility()
-	{
-		switch (parent::getVisibility())
-		{
-			case 'disponible' : return 'Non disponible';
-			case 'non_disponible' :
-			default : return "Brouillon";
-		}
-	}
+    /**
+     * Constructeur. Met en place la date de création et de mise à jour de la rumeur.
+     */
+    public function __construct()
+    {
+        $this->setCreationDate(new \DateTime('NOW'));
+        $this->setUpdateDate(new \DateTime('NOW'));
+        parent::__construct();
+    }
+
+    public function getVisibility(): string
+    {
+        return match (parent::getVisibility()) {
+            'disponible' => 'Non disponible',
+            default => 'Brouillon',
+        };
+    }
 }

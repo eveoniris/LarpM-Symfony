@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,12 +27,10 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseDomaine;
-
 class Domaine extends BaseDomaine
 {
-	public function getFullDescription()
-	{
-		return $this->getLabel(). ' - ' . $this->getDescription();
-	}
+    public function getFullDescription(): string
+    {
+        return $this->getLabel().' - '.$this->getDescription();
+    }
 }

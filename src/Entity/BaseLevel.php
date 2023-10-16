@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Level
+ * App\Entity\Level.
  *
  * @Table(name="`level`")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseLevel", "extended":"Level"})
  */
 class BaseLevel
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -55,6 +60,7 @@ class BaseLevel
 
     /**
      * @OneToMany(targetEntity="Competence", mappedBy="level", cascade={"persist"})
+     *
      * @JoinColumn(name="id", referencedColumnName="level_id", nullable=false)
      */
     protected $competences;
@@ -67,10 +73,11 @@ class BaseLevel
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Level
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -80,7 +87,7 @@ class BaseLevel
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -90,7 +97,8 @@ class BaseLevel
     /**
      * Set the value of index.
      *
-     * @param integer $index
+     * @param int $index
+     *
      * @return \App\Entity\Level
      */
     public function setIndex($index)
@@ -103,7 +111,7 @@ class BaseLevel
     /**
      * Get the value of index.
      *
-     * @return integer
+     * @return int
      */
     public function getIndex()
     {
@@ -114,6 +122,7 @@ class BaseLevel
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Level
      */
     public function setLabel($label)
@@ -136,7 +145,8 @@ class BaseLevel
     /**
      * Set the value of cout.
      *
-     * @param integer $cout
+     * @param int $cout
+     *
      * @return \App\Entity\Level
      */
     public function setCout($cout)
@@ -149,7 +159,7 @@ class BaseLevel
     /**
      * Get the value of cout.
      *
-     * @return integer
+     * @return int
      */
     public function getCout()
     {
@@ -159,7 +169,8 @@ class BaseLevel
     /**
      * Set the value of cout_favori.
      *
-     * @param integer $cout_favori
+     * @param int $cout_favori
+     *
      * @return \App\Entity\Level
      */
     public function setCoutFavori($cout_favori)
@@ -172,7 +183,7 @@ class BaseLevel
     /**
      * Get the value of cout_favori.
      *
-     * @return integer
+     * @return int
      */
     public function getCoutFavori()
     {
@@ -182,7 +193,8 @@ class BaseLevel
     /**
      * Set the value of cout_meconu.
      *
-     * @param integer $cout_meconu
+     * @param int $cout_meconu
+     *
      * @return \App\Entity\Level
      */
     public function setCoutMeconu($cout_meconu)
@@ -195,7 +207,7 @@ class BaseLevel
     /**
      * Get the value of cout_meconu.
      *
-     * @return integer
+     * @return int
      */
     public function getCoutMeconu()
     {
@@ -205,7 +217,6 @@ class BaseLevel
     /**
      * Add Competence entity to collection (one to many).
      *
-     * @param \App\Entity\Competence $competence
      * @return \App\Entity\Level
      */
     public function addCompetence(Competence $competence)
@@ -218,7 +229,6 @@ class BaseLevel
     /**
      * Remove Competence entity from collection (one to many).
      *
-     * @param \App\Entity\Competence $competence
      * @return \App\Entity\Level
      */
     public function removeCompetence(Competence $competence)
@@ -240,6 +250,6 @@ class BaseLevel
 
     public function __sleep()
     {
-        return array('id', 'index', 'label', 'cout', 'cout_favori', 'cout_meconu');
+        return ['id', 'index', 'label', 'cout', 'cout_favori', 'cout_meconu'];
     }
 }

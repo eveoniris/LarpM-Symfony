@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,74 +25,68 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\GroupFindForm
+ * LarpManager\Form\GroupFindForm.
  *
  * @author kevin
- *
  */
 class FiefForm extends AbstractType
 {
     /**
-     * Construction du formulaire
-     *
-     * @param FormBuilderInterface $builder
-     * @param array $options
+     * Construction du formulaire.
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('value', 'text', array(
+        $builder->add('value', 'text', [
+            'required' => false,
+            'attr' => [
+                'placeholder' => 'Votre recherche',
+            ],
+        ])
+            ->add('type', 'choice', [
                 'required' => false,
-                'attr' => array(
-                    'placeholder' => 'Votre recherche',
-                )
-            ))
-            ->add('type', 'choice', array(
-                'required' => false,
-                'choices' => array(
+                'choices' => [
                     'idFief' => 'Id du fief',
                     'nomFief' => 'Nom du fief',
-                )
-            ))
-            ->add('pays', 'entity', array(
+                ],
+            ])
+            ->add('pays', 'entity', [
                 'required' => false,
                 'label' => 'Par pays',
-                'class' => 'App\Entity\Territoire',
+                'class' => \App\Entity\Territoire::class,
                 'choices' => $options['listePays'],
-            ))
-            ->add('province', 'entity', array(
+            ])
+            ->add('province', 'entity', [
                 'required' => false,
                 'label' => 'Par province',
-                'class' => 'App\Entity\Territoire',
+                'class' => \App\Entity\Territoire::class,
                 'choices' => $options['listeProvinces'],
-            ))
-            ->add('groupe', 'entity', array(
+            ])
+            ->add('groupe', 'entity', [
                 'required' => false,
                 'label' => 'Par groupe',
-                'class' => 'App\Entity\Groupe',
-                'choices' => $options['listeGroupes']
-            ));
+                'class' => \App\Entity\Groupe::class,
+                'choices' => $options['listeGroupes'],
+            ]);
     }
 
     /**
-     * Définition de l'entité concernée
-     *
-     * @param OptionsResolver $resolver
+     * Définition de l'entité concernée.
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(
-            array(
-                'listeGroupes'=>'',
-                'listePays'=>'',
-                'listeProvinces'=>'',
-            )
+            [
+                'listeGroupes' => '',
+                'listePays' => '',
+                'listeProvinces' => '',
+            ]
         );
     }
 
     /**
-     * Nom du formulaire
+     * Nom du formulaire.
      */
-    public function getName()
+    public function getName(): string
     {
         return 'fief';
     }

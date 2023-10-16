@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Tag
+ * App\Entity\Tag.
  *
  * @Table(name="tag")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseTag", "extended":"Tag"})
  */
 class BaseTag
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -46,10 +51,11 @@ class BaseTag
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Tag
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -59,7 +65,7 @@ class BaseTag
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -70,6 +76,7 @@ class BaseTag
      * Set the value of nom.
      *
      * @param string $nom
+     *
      * @return \App\Entity\Tag
      */
     public function setNom($nom)
@@ -92,7 +99,6 @@ class BaseTag
     /**
      * Add Objet entity to collection.
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\Tag
      */
     public function addObjet(Objet $objet)
@@ -105,7 +111,6 @@ class BaseTag
     /**
      * Remove Objet entity from collection.
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\Tag
      */
     public function removeObjet(Objet $objet)
@@ -127,6 +132,6 @@ class BaseTag
 
     public function __sleep()
     {
-        return array('id', 'nom');
+        return ['id', 'nom'];
     }
 }

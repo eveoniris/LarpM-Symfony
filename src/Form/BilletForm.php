@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,69 +25,63 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\BilletForm
+ * LarpManager\Form\BilletForm.
  *
  * @author kevin
- *
  */
 class BilletForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text', array(
-					'label' => 'Label',
-					'required' => true,
-				))
-				->add('gn', 'entity', array(
-					'label' => 'Concerne le GN',
-					'required' => true,
-					'multiple' => false,
-					'expanded' => false,
-					'class' => 'App\Entity\Gn',
-					'property' => 'label',
-				))
-				->add('fedegn', 'choice', array(
-					'label' => 'A transmettre à la Fédégn',
-					'required' => true,
-					'choices' => array(
-							true => 'Oui',
-							false => 'Non',
-					),
-					'expanded' => true,
-				))
-				->add('description','textarea', array(
-					'required' => true,
-					'label' => 'Description',
-					'attr' => array(
-						'rows' => 9,
-						'class' => 'tinymce'
-					),
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Billet',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'billetDelete';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text', [
+            'label' => 'Label',
+            'required' => true,
+        ])
+            ->add('gn', 'entity', [
+                'label' => 'Concerne le GN',
+                'required' => true,
+                'multiple' => false,
+                'expanded' => false,
+                'class' => \App\Entity\Gn::class,
+                'property' => 'label',
+            ])
+            ->add('fedegn', 'choice', [
+                'label' => 'A transmettre à la Fédégn',
+                'required' => true,
+                'choices' => [
+                    true => 'Oui',
+                    false => 'Non',
+                ],
+                'expanded' => true,
+            ])
+            ->add('description', 'textarea', [
+                'required' => true,
+                'label' => 'Description',
+                'attr' => [
+                    'rows' => 9,
+                    'class' => 'tinymce',
+                ],
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Billet::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'billetDelete';
+    }
 }

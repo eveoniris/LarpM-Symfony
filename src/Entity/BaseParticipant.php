@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -16,16 +15,16 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseParticipant', 'extended' => 'Participant'])]
 class BaseParticipant
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected int $id;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected ?\DateTimeInterface $subscription_date = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected string $billet_date;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTimeInterface $valide_ci_le = null;
 
     /**
@@ -114,11 +113,9 @@ class BaseParticipant
     /**
      * Set the value of id.
      *
-     * @param int $id
-     *
      * @return \App\Entity\Participant
      */
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
 
@@ -142,7 +139,7 @@ class BaseParticipant
      *
      * @return \App\Entity\Participant
      */
-    public function setSubscriptionDate($subscription_date)
+    public function setSubscriptionDate(?\DateTimeInterface $subscription_date)
     {
         $this->subscription_date = $subscription_date;
 
@@ -166,7 +163,7 @@ class BaseParticipant
      *
      * @return \App\Entity\Participant
      */
-    public function setBilletDate($billet_date)
+    public function setBilletDate(string $billet_date)
     {
         $this->billet_date = $billet_date;
 
@@ -190,7 +187,7 @@ class BaseParticipant
      *
      * @return \App\Entity\Participant
      */
-    public function setValideCiLe($valide_ci_le)
+    public function setValideCiLe(?\DateTimeInterface $valide_ci_le)
     {
         $this->valide_ci_le = $valide_ci_le;
 

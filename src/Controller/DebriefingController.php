@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,185 +17,165 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Controller;
 
+use App\Entity\Debriefing;
+use App\Entity\Groupe;
+use JasonGrimes\Paginator;
+use LarpManager\Form\Debriefing\DebriefingDeleteForm;
+use LarpManager\Form\Debriefing\DebriefingFindForm;
+use LarpManager\Form\Debriefing\DebriefingForm;
+use Silex\Application;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
-use Silex\Application;
-use JasonGrimes\Paginator;
-
-use App\Entity\Debriefing;
-use LarpManager\Form\Debriefing\DebriefingForm;
-use LarpManager\Form\Debriefing\DebriefingFindForm;
-use LarpManager\Form\Debriefing\DebriefingDeleteForm;
-use App\Entity\Groupe;
-
 
 /**
- * LarpManager\Controllers\DebriefingController
+ * LarpManager\Controllers\DebriefingController.
  *
  * @author kevin
- *
  */
 class DebriefingController
 {
-    public const DOC_PATH = __DIR__.'/../../../private/doc/';
+    final public const DOC_PATH = __DIR__.'/../../../private/doc/';
 
-	/**
-	 * Présentation des debriefings
-	 *
-	 * @param Request $request
-	 * @param Application $app
-	 */
-	public function listAction(Request $request, Application $app)
-	{
-		$order_by = $request->get('order_by') ?: 'id';
-		$order_dir = $request->get('order_dir') === 'DESC' ? 'DESC' : 'ASC';
-		$limit = (int)($request->get('limit') ?: 50);
-		$page = (int)($request->get('page') ?: 1);
-		$offset = ($page - 1) * $limit;
-		$criteria = array();
-		
-		$form = $app['form.factory']->createBuilder(new DebriefingFindForm())
-			->getForm();
-		
-		$form->handleRequest($request);
-			
-		if ( $form->isValid() )
-		{
-			// TODO
-			/*$data = $form->getData();
-			$type = $data['type'];
-			$value = $data['value'];
-			switch ($type){
-				case 'Auteur':
-					$criteria[] = "g.nom LIKE '%$value%'";
-					break;
-				case 'Groupe':
-					$criteria[] = "u.name LIKE '%$value%'";
-					break;
-			}*/
-		}
-	
-		$repo = $app['orm.em']->getRepository('\App\Entity\Debriefing');
-		$debriefings = $repo->findBy(
-				$criteria,
-				array( $order_by => $order_dir),
-				$limit,
-				$offset);
-	
-		$numResults = $repo->findCount($criteria);
-	
-		$paginator = new Paginator($numResults, $limit, $page,
-				$app['url_generator']->generate('debriefing.list') . '?page=(:num)&limit=' . $limit . '&order_by=' . $order_by . '&order_dir=' . $order_dir
-				);
-	
-		return $app['twig']->render('admin/debriefing/list.twig', array(
-				'debriefings' => $debriefings,
-				'paginator' => $paginator,
-				'form' => $form->createView(),
-		));
-	}
-	
-	/**
-	 * Ajout d'un debriefing
-	 * 
-	 * @param Request $request
-	 * @param Application $app
-	 */
-	public function addAction(Request $request, Application $app)
-	{
-		$debriefing = new Debriefing;
-		$groupeId = $request->get('groupe');
-		
-		if ( $groupeId )
-		{
-			$groupe = $app['orm.em']->find(Groupe::class, $groupeId);
-			if ( $groupe ) {
+    /**
+     * Présentation des debriefings.
+     */
+    public function listAction(Request $request, Application $app)
+    {
+        $order_by = $request->get('order_by') ?: 'id';
+        $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
+        $limit = (int) ($request->get('limit') ?: 50);
+        $page = (int) ($request->get('page') ?: 1);
+        $offset = ($page - 1) * $limit;
+        $criteria = [];
+
+        $form = $app['form.factory']->createBuilder(new DebriefingFindForm())
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            // TODO
+            /*$data = $form->getData();
+            $type = $data['type'];
+            $value = $data['value'];
+            switch ($type){
+                case 'Auteur':
+                    $criteria[] = "g.nom LIKE '%$value%'";
+                    break;
+                case 'Groupe':
+                    $criteria[] = "u.name LIKE '%$value%'";
+                    break;
+            }*/
+        }
+
+        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Debriefing::class);
+        $debriefings = $repo->findBy(
+            $criteria,
+            [$order_by => $order_dir],
+            $limit,
+            $offset);
+
+        $numResults = $repo->findCount($criteria);
+
+        $paginator = new Paginator($numResults, $limit, $page,
+            $app['url_generator']->generate('debriefing.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
+        );
+
+        return $app['twig']->render('admin/debriefing/list.twig', [
+            'debriefings' => $debriefings,
+            'paginator' => $paginator,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Ajout d'un debriefing.
+     */
+    public function addAction(Request $request, Application $app)
+    {
+        $debriefing = new Debriefing();
+        $groupeId = $request->get('groupe');
+
+        if ($groupeId) {
+            $groupe = $app['orm.em']->find(Groupe::class, $groupeId);
+            if ($groupe) {
                 $debriefing->setGroupe($groupe);
             }
-		}
-		
-		$form = $app['form.factory']->createBuilder(new DebriefingForm(), $debriefing)
-			->add('visibility','choice', array(
-					'required' => true,
-					'label' =>  'Visibilité',
-					'choices' => $app['larp.manager']->getVisibility(),
-			))
-			->add('save','submit', array('label' => 'Sauvegarder'))
-			->getForm();
-			
-		$form->handleRequest($request);
-			
-		if ( $form->isValid() && $form->isSubmitted() )
-		{
-			$debriefing = $form->getData();
-			$debriefing->setUser($app['User']);
+        }
 
-            if ($this->handleDocument($request, $app, $form, $debriefing)){
+        $form = $app['form.factory']->createBuilder(new DebriefingForm(), $debriefing)
+            ->add('visibility', 'choice', [
+                'required' => true,
+                'label' => 'Visibilité',
+                'choices' => $app['larp.manager']->getVisibility(),
+            ])
+            ->add('save', 'submit', ['label' => 'Sauvegarder'])
+            ->getForm();
 
+        $form->handleRequest($request);
+
+        if ($form->isValid() && $form->isSubmitted()) {
+            $debriefing = $form->getData();
+            $debriefing->setUser($app['User']);
+
+            if ($this->handleDocument($request, $app, $form, $debriefing)) {
                 $app['orm.em']->persist($debriefing);
                 $app['orm.em']->flush();
 
                 $app['session']->getFlashBag()->add('success', 'Le debriefing a été ajouté.');
-
             }
-			return $app->redirect($app['url_generator']->generate('groupe.detail', array('index' => $debriefing->getGroupe()->getId())),303);
-		}
-		
-		return $app['twig']->render('admin/debriefing/add.twig', array(
-				'form' => $form->createView(),
-		));
-	}
-	
-	/**
-	 * Suppression d'un debriefing
-	 * 
-	 * @param Request $request
-	 * @param Application $app
-	 * @param Debriefing $debriefing
-	 */
-	public function deleteAction(Request $request, Application $app, Debriefing $debriefing)
-	{
-		$form = $app['form.factory']->createBuilder(new DebriefingDeleteForm(), $debriefing)
-			->add('save','submit', array('label' => 'Supprimer'))
-			->getForm();
-			
-		$form->handleRequest($request);
-			
-		if ( $form->isValid() )
-		{
-			$debriefing = $form->getData();
-			$app['orm.em']->remove($debriefing);
-			$app['orm.em']->flush();
-			
-			$app['session']->getFlashBag()->add('success', 'Le debriefing a été supprimé.');
-			return $app->redirect($app['url_generator']->generate('groupe.detail', array('index' => $debriefing->getGroupe()->getId())),303);
-		}
-		
-		return $app['twig']->render('admin/debriefing/delete.twig', array(
-				'form' => $form->createView(),
-				'debriefing' => $debriefing
-		));
-	}
-	
-	/**
-	 * Mise à jour d'un debriefing
-	 * 
-	 * @param Request $request
-	 * @param Application $app
-	 */
-	public function updateAction(Request $request, Application $app, Debriefing $debriefing)
+
+            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $debriefing->getGroupe()->getId()]), 303);
+        }
+
+        return $app['twig']->render('admin/debriefing/add.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Suppression d'un debriefing.
+     */
+    public function deleteAction(Request $request, Application $app, Debriefing $debriefing)
+    {
+        $form = $app['form.factory']->createBuilder(new DebriefingDeleteForm(), $debriefing)
+            ->add('save', 'submit', ['label' => 'Supprimer'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $debriefing = $form->getData();
+            $app['orm.em']->remove($debriefing);
+            $app['orm.em']->flush();
+
+            $app['session']->getFlashBag()->add('success', 'Le debriefing a été supprimé.');
+
+            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $debriefing->getGroupe()->getId()]), 303);
+        }
+
+        return $app['twig']->render('admin/debriefing/delete.twig', [
+            'form' => $form->createView(),
+            'debriefing' => $debriefing,
+        ]);
+    }
+
+    /**
+     * Mise à jour d'un debriefing.
+     */
+    public function updateAction(Request $request, Application $app, Debriefing $debriefing)
     {
         $form = $app['form.factory']->createBuilder(new DebriefingForm(), $debriefing)
-            ->add('visibility', 'choice', array(
+            ->add('visibility', 'choice', [
                 'required' => true,
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getVisibility(),
-            ))
-            ->add('save', 'submit', array('label' => 'Sauvegarder'))
+            ])
+            ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->getForm();
 
         $form->handleRequest($request);
@@ -204,96 +184,79 @@ class DebriefingController
             $debriefing = $form->getData();
 
             if ($this->handleDocument($request, $app, $form, $debriefing)) {
-
                 $app['orm.em']->persist($debriefing);
                 $app['orm.em']->flush();
 
                 $app['session']->getFlashBag()->add('success', 'Le debriefing a été modifié.');
-                return $app->redirect($app['url_generator']->generate('groupe.detail', array('index' => $debriefing->getGroupe()->getId())), 303);
+
+                return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $debriefing->getGroupe()->getId()]), 303);
             }
         }
-            return $app['twig']->render('admin/debriefing/update.twig', array(
-                'form' => $form->createView(),
-                'debriefing' => $debriefing
-            ));
+
+        return $app['twig']->render('admin/debriefing/update.twig', [
+            'form' => $form->createView(),
+            'debriefing' => $debriefing,
+        ]);
     }
 
-	
-	/**
-	 * Détail d'un debriefing
-	 * 
-	 * @param Request $request
-	 * @param Application $app
-	 */
-	public function detailAction(Request $request, Application $app, Debriefing $debriefing)
-	{		
-		return $app['twig']->render('admin/debriefing/detail.twig', array(
-				'debriefing' => $debriefing
-		));
-	}
+    /**
+     * Détail d'un debriefing.
+     */
+    public function detailAction(Request $request, Application $app, Debriefing $debriefing)
+    {
+        return $app['twig']->render('admin/debriefing/detail.twig', [
+            'debriefing' => $debriefing,
+        ]);
+    }
 
     /**
-     * Gère le document uploadé et renvoie true si il est valide, false sinon
-     *
-     * @param Request $request
-     * @param Application $app
-     * @param Form $form
-     * @param Debriefing $debriefing
-     * @return bool
+     * Gère le document uploadé et renvoie true si il est valide, false sinon.
      */
-    private function handleDocument(Request $request, Application $app, Form $form, Debriefing $debriefing) : bool
+    private function handleDocument(Request $request, Application $app, Form $form, Debriefing $debriefing): bool
     {
         $files = $request->files->get($form->getName());
         $documentFile = $files['document'];
         // Si un document est fourni, l'enregistrer
-        if ($documentFile !== null )
-        {
+        if (null !== $documentFile) {
             $filename = $documentFile->getClientOriginalName();
-            $extension = pathinfo($filename, PATHINFO_EXTENSION);
+            $extension = pathinfo((string) $filename, PATHINFO_EXTENSION);
 
-            if ($extension !== 'pdf') {
-                $app['session']->getFlashBag()->add('error','Désolé, votre document n\'est pas valide. Vérifiez le format de votre document ('.$extension.'), seuls les .pdf sont acceptés.');
+            if ('pdf' !== $extension) {
+                $app['session']->getFlashBag()->add('error', 'Désolé, votre document n\'est pas valide. Vérifiez le format de votre document ('.$extension.'), seuls les .pdf sont acceptés.');
+
                 return false;
             }
 
-            $documentFilename = hash('md5',$debriefing->getTitre().$filename . time()).'.'.$extension;
+            $documentFilename = hash('md5', $debriefing->getTitre().$filename.time()).'.'.$extension;
 
-            $documentFile->move(self::DOC_PATH,$documentFilename);
+            $documentFile->move(self::DOC_PATH, $documentFilename);
 
             // delete previous language document if it exists
             $this->tryDeleteDocument($debriefing);
 
             $debriefing->setDocumentUrl($documentFilename);
         }
+
         return true;
     }
 
     /**
-     * Supprime le document spécifié, en cas d'erreur, ne fait rien pour le moment
-     *
-     * @param Debriefing $debriefing
+     * Supprime le document spécifié, en cas d'erreur, ne fait rien pour le moment.
      */
     private function tryDeleteDocument(Debriefing $debriefing): void
     {
-        try
-        {
-            if (!empty($debriefing->getDocumentUrl()))
-			{
-				$docFilePath = self::DOC_PATH.$debriefing->getDocumentUrl();
-				unlink($docFilePath);
-			}
-        }
-        catch (FileException $e)
-        {
+        try {
+            if (!empty($debriefing->getDocumentUrl())) {
+                $docFilePath = self::DOC_PATH.$debriefing->getDocumentUrl();
+                unlink($docFilePath);
+            }
+        } catch (FileException) {
             // for now, simply ignore
         }
     }
 
     /**
-     * Afficher le document lié a un debriefing
-     *
-     * @param Request $request
-     * @param Application $app
+     * Afficher le document lié a un debriefing.
      */
     public function documentAction(Request $request, Application $app)
     {
@@ -301,14 +264,14 @@ class DebriefingController
         $document = $debriefing->getDocumentUrl();
         $file = self::DOC_PATH.$document;
 
-        $stream = function () use ($file) {
+        $stream = static function () use ($file): void {
             readfile($file);
         };
 
-        return $app->stream($stream, 200, array(
+        return $app->stream($stream, 200, [
             'Content-Type' => 'text/pdf',
             'Content-length' => filesize($file),
-            'Content-Disposition' => 'attachment; filename="'.$debriefing->getPrintTitre().'.pdf"'
-        ));
+            'Content-Disposition' => 'attachment; filename="'.$debriefing->getPrintTitre().'.pdf"',
+        ]);
     }
 }

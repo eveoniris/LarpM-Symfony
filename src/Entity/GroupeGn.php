@@ -9,11 +9,10 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseGroupeGn;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\GroupeGn
+ * App\Entity\GroupeGn.
  *
  * @Entity(repositoryClass="LarpManager\Repository\GroupeGnRepository")
  */
@@ -28,58 +27,58 @@ class GroupeGn extends BaseGroupeGn
     }
 
     /**
-	 * Défini le responsable de cette session de jeu
-	 * 
-	 * @param Participant $participant
-	 */
-	public function setResponsable(Participant $participant)
-	{
-		$this->setParticipant($participant);
-		return $this;
-	}
-	
-	/**
-	 * Fourni le responsable de cette session de jeu
-	 */
-	public function getResponsable()
-	{
-		return $this->getParticipant();
-	}
-	
-	/**
-	 * Supprime le responsable de cette session de jeu
-	 */
-	public function setResponsableNull()
-	{
-		return $this->setParticipant(null);		
-	}
-	
-	/**
-	 * Fourni la liste des personnages de cette session de jeu
-	 */
-	public function getPersonnages()
-	{
-		$personnages = new ArrayCollection();
-		
-		foreach ( $this->getParticipants() as $participant )
-		{
-			if ( $participant->getPersonnage() )
-			{
-				$personnages[] = $participant->getPersonnage();
-			}
-		}
-		return $personnages;
-	}
-	
-	public function addAgent()
-	{
-		$this->agents = $this->agents + 1;
+     * Défini le responsable de cette session de jeu.
+     */
+    public function setResponsable(Participant $participant): static
+    {
+        $this->setParticipant($participant);
+
         return $this;
-	}
-	
-	public function addBateau()
-	{
-		$this->bateaux = $this->bateaux + 1;
+    }
+
+    /**
+     * Fourni le responsable de cette session de jeu.
+     */
+    public function getResponsable()
+    {
+        return $this->getParticipant();
+    }
+
+    /**
+     * Supprime le responsable de cette session de jeu.
+     */
+    public function setResponsableNull()
+    {
+        return $this->setParticipant(null);
+    }
+
+    /**
+     * Fourni la liste des personnages de cette session de jeu.
+     */
+    public function getPersonnages(): ArrayCollection
+    {
+        $personnages = new ArrayCollection();
+
+        foreach ($this->getParticipants() as $participant) {
+            if ($participant->getPersonnage()) {
+                $personnages[] = $participant->getPersonnage();
+            }
+        }
+
+        return $personnages;
+    }
+
+    public function addAgent(): static
+    {
+        ++$this->agents;
+
         return $this;
-	}
+    }
+
+    public function addBateau(): static
+    {
+        ++$this->bateaux;
+
+        return $this;
+    }
 }

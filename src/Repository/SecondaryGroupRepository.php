@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,74 +21,64 @@
 namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use App\Entity\SecondaryGroup;
 
 /**
- * LarpManager\Repository\SecondaryGroupRepository
- *  
+ * LarpManager\Repository\SecondaryGroupRepository.
+ *
  * @author kevin
  */
 class SecondaryGroupRepository extends EntityRepository
 {
-	/**
-	 * Trouve tous les groupes secondaire publics
-	 */
-	public function findAllPublic()
-	{
-		$groupes = $this->getEntityManager()
-			->createQuery('SELECT g FROM App\Entity\SecondaryGroup g WHERE g.secret = false or g.secret is null')
-			->getResult();
-	
-		return $groupes;
-	}
+    /**
+     * Trouve tous les groupes secondaire publics.
+     */
+    public function findAllPublic()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT g FROM App\Entity\SecondaryGroup g WHERE g.secret = false or g.secret is null')
+            ->getResult();
+    }
 
-	/**
-	 * Trouve les groupes secondaires correspondants aux critères de recherche
-	 * 
-	 * @param array $criteria
-	 * @param array $order
-	 * @param unknown $limit
-	 * @param unknown $offset
-	 */
-	public function findList(array $criteria = array(), array $order = array(), $limit, $offset)
-	{
-		$qb = $this->getEntityManager()->createQueryBuilder();
+    /**
+     * Trouve les groupes secondaires correspondants aux critères de recherche.
+     *
+     * @param unknown $limit
+     * @param unknown $offset
+     */
+    public function findList($limit, $offset, array $criteria = [], array $order = [])
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
 
-		$qb->select('distinct g');
-		$qb->from('App\Entity\SecondaryGroup','g');
+        $qb->select('distinct g');
+        $qb->from(\App\Entity\SecondaryGroup::class, 'g');
 
-		foreach ( $criteria as $critere )
-		{
-			$qb->andWhere('?1');
-            $qb->setParameter(1, $critere);
-		}
-
-		$qb->setFirstResult($offset);
-		$qb->setMaxResults($limit);
-		$qb->orderBy('g.'.$order['by'], $order['dir']);
-		return $qb->getQuery()->getResult();
-	}	
-
-	/**
-	 * Compte les groupes secondaires correspondants aux critères de recherche
-	 *
-	 * @param array $criteria
-	 * @param array $options
-	 */
-	public function findCount(array $criteria = array())
-	{
-		$qb = $this->getEntityManager()->createQueryBuilder();
-	
-		$qb->select($qb->expr()->count('g'));
-		$qb->from('App\Entity\SecondaryGroup','g');
-	
-		foreach ( $criteria as $critere )
-		{
+        foreach ($criteria as $critere) {
             $qb->andWhere('?1');
             $qb->setParameter(1, $critere);
-		}
-	
-		return $qb->getQuery()->getSingleScalarResult();
-	}
+        }
 
+        $qb->setFirstResult($offset);
+        $qb->setMaxResults($limit);
+        $qb->orderBy('g.'.$order['by'], $order['dir']);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Compte les groupes secondaires correspondants aux critères de recherche.
+     */
+    public function findCount(array $criteria = [])
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select($qb->expr()->count('g'));
+        $qb->from(\App\Entity\SecondaryGroup::class, 'g');
+
+        foreach ($criteria as $critere) {
+            $qb->andWhere('?1');
+            $qb->setParameter(1, $critere);
+        }
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }

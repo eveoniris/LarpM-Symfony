@@ -68,7 +68,6 @@ class BasePersonnageSecondaireCompetence
     /**
      * Set PersonnageSecondaire entity (many to one).
      *
-     * @param \App\Entity\PersonnageSecondaire $personnageSecondaire
      * @return \App\Entity\PersonnageSecondaireCompetence
      */
     public function setPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire = null)
@@ -91,7 +90,6 @@ class BasePersonnageSecondaireCompetence
     /**
      * Set Competence entity (many to one).
      *
-     * @param \App\Entity\Competence $competence
      * @return \App\Entity\PersonnageSecondaireCompetence
      */
     public function setCompetence(Competence $competence = null)

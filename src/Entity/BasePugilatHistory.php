@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\PugilatHistory
+ * App\Entity\PugilatHistory.
  *
  * @Table(name="pugilat_history", indexes={@Index(name="fk_pugilat_history_personnage1_idx", columns={"personnage_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePugilatHistory", "extended":"PugilatHistory"})
  */
 class BasePugilatHistory
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -43,6 +48,7 @@ class BasePugilatHistory
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="pugilatHistories")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
@@ -54,7 +60,8 @@ class BasePugilatHistory
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\PugilatHistory
      */
     public function setId($id)
@@ -67,7 +74,7 @@ class BasePugilatHistory
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -78,6 +85,7 @@ class BasePugilatHistory
      * Set the value of date.
      *
      * @param \DateTime $date
+     *
      * @return \App\Entity\PugilatHistory
      */
     public function setDate($date)
@@ -100,7 +108,8 @@ class BasePugilatHistory
     /**
      * Set the value of pugilat.
      *
-     * @param integer $pugilat
+     * @param int $pugilat
+     *
      * @return \App\Entity\PugilatHistory
      */
     public function setPugilat($pugilat)
@@ -113,7 +122,7 @@ class BasePugilatHistory
     /**
      * Get the value of pugilat.
      *
-     * @return integer
+     * @return int
      */
     public function getPugilat()
     {
@@ -124,6 +133,7 @@ class BasePugilatHistory
      * Set the value of explication.
      *
      * @param string $explication
+     *
      * @return \App\Entity\PugilatHistory
      */
     public function setExplication($explication)
@@ -146,7 +156,6 @@ class BasePugilatHistory
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\PugilatHistory
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -168,6 +177,6 @@ class BasePugilatHistory
 
     public function __sleep()
     {
-        return array('id', 'date', 'pugilat', 'explication', 'personnage_id');
+        return ['id', 'date', 'pugilat', 'explication', 'personnage_id'];
     }
 }

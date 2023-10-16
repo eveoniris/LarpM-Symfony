@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,35 +21,35 @@
 namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use App\Entity\Item;
 
 /**
- * LarpManager\Repository\ItemRepository
- *  
+ * LarpManager\Repository\ItemRepository.
+ *
  * @author kevin
  */
 class ItemRepository extends EntityRepository
 {
-	/**
-	 * Recherche le prochain GN (le plus proche de la date du jour)
-	 */
-	public function findNextNumero()
-	{
-		$numeroMax = $this->getEntityManager()
-			->createQuery('SELECT MAX(i.numero) FROM App\Entity\Item i')
-			->getSingleScalarResult();
-		
-		return $numeroMax++;
-	}
-	
-	public function findAll()
-	{
-		$qb = $this->getEntityManager()->createQueryBuilder();
-		
-		$qb->select('i');
-		$qb->from('App\Entity\Item','i');
-		
-		$qb->orderBy('i.numero', 'DESC');
-		return $qb->getQuery()->getResult();
-	}
+    /**
+     * Recherche le prochain GN (le plus proche de la date du jour).
+     */
+    public function findNextNumero()
+    {
+        $numeroMax = $this->getEntityManager()
+            ->createQuery('SELECT MAX(i.numero) FROM App\Entity\Item i')
+            ->getSingleScalarResult();
+
+        return $numeroMax++;
+    }
+
+    public function findAll()
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select('i');
+        $qb->from(\App\Entity\Item::class, 'i');
+
+        $qb->orderBy('i.numero', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
 }

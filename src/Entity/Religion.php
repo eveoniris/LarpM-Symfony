@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,70 +27,67 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseReligion;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Religion
+ * App\Entity\Religion.
  *
  * @Entity(repositoryClass="LarpManager\Repository\ReligionRepository")
  */
-class Religion extends BaseReligion
+class Religion extends BaseReligion implements \Stringable
 {
-	/**
-	 * @ManyToMany(targetEntity="Territoire", mappedBy="religions")
-	 */
-	protected $territoireSecondaires;
-	
-	/**
-	 * Constructeur
-	 */
-	public function __construct()
-	{
-		$this->territoireSecondaires = new ArrayCollection();
-		parent::__construct();
-	}
-	
-	public function __toString()
-	{
-		return $this->getLabel();	
-	}
-	
-	/**
-	 * Fourni la liste des territoires ou la religion est une religion secondaire 
-	 */
-	public function getTerritoireSecondaires()
-	{
-		return $this->territoireSecondaires;
-	}
-	
-	/**
-	 * Ajoute un territoire dans la liste des territoires ou la religion est une religion secondaire
-	 * @param Territoire $territoire
-	 */
-	public function addTerritoireSecondaire(Territoire $territoire)
-	{
-		$this->territoireSecondaires[] = $territoire;
-		return $this;
-	}
-	
-	/**
-	 * Retire un territoire de la liste des territoires ou la religion est une religion secondaire
-	 * @param Territoire $territoire
-	 */
-	public function removeTerritoireSecondaire(Territoire $territoire)
-	{
-		$this->territoireSecondaires->removeElement($territoire);
-		return $this;
-	
-	}
-	
-	/**
-	 * Fourni la liste des territoires ou la religion est la religion principale.
-	 */
-	public function getTerritoirePrincipaux()
-	{
-		return $this->getTerritoires();
-	}
-	
+    /**
+     * @ManyToMany(targetEntity="Territoire", mappedBy="religions")
+     */
+    protected $territoireSecondaires;
+
+    /**
+     * Constructeur.
+     */
+    public function __construct()
+    {
+        $this->territoireSecondaires = new ArrayCollection();
+        parent::__construct();
+    }
+
+    public function __toString(): string
+    {
+        return $this->getLabel();
+    }
+
+    /**
+     * Fourni la liste des territoires ou la religion est une religion secondaire.
+     */
+    public function getTerritoireSecondaires()
+    {
+        return $this->territoireSecondaires;
+    }
+
+    /**
+     * Ajoute un territoire dans la liste des territoires ou la religion est une religion secondaire.
+     */
+    public function addTerritoireSecondaire(Territoire $territoire): static
+    {
+        $this->territoireSecondaires[] = $territoire;
+
+        return $this;
+    }
+
+    /**
+     * Retire un territoire de la liste des territoires ou la religion est une religion secondaire.
+     */
+    public function removeTerritoireSecondaire(Territoire $territoire): static
+    {
+        $this->territoireSecondaires->removeElement($territoire);
+
+        return $this;
+    }
+
+    /**
+     * Fourni la liste des territoires ou la religion est la religion principale.
+     */
+    public function getTerritoirePrincipaux()
+    {
+        return $this->getTerritoires();
+    }
 }

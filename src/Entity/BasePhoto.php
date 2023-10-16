@@ -75,7 +75,7 @@ class BasePhoto
      * @param integer $id
      * @return \App\Entity\Photo
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -233,7 +233,6 @@ class BasePhoto
     /**
      * Add Objet entity to collection (one to many).
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\Photo
      */
     public function addObjet(Objet $objet)
@@ -246,7 +245,6 @@ class BasePhoto
     /**
      * Remove Objet entity from collection (one to many).
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\Photo
      */
     public function removeObjet(Objet $objet)
