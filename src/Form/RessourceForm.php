@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,51 +25,45 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\RessourceForm
+ * LarpManager\Form\RessourceForm.
  *
  * @author kevin
- *
  */
 class RessourceForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text', array(
-					'required' => true,	
-				))
-				->add('rarete','entity', array(
-						'label' => "Rareté",
-						'required' => true,
-						'property' => 'label',
-						'multiple' => false,
-						'mapped' => true,
-						'class' => 'App\Entity\Rarete',
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data' => 'App\Entity\Ressource',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'ressource';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text', [
+            'required' => true,
+        ])
+            ->add('rarete', 'entity', [
+                'label' => 'Rareté',
+                'required' => true,
+                'property' => 'label',
+                'multiple' => false,
+                'mapped' => true,
+                'class' => \App\Entity\Rarete::class,
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data' => \App\Entity\Ressource::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'ressource';
+    }
 }

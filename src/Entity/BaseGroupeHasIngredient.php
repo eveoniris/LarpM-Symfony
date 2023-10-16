@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\GroupeHasIngredient
+ * App\Entity\GroupeHasIngredient.
  *
  * @Table(name="groupe_has_ingredient", indexes={@Index(name="fk_groupe_has_ingredient_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_groupe_has_ingredient_ingredient1_idx", columns={"ingredient_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseGroupeHasIngredient", "extended":"GroupeHasIngredient"})
  */
 class BaseGroupeHasIngredient
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -33,12 +38,14 @@ class BaseGroupeHasIngredient
 
     /**
      * @ManyToOne(targetEntity="Groupe", inversedBy="groupeHasIngredients", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)
      */
     protected $groupe;
 
     /**
      * @ManyToOne(targetEntity="Ingredient", inversedBy="groupeHasIngredients")
+     *
      * @JoinColumn(name="ingredient_id", referencedColumnName="id", nullable=false)
      */
     protected $ingredient;
@@ -50,7 +57,8 @@ class BaseGroupeHasIngredient
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\GroupeHasIngredient
      */
     public function setId($id)
@@ -63,7 +71,7 @@ class BaseGroupeHasIngredient
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -73,7 +81,8 @@ class BaseGroupeHasIngredient
     /**
      * Set the value of quantite.
      *
-     * @param integer $quantite
+     * @param int $quantite
+     *
      * @return \App\Entity\GroupeHasIngredient
      */
     public function setQuantite($quantite)
@@ -86,7 +95,7 @@ class BaseGroupeHasIngredient
     /**
      * Get the value of quantite.
      *
-     * @return integer
+     * @return int
      */
     public function getQuantite()
     {
@@ -96,7 +105,6 @@ class BaseGroupeHasIngredient
     /**
      * Set Groupe entity (many to one).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\GroupeHasIngredient
      */
     public function setGroupe(Groupe $groupe = null)
@@ -119,7 +127,6 @@ class BaseGroupeHasIngredient
     /**
      * Set Ingredient entity (many to one).
      *
-     * @param \App\Entity\Ingredient $ingredient
      * @return \App\Entity\GroupeHasIngredient
      */
     public function setIngredient(Ingredient $ingredient = null)
@@ -141,6 +148,6 @@ class BaseGroupeHasIngredient
 
     public function __sleep()
     {
-        return array('id', 'quantite', 'groupe_id', 'ingredient_id');
+        return ['id', 'quantite', 'groupe_id', 'ingredient_id'];
     }
 }

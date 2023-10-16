@@ -10,38 +10,47 @@
 namespace App\Entity;
 
 /**
- * App\Entity\PersonnagesReligions
+ * App\Entity\PersonnagesReligions.
  *
  * @Table(name="personnages_religions", indexes={@Index(name="fk_personnage_religion_religion1_idx", columns={"religion_id"}), @Index(name="fk_personnage_religion_religion_level1_idx", columns={"religion_level_id"}), @Index(name="fk_personnages_religions_personnage1_idx", columns={"personnage_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePersonnagesReligions", "extended":"PersonnagesReligions"})
  */
 class BasePersonnagesReligions
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
      * @ManyToOne(targetEntity="Religion", inversedBy="personnagesReligions")
+     *
      * @JoinColumn(name="religion_id", referencedColumnName="id", nullable=false)
      * @JoinColumn(name="religion_label", referencedColumnName="label", nullable=false)
+     *
      * @OrderBy({"religion_label" = "ASC",})
      */
     protected $religion;
 
     /**
      * @ManyToOne(targetEntity="ReligionLevel", inversedBy="personnagesReligions")
+     *
      * @JoinColumn(name="religion_level_id", referencedColumnName="id", nullable=false)
      */
     protected $religionLevel;
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="personnagesReligions")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
@@ -53,7 +62,8 @@ class BasePersonnagesReligions
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\PersonnagesReligions
      */
     public function setId($id)
@@ -66,7 +76,7 @@ class BasePersonnagesReligions
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -76,7 +86,6 @@ class BasePersonnagesReligions
     /**
      * Set Religion entity (many to one).
      *
-     * @param \App\Entity\Religion $religion
      * @return \App\Entity\PersonnagesReligions
      */
     public function setReligion(Religion $religion = null)
@@ -99,7 +108,6 @@ class BasePersonnagesReligions
     /**
      * Set ReligionLevel entity (many to one).
      *
-     * @param \App\Entity\ReligionLevel $religionLevel
      * @return \App\Entity\PersonnagesReligions
      */
     public function setReligionLevel(ReligionLevel $religionLevel = null)
@@ -122,7 +130,6 @@ class BasePersonnagesReligions
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\PersonnagesReligions
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -144,6 +151,6 @@ class BasePersonnagesReligions
 
     public function __sleep()
     {
-        return array('id', 'religion_id', 'religion_level_id', 'personnage_id');
+        return ['id', 'religion_id', 'religion_level_id', 'personnage_id'];
     }
 }

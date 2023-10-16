@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Restauration
+ * App\Entity\Restauration.
  *
  * @Table(name="restauration")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseRestauration", "extended":"Restauration"})
  */
 class BaseRestauration
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -40,6 +45,7 @@ class BaseRestauration
 
     /**
      * @OneToMany(targetEntity="ParticipantHasRestauration", mappedBy="restauration")
+     *
      * @JoinColumn(name="id", referencedColumnName="restauration_id", nullable=false)
      */
     protected $participantHasRestaurations;
@@ -52,10 +58,11 @@ class BaseRestauration
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Restauration
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -65,7 +72,7 @@ class BaseRestauration
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -76,6 +83,7 @@ class BaseRestauration
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Restauration
      */
     public function setLabel($label)
@@ -99,6 +107,7 @@ class BaseRestauration
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Restauration
      */
     public function setDescription($description)
@@ -121,7 +130,6 @@ class BaseRestauration
     /**
      * Add ParticipantHasRestauration entity to collection (one to many).
      *
-     * @param \App\Entity\ParticipantHasRestauration $participantHasRestauration
      * @return \App\Entity\Restauration
      */
     public function addParticipantHasRestauration(ParticipantHasRestauration $participantHasRestauration)
@@ -134,7 +142,6 @@ class BaseRestauration
     /**
      * Remove ParticipantHasRestauration entity from collection (one to many).
      *
-     * @param \App\Entity\ParticipantHasRestauration $participantHasRestauration
      * @return \App\Entity\Restauration
      */
     public function removeParticipantHasRestauration(ParticipantHasRestauration $participantHasRestauration)
@@ -156,6 +163,6 @@ class BaseRestauration
 
     public function __sleep()
     {
-        return array('id', 'label', 'description');
+        return ['id', 'label', 'description'];
     }
 }

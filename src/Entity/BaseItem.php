@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Item
+ * App\Entity\Item.
  *
  * @Table(name="item", indexes={@Index(name="fk_item_qualite1_idx", columns={"quality_id"}), @Index(name="fk_item_statut1_idx", columns={"statut_id"}), @Index(name="fk_item_objet1_idx", columns={"objet_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseItem", "extended":"Item"})
  */
 class BaseItem
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -75,18 +80,21 @@ class BaseItem
 
     /**
      * @ManyToOne(targetEntity="Quality", inversedBy="items")
+     *
      * @JoinColumn(name="quality_id", referencedColumnName="id", nullable=false)
      */
     protected $quality;
 
     /**
      * @ManyToOne(targetEntity="Statut", inversedBy="items")
+     *
      * @JoinColumn(name="statut_id", referencedColumnName="id")
      */
     protected $statut;
 
     /**
      * @ManyToOne(targetEntity="Objet", inversedBy="items")
+     *
      * @JoinColumn(name="objet_id", referencedColumnName="id", nullable=false)
      */
     protected $objet;
@@ -110,10 +118,11 @@ class BaseItem
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Item
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -123,7 +132,7 @@ class BaseItem
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -134,6 +143,7 @@ class BaseItem
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Item
      */
     public function setLabel($label)
@@ -157,6 +167,7 @@ class BaseItem
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Item
      */
     public function setDescription($description)
@@ -179,7 +190,8 @@ class BaseItem
     /**
      * Set the value of numero.
      *
-     * @param integer $numero
+     * @param int $numero
+     *
      * @return \App\Entity\Item
      */
     public function setNumero($numero)
@@ -192,7 +204,7 @@ class BaseItem
     /**
      * Get the value of numero.
      *
-     * @return integer
+     * @return int
      */
     public function getNumero()
     {
@@ -203,6 +215,7 @@ class BaseItem
      * Set the value of identification.
      *
      * @param string $identification
+     *
      * @return \App\Entity\Item
      */
     public function setIdentification($identification)
@@ -226,6 +239,7 @@ class BaseItem
      * Set the value of special.
      *
      * @param string $special
+     *
      * @return \App\Entity\Item
      */
     public function setSpecial($special)
@@ -249,6 +263,7 @@ class BaseItem
      * Set the value of couleur.
      *
      * @param string $couleur
+     *
      * @return \App\Entity\Item
      */
     public function setCouleur($couleur)
@@ -272,6 +287,7 @@ class BaseItem
      * Set the value of date_creation.
      *
      * @param \DateTime $date_creation
+     *
      * @return \App\Entity\Item
      */
     public function setDateCreation($date_creation)
@@ -295,6 +311,7 @@ class BaseItem
      * Set the value of date_update.
      *
      * @param \DateTime $date_update
+     *
      * @return \App\Entity\Item
      */
     public function setDateUpdate($date_update)
@@ -317,7 +334,8 @@ class BaseItem
     /**
      * Set the value of quantite.
      *
-     * @param integer $quantite
+     * @param int $quantite
+     *
      * @return \App\Entity\Item
      */
     public function setQuantite($quantite)
@@ -330,7 +348,7 @@ class BaseItem
     /**
      * Get the value of quantite.
      *
-     * @return integer
+     * @return int
      */
     public function getQuantite()
     {
@@ -340,7 +358,6 @@ class BaseItem
     /**
      * Set Quality entity (many to one).
      *
-     * @param \App\Entity\Quality $quality
      * @return \App\Entity\Item
      */
     public function setQuality(Quality $quality = null)
@@ -363,7 +380,6 @@ class BaseItem
     /**
      * Set Statut entity (many to one).
      *
-     * @param \App\Entity\Statut $statut
      * @return \App\Entity\Item
      */
     public function setStatut(Statut $statut = null)
@@ -386,7 +402,6 @@ class BaseItem
     /**
      * Set Objet entity (many to one).
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\Item
      */
     public function setObjet(Objet $objet = null)
@@ -409,7 +424,6 @@ class BaseItem
     /**
      * Add Groupe entity to collection.
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\Item
      */
     public function addGroupe(Groupe $groupe)
@@ -422,7 +436,6 @@ class BaseItem
     /**
      * Remove Groupe entity from collection.
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\Item
      */
     public function removeGroupe(Groupe $groupe)
@@ -445,7 +458,6 @@ class BaseItem
     /**
      * Add Personnage entity to collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Item
      */
     public function addPersonnage(Personnage $personnage)
@@ -458,7 +470,6 @@ class BaseItem
     /**
      * Remove Personnage entity from collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Item
      */
     public function removePersonnage(Personnage $personnage)
@@ -480,6 +491,6 @@ class BaseItem
 
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'numero', 'identification', 'quality_id', 'special', 'couleur', 'date_creation', 'date_update', 'statut_id', 'objet_id', 'quantite');
+        return ['id', 'label', 'description', 'numero', 'identification', 'quality_id', 'special', 'couleur', 'date_creation', 'date_update', 'statut_id', 'objet_id', 'quantite'];
     }
 }

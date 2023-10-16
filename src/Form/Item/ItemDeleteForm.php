@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,48 +25,40 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\Monnaie\ItemDeleteForm
+ * LarpManager\Form\Monnaie\ItemDeleteForm.
  *
  * @author kevin
- *
  */
 class ItemDeleteForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('delete', 'submit', array(
-						'label' => 'Supprimer',
-						'attr' => array(
-								'class' => 'btn btn-danger'
-						)
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Item',
-		));
-	}
-	
-	/**
-	 * 
-	 * 
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'itemDelete';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('delete', 'submit', [
+            'label' => 'Supprimer',
+            'attr' => [
+                'class' => 'btn btn-danger',
+            ],
+        ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Item::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'itemDelete';
+    }
 }

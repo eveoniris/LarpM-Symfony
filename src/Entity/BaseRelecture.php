@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\Relecture
+ * App\Entity\Relecture.
  *
  * @Table(name="relecture", indexes={@Index(name="fk_relecture_User1_idx", columns={"User_id"}), @Index(name="fk_relecture_intrigue1_idx", columns={"intrigue_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseRelecture", "extended":"Relecture"})
  */
 class BaseRelecture
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -43,12 +48,14 @@ class BaseRelecture
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="relectures")
+     *
      * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
      */
     protected $User;
 
     /**
      * @ManyToOne(targetEntity="Intrigue", inversedBy="relectures", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="intrigue_id", referencedColumnName="id", nullable=false)
      */
     protected $intrigue;
@@ -60,7 +67,8 @@ class BaseRelecture
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Relecture
      */
     public function setId($id)
@@ -73,7 +81,7 @@ class BaseRelecture
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -84,6 +92,7 @@ class BaseRelecture
      * Set the value of date.
      *
      * @param \DateTime $date
+     *
      * @return \App\Entity\Relecture
      */
     public function setDate($date)
@@ -107,6 +116,7 @@ class BaseRelecture
      * Set the value of statut.
      *
      * @param string $statut
+     *
      * @return \App\Entity\Relecture
      */
     public function setStatut($statut)
@@ -130,6 +140,7 @@ class BaseRelecture
      * Set the value of remarque.
      *
      * @param string $remarque
+     *
      * @return \App\Entity\Relecture
      */
     public function setRemarque($remarque)
@@ -152,7 +163,6 @@ class BaseRelecture
     /**
      * Set User entity (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Relecture
      */
     public function setUser(User $User = null)
@@ -175,7 +185,6 @@ class BaseRelecture
     /**
      * Set Intrigue entity (many to one).
      *
-     * @param \App\Entity\Intrigue $intrigue
      * @return \App\Entity\Relecture
      */
     public function setIntrigue(Intrigue $intrigue = null)
@@ -197,6 +206,6 @@ class BaseRelecture
 
     public function __sleep()
     {
-        return array('id', 'date', 'statut', 'remarque', 'User_id', 'intrigue_id');
+        return ['id', 'date', 'statut', 'remarque', 'User_id', 'intrigue_id'];
     }
 }

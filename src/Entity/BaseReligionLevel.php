@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\ReligionLevel
+ * App\Entity\ReligionLevel.
  *
  * @Table(name="religion_level")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseReligionLevel", "extended":"ReligionLevel"})
  */
 class BaseReligionLevel
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -45,6 +50,7 @@ class BaseReligionLevel
 
     /**
      * @OneToMany(targetEntity="PersonnagesReligions", mappedBy="religionLevel")
+     *
      * @JoinColumn(name="id", referencedColumnName="religion_level_id", nullable=false)
      */
     protected $personnagesReligions;
@@ -57,7 +63,8 @@ class BaseReligionLevel
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\ReligionLevel
      */
     public function setId($id)
@@ -70,7 +77,7 @@ class BaseReligionLevel
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -81,6 +88,7 @@ class BaseReligionLevel
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\ReligionLevel
      */
     public function setLabel($label)
@@ -103,7 +111,8 @@ class BaseReligionLevel
     /**
      * Set the value of index.
      *
-     * @param integer $index
+     * @param int $index
+     *
      * @return \App\Entity\ReligionLevel
      */
     public function setIndex($index)
@@ -116,7 +125,7 @@ class BaseReligionLevel
     /**
      * Get the value of index.
      *
-     * @return integer
+     * @return int
      */
     public function getIndex()
     {
@@ -127,6 +136,7 @@ class BaseReligionLevel
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\ReligionLevel
      */
     public function setDescription($description)
@@ -149,7 +159,6 @@ class BaseReligionLevel
     /**
      * Add PersonnagesReligions entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnagesReligions $personnagesReligions
      * @return \App\Entity\ReligionLevel
      */
     public function addPersonnagesReligions(PersonnagesReligions $personnagesReligions)
@@ -162,7 +171,6 @@ class BaseReligionLevel
     /**
      * Remove PersonnagesReligions entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnagesReligions $personnagesReligions
      * @return \App\Entity\ReligionLevel
      */
     public function removePersonnagesReligions(PersonnagesReligions $personnagesReligions)
@@ -184,6 +192,6 @@ class BaseReligionLevel
 
     public function __sleep()
     {
-        return array('id', 'label', 'index', 'description');
+        return ['id', 'label', 'index', 'description'];
     }
 }

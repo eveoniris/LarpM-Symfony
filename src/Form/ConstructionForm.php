@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,57 +25,50 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\ClasseForm
+ * LarpManager\Form\ClasseForm.
  *
  * @author kevin
- *
  */
 class ConstructionForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text', array(
-					'label' => 'Le nom de la construction',
-					'required' => true,
-				))
-				->add('description', 'textarea', array(
-					'label' => 'La description de la construction',
-					'required' => true,
-					'attr' => array(
-							'class' => 'tinymce',
-							'rows' => 9,
-					)
-				))
-				->add('defense', 'integer', array(
-					'label' => 'La valeur de défense de la construction',
-					'required' => true,
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concernée
-	 *
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{	
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\Construction',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'construction';
-	}
-	
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text', [
+            'label' => 'Le nom de la construction',
+            'required' => true,
+        ])
+            ->add('description', 'textarea', [
+                'label' => 'La description de la construction',
+                'required' => true,
+                'attr' => [
+                    'class' => 'tinymce',
+                    'rows' => 9,
+                ],
+            ])
+            ->add('defense', 'integer', [
+                'label' => 'La valeur de défense de la construction',
+                'required' => true,
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concernée.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => \App\Entity\Construction::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'construction';
+    }
 }

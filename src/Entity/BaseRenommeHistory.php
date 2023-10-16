@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\RenommeHistory
+ * App\Entity\RenommeHistory.
  *
  * @Table(name="renomme_history", indexes={@Index(name="fk_renomme_history_personnage1_idx", columns={"personnage_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseRenommeHistory", "extended":"RenommeHistory"})
  */
 class BaseRenommeHistory
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -43,6 +48,7 @@ class BaseRenommeHistory
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="renommeHistories")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
@@ -54,7 +60,8 @@ class BaseRenommeHistory
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\RenommeHistory
      */
     public function setId($id)
@@ -67,7 +74,7 @@ class BaseRenommeHistory
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -77,7 +84,8 @@ class BaseRenommeHistory
     /**
      * Set the value of renomme.
      *
-     * @param integer $renomme
+     * @param int $renomme
+     *
      * @return \App\Entity\RenommeHistory
      */
     public function setRenomme($renomme)
@@ -90,7 +98,7 @@ class BaseRenommeHistory
     /**
      * Get the value of renomme.
      *
-     * @return integer
+     * @return int
      */
     public function getRenomme()
     {
@@ -101,6 +109,7 @@ class BaseRenommeHistory
      * Set the value of explication.
      *
      * @param string $explication
+     *
      * @return \App\Entity\RenommeHistory
      */
     public function setExplication($explication)
@@ -124,6 +133,7 @@ class BaseRenommeHistory
      * Set the value of date.
      *
      * @param \DateTime $date
+     *
      * @return \App\Entity\RenommeHistory
      */
     public function setDate($date)
@@ -146,7 +156,6 @@ class BaseRenommeHistory
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\RenommeHistory
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -168,6 +177,6 @@ class BaseRenommeHistory
 
     public function __sleep()
     {
-        return array('id', 'renomme', 'explication', 'date', 'personnage_id');
+        return ['id', 'renomme', 'explication', 'date', 'personnage_id'];
     }
 }

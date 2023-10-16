@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping\Table;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * App\Entity\Technologie
+ * App\Entity\Technologie.
  */
 #[Table(name: 'technologie')]
 #[InheritanceType('SINGLE_TABLE')]
@@ -72,10 +72,9 @@ class BaseTechnologie
     /**
      * Set the value of id.
      *
-     * @param integer $id
      * @return Technologie
      */
-    public function setId($id)
+    public function setId(?int $id)
     {
         $this->id = $id;
 
@@ -85,7 +84,7 @@ class BaseTechnologie
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -95,10 +94,9 @@ class BaseTechnologie
     /**
      * Set the value of label.
      *
-     * @param string $label
      * @return Technologie
      */
-    public function setLabel($label)
+    public function setLabel(?string $label)
     {
         $this->label = $label;
 
@@ -118,10 +116,9 @@ class BaseTechnologie
     /**
      * Set the value of description.
      *
-     * @param string $description
      * @return Technologie
      */
-    public function setDescription($description)
+    public function setDescription(?string $description)
     {
         $this->description = $description;
 
@@ -139,7 +136,7 @@ class BaseTechnologie
     }
 
     /**
-     * Get the value of documentUrl
+     * Get the value of documentUrl.
      *
      * @return string
      */
@@ -149,17 +146,16 @@ class BaseTechnologie
     }
 
     /**
-     * Set the value of documentUrl
-     *
-     * @param string $documentUrl
+     * Set the value of documentUrl.
      */
-    public function setDocumentUrl($documentUrl)
+    public function setDocumentUrl(?string $documentUrl): void
     {
         $this->documentUrl = $documentUrl;
     }
 
     /**
-     * Get the value of secret
+     * Get the value of secret.
+     *
      * @return bool
      */
     public function isSecret()
@@ -168,10 +164,9 @@ class BaseTechnologie
     }
 
     /**
-     * Set the value of secret
-     * @param bool $secret
+     * Set the value of secret.
      */
-    public function setSecret($secret)
+    public function setSecret(bool $secret): void
     {
         $this->secret = $secret;
     }
@@ -180,6 +175,7 @@ class BaseTechnologie
      * Add BaseTechnologiesRessources entity to collection (one to many).
      *
      * @param BaseTechnologiesRessources $ressource
+     *
      * @return Technologie
      */
     public function addRessources($ressource)
@@ -193,6 +189,7 @@ class BaseTechnologie
      * Remove BaseTechnologiesRessources entity from collection (one to many).
      *
      * @param BaseTechnologiesRessources $ressource
+     *
      * @return Technologie
      */
     public function removeTechnologie($ressource)
@@ -216,6 +213,7 @@ class BaseTechnologie
      * Set CompetenceFamily entity (many to one).
      *
      * @param CompetenceFamily|null $competenceFamily
+     *
      * @return BaseTechnologie
      */
     public function setCompetenceFamily($competenceFamily)
@@ -239,6 +237,7 @@ class BaseTechnologie
      * Add Personnage entity to collection.
      *
      * @param Personnage $personnage
+     *
      * @return Technologie
      */
     public function addPersonnage($personnage)
@@ -252,6 +251,7 @@ class BaseTechnologie
      * Remove Personnage entity from collection.
      *
      * @param Personnage $personnage
+     *
      * @return Technologie
      */
     public function removePersonnage($personnage)
@@ -273,6 +273,6 @@ class BaseTechnologie
 
     public function __sleep()
     {
-        return array('id', 'label', 'description');
+        return ['id', 'label', 'description'];
     }
 }

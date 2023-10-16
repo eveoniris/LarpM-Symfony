@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,35 +24,30 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
- * LarpManager\Form\SearchObjetForm
+ * LarpManager\Form\SearchObjetForm.
  *
  * @author kevin
- *
  */
 class SearchObjetForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{		
-		$builder->add('type','choice', array(
-					'required' => true,
-					'choices' => array(
-						'nom' => 'Nom',
-						'numero' => 'Numero')))
-				->add('value','text', array('required' => true));
-		
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('type', 'choice', [
+            'required' => true,
+            'choices' => [
+                'nom' => 'Nom',
+                'numero' => 'Numero']])
+            ->add('value', 'text', ['required' => true]);
+    }
 
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'searchObjetForm';
-	}
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'searchObjetForm';
+    }
 }

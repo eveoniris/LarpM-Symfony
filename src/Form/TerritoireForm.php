@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,195 +25,189 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\TerritoireForm
+ * LarpManager\Form\TerritoireForm.
  *
  * @author kevin
- *
  */
 class TerritoireForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('nom','text', array(
-					'label' => 'Nom',
-					'required' => true,
-				))
-				->add('appelation','entity', array(
-					'label' => 'Choisissez l\'appelation de ce territoire',
-					'required' => true,
-					'class' => 'App\Entity\Appelation',
-					'multiple' => false,
-					'mapped' => true,
-					'property' => 'label', 
-				))
-				->add('description','textarea', array(
-					'label' => 'Description',
-					'required' => false,
-					'attr' => array(
-							'class' => 'tinymce',
-							'rows' => 10),
-				))
-				->add('description_secrete','textarea', array(
-					'label' => 'Description connue des habitants',
-					'required' => false,
-					'attr' => array(
-							'class' => 'tinymce',
-							'rows' => 10),
-				))
-				->add('statut','choice', array(
-					'label' => 'Statut',
-					'required' => false,
-					'choices' => array('Normal' => 'Normal', 'Instable' => 'Instable')
-				))
-				->add('geojson', 'textarea', array(
-					'label' => 'GeoJSON',
-					'required' => false,
-					'attr' => array('rows' => 10),
-				))
-				->add('capitale','text', array(
-					'label' => 'Capitale',
-					'required' => false,
-				))
-				->add('politique','text', array(
-					'label' => 'Système politique',
-					'required' => false,
-				))
-				->add('dirigeant','text', array(
-					'label' => 'Dirigeant',
-					'required' => false,
-				))
-				->add('population','text', array(
-					'label' => 'Population',
-					'required' => false,
-				))
-				->add('symbole','text', array(
-					'label' => 'Symbole',
-					'required' => false,
-				))
-				->add('tech_level','text', array(
-					'label' => 'Niveau technologique',
-					'required' => false,
-				))
-				->add('type_racial','textarea', array(
-						'label' => 'Type racial',
-						'required' => false,
-						'attr' => array('rows' => 5),
-				))
-				->add('inspiration','textarea', array(
-						'label' => 'Inspiration',
-						'required' => false,
-						'attr' => array('rows' => 5),
-				))
-				->add('armes_predilection','textarea', array(
-						'label' => 'Armes de prédilection',
-						'required' => false,
-						'attr' => array('rows' => 5),
-				))
-				->add('vetements','textarea', array(
-						'label' => 'Vetements',
-						'required' => false,
-						'attr' => array('rows' => 5),
-				))
-				->add('noms_masculin','textarea', array(
-						'label' => 'Noms masculins',
-						'required' => false,
-						'attr' => array('rows' => 5),
-				))
-				->add('noms_feminin','textarea', array(
-						'label' => 'Noms féminins',
-						'required' => false,
-						'attr' => array('rows' => 5),
-				))
-				->add('frontieres','textarea', array(
-						'label' => 'Frontières',
-						'required' => false,
-						'attr' => array('rows' => 5),
-				))
-				->add('importations','entity', array(
-					'required' => false,
-					'label' => 'Importations',
-					'class' => 'App\Entity\Ressource',
-					'multiple' => true,
-					'expanded' => true,
-					'mapped' => true,
-					'property' => 'label', 						
-				))
-				->add('exportations','entity', array(
-					'required' => false,
-					'label' => 'Exportations',
-					'class' => 'App\Entity\Ressource',
-					'multiple' => true,
-					'expanded' => true,
-					'mapped' => true,
-					'property' => 'label',
-				))
-				->add('languePrincipale','entity', array(
-					'required' => false,
-					'label' => 'Langue principale',
-					'class' => 'App\Entity\Langue',
-					'multiple' => false,
-					'mapped' => true,
-					'property' => 'label',
-				))
-				->add('langues','entity', array(
-					'required' => false,
-					'label' => 'Langues parlées (selectionnez aussi la langue principale)',
-					'class' => 'App\Entity\Langue',
-					'multiple' => true,
-					'expanded' => true,
-					'mapped' => true,
-					'property' => 'label',
-				))
-				->add('religionPrincipale','entity', array(
-					'required' => false,
-					'label' => 'Religion dominante',
-					'class' => 'App\Entity\Religion',
-					'multiple' => false,
-					'mapped' => true,
-					'property' => 'label',
-				))
-				->add('religions','entity', array(
-					'required' => false,
-					'label' => 'Religions secondaires',
-					'class' => 'App\Entity\Religion',
-					'multiple' => true,
-					'expanded' => true,
-					'mapped' => true,
-					'property' => 'label',
-				))
-				->add('territoire','entity', array(
-					'required' => false,
-					'label' => 'Ce territoire dépend de ',
-					'class' => 'App\Entity\Territoire',
-					'property' => 'nom',
-					'empty_value' => 'Aucun, territoire indépendant',
-					'empty_data'  => null
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 * 
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\Territoire',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'territoire';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('nom', 'text', [
+            'label' => 'Nom',
+            'required' => true,
+        ])
+            ->add('appelation', 'entity', [
+                'label' => "Choisissez l'appelation de ce territoire",
+                'required' => true,
+                'class' => \App\Entity\Appelation::class,
+                'multiple' => false,
+                'mapped' => true,
+                'property' => 'label',
+            ])
+            ->add('description', 'textarea', [
+                'label' => 'Description',
+                'required' => false,
+                'attr' => [
+                    'class' => 'tinymce',
+                    'rows' => 10],
+            ])
+            ->add('description_secrete', 'textarea', [
+                'label' => 'Description connue des habitants',
+                'required' => false,
+                'attr' => [
+                    'class' => 'tinymce',
+                    'rows' => 10],
+            ])
+            ->add('statut', 'choice', [
+                'label' => 'Statut',
+                'required' => false,
+                'choices' => ['Normal' => 'Normal', 'Instable' => 'Instable'],
+            ])
+            ->add('geojson', 'textarea', [
+                'label' => 'GeoJSON',
+                'required' => false,
+                'attr' => ['rows' => 10],
+            ])
+            ->add('capitale', 'text', [
+                'label' => 'Capitale',
+                'required' => false,
+            ])
+            ->add('politique', 'text', [
+                'label' => 'Système politique',
+                'required' => false,
+            ])
+            ->add('dirigeant', 'text', [
+                'label' => 'Dirigeant',
+                'required' => false,
+            ])
+            ->add('population', 'text', [
+                'label' => 'Population',
+                'required' => false,
+            ])
+            ->add('symbole', 'text', [
+                'label' => 'Symbole',
+                'required' => false,
+            ])
+            ->add('tech_level', 'text', [
+                'label' => 'Niveau technologique',
+                'required' => false,
+            ])
+            ->add('type_racial', 'textarea', [
+                'label' => 'Type racial',
+                'required' => false,
+                'attr' => ['rows' => 5],
+            ])
+            ->add('inspiration', 'textarea', [
+                'label' => 'Inspiration',
+                'required' => false,
+                'attr' => ['rows' => 5],
+            ])
+            ->add('armes_predilection', 'textarea', [
+                'label' => 'Armes de prédilection',
+                'required' => false,
+                'attr' => ['rows' => 5],
+            ])
+            ->add('vetements', 'textarea', [
+                'label' => 'Vetements',
+                'required' => false,
+                'attr' => ['rows' => 5],
+            ])
+            ->add('noms_masculin', 'textarea', [
+                'label' => 'Noms masculins',
+                'required' => false,
+                'attr' => ['rows' => 5],
+            ])
+            ->add('noms_feminin', 'textarea', [
+                'label' => 'Noms féminins',
+                'required' => false,
+                'attr' => ['rows' => 5],
+            ])
+            ->add('frontieres', 'textarea', [
+                'label' => 'Frontières',
+                'required' => false,
+                'attr' => ['rows' => 5],
+            ])
+            ->add('importations', 'entity', [
+                'required' => false,
+                'label' => 'Importations',
+                'class' => \App\Entity\Ressource::class,
+                'multiple' => true,
+                'expanded' => true,
+                'mapped' => true,
+                'property' => 'label',
+            ])
+            ->add('exportations', 'entity', [
+                'required' => false,
+                'label' => 'Exportations',
+                'class' => \App\Entity\Ressource::class,
+                'multiple' => true,
+                'expanded' => true,
+                'mapped' => true,
+                'property' => 'label',
+            ])
+            ->add('languePrincipale', 'entity', [
+                'required' => false,
+                'label' => 'Langue principale',
+                'class' => \App\Entity\Langue::class,
+                'multiple' => false,
+                'mapped' => true,
+                'property' => 'label',
+            ])
+            ->add('langues', 'entity', [
+                'required' => false,
+                'label' => 'Langues parlées (selectionnez aussi la langue principale)',
+                'class' => \App\Entity\Langue::class,
+                'multiple' => true,
+                'expanded' => true,
+                'mapped' => true,
+                'property' => 'label',
+            ])
+            ->add('religionPrincipale', 'entity', [
+                'required' => false,
+                'label' => 'Religion dominante',
+                'class' => \App\Entity\Religion::class,
+                'multiple' => false,
+                'mapped' => true,
+                'property' => 'label',
+            ])
+            ->add('religions', 'entity', [
+                'required' => false,
+                'label' => 'Religions secondaires',
+                'class' => \App\Entity\Religion::class,
+                'multiple' => true,
+                'expanded' => true,
+                'mapped' => true,
+                'property' => 'label',
+            ])
+            ->add('territoire', 'entity', [
+                'required' => false,
+                'label' => 'Ce territoire dépend de ',
+                'class' => \App\Entity\Territoire::class,
+                'property' => 'nom',
+                'empty_value' => 'Aucun, territoire indépendant',
+                'empty_data' => null,
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => \App\Entity\Territoire::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'territoire';
+    }
 }

@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -19,18 +18,21 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseObjectif', 'extended' => 'Objectif'])]
 class BaseObjectif
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'text', type: 'string', length: 450)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 450)]
     protected string $text = '';
 
-    #[Column(type: 'datetime')]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $date_creation;
 
-    #[Column(type: 'datetime')]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $date_update;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\IntrigueHasObjectif>|\App\Entity\IntrigueHasObjectif[]
+     */
     #[OneToMany(mappedBy: 'objectif', targetEntity: IntrigueHasObjectif::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'objectif_id', nullable: 'false')]
     protected ArrayCollection $intrigueHasObjectifs;
@@ -40,7 +42,7 @@ class BaseObjectif
         $this->intrigueHasObjectifs = new ArrayCollection();
     }
 
-    public function setId($id): self
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
@@ -52,7 +54,7 @@ class BaseObjectif
         return $this->id;
     }
 
-    public function setText($text): self
+    public function setText(string $text): self
     {
         $this->text = $text;
 
@@ -64,7 +66,7 @@ class BaseObjectif
         return $this->text;
     }
 
-    public function setDateCreation($date_creation): self
+    public function setDateCreation(\DateTime $date_creation): self
     {
         $this->date_creation = $date_creation;
 
@@ -76,7 +78,7 @@ class BaseObjectif
         return $this->date_creation;
     }
 
-    public function setDateUpdate($date_update): self
+    public function setDateUpdate(\DateTime $date_update): self
     {
         $this->date_update = $date_update;
 

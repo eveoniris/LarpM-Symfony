@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,42 +25,35 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\PersonnageCompetenceForm
+ * LarpManager\Form\PersonnageCompetenceForm.
  *
  * @author kevin
- *
  */
 class PersonnageCompetenceForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire.
-	 * Est-ce vraiment indispensable ?
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 * 
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\Personnage',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'personnage';
-	}
+    /**
+     * Construction du formulaire.
+     * Est-ce vraiment indispensable ?
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => \App\Entity\Personnage::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'personnage';
+    }
 }

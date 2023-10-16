@@ -9,30 +9,28 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseItem;
-
 /**
- * App\Entity\Item
+ * App\Entity\Item.
  *
  * @Entity(repositoryClass="LarpManager\Repository\ItemRepository")
  */
 class Item extends BaseItem
 {
-	public function __construct()
-	{
-		$this->setDateCreation(new \Datetime('NOW'));
-		$this->setDateUpdate(new \Datetime('NOW'));
-		$this->setQuantite(1);
-		parent::__construct();
-	}
+    public function __construct()
+    {
+        $this->setDateCreation(new \DateTime('NOW'));
+        $this->setDateUpdate(new \DateTime('NOW'));
+        $this->setQuantite(1);
+        parent::__construct();
+    }
 
-	public function getIdentite()
-	{
-		return $this->getNumero().' - '.$this->getLabel();
-	}
+    public function getIdentite(): string
+    {
+        return $this->getNumero().' - '.$this->getLabel();
+    }
 
-	public function getIdentiteReverse()
-	{
-		return $this->getLabel().' ('.$this->getNumero().')';
-	}
+    public function getIdentiteReverse(): string
+    {
+        return $this->getLabel().' ('.$this->getNumero().')';
+    }
 }

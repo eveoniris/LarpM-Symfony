@@ -8,32 +8,32 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class CompetenceNiveauForm extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('competence','entity', array(
-					'required' => true,
-					'class' => 'App\Entity\Competence',
-					'property' => 'nom',
-				))
-				->add('niveau','entity', array(
-					'required' => true,
-					'class' => 'App\Entity\Niveau',
-					'property' => 'label',
-				))
-				->add('description','textarea', array(
-					'required' => false,		
-				));
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('competence', 'entity', [
+            'required' => true,
+            'class' => \App\Entity\Competence::class,
+            'property' => 'nom',
+        ])
+            ->add('niveau', 'entity', [
+                'required' => true,
+                'class' => 'App\Entity\Niveau',
+                'property' => 'label',
+            ])
+            ->add('description', 'textarea', [
+                'required' => false,
+            ]);
+    }
 
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data' => 'App\Entity\CompetenceNiveau',
-		));
-	}
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data' => 'App\Entity\CompetenceNiveau',
+        ]);
+    }
 
-	public function getName()
-	{
-		return 'competenceNiveauForm';
-	}
+    public function getName(): string
+    {
+        return 'competenceNiveauForm';
+    }
 }

@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,23 +23,21 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Repository\GroupeLangueRepository
- * 
+ * LarpManager\Repository\GroupeLangueRepository.
+ *
  * @author kevin
  */
 class GroupeLangueRepository extends EntityRepository
 {
-	/**
-	 * Find all groupelangues ordered by label
-	 * @return ArrayCollection $groupelangues
-	 */
-	public function findAllOrderedByLabel()
-	{
-		$groupelangues = $this->getEntityManager()
-				->createQuery('SELECT l FROM App\Entity\GroupeLangue l ORDER BY l.label ASC')
-				->getResult();
-		
-		return $groupelangues;
-
-	}
+    /**
+     * Find all groupelangues ordered by label.
+     *
+     * @return ArrayCollection $groupelangues
+     */
+    public function findAllOrderedByLabel()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT l FROM App\Entity\GroupeLangue l ORDER BY l.label ASC')
+            ->getResult();
+    }
 }

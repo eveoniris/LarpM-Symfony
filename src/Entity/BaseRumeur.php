@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\Rumeur
+ * App\Entity\Rumeur.
  *
  * @Table(name="rumeur", indexes={@Index(name="fk_rumeur_territoire1_idx", columns={"territoire_id"}), @Index(name="fk_rumeur_User1_idx", columns={"User_id"}), @Index(name="fk_rumeur_gn1_idx", columns={"gn_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseRumeur", "extended":"Rumeur"})
  */
 class BaseRumeur
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -48,18 +53,21 @@ class BaseRumeur
 
     /**
      * @ManyToOne(targetEntity="Gn", inversedBy="rumeurs")
+     *
      * @JoinColumn(name="gn_id", referencedColumnName="id", nullable=false)
      */
     protected $gn;
 
     /**
      * @ManyToOne(targetEntity="Territoire", inversedBy="rumeurs")
+     *
      * @JoinColumn(name="territoire_id", referencedColumnName="id")
      */
     protected $territoire;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="rumeurs")
+     *
      * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
      */
     protected $User;
@@ -71,7 +79,8 @@ class BaseRumeur
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Rumeur
      */
     public function setId($id)
@@ -84,7 +93,7 @@ class BaseRumeur
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -95,6 +104,7 @@ class BaseRumeur
      * Set the value of text.
      *
      * @param string $text
+     *
      * @return \App\Entity\Rumeur
      */
     public function setText($text)
@@ -118,6 +128,7 @@ class BaseRumeur
      * Set the value of creation_date.
      *
      * @param \DateTime $creation_date
+     *
      * @return \App\Entity\Rumeur
      */
     public function setCreationDate($creation_date)
@@ -141,6 +152,7 @@ class BaseRumeur
      * Set the value of update_date.
      *
      * @param \DateTime $update_date
+     *
      * @return \App\Entity\Rumeur
      */
     public function setUpdateDate($update_date)
@@ -164,6 +176,7 @@ class BaseRumeur
      * Set the value of visibility.
      *
      * @param string $visibility
+     *
      * @return \App\Entity\Rumeur
      */
     public function setVisibility($visibility)
@@ -186,7 +199,6 @@ class BaseRumeur
     /**
      * Set Gn entity (many to one).
      *
-     * @param \App\Entity\Gn $gn
      * @return \App\Entity\Rumeur
      */
     public function setGn(Gn $gn = null)
@@ -209,7 +221,6 @@ class BaseRumeur
     /**
      * Set Territoire entity (many to one).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Rumeur
      */
     public function setTerritoire(Territoire $territoire = null)
@@ -232,7 +243,6 @@ class BaseRumeur
     /**
      * Set User entity (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Rumeur
      */
     public function setUser(User $User = null)
@@ -254,6 +264,6 @@ class BaseRumeur
 
     public function __sleep()
     {
-        return array('id', 'text', 'gn_id', 'territoire_id', 'User_id', 'creation_date', 'update_date', 'visibility');
+        return ['id', 'text', 'gn_id', 'territoire_id', 'User_id', 'creation_date', 'update_date', 'visibility'];
     }
 }

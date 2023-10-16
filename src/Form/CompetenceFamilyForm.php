@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,10 +27,9 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints\Length;
 
 /**
- * LarpManager\Form\CompetenceFamilyForm
+ * LarpManager\Form\CompetenceFamilyForm.
  *
  * @author kevin
- *
  */
 class CompetenceFamilyForm extends AbstractType
 {
@@ -39,47 +38,42 @@ class CompetenceFamilyForm extends AbstractType
         $resolver->setDefaults(['sanitize_html' => true]);
     }
 
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text', array(
-					'required' => true,
-                    'attr' => ['maxlength' => 45],
-                    'constraints' => [new Length(['max' => 45])],
-				))
-				->add('description','textarea', array(
-					'required' => false,
-                    'constraints' => [new Length(['max' => 450])],
-					'attr' => array(
-							'class' => 'tinymce',
-							'row' => 9,
-                            'maxlength' => 450,
-					)
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concernée
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\CompetenceFamily',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'competenceFamily';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text', [
+            'required' => true,
+            'attr' => ['maxlength' => 45],
+            'constraints' => [new Length(['max' => 45])],
+        ])
+            ->add('description', 'textarea', [
+                'required' => false,
+                'constraints' => [new Length(['max' => 450])],
+                'attr' => [
+                    'class' => 'tinymce',
+                    'row' => 9,
+                    'maxlength' => 450,
+                ],
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concernée.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\CompetenceFamily::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'competenceFamily';
+    }
 }

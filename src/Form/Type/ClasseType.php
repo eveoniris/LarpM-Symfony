@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,32 +25,31 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\Type\ClasseType
+ * LarpManager\Form\Type\ClasseType.
  *
  * @author kevin
- *
  */
 class ClasseType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('classe','entity', array(
-					'label' => false,
-					'required' => true,
-					'property' => 'label',
-					'class' => 'App\Entity\Classe',						
-				));
-	}
-	
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\GroupeClasse',
-		));
-	}
-	
-	public function getName()
-	{
-		return 'groupeClasse';
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('classe', 'entity', [
+            'label' => false,
+            'required' => true,
+            'property' => 'label',
+            'class' => \App\Entity\Classe::class,
+        ]);
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\GroupeClasse::class,
+        ]);
+    }
+
+    public function getName(): string
+    {
+        return 'groupeClasse';
+    }
 }

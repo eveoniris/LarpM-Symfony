@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\Message
+ * App\Entity\Message.
  *
  * @Table(name="message", indexes={@Index(name="fk_message_User1_idx", columns={"auteur"}), @Index(name="fk_message_User2_idx", columns={"destinataire"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseMessage", "extended":"Message"})
  */
 class BaseMessage
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -53,12 +58,14 @@ class BaseMessage
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="messageRelatedByAuteurs")
+     *
      * @JoinColumn(name="auteur", referencedColumnName="id", nullable=false)
      */
     protected $UserRelatedByAuteur;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="messageRelatedByDestinataires")
+     *
      * @JoinColumn(name="destinataire", referencedColumnName="id", nullable=false)
      */
     protected $UserRelatedByDestinataire;
@@ -70,7 +77,8 @@ class BaseMessage
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Message
      */
     public function setId($id)
@@ -83,7 +91,7 @@ class BaseMessage
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -94,6 +102,7 @@ class BaseMessage
      * Set the value of title.
      *
      * @param string $title
+     *
      * @return \App\Entity\Message
      */
     public function setTitle($title)
@@ -117,6 +126,7 @@ class BaseMessage
      * Set the value of text.
      *
      * @param string $text
+     *
      * @return \App\Entity\Message
      */
     public function setText($text)
@@ -140,6 +150,7 @@ class BaseMessage
      * Set the value of creation_date.
      *
      * @param \DateTime $creation_date
+     *
      * @return \App\Entity\Message
      */
     public function setCreationDate($creation_date)
@@ -163,6 +174,7 @@ class BaseMessage
      * Set the value of update_date.
      *
      * @param \DateTime $update_date
+     *
      * @return \App\Entity\Message
      */
     public function setUpdateDate($update_date)
@@ -185,7 +197,8 @@ class BaseMessage
     /**
      * Set the value of lu.
      *
-     * @param boolean $lu
+     * @param bool $lu
+     *
      * @return \App\Entity\Message
      */
     public function setLu($lu)
@@ -198,7 +211,7 @@ class BaseMessage
     /**
      * Get the value of lu.
      *
-     * @return boolean
+     * @return bool
      */
     public function getLu()
     {
@@ -208,7 +221,6 @@ class BaseMessage
     /**
      * Set User entity related by `auteur` (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Message
      */
     public function setUserRelatedByAuteur(User $User = null)
@@ -231,7 +243,6 @@ class BaseMessage
     /**
      * Set User entity related by `destinataire` (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Message
      */
     public function setUserRelatedByDestinataire(User $User = null)
@@ -253,6 +264,6 @@ class BaseMessage
 
     public function __sleep()
     {
-        return array('id', 'title', 'text', 'creation_date', 'update_date', 'lu', 'auteur', 'destinataire');
+        return ['id', 'title', 'text', 'creation_date', 'update_date', 'lu', 'auteur', 'destinataire'];
     }
 }

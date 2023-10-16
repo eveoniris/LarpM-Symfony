@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\Trigger
+ * App\Entity\Trigger.
  *
  * @Table(name="`trigger`", indexes={@Index(name="fk_trigger_idx", columns={"personnage_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseTrigger", "extended":"Trigger"})
  */
 class BaseTrigger
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -38,6 +43,7 @@ class BaseTrigger
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="triggers")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
@@ -49,7 +55,8 @@ class BaseTrigger
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Trigger
      */
     public function setId($id)
@@ -62,7 +69,7 @@ class BaseTrigger
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -73,6 +80,7 @@ class BaseTrigger
      * Set the value of tag.
      *
      * @param string $tag
+     *
      * @return \App\Entity\Trigger
      */
     public function setTag($tag)
@@ -95,7 +103,8 @@ class BaseTrigger
     /**
      * Set the value of done.
      *
-     * @param boolean $done
+     * @param bool $done
+     *
      * @return \App\Entity\Trigger
      */
     public function setDone($done)
@@ -108,7 +117,7 @@ class BaseTrigger
     /**
      * Get the value of done.
      *
-     * @return boolean
+     * @return bool
      */
     public function getDone()
     {
@@ -118,7 +127,6 @@ class BaseTrigger
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Trigger
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -140,6 +148,6 @@ class BaseTrigger
 
     public function __sleep()
     {
-        return array('id', 'personnage_id', 'tag', 'done');
+        return ['id', 'personnage_id', 'tag', 'done'];
     }
 }

@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\Membre
+ * App\Entity\Membre.
  *
  * @Table(name="membre", indexes={@Index(name="fk_personnage_groupe_secondaire_personnage1_idx", columns={"personnage_id"}), @Index(name="fk_personnage_groupe_secondaire_secondary_group1_idx", columns={"secondary_group_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseMembre", "extended":"Membre"})
  */
 class BaseMembre
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -33,12 +38,14 @@ class BaseMembre
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="membres")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
 
     /**
      * @ManyToOne(targetEntity="SecondaryGroup", inversedBy="membres")
+     *
      * @JoinColumn(name="secondary_group_id", referencedColumnName="id", nullable=false)
      */
     protected $secondaryGroup;
@@ -50,7 +57,8 @@ class BaseMembre
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Membre
      */
     public function setId($id)
@@ -63,7 +71,7 @@ class BaseMembre
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -73,7 +81,8 @@ class BaseMembre
     /**
      * Set the value of secret.
      *
-     * @param boolean $secret
+     * @param bool $secret
+     *
      * @return \App\Entity\Membre
      */
     public function setSecret($secret)
@@ -86,7 +95,7 @@ class BaseMembre
     /**
      * Get the value of secret.
      *
-     * @return boolean
+     * @return bool
      */
     public function getSecret()
     {
@@ -96,7 +105,6 @@ class BaseMembre
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Membre
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -119,7 +127,6 @@ class BaseMembre
     /**
      * Set SecondaryGroup entity (many to one).
      *
-     * @param \App\Entity\SecondaryGroup $secondaryGroup
      * @return \App\Entity\Membre
      */
     public function setSecondaryGroup(SecondaryGroup $secondaryGroup = null)
@@ -141,6 +148,6 @@ class BaseMembre
 
     public function __sleep()
     {
-        return array('id', 'personnage_id', 'secondary_group_id', 'secret');
+        return ['id', 'personnage_id', 'secondary_group_id', 'secret'];
     }
 }

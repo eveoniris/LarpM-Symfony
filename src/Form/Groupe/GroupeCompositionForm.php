@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,58 +20,48 @@
 
 namespace App\Form\Groupe;
 
+use LarpManager\Form\Type\ClasseType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Doctrine\ORM\EntityRepository;
-
-use LarpManager\Form\Type\ClasseType;
 
 /**
- * LarpManager\Form\Groupe\GroupeCompositionForm
+ * LarpManager\Form\Groupe\GroupeCompositionForm.
  *
  * @author kevin
- *
  */
 class GroupeCompositionForm extends AbstractType
 {
-	/**
-	 * Contruction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('groupeClasses', 'collection', array(
-						'label' => "Composition",
-						'required' => false,
-						'allow_add' => true,
-						'allow_delete' => true,
-						'by_reference' => false,
-						'type' => new ClasseType()
-				));
-	}
-	
-	/**
-	 * Définition de l'entité conercné
-	 *
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\Groupe',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'groupeComposition';
-	}
-	
-	
+    /**
+     * Contruction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('groupeClasses', 'collection', [
+            'label' => 'Composition',
+            'required' => false,
+            'allow_add' => true,
+            'allow_delete' => true,
+            'by_reference' => false,
+            'type' => new ClasseType(),
+        ]);
+    }
+
+    /**
+     * Définition de l'entité conercné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\Groupe::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'groupeComposition';
+    }
 }

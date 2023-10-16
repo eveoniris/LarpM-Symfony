@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,22 +23,21 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Repository\PersonnageSecondaireRepository
- * 
+ * LarpManager\Repository\PersonnageSecondaireRepository.
+ *
  * @author kevin
  */
 class PersonnageSecondaireRepository extends EntityRepository
 {
-	/**
-	 * Trouve tous les personnages secondaires
-	 * @return ArrayCollection $personnageSecondaire
-	 */
-	public function findAll()
-	{
-		$personnageSecondaires = $this->getEntityManager()
-				->createQuery('SELECT ps FROM App\Entity\PersonnageSecondaire ps')
-				->getResult();
-		
-		return $personnageSecondaires;
-	}
+    /**
+     * Trouve tous les personnages secondaires.
+     *
+     * @return ArrayCollection $personnageSecondaire
+     */
+    public function findAll()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT ps FROM App\Entity\PersonnageSecondaire ps')
+            ->getResult();
+    }
 }

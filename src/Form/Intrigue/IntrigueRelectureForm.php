@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,60 +23,53 @@ namespace App\Form\Intrigue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Form\Groupe\IntrigueRelectureForm
+ * LarpManager\Form\Groupe\IntrigueRelectureForm.
  *
  * @author kevin
- *
  */
 class IntrigueRelectureForm extends AbstractType
 {
-	/**
-	 * Contruction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('statut', 'choice', array(
-						'label' => "Choisissez le statut",
-						'required' => true,
-						'choices' => array(
-								'Validé' => 'Validé',
-								'Non validé' => 'Non validé',
-						),
-				))
-				->add('remarque', 'textarea', array(
-						'label' => "Vos remarques éventuelles",
-						'required' => false,
-						'attr' => array(
-								'class' => 'tinymce',
-								'row' => '9',
-								'help' => 'Vos remarques vis à vis de cette intrigue.',
-						),
-				));
-	}
+    /**
+     * Contruction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('statut', 'choice', [
+            'label' => 'Choisissez le statut',
+            'required' => true,
+            'choices' => [
+                'Validé' => 'Validé',
+                'Non validé' => 'Non validé',
+            ],
+        ])
+            ->add('remarque', 'textarea', [
+                'label' => 'Vos remarques éventuelles',
+                'required' => false,
+                'attr' => [
+                    'class' => 'tinymce',
+                    'row' => '9',
+                    'help' => 'Vos remarques vis à vis de cette intrigue.',
+                ],
+            ]);
+    }
 
-	/**
-	 * Définition de l'entité conercné
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\Relecture',
-		));
-	}
+    /**
+     * Définition de l'entité conercné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\Relecture::class,
+        ]);
+    }
 
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'relecture';
-	}
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'relecture';
+    }
 }

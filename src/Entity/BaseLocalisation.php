@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Localisation
+ * App\Entity\Localisation.
  *
  * @Table(name="localisation")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseLocalisation", "extended":"Localisation"})
  */
 class BaseLocalisation
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -40,6 +45,7 @@ class BaseLocalisation
 
     /**
      * @OneToMany(targetEntity="Rangement", mappedBy="localisation")
+     *
      * @JoinColumn(name="id", referencedColumnName="localisation_id", nullable=false)
      */
     protected $rangements;
@@ -52,10 +58,11 @@ class BaseLocalisation
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Localisation
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -65,7 +72,7 @@ class BaseLocalisation
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -76,6 +83,7 @@ class BaseLocalisation
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Localisation
      */
     public function setLabel($label)
@@ -99,6 +107,7 @@ class BaseLocalisation
      * Set the value of precision.
      *
      * @param string $precision
+     *
      * @return \App\Entity\Localisation
      */
     public function setPrecision($precision)
@@ -121,7 +130,6 @@ class BaseLocalisation
     /**
      * Add Rangement entity to collection (one to many).
      *
-     * @param \App\Entity\Rangement $rangement
      * @return \App\Entity\Localisation
      */
     public function addRangement(Rangement $rangement)
@@ -134,7 +142,6 @@ class BaseLocalisation
     /**
      * Remove Rangement entity from collection (one to many).
      *
-     * @param \App\Entity\Rangement $rangement
      * @return \App\Entity\Localisation
      */
     public function removeRangement(Rangement $rangement)
@@ -156,6 +163,6 @@ class BaseLocalisation
 
     public function __sleep()
     {
-        return array('id', 'label', 'precision');
+        return ['id', 'label', 'precision'];
     }
 }

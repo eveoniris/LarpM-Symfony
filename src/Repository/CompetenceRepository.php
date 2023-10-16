@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,40 +25,36 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * LarpManager\Repository\CompetenceRepository
- * @author kevin
+ * LarpManager\Repository\CompetenceRepository.
  *
+ * @author kevin
  */
 class CompetenceRepository extends EntityRepository
 {
-	/**
-	 * Find all competences ordered by label
-	 * @return ArrayCollection $competences
-	 */
-	public function findAllOrderedByLabel()
-	{
-		$competences = $this->getEntityManager()
-				->createQuery('SELECT c FROM App\Entity\Competence c JOIN c.competenceFamily cf JOIN c.level l ORDER BY cf.label ASC, l.index ASC')
-				->getResult();
-		
-		return $competences;
+    /**
+     * Find all competences ordered by label.
+     *
+     * @return ArrayCollection $competences
+     */
+    public function findAllOrderedByLabel()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT c FROM App\Entity\Competence c JOIN c.competenceFamily cf JOIN c.level l ORDER BY cf.label ASC, l.index ASC')
+            ->getResult();
+    }
 
-	}
-	
-	/**
-	 * Returns a query builder to find all competences ordered by label
-	 * @return QueryBuilder 
-	 */
-	public function getQueryBuilderFindAllOrderedByLabel() : QueryBuilder
-	{
-	    $queryBuilder = $this->getEntityManager()
-    	    ->createQueryBuilder()
-    	    ->select('c')
-    	    ->from('App\Entity\Competence', 'c')
-    	    ->join('c.competenceFamily', 'cf')
-    	    ->join('c.level', 'l')
-    	    ->addOrderBy('cf.label')
+    /**
+     * Returns a query builder to find all competences ordered by label.
+     */
+    public function getQueryBuilderFindAllOrderedByLabel(): QueryBuilder
+    {
+        return $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('c')
+            ->from(\App\Entity\Competence::class, 'c')
+            ->join('c.competenceFamily', 'cf')
+            ->join('c.level', 'l')
+            ->addOrderBy('cf.label')
             ->addOrderBy('l.index');
-	    return $queryBuilder;	    
-	}
+    }
 }

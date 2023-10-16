@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,42 +27,33 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseIngredient;
-
 /**
- * App\Entity\Ingredient
+ * App\Entity\Ingredient.
  *
  * @Entity(repositoryClass="LarpManager\Repository\IngredientRepository")
  */
-class Ingredient extends BaseIngredient
+class Ingredient extends BaseIngredient implements \Stringable
 {
-	public function __toString()
-	{
-		return $this->getLabel();
-	}
-	
-	public function fullLabel()
-	{
-		return $this->getLabel() .' - '. $this->getColor() .' (Niveau '.  $this->getNiveau(). ') : '.  $this->getDose();
-	}
+    public function __toString(): string
+    {
+        return $this->getLabel();
+    }
 
-	public function getColor()
-	{
-		$color = 'Blanc';
-		switch ($this->getNiveau()) {
-			case 1:
-				$color = 'Jaune';
-				break;
-			case 2:
-				$color = 'Bleu';
-				break;
-			case 3:
-				$color = 'Rouge';
-				break;
-			case 4:
-				$color = 'Gris';
-				break;
-		}
-		return $color;	
-	}	
+    public function fullLabel(): string
+    {
+        return $this->getLabel().' - '.$this->getColor().' (Niveau '.$this->getNiveau().') : '.$this->getDose();
+    }
+
+    public function getColor(): string
+    {
+        $color = 'Blanc';
+
+        return match ($this->getNiveau()) {
+            1 => 'Jaune',
+            2 => 'Bleu',
+            3 => 'Rouge',
+            4 => 'Gris',
+            default => $color,
+        };
+    }
 }

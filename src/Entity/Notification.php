@@ -9,16 +9,13 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseNotification;
-
 /**
- * App\Entity\Notification
- *
+ * App\Entity\Notification.
  */
 class Notification extends BaseNotification
 {
-	public function __contruct()
-	{
-		$this->setDate(new \Datetime('NOW'));
-	}
+    public function __contruct(): void
+    {
+        $this->setDate(new \DateTime('NOW'));
+    }
 }

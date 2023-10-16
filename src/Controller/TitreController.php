@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,148 +17,131 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
-use Silex\Application;
-use LarpManager\Form\TitreForm;
 use LarpManager\Form\TitreDeleteForm;
+use LarpManager\Form\TitreForm;
+use Silex\Application;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * LarpManager\Controllers\TitreController
+ * LarpManager\Controllers\TitreController.
  *
  * @author kevin
  */
 class TitreController
 {
-	/**
-	 * Liste des titres
-	 *
-	 * @param Request $request
-	 * @param Application $app
-	 */
-	public function adminListAction(Request $request, Application $app)
-	{
-		$repo = $app['orm.em']->getRepository('\App\Entity\Titre');
-		$titres = $repo->findAll();
-		
+    /**
+     * Liste des titres.
+     */
+    public function adminListAction(Request $request, Application $app)
+    {
+        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Titre::class);
+        $titres = $repo->findAll();
 
-		return $app['twig']->render('admin/titre/list.twig', array('titres' => $titres));
-	}
-	
-	
-	/**
-	 * Detail d'un titre
-	 *
-	 * @param Request $request
-	 * @param Application $app
-	 */
-	public function adminDetailAction(Request $request, Application $app)
-	{
-		$titre = $request->get('titre');
-	
-		return $app['twig']->render('admin/titre/detail.twig', array(
-				'titre' => $titre,
-		));
-	}
-	
-	/**
-	 * Ajoute un titre
-	 *
-	 * @param Request $request
-	 * @param Application $app
-	 */
-	public function adminAddAction(Request $request, Application $app)
-	{
-		$titre = new \App\Entity\Titre();
-	
-		$form = $app['form.factory']->createBuilder(new TitreForm(), $titre)
-			->add('save','submit', array('label' => 'Sauvegarder'))
-			->getForm();
-	
-		$form->handleRequest($request);
-			
-		if ( $form->isValid() )
-		{
-			$titre = $form->getData();
-	
-			$app['orm.em']->persist($titre);
-			$app['orm.em']->flush();
-	
-			$app['session']->getFlashBag()->add('success','Le titre a été ajouté');
-			return $app->redirect($app['url_generator']->generate('titre.admin.detail',array('titre'=>$titre->getId())),303);
-		}
-	
-		return $app['twig']->render('admin/titre/add.twig', array(
-				'titre' => $titre,
-				'form' => $form->createView(),
-		));
-	}
-	
-	/**
-	 * Met à jour un titre
-	 *
-	 * @param Request $request
-	 * @param Application $app
-	 */
-	public function adminUpdateAction(Request $request, Application $app)
-	{
-		$titre = $request->get('titre');
-	
-		$form = $app['form.factory']->createBuilder(new TitreForm(), $titre)
-			->add('save','submit', array('label' => 'Sauvegarder'))
-			->getForm();
-	
-		$form->handleRequest($request);
-			
-		if ( $form->isValid() )
-		{
-			$titre = $form->getData();
-		
-			$app['orm.em']->persist($titre);
-			$app['orm.em']->flush();
-	
-			$app['session']->getFlashBag()->add('success','Le titre a été sauvegardé');
-			return $app->redirect($app['url_generator']->generate('titre.admin.detail',array('titre'=>$titre->getId())),303);
-		}
-	
-		return $app['twig']->render('admin/titre/update.twig', array(
-				'titre' => $titre,
-				'form' => $form->createView(),
-		));
-	}
-	
-	/**
-	 * Supprime un titre
-	 *
-	 * @param Request $request
-	 * @param Application $app
-	 */
-	public function adminDeleteAction(Request $request, Application $app)
-	{
-		$titre = $request->get('titre');
-	
-		$form = $app['form.factory']->createBuilder(new TitreDeleteForm(), $titre)
-			->add('save','submit', array('label' => 'Supprimer'))
-			->getForm();
-	
-		$form->handleRequest($request);
-			
-		if ( $form->isValid() )
-		{
-			$titre = $form->getData();
-	
-			$app['orm.em']->remove($titre);
-			$app['orm.em']->flush();
-	
-			$app['session']->getFlashBag()->add('success','Le titre a été suprimé');
-			return $app->redirect($app['url_generator']->generate('titre.admin.list'),303);
-		}
-	
-		return $app['twig']->render('admin/titre/delete.twig', array(
-				'titre' => $titre,
-				'form' => $form->createView(),
-		));
-	}
+        return $app['twig']->render('admin/titre/list.twig', ['titres' => $titres]);
+    }
+
+    /**
+     * Detail d'un titre.
+     */
+    public function adminDetailAction(Request $request, Application $app)
+    {
+        $titre = $request->get('titre');
+
+        return $app['twig']->render('admin/titre/detail.twig', [
+            'titre' => $titre,
+        ]);
+    }
+
+    /**
+     * Ajoute un titre.
+     */
+    public function adminAddAction(Request $request, Application $app)
+    {
+        $titre = new \App\Entity\Titre();
+
+        $form = $app['form.factory']->createBuilder(new TitreForm(), $titre)
+            ->add('save', 'submit', ['label' => 'Sauvegarder'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $titre = $form->getData();
+
+            $app['orm.em']->persist($titre);
+            $app['orm.em']->flush();
+
+            $app['session']->getFlashBag()->add('success', 'Le titre a été ajouté');
+
+            return $app->redirect($app['url_generator']->generate('titre.admin.detail', ['titre' => $titre->getId()]), 303);
+        }
+
+        return $app['twig']->render('admin/titre/add.twig', [
+            'titre' => $titre,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Met à jour un titre.
+     */
+    public function adminUpdateAction(Request $request, Application $app)
+    {
+        $titre = $request->get('titre');
+
+        $form = $app['form.factory']->createBuilder(new TitreForm(), $titre)
+            ->add('save', 'submit', ['label' => 'Sauvegarder'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $titre = $form->getData();
+
+            $app['orm.em']->persist($titre);
+            $app['orm.em']->flush();
+
+            $app['session']->getFlashBag()->add('success', 'Le titre a été sauvegardé');
+
+            return $app->redirect($app['url_generator']->generate('titre.admin.detail', ['titre' => $titre->getId()]), 303);
+        }
+
+        return $app['twig']->render('admin/titre/update.twig', [
+            'titre' => $titre,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Supprime un titre.
+     */
+    public function adminDeleteAction(Request $request, Application $app)
+    {
+        $titre = $request->get('titre');
+
+        $form = $app['form.factory']->createBuilder(new TitreDeleteForm(), $titre)
+            ->add('save', 'submit', ['label' => 'Supprimer'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $titre = $form->getData();
+
+            $app['orm.em']->remove($titre);
+            $app['orm.em']->flush();
+
+            $app['session']->getFlashBag()->add('success', 'Le titre a été suprimé');
+
+            return $app->redirect($app['url_generator']->generate('titre.admin.list'), 303);
+        }
+
+        return $app['twig']->render('admin/titre/delete.twig', [
+            'titre' => $titre,
+            'form' => $form->createView(),
+        ]);
+    }
 }

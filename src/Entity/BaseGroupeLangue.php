@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\GroupeLangue
+ * App\Entity\GroupeLangue.
  *
  * @Table(name="groupe_langue")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseGroupeLangue", "extended":"GroupeLangue"})
  */
 class BaseGroupeLangue
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -40,6 +45,7 @@ class BaseGroupeLangue
 
     /**
      * @OneToMany(targetEntity="Langue", mappedBy="groupeLangue")
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_langue_id", nullable=false)
      */
     protected $langues;
@@ -52,10 +58,11 @@ class BaseGroupeLangue
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\GroupeLangue
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -65,7 +72,7 @@ class BaseGroupeLangue
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -76,6 +83,7 @@ class BaseGroupeLangue
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\GroupeLangue
      */
     public function setLabel($label)
@@ -99,6 +107,7 @@ class BaseGroupeLangue
      * Set the value of couleur.
      *
      * @param string $couleur
+     *
      * @return \App\Entity\GroupeLangue
      */
     public function setCouleur($couleur)
@@ -121,7 +130,6 @@ class BaseGroupeLangue
     /**
      * Add Langue entity to collection (one to many).
      *
-     * @param \App\Entity\Langue $langue
      * @return \App\Entity\GroupeLangue
      */
     public function addLangue(Langue $langue)
@@ -134,7 +142,6 @@ class BaseGroupeLangue
     /**
      * Remove Langue entity from collection (one to many).
      *
-     * @param \App\Entity\Langue $langue
      * @return \App\Entity\GroupeLangue
      */
     public function removeLangue(Langue $langue)
@@ -156,6 +163,6 @@ class BaseGroupeLangue
 
     public function __sleep()
     {
-        return array('id', 'label', 'couleur');
+        return ['id', 'label', 'couleur'];
     }
 }

@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,26 +27,23 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseLocalisation;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Localisation
- *
+ * App\Entity\Localisation.
  */
 class Localisation extends BaseLocalisation
 {
-	/**
-	 * Retourne la liste de tous les objets dans cette localisation
-	 */
-	public function objets()
-	{
-		$objets = array();
-		foreach ( $this->getRangements() as $rangement)
-		{
-			$objets = array_merge($objets, $rangement->getObjets()->toArray());
-		}
-		 
-		return new ArrayCollection($objets);
-	}
+    /**
+     * Retourne la liste de tous les objets dans cette localisation.
+     */
+    public function objets(): ArrayCollection
+    {
+        $objets = [];
+        foreach ($this->getRangements() as $rangement) {
+            $objets = array_merge($objets, $rangement->getObjets()->toArray());
+        }
+
+        return new ArrayCollection($objets);
+    }
 }

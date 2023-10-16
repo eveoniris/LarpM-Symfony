@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Loi
+ * App\Entity\Loi.
  *
  * @Table(name="loi")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseLoi", "extended":"Loi"})
  */
 class BaseLoi
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -56,10 +61,11 @@ class BaseLoi
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Loi
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -69,7 +75,7 @@ class BaseLoi
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -80,6 +86,7 @@ class BaseLoi
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Loi
      */
     public function setLabel($label)
@@ -103,6 +110,7 @@ class BaseLoi
      * Set the value of documentUrl.
      *
      * @param string $documentUrl
+     *
      * @return \App\Entity\Loi
      */
     public function setDocumentUrl($documentUrl)
@@ -126,6 +134,7 @@ class BaseLoi
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Loi
      */
     public function setDescription($description)
@@ -148,7 +157,6 @@ class BaseLoi
     /**
      * Add Territoire entity to collection.
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Loi
      */
     public function addTerritoire(Territoire $territoire)
@@ -161,7 +169,6 @@ class BaseLoi
     /**
      * Remove Territoire entity from collection.
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Loi
      */
     public function removeTerritoire(Territoire $territoire)
@@ -183,6 +190,6 @@ class BaseLoi
 
     public function __sleep()
     {
-        return array('id', 'label', 'documentUrl', 'description');
+        return ['id', 'label', 'documentUrl', 'description'];
     }
 }

@@ -1,21 +1,27 @@
 <?php
 
-
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * App\Entity\Objet
+ * App\Entity\Objet.
  *
  * @Table(name="objet", indexes={@Index(name="fk_objet_etat1_idx", columns={"etat_id"}), @Index(name="fk_objet_possesseur1_idx", columns={"proprietaire_id"}), @Index(name="fk_objet_Users1_idx", columns={"responsable_id"}), @Index(name="fk_objet_photo1_idx", columns={"photo_id"}), @Index(name="fk_objet_rangement1_idx", columns={"rangement_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseObjet", "extended":"Objet"})
  */
 class BaseObjet
 {
+    /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     */
+    public $objetCaracs;
     #[ORM\Id, ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER), ORM\GeneratedValue]
     protected ?int $id = null;
 
@@ -61,6 +67,7 @@ class BaseObjet
 
     /**
      * @OneToMany(targetEntity="Item", mappedBy="objet")
+     *
      * @JoinColumn(name="id", referencedColumnName="objet_id", nullable=false)
      */
     protected $items;
@@ -72,36 +79,42 @@ class BaseObjet
 
     /**
      * @ManyToOne(targetEntity="Etat", inversedBy="objets")
+     *
      * @JoinColumn(name="etat_id", referencedColumnName="id")
      */
     protected $etat;
 
     /**
      * @ManyToOne(targetEntity="Proprietaire", inversedBy="objets")
+     *
      * @JoinColumn(name="proprietaire_id", referencedColumnName="id")
      */
     protected $proprietaire;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="objets")
+     *
      * @JoinColumn(name="responsable_id", referencedColumnName="id")
      */
     protected $User;
 
     /**
      * @ManyToOne(targetEntity="Photo", inversedBy="objets", cascade={"persist", "merge", "remove", "detach", "all"})
+     *
      * @JoinColumn(name="photo_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $photo;
 
     /**
      * @ManyToOne(targetEntity="Rangement", inversedBy="objets")
+     *
      * @JoinColumn(name="rangement_id", referencedColumnName="id", nullable=false)
      */
     protected $rangement;
 
     /**
      * @ManyToMany(targetEntity="Tag", inversedBy="objets")
+     *
      * @JoinTable(name="objet_tag",
      *     joinColumns={@JoinColumn(name="objet_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="tag_id", referencedColumnName="id", nullable=false)}
@@ -119,10 +132,9 @@ class BaseObjet
     /**
      * Set the value of id.
      *
-     * @param integer $id
      * @return \App\Entity\Objet
      */
-    public function setId($id)
+    public function setId(?int $id): static
     {
         $this->id = $id;
 
@@ -132,7 +144,7 @@ class BaseObjet
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -143,6 +155,7 @@ class BaseObjet
      * Set the value of numero.
      *
      * @param string $numero
+     *
      * @return \App\Entity\Objet
      */
     public function setNumero($numero)
@@ -166,6 +179,7 @@ class BaseObjet
      * Set the value of nom.
      *
      * @param string $nom
+     *
      * @return \App\Entity\Objet
      */
     public function setNom($nom)
@@ -189,6 +203,7 @@ class BaseObjet
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Objet
      */
     public function setDescription($description)
@@ -211,7 +226,8 @@ class BaseObjet
     /**
      * Set the value of nombre.
      *
-     * @param integer $nombre
+     * @param int $nombre
+     *
      * @return \App\Entity\Objet
      */
     public function setNombre($nombre)
@@ -224,7 +240,7 @@ class BaseObjet
     /**
      * Get the value of nombre.
      *
-     * @return integer
+     * @return int
      */
     public function getNombre()
     {
@@ -235,6 +251,7 @@ class BaseObjet
      * Set the value of cout.
      *
      * @param float $cout
+     *
      * @return \App\Entity\Objet
      */
     public function setCout($cout)
@@ -258,6 +275,7 @@ class BaseObjet
      * Set the value of budget.
      *
      * @param float $budget
+     *
      * @return \App\Entity\Objet
      */
     public function setBudget($budget)
@@ -280,7 +298,8 @@ class BaseObjet
     /**
      * Set the value of investissement.
      *
-     * @param boolean $investissement
+     * @param bool $investissement
+     *
      * @return \App\Entity\Objet
      */
     public function setInvestissement($investissement)
@@ -293,7 +312,7 @@ class BaseObjet
     /**
      * Get the value of investissement.
      *
-     * @return boolean
+     * @return bool
      */
     public function getInvestissement()
     {
@@ -304,6 +323,7 @@ class BaseObjet
      * Set the value of creation_date.
      *
      * @param \DateTime $creation_date
+     *
      * @return \App\Entity\Objet
      */
     public function setCreationDate($creation_date)
@@ -326,7 +346,6 @@ class BaseObjet
     /**
      * Add Item entity to collection (one to many).
      *
-     * @param \App\Entity\Item $item
      * @return \App\Entity\Objet
      */
     public function addItem(Item $item)
@@ -339,7 +358,6 @@ class BaseObjet
     /**
      * Remove Item entity from collection (one to many).
      *
-     * @param \App\Entity\Item $item
      * @return \App\Entity\Objet
      */
     public function removeItem(Item $item)
@@ -362,7 +380,6 @@ class BaseObjet
     /**
      * Set ObjetCarac entity (one to one).
      *
-     * @param \App\Entity\ObjetCarac $objetCarac
      * @return \App\Entity\Objet
      */
     public function setObjetCarac(ObjetCarac $objetCarac = null)
@@ -386,7 +403,6 @@ class BaseObjet
     /**
      * Set Etat entity (many to one).
      *
-     * @param \App\Entity\Etat $etat
      * @return \App\Entity\Objet
      */
     public function setEtat(Etat $etat = null)
@@ -409,7 +425,6 @@ class BaseObjet
     /**
      * Set Proprietaire entity (many to one).
      *
-     * @param \App\Entity\Proprietaire $proprietaire
      * @return \App\Entity\Objet
      */
     public function setProprietaire(Proprietaire $proprietaire = null)
@@ -432,7 +447,6 @@ class BaseObjet
     /**
      * Set User entity (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Objet
      */
     public function setUser(User $User = null)
@@ -455,7 +469,6 @@ class BaseObjet
     /**
      * Set Photo entity (many to one).
      *
-     * @param \App\Entity\Photo $photo
      * @return \App\Entity\Objet
      */
     public function setPhoto(Photo $photo = null)
@@ -478,7 +491,6 @@ class BaseObjet
     /**
      * Set Rangement entity (many to one).
      *
-     * @param \App\Entity\Rangement $rangement
      * @return \App\Entity\Objet
      */
     public function setRangement(Rangement $rangement = null)
@@ -501,7 +513,6 @@ class BaseObjet
     /**
      * Add Tag entity to collection.
      *
-     * @param \App\Entity\Tag $tag
      * @return \App\Entity\Objet
      */
     public function addTag(Tag $tag)
@@ -515,7 +526,6 @@ class BaseObjet
     /**
      * Remove Tag entity from collection.
      *
-     * @param \App\Entity\Tag $tag
      * @return \App\Entity\Objet
      */
     public function removeTag(Tag $tag)
@@ -538,6 +548,6 @@ class BaseObjet
 
     public function __sleep()
     {
-        return array('id', 'numero', 'nom', 'description', 'etat_id', 'proprietaire_id', 'responsable_id', 'nombre', 'cout', 'budget', 'investissement', 'creation_date', 'photo_id', 'rangement_id');
+        return ['id', 'numero', 'nom', 'description', 'etat_id', 'proprietaire_id', 'responsable_id', 'nombre', 'cout', 'budget', 'investissement', 'creation_date', 'photo_id', 'rangement_id'];
     }
 }

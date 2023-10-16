@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -20,22 +19,22 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseBackground', 'extended' => 'Background'])]
 class BaseBackground
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'titre', type: 'string', length: 45)]
+    #[Column(name: 'titre', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $titre = '';
 
-    #[Column(name: 'text', type: 'text', nullable: true)]
+    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $text = null;
 
-    #[Column(name: 'visiility', type: 'string', nullable: true)]
-    protected $visibility;
+    #[Column(name: 'visiility', type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $visibility = null;
 
-    #[Column(type: 'datetime', nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date;
 
-    #[Column(type: 'datetime', nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $update_date;
 
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'backgrounds')]
@@ -49,6 +48,10 @@ class BaseBackground
     #[ManyToOne(targetEntity: Gn::class, inversedBy: 'backgrounds')]
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id')]
     protected ?Gn $gn = null;
+
+    public function __construct()
+    {
+    }
 
     public function setId(int $id): self
     {

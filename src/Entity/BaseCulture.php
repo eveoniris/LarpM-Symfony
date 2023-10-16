@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Culture
+ * App\Entity\Culture.
  *
  * @Table(name="culture")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseCulture", "extended":"Culture"})
  */
 class BaseCulture
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -45,6 +50,7 @@ class BaseCulture
 
     /**
      * @OneToMany(targetEntity="Territoire", mappedBy="culture")
+     *
      * @JoinColumn(name="id", referencedColumnName="culture_id", nullable=false)
      */
     protected $territoires;
@@ -57,10 +63,11 @@ class BaseCulture
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Culture
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -70,7 +77,7 @@ class BaseCulture
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -81,6 +88,7 @@ class BaseCulture
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Culture
      */
     public function setLabel($label)
@@ -104,6 +112,7 @@ class BaseCulture
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Culture
      */
     public function setDescription($description)
@@ -127,6 +136,7 @@ class BaseCulture
      * Set the value of description_complete.
      *
      * @param string $description_complete
+     *
      * @return \App\Entity\Culture
      */
     public function setDescriptionComplete($description_complete)
@@ -149,7 +159,6 @@ class BaseCulture
     /**
      * Add Territoire entity to collection (one to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Culture
      */
     public function addTerritoire(Territoire $territoire)
@@ -162,7 +171,6 @@ class BaseCulture
     /**
      * Remove Territoire entity from collection (one to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Culture
      */
     public function removeTerritoire(Territoire $territoire)
@@ -184,6 +192,6 @@ class BaseCulture
 
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'description_complete');
+        return ['id', 'label', 'description', 'description_complete'];
     }
 }

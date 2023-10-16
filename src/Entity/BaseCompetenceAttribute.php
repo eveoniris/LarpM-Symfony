@@ -10,23 +10,28 @@
 namespace App\Entity;
 
 /**
- * App\Entity\CompetenceAttribute
+ * App\Entity\CompetenceAttribute.
  *
  * @Table(name="competence_attribute", indexes={@Index(name="fk_competence_has_attribute_type_attribute_type1_idx", columns={"attribute_type_id"}), @Index(name="fk_competence_has_attribute_type_competence1_idx", columns={"competence_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseCompetenceAttribute", "extended":"CompetenceAttribute"})
  */
 class BaseCompetenceAttribute
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
      */
     protected $competence_id;
 
     /**
      * @Id
+     *
      * @Column(type="integer")
      */
     protected $attribute_type_id;
@@ -38,12 +43,14 @@ class BaseCompetenceAttribute
 
     /**
      * @ManyToOne(targetEntity="Competence", inversedBy="competenceAttributes")
+     *
      * @JoinColumn(name="competence_id", referencedColumnName="id", nullable=false)
      */
     protected $competence;
 
     /**
      * @ManyToOne(targetEntity="AttributeType", inversedBy="competenceAttributes", cascade={"persist"})
+     *
      * @JoinColumn(name="attribute_type_id", referencedColumnName="id", nullable=false)
      */
     protected $attributeType;
@@ -55,7 +62,8 @@ class BaseCompetenceAttribute
     /**
      * Set the value of competence_id.
      *
-     * @param integer $competence_id
+     * @param int $competence_id
+     *
      * @return \App\Entity\CompetenceAttribute
      */
     public function setCompetenceId($competence_id)
@@ -68,7 +76,7 @@ class BaseCompetenceAttribute
     /**
      * Get the value of competence_id.
      *
-     * @return integer
+     * @return int
      */
     public function getCompetenceId()
     {
@@ -78,7 +86,8 @@ class BaseCompetenceAttribute
     /**
      * Set the value of attribute_type_id.
      *
-     * @param integer $attribute_type_id
+     * @param int $attribute_type_id
+     *
      * @return \App\Entity\CompetenceAttribute
      */
     public function setAttributeTypeId($attribute_type_id)
@@ -91,7 +100,7 @@ class BaseCompetenceAttribute
     /**
      * Get the value of attribute_type_id.
      *
-     * @return integer
+     * @return int
      */
     public function getAttributeTypeId()
     {
@@ -101,7 +110,8 @@ class BaseCompetenceAttribute
     /**
      * Set the value of value.
      *
-     * @param integer $value
+     * @param int $value
+     *
      * @return \App\Entity\CompetenceAttribute
      */
     public function setValue($value)
@@ -114,7 +124,7 @@ class BaseCompetenceAttribute
     /**
      * Get the value of value.
      *
-     * @return integer
+     * @return int
      */
     public function getValue()
     {
@@ -124,7 +134,6 @@ class BaseCompetenceAttribute
     /**
      * Set Competence entity (many to one).
      *
-     * @param \App\Entity\Competence $competence
      * @return \App\Entity\CompetenceAttribute
      */
     public function setCompetence(Competence $competence = null)
@@ -147,7 +156,6 @@ class BaseCompetenceAttribute
     /**
      * Set AttributeType entity (many to one).
      *
-     * @param \App\Entity\AttributeType $attributeType
      * @return \App\Entity\CompetenceAttribute
      */
     public function setAttributeType(AttributeType $attributeType = null)
@@ -169,6 +177,6 @@ class BaseCompetenceAttribute
 
     public function __sleep()
     {
-        return array('competence_id', 'attribute_type_id', 'value');
+        return ['competence_id', 'attribute_type_id', 'value'];
     }
 }

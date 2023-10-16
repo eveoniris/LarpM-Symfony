@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,90 +27,90 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseObjet;
-use JsonSerializable;
-
 /**
- * App\Entity\Objet
+ * App\Entity\Objet.
  *
  * @Entity(repositoryClass="LarpManager\Repository\ObjetRepository")
  */
 class Objet extends BaseObjet
 {
-	
-	public function __construct()
-	{
-		parent::__construct();
-		$this->setCreationDate(new \Datetime('NOW'));
-	}
-	
-	/**
-	 * Manage relation when clone entity
-	 */
-	public function __clone() {
-		$objetCarac = $this->getObjetCarac();
-		if ( $objetCarac )
-		{
-			$cloneObjetCarac = clone $objetCarac;
-			$this->objetCarac = $cloneObjetCarac;
-			$cloneObjetCarac->setObjet($this);
-		}
-				
-		$photo = $this->getPhoto();
-		if ( $photo )
-		{
-			$this->photo = null; // on ne clone pas la photo par comodité
-		}	
-		
-		$this->setCreationDate(new \Datetime('NOW'));
-	}
-		
-	/**
-	 * Fourni un tableau pour exporter l'objet dans un fichier CSV
-	 */
-	public function getExportValue() {
-		return array(
-				'nom' => ( $this->getNom() ) ? $this->getNom() : '',
-				'code' => ( $this->getcode() ) ? $this->getCode() : '',
-				'description' => ($this->getDescription() ) ? $this->getDescription(): '',
-				'photo' => ($this->getPhoto() ) ? $this->getPhoto()->getRealName(): '',
-				'rangement' => ( $this->getRangement() ) ? $this->getRangement()->getAdresse() : '',
-				'etat' => ( $this->getEtat() ) ? $this->getEtat()->getLabel() : '',
-				'proprietaire' => ( $this->getProprietaire() ) ? $this->getProprietaire()->getNom() : '',
-				'responsable' => ( $this->getResponsable() ) ? $this->getResponsable()->getUserName() : '',
-				'nombre' => $this->getNombre(),
-				'creation_date' => ( $this->getCreationDate() ) ? $this->getCreationDate()->format('Y-m-d H:i:s') : '',
-		);
-	}
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setCreationDate(new \DateTime('NOW'));
+    }
 
-	
-	/**
-	 * Fabrique le code d'un objet en fonction de son rangement et de son numéro
-	 */
-	public function getCode() {
-		$code = '';
-		if ( $this->getRangement() )
-			$code .= substr($this->getRangement()->getLabel(),0,3); 
-		$code .= '-'.$this->getNumero();
-		return $code;
-	}
-	
-	/**
-	 * Get User entity related by `responsable_id` (many to one).
-	 *
-	 * @return \App\Entity\User
-	 */
-	public function getResponsable() {
-		return $this->getUser();
-	}
-	
-	/**
-	 * Set Users entity related by `responsable_id` (many to one).
-	 *
-	 * @param \App\Entity\Users $User
-	 * @return \App\Entity\Objet
-	 */
-	function setResponsable(User $User = null) {
-		return $this->setUser($User);
-	}
+    /**
+     * Manage relation when clone entity.
+     */
+    public function __clone()
+    {
+        $objetCarac = $this->getObjetCarac();
+        if ($objetCarac) {
+            $cloneObjetCarac = clone $objetCarac;
+            $this->objetCarac = $cloneObjetCarac;
+            $cloneObjetCarac->setObjet($this);
+        }
+
+        $photo = $this->getPhoto();
+        if ($photo) {
+            $this->photo = null; // on ne clone pas la photo par comodité
+        }
+
+        $this->setCreationDate(new \DateTime('NOW'));
+    }
+
+    /**
+     * Fourni un tableau pour exporter l'objet dans un fichier CSV.
+     */
+    public function getExportValue(): array
+    {
+        return [
+            'nom' => ('' !== $this->getNom() && '0' !== $this->getNom()) ? $this->getNom() : '',
+            'code' => ($this->getcode()) ? $this->getCode() : '',
+            'description' => ('' !== $this->getDescription() && '0' !== $this->getDescription()) ? $this->getDescription() : '',
+            'photo' => ($this->getPhoto()) ? $this->getPhoto()->getRealName() : '',
+            'rangement' => ($this->getRangement()) ? $this->getRangement()->getAdresse() : '',
+            'etat' => ($this->getEtat()) ? $this->getEtat()->getLabel() : '',
+            'proprietaire' => ($this->getProprietaire()) ? $this->getProprietaire()->getNom() : '',
+            'responsable' => ($this->getResponsable()) ? $this->getResponsable()->getUserName() : '',
+            'nombre' => $this->getNombre(),
+            'creation_date' => ($this->getCreationDate()) ? $this->getCreationDate()->format('Y-m-d H:i:s') : '',
+        ];
+    }
+
+    /**
+     * Fabrique le code d'un objet en fonction de son rangement et de son numéro.
+     */
+    public function getCode(): string
+    {
+        $code = '';
+        if ($this->getRangement()) {
+            $code .= substr($this->getRangement()->getLabel(), 0, 3);
+        }
+
+        return $code.('-'.$this->getNumero());
+    }
+
+    /**
+     * Get User entity related by `responsable_id` (many to one).
+     *
+     * @return \App\Entity\User
+     */
+    public function getResponsable()
+    {
+        return $this->getUser();
+    }
+
+    /**
+     * Set Users entity related by `responsable_id` (many to one).
+     *
+     * @param \App\Entity\Users $User
+     *
+     * @return \App\Entity\Objet
+     */
+    public function setResponsable(User $User = null)
+    {
+        return $this->setUser($User);
+    }
 }

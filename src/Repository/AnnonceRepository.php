@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,32 +23,27 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Repository\AnnonceRepository
+ * LarpManager\Repository\AnnonceRepository.
  *
  * @author kevin
  */
 class AnnonceRepository extends EntityRepository
 {
+    /**
+     * Trouve les annonces correspondant aux critères de recherche.
+     */
+    public function findCount(array $criteria = [])
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
 
-	/**
-	 * Trouve les annonces correspondant aux critères de recherche
-	 *
-	 * @param array $criteria
-	 * @param array $options
-	 */
-	public function findCount(array $criteria = array())
-	{
-		$qb = $this->getEntityManager()->createQueryBuilder();
-		
-		$qb->select($qb->expr()->count('a'));
-		$qb->from('App\Entity\Annonce','a');
-		
-		foreach ( $criteria as $criter )
-		{
-			$qb->andWhere('?1');
+        $qb->select($qb->expr()->count('a'));
+        $qb->from(\App\Entity\Annonce::class, 'a');
+
+        foreach ($criteria as $criter) {
+            $qb->andWhere('?1');
             $qb->setParameter(1, $criter);
-		}
-		
-		return $qb->getQuery()->getSingleScalarResult();
-	}
+        }
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }

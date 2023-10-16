@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Rangement
+ * App\Entity\Rangement.
  *
  * @Table(name="rangement", indexes={@Index(name="fk_rangement_localisation1_idx", columns={"localisation_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseRangement", "extended":"Rangement"})
  */
 class BaseRangement
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -40,12 +45,14 @@ class BaseRangement
 
     /**
      * @OneToMany(targetEntity="Objet", mappedBy="rangement")
+     *
      * @JoinColumn(name="id", referencedColumnName="rangement_id", nullable=false)
      */
     protected $objets;
 
     /**
      * @ManyToOne(targetEntity="Localisation", inversedBy="rangements")
+     *
      * @JoinColumn(name="localisation_id", referencedColumnName="id")
      */
     protected $localisation;
@@ -58,10 +65,11 @@ class BaseRangement
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Rangement
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -71,7 +79,7 @@ class BaseRangement
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -82,6 +90,7 @@ class BaseRangement
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Rangement
      */
     public function setLabel($label)
@@ -105,6 +114,7 @@ class BaseRangement
      * Set the value of precision.
      *
      * @param string $precision
+     *
      * @return \App\Entity\Rangement
      */
     public function setPrecision($precision)
@@ -127,7 +137,6 @@ class BaseRangement
     /**
      * Add Objet entity to collection (one to many).
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\Rangement
      */
     public function addObjet(Objet $objet)
@@ -140,7 +149,6 @@ class BaseRangement
     /**
      * Remove Objet entity from collection (one to many).
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\Rangement
      */
     public function removeObjet(Objet $objet)
@@ -163,7 +171,6 @@ class BaseRangement
     /**
      * Set Localisation entity (many to one).
      *
-     * @param \App\Entity\Localisation $localisation
      * @return \App\Entity\Rangement
      */
     public function setLocalisation(Localisation $localisation = null)
@@ -185,6 +192,6 @@ class BaseRangement
 
     public function __sleep()
     {
-        return array('id', 'localisation_id', 'label', 'precision');
+        return ['id', 'localisation_id', 'label', 'precision'];
     }
 }

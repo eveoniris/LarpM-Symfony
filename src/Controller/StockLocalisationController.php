@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,87 +21,82 @@
 namespace App\Controller;
 
 use LarpManager\Form\Type\LocalisationType;
-use Symfony\Component\HttpFoundation\Request;
 use Silex\Application;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * LarpManager\Controllers\StockLocalisationController
+ * LarpManager\Controllers\StockLocalisationController.
  *
  * @author kevin
- *
  */
 class StockLocalisationController
 {
-	public function indexAction(Request $request, Application $app)
-	{
-		$repo = $app['orm.em']->getRepository('\App\Entity\Localisation');
-		$localisations = $repo->findAll();
-	
-		return $app['twig']->render('stock/localisation/index.twig', array('localisations' => $localisations));
-	}
+    public function indexAction(Request $request, Application $app)
+    {
+        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Localisation::class);
+        $localisations = $repo->findAll();
 
-	public function addAction(Request $request, Application $app)
-	{
-		$localisation = new \App\Entity\Localisation();
-	
-		$form = $app['form.factory']->createBuilder(new LocalisationType(), $localisation)
-				->add('save','submit')
-				->getForm();
-	
-		// on passe la requête de l'utilisateur au formulaire
-		$form->handleRequest($request);
-	
-		// si la requête est valide
-		if ( $form->isValid() )
-		{
-			// on récupére les data de l'utilisateur
-			$localisation = $form->getData();
-			$app['orm.em']->persist($localisation);
-			$app['orm.em']->flush();
-				
-			$app['session']->getFlashBag()->add('success', 'La localisation a été ajoutée.');
-			return $app->redirect($app['url_generator']->generate('stock_localisation_index'));
-		}
-	
-		return $app['twig']->render('stock/localisation/add.twig', array('form' => $form->createView()));
-	}
+        return $app['twig']->render('stock/localisation/index.twig', ['localisations' => $localisations]);
+    }
 
-	public function updateAction(Request $request, Application $app)
-	{
-		$id = $request->get('index');
-			
-		$repo = $app['orm.em']->getRepository('\App\Entity\Localisation');
-		$localisation = $repo->find($id);
-	
-		$form = $app['form.factory']->createBuilder(new LocalisationType(), $localisation)
-			->add('update','submit')
-			->add('delete','submit')
-			->getForm();
-				
-		$form->handleRequest($request);
-	
-		if ( $form->isValid() )
-		{
-			$localisation = $form->getData();
-	
-			if ($form->get('update')->isClicked()) 
-			{
-				$app['orm.em']->persist($localisation);
-				$app['orm.em']->flush();
-				$app['session']->getFlashBag()->add('success', 'La localisation a été mise à jour');
-			}
-			else if ($form->get('delete')->isClicked()) 
-			{
-				$app['orm.em']->remove($localisation);
-				$app['orm.em']->flush();
-				$app['session']->getFlashBag()->add('success', 'La localisation a été suprimée');
-			}
-			
+    public function addAction(Request $request, Application $app)
+    {
+        $localisation = new \App\Entity\Localisation();
 
-			return $app->redirect($app['url_generator']->generate('stock_localisation_index'));
-		}
-		return $app['twig']->render('stock/localisation/update.twig', array(
-				'localisation' => $localisation,
-				'form' => $form->createView()));
-	}	
+        $form = $app['form.factory']->createBuilder(new LocalisationType(), $localisation)
+            ->add('save', 'submit')
+            ->getForm();
+
+        // on passe la requête de l'utilisateur au formulaire
+        $form->handleRequest($request);
+
+        // si la requête est valide
+        if ($form->isValid()) {
+            // on récupére les data de l'utilisateur
+            $localisation = $form->getData();
+            $app['orm.em']->persist($localisation);
+            $app['orm.em']->flush();
+
+            $app['session']->getFlashBag()->add('success', 'La localisation a été ajoutée.');
+
+            return $app->redirect($app['url_generator']->generate('stock_localisation_index'));
+        }
+
+        return $app['twig']->render('stock/localisation/add.twig', ['form' => $form->createView()]);
+    }
+
+    public function updateAction(Request $request, Application $app)
+    {
+        $id = $request->get('index');
+
+        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Localisation::class);
+        $localisation = $repo->find($id);
+
+        $form = $app['form.factory']->createBuilder(new LocalisationType(), $localisation)
+            ->add('update', 'submit')
+            ->add('delete', 'submit')
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $localisation = $form->getData();
+
+            if ($form->get('update')->isClicked()) {
+                $app['orm.em']->persist($localisation);
+                $app['orm.em']->flush();
+                $app['session']->getFlashBag()->add('success', 'La localisation a été mise à jour');
+            } elseif ($form->get('delete')->isClicked()) {
+                $app['orm.em']->remove($localisation);
+                $app['orm.em']->flush();
+                $app['session']->getFlashBag()->add('success', 'La localisation a été suprimée');
+            }
+
+            return $app->redirect($app['url_generator']->generate('stock_localisation_index'));
+        }
+
+        return $app['twig']->render('stock/localisation/update.twig', [
+            'localisation' => $localisation,
+            'form' => $form->createView()]);
+    }
 }

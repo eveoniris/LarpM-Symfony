@@ -5,18 +5,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Connaissance
+ * App\Entity\Connaissance.
  *
  * @Table(name="connaissance")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseConnaissance", "extended":"Connaissance"})
  */
 class BaseConnaissance
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -64,10 +69,11 @@ class BaseConnaissance
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Connaissance
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -77,7 +83,7 @@ class BaseConnaissance
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -88,6 +94,7 @@ class BaseConnaissance
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Connaissance
      */
     public function setLabel($label)
@@ -111,6 +118,7 @@ class BaseConnaissance
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Connaissance
      */
     public function setDescription($description)
@@ -134,6 +142,7 @@ class BaseConnaissance
      * Set the value of contraintes.
      *
      * @param string $contraintes
+     *
      * @return \App\Entity\Connaissance
      */
     public function setContraintes($contraintes)
@@ -157,6 +166,7 @@ class BaseConnaissance
      * Set the value of documentUrl.
      *
      * @param string $documentUrl
+     *
      * @return \App\Entity\Connaissance
      */
     public function setDocumentUrl($documentUrl)
@@ -179,7 +189,6 @@ class BaseConnaissance
     /**
      * Add Personnage entity to collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Connaissance
      */
     public function addPersonnage(Personnage $personnage)
@@ -192,7 +201,6 @@ class BaseConnaissance
     /**
      * Remove Personnage entity from collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Connaissance
      */
     public function removePersonnage(Personnage $personnage)
@@ -215,7 +223,8 @@ class BaseConnaissance
     /**
      * Set the value of niveau.
      *
-     * @param integer $niveau
+     * @param int $niveau
+     *
      * @return \App\Entity\Connaissance
      */
     public function setNiveau($niveau)
@@ -228,7 +237,7 @@ class BaseConnaissance
     /**
      * Get the value of niveau.
      *
-     * @return integer
+     * @return int
      */
     public function getNiveau()
     {
@@ -238,7 +247,8 @@ class BaseConnaissance
     /**
      * Set the value of secret.
      *
-     * @param boolean $secret
+     * @param bool $secret
+     *
      * @return \App\Entity\Connaissance
      */
     public function setSecret($secret)
@@ -251,16 +261,15 @@ class BaseConnaissance
     /**
      * Get the value of secret.
      *
-     * @return boolean
+     * @return bool
      */
     public function getSecret()
     {
         return $this->secret;
     }
 
-
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'documentUrl', 'niveau', 'secret');
+        return ['id', 'label', 'description', 'documentUrl', 'niveau', 'secret'];
     }
 }

@@ -12,7 +12,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\EtatCivil
+ * App\Entity\EtatCivil.
  *
  * @Table(name="etat_civil")
  * @InheritanceType("SINGLE_TABLE")
@@ -22,8 +22,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 class BaseEtatCivil
 {
     /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     */
+    public $Users;
+    /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -101,10 +107,11 @@ class BaseEtatCivil
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\EtatCivil
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -114,7 +121,7 @@ class BaseEtatCivil
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -125,6 +132,7 @@ class BaseEtatCivil
      * Set the value of nom.
      *
      * @param string $nom
+     *
      * @return \App\Entity\EtatCivil
      */
     public function setNom($nom)
@@ -148,6 +156,7 @@ class BaseEtatCivil
      * Set the value of prenom.
      *
      * @param string $prenom
+     *
      * @return \App\Entity\EtatCivil
      */
     public function setPrenom($prenom)
@@ -171,6 +180,7 @@ class BaseEtatCivil
      * Set the value of prenom_usage.
      *
      * @param string $prenom_usage
+     *
      * @return \App\Entity\EtatCivil
      */
     public function setPrenomUsage($prenom_usage)
@@ -194,6 +204,7 @@ class BaseEtatCivil
      * Set the value of telephone.
      *
      * @param string $telephone
+     *
      * @return \App\Entity\EtatCivil
      */
     public function setTelephone($telephone)
@@ -217,6 +228,7 @@ class BaseEtatCivil
      * Set the value of photo.
      *
      * @param string $photo
+     *
      * @return \App\Entity\EtatCivil
      */
     public function setPhoto($photo)
@@ -240,6 +252,7 @@ class BaseEtatCivil
      * Set the value of date_naissance.
      *
      * @param \DateTime $date_naissance
+     *
      * @return \App\Entity\EtatCivil
      */
     public function setDateNaissance($date_naissance)
@@ -263,6 +276,7 @@ class BaseEtatCivil
      * Set the value of probleme_medicaux.
      *
      * @param string $probleme_medicaux
+     *
      * @return \App\Entity\EtatCivil
      */
     public function setProblemeMedicaux($probleme_medicaux)
@@ -286,6 +300,7 @@ class BaseEtatCivil
      * Set the value of personne_a_prevenir.
      *
      * @param string $personne_a_prevenir
+     *
      * @return \App\Entity\EtatCivil
      */
     public function setPersonneAPrevenir($personne_a_prevenir)
@@ -309,6 +324,7 @@ class BaseEtatCivil
      * Set the value of tel_pap.
      *
      * @param string $tel_pap
+     *
      * @return \App\Entity\EtatCivil
      */
     public function setTelPap($tel_pap)
@@ -332,6 +348,7 @@ class BaseEtatCivil
      * Set the value of fedegn.
      *
      * @param string $fedegn
+     *
      * @return \App\Entity\EtatCivil
      */
     public function setFedegn($fedegn)
@@ -355,6 +372,7 @@ class BaseEtatCivil
      * Set the value of creation_date.
      *
      * @param \DateTime $creation_date
+     *
      * @return \App\Entity\EtatCivil
      */
     public function setCreationDate($creation_date)
@@ -378,6 +396,7 @@ class BaseEtatCivil
      * Set the value of update_date.
      *
      * @param \DateTime $update_date
+     *
      * @return \App\Entity\EtatCivil
      */
     public function setUpdateDate($update_date)
@@ -400,7 +419,6 @@ class BaseEtatCivil
     /**
      * Set User entity (one to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\EtatCivil
      */
     public function setUser(User $User = null)
@@ -423,6 +441,6 @@ class BaseEtatCivil
 
     public function __sleep()
     {
-        return array('id', 'nom', 'prenom', 'prenom_usage', 'telephone', 'photo', 'date_naissance', 'probleme_medicaux', 'personne_a_prevenir', 'tel_pap', 'fedegn', 'creation_date', 'update_date');
+        return ['id', 'nom', 'prenom', 'prenom_usage', 'telephone', 'photo', 'date_naissance', 'probleme_medicaux', 'personne_a_prevenir', 'tel_pap', 'fedegn', 'creation_date', 'update_date'];
     }
 }

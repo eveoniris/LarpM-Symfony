@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\Reponse
+ * App\Entity\Reponse.
  *
  * @Table(name="reponse", indexes={@Index(name="fk_reponse_idx", columns={"question_id"}), @Index(name="fk_reponse_participant1_idx", columns={"participant_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseReponse", "extended":"Reponse"})
  */
 class BaseReponse
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -33,12 +38,14 @@ class BaseReponse
 
     /**
      * @ManyToOne(targetEntity="Question", inversedBy="reponses")
+     *
      * @JoinColumn(name="question_id", referencedColumnName="id", nullable=false)
      */
     protected $question;
 
     /**
      * @ManyToOne(targetEntity="Participant", inversedBy="reponses")
+     *
      * @JoinColumn(name="participant_id", referencedColumnName="id", nullable=false)
      */
     protected $participant;
@@ -50,7 +57,8 @@ class BaseReponse
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Reponse
      */
     public function setId($id)
@@ -63,7 +71,7 @@ class BaseReponse
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -74,6 +82,7 @@ class BaseReponse
      * Set the value of reponse.
      *
      * @param string $reponse
+     *
      * @return \App\Entity\Reponse
      */
     public function setReponse($reponse)
@@ -96,7 +105,6 @@ class BaseReponse
     /**
      * Set Question entity (many to one).
      *
-     * @param \App\Entity\Question $question
      * @return \App\Entity\Reponse
      */
     public function setQuestion(Question $question = null)
@@ -119,7 +127,6 @@ class BaseReponse
     /**
      * Set Participant entity (many to one).
      *
-     * @param \App\Entity\Participant $participant
      * @return \App\Entity\Reponse
      */
     public function setParticipant(Participant $participant = null)
@@ -141,6 +148,6 @@ class BaseReponse
 
     public function __sleep()
     {
-        return array('id', 'question_id', 'reponse', 'participant_id');
+        return ['id', 'question_id', 'reponse', 'participant_id'];
     }
 }

@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,47 +27,42 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseRestriction;
-use App\Entity\User;
-
 /**
- * App\Entity\Restriction
+ * App\Entity\Restriction.
  *
  * @Entity(repositoryClass="LarpManager\Repository\RestrictionRepository")
  */
-class Restriction extends BaseRestriction
+class Restriction extends BaseRestriction implements \Stringable
 {
-	/**
-	 * Constructeur
-	 */
-	public function __construct()
-	{
-		$this->setCreationDate(new \Datetime('NOW'));
-		$this->setUpdateDate(new \Datetime('NOW'));
-	}
-	
-	public function __toString()
-	{
-		return $this->getLabel();
-	}
-	
-	/**
-	 * Fourni le créateur de la restriction
-	 */
-	public function getAuteur()
-	{
-		return $this->getUserRelatedByAuteurId();
-	}
-	
-	/**
-	 * Défini le créateur de la restriction
-	 * 
-	 * @param User $User
-	 */
-	public function setAuteur(User $User)
-	{
-		$this->setUserRelatedByAuteurId($User);
-		return $this;
-	}
-			
+    /**
+     * Constructeur.
+     */
+    public function __construct()
+    {
+        $this->setCreationDate(new \DateTime('NOW'));
+        $this->setUpdateDate(new \DateTime('NOW'));
+    }
+
+    public function __toString(): string
+    {
+        return $this->getLabel();
+    }
+
+    /**
+     * Fourni le créateur de la restriction.
+     */
+    public function getAuteur()
+    {
+        return $this->getUserRelatedByAuteurId();
+    }
+
+    /**
+     * Défini le créateur de la restriction.
+     */
+    public function setAuteur(User $User): static
+    {
+        $this->setUserRelatedByAuteurId($User);
+
+        return $this;
+    }
 }

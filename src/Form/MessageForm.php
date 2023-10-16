@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,52 +25,46 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\MessageForm
- * 
- * @author kevin
+ * LarpManager\Form\MessageForm.
  *
+ * @author kevin
  */
 class MessageForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('title','text', array(
-					'required' => true,	
-					'label' => 'Titre',
-				))
-				->add('text','textarea', array(
-					'required' => true,
-					'label' => 'Message',
-					'attr' => array(
-							'rows' => 9,
-							'class' => 'tinymce'
-					),
-				));
-	}
-	
-	/**
-	 * Définition de la classe d'entité concernée
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Message',
-		));
-	}
-	
-	/**
-	 * Nom du formlaire
-	 */
-	public function getName()
-	{
-		return 'message';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('title', 'text', [
+            'required' => true,
+            'label' => 'Titre',
+        ])
+            ->add('text', 'textarea', [
+                'required' => true,
+                'label' => 'Message',
+                'attr' => [
+                    'rows' => 9,
+                    'class' => 'tinymce',
+                ],
+            ]);
+    }
+
+    /**
+     * Définition de la classe d'entité concernée.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Message::class,
+        ]);
+    }
+
+    /**
+     * Nom du formlaire.
+     */
+    public function getName(): string
+    {
+        return 'message';
+    }
 }

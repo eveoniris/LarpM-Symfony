@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,34 +27,32 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePersonnageSecondaire;
-
 /**
- * App\Entity\PersonnageSecondaire
- *
+ * App\Entity\PersonnageSecondaire.
  */
 class PersonnageSecondaire extends BasePersonnageSecondaire
 {
-	/**
-	 * Fourni la liste des compétences
-	 */
-	public function getCompetences()
-	{
-		$competences = array();
-		$personnageSecondaireCompetences =  $this->getPersonnageSecondaireCompetences();
-		foreach ( $personnageSecondaireCompetences as $personnageSecondaireCompetence)
-		{
-			$competences[] = $personnageSecondaireCompetence->getCompetence();
-		}
-		return $competences;
-	}
-	
-	/**
-	 * Fourni le label de la classe en guide de la label pour l'archétype
-	 */
-	public function getLabel()
-	{
-		return $this->getClasse()->getLabel();
-	}
-	
+    /**
+     * Fourni la liste des compétences.
+     *
+     * @return mixed[]
+     */
+    public function getCompetences(): array
+    {
+        $competences = [];
+        $personnageSecondaireCompetences = $this->getPersonnageSecondaireCompetences();
+        foreach ($personnageSecondaireCompetences as $personnageSecondaireCompetence) {
+            $competences[] = $personnageSecondaireCompetence->getCompetence();
+        }
+
+        return $competences;
+    }
+
+    /**
+     * Fourni le label de la classe en guide de la label pour l'archétype.
+     */
+    public function getLabel(): string
+    {
+        return $this->getClasse()->getLabel();
+    }
 }

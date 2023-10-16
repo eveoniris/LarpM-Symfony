@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Priere
+ * App\Entity\Priere.
  *
  * @Table(name="priere", indexes={@Index(name="fk_priere_sphere1_idx", columns={"sphere_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePriere", "extended":"Priere"})
  */
 class BasePriere
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -55,12 +60,14 @@ class BasePriere
 
     /**
      * @ManyToOne(targetEntity="Sphere", inversedBy="prieres")
+     *
      * @JoinColumn(name="sphere_id", referencedColumnName="id", nullable=false)
      */
     protected $sphere;
 
     /**
      * @ManyToMany(targetEntity="Personnage", inversedBy="prieres")
+     *
      * @JoinTable(name="personnages_prieres",
      *     joinColumns={@JoinColumn(name="priere_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)}
@@ -76,10 +83,11 @@ class BasePriere
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Priere
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -89,7 +97,7 @@ class BasePriere
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -100,6 +108,7 @@ class BasePriere
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Priere
      */
     public function setLabel($label)
@@ -123,6 +132,7 @@ class BasePriere
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Priere
      */
     public function setDescription($description)
@@ -146,6 +156,7 @@ class BasePriere
      * Set the value of annonce.
      *
      * @param string $annonce
+     *
      * @return \App\Entity\Priere
      */
     public function setAnnonce($annonce)
@@ -169,6 +180,7 @@ class BasePriere
      * Set the value of documentUrl.
      *
      * @param string $documentUrl
+     *
      * @return \App\Entity\Priere
      */
     public function setDocumentUrl($documentUrl)
@@ -191,7 +203,8 @@ class BasePriere
     /**
      * Set the value of niveau.
      *
-     * @param integer $niveau
+     * @param int $niveau
+     *
      * @return \App\Entity\Priere
      */
     public function setNiveau($niveau)
@@ -204,7 +217,7 @@ class BasePriere
     /**
      * Get the value of niveau.
      *
-     * @return integer
+     * @return int
      */
     public function getNiveau()
     {
@@ -214,7 +227,6 @@ class BasePriere
     /**
      * Set Sphere entity (many to one).
      *
-     * @param \App\Entity\Sphere $sphere
      * @return \App\Entity\Priere
      */
     public function setSphere(Sphere $sphere = null)
@@ -237,7 +249,6 @@ class BasePriere
     /**
      * Add Personnage entity to collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Priere
      */
     public function addPersonnage(Personnage $personnage)
@@ -251,7 +262,6 @@ class BasePriere
     /**
      * Remove Personnage entity from collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Priere
      */
     public function removePersonnage(Personnage $personnage)
@@ -274,6 +284,6 @@ class BasePriere
 
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'annonce', 'documentUrl', 'niveau', 'sphere_id');
+        return ['id', 'label', 'description', 'annonce', 'documentUrl', 'niveau', 'sphere_id'];
     }
 }

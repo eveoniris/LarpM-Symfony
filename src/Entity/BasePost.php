@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Post
+ * App\Entity\Post.
  *
  * @Table(name="post", indexes={@Index(name="fk_post_topic1_idx", columns={"topic_id"}), @Index(name="fk_post_User1_idx", columns={"User_id"}), @Index(name="fk_post_post1_idx", columns={"post_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePost", "extended":"Post"})
  */
 class BasePost
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -50,36 +55,42 @@ class BasePost
 
     /**
      * @OneToMany(targetEntity="Post", mappedBy="post")
+     *
      * @JoinColumn(name="id", referencedColumnName="post_id", nullable=false)
      */
     protected $posts;
 
     /**
      * @OneToMany(targetEntity="PostView", mappedBy="post")
+     *
      * @JoinColumn(name="id", referencedColumnName="post_id", nullable=false)
      */
     protected $postViews;
 
     /**
      * @ManyToOne(targetEntity="Topic", inversedBy="posts")
+     *
      * @JoinColumn(name="topic_id", referencedColumnName="id")
      */
     protected $topic;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="postRelatedByUserIds")
+     *
      * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
      */
     protected $UserRelatedByUserId;
 
     /**
      * @ManyToOne(targetEntity="Post", inversedBy="posts")
+     *
      * @JoinColumn(name="post_id", referencedColumnName="id")
      */
     protected $post;
 
     /**
      * @ManyToMany(targetEntity="User", inversedBy="posts")
+     *
      * @JoinTable(name="watching_User",
      *     joinColumns={@JoinColumn(name="post_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="User_id", referencedColumnName="id", nullable=false)}
@@ -97,10 +108,11 @@ class BasePost
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Post
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -110,7 +122,7 @@ class BasePost
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -121,6 +133,7 @@ class BasePost
      * Set the value of title.
      *
      * @param string $title
+     *
      * @return \App\Entity\Post
      */
     public function setTitle($title)
@@ -144,6 +157,7 @@ class BasePost
      * Set the value of text.
      *
      * @param string $text
+     *
      * @return \App\Entity\Post
      */
     public function setText($text)
@@ -167,6 +181,7 @@ class BasePost
      * Set the value of creation_date.
      *
      * @param \DateTime $creation_date
+     *
      * @return \App\Entity\Post
      */
     public function setCreationDate($creation_date)
@@ -190,6 +205,7 @@ class BasePost
      * Set the value of update_date.
      *
      * @param \DateTime $update_date
+     *
      * @return \App\Entity\Post
      */
     public function setUpdateDate($update_date)
@@ -212,7 +228,6 @@ class BasePost
     /**
      * Add Post entity to collection (one to many).
      *
-     * @param \App\Entity\Post $post
      * @return \App\Entity\Post
      */
     public function addPost(Post $post)
@@ -225,7 +240,6 @@ class BasePost
     /**
      * Remove Post entity from collection (one to many).
      *
-     * @param \App\Entity\Post $post
      * @return \App\Entity\Post
      */
     public function removePost(Post $post)
@@ -248,7 +262,6 @@ class BasePost
     /**
      * Add PostView entity to collection (one to many).
      *
-     * @param \App\Entity\PostView $postView
      * @return \App\Entity\Post
      */
     public function addPostView(PostView $postView)
@@ -261,7 +274,6 @@ class BasePost
     /**
      * Remove PostView entity from collection (one to many).
      *
-     * @param \App\Entity\PostView $postView
      * @return \App\Entity\Post
      */
     public function removePostView(PostView $postView)
@@ -284,7 +296,6 @@ class BasePost
     /**
      * Set Topic entity (many to one).
      *
-     * @param \App\Entity\Topic $topic
      * @return \App\Entity\Post
      */
     public function setTopic(Topic $topic = null)
@@ -307,7 +318,6 @@ class BasePost
     /**
      * Set User entity related by `User_id` (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Post
      */
     public function setUserRelatedByUserId(User $User = null)
@@ -330,7 +340,6 @@ class BasePost
     /**
      * Set Post entity (many to one).
      *
-     * @param \App\Entity\Post $post
      * @return \App\Entity\Post
      */
     public function setPost(Post $post = null)
@@ -353,7 +362,6 @@ class BasePost
     /**
      * Add User entity to collection.
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Post
      */
     public function addUser(User $User)
@@ -367,7 +375,6 @@ class BasePost
     /**
      * Remove User entity from collection.
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Post
      */
     public function removeUser(User $User)
@@ -390,6 +397,6 @@ class BasePost
 
     public function __sleep()
     {
-        return array('id', 'title', 'text', 'creation_date', 'update_date', 'topic_id', 'User_id', 'post_id');
+        return ['id', 'title', 'text', 'creation_date', 'update_date', 'topic_id', 'User_id', 'post_id'];
     }
 }

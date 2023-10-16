@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Etat
+ * App\Entity\Etat.
  *
  * @Table(name="etat")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseEtat", "extended":"Etat"})
  */
 class BaseEtat
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -35,6 +40,7 @@ class BaseEtat
 
     /**
      * @OneToMany(targetEntity="Objet", mappedBy="etat")
+     *
      * @JoinColumn(name="id", referencedColumnName="etat_id", nullable=false)
      */
     protected $objets;
@@ -47,10 +53,11 @@ class BaseEtat
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Etat
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -60,7 +67,7 @@ class BaseEtat
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -71,6 +78,7 @@ class BaseEtat
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Etat
      */
     public function setLabel($label)
@@ -93,7 +101,6 @@ class BaseEtat
     /**
      * Add Objet entity to collection (one to many).
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\Etat
      */
     public function addObjet(Objet $objet)
@@ -106,7 +113,6 @@ class BaseEtat
     /**
      * Remove Objet entity from collection (one to many).
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\Etat
      */
     public function removeObjet(Objet $objet)
@@ -128,6 +134,6 @@ class BaseEtat
 
     public function __sleep()
     {
-        return array('id', 'label');
+        return ['id', 'label'];
     }
 }

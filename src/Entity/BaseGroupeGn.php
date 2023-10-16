@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\GroupeGn
+ * App\Entity\GroupeGn.
  *
  * @Table(name="groupe_gn", indexes={@Index(name="fk_groupe_gn_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_groupe_gn_gn1_idx", columns={"gn_id"}), @Index(name="fk_groupe_gn_participant1_idx", columns={"responsable_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseGroupeGn", "extended":"GroupeGn"})
  */
 class BaseGroupeGn
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -75,40 +80,47 @@ class BaseGroupeGn
 
     /**
      * @OneToMany(targetEntity="Participant", mappedBy="groupeGn")
+     *
      * @JoinColumn(name="id", referencedColumnName="groupe_gn_id", nullable=false)
      */
     protected $participants;
 
     /**
      * @ManyToOne(targetEntity="Groupe", inversedBy="groupeGns")
+     *
      * @JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)
      */
     protected $groupe;
 
     /**
      * @ManyToOne(targetEntity="Gn", inversedBy="groupeGns")
+     *
      * @JoinColumn(name="gn_id", referencedColumnName="id", nullable=false)
      */
     protected $gn;
 
     /**
      * @ManyToOne(targetEntity="Participant", inversedBy="groupeGns")
+     *
      * @JoinColumn(name="responsable_id", referencedColumnName="id")
      */
     protected $participant;
-    
+
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="groupeGns")
+     *
      * @JoinColumn(name="suzerain_id", referencedColumnName="id")
      */
     protected $suzerain;
-    
+
     /**
      * @ManyToMany(targetEntity="GroupeGnOrdre", inversedBy="groupeGns")
+     *
      * @JoinTable(name="groupe_gn_ordre",
      *     joinColumns={@JoinColumn(name="groupe_gn_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="id", referencedColumnName="id", nullable=false)}
      * )
+     *
      * @OrderBy({"ordre" = "ASC",})
      */
     protected $groupeGnOrdres;
@@ -122,7 +134,8 @@ class BaseGroupeGn
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\GroupeGn
      */
     public function setId($id)
@@ -135,7 +148,7 @@ class BaseGroupeGn
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -145,7 +158,8 @@ class BaseGroupeGn
     /**
      * Set the value of free.
      *
-     * @param boolean $free
+     * @param bool $free
+     *
      * @return \App\Entity\GroupeGn
      */
     public function setFree($free)
@@ -158,7 +172,7 @@ class BaseGroupeGn
     /**
      * Get the value of free.
      *
-     * @return boolean
+     * @return bool
      */
     public function getFree()
     {
@@ -169,6 +183,7 @@ class BaseGroupeGn
      * Set the value of code.
      *
      * @param string $code
+     *
      * @return \App\Entity\GroupeGn
      */
     public function setCode($code)
@@ -191,7 +206,8 @@ class BaseGroupeGn
     /**
      * Set the value of jeu_maritime.
      *
-     * @param boolean $jeu_maritime
+     * @param bool $jeu_maritime
+     *
      * @return \App\Entity\GroupeGn
      */
     public function setJeuMaritime($jeu_maritime)
@@ -204,7 +220,7 @@ class BaseGroupeGn
     /**
      * Get the value of jeu_maritime.
      *
-     * @return boolean
+     * @return bool
      */
     public function getJeuMaritime()
     {
@@ -214,7 +230,8 @@ class BaseGroupeGn
     /**
      * Set the value of jeu_strategique.
      *
-     * @param boolean $jeu_strategique
+     * @param bool $jeu_strategique
+     *
      * @return \App\Entity\GroupeGn
      */
     public function setJeuStrategique($jeu_strategique)
@@ -227,7 +244,7 @@ class BaseGroupeGn
     /**
      * Get the value of jeu_strategique.
      *
-     * @return boolean
+     * @return bool
      */
     public function getJeuStrategique()
     {
@@ -237,7 +254,8 @@ class BaseGroupeGn
     /**
      * Set the value of place_available.
      *
-     * @param integer $place_available
+     * @param int $place_available
+     *
      * @return \App\Entity\GroupeGn
      */
     public function setPlaceAvailable($place_available)
@@ -250,7 +268,7 @@ class BaseGroupeGn
     /**
      * Get the value of place_available.
      *
-     * @return integer
+     * @return int
      */
     public function getPlaceAvailable()
     {
@@ -260,7 +278,8 @@ class BaseGroupeGn
     /**
      * Set the value of agents.
      *
-     * @param integer $agents
+     * @param int $agents
+     *
      * @return \App\Entity\GroupeGn
      */
     public function setAgents($agents)
@@ -273,7 +292,7 @@ class BaseGroupeGn
     /**
      * Get the value of agents.
      *
-     * @return integer
+     * @return int
      */
     public function getAgents()
     {
@@ -283,7 +302,8 @@ class BaseGroupeGn
     /**
      * Set the value of bateaux.
      *
-     * @param integer $bateaux
+     * @param int $bateaux
+     *
      * @return \App\Entity\GroupeGn
      */
     public function setBateaux($bateaux)
@@ -296,7 +316,7 @@ class BaseGroupeGn
     /**
      * Get the value of bateaux.
      *
-     * @return integer
+     * @return int
      */
     public function getBateaux()
     {
@@ -306,7 +326,8 @@ class BaseGroupeGn
     /**
      * Set the value of sieges.
      *
-     * @param integer $sieges
+     * @param int $sieges
+     *
      * @return \App\Entity\GroupeGn
      */
     public function setSieges($sieges)
@@ -319,7 +340,7 @@ class BaseGroupeGn
     /**
      * Get the value of sieges.
      *
-     * @return integer
+     * @return int
      */
     public function getSieges()
     {
@@ -329,7 +350,8 @@ class BaseGroupeGn
     /**
      * Set the value of initiative.
      *
-     * @param integer $initiative
+     * @param int $initiative
+     *
      * @return \App\Entity\GroupeGn
      */
     public function setInitiative($initiative)
@@ -342,7 +364,7 @@ class BaseGroupeGn
     /**
      * Get the value of initiative.
      *
-     * @return integer
+     * @return int
      */
     public function getInitiative()
     {
@@ -352,7 +374,6 @@ class BaseGroupeGn
     /**
      * Add Participant entity to collection (one to many).
      *
-     * @param \App\Entity\Participant $participant
      * @return \App\Entity\GroupeGn
      */
     public function addParticipant(Participant $participant)
@@ -365,7 +386,6 @@ class BaseGroupeGn
     /**
      * Remove Participant entity from collection (one to many).
      *
-     * @param \App\Entity\Participant $participant
      * @return \App\Entity\GroupeGn
      */
     public function removeParticipant(Participant $participant)
@@ -388,7 +408,6 @@ class BaseGroupeGn
     /**
      * Set Groupe entity (many to one).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\GroupeGn
      */
     public function setGroupe(Groupe $groupe = null)
@@ -411,7 +430,6 @@ class BaseGroupeGn
     /**
      * Set Gn entity (many to one).
      *
-     * @param \App\Entity\Gn $gn
      * @return \App\Entity\GroupeGn
      */
     public function setGn(Gn $gn = null)
@@ -434,7 +452,6 @@ class BaseGroupeGn
     /**
      * Set Participant entity (many to one).
      *
-     * @param \App\Entity\Participant $participant
      * @return \App\Entity\GroupeGn
      */
     public function setParticipant(Participant $participant = null)
@@ -457,7 +474,6 @@ class BaseGroupeGn
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $suzerain
      * @return \App\Entity\GroupeGn
      */
     public function setSuzerain(Personnage $suzerain = null)
@@ -480,7 +496,6 @@ class BaseGroupeGn
     /**
      * Add GroupeGnOrdre entity to collection.
      *
-     * @param \App\Entity\GroupeGnOrdre $groupeGnOrdre
      * @return \App\Entity\GroupeGn
      */
     public function addGroupeGnOrdre(GroupeGnOrdre $groupeGnOrdre)
@@ -494,7 +509,6 @@ class BaseGroupeGn
     /**
      * Remove GroupeGnOrdre entity from collection.
      *
-     * @param \App\Entity\GroupeGnOrdre $groupeGnOrdre
      * @return \App\Entity\GroupeGn
      */
     public function removeGroupeGnOrdre(GroupeGnOrdre $groupeGnOrdre)
@@ -513,10 +527,10 @@ class BaseGroupeGn
     public function getGroupeGnOrdres()
     {
         return $this->groupeGnOrdres;
-    }    
+    }
 
     public function __sleep()
     {
-        return array('id', 'groupe_id', 'gn_id', 'responsable_id', 'free', 'code', 'jeu_maritime', 'jeu_strategique', 'place_available');
+        return ['id', 'groupe_id', 'gn_id', 'responsable_id', 'free', 'code', 'jeu_maritime', 'jeu_strategique', 'place_available'];
     }
 }

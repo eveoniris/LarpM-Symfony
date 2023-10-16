@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,52 +17,51 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Form\Type;
 
+use LarpManager\Repository\IngredientRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use LarpManager\Repository\IngredientRepository;
-
 /**
- * LarpManager\Form\Type\PersonnageIngredientType
+ * LarpManager\Form\Type\PersonnageIngredientType.
  *
  * @author kevin
- *
  */
 class PersonnageIngredientType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder
-			->add('nombre', 'integer', array(
-					'label' => 'quantite',
-					'required' => true
-			))
-			->add('ingredient','entity', array(
-					'label' => 'Choisissez l\'ingredient',
-					'required' => true,
-					'class' => 'App\Entity\Ingredient',
-					'property' => 'fullLabel',
-					'query_builder' => function(IngredientRepository $er) {
-						$qb = $er->createQueryBuilder('c');
-						$qb->orderBy('c.label', 'ASC')->addOrderBy('c.niveau', 'ASC');
-						return $qb;
-					}
-			));
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('nombre', 'integer', [
+                'label' => 'quantite',
+                'required' => true,
+            ])
+            ->add('ingredient', 'entity', [
+                'label' => "Choisissez l'ingredient",
+                'required' => true,
+                'class' => \App\Entity\Ingredient::class,
+                'property' => 'fullLabel',
+                'query_builder' => static function (IngredientRepository $er) {
+                    $qb = $er->createQueryBuilder('c');
+                    $qb->orderBy('c.label', 'ASC')->addOrderBy('c.niveau', 'ASC');
 
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\PersonnageIngredient',
-		));
-	}
+                    return $qb;
+                },
+            ]);
+    }
 
-	public function getName()
-	{
-		return 'personnageIngredient';
-	}
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\PersonnageIngredient::class,
+        ]);
+    }
+
+    public function getName(): string
+    {
+        return 'personnageIngredient';
+    }
 }

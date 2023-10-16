@@ -11,7 +11,6 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -27,22 +26,28 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseAppelation', 'extended' => 'Appelation'])]
 class BaseAppelation
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'label', type: 'string', length: 45)]
+    #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $label = '';
 
-    #[Column(name: 'description', type: 'text', nullable: true)]
+    #[Column(name: 'description', type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected string $description;
 
-    #[Column(name: 'titre', type: 'string', length: 45, nullable: true)]
+    #[Column(name: 'titre', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected string $titre = '';
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Appelation>|\App\Entity\Appelation[]
+     */
     #[OneToMany(mappedBy: 'appelation', targetEntity: Appelation::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id', nullable: 'false')]
     protected ArrayCollection $appelations;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Territoire>|\App\Entity\Territoire[]
+     */
     #[OneToMany(mappedBy: 'appelation', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id', nullable: 'false')]
     protected ArrayCollection $territoires;

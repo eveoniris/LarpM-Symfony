@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,71 +20,57 @@
 
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use App\Entity\Intrigue;
+use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Repository\IntrigueRepository
- *  
+ * LarpManager\Repository\IntrigueRepository.
+ *
  * @author kevin
  */
 class IntrigueRepository extends EntityRepository
 {
-	/**
-	 * Recherche d'une liste d'intrigue
-	 *
-	 * @param unknown $type
-	 * @param unknown $value
-	 * @param array $order
-	 * @param unknown $limit
-	 * @param unknown $offset
-	 */
-	public function findList($type, $value, array $order = array(), $limit, $offset)
-	{
-		$qb = $this->getEntityManager()->createQueryBuilder();
-	
-		$qb->select('i');
-		$qb->from('App\Entity\Intrigue','i');
-		if ( $type && $value)
-		{
-			switch ($type){
-				case 'titre':
-					$qb->andWhere('i.titre LIKE :value');
-					$qb->setParameter('value', '%'.$value.'%');
-					break;
-			}
-		}
-			
-		$qb->setFirstResult($offset);
-		$qb->setMaxResults($limit);
-		$qb->orderBy('i.'.$order['by'], $order['dir']);
-	
-		return $qb->getQuery()->getResult();
-	}
-	
-	/**
-	 * Trouve le nombre d'intrigue correspondant aux critères de recherche
-	 *
-	 * @param array $criteria
-	 * @param array $options
-	 */
-	public function findCount($type, $value)
-	{
-		$qb = $this->getEntityManager()->createQueryBuilder();
-	
-		$qb->select($qb->expr()->count('i'));
-		$qb->from('App\Entity\Intrigue','i');
-	
-		if ( $type && $value)
-		{
-			switch ($type){
-				case 'titre':
-					$qb->andWhere('i.titre LIKE :value');
-					$qb->setParameter('value', '%'.$value.'%');
-					break;
-			}
-		}
-	
-		return $qb->getQuery()->getSingleScalarResult();
-	}
+    /**
+     * Recherche d'une liste d'intrigue.
+     *
+     * @param unknown $type
+     * @param unknown $value
+     * @param unknown $limit
+     * @param unknown $offset
+     */
+    public function findList($type, $value, $limit, $offset, array $order = [])
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select('i');
+        $qb->from(\App\Entity\Intrigue::class, 'i');
+        if ($type && $value && 'titre' === $type) {
+            $qb->andWhere('i.titre LIKE :value');
+            $qb->setParameter('value', '%'.$value.'%');
+        }
+
+        $qb->setFirstResult($offset);
+        $qb->setMaxResults($limit);
+        $qb->orderBy('i.'.$order['by'], $order['dir']);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Trouve le nombre d'intrigue correspondant aux critères de recherche.
+     */
+    public function findCount($type, ?string $value)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select($qb->expr()->count('i'));
+        $qb->from(\App\Entity\Intrigue::class, 'i');
+
+        if ($type && $value && 'titre' === $type) {
+            $qb->andWhere('i.titre LIKE :value');
+            $qb->setParameter('value', '%'.$value.'%');
+        }
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }

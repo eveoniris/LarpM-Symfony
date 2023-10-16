@@ -9,22 +9,20 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseIntrigue;
-
 /**
- * App\Entity\Intrigue
+ * App\Entity\Intrigue.
  *
  * @Entity(repositoryClass="LarpManager\Repository\IntrigueRepository")
  */
 class Intrigue extends BaseIntrigue
 {
-	/**
-	 * Constructeur. Met en place la date de création et de mise à jour de l'intrigue
-	 */
-	function __construct()
-	{
-		$this->setDateCreation(new \Datetime('NOW'));
-		$this->setDateUpdate(new \Datetime('NOW'));
-		parent::__construct();
-	}
+    /**
+     * Constructeur. Met en place la date de création et de mise à jour de l'intrigue.
+     */
+    public function __construct()
+    {
+        $this->setDateCreation(new \DateTime('NOW'));
+        $this->setDateUpdate(new \DateTime('NOW'));
+        parent::__construct();
+    }
 }

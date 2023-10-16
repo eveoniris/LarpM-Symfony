@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,58 +27,52 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
- * LarpManager\Form\GroupeLangueForm
+ * LarpManager\Form\GroupeLangueForm.
  *
  * @author kevin
- *
  */
 class GroupeLangueForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text', array(
-					'label' => 'Label',
-					'required' => true,
-                    'attr' => ['maxlength' => 45],
-                    'constraints' => [
-                        new Length(['max' => 45]),
-                        new NotBlank(),
-                    ],
-				))
-				->add('couleur','text', array(
-					'label' => 'Couleur',
-					'required' => true,
-                    'attr' => ['maxlength' => 45],
-                    'constraints' => [
-                        new Length(['max' => 45]),
-                        new NotBlank(),
-                    ],
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 * 
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\GroupeLangue',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'groupeLangue';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text', [
+            'label' => 'Label',
+            'required' => true,
+            'attr' => ['maxlength' => 45],
+            'constraints' => [
+                new Length(['max' => 45]),
+                new NotBlank(),
+            ],
+        ])
+            ->add('couleur', 'text', [
+                'label' => 'Couleur',
+                'required' => true,
+                'attr' => ['maxlength' => 45],
+                'constraints' => [
+                    new Length(['max' => 45]),
+                    new NotBlank(),
+                ],
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => \App\Entity\GroupeLangue::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'groupeLangue';
+    }
 }

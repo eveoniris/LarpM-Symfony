@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Token
+ * App\Entity\Token.
  *
  * @Table(name="token")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseToken", "extended":"Token"})
  */
 class BaseToken
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -45,6 +50,7 @@ class BaseToken
 
     /**
      * @OneToMany(targetEntity="PersonnageHasToken", mappedBy="token")
+     *
      * @JoinColumn(name="id", referencedColumnName="token_id", nullable=false)
      */
     protected $personnageHasTokens;
@@ -57,10 +63,11 @@ class BaseToken
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Token
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -70,7 +77,7 @@ class BaseToken
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -81,6 +88,7 @@ class BaseToken
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Token
      */
     public function setLabel($label)
@@ -104,6 +112,7 @@ class BaseToken
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Token
      */
     public function setDescription($description)
@@ -127,6 +136,7 @@ class BaseToken
      * Set the value of tag.
      *
      * @param string $tag
+     *
      * @return \App\Entity\Token
      */
     public function setTag($tag)
@@ -149,7 +159,6 @@ class BaseToken
     /**
      * Add PersonnageHasToken entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnageHasToken $personnageHasToken
      * @return \App\Entity\Token
      */
     public function addPersonnageHasToken(PersonnageHasToken $personnageHasToken)
@@ -162,7 +171,6 @@ class BaseToken
     /**
      * Remove PersonnageHasToken entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnageHasToken $personnageHasToken
      * @return \App\Entity\Token
      */
     public function removePersonnageHasToken(PersonnageHasToken $personnageHasToken)
@@ -184,6 +192,6 @@ class BaseToken
 
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'tag');
+        return ['id', 'label', 'description', 'tag'];
     }
 }

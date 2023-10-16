@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\GroupeAllie
+ * App\Entity\GroupeAllie.
  *
  * @Table(name="groupe_allie", indexes={@Index(name="fk_groupe_allie_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_groupe_allie_groupe2_idx", columns={"groupe_allie_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseGroupeAllie", "extended":"GroupeAllie"})
  */
 class BaseGroupeAllie
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -48,12 +53,14 @@ class BaseGroupeAllie
 
     /**
      * @ManyToOne(targetEntity="Groupe", inversedBy="groupeAllieRelatedByGroupeIds")
+     *
      * @JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)
      */
     protected $groupeRelatedByGroupeId;
 
     /**
      * @ManyToOne(targetEntity="Groupe", inversedBy="groupeAllieRelatedByGroupeAllieIds")
+     *
      * @JoinColumn(name="groupe_allie_id", referencedColumnName="id", nullable=false)
      */
     protected $groupeRelatedByGroupeAllieId;
@@ -65,7 +72,8 @@ class BaseGroupeAllie
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\GroupeAllie
      */
     public function setId($id)
@@ -78,7 +86,7 @@ class BaseGroupeAllie
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -88,7 +96,8 @@ class BaseGroupeAllie
     /**
      * Set the value of groupe_accepted.
      *
-     * @param boolean $groupe_accepted
+     * @param bool $groupe_accepted
+     *
      * @return \App\Entity\GroupeAllie
      */
     public function setGroupeAccepted($groupe_accepted)
@@ -101,7 +110,7 @@ class BaseGroupeAllie
     /**
      * Get the value of groupe_accepted.
      *
-     * @return boolean
+     * @return bool
      */
     public function getGroupeAccepted()
     {
@@ -111,7 +120,8 @@ class BaseGroupeAllie
     /**
      * Set the value of groupe_allie_accepted.
      *
-     * @param boolean $groupe_allie_accepted
+     * @param bool $groupe_allie_accepted
+     *
      * @return \App\Entity\GroupeAllie
      */
     public function setGroupeAllieAccepted($groupe_allie_accepted)
@@ -124,7 +134,7 @@ class BaseGroupeAllie
     /**
      * Get the value of groupe_allie_accepted.
      *
-     * @return boolean
+     * @return bool
      */
     public function getGroupeAllieAccepted()
     {
@@ -135,6 +145,7 @@ class BaseGroupeAllie
      * Set the value of message.
      *
      * @param string $message
+     *
      * @return \App\Entity\GroupeAllie
      */
     public function setMessage($message)
@@ -158,6 +169,7 @@ class BaseGroupeAllie
      * Set the value of message_allie.
      *
      * @param string $message_allie
+     *
      * @return \App\Entity\GroupeAllie
      */
     public function setMessageAllie($message_allie)
@@ -180,7 +192,6 @@ class BaseGroupeAllie
     /**
      * Set Groupe entity related by `groupe_id` (many to one).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\GroupeAllie
      */
     public function setGroupeRelatedByGroupeId(Groupe $groupe = null)
@@ -203,7 +214,6 @@ class BaseGroupeAllie
     /**
      * Set Groupe entity related by `groupe_allie_id` (many to one).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\GroupeAllie
      */
     public function setGroupeRelatedByGroupeAllieId(Groupe $groupe = null)
@@ -225,6 +235,6 @@ class BaseGroupeAllie
 
     public function __sleep()
     {
-        return array('id', 'groupe_id', 'groupe_allie_id', 'groupe_accepted', 'groupe_allie_accepted', 'message', 'message_allie');
+        return ['id', 'groupe_id', 'groupe_allie_id', 'groupe_accepted', 'groupe_allie_accepted', 'message', 'message_allie'];
     }
 }

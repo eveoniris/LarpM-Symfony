@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,35 +22,30 @@ namespace App\Repository;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * LarpManager\Repository\PotionRepository
- * 
+ * LarpManager\Repository\PotionRepository.
+ *
  * @author kevin
  */
 class PotionRepository extends EntityRepository
 {
-	/**
-	 * Trouve toute les potions en fonction de leur niveau
-	 * 
-	 * @return ArrayCollection $sorts
-	 */
-	public function findByNiveau($niveau)
-	{
-		$potions = $this->getEntityManager()
-				->createQuery('SELECT p FROM App\Entity\Potion p Where p.niveau = ?1 and (p.secret = false or p.secret is null) ORDER BY p.label ASC')
-                ->setParameter(1, $niveau)
-				->getResult();
-		
-		return $potions;
-	}
+    /**
+     * Trouve toute les potions en fonction de leur niveau.
+     *
+     * @return ArrayCollection $sorts
+     */
+    public function findByNiveau($niveau)
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT p FROM App\Entity\Potion p Where p.niveau = ?1 and (p.secret = false or p.secret is null) ORDER BY p.label ASC')
+            ->setParameter(1, $niveau)
+            ->getResult();
+    }
 
     /**
-     * Trouve le nombre de potions correspondant aux critères de recherche
-     *
-     * @param ?string $type
+     * Trouve le nombre de potions correspondant aux critères de recherche.
      */
     public function findCount(?string $type, $value)
     {
@@ -61,12 +56,7 @@ class PotionRepository extends EntityRepository
     }
 
     /**
-     * Trouve les potions correspondant aux critères de recherche
-     *
-     * @param ?string $type
-     * @param array $order
-     * @param int $limit
-     * @param int $offset
+     * Trouve les potions correspondant aux critères de recherche.
      */
     public function findList(?string $type, $value, array $order = [], int $limit = 50, int $offset = 0)
     {
@@ -78,24 +68,18 @@ class PotionRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @param string|null $type
-     * @param $value
-     * @return QueryBuilder
-     */
     protected function getQueryBuilder(?string $type, $value): QueryBuilder
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('p');
-        $qb->from('App\Entity\Potion','p');
+        $qb->from(\App\Entity\Potion::class, 'p');
 
         // retire les caractères non imprimable d'une chaine UTF-8
-        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars($value));
+        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars((string) $value));
 
-        if ($type && $value)
-        {
-            switch ($type){
+        if ($type && $value) {
+            switch ($type) {
                 case 'label':
                     $qb->andWhere('p.label LIKE :value');
                     $qb->setParameter('value', '%'.$value.'%');

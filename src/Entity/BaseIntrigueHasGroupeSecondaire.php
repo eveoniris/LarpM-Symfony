@@ -10,30 +10,37 @@
 namespace App\Entity;
 
 /**
- * App\Entity\IntrigueHasGroupeSecondaire
+ * App\Entity\IntrigueHasGroupeSecondaire.
  *
  * @Table(name="intrigue_has_groupe_secondaire", indexes={@Index(name="fk_intrigue_has_groupe_secondaire_intrigue1_idx", columns={"intrigue_id"}), @Index(name="fk_intrigue_has_groupe_secondaire_secondary_group1_idx", columns={"secondary_group_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseIntrigueHasGroupeSecondaire", "extended":"IntrigueHasGroupeSecondaire"})
  */
 class BaseIntrigueHasGroupeSecondaire
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
      * @ManyToOne(targetEntity="Intrigue", inversedBy="intrigueHasGroupeSecondaires", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="intrigue_id", referencedColumnName="id", nullable=false)
      */
     protected $intrigue;
 
     /**
      * @ManyToOne(targetEntity="SecondaryGroup", inversedBy="intrigueHasGroupeSecondaires")
+     *
      * @JoinColumn(name="secondary_group_id", referencedColumnName="id", nullable=false)
      */
     protected $secondaryGroup;
@@ -45,7 +52,8 @@ class BaseIntrigueHasGroupeSecondaire
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\IntrigueHasGroupeSecondaire
      */
     public function setId($id)
@@ -58,7 +66,7 @@ class BaseIntrigueHasGroupeSecondaire
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -68,7 +76,6 @@ class BaseIntrigueHasGroupeSecondaire
     /**
      * Set Intrigue entity (many to one).
      *
-     * @param \App\Entity\Intrigue $intrigue
      * @return \App\Entity\IntrigueHasGroupeSecondaire
      */
     public function setIntrigue(Intrigue $intrigue = null)
@@ -91,7 +98,6 @@ class BaseIntrigueHasGroupeSecondaire
     /**
      * Set SecondaryGroup entity (many to one).
      *
-     * @param \App\Entity\SecondaryGroup $secondaryGroup
      * @return \App\Entity\IntrigueHasGroupeSecondaire
      */
     public function setSecondaryGroup(SecondaryGroup $secondaryGroup = null)
@@ -113,6 +119,6 @@ class BaseIntrigueHasGroupeSecondaire
 
     public function __sleep()
     {
-        return array('id', 'intrigue_id', 'secondary_group_id');
+        return ['id', 'intrigue_id', 'secondary_group_id'];
     }
 }

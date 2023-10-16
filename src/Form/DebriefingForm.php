@@ -7,58 +7,52 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\DebriefingForm
- * 
- * @author kevin
+ * LarpManager\Form\DebriefingForm.
  *
+ * @author kevin
  */
 class DebriefingForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('gn', 'entity', array(
-					'required' => true,
-					'attr'=> array(
-						'help' => 'A quel GN correspond ce debriefing ?',
-					),
-				))
-            ->add('gn', 'entity', array(
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('gn', 'entity', [
+            'required' => true,
+            'attr' => [
+                'help' => 'A quel GN correspond ce debriefing ?',
+            ],
+        ])
+            ->add('gn', 'entity', [
                 'required' => true,
-                'attr'=> array(
+                'attr' => [
                     'help' => 'A quel GN correspond ce debriefing ?',
-                ),
-            ))
-				->add('text','textarea', array(
-					'required' => true,
-					'attr' => array(
-						'class'=> 'tinymce',
-						'rows' => 9),
-				));
-	}
-	
-	/**
-	 * Définition de la classe d'entité concernée
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Debriefing',
-		));
-	}
-	
-	/**
-	 * Nom du formlaire
-	 */
-	public function getName()
-	{
-		return 'debriefing';
-	}
+                ],
+            ])
+            ->add('text', 'textarea', [
+                'required' => true,
+                'attr' => [
+                    'class' => 'tinymce',
+                    'rows' => 9],
+            ]);
+    }
+
+    /**
+     * Définition de la classe d'entité concernée.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Debriefing::class,
+        ]);
+    }
+
+    /**
+     * Nom du formlaire.
+     */
+    public function getName(): string
+    {
+        return 'debriefing';
+    }
 }

@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Titre
+ * App\Entity\Titre.
  *
  * @Table(name="titre")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseTitre", "extended":"Titre"})
  */
 class BaseTitre
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -40,6 +45,7 @@ class BaseTitre
 
     /**
      * @OneToMany(targetEntity="TitreTerritoire", mappedBy="titre")
+     *
      * @JoinColumn(name="id", referencedColumnName="titre_id", nullable=false)
      */
     protected $titreTerritoires;
@@ -52,10 +58,11 @@ class BaseTitre
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Titre
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -65,7 +72,7 @@ class BaseTitre
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -76,6 +83,7 @@ class BaseTitre
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Titre
      */
     public function setLabel($label)
@@ -98,7 +106,8 @@ class BaseTitre
     /**
      * Set the value of renomme.
      *
-     * @param integer $renomme
+     * @param int $renomme
+     *
      * @return \App\Entity\Titre
      */
     public function setRenomme($renomme)
@@ -111,7 +120,7 @@ class BaseTitre
     /**
      * Get the value of renomme.
      *
-     * @return integer
+     * @return int
      */
     public function getRenomme()
     {
@@ -121,7 +130,6 @@ class BaseTitre
     /**
      * Add TitreTerritoire entity to collection (one to many).
      *
-     * @param \App\Entity\TitreTerritoire $titreTerritoire
      * @return \App\Entity\Titre
      */
     public function addTitreTerritoire(TitreTerritoire $titreTerritoire)
@@ -134,7 +142,6 @@ class BaseTitre
     /**
      * Remove TitreTerritoire entity from collection (one to many).
      *
-     * @param \App\Entity\TitreTerritoire $titreTerritoire
      * @return \App\Entity\Titre
      */
     public function removeTitreTerritoire(TitreTerritoire $titreTerritoire)
@@ -156,6 +163,6 @@ class BaseTitre
 
     public function __sleep()
     {
-        return array('id', 'label', 'renomme');
+        return ['id', 'label', 'renomme'];
     }
 }

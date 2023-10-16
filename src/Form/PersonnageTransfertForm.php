@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,51 +25,44 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\PersonnageTransfertForm
+ * LarpManager\Form\PersonnageTransfertForm.
  *
  * @author kevin
- *
  */
 class PersonnageTransfertForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('participant','entity', array(
-					'required' => true,
-					'label' => 'Nouveau propriétaire',
-					'class' => 'App\Entity\User',
-					'property' => 'identity',
-					'mapped' => false,
-/*					'query_builder' => function(\LarpManager\Repository\TerritoireRepository $er) {
-						$qb = $er->createQueryBuilder('t');
-						$qb->andWhere('t.territoire IS NULL');
-						$qb->orderBy('t.nom', 'ASC');
-						return $qb;
-					}*/
-				));
-	}
-	
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('participant', 'entity', [
+            'required' => true,
+            'label' => 'Nouveau propriétaire',
+            'class' => \App\Entity\User::class,
+            'property' => 'identity',
+            'mapped' => false,
+            /*					'query_builder' => function(\LarpManager\Repository\TerritoireRepository $er) {
+                                    $qb = $er->createQueryBuilder('t');
+                                    $qb->andWhere('t.territoire IS NULL');
+                                    $qb->orderBy('t.nom', 'ASC');
+                                    return $qb;
+                                }*/
+        ]);
+    }
 
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'personnageTransfert';
-	}
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'personnageTransfert';
+    }
 }

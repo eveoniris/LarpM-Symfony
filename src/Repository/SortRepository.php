@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,29 +25,27 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * LarpManager\Repository\SortRepository
- * 
+ * LarpManager\Repository\SortRepository.
+ *
  * @author kevin
  */
 class SortRepository extends EntityRepository
 {
-	/**
-	 * Find all Apprenti sorts ordered by label
-	 * @return ArrayCollection $sorts
-	 */
-	public function findByNiveau($niveau)
-	{
-		$sorts = $this->getEntityManager()
-				->createQuery('SELECT s FROM App\Entity\Sort s Where s.niveau = ?1 AND (s.secret = 0 OR s.secret IS NULL) ORDER BY s.label ASC')
-				->setParameter(1, $niveau)
-                ->getResult();
-		
-		return $sorts;
-	}
     /**
-     * Trouve le nombre de sorts correspondant aux critères de recherche
+     * Find all Apprenti sorts ordered by label.
      *
-     * @param ?string $type
+     * @return ArrayCollection $sorts
+     */
+    public function findByNiveau($niveau)
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT s FROM App\Entity\Sort s Where s.niveau = ?1 AND (s.secret = 0 OR s.secret IS NULL) ORDER BY s.label ASC')
+            ->setParameter(1, $niveau)
+            ->getResult();
+    }
+
+    /**
+     * Trouve le nombre de sorts correspondant aux critères de recherche.
      */
     public function findCount(?string $type, $value)
     {
@@ -58,12 +56,7 @@ class SortRepository extends EntityRepository
     }
 
     /**
-     * Trouve les sorts correspondant aux critères de recherche
-     *
-     * @param ?string $type
-     * @param array $order
-     * @param int $limit
-     * @param int $offset
+     * Trouve les sorts correspondant aux critères de recherche.
      */
     public function findList(?string $type, $value, array $order = [], int $limit = 50, int $offset = 0)
     {
@@ -75,30 +68,24 @@ class SortRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @param string|null $type
-     * @param $value
-     * @return QueryBuilder
-     */
     protected function getQueryBuilder(?string $type, $value): QueryBuilder
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('s');
-        $qb->from('App\Entity\Sort','s');
+        $qb->from(\App\Entity\Sort::class, 's');
 
         // retire les caractères non imprimable d'une chaine UTF-8
-        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars($value));
+        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars((string) $value));
 
-        if ($type && $value)
-        {
-            switch ($type){
+        if ($type && $value) {
+            switch ($type) {
                 case 'label':
                     $qb->andWhere('s.label LIKE :value');
                     $qb->setParameter('value', '%'.$value.'%');
                     break;
                 case 'domaine':
-                    $qb->join('s.domaine','d');
+                    $qb->join('s.domaine', 'd');
                     $qb->andWhere('d.label LIKE :value');
                     $qb->setParameter('value', '%'.$value.'%');
                     break;
@@ -111,7 +98,6 @@ class SortRepository extends EntityRepository
                     $qb->setParameter('value', (int) $value);
                     break;
             }
-
         }
 
         return $qb;

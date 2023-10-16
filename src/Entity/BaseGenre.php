@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Genre
+ * App\Entity\Genre.
  *
  * @Table(name="genre")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseGenre", "extended":"Genre"})
  */
 class BaseGenre
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -40,6 +45,7 @@ class BaseGenre
 
     /**
      * @OneToMany(targetEntity="Personnage", mappedBy="genre")
+     *
      * @JoinColumn(name="id", referencedColumnName="genre_id", nullable=false)
      */
     protected $personnages;
@@ -52,10 +58,11 @@ class BaseGenre
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Genre
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -65,7 +72,7 @@ class BaseGenre
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -76,6 +83,7 @@ class BaseGenre
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Genre
      */
     public function setLabel($label)
@@ -99,6 +107,7 @@ class BaseGenre
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Genre
      */
     public function setDescription($description)
@@ -121,7 +130,6 @@ class BaseGenre
     /**
      * Add Personnage entity to collection (one to many).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Genre
      */
     public function addPersonnage(Personnage $personnage)
@@ -134,7 +142,6 @@ class BaseGenre
     /**
      * Remove Personnage entity from collection (one to many).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Genre
      */
     public function removePersonnage(Personnage $personnage)
@@ -156,6 +163,6 @@ class BaseGenre
 
     public function __sleep()
     {
-        return array('id', 'label', 'description');
+        return ['id', 'label', 'description'];
     }
 }

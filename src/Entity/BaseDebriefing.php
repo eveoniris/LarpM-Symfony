@@ -9,20 +9,20 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
 /**
- * App\Entity\Debriefing
+ * App\Entity\Debriefing.
  */
 #[Table(name: 'debriefing')]
 #[Index(name: 'fk_debriefing_groupe1_idx', columns: ['groupe_id'])]
@@ -79,10 +79,9 @@ class BaseDebriefing
     /**
      * Set the value of id.
      *
-     * @param integer $id
      * @return Debriefing
      */
-    public function setId($id)
+    public function setId(?int $id): static
     {
         $this->id = $id;
 
@@ -92,7 +91,7 @@ class BaseDebriefing
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -102,10 +101,9 @@ class BaseDebriefing
     /**
      * Set the value of titre.
      *
-     * @param string $titre
      * @return Debriefing
      */
-    public function setTitre($titre)
+    public function setTitre(?string $titre)
     {
         $this->titre = $titre;
 
@@ -125,10 +123,9 @@ class BaseDebriefing
     /**
      * Set the value of text.
      *
-     * @param string $text
      * @return Debriefing
      */
-    public function setText($text)
+    public function setText(?string $text)
     {
         $this->text = $text;
 
@@ -148,10 +145,9 @@ class BaseDebriefing
     /**
      * Set the value of visibility.
      *
-     * @param string $visibility
      * @return Debriefing
      */
-    public function setVisibility($visibility)
+    public function setVisibility(?string $visibility)
     {
         $this->visibility = $visibility;
 
@@ -172,9 +168,10 @@ class BaseDebriefing
      * Set the value of creation_date.
      *
      * @param \DateTime $creation_date
+     *
      * @return Debriefing
      */
-    public function setCreationDate($creation_date)
+    public function setCreationDate(?\DateTimeInterface $creation_date)
     {
         $this->creation_date = $creation_date;
 
@@ -195,9 +192,10 @@ class BaseDebriefing
      * Set the value of update_date.
      *
      * @param \DateTime $update_date
+     *
      * @return Debriefing
      */
-    public function setUpdateDate($update_date)
+    public function setUpdateDate(?\DateTimeInterface $update_date)
     {
         $this->update_date = $update_date;
 
@@ -214,18 +212,12 @@ class BaseDebriefing
         return $this->update_date;
     }
 
-    /**
-     * @return mixed
-     */
     public function getDocumentUrl()
     {
         return $this->documentUrl;
     }
 
-    /**
-     * @param mixed $documentUrl
-     */
-    public function setDocumentUrl($documentUrl): void
+    public function setDocumentUrl(mixed $documentUrl): void
     {
         $this->documentUrl = $documentUrl;
     }
@@ -233,7 +225,6 @@ class BaseDebriefing
     /**
      * Set Groupe entity (many to one).
      *
-     * @param Groupe|null $groupe
      * @return Debriefing
      */
     public function setGroupe(Groupe $groupe = null)
@@ -256,7 +247,6 @@ class BaseDebriefing
     /**
      * Set User entity (many to one).
      *
-     * @param User $User
      * @return Debriefing
      */
     public function setUser(User $User = null)
@@ -279,16 +269,15 @@ class BaseDebriefing
     /**
      * Set player User entity (many to one).
      *
-     * @param User $player
      * @return Debriefing
      */
-
     public function setPlayer(User $player = null)
     {
         $this->player = $player;
 
         return $this;
     }
+
     /**
      * Get player User entity (many to one).
      *
@@ -302,7 +291,6 @@ class BaseDebriefing
     /**
      * Set Gn entity (many to one).
      *
-     * @param Gn $gn
      * @return Debriefing
      */
     public function setGn(Gn $gn = null)
@@ -324,6 +312,6 @@ class BaseDebriefing
 
     public function __sleep()
     {
-        return array('id', 'titre', 'text', 'visibility', 'creation_date', 'update_date', 'groupe_id', 'User_id', 'gn_id');
+        return ['id', 'titre', 'text', 'visibility', 'creation_date', 'update_date', 'groupe_id', 'User_id', 'gn_id'];
     }
 }

@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Question
+ * App\Entity\Question.
  *
  * @Table(name="question", indexes={@Index(name="fk_question_User1_idx", columns={"User_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseQuestion", "extended":"Question"})
  */
 class BaseQuestion
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -50,12 +55,14 @@ class BaseQuestion
 
     /**
      * @OneToMany(targetEntity="Reponse", mappedBy="question")
+     *
      * @JoinColumn(name="id", referencedColumnName="question_id", nullable=false)
      */
     protected $reponses;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="questions")
+     *
      * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
      */
     protected $User;
@@ -68,10 +75,11 @@ class BaseQuestion
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Question
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -81,7 +89,7 @@ class BaseQuestion
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -92,6 +100,7 @@ class BaseQuestion
      * Set the value of text.
      *
      * @param string $text
+     *
      * @return \App\Entity\Question
      */
     public function setText($text)
@@ -115,6 +124,7 @@ class BaseQuestion
      * Set the value of date.
      *
      * @param \DateTime $date
+     *
      * @return \App\Entity\Question
      */
     public function setDate($date)
@@ -138,6 +148,7 @@ class BaseQuestion
      * Set the value of choix.
      *
      * @param string $choix
+     *
      * @return \App\Entity\Question
      */
     public function setChoix($choix)
@@ -161,6 +172,7 @@ class BaseQuestion
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Question
      */
     public function setLabel($label)
@@ -183,7 +195,6 @@ class BaseQuestion
     /**
      * Add Reponse entity to collection (one to many).
      *
-     * @param \App\Entity\Reponse $reponse
      * @return \App\Entity\Question
      */
     public function addReponse(Reponse $reponse)
@@ -196,7 +207,6 @@ class BaseQuestion
     /**
      * Remove Reponse entity from collection (one to many).
      *
-     * @param \App\Entity\Reponse $reponse
      * @return \App\Entity\Question
      */
     public function removeReponse(Reponse $reponse)
@@ -219,7 +229,6 @@ class BaseQuestion
     /**
      * Set User entity (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Question
      */
     public function setUser(User $User = null)
@@ -241,6 +250,6 @@ class BaseQuestion
 
     public function __sleep()
     {
-        return array('id', 'text', 'date', 'User_id', 'choix', 'label');
+        return ['id', 'text', 'date', 'User_id', 'choix', 'label'];
     }
 }

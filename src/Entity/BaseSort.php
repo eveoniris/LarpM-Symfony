@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Sort
+ * App\Entity\Sort.
  *
  * @Table(name="sort", indexes={@Index(name="fk_sort_domaine1_idx", columns={"domaine_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseSort", "extended":"Sort"})
  */
 class BaseSort
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -50,6 +55,7 @@ class BaseSort
 
     /**
      * @ManyToOne(targetEntity="Domaine", inversedBy="sorts")
+     *
      * @JoinColumn(name="domaine_id", referencedColumnName="id", nullable=false)
      */
     protected $domaine;
@@ -72,7 +78,8 @@ class BaseSort
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Sort
      */
     public function setId($id)
@@ -85,7 +92,7 @@ class BaseSort
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -96,6 +103,7 @@ class BaseSort
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Sort
      */
     public function setLabel($label)
@@ -119,6 +127,7 @@ class BaseSort
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Sort
      */
     public function setDescription($description)
@@ -142,6 +151,7 @@ class BaseSort
      * Set the value of documentUrl.
      *
      * @param string $documentUrl
+     *
      * @return \App\Entity\Sort
      */
     public function setDocumentUrl($documentUrl)
@@ -164,7 +174,8 @@ class BaseSort
     /**
      * Set the value of niveau.
      *
-     * @param integer $niveau
+     * @param int $niveau
+     *
      * @return \App\Entity\Sort
      */
     public function setNiveau($niveau)
@@ -177,7 +188,7 @@ class BaseSort
     /**
      * Get the value of niveau.
      *
-     * @return integer
+     * @return int
      */
     public function getNiveau()
     {
@@ -187,7 +198,6 @@ class BaseSort
     /**
      * Set Domaine entity (many to one).
      *
-     * @param \App\Entity\Domaine $domaine
      * @return \App\Entity\Sort
      */
     public function setDomaine(Domaine $domaine = null)
@@ -210,7 +220,6 @@ class BaseSort
     /**
      * Add Personnage entity to collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Sort
      */
     public function addPersonnage(Personnage $personnage)
@@ -223,7 +232,6 @@ class BaseSort
     /**
      * Remove Personnage entity from collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Sort
      */
     public function removePersonnage(Personnage $personnage)
@@ -246,7 +254,8 @@ class BaseSort
     /**
      * Set the value of secret.
      *
-     * @param boolean $secret
+     * @param bool $secret
+     *
      * @return \App\Entity\Sort
      */
     public function setSecret($secret)
@@ -259,16 +268,15 @@ class BaseSort
     /**
      * Get the value of secret.
      *
-     * @return boolean
+     * @return bool
      */
     public function getSecret()
     {
         return $this->secret;
     }
 
-
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'domaine_id', 'documentUrl', 'niveau');
+        return ['id', 'label', 'description', 'domaine_id', 'documentUrl', 'niveau'];
     }
 }

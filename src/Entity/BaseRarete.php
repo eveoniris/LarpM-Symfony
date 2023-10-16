@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Rarete
+ * App\Entity\Rarete.
  *
  * @Table(name="rarete")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseRarete", "extended":"Rarete"})
  */
 class BaseRarete
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -40,6 +45,7 @@ class BaseRarete
 
     /**
      * @OneToMany(targetEntity="Ressource", mappedBy="rarete")
+     *
      * @JoinColumn(name="id", referencedColumnName="rarete_id", nullable=false)
      */
     protected $ressources;
@@ -52,10 +58,11 @@ class BaseRarete
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Rarete
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -65,7 +72,7 @@ class BaseRarete
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -76,6 +83,7 @@ class BaseRarete
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Rarete
      */
     public function setLabel($label)
@@ -98,7 +106,8 @@ class BaseRarete
     /**
      * Set the value of value.
      *
-     * @param integer $value
+     * @param int $value
+     *
      * @return \App\Entity\Rarete
      */
     public function setValue($value)
@@ -111,7 +120,7 @@ class BaseRarete
     /**
      * Get the value of value.
      *
-     * @return integer
+     * @return int
      */
     public function getValue()
     {
@@ -121,7 +130,6 @@ class BaseRarete
     /**
      * Add Ressource entity to collection (one to many).
      *
-     * @param \App\Entity\Ressource $ressource
      * @return \App\Entity\Rarete
      */
     public function addRessource(Ressource $ressource)
@@ -134,7 +142,6 @@ class BaseRarete
     /**
      * Remove Ressource entity from collection (one to many).
      *
-     * @param \App\Entity\Ressource $ressource
      * @return \App\Entity\Rarete
      */
     public function removeRessource(Ressource $ressource)
@@ -156,6 +163,6 @@ class BaseRarete
 
     public function __sleep()
     {
-        return array('id', 'label', 'value');
+        return ['id', 'label', 'value'];
     }
 }

@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\GroupeEnemy
+ * App\Entity\GroupeEnemy.
  *
  * @Table(name="groupe_enemy", indexes={@Index(name="fk_groupe_enemy_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_groupe_enemy_groupe2_idx", columns={"groupe_enemy_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseGroupeEnemy", "extended":"GroupeEnemy"})
  */
 class BaseGroupeEnemy
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -48,12 +53,14 @@ class BaseGroupeEnemy
 
     /**
      * @ManyToOne(targetEntity="Groupe", inversedBy="groupeEnemyRelatedByGroupeIds")
+     *
      * @JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)
      */
     protected $groupeRelatedByGroupeId;
 
     /**
      * @ManyToOne(targetEntity="Groupe", inversedBy="groupeEnemyRelatedByGroupeEnemyIds")
+     *
      * @JoinColumn(name="groupe_enemy_id", referencedColumnName="id", nullable=false)
      */
     protected $groupeRelatedByGroupeEnemyId;
@@ -65,7 +72,8 @@ class BaseGroupeEnemy
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\GroupeEnemy
      */
     public function setId($id)
@@ -78,7 +86,7 @@ class BaseGroupeEnemy
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -88,7 +96,8 @@ class BaseGroupeEnemy
     /**
      * Set the value of groupe_peace.
      *
-     * @param boolean $groupe_peace
+     * @param bool $groupe_peace
+     *
      * @return \App\Entity\GroupeEnemy
      */
     public function setGroupePeace($groupe_peace)
@@ -101,7 +110,7 @@ class BaseGroupeEnemy
     /**
      * Get the value of groupe_peace.
      *
-     * @return boolean
+     * @return bool
      */
     public function getGroupePeace()
     {
@@ -111,7 +120,8 @@ class BaseGroupeEnemy
     /**
      * Set the value of groupe_enemy_peace.
      *
-     * @param boolean $groupe_enemy_peace
+     * @param bool $groupe_enemy_peace
+     *
      * @return \App\Entity\GroupeEnemy
      */
     public function setGroupeEnemyPeace($groupe_enemy_peace)
@@ -124,7 +134,7 @@ class BaseGroupeEnemy
     /**
      * Get the value of groupe_enemy_peace.
      *
-     * @return boolean
+     * @return bool
      */
     public function getGroupeEnemyPeace()
     {
@@ -135,6 +145,7 @@ class BaseGroupeEnemy
      * Set the value of message.
      *
      * @param string $message
+     *
      * @return \App\Entity\GroupeEnemy
      */
     public function setMessage($message)
@@ -158,6 +169,7 @@ class BaseGroupeEnemy
      * Set the value of message_enemy.
      *
      * @param string $message_enemy
+     *
      * @return \App\Entity\GroupeEnemy
      */
     public function setMessageEnemy($message_enemy)
@@ -180,7 +192,6 @@ class BaseGroupeEnemy
     /**
      * Set Groupe entity related by `groupe_id` (many to one).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\GroupeEnemy
      */
     public function setGroupeRelatedByGroupeId(Groupe $groupe = null)
@@ -203,7 +214,6 @@ class BaseGroupeEnemy
     /**
      * Set Groupe entity related by `groupe_enemy_id` (many to one).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\GroupeEnemy
      */
     public function setGroupeRelatedByGroupeEnemyId(Groupe $groupe = null)
@@ -225,6 +235,6 @@ class BaseGroupeEnemy
 
     public function __sleep()
     {
-        return array('id', 'groupe_id', 'groupe_enemy_id', 'groupe_peace', 'groupe_enemy_peace', 'message', 'message_enemy');
+        return ['id', 'groupe_id', 'groupe_enemy_id', 'groupe_peace', 'groupe_enemy_peace', 'message', 'message_enemy'];
     }
 }

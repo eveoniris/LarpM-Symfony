@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\Postulant
+ * App\Entity\Postulant.
  *
  * @Table(name="postulant", indexes={@Index(name="fk_postulant_secondary_group1_idx", columns={"secondary_group_id"}), @Index(name="fk_postulant_personnage1_idx", columns={"personnage_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePostulant", "extended":"Postulant"})
  */
 class BasePostulant
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -43,12 +48,14 @@ class BasePostulant
 
     /**
      * @ManyToOne(targetEntity="SecondaryGroup", inversedBy="postulants")
+     *
      * @JoinColumn(name="secondary_group_id", referencedColumnName="id", nullable=false)
      */
     protected $secondaryGroup;
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="postulants")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
@@ -60,7 +67,8 @@ class BasePostulant
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Postulant
      */
     public function setId($id)
@@ -73,7 +81,7 @@ class BasePostulant
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -84,6 +92,7 @@ class BasePostulant
      * Set the value of date.
      *
      * @param \DateTime $date
+     *
      * @return \App\Entity\Postulant
      */
     public function setDate($date)
@@ -107,6 +116,7 @@ class BasePostulant
      * Set the value of explanation.
      *
      * @param string $explanation
+     *
      * @return \App\Entity\Postulant
      */
     public function setExplanation($explanation)
@@ -129,7 +139,8 @@ class BasePostulant
     /**
      * Set the value of waiting.
      *
-     * @param boolean $waiting
+     * @param bool $waiting
+     *
      * @return \App\Entity\Postulant
      */
     public function setWaiting($waiting)
@@ -142,7 +153,7 @@ class BasePostulant
     /**
      * Get the value of waiting.
      *
-     * @return boolean
+     * @return bool
      */
     public function getWaiting()
     {
@@ -152,7 +163,6 @@ class BasePostulant
     /**
      * Set SecondaryGroup entity (many to one).
      *
-     * @param \App\Entity\SecondaryGroup $secondaryGroup
      * @return \App\Entity\Postulant
      */
     public function setSecondaryGroup(SecondaryGroup $secondaryGroup = null)
@@ -175,7 +185,6 @@ class BasePostulant
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Postulant
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -197,6 +206,6 @@ class BasePostulant
 
     public function __sleep()
     {
-        return array('id', 'date', 'secondary_group_id', 'personnage_id', 'explanation', 'waiting');
+        return ['id', 'date', 'secondary_group_id', 'personnage_id', 'explanation', 'waiting'];
     }
 }

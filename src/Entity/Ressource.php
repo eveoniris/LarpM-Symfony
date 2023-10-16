@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,71 +27,73 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseRessource;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Ressource
+ * App\Entity\Ressource.
  *
-* @Entity(repositoryClass="LarpManager\Repository\RessourceRepository")
+ * @Entity(repositoryClass="LarpManager\Repository\RessourceRepository")
  */
-class Ressource extends BaseRessource
+class Ressource extends BaseRessource implements \Stringable
 {
-	/**
-	 * @ManyToMany(targetEntity="Territoire", mappedBy="exportations")
-	 */
-	protected $exportateurs;
-	
-	/**
-	 * @ManyToMany(targetEntity="Territoire", mappedBy="importations")
-	 */
-	protected $importateurs;
-	
-	public function __construct()
-	{
-		$this->exportateurs = new ArrayCollection();
-		$this->importateurs = new ArrayCollection();
-	
-		parent::__construct();
-	}
-	
-	public function __toString()
-	{
-		return $this->getLabel();
-	}
-	
-	public function getExportateurs()
-	{
-		return $this->exportateurs;
-	}
-	
-	public function getImportateurs()
-	{
-		return $this->importateurs;
-	}
-	
-	public function addImportateur($territoire)
-	{
-		$this->importateurs[] = $territoire;
-		return $this;
-	}
-	
-	public function removeImportateur($territoire)
-	{
-		$this->importateurs->removeElement($territoire);
-		return $this;
-	}
-	
-	public function addExportateur($territoire)
-	{
-		$this->exportateurs[] = $territoire;
-		return $this;
-	}
-	
-	public function removeExportateur($territoire)
-	{
-		$this->exportateurs->removeElement($territoire);
-		return $this;
-	}
-		
+    /**
+     * @ManyToMany(targetEntity="Territoire", mappedBy="exportations")
+     */
+    protected $exportateurs;
+
+    /**
+     * @ManyToMany(targetEntity="Territoire", mappedBy="importations")
+     */
+    protected $importateurs;
+
+    public function __construct()
+    {
+        $this->exportateurs = new ArrayCollection();
+        $this->importateurs = new ArrayCollection();
+
+        parent::__construct();
+    }
+
+    public function __toString(): string
+    {
+        return $this->getLabel();
+    }
+
+    public function getExportateurs()
+    {
+        return $this->exportateurs;
+    }
+
+    public function getImportateurs()
+    {
+        return $this->importateurs;
+    }
+
+    public function addImportateur($territoire): static
+    {
+        $this->importateurs[] = $territoire;
+
+        return $this;
+    }
+
+    public function removeImportateur($territoire): static
+    {
+        $this->importateurs->removeElement($territoire);
+
+        return $this;
+    }
+
+    public function addExportateur($territoire): static
+    {
+        $this->exportateurs[] = $territoire;
+
+        return $this;
+    }
+
+    public function removeExportateur($territoire): static
+    {
+        $this->exportateurs->removeElement($territoire);
+
+        return $this;
+    }
 }

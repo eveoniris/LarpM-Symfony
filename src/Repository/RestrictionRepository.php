@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,21 +23,21 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Repository\RestrictionRepository
+ * LarpManager\Repository\RestrictionRepository.
  *
  * @author kevin
  */
 class RestrictionRepository extends EntityRepository
 {
-	/**
-	 * Fourni la liste des restrictions alimentaires
-	 * @return \Doctrine\Common\Collections\Collection
-	 */
-	public function findAllOrderedByLabel()
-	{
-		$query = $this->getEntityManager()->createQuery('SELECT r FROM App\Entity\Restriction r ORDER BY r.label ASC');
-		$ressources = $query->getResult();
+    /**
+     * Fourni la liste des restrictions alimentaires.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function findAllOrderedByLabel()
+    {
+        $query = $this->getEntityManager()->createQuery('SELECT r FROM App\Entity\Restriction r ORDER BY r.label ASC');
 
-		return $ressources;
-	}
+        return $query->getResult();
+    }
 }

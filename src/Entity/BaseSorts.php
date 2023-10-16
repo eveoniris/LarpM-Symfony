@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\Sorts
+ * App\Entity\Sorts.
  *
  * @Table(name="sorts", indexes={@Index(name="fk_sorts_domaine1_idx", columns={"domaine_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseSorts", "extended":"Sorts"})
  */
 class BaseSorts
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -48,6 +53,7 @@ class BaseSorts
 
     /**
      * @ManyToOne(targetEntity="Domaine", inversedBy="sorts")
+     *
      * @JoinColumn(name="domaine_id", referencedColumnName="id", nullable=false)
      */
     protected $domaine;
@@ -59,7 +65,8 @@ class BaseSorts
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Sorts
      */
     public function setId($id)
@@ -72,7 +79,7 @@ class BaseSorts
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -83,6 +90,7 @@ class BaseSorts
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Sorts
      */
     public function setLabel($label)
@@ -106,6 +114,7 @@ class BaseSorts
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Sorts
      */
     public function setDescription($description)
@@ -129,6 +138,7 @@ class BaseSorts
      * Set the value of documentUrl.
      *
      * @param string $documentUrl
+     *
      * @return \App\Entity\Sorts
      */
     public function setDocumentUrl($documentUrl)
@@ -151,7 +161,8 @@ class BaseSorts
     /**
      * Set the value of niveau.
      *
-     * @param integer $niveau
+     * @param int $niveau
+     *
      * @return \App\Entity\Sorts
      */
     public function setNiveau($niveau)
@@ -164,7 +175,7 @@ class BaseSorts
     /**
      * Get the value of niveau.
      *
-     * @return integer
+     * @return int
      */
     public function getNiveau()
     {
@@ -174,7 +185,6 @@ class BaseSorts
     /**
      * Set Domaine entity (many to one).
      *
-     * @param \App\Entity\Domaine $domaine
      * @return \App\Entity\Sorts
      */
     public function setDomaine(Domaine $domaine = null)
@@ -196,6 +206,6 @@ class BaseSorts
 
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'domaine_id', 'documentUrl', 'niveau');
+        return ['id', 'label', 'description', 'domaine_id', 'documentUrl', 'niveau'];
     }
 }

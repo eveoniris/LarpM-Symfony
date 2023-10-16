@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\PersonnageHasQuestion
+ * App\Entity\PersonnageHasQuestion.
  *
  * @Table(name="personnage_has_question", indexes={@Index(name="fk_personnage_has_question_personnage1_idx", columns={"personnage_id"}), @Index(name="fk_personnage_has_question_question1_idx", columns={"question_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePersonnageHasQuestion", "extended":"PersonnageHasQuestion"})
  */
 class BasePersonnageHasQuestion
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -33,12 +38,14 @@ class BasePersonnageHasQuestion
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="personnageHasQuestions")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
 
     /**
      * @ManyToOne(targetEntity="Question", inversedBy="personnageHasQuestions")
+     *
      * @JoinColumn(name="question_id", referencedColumnName="id", nullable=false)
      */
     protected $question;
@@ -50,7 +57,8 @@ class BasePersonnageHasQuestion
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\PersonnageHasQuestion
      */
     public function setId($id)
@@ -63,7 +71,7 @@ class BasePersonnageHasQuestion
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -73,7 +81,8 @@ class BasePersonnageHasQuestion
     /**
      * Set the value of reponse.
      *
-     * @param boolean $reponse
+     * @param bool $reponse
+     *
      * @return \App\Entity\PersonnageHasQuestion
      */
     public function setReponse($reponse)
@@ -86,7 +95,7 @@ class BasePersonnageHasQuestion
     /**
      * Get the value of reponse.
      *
-     * @return boolean
+     * @return bool
      */
     public function getReponse()
     {
@@ -96,7 +105,6 @@ class BasePersonnageHasQuestion
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\PersonnageHasQuestion
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -119,7 +127,6 @@ class BasePersonnageHasQuestion
     /**
      * Set Question entity (many to one).
      *
-     * @param \App\Entity\Question $question
      * @return \App\Entity\PersonnageHasQuestion
      */
     public function setQuestion(Question $question = null)
@@ -141,6 +148,6 @@ class BasePersonnageHasQuestion
 
     public function __sleep()
     {
-        return array('id', 'reponse', 'personnage_id', 'question_id');
+        return ['id', 'reponse', 'personnage_id', 'question_id'];
     }
 }

@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,47 +25,40 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\GroupeSecondaireTypeForm
+ * LarpManager\Form\GroupeSecondaireTypeForm.
  *
  * @author kevin
- *
  */
 class GroupeSecondaireTypeForm extends AbstractType
 {
-	/**
-	 * Contruction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text', array(
-					'required' => true,
-				))
-				->add('description','textarea', array(
-					'required' => false,
-				));
-	}
-	
+    /**
+     * Contruction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text', [
+            'required' => true,
+        ])
+            ->add('description', 'textarea', [
+                'required' => false,
+            ]);
+    }
 
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data' => 'App\Entity\SecondaryGroupType',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'groupeSecondaireType';
-	}
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data' => \App\Entity\SecondaryGroupType::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'groupeSecondaireType';
+    }
 }

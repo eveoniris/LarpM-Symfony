@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\ObjetCarac
+ * App\Entity\ObjetCarac.
  *
  * @Table(name="objet_carac", indexes={@Index(name="fk_objet_carac_objet1_idx", columns={"objet_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseObjetCarac", "extended":"ObjetCarac"})
  */
 class BaseObjetCarac
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -43,6 +48,7 @@ class BaseObjetCarac
 
     /**
      * @OneToOne(targetEntity="Objet", inversedBy="objetCarac", cascade={"persist", "merge", "remove", "detach", "all"})
+     *
      * @JoinColumn(name="objet_id", referencedColumnName="id", nullable=false)
      */
     protected $objet;
@@ -54,7 +60,8 @@ class BaseObjetCarac
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\ObjetCarac
      */
     public function setId($id)
@@ -67,7 +74,7 @@ class BaseObjetCarac
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -78,6 +85,7 @@ class BaseObjetCarac
      * Set the value of taille.
      *
      * @param string $taille
+     *
      * @return \App\Entity\ObjetCarac
      */
     public function setTaille($taille)
@@ -101,6 +109,7 @@ class BaseObjetCarac
      * Set the value of poid.
      *
      * @param string $poid
+     *
      * @return \App\Entity\ObjetCarac
      */
     public function setPoid($poid)
@@ -124,6 +133,7 @@ class BaseObjetCarac
      * Set the value of couleur.
      *
      * @param string $couleur
+     *
      * @return \App\Entity\ObjetCarac
      */
     public function setCouleur($couleur)
@@ -146,7 +156,6 @@ class BaseObjetCarac
     /**
      * Set Objet entity (one to one).
      *
-     * @param \App\Entity\Objet $objet
      * @return \App\Entity\ObjetCarac
      */
     public function setObjet(Objet $objet)
@@ -168,6 +177,6 @@ class BaseObjetCarac
 
     public function __sleep()
     {
-        return array('id', 'objet_id', 'taille', 'poid', 'couleur');
+        return ['id', 'objet_id', 'taille', 'poid', 'couleur'];
     }
 }

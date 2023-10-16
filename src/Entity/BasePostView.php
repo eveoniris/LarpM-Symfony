@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\PostView
+ * App\Entity\PostView.
  *
  * @Table(name="post_view", indexes={@Index(name="fk_post_view_post1_idx", columns={"post_id"}), @Index(name="fk_post_view_User1_idx", columns={"User_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePostView", "extended":"PostView"})
  */
 class BasePostView
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -33,12 +38,14 @@ class BasePostView
 
     /**
      * @ManyToOne(targetEntity="Post", inversedBy="postViews")
+     *
      * @JoinColumn(name="post_id", referencedColumnName="id", nullable=false)
      */
     protected $post;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="postViews")
+     *
      * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
      */
     protected $User;
@@ -50,7 +57,8 @@ class BasePostView
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\PostView
      */
     public function setId($id)
@@ -63,7 +71,7 @@ class BasePostView
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -74,6 +82,7 @@ class BasePostView
      * Set the value of date.
      *
      * @param \DateTime $date
+     *
      * @return \App\Entity\PostView
      */
     public function setDate($date)
@@ -96,7 +105,6 @@ class BasePostView
     /**
      * Set Post entity (many to one).
      *
-     * @param \App\Entity\Post $post
      * @return \App\Entity\PostView
      */
     public function setPost(Post $post = null)
@@ -119,7 +127,6 @@ class BasePostView
     /**
      * Set User entity (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\PostView
      */
     public function setUser(User $User = null)
@@ -141,6 +148,6 @@ class BasePostView
 
     public function __sleep()
     {
-        return array('id', 'date', 'post_id', 'User_id');
+        return ['id', 'date', 'post_id', 'User_id'];
     }
 }

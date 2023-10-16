@@ -7,18 +7,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\Lignee
+ * App\Entity\Lignee.
  *
  * @Table(name="lignees")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseLignee", "extended":"Lignee"})
  */
 class BaseLignee
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -35,10 +40,10 @@ class BaseLignee
 
     /**
      * @OneToMany(targetEntity="PersonnageLignee", mappedBy="lignee")
+     *
      * @JoinColumn(name="id", referencedColumnName="lignee_id", nullable=false)
      */
     protected $personnageLignees;
-
 
     public function __construct()
     {
@@ -47,7 +52,8 @@ class BaseLignee
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Lignee
      */
     public function setId($id)
@@ -60,7 +66,7 @@ class BaseLignee
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -71,6 +77,7 @@ class BaseLignee
      * Set the value of nom.
      *
      * @param string $nom
+     *
      * @return \App\Entity\Lignee
      */
     public function setNom($nom)
@@ -94,6 +101,7 @@ class BaseLignee
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Lignee
      */
     public function setDescription($description)
@@ -113,24 +121,18 @@ class BaseLignee
         return $this->description;
     }
 
-    /**
-     * @return mixed
-     */
     public function getPersonnageLignees()
     {
         return $this->personnageLignees;
     }
 
-    /**
-     * @param mixed $personnageLignees
-     */
-    public function setPersonnageLignees($personnageLignees): void
+    public function setPersonnageLignees(mixed $personnageLignees): void
     {
         $this->personnageLignees = $personnageLignees;
     }
 
     public function __sleep()
     {
-        return array('id', 'nom', 'description');
+        return ['id', 'nom', 'description'];
     }
 }

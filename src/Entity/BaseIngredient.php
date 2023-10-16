@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Ingredient
+ * App\Entity\Ingredient.
  *
  * @Table(name="ingredient")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseIngredient", "extended":"Ingredient"})
  */
 class BaseIngredient
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -50,12 +55,14 @@ class BaseIngredient
 
     /**
      * @OneToMany(targetEntity="GroupeHasIngredient", mappedBy="ingredient")
+     *
      * @JoinColumn(name="id", referencedColumnName="ingredient_id", nullable=false)
      */
     protected $groupeHasIngredients;
 
     /**
      * @OneToMany(targetEntity="PersonnageIngredient", mappedBy="ingredient")
+     *
      * @JoinColumn(name="id", referencedColumnName="ingredient_id", nullable=false)
      */
     protected $personnageIngredients;
@@ -75,7 +82,8 @@ class BaseIngredient
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Ingredient
      */
     public function setId($id)
@@ -88,7 +96,7 @@ class BaseIngredient
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -99,6 +107,7 @@ class BaseIngredient
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\Ingredient
      */
     public function setLabel($label)
@@ -122,6 +131,7 @@ class BaseIngredient
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Ingredient
      */
     public function setDescription($description)
@@ -144,7 +154,8 @@ class BaseIngredient
     /**
      * Set the value of niveau.
      *
-     * @param integer $niveau
+     * @param int $niveau
+     *
      * @return \App\Entity\Ingredient
      */
     public function setNiveau($niveau)
@@ -157,7 +168,7 @@ class BaseIngredient
     /**
      * Get the value of niveau.
      *
-     * @return integer
+     * @return int
      */
     public function getNiveau()
     {
@@ -168,6 +179,7 @@ class BaseIngredient
      * Set the value of dose.
      *
      * @param string $dose
+     *
      * @return \App\Entity\Ingredient
      */
     public function setDose($dose)
@@ -190,7 +202,6 @@ class BaseIngredient
     /**
      * Add GroupeHasIngredient entity to collection (one to many).
      *
-     * @param \App\Entity\GroupeHasIngredient $groupeHasIngredient
      * @return \App\Entity\Ingredient
      */
     public function addGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient)
@@ -203,7 +214,6 @@ class BaseIngredient
     /**
      * Remove GroupeHasIngredient entity from collection (one to many).
      *
-     * @param \App\Entity\GroupeHasIngredient $groupeHasIngredient
      * @return \App\Entity\Ingredient
      */
     public function removeGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient)
@@ -226,7 +236,6 @@ class BaseIngredient
     /**
      * Add PersonnageIngredient entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnageIngredient $personnageIngredient
      * @return \App\Entity\Ingredient
      */
     public function addPersonnageIngredient(PersonnageIngredient $personnageIngredient)
@@ -239,7 +248,6 @@ class BaseIngredient
     /**
      * Remove PersonnageIngredient entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnageIngredient $personnageIngredient
      * @return \App\Entity\Ingredient
      */
     public function removePersonnageIngredient(PersonnageIngredient $personnageIngredient)
@@ -262,7 +270,6 @@ class BaseIngredient
     /**
      * Add Territoire entity to collection.
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Ingredient
      */
     public function addTerritoire(Territoire $territoire)
@@ -275,7 +282,6 @@ class BaseIngredient
     /**
      * Remove Territoire entity from collection.
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Ingredient
      */
     public function removeTerritoire(Territoire $territoire)
@@ -297,6 +303,6 @@ class BaseIngredient
 
     public function __sleep()
     {
-        return array('id', 'label', 'description', 'niveau', 'dose');
+        return ['id', 'label', 'description', 'niveau', 'dose'];
     }
 }

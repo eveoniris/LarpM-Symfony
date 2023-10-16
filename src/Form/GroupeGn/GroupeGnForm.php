@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,68 +23,61 @@ namespace App\Form\GroupeGn;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use LarpManager\Repository\ParticipantRepository;
 
 /**
- * LarpManager\Form\GroupeGn\GroupeGnForm
+ * LarpManager\Form\GroupeGn\GroupeGnForm.
  *
  * @author kevin
- *
  */
 class GroupeGnForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('gn','entity', array(
-					'label' => 'Jeu',
-					'required' => true,
-					'class' => 'App\Entity\Gn',
-					'property' => 'label',
-				))
-				->add('free','choice', array(
-					'label' => 'Groupe disponible ou réservé ?',
-					'required' => false,
-					'choices' => array(
-						true => 'Groupe disponible',
-						false => 'Groupe réservé',
-					),
-				))
-				->add('code','text', array(
-						'required' => false,
-				))
-				->add('jeuStrategique','checkbox', array(
-						'label' => "Participe au jeu stratégique",
-						'required' => false,
-				))
-				->add('jeuMaritime','checkbox', array(
-						'label' => "Participe au jeu maritime",
-						'required' => false,
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\GroupeGn',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'groupeGn';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('gn', 'entity', [
+            'label' => 'Jeu',
+            'required' => true,
+            'class' => \App\Entity\Gn::class,
+            'property' => 'label',
+        ])
+            ->add('free', 'choice', [
+                'label' => 'Groupe disponible ou réservé ?',
+                'required' => false,
+                'choices' => [
+                    true => 'Groupe disponible',
+                    false => 'Groupe réservé',
+                ],
+            ])
+            ->add('code', 'text', [
+                'required' => false,
+            ])
+            ->add('jeuStrategique', 'checkbox', [
+                'label' => 'Participe au jeu stratégique',
+                'required' => false,
+            ])
+            ->add('jeuMaritime', 'checkbox', [
+                'label' => 'Participe au jeu maritime',
+                'required' => false,
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\GroupeGn::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'groupeGn';
+    }
 }

@@ -10,30 +10,37 @@
 namespace App\Entity;
 
 /**
- * App\Entity\PersonnageSecondairesCompetences
+ * App\Entity\PersonnageSecondairesCompetences.
  *
  * @Table(name="personnage_secondaires_competences", indexes={@Index(name="fk_personnage_secondaires_competences_personnage_secondaire_idx", columns={"personnage_secondaire_id"}), @Index(name="fk_personnage_secondaires_competences_competence1_idx", columns={"competence_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePersonnageSecondairesCompetences", "extended":"PersonnageSecondairesCompetences"})
  */
 class BasePersonnageSecondairesCompetences
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
      * @ManyToOne(targetEntity="PersonnageSecondaire", inversedBy="personnageSecondairesCompetences")
+     *
      * @JoinColumn(name="personnage_secondaire_id", referencedColumnName="id", nullable=false)
      */
     protected $personnageSecondaire;
 
     /**
      * @ManyToOne(targetEntity="Competence", inversedBy="personnageSecondairesCompetences")
+     *
      * @JoinColumn(name="competence_id", referencedColumnName="id", nullable=false)
      */
     protected $competence;
@@ -45,7 +52,8 @@ class BasePersonnageSecondairesCompetences
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\PersonnageSecondairesCompetences
      */
     public function setId($id)
@@ -58,7 +66,7 @@ class BasePersonnageSecondairesCompetences
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -68,7 +76,6 @@ class BasePersonnageSecondairesCompetences
     /**
      * Set PersonnageSecondaire entity (many to one).
      *
-     * @param \App\Entity\PersonnageSecondaire $personnageSecondaire
      * @return \App\Entity\PersonnageSecondairesCompetences
      */
     public function setPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire = null)
@@ -91,7 +98,6 @@ class BasePersonnageSecondairesCompetences
     /**
      * Set Competence entity (many to one).
      *
-     * @param \App\Entity\Competence $competence
      * @return \App\Entity\PersonnageSecondairesCompetences
      */
     public function setCompetence(Competence $competence = null)
@@ -113,6 +119,6 @@ class BasePersonnageSecondairesCompetences
 
     public function __sleep()
     {
-        return array('id', 'personnage_secondaire_id', 'competence_id');
+        return ['id', 'personnage_secondaire_id', 'competence_id'];
     }
 }

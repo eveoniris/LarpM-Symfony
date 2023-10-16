@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\ParticipantHasRestauration
+ * App\Entity\ParticipantHasRestauration.
  *
  * @Table(name="participant_has_restauration", indexes={@Index(name="fk_participant_has_restauration_participant1_idx", columns={"participant_id"}), @Index(name="fk_participant_has_restauration_restauration1_idx", columns={"restauration_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseParticipantHasRestauration", "extended":"ParticipantHasRestauration"})
  */
 class BaseParticipantHasRestauration
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -33,12 +38,14 @@ class BaseParticipantHasRestauration
 
     /**
      * @ManyToOne(targetEntity="Participant", inversedBy="participantHasRestaurations", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="participant_id", referencedColumnName="id", nullable=false)
      */
     protected $participant;
 
     /**
      * @ManyToOne(targetEntity="Restauration", inversedBy="participantHasRestaurations")
+     *
      * @JoinColumn(name="restauration_id", referencedColumnName="id", nullable=false)
      */
     protected $restauration;
@@ -50,7 +57,8 @@ class BaseParticipantHasRestauration
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\ParticipantHasRestauration
      */
     public function setId($id)
@@ -63,7 +71,7 @@ class BaseParticipantHasRestauration
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -74,6 +82,7 @@ class BaseParticipantHasRestauration
      * Set the value of date.
      *
      * @param \DateTime $date
+     *
      * @return \App\Entity\ParticipantHasRestauration
      */
     public function setDate($date)
@@ -96,7 +105,6 @@ class BaseParticipantHasRestauration
     /**
      * Set Participant entity (many to one).
      *
-     * @param \App\Entity\Participant $participant
      * @return \App\Entity\ParticipantHasRestauration
      */
     public function setParticipant(Participant $participant = null)
@@ -119,7 +127,6 @@ class BaseParticipantHasRestauration
     /**
      * Set Restauration entity (many to one).
      *
-     * @param \App\Entity\Restauration $restauration
      * @return \App\Entity\ParticipantHasRestauration
      */
     public function setRestauration(Restauration $restauration = null)
@@ -141,6 +148,6 @@ class BaseParticipantHasRestauration
 
     public function __sleep()
     {
-        return array('id', 'participant_id', 'restauration_id', 'date');
+        return ['id', 'participant_id', 'restauration_id', 'date'];
     }
 }

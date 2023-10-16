@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,28 +25,27 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\Type\ObjetDelete
+ * LarpManager\Form\Type\ObjetDelete.
  *
  * @author kevin
- *
  */
 class ObjetDeleteForm extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('delete','submit', array('label' => "Supprimer"));
-	}
-	
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Objet',
-				'cascade_validation' => true,
-		));
-	}
-	
-	public function getName()
-	{
-		return 'objetDelete';
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('delete', 'submit', ['label' => 'Supprimer']);
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Objet::class,
+            'cascade_validation' => true,
+        ]);
+    }
+
+    public function getName(): string
+    {
+        return 'objetDelete';
+    }
 }

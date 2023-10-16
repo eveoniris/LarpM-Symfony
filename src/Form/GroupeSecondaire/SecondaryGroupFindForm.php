@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,49 +25,43 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\SecondaryGroupFindForm
+ * LarpManager\Form\SecondaryGroupFindForm.
  *
  * @author kevin
- *
  */
 class SecondaryGroupFindForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('value','text', array(
-						'required' => true,
-						'label' => 'Valeur',
-				))
-				->add('type', 'choice', array(
-						'required' => true,
-						'label' => 'Type',
-						'choices' => array(
-							'id' => 'Numéro',
-							'nom' => 'Nom du groupe secondaire',
-						)
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concernée
-	 *
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'secondaryGroupFind';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('value', 'text', [
+            'required' => true,
+            'label' => 'Valeur',
+        ])
+            ->add('type', 'choice', [
+                'required' => true,
+                'label' => 'Type',
+                'choices' => [
+                    'id' => 'Numéro',
+                    'nom' => 'Nom du groupe secondaire',
+                ],
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concernée.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'secondaryGroupFind';
+    }
 }

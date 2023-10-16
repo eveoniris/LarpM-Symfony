@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
@@ -25,29 +25,28 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\Type\RangementType
+ * LarpManager\Form\Type\RangementType.
  *
  * @author kevin
- *
  */
 class RangementType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text', array('attr' => array('help' => 'Les trois premières lettres (avec le numéro de l\'objet) servirons à créer le code identifiant un objet')))
-				->add('localisation','entity', array('required' => false, 'class' => 'App\Entity\Localisation', 'property' => 'label'))
-				->add('precision','textarea', array('required' => false, 'attr' => array('help'  => '')));
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text', ['attr' => ['help' => 'Les trois premières lettres (avec le numéro de l\'objet) servirons à créer le code identifiant un objet']])
+            ->add('localisation', 'entity', ['required' => false, 'class' => \App\Entity\Localisation::class, 'property' => 'label'])
+            ->add('precision', 'textarea', ['required' => false, 'attr' => ['help' => '']]);
+    }
 
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\Rangement',
-		));
-	}
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\Rangement::class,
+        ]);
+    }
 
-	public function getName()
-	{
-		return 'rangement';
-	}
+    public function getName(): string
+    {
+        return 'rangement';
+    }
 }

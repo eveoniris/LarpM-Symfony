@@ -12,42 +12,51 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\PersonnageSecondaire
+ * App\Entity\PersonnageSecondaire.
  *
  * @Table(name="personnage_secondaire", indexes={@Index(name="fk_personnage_secondaire_classe1_idx", columns={"classe_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePersonnageSecondaire", "extended":"PersonnageSecondaire"})
  */
 class BasePersonnageSecondaire
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
      * @OneToMany(targetEntity="Participant", mappedBy="personnageSecondaire")
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_secondaire_id", nullable=false)
      */
     protected $participants;
 
     /**
      * @OneToMany(targetEntity="PersonnageSecondaireCompetence", mappedBy="personnageSecondaire", cascade={"persist"})
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_secondaire_id", nullable=false)
      */
     protected $personnageSecondaireCompetences;
 
     /**
      * @OneToMany(targetEntity="User", mappedBy="personnageSecondaire", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="id", referencedColumnName="personnage_secondaire_id", nullable=false)
      */
     protected $Users;
 
     /**
      * @ManyToOne(targetEntity="Classe", inversedBy="personnageSecondaires")
+     *
      * @JoinColumn(name="classe_id", referencedColumnName="id", nullable=false)
      */
     protected $classe;
@@ -62,10 +71,11 @@ class BasePersonnageSecondaire
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\PersonnageSecondaire
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -75,7 +85,7 @@ class BasePersonnageSecondaire
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -85,7 +95,6 @@ class BasePersonnageSecondaire
     /**
      * Add Participant entity to collection (one to many).
      *
-     * @param \App\Entity\Participant $participant
      * @return \App\Entity\PersonnageSecondaire
      */
     public function addParticipant(Participant $participant)
@@ -98,7 +107,6 @@ class BasePersonnageSecondaire
     /**
      * Remove Participant entity from collection (one to many).
      *
-     * @param \App\Entity\Participant $participant
      * @return \App\Entity\PersonnageSecondaire
      */
     public function removeParticipant(Participant $participant)
@@ -121,7 +129,6 @@ class BasePersonnageSecondaire
     /**
      * Add PersonnageSecondaireCompetence entity to collection (one to many).
      *
-     * @param \App\Entity\PersonnageSecondaireCompetence $personnageSecondaireCompetence
      * @return \App\Entity\PersonnageSecondaire
      */
     public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence)
@@ -134,7 +141,6 @@ class BasePersonnageSecondaire
     /**
      * Remove PersonnageSecondaireCompetence entity from collection (one to many).
      *
-     * @param \App\Entity\PersonnageSecondaireCompetence $personnageSecondaireCompetence
      * @return \App\Entity\PersonnageSecondaire
      */
     public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence)
@@ -157,7 +163,6 @@ class BasePersonnageSecondaire
     /**
      * Add User entity to collection (one to many).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\PersonnageSecondaire
      */
     public function addUser(User $User)
@@ -170,7 +175,6 @@ class BasePersonnageSecondaire
     /**
      * Remove User entity from collection (one to many).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\PersonnageSecondaire
      */
     public function removeUser(User $User)
@@ -193,7 +197,6 @@ class BasePersonnageSecondaire
     /**
      * Set Classe entity (many to one).
      *
-     * @param \App\Entity\Classe $classe
      * @return \App\Entity\PersonnageSecondaire
      */
     public function setClasse(Classe $classe = null)
@@ -215,6 +218,6 @@ class BasePersonnageSecondaire
 
     public function __sleep()
     {
-        return array('id', 'classe_id');
+        return ['id', 'classe_id'];
     }
 }

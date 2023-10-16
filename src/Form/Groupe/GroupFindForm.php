@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,50 +25,44 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\GroupFindForm
+ * LarpManager\Form\GroupFindForm.
  *
  * @author kevin
- *
  */
 class GroupFindForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('search','text', array(
-						'required' => true,
-						'attr' => array(
-							'placeholder' => 'Votre recherche',
-						)
-				))
-				->add('type', 'choice', array(
-						'required' => true,
-						'choices' => array(
-							'numero' => 'Numéro',
-							'nom' => 'Nom du groupe',
-						)
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concernée
-	 *
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'groupFind';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('search', 'text', [
+            'required' => true,
+            'attr' => [
+                'placeholder' => 'Votre recherche',
+            ],
+        ])
+            ->add('type', 'choice', [
+                'required' => true,
+                'choices' => [
+                    'numero' => 'Numéro',
+                    'nom' => 'Nom du groupe',
+                ],
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concernée.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'groupFind';
+    }
 }

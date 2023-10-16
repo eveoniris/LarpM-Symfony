@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\ReligionDescription
+ * App\Entity\ReligionDescription.
  *
  * @Table(name="religion_description", indexes={@Index(name="fk_religion_description_religion1_idx", columns={"religion_id"}), @Index(name="fk_religion_description_religion_level1_idx", columns={"religion_level_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseReligionDescription", "extended":"ReligionDescription"})
  */
 class BaseReligionDescription
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -33,12 +38,14 @@ class BaseReligionDescription
 
     /**
      * @ManyToOne(targetEntity="Religion", inversedBy="religionDescriptions")
+     *
      * @JoinColumn(name="religion_id", referencedColumnName="id", nullable=false)
      */
     protected $religion;
 
     /**
      * @ManyToOne(targetEntity="ReligionLevel", inversedBy="religionDescriptions")
+     *
      * @JoinColumn(name="religion_level_id", referencedColumnName="id", nullable=false)
      */
     protected $religionLevel;
@@ -50,7 +57,8 @@ class BaseReligionDescription
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\ReligionDescription
      */
     public function setId($id)
@@ -63,7 +71,7 @@ class BaseReligionDescription
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -74,6 +82,7 @@ class BaseReligionDescription
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\ReligionDescription
      */
     public function setDescription($description)
@@ -96,7 +105,6 @@ class BaseReligionDescription
     /**
      * Set Religion entity (many to one).
      *
-     * @param \App\Entity\Religion $religion
      * @return \App\Entity\ReligionDescription
      */
     public function setReligion(Religion $religion = null)
@@ -119,7 +127,6 @@ class BaseReligionDescription
     /**
      * Set ReligionLevel entity (many to one).
      *
-     * @param \App\Entity\ReligionLevel $religionLevel
      * @return \App\Entity\ReligionDescription
      */
     public function setReligionLevel(ReligionLevel $religionLevel = null)
@@ -141,6 +148,6 @@ class BaseReligionDescription
 
     public function __sleep()
     {
-        return array('id', 'description', 'religion_id', 'religion_level_id');
+        return ['id', 'description', 'religion_id', 'religion_level_id'];
     }
 }

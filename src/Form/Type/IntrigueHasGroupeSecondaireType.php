@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
@@ -25,32 +25,31 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\Type\IntrigueHasGroupeSecondaireType
+ * LarpManager\Form\Type\IntrigueHasGroupeSecondaireType.
  *
  * @author kevin
- *
  */
 class IntrigueHasGroupeSecondaireType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('secondaryGroup','entity', array(
-					'label' => 'Ajouter un groupe secondaire concerné par cette intrigue',
-					'required' => true,
-					'class' => 'App\Entity\SecondaryGroup',
-					'property' => 'label',
-				));
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('secondaryGroup', 'entity', [
+            'label' => 'Ajouter un groupe secondaire concerné par cette intrigue',
+            'required' => true,
+            'class' => \App\Entity\SecondaryGroup::class,
+            'property' => 'label',
+        ]);
+    }
 
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\IntrigueHasGroupeSecondaire',
-		));
-	}
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\IntrigueHasGroupeSecondaire::class,
+        ]);
+    }
 
-	public function getName()
-	{
-		return 'intrigueHasGroupeSecondaire';
-	}
+    public function getName(): string
+    {
+        return 'intrigueHasGroupeSecondaire';
+    }
 }

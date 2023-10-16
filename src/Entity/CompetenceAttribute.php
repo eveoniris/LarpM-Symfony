@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,33 +27,34 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseCompetenceAttribute;
-
 /**
- * App\Entity\CompetenceAttribute
+ * App\Entity\CompetenceAttribute.
  *
  * @Entity(repositoryClass="LarpManager\Repository\CompetenceAttributeRepository")
  */
-class CompetenceAttribute extends BaseCompetenceAttribute implements \ArrayAccess
+class CompetenceAttribute extends BaseCompetenceAttribute implements \ArrayAccess, \Stringable
 {
     /**
-     * Pour utilisation en tant que string
+     * Pour utilisation en tant que string.
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return "CompetenceAttribute";
+        return 'CompetenceAttribute';
     }
-    
-    public function offsetGet($offset)
-    {}
 
-    public function offsetExists($offset)
-    {}
+    public function offsetGet($offset): void
+    {
+    }
 
-    public function offsetUnset($offset)
-    {}
+    public function offsetExists($offset): void
+    {
+    }
 
-    public function offsetSet($offset, $value)
-    {}
+    public function offsetUnset($offset): void
+    {
+    }
 
+    public function offsetSet($offset, $value): void
+    {
+    }
 }

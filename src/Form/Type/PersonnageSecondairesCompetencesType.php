@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
@@ -25,32 +25,31 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\Type\PersonnageSecondairesCompetencesType
+ * LarpManager\Form\Type\PersonnageSecondairesCompetencesType.
  *
  * @author kevin
- *
  */
 class PersonnageSecondairesCompetencesType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('competence','entity', array(
-					'label' => false,
-					'required' => true,
-					'property' => 'label',
-					'class' => 'App\Entity\Competence',
-				));
-	}
-	
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\PersonnageSecondaireCompetence',
-		));
-	}
-	
-	public function getName()
-	{
-		return 'personnageSecondairesCompetences';
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('competence', 'entity', [
+            'label' => false,
+            'required' => true,
+            'property' => 'label',
+            'class' => \App\Entity\Competence::class,
+        ]);
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\PersonnageSecondaireCompetence::class,
+        ]);
+    }
+
+    public function getName(): string
+    {
+        return 'personnageSecondairesCompetences';
+    }
 }

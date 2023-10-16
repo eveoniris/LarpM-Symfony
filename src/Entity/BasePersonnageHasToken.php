@@ -10,30 +10,37 @@
 namespace App\Entity;
 
 /**
- * App\Entity\PersonnageHasToken
+ * App\Entity\PersonnageHasToken.
  *
  * @Table(name="personnage_has_token", indexes={@Index(name="fk_personnage_has_token_token1_idx", columns={"token_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePersonnageHasToken", "extended":"PersonnageHasToken"})
  */
 class BasePersonnageHasToken
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="personnageHasTokens")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
 
     /**
      * @ManyToOne(targetEntity="Token", inversedBy="personnageHasTokens")
+     *
      * @JoinColumn(name="token_id", referencedColumnName="id", nullable=false)
      */
     protected $token;
@@ -45,7 +52,8 @@ class BasePersonnageHasToken
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\PersonnageHasToken
      */
     public function setId($id)
@@ -58,7 +66,7 @@ class BasePersonnageHasToken
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -68,7 +76,6 @@ class BasePersonnageHasToken
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\PersonnageHasToken
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -91,7 +98,6 @@ class BasePersonnageHasToken
     /**
      * Set Token entity (many to one).
      *
-     * @param \App\Entity\Token $token
      * @return \App\Entity\PersonnageHasToken
      */
     public function setToken(Token $token = null)
@@ -113,6 +119,6 @@ class BasePersonnageHasToken
 
     public function __sleep()
     {
-        return array('id', 'personnage_id', 'token_id');
+        return ['id', 'personnage_id', 'token_id'];
     }
 }

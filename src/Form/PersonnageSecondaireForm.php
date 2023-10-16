@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,57 +20,53 @@
 
 namespace App\Form;
 
+use LarpManager\Form\Type\PersonnageSecondairesCompetencesType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-use LarpManager\Form\Type\PersonnageSecondairesCompetencesType;
-
 /**
- * LarpManager\Form\PersonnageSecondaireForm
+ * LarpManager\Form\PersonnageSecondaireForm.
  *
  * @author kevin
- *
  */
 class PersonnageSecondaireForm extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add(
-					'classe','entity', array(
-						'required' => true,
-						'label' => 'Choisissez la classe',
-						'class' => 'App\Entity\Classe',
-						'property' => 'label',
-				))
-				->add(
-					'personnageSecondaireCompetences', 'collection', array(
-						'label' => "Competences",
-						'required' => false,
-						'allow_add' => true,
-						'allow_delete' => true,
-						'by_reference' => false,
-						'type' => new PersonnageSecondairesCompetencesType()					
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\PersonnageSecondaire',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'personnageSecondaire';
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add(
+            'classe', 'entity', [
+            'required' => true,
+            'label' => 'Choisissez la classe',
+            'class' => \App\Entity\Classe::class,
+            'property' => 'label',
+        ])
+            ->add(
+                'personnageSecondaireCompetences', 'collection', [
+                'label' => 'Competences',
+                'required' => false,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'type' => new PersonnageSecondairesCompetencesType(),
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => \App\Entity\PersonnageSecondaire::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'personnageSecondaire';
+    }
 }

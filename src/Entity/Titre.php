@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,17 +27,15 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseTitre;
-
 /**
- * App\Entity\Titre
+ * App\Entity\Titre.
  *
  * @Entity(repositoryClass="LarpManager\Repository\TitreRepository")
  */
-class Titre extends BaseTitre
+class Titre extends BaseTitre implements \Stringable
 {
-	public function __toString()
-	{
-		return $this->getLabel();
-	}
+    public function __toString(): string
+    {
+        return $this->getLabel();
+    }
 }

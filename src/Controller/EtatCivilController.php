@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,29 +20,24 @@
 
 namespace App\Controller;
 
+use App\Entity\EtatCivil;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 
-use App\Entity\EtatCivil;
-
 /**
- * LarpManager\Controllers\EtatCivilController
+ * LarpManager\Controllers\EtatCivilController.
  *
  * @author kevin
- *
  */
 class EtatCivilController
 {
-
-	/**
-	 * Affiche l'état civil de l'utilisateur
-	 * @param Application $app
-	 * @param Request $request
-	 */
-	public function detailAction(Application $app, Request $request, EtatCivil $etatCivil)
-	{
-		return $app['twig']->render('admin/etatCivil/detail.twig', array(
-				'etatCivil' => $etatCivil,
-		));
-	}
+    /**
+     * Affiche l'état civil de l'utilisateur.
+     */
+    public function detailAction(Application $app, Request $request, EtatCivil $etatCivil)
+    {
+        return $app['twig']->render('admin/etatCivil/detail.twig', [
+            'etatCivil' => $etatCivil,
+        ]);
+    }
 }

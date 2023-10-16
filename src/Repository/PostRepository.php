@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,22 +23,21 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Repository\PostRepository
- * 
+ * LarpManager\Repository\PostRepository.
+ *
  * @author kevin
  */
 class PostRepository extends EntityRepository
 {
-	/**
-	 * trouve tous les derniers posts classé par date de publication (en prennant en compte les réponses)
-	 * @return ArrayCollection $religionLevels
-	 */
-	public function findOrderByCreationDate()
-	{
-		$posts = $this->getEntityManager()
-				->createQuery('SELECT p FROM App\Entity\Post p ORDER BY p.creationDate DESC')
-				->getResult();
-		
-		return $posts;
-	}
+    /**
+     * trouve tous les derniers posts classé par date de publication (en prennant en compte les réponses).
+     *
+     * @return ArrayCollection $religionLevels
+     */
+    public function findOrderByCreationDate()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT p FROM App\Entity\Post p ORDER BY p.creationDate DESC')
+            ->getResult();
+    }
 }

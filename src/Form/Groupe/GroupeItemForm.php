@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,61 +20,51 @@
 
 namespace App\Form\Groupe;
 
+use LarpManager\Repository\ItemRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Doctrine\ORM\EntityRepository;
-
-use LarpManager\Repository\ItemRepository;
-
 
 /**
- * LarpManager\Form\GroupeItemForm
+ * LarpManager\Form\GroupeItemForm.
  *
  * @author kevin
- *
  */
 class GroupeItemForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('items','entity', array(
-					'label' => "Choisissez les objets possédé par le groupe en début de jeu",
-					'multiple' => true,
-					'expanded' => true,
-					'required' => false,
-					'class' => 'App\Entity\Item',
-					'property' => 'identitereverse',
-					'query_builder' => function(ItemRepository $er) {
-						return $er->createQueryBuilder('i')->orderBy('i.label', 'ASC');
-					},
-				));
-	}
-		
-	/**
-	 * Définition de l'entité conercné
-	 *
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\Groupe',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire 
-	 * @return string
-	 */
-	public function getName()
-	{
-		return 'groupeItem';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('items', 'entity', [
+            'label' => 'Choisissez les objets possédé par le groupe en début de jeu',
+            'multiple' => true,
+            'expanded' => true,
+            'required' => false,
+            'class' => \App\Entity\Item::class,
+            'property' => 'identitereverse',
+            'query_builder' => static function (ItemRepository $er) {
+                return $er->createQueryBuilder('i')->orderBy('i.label', 'ASC');
+            },
+        ]);
+    }
+
+    /**
+     * Définition de l'entité conercné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\Groupe::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'groupeItem';
+    }
 }

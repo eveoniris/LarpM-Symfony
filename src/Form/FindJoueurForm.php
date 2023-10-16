@@ -7,48 +7,42 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\FindJoueurForm
+ * LarpManager\Form\FindJoueurForm.
  *
  * @author kevin
- *
  */
 class FindJoueurForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('search','text', array(
-						'required' => true,
-				))
-				->add('type', 'choice', array(
-						'required' => true,
-						'choices' => array(
-							'lastName' => 'Nom du joueur',
-							'firstName' => 'Prénom du joueur',
-							'numero' => 'Numéro',
-						)
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concernée
-	 *
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'findJoueur';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('search', 'text', [
+            'required' => true,
+        ])
+            ->add('type', 'choice', [
+                'required' => true,
+                'choices' => [
+                    'lastName' => 'Nom du joueur',
+                    'firstName' => 'Prénom du joueur',
+                    'numero' => 'Numéro',
+                ],
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concernée.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'findJoueur';
+    }
 }

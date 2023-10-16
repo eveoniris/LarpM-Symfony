@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,26 +20,25 @@
 
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use App\Entity\Participant;
+use Doctrine\ORM\EntityRepository;
 
 /**
- * LarpManager\Repository\QuestionRepository
- * 
+ * LarpManager\Repository\QuestionRepository.
+ *
  * @author kevin
  */
 class QuestionRepository extends EntityRepository
 {
-	/**
-	 * Trouve toutes les questions auquel le participant n'a pas répondu
-	 * @return ArrayCollection $classes
-	 */
-	public function findByParticipant($participant)
-	{
-		$questions = $this->getEntityManager()
-			->createQuery('SELECT q FROM App\Entity\Question q ORDER BY q.date DESC')
-			->getResult();
-	
-		return $questions;
-	}
+    /**
+     * Trouve toutes les questions auquel le participant n'a pas répondu.
+     *
+     * @return ArrayCollection $classes
+     */
+    public function findByParticipant($participant)
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT q FROM App\Entity\Question q ORDER BY q.date DESC')
+            ->getResult();
+    }
 }

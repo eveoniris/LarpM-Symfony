@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,46 +25,38 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\GroupeGn\GroupeGnPlaceAvailableForm
+ * LarpManager\Form\GroupeGn\GroupeGnPlaceAvailableForm.
  *
  * @author kevin
- *
  */
 class GroupeGnPlaceAvailableForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('placeAvailable','integer', array(
-					'label' => "Indiquez içi le nombre de personnes recherché pour compléter votre groupe",
-					'required' => true,	
-				));
-	}
-	
-	/**
-	 * Définition de l'entité conercné
-	 *
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\GroupeGn',
-		));
-	}
-	
-		
-	/**
-	 * Nom du formulaire 
-	 * @return string
-	 */
-	public function getName()
-	{
-		return 'groupeGnPlaceAvailable';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('placeAvailable', 'integer', [
+            'label' => 'Indiquez içi le nombre de personnes recherché pour compléter votre groupe',
+            'required' => true,
+        ]);
+    }
+
+    /**
+     * Définition de l'entité conercné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\GroupeGn::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'groupeGnPlaceAvailable';
+    }
 }

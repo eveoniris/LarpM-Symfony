@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Document
+ * App\Entity\Document.
  *
  * @Table(name="document", indexes={@Index(name="fk_document_User1_idx", columns={"User_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseDocument", "extended":"Document"})
  */
 class BaseDocument
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -80,12 +85,14 @@ class BaseDocument
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="documents")
+     *
      * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
      */
     protected $User;
 
     /**
      * @ManyToMany(targetEntity="Langue", inversedBy="documents")
+     *
      * @JoinTable(name="document_has_langue",
      *     joinColumns={@JoinColumn(name="document_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="langue_id", referencedColumnName="id", nullable=false)}
@@ -119,10 +126,11 @@ class BaseDocument
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Document
      */
-    public function setId($id)
+    public function setId($id): static
     {
         $this->id = $id;
 
@@ -132,7 +140,7 @@ class BaseDocument
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -143,6 +151,7 @@ class BaseDocument
      * Set the value of code.
      *
      * @param string $code
+     *
      * @return \App\Entity\Document
      */
     public function setCode($code)
@@ -166,6 +175,7 @@ class BaseDocument
      * Set the value of titre.
      *
      * @param string $titre
+     *
      * @return \App\Entity\Document
      */
     public function setTitre($titre)
@@ -189,6 +199,7 @@ class BaseDocument
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Document
      */
     public function setDescription($description)
@@ -212,6 +223,7 @@ class BaseDocument
      * Set the value of documentUrl.
      *
      * @param string $documentUrl
+     *
      * @return \App\Entity\Document
      */
     public function setDocumentUrl($documentUrl)
@@ -234,7 +246,8 @@ class BaseDocument
     /**
      * Set the value of cryptage.
      *
-     * @param boolean $cryptage
+     * @param bool $cryptage
+     *
      * @return \App\Entity\Document
      */
     public function setCryptage($cryptage)
@@ -247,7 +260,7 @@ class BaseDocument
     /**
      * Get the value of cryptage.
      *
-     * @return boolean
+     * @return bool
      */
     public function getCryptage()
     {
@@ -258,6 +271,7 @@ class BaseDocument
      * Set the value of statut.
      *
      * @param string $statut
+     *
      * @return \App\Entity\Document
      */
     public function setStatut($statut)
@@ -281,6 +295,7 @@ class BaseDocument
      * Set the value of auteur.
      *
      * @param string $auteur
+     *
      * @return \App\Entity\Document
      */
     public function setAuteur($auteur)
@@ -304,6 +319,7 @@ class BaseDocument
      * Set the value of creation_date.
      *
      * @param \DateTime $creation_date
+     *
      * @return \App\Entity\Document
      */
     public function setCreationDate($creation_date)
@@ -327,6 +343,7 @@ class BaseDocument
      * Set the value of update_date.
      *
      * @param \DateTime $update_date
+     *
      * @return \App\Entity\Document
      */
     public function setUpdateDate($update_date)
@@ -349,7 +366,8 @@ class BaseDocument
     /**
      * Set the value of impression.
      *
-     * @param boolean $impression
+     * @param bool $impression
+     *
      * @return \App\Entity\Document
      */
     public function setImpression($impression)
@@ -362,7 +380,7 @@ class BaseDocument
     /**
      * Get the value of impression.
      *
-     * @return boolean
+     * @return bool
      */
     public function getImpression()
     {
@@ -372,7 +390,6 @@ class BaseDocument
     /**
      * Set User entity (many to one).
      *
-     * @param \App\Entity\User $User
      * @return \App\Entity\Document
      */
     public function setUser(User $User = null)
@@ -395,7 +412,6 @@ class BaseDocument
     /**
      * Add Langue entity to collection.
      *
-     * @param \App\Entity\Langue $langue
      * @return \App\Entity\Document
      */
     public function addLangue(Langue $langue)
@@ -409,7 +425,6 @@ class BaseDocument
     /**
      * Remove Langue entity from collection.
      *
-     * @param \App\Entity\Langue $langue
      * @return \App\Entity\Document
      */
     public function removeLangue(Langue $langue)
@@ -433,7 +448,6 @@ class BaseDocument
     /**
      * Add Groupe entity to collection.
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\Document
      */
     public function addGroupe(Groupe $groupe)
@@ -446,7 +460,6 @@ class BaseDocument
     /**
      * Remove Groupe entity from collection.
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\Document
      */
     public function removeGroupe(Groupe $groupe)
@@ -469,7 +482,6 @@ class BaseDocument
     /**
      * Add Lieu entity to collection.
      *
-     * @param \App\Entity\Lieu $lieu
      * @return \App\Entity\Document
      */
     public function addLieu(Lieu $lieu)
@@ -482,7 +494,6 @@ class BaseDocument
     /**
      * Remove Lieu entity from collection.
      *
-     * @param \App\Entity\Lieu $lieu
      * @return \App\Entity\Document
      */
     public function removeLieu(Lieu $lieu)
@@ -505,7 +516,6 @@ class BaseDocument
     /**
      * Add Personnage entity to collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Document
      */
     public function addPersonnage(Personnage $personnage)
@@ -518,7 +528,6 @@ class BaseDocument
     /**
      * Remove Personnage entity from collection.
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Document
      */
     public function removePersonnage(Personnage $personnage)
@@ -540,6 +549,6 @@ class BaseDocument
 
     public function __sleep()
     {
-        return array('id', 'code', 'titre', 'description', 'documentUrl', 'cryptage', 'statut', 'auteur', 'User_id', 'creation_date', 'update_date', 'impression');
+        return ['id', 'code', 'titre', 'description', 'documentUrl', 'cryptage', 'statut', 'auteur', 'User_id', 'creation_date', 'update_date', 'impression'];
     }
 }

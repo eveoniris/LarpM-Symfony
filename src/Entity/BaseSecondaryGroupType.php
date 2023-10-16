@@ -12,18 +12,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\SecondaryGroupType
+ * App\Entity\SecondaryGroupType.
  *
  * @Table(name="secondary_group_type")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseSecondaryGroupType", "extended":"SecondaryGroupType"})
  */
 class BaseSecondaryGroupType
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -40,6 +45,7 @@ class BaseSecondaryGroupType
 
     /**
      * @OneToMany(targetEntity="SecondaryGroup", mappedBy="secondaryGroupType")
+     *
      * @JoinColumn(name="id", referencedColumnName="secondary_group_type_id", nullable=false)
      */
     protected $secondaryGroups;
@@ -52,7 +58,8 @@ class BaseSecondaryGroupType
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\SecondaryGroupType
      */
     public function setId($id)
@@ -65,7 +72,7 @@ class BaseSecondaryGroupType
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -76,6 +83,7 @@ class BaseSecondaryGroupType
      * Set the value of label.
      *
      * @param string $label
+     *
      * @return \App\Entity\SecondaryGroupType
      */
     public function setLabel($label)
@@ -99,6 +107,7 @@ class BaseSecondaryGroupType
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\SecondaryGroupType
      */
     public function setDescription($description)
@@ -121,7 +130,6 @@ class BaseSecondaryGroupType
     /**
      * Add SecondaryGroup entity to collection (one to many).
      *
-     * @param \App\Entity\SecondaryGroup $secondaryGroup
      * @return \App\Entity\SecondaryGroupType
      */
     public function addSecondaryGroup(SecondaryGroup $secondaryGroup)
@@ -134,7 +142,6 @@ class BaseSecondaryGroupType
     /**
      * Remove SecondaryGroup entity from collection (one to many).
      *
-     * @param \App\Entity\SecondaryGroup $secondaryGroup
      * @return \App\Entity\SecondaryGroupType
      */
     public function removeSecondaryGroup(SecondaryGroup $secondaryGroup)
@@ -156,6 +163,6 @@ class BaseSecondaryGroupType
 
     public function __sleep()
     {
-        return array('id', 'label', 'description');
+        return ['id', 'label', 'description'];
     }
 }

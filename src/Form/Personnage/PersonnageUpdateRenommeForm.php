@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,49 +25,42 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\PersonnageUpdateRenommeForm
+ * LarpManager\Form\PersonnageUpdateRenommeForm.
  *
  * @author kevin
- *
  */
 class PersonnageUpdateRenommeForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * Seul les éléments ne dépendant pas des points d'expérience sont modifiables
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('renomme','integer', array(
-					'required' => true,
-					'label' => 'Combien de points de Renommée voulez-vous ajouter ? (indiquez une valeur négative pour retirer des points)',
-					'mapped' => false
-				))
-				->add('explication','textarea', array(
-					'required' => true,
-					'mapped' => false,
-					'label' => 'Donnez une explication',
-				));
+    /**
+     * Construction du formulaire
+     * Seul les éléments ne dépendant pas des points d'expérience sont modifiables.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('renomme', 'integer', [
+            'required' => true,
+            'label' => 'Combien de points de Renommée voulez-vous ajouter ? (indiquez une valeur négative pour retirer des points)',
+            'mapped' => false,
+        ])
+            ->add('explication', 'textarea', [
+                'required' => true,
+                'mapped' => false,
+                'label' => 'Donnez une explication',
+            ]);
+    }
 
-	}
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+    }
 
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-	}
-
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'personnageUpdateRenomme';
-	}
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'personnageUpdateRenomme';
+    }
 }

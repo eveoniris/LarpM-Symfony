@@ -7,45 +7,39 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\PersonnageSecondaireChoiceForm
- * 
- * @author kevin
+ * LarpManager\Form\PersonnageSecondaireChoiceForm.
  *
+ * @author kevin
  */
 class PersonnageSecondaireChoiceForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('personnageSecondaire','entity', array(
-						'label' => 'Archétype',
-						'required' => true,
-						'class' => 'App\Entity\PersonnageSecondaire',
-						'property' => 'label'));
-	}
-	
-	/**
-	 * Définition de la classe d'entité concernée
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Participant',
-		));
-	}
-	
-	/**
-	 * Nom du formlaire
-	 */
-	public function getName()
-	{
-		return 'personnageSecondaireChoice';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('personnageSecondaire', 'entity', [
+            'label' => 'Archétype',
+            'required' => true,
+            'class' => \App\Entity\PersonnageSecondaire::class,
+            'property' => 'label']);
+    }
+
+    /**
+     * Définition de la classe d'entité concernée.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Participant::class,
+        ]);
+    }
+
+    /**
+     * Nom du formlaire.
+     */
+    public function getName(): string
+    {
+        return 'personnageSecondaireChoice';
+    }
 }

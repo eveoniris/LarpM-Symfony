@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,77 +25,70 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\SortForm
+ * LarpManager\Form\SortForm.
  *
  * @author kevin
- *
  */
 class SortForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text', array(
-					'required' => true,
-					'label' => 'Label',
-				))
-				->add('niveau','choice', array(
-						'required' => true,
-						'choices' => array("1" => 1,"2" => 2, "3" => 3, "4" => 4),
-						'label' => 'Niveau',
-				))
-				->add('domaine','entity', array(
-						'required' => true,
-						'label' => 'Domaine',
-						'class' => 'App\Entity\Domaine',
-						'property' => 'label',
-				))
-				->add('document','file', array(
-						'label' => 'Téléversez un document',
-						'required' => true,
-						'mapped' => false
-				))
-				->add('description','textarea', array(
-					'required' => false,
-					'label' => 'Description',
-					'attr' => array(
-						'class' => 'tinymce',
-						'rows' => 9
-					),
-				))
-				->add('secret', 'choice', array(
-					'required' => true,
-					'choices' => array(
-							false => 'Sort visible',
-							true => 'Sort secret',
-					),
-					'label' => 'Secret'
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\Sort',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'sort';
-	}
-	
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text', [
+            'required' => true,
+            'label' => 'Label',
+        ])
+            ->add('niveau', 'choice', [
+                'required' => true,
+                'choices' => ['1' => 1, '2' => 2, '3' => 3, '4' => 4],
+                'label' => 'Niveau',
+            ])
+            ->add('domaine', 'entity', [
+                'required' => true,
+                'label' => 'Domaine',
+                'class' => \App\Entity\Domaine::class,
+                'property' => 'label',
+            ])
+            ->add('document', 'file', [
+                'label' => 'Téléversez un document',
+                'required' => true,
+                'mapped' => false,
+            ])
+            ->add('description', 'textarea', [
+                'required' => false,
+                'label' => 'Description',
+                'attr' => [
+                    'class' => 'tinymce',
+                    'rows' => 9,
+                ],
+            ])
+            ->add('secret', 'choice', [
+                'required' => true,
+                'choices' => [
+                    false => 'Sort visible',
+                    true => 'Sort secret',
+                ],
+                'label' => 'Secret',
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => \App\Entity\Sort::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'sort';
+    }
 }

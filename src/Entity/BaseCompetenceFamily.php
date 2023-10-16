@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,9 +15,8 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-
 /**
- * App\Entity\CompetenceFamily
+ * App\Entity\CompetenceFamily.
  */
 #[Table(name: 'competence_family')]
 #[InheritanceType('SINGLE_TABLE')]
@@ -59,9 +57,6 @@ class BaseCompetenceFamily
 
     /**
      * Set the value of id.
-     *
-     * @param integer $id
-     * @return CompetenceFamily
      */
     public function setId(int $id): CompetenceFamily
     {
@@ -72,8 +67,6 @@ class BaseCompetenceFamily
 
     /**
      * Get the value of id.
-     *
-     * @return integer
      */
     public function getId(): int
     {
@@ -82,9 +75,6 @@ class BaseCompetenceFamily
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     * @return CompetenceFamily
      */
     public function setLabel(string $label): CompetenceFamily
     {
@@ -95,8 +85,6 @@ class BaseCompetenceFamily
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -105,9 +93,6 @@ class BaseCompetenceFamily
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     * @return CompetenceFamily
      */
     public function setDescription(string $description): CompetenceFamily
     {
@@ -118,8 +103,6 @@ class BaseCompetenceFamily
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
     public function getDescription(): string
     {
@@ -128,9 +111,6 @@ class BaseCompetenceFamily
 
     /**
      * Add Competence entity to collection (one to many).
-     *
-     * @param Competence $competence
-     * @return CompetenceFamily
      */
     public function addCompetence(Competence $competence): CompetenceFamily
     {
@@ -141,9 +121,6 @@ class BaseCompetenceFamily
 
     /**
      * Remove Competence entity from collection (one to many).
-     *
-     * @param Competence $competence
-     * @return CompetenceFamily
      */
     public function removeCompetence(Competence $competence): CompetenceFamily
     {
@@ -154,19 +131,14 @@ class BaseCompetenceFamily
 
     /**
      * Get Competence entity collection (one to many).
-     *
-     * @return Collection
      */
-    public function getCompetences()
+    public function getCompetences(): Collection
     {
         return $this->competences;
     }
 
     /**
      * Add Technologie entity to collection (one to many).
-     *
-     * @param Technologie $technologie
-     * @return CompetenceFamily
      */
     public function addTechnologie(Technologie $technologie): CompetenceFamily
     {
@@ -177,9 +149,6 @@ class BaseCompetenceFamily
 
     /**
      * Remove Technologie entity from collection (one to many).
-     *
-     * @param Technologie $technologie
-     * @return CompetenceFamily
      */
     public function removeTechnologie(Technologie $technologie): CompetenceFamily
     {
@@ -190,16 +159,14 @@ class BaseCompetenceFamily
 
     /**
      * Get Technologie entity collection (one to many).
-     *
-     * @return Collection
      */
-    public function getTechnologies()
+    public function getTechnologies(): Collection
     {
         return $this->technologies;
     }
 
     public function __sleep()
     {
-        return array('id', 'label', 'description');
+        return ['id', 'label', 'description'];
     }
 }

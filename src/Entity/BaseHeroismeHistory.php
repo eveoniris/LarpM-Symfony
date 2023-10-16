@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\HeroismeHistory
+ * App\Entity\HeroismeHistory.
  *
  * @Table(name="heroisme_history", indexes={@Index(name="fk_heroisme_history_personnage1_idx", columns={"personnage_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseHeroismeHistory", "extended":"HeroismeHistory"})
  */
 class BaseHeroismeHistory
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -43,6 +48,7 @@ class BaseHeroismeHistory
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="heroismeHistories")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
@@ -54,7 +60,8 @@ class BaseHeroismeHistory
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\HeroismeHistory
      */
     public function setId($id)
@@ -67,7 +74,7 @@ class BaseHeroismeHistory
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -78,6 +85,7 @@ class BaseHeroismeHistory
      * Set the value of date.
      *
      * @param \DateTime $date
+     *
      * @return \App\Entity\HeroismeHistory
      */
     public function setDate($date)
@@ -100,7 +108,8 @@ class BaseHeroismeHistory
     /**
      * Set the value of heroisme.
      *
-     * @param integer $heroisme
+     * @param int $heroisme
+     *
      * @return \App\Entity\HeroismeHistory
      */
     public function setHeroisme($heroisme)
@@ -113,7 +122,7 @@ class BaseHeroismeHistory
     /**
      * Get the value of heroisme.
      *
-     * @return integer
+     * @return int
      */
     public function getHeroisme()
     {
@@ -124,6 +133,7 @@ class BaseHeroismeHistory
      * Set the value of explication.
      *
      * @param string $explication
+     *
      * @return \App\Entity\HeroismeHistory
      */
     public function setExplication($explication)
@@ -146,7 +156,6 @@ class BaseHeroismeHistory
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\HeroismeHistory
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -168,6 +177,6 @@ class BaseHeroismeHistory
 
     public function __sleep()
     {
-        return array('id', 'date', 'heroisme', 'explication', 'personnage_id');
+        return ['id', 'date', 'heroisme', 'explication', 'personnage_id'];
     }
 }

@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,40 +17,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Form\Type;
 
+use LarpManager\Form\Type\ObjectifType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use LarpManager\Form\Type\ObjectifType;
-
 /**
- * LarpManager\Form\Type\IntrigueHasObjectifType
+ * LarpManager\Form\Type\IntrigueHasObjectifType.
  *
  * @author kevin
- *
  */
 class IntrigueHasObjectifType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('objectif',ObjectifType::class, array(
-					'label' => 'Ajouter un objectif',
-					'required' => true,
-				));
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('objectif', ObjectifType::class, [
+            'label' => 'Ajouter un objectif',
+            'required' => true,
+        ]);
+    }
 
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\IntrigueHasObjectif',
-		));
-	}
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\'.\App\Entity\IntrigueHasObjectif::class,
+        ]);
+    }
 
-	public function getName()
-	{
-		return 'intrigueHasObjectif';
-	}
+    public function getName(): string
+    {
+        return 'intrigueHasObjectif';
+    }
 }

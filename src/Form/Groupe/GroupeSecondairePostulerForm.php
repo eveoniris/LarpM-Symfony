@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,45 +25,39 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\GroupeSecondairePostulerForm
+ * LarpManager\Form\GroupeSecondairePostulerForm.
  *
  * @author kevin
- *
  */
 class GroupeSecondairePostulerForm extends AbstractType
 {
-	/**
-	 * Contruction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('explanation','textarea', array(
-				'label' => "Explication (obligatoire)",
-				'required' => true,
-				'attr' => array(
-						'rows' => 9,
-						'class' => 'tinymce',
-						'help' => 'Soyez convaincant, votre explication sera transmise au chef de groupe qui validera (ou pas) votre demande.'),
-		));
-	}
+    /**
+     * Contruction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('explanation', 'textarea', [
+            'label' => 'Explication (obligatoire)',
+            'required' => true,
+            'attr' => [
+                'rows' => 9,
+                'class' => 'tinymce',
+                'help' => 'Soyez convaincant, votre explication sera transmise au chef de groupe qui validera (ou pas) votre demande.'],
+        ]);
+    }
 
-	/**
-	 * Définition de l'entité conercné
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-	}
+    /**
+     * Définition de l'entité conercné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+    }
 
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'secondaryGroupApply';
-	}
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'secondaryGroupApply';
+    }
 }

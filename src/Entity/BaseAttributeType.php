@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,15 +17,18 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseAttributeType', 'extended' => 'AttributeType'])]
 class BaseAttributeType
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'label', type: 'string', length: 45)]
+    #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $label = '';
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\CompetenceAttribute>|\App\Entity\CompetenceAttribute[]
+     */
     #[OneToMany(mappedBy: 'attributeType', targetEntity: CompetenceAttribute::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'attribute_type_id', nullable: 'false')]
-    protected $competenceAttributes;
+    protected \Doctrine\Common\Collections\ArrayCollection|\Doctrine\Common\Collections\Collection $competenceAttributes;
 
     public function __construct()
     {

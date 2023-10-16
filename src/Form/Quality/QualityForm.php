@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,63 +20,56 @@
 
 namespace App\Form\Quality;
 
+use LarpManager\Form\Type\QualityValeurType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use LarpManager\Form\Type\QualityValeurType;
-
 /**
- * LarpManager\Form\Quality\QualityForm
+ * LarpManager\Form\Quality\QualityForm.
  *
  * @author kevin
- *
  */
 class QualityForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 *
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('label','text', array(
-					'label' => 'Label',
-					'required' => true,
-				))
-				->add('numero','integer', array(
-					'required' => true,
-					'label' => 'Numéro',					
-				))
-				->add('qualityValeurs', 'collection', array(
-					'label' => "Valeur",
-					'required' => true,
-					'allow_add' => true,
-					'allow_delete' => true,
-					'by_reference' => false,
-					'type' => new QualityValeurType()
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\Quality',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'quality';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('label', 'text', [
+            'label' => 'Label',
+            'required' => true,
+        ])
+            ->add('numero', 'integer', [
+                'required' => true,
+                'label' => 'Numéro',
+            ])
+            ->add('qualityValeurs', 'collection', [
+                'label' => 'Valeur',
+                'required' => true,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'type' => new QualityValeurType(),
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\Quality::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'quality';
+    }
 }

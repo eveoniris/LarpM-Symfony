@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,56 +25,49 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\PersonnageBackgroundForm
+ * LarpManager\Form\PersonnageBackgroundForm.
  *
  * @author kevin
- *
  */
 class PersonnageBackgroundForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('text','textarea', array(
-					'required' => false,
-					'label' => 'Background',
-					'attr' => array(
-							'class' => 'tinymce',
-							'rows' => 9),
-				))
-				->add('gn', 'entity', array(
-						'required' => true,
-						'label' => 'GN',
-						'class' => 'App\Entity\Gn',
-						'property' => 'label',
-						'placeholder' => 'Choisissez le GN auquel est lié ce background',
-						'empty_data'  => null
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 *
-	 * @param OptionsResolver $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => 'App\Entity\PersonnageBackground',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'personnageBackground';
-	}
-	
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('text', 'textarea', [
+            'required' => false,
+            'label' => 'Background',
+            'attr' => [
+                'class' => 'tinymce',
+                'rows' => 9],
+        ])
+            ->add('gn', 'entity', [
+                'required' => true,
+                'label' => 'GN',
+                'class' => \App\Entity\Gn::class,
+                'property' => 'label',
+                'placeholder' => 'Choisissez le GN auquel est lié ce background',
+                'empty_data' => null,
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => \App\Entity\PersonnageBackground::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'personnageBackground';
+    }
 }

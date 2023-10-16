@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,101 +25,95 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\JoueurForm
+ * LarpManager\Form\JoueurForm.
  *
  * @author kevin
- *
  */
 class EtatCivilForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('nom','text', array(
-					'label' => 'Nom civil',
-					'required' => true,
-					'attr' => array(
-						'placeholder' => 'Nom civil'
-					)
-				))
-				->add('prenom','text', array(
-					'label' => 'Prénom civil',
-					'required' => true,
-					'attr' => array(
-						'placeholder' => 'Prénom civil'
-					)
-				))
-				->add('prenom_usage','text', array(
-					'label' => 'Nom d\'usage',
-					'required' => false,
-					'attr' => array(
-						'placeholder' => 'Nom d\'usage'
-					)
-				))
-				->add('date_naissance','date', array(
-					'label' => 'Date de naissance',
-					'required' => true,
-					'years' => range(1900,2020),
-				))
-				->add('telephone','text', array(
-					'label' => 'Numéro de téléphone',
-					'required' => true,
-					'attr' => array(
-						'placeholder' => 'Numéro de téléphone'
-					)
-				))
-				->add('probleme_medicaux','textarea', array(
-					'label' => 'Problèmes médicaux',
-					'required' => false,
-					'attr' => array(
-						'placeholder' => 'Indiquez içi les problèmes médicaux qui vous semblent pertinants'
-					)
-				))
-				->add('personne_a_prevenir','text', array(
-					'label' => 'Personne à prévenir en cas d\'urgence',
-					'required' => true,
-					'attr' => array(
-						'placeholder' => 'Nom et prénom'
-					)
-				))
-				->add('tel_pap','text', array(
-					'label' => 'Numéro de téléphone de la personne à prévenir',
-					'required' => true,
-					'attr' => array(
-						'placeholder' => 'Numéro de téléphone'
-					)
-				))
-				->add('fedegn','text', array(
-					'label' => 'Numéro de carte FédéGN',
-					'required' => false,
-					'attr' => array(
-						'placeholder' => 'votre numéro de carte GN ou GN+'
-					)
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concerné
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'class' => 'App\Entity\EtatCivil',
-		));
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName()
-	{
-		return 'etatCivil';
-	}
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('nom', 'text', [
+            'label' => 'Nom civil',
+            'required' => true,
+            'attr' => [
+                'placeholder' => 'Nom civil',
+            ],
+        ])
+            ->add('prenom', 'text', [
+                'label' => 'Prénom civil',
+                'required' => true,
+                'attr' => [
+                    'placeholder' => 'Prénom civil',
+                ],
+            ])
+            ->add('prenom_usage', 'text', [
+                'label' => "Nom d'usage",
+                'required' => false,
+                'attr' => [
+                    'placeholder' => "Nom d'usage",
+                ],
+            ])
+            ->add('date_naissance', 'date', [
+                'label' => 'Date de naissance',
+                'required' => true,
+                'years' => range(1900, 2020),
+            ])
+            ->add('telephone', 'text', [
+                'label' => 'Numéro de téléphone',
+                'required' => true,
+                'attr' => [
+                    'placeholder' => 'Numéro de téléphone',
+                ],
+            ])
+            ->add('probleme_medicaux', 'textarea', [
+                'label' => 'Problèmes médicaux',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'Indiquez içi les problèmes médicaux qui vous semblent pertinants',
+                ],
+            ])
+            ->add('personne_a_prevenir', 'text', [
+                'label' => 'Personne à prévenir en cas d\'urgence',
+                'required' => true,
+                'attr' => [
+                    'placeholder' => 'Nom et prénom',
+                ],
+            ])
+            ->add('tel_pap', 'text', [
+                'label' => 'Numéro de téléphone de la personne à prévenir',
+                'required' => true,
+                'attr' => [
+                    'placeholder' => 'Numéro de téléphone',
+                ],
+            ])
+            ->add('fedegn', 'text', [
+                'label' => 'Numéro de carte FédéGN',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'votre numéro de carte GN ou GN+',
+                ],
+            ]);
+    }
+
+    /**
+     * Définition de l'entité concerné.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'class' => \App\Entity\EtatCivil::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'etatCivil';
+    }
 }

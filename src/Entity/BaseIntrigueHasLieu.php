@@ -10,30 +10,37 @@
 namespace App\Entity;
 
 /**
- * App\Entity\IntrigueHasLieu
+ * App\Entity\IntrigueHasLieu.
  *
  * @Table(name="intrigue_has_lieu", indexes={@Index(name="fk_intrigue_has_lieu_intrigue1_idx", columns={"intrigue_id"}), @Index(name="fk_intrigue_has_lieu_lieu1_idx", columns={"lieu_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseIntrigueHasLieu", "extended":"IntrigueHasLieu"})
  */
 class BaseIntrigueHasLieu
 {
     /**
      * @Id
+     *
      * @Column(type="integer", options={"unsigned":true})
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
      * @ManyToOne(targetEntity="Intrigue", inversedBy="intrigueHasLieus", cascade={"persist", "remove"})
+     *
      * @JoinColumn(name="intrigue_id", referencedColumnName="id", nullable=false)
      */
     protected $intrigue;
 
     /**
      * @ManyToOne(targetEntity="Lieu", inversedBy="intrigueHasLieus")
+     *
      * @JoinColumn(name="lieu_id", referencedColumnName="id", nullable=false)
      */
     protected $lieu;
@@ -45,7 +52,8 @@ class BaseIntrigueHasLieu
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\IntrigueHasLieu
      */
     public function setId($id)
@@ -58,7 +66,7 @@ class BaseIntrigueHasLieu
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -68,7 +76,6 @@ class BaseIntrigueHasLieu
     /**
      * Set Intrigue entity (many to one).
      *
-     * @param \App\Entity\Intrigue $intrigue
      * @return \App\Entity\IntrigueHasLieu
      */
     public function setIntrigue(Intrigue $intrigue = null)
@@ -91,7 +98,6 @@ class BaseIntrigueHasLieu
     /**
      * Set Lieu entity (many to one).
      *
-     * @param \App\Entity\Lieu $lieu
      * @return \App\Entity\IntrigueHasLieu
      */
     public function setLieu(Lieu $lieu = null)
@@ -113,6 +119,6 @@ class BaseIntrigueHasLieu
 
     public function __sleep()
     {
-        return array('id', 'intrigue_id', 'lieu_id');
+        return ['id', 'intrigue_id', 'lieu_id'];
     }
 }

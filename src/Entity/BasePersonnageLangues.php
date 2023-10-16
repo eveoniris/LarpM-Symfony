@@ -10,18 +10,23 @@
 namespace App\Entity;
 
 /**
- * App\Entity\PersonnageLangues
+ * App\Entity\PersonnageLangues.
  *
  * @Table(name="personnage_langues", indexes={@Index(name="fk_personnage_langues_personnage1_idx", columns={"personnage_id"}), @Index(name="fk_personnage_langues_langue1_idx", columns={"langue_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePersonnageLangues", "extended":"PersonnageLangues"})
  */
 class BasePersonnageLangues
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -33,13 +38,16 @@ class BasePersonnageLangues
 
     /**
      * @ManyToOne(targetEntity="Personnage", inversedBy="personnageLangues")
+     *
      * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
      */
     protected $personnage;
 
     /**
      * @ManyToOne(targetEntity="Langue", inversedBy="personnageLangues")
+     *
      * @JoinColumn(name="langue_id", referencedColumnName="id", nullable=false)
+     *
      * @OrderBy({"secret" = "ASC", "label" = "ASC"})
      */
     protected $langue;
@@ -51,7 +59,8 @@ class BasePersonnageLangues
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\PersonnageLangues
      */
     public function setId($id)
@@ -64,7 +73,7 @@ class BasePersonnageLangues
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -75,6 +84,7 @@ class BasePersonnageLangues
      * Set the value of source.
      *
      * @param string $source
+     *
      * @return \App\Entity\PersonnageLangues
      */
     public function setSource($source)
@@ -97,7 +107,6 @@ class BasePersonnageLangues
     /**
      * Set Personnage entity (many to one).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\PersonnageLangues
      */
     public function setPersonnage(Personnage $personnage = null)
@@ -120,7 +129,6 @@ class BasePersonnageLangues
     /**
      * Set Langue entity (many to one).
      *
-     * @param \App\Entity\Langue $langue
      * @return \App\Entity\PersonnageLangues
      */
     public function setLangue(Langue $langue = null)
@@ -142,6 +150,6 @@ class BasePersonnageLangues
 
     public function __sleep()
     {
-        return array('id', 'personnage_id', 'langue_id', 'source');
+        return ['id', 'personnage_id', 'langue_id', 'source'];
     }
 }

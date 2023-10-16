@@ -12,18 +12,27 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\TerritoireGuerre
+ * App\Entity\TerritoireGuerre.
  *
  * @Table(name="territoire_guerre")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseTerritoireGuerre", "extended":"TerritoireGuerre"})
  */
 class BaseTerritoireGuerre
 {
     /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     */
+    public $territoires;
+    /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -56,7 +65,8 @@ class BaseTerritoireGuerre
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\TerritoireGuerre
      */
     public function setId($id)
@@ -69,7 +79,7 @@ class BaseTerritoireGuerre
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -79,7 +89,8 @@ class BaseTerritoireGuerre
     /**
      * Set the value of puissance.
      *
-     * @param integer $puissance
+     * @param int $puissance
+     *
      * @return \App\Entity\TerritoireGuerre
      */
     public function setPuissance($puissance)
@@ -92,7 +103,7 @@ class BaseTerritoireGuerre
     /**
      * Get the value of puissance.
      *
-     * @return integer
+     * @return int
      */
     public function getPuissance()
     {
@@ -102,7 +113,8 @@ class BaseTerritoireGuerre
     /**
      * Set the value of puissance_max.
      *
-     * @param integer $puissance_max
+     * @param int $puissance_max
+     *
      * @return \App\Entity\TerritoireGuerre
      */
     public function setPuissanceMax($puissance_max)
@@ -115,7 +127,7 @@ class BaseTerritoireGuerre
     /**
      * Get the value of puissance_max.
      *
-     * @return integer
+     * @return int
      */
     public function getPuissanceMax()
     {
@@ -125,7 +137,8 @@ class BaseTerritoireGuerre
     /**
      * Set the value of protection.
      *
-     * @param integer $protection
+     * @param int $protection
+     *
      * @return \App\Entity\TerritoireGuerre
      */
     public function setProtection($protection)
@@ -138,7 +151,7 @@ class BaseTerritoireGuerre
     /**
      * Get the value of protection.
      *
-     * @return integer
+     * @return int
      */
     public function getProtection()
     {
@@ -148,7 +161,6 @@ class BaseTerritoireGuerre
     /**
      * Set Territoire entity (one to one).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\TerritoireGuerre
      */
     public function setTerritoire(Territoire $territoire = null)
@@ -171,6 +183,6 @@ class BaseTerritoireGuerre
 
     public function __sleep()
     {
-        return array('id', 'puissance', 'puissance_max', 'protection');
+        return ['id', 'puissance', 'puissance_max', 'protection'];
     }
 }

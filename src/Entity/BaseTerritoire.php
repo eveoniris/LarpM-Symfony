@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ATTENTION Cette classe n'est pas généré car elle contient une ManyToMany sur elle-même 
+ * ATTENTION Cette classe n'est pas généré car elle contient une ManyToMany sur elle-même
  * à travers la table territoire_quete.
  * Ce type de relation n'est pas modélisable dans MySQLWorkbench sans passer par une table nommé.
  * Mais elle est modélisable via Doctrine.
@@ -13,18 +13,23 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * App\Entity\Territoire
+ * App\Entity\Territoire.
  *
  * @Table(name="territoire", indexes={@Index(name="fk_zone_politique_zone_politique1_idx", columns={"territoire_id"}), @Index(name="fk_territoire_territoire_guerre1_idx", columns={"territoire_guerre_id"}), @Index(name="fk_territoire_appelation1_idx", columns={"appelation_id"}), @Index(name="fk_territoire_langue1_idx", columns={"langue_id"}), @Index(name="fk_territoire_topic1_idx", columns={"topic_id"}), @Index(name="fk_territoire_religion1_idx", columns={"religion_id"}), @Index(name="fk_territoire_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_territoire_culture1_idx", columns={"culture_id"})})
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BaseTerritoire", "extended":"Territoire"})
  */
 class BaseTerritoire
 {
     /**
      * @Id
+     *
      * @Column(type="integer")
+     *
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -146,78 +151,91 @@ class BaseTerritoire
 
     /**
      * @OneToMany(targetEntity="Chronologie", mappedBy="territoire")
+     *
      * @JoinColumn(name="id", referencedColumnName="zone_politique_id", nullable=false)
      */
     protected $chronologies;
 
     /**
      * @OneToMany(targetEntity="Groupe", mappedBy="territoire")
+     *
      * @JoinColumn(name="id", referencedColumnName="territoire_id", nullable=false)
      */
     protected $groupes;
 
     /**
      * @OneToMany(targetEntity="Personnage", mappedBy="territoire")
+     *
      * @JoinColumn(name="id", referencedColumnName="territoire_id", nullable=false)
      */
     protected $personnages;
 
     /**
      * @OneToMany(targetEntity="Rumeur", mappedBy="territoire")
+     *
      * @JoinColumn(name="id", referencedColumnName="territoire_id", nullable=false)
      */
     protected $rumeurs;
 
     /**
      * @OneToMany(targetEntity="Territoire", mappedBy="territoire")
+     *
      * @JoinColumn(name="id", referencedColumnName="territoire_id", nullable=false)
      */
     protected $territoires;
 
     /**
      * @OneToMany(targetEntity="TitreTerritoire", mappedBy="territoire")
+     *
      * @JoinColumn(name="id", referencedColumnName="territoire_id", nullable=false)
      */
     protected $titreTerritoires;
 
     /**
      * @ManyToOne(targetEntity="Territoire", inversedBy="territoires")
+     *
      * @JoinColumn(name="territoire_id", referencedColumnName="id")
      */
     protected $territoire;
 
     /**
      * @OneToOne(targetEntity="TerritoireGuerre", inversedBy="territoire")
+     *
      * @JoinColumn(name="territoire_guerre_id", referencedColumnName="id")
      */
     protected $territoireGuerre;
 
     /**
      * @ManyToOne(targetEntity="Appelation", inversedBy="territoires")
+     *
      * @JoinColumn(name="appelation_id", referencedColumnName="id", nullable=false)
      */
     protected $appelation;
 
     /**
      * @ManyToOne(targetEntity="Langue", inversedBy="territoires")
+     *
      * @JoinColumn(name="langue_id", referencedColumnName="id")
      */
     protected $langue;
 
     /**
      * @ManyToOne(targetEntity="Topic", inversedBy="territoires")
+     *
      * @JoinColumn(name="topic_id", referencedColumnName="id", nullable=false)
      */
     protected $topic;
 
     /**
      * @ManyToOne(targetEntity="Religion", inversedBy="territoires")
+     *
      * @JoinColumn(name="religion_id", referencedColumnName="id")
      */
     protected $religion;
 
     /**
      * @ManyToMany(targetEntity="Territoire", inversedBy="territoireStarts")
+     *
      * @JoinTable(name="territoire_quete",
      *     joinColumns={@JoinColumn(name="territoire_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="territoire_cible_id", referencedColumnName="id", nullable=false)}
@@ -232,28 +250,33 @@ class BaseTerritoire
 
     /**
      * @ManyToOne(targetEntity="Groupe", inversedBy="territoires")
+     *
      * @JoinColumn(name="groupe_id", referencedColumnName="id")
      */
     protected $groupe;
 
     /**
      * @ManyToOne(targetEntity="Culture", inversedBy="territoires")
+     *
      * @JoinColumn(name="culture_id", referencedColumnName="id")
      */
     protected $culture;
 
     /**
      * @ManyToMany(targetEntity="Construction", inversedBy="territoires")
+     *
      * @JoinTable(name="territoire_has_construction",
      *     joinColumns={@JoinColumn(name="territoire_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="construction_id", referencedColumnName="id", nullable=false)}
      * )
+     *
      * @OrderBy({"label" = "ASC",})
      */
     protected $constructions;
 
     /**
      * @ManyToMany(targetEntity="Loi", inversedBy="territoires")
+     *
      * @JoinTable(name="territoire_has_loi",
      *     joinColumns={@JoinColumn(name="territoire_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="loi_id", referencedColumnName="id", nullable=false)}
@@ -263,6 +286,7 @@ class BaseTerritoire
 
     /**
      * @ManyToMany(targetEntity="Ingredient", inversedBy="territoires")
+     *
      * @JoinTable(name="territoire_ingredient",
      *     joinColumns={@JoinColumn(name="territoire_id", referencedColumnName="id", nullable=false)},
      *     inverseJoinColumns={@JoinColumn(name="ingredient_id", referencedColumnName="id", nullable=false)}
@@ -288,7 +312,8 @@ class BaseTerritoire
     /**
      * Set the value of id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return \App\Entity\Territoire
      */
     public function setId($id)
@@ -301,7 +326,7 @@ class BaseTerritoire
     /**
      * Get the value of id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -312,6 +337,7 @@ class BaseTerritoire
      * Set the value of nom.
      *
      * @param string $nom
+     *
      * @return \App\Entity\Territoire
      */
     public function setNom($nom)
@@ -335,6 +361,7 @@ class BaseTerritoire
      * Set the value of description.
      *
      * @param string $description
+     *
      * @return \App\Entity\Territoire
      */
     public function setDescription($description)
@@ -358,6 +385,7 @@ class BaseTerritoire
      * Set the value of capitale.
      *
      * @param string $capitale
+     *
      * @return \App\Entity\Territoire
      */
     public function setCapitale($capitale)
@@ -381,6 +409,7 @@ class BaseTerritoire
      * Set the value of politique.
      *
      * @param string $politique
+     *
      * @return \App\Entity\Territoire
      */
     public function setPolitique($politique)
@@ -404,6 +433,7 @@ class BaseTerritoire
      * Set the value of dirigeant.
      *
      * @param string $dirigeant
+     *
      * @return \App\Entity\Territoire
      */
     public function setDirigeant($dirigeant)
@@ -427,6 +457,7 @@ class BaseTerritoire
      * Set the value of population.
      *
      * @param string $population
+     *
      * @return \App\Entity\Territoire
      */
     public function setPopulation($population)
@@ -450,6 +481,7 @@ class BaseTerritoire
      * Set the value of symbole.
      *
      * @param string $symbole
+     *
      * @return \App\Entity\Territoire
      */
     public function setSymbole($symbole)
@@ -473,6 +505,7 @@ class BaseTerritoire
      * Set the value of tech_level.
      *
      * @param string $tech_level
+     *
      * @return \App\Entity\Territoire
      */
     public function setTechLevel($tech_level)
@@ -496,6 +529,7 @@ class BaseTerritoire
      * Set the value of type_racial.
      *
      * @param string $type_racial
+     *
      * @return \App\Entity\Territoire
      */
     public function setTypeRacial($type_racial)
@@ -519,6 +553,7 @@ class BaseTerritoire
      * Set the value of inspiration.
      *
      * @param string $inspiration
+     *
      * @return \App\Entity\Territoire
      */
     public function setInspiration($inspiration)
@@ -542,6 +577,7 @@ class BaseTerritoire
      * Set the value of armes_predilection.
      *
      * @param string $armes_predilection
+     *
      * @return \App\Entity\Territoire
      */
     public function setArmesPredilection($armes_predilection)
@@ -565,6 +601,7 @@ class BaseTerritoire
      * Set the value of vetements.
      *
      * @param string $vetements
+     *
      * @return \App\Entity\Territoire
      */
     public function setVetements($vetements)
@@ -588,6 +625,7 @@ class BaseTerritoire
      * Set the value of noms_masculin.
      *
      * @param string $noms_masculin
+     *
      * @return \App\Entity\Territoire
      */
     public function setNomsMasculin($noms_masculin)
@@ -611,6 +649,7 @@ class BaseTerritoire
      * Set the value of noms_feminin.
      *
      * @param string $noms_feminin
+     *
      * @return \App\Entity\Territoire
      */
     public function setNomsFeminin($noms_feminin)
@@ -634,6 +673,7 @@ class BaseTerritoire
      * Set the value of frontieres.
      *
      * @param string $frontieres
+     *
      * @return \App\Entity\Territoire
      */
     public function setFrontieres($frontieres)
@@ -657,6 +697,7 @@ class BaseTerritoire
      * Set the value of geojson.
      *
      * @param string $geojson
+     *
      * @return \App\Entity\Territoire
      */
     public function setGeojson($geojson)
@@ -680,6 +721,7 @@ class BaseTerritoire
      * Set the value of color.
      *
      * @param string $color
+     *
      * @return \App\Entity\Territoire
      */
     public function setColor($color)
@@ -702,7 +744,8 @@ class BaseTerritoire
     /**
      * Set the value of tresor.
      *
-     * @param integer $tresor
+     * @param int $tresor
+     *
      * @return \App\Entity\Territoire
      */
     public function setTresor($tresor)
@@ -715,7 +758,7 @@ class BaseTerritoire
     /**
      * Get the value of tresor.
      *
-     * @return integer
+     * @return int
      */
     public function getTresor()
     {
@@ -725,7 +768,8 @@ class BaseTerritoire
     /**
      * Set the value of resistance.
      *
-     * @param integer $resistance
+     * @param int $resistance
+     *
      * @return \App\Entity\Territoire
      */
     public function setResistance($resistance)
@@ -738,7 +782,7 @@ class BaseTerritoire
     /**
      * Get the value of resistance.
      *
-     * @return integer
+     * @return int
      */
     public function getResistance()
     {
@@ -749,6 +793,7 @@ class BaseTerritoire
      * Set the value of blason.
      *
      * @param string $blason
+     *
      * @return \App\Entity\Territoire
      */
     public function setBlason($blason)
@@ -772,6 +817,7 @@ class BaseTerritoire
      * Set the value of description_secrete.
      *
      * @param string $description_secrete
+     *
      * @return \App\Entity\Territoire
      */
     public function setDescriptionSecrete($description_secrete)
@@ -795,6 +841,7 @@ class BaseTerritoire
      * Set the value of statut.
      *
      * @param string $statut
+     *
      * @return \App\Entity\Territoire
      */
     public function setStatut($statut)
@@ -817,7 +864,8 @@ class BaseTerritoire
     /**
      * Set the value of ordre_social.
      *
-     * @param integer $ordre_social
+     * @param int $ordre_social
+     *
      * @return \App\Entity\Territoire
      */
     public function setOrdreSocial($ordre_social)
@@ -830,7 +878,7 @@ class BaseTerritoire
     /**
      * Get the value of ordre_social.
      *
-     * @return integer
+     * @return int
      */
     public function getOrdreSocial()
     {
@@ -840,7 +888,6 @@ class BaseTerritoire
     /**
      * Add Chronologie entity to collection (one to many).
      *
-     * @param \App\Entity\Chronologie $chronologie
      * @return \App\Entity\Territoire
      */
     public function addChronologie(Chronologie $chronologie)
@@ -853,7 +900,6 @@ class BaseTerritoire
     /**
      * Remove Chronologie entity from collection (one to many).
      *
-     * @param \App\Entity\Chronologie $chronologie
      * @return \App\Entity\Territoire
      */
     public function removeChronologie(Chronologie $chronologie)
@@ -876,77 +922,74 @@ class BaseTerritoire
     /**
      * Add Territoire entity to collection (many to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Territoire
      */
     public function addTerritoireCible(Territoire $territoire)
     {
-	$this->territoireCibles[] = $territoire;
+        $this->territoireCibles[] = $territoire;
 
-	return $this;
+        return $this;
     }
 
     /**
      * Remove Territoire entity from collection (many to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Territoire
      */
     public function removeTerritoireCible(Territoire $territoire)
     {
-    	$this->territoireCibles->removeElement($territoire);
+        $this->territoireCibles->removeElement($territoire);
 
-	return $this;
+        return $this;
     }
 
     /**
-     * Get territoireCibles entity collection
+     * Get territoireCibles entity collection.
+     *
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getTerritoireCibles()
     {
-	return $this->territoireCibles;
+        return $this->territoireCibles;
     }
 
     /**
      * Add Territoire entity to collection (many to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Territoire
      */
     public function addTerritoireStart(Territoire $territoire)
     {
-	$this->territoireStarts[] = $territoire;
+        $this->territoireStarts[] = $territoire;
 
-	return $this;
+        return $this;
     }
 
     /**
      * Remove Territoire entity from collection (many to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Territoire
      */
     public function removeTerritoireStart(Territoire $territoire)
     {
-	$this->territoireStarts->removeElement($territoire);
+        $this->territoireStarts->removeElement($territoire);
 
-	return $this;
+        return $this;
     }
 
     /**
-     * Get TerritoireStarts entity collection
+     * Get TerritoireStarts entity collection.
+     *
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getTerritoireStarts()
     {
-	return $this->territoireStarts;
+        return $this->territoireStarts;
     }
 
     /**
      * Add Groupe entity to collection (one to many).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\Territoire
      */
     public function addGroupe(Groupe $groupe)
@@ -959,7 +1002,6 @@ class BaseTerritoire
     /**
      * Remove Groupe entity from collection (one to many).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\Territoire
      */
     public function removeGroupe(Groupe $groupe)
@@ -982,7 +1024,6 @@ class BaseTerritoire
     /**
      * Add Personnage entity to collection (one to many).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Territoire
      */
     public function addPersonnage(Personnage $personnage)
@@ -995,7 +1036,6 @@ class BaseTerritoire
     /**
      * Remove Personnage entity from collection (one to many).
      *
-     * @param \App\Entity\Personnage $personnage
      * @return \App\Entity\Territoire
      */
     public function removePersonnage(Personnage $personnage)
@@ -1018,7 +1058,6 @@ class BaseTerritoire
     /**
      * Add Rumeur entity to collection (one to many).
      *
-     * @param \App\Entity\Rumeur $rumeur
      * @return \App\Entity\Territoire
      */
     public function addRumeur(Rumeur $rumeur)
@@ -1031,7 +1070,6 @@ class BaseTerritoire
     /**
      * Remove Rumeur entity from collection (one to many).
      *
-     * @param \App\Entity\Rumeur $rumeur
      * @return \App\Entity\Territoire
      */
     public function removeRumeur(Rumeur $rumeur)
@@ -1054,7 +1092,6 @@ class BaseTerritoire
     /**
      * Add Territoire entity to collection (one to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Territoire
      */
     public function addTerritoire(Territoire $territoire)
@@ -1067,7 +1104,6 @@ class BaseTerritoire
     /**
      * Remove Territoire entity from collection (one to many).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Territoire
      */
     public function removeTerritoire(Territoire $territoire)
@@ -1090,7 +1126,6 @@ class BaseTerritoire
     /**
      * Add TitreTerritoire entity to collection (one to many).
      *
-     * @param \App\Entity\TitreTerritoire $titreTerritoire
      * @return \App\Entity\Territoire
      */
     public function addTitreTerritoire(TitreTerritoire $titreTerritoire)
@@ -1103,7 +1138,6 @@ class BaseTerritoire
     /**
      * Remove TitreTerritoire entity from collection (one to many).
      *
-     * @param \App\Entity\TitreTerritoire $titreTerritoire
      * @return \App\Entity\Territoire
      */
     public function removeTitreTerritoire(TitreTerritoire $titreTerritoire)
@@ -1126,7 +1160,6 @@ class BaseTerritoire
     /**
      * Set Territoire entity (many to one).
      *
-     * @param \App\Entity\Territoire $territoire
      * @return \App\Entity\Territoire
      */
     public function setTerritoire(Territoire $territoire = null)
@@ -1149,7 +1182,6 @@ class BaseTerritoire
     /**
      * Set TerritoireGuerre entity (one to one).
      *
-     * @param \App\Entity\TerritoireGuerre $territoireGuerre
      * @return \App\Entity\Territoire
      */
     public function setTerritoireGuerre(TerritoireGuerre $territoireGuerre)
@@ -1172,7 +1204,6 @@ class BaseTerritoire
     /**
      * Set Appelation entity (many to one).
      *
-     * @param \App\Entity\Appelation $appelation
      * @return \App\Entity\Territoire
      */
     public function setAppelation(Appelation $appelation = null)
@@ -1195,7 +1226,6 @@ class BaseTerritoire
     /**
      * Set Langue entity (many to one).
      *
-     * @param \App\Entity\Langue $langue
      * @return \App\Entity\Territoire
      */
     public function setLangue(Langue $langue = null)
@@ -1218,7 +1248,6 @@ class BaseTerritoire
     /**
      * Set Topic entity (many to one).
      *
-     * @param \App\Entity\Topic $topic
      * @return \App\Entity\Territoire
      */
     public function setTopic(Topic $topic = null)
@@ -1241,7 +1270,6 @@ class BaseTerritoire
     /**
      * Set Religion entity (many to one).
      *
-     * @param \App\Entity\Religion $religion
      * @return \App\Entity\Territoire
      */
     public function setReligion(Religion $religion = null)
@@ -1264,7 +1292,6 @@ class BaseTerritoire
     /**
      * Set Groupe entity (many to one).
      *
-     * @param \App\Entity\Groupe $groupe
      * @return \App\Entity\Territoire
      */
     public function setGroupe(Groupe $groupe = null)
@@ -1287,7 +1314,6 @@ class BaseTerritoire
     /**
      * Set Culture entity (many to one).
      *
-     * @param \App\Entity\Culture $culture
      * @return \App\Entity\Territoire
      */
     public function setCulture(Culture $culture = null)
@@ -1310,7 +1336,6 @@ class BaseTerritoire
     /**
      * Add Construction entity to collection.
      *
-     * @param \App\Entity\Construction $construction
      * @return \App\Entity\Territoire
      */
     public function addConstruction(Construction $construction)
@@ -1324,7 +1349,6 @@ class BaseTerritoire
     /**
      * Remove Construction entity from collection.
      *
-     * @param \App\Entity\Construction $construction
      * @return \App\Entity\Territoire
      */
     public function removeConstruction(Construction $construction)
@@ -1348,7 +1372,6 @@ class BaseTerritoire
     /**
      * Add Loi entity to collection.
      *
-     * @param \App\Entity\Loi $loi
      * @return \App\Entity\Territoire
      */
     public function addLoi(Loi $loi)
@@ -1362,7 +1385,6 @@ class BaseTerritoire
     /**
      * Remove Loi entity from collection.
      *
-     * @param \App\Entity\Loi $loi
      * @return \App\Entity\Territoire
      */
     public function removeLoi(Loi $loi)
@@ -1386,7 +1408,6 @@ class BaseTerritoire
     /**
      * Add Ingredient entity to collection.
      *
-     * @param \App\Entity\Ingredient $ingredient
      * @return \App\Entity\Territoire
      */
     public function addIngredient(Ingredient $ingredient)
@@ -1400,7 +1421,6 @@ class BaseTerritoire
     /**
      * Remove Ingredient entity from collection.
      *
-     * @param \App\Entity\Ingredient $ingredient
      * @return \App\Entity\Territoire
      */
     public function removeIngredient(Ingredient $ingredient)
@@ -1423,6 +1443,6 @@ class BaseTerritoire
 
     public function __sleep()
     {
-        return array('id', 'nom', 'description', 'capitale', 'politique', 'dirigeant', 'population', 'symbole', 'tech_level', 'territoire_id', 'territoire_guerre_id', 'appelation_id', 'langue_id', 'topic_id', 'religion_id', 'type_racial', 'inspiration', 'armes_predilection', 'vetements', 'noms_masculin', 'noms_feminin', 'frontieres', 'geojson', 'color', 'groupe_id', 'tresor', 'resistance', 'blason', 'description_secrete', 'statut', 'culture_id', 'ordre_social');
+        return ['id', 'nom', 'description', 'capitale', 'politique', 'dirigeant', 'population', 'symbole', 'tech_level', 'territoire_id', 'territoire_guerre_id', 'appelation_id', 'langue_id', 'topic_id', 'religion_id', 'type_racial', 'inspiration', 'armes_predilection', 'vetements', 'noms_masculin', 'noms_feminin', 'frontieres', 'geojson', 'color', 'groupe_id', 'tresor', 'resistance', 'blason', 'description_secrete', 'statut', 'culture_id', 'ordre_social'];
     }
 }

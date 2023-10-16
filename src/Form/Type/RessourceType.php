@@ -2,7 +2,7 @@
 
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,32 +25,31 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * LarpManager\Form\Type\RessourceType
+ * LarpManager\Form\Type\RessourceType.
  *
  * @author kevin
- *
  */
 class RessourceType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder->add('ressource','entity', array(
-					'label' => false,
-					'required' => true,
-					'property' => 'label',
-					'class' => 'App\Entity\Ressource',						
-				));
-	}
-	
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-				'data_class' => '\App\Entity\RegionRessource',
-		));
-	}
-	
-	public function getName()
-	{
-		return 'regionRessource';
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('ressource', 'entity', [
+            'label' => false,
+            'required' => true,
+            'property' => 'label',
+            'class' => \App\Entity\Ressource::class,
+        ]);
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\App\Entity\RegionRessource',
+        ]);
+    }
+
+    public function getName(): string
+    {
+        return 'regionRessource';
+    }
 }
