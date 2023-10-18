@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping\Entity;
 
-#[Entity(repositoryClass: 'LarpManager\Repository\ObjectRepository')]
+#[Entity(repositoryClass: 'App\Repository\ObjectRepository')]
 class Objectif extends BaseObjectif
 {
     public function __construct()

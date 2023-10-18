@@ -3,8 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping\Entity;
+use App\Repository\AppelationRepository;
 
-#[Entity(repositoryClass: 'LarpManager\Repository\AppelationRepository')]
+#[Entity(repositoryClass: AppelationRepository::class)]
 class Appelation extends BaseAppelation implements \Stringable
 {
     public function __toString(): string

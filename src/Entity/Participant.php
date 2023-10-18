@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping\Entity;
 
-#[Entity(repositoryClass: 'LarpManager\Repository\ParticipantRepository')]
+#[Entity(repositoryClass: 'App\Repository\ParticipantRepository')]
 class Participant extends BaseParticipant implements \Stringable
 {
     public function __construct()

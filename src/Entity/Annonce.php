@@ -3,8 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AnnonceRepository;
 
-#[ORM\Entity(repositoryClass: 'LarpManager\Repository\AnnonceRepository')]
+#[ORM\Entity(repositoryClass: AnnonceRepository::class)]
 class Annonce extends BaseAnnonce
 {
     public function __construct()

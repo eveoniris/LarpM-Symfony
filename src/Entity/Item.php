@@ -9,11 +9,10 @@
 
 namespace App\Entity;
 
-/**
- * App\Entity\Item.
- *
- * @Entity(repositoryClass="LarpManager\Repository\ItemRepository")
- */
+use App\Repository\ItemRepository;
+use Doctrine\ORM\Mapping\Entity;
+
+#[Entity(repositoryClass: ItemRepository::class)]
 class Item extends BaseItem
 {
     public function __construct()

@@ -4,8 +4,9 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Entity;
+use App\Repository\CompetenceRepository;
 
-#[Entity(repositoryClass: 'LarpManager\Repository\CompetenceRepository')]
+#[Entity(repositoryClass: CompetenceRepository::class)]
 class Competence extends BaseCompetence implements \Stringable
 {
     public function __toString(): string
