@@ -194,7 +194,7 @@ class BaseGroupeEnemy
      *
      * @return \App\Entity\GroupeEnemy
      */
-    public function setGroupeRelatedByGroupeId(Groupe $groupe = null)
+    public function setGroupeRelatedByGroupeId(Groupe $groupe = null): static
     {
         $this->groupeRelatedByGroupeId = $groupe;
 
@@ -206,7 +206,7 @@ class BaseGroupeEnemy
      *
      * @return \App\Entity\Groupe
      */
-    public function getGroupeRelatedByGroupeId()
+    public function getGroupeRelatedByGroupeId(): static
     {
         return $this->groupeRelatedByGroupeId;
     }
@@ -216,7 +216,7 @@ class BaseGroupeEnemy
      *
      * @return \App\Entity\GroupeEnemy
      */
-    public function setGroupeRelatedByGroupeEnemyId(Groupe $groupe = null)
+    public function setGroupeRelatedByGroupeEnemyId(Groupe $groupe = null): static
     {
         $this->groupeRelatedByGroupeEnemyId = $groupe;
 
@@ -228,7 +228,7 @@ class BaseGroupeEnemy
      *
      * @return \App\Entity\Groupe
      */
-    public function getGroupeRelatedByGroupeEnemyId()
+    public function getGroupeRelatedByGroupeEnemyId(): Groupe
     {
         return $this->groupeRelatedByGroupeEnemyId;
     }

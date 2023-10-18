@@ -4,8 +4,9 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Entity;
+use App\Repository\BilletRepository;
 
-#[Entity(repositoryClass: 'LarpManager\Repository\BilletRepository')]
+#[Entity(repositoryClass: BilletRepository::class)]
 class Billet extends BaseBillet implements \Stringable
 {
     public function __construct()

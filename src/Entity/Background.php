@@ -3,8 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping\Entity;
+use App\Repository\BackgroundRepository;
 
-#[Entity(repositoryClass: 'LarpManager\Repository\BackgroundRepository')]
+#[Entity(repositoryClass: BackgroundRepository::class)]
 class Background extends BaseBackground
 {
     public function __construct()

@@ -3,11 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping\Entity;
+use App\Repository\ChronologieRepository;
 
-/**
- * App\Entity\Chronologie.
- */
-#[Entity(repositoryClass: 'LarpManager\Repository\ChronologieRepository')]
+#[Entity(repositoryClass: ChronologieRepository::class)]
 class Chronologie extends BaseChronologie implements \JsonSerializable
 {
     public function jsonSerialize(): array

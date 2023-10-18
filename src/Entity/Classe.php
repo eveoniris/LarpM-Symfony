@@ -3,14 +3,15 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\joinColumns;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OrderBy;
+use App\Repository\ClasseRepository;
 
-#[Entity(repositoryClass: 'LarpManager\Repository\ClasseRepository')]
+#[Entity(repositoryClass: ClasseRepository::class)]
 class Classe extends BaseClasse
 {
     #[ManyToOne(targetEntity: CompetenceFamily::class, inversedBy: 'classeFavorites')]
@@ -23,22 +24,16 @@ class Classe extends BaseClasse
     protected ArrayCollection $competenceFamilyFavorites;
 
     #[ManyToMany(targetEntity: CompetenceFamily::class, inversedBy: 'classeNormales')]
-    // Todo check JoinTable Attributes on ManyToMany
-    #[JoinTable(
-        name: 'classe_competence_family_normale',
-        // joinColumns: ['name' => 'class_id', 'referencedColumnName' => 'id'],
-        // inverseJoinColumns: ['JoinColumn' => ['name' => 'competence_family_id', 'referencedColumnName' => 'id']]
-    )]
+    #[JoinTable(name: 'classe_competence_family_normale')]
+    #[ORM\JoinColumn(name: 'class_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
     #[OrderBy(['label' => \Doctrine\Common\Collections\Criteria::ASC])]
     protected ArrayCollection $competenceFamilyNormales;
 
     #[ManyToMany(targetEntity: CompetenceFamily::class, inversedBy: 'classeCreations')]
-    // Todo check JoinTable Attributes on ManyToMany
-    #[JoinTable(
-        name: 'classe_competence_family_creation',
-        // joinColumns: ['name' => 'class_id', 'referencedColumnName' => 'id'],
-        // inverseJoinColumns: ['JoinColumn' => ['name' => 'competence_family_id', 'referencedColumnName' => 'id']]
-    )]
+    #[JoinTable(name: 'classe_competence_family_creation')]
+    #[ORM\JoinColumn(name: 'class_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
     #[OrderBy(['label' => \Doctrine\Common\Collections\Criteria::ASC])]
     protected ArrayCollection $competenceFamilyCreations;
 

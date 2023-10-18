@@ -3,8 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping\Entity;
+use App\Repository\AgeRepository;
 
-#[Entity(repositoryClass: 'LarpManager\Repository\AgeRepository')]
+#[Entity(repositoryClass: AgeRepository::class)]
 class Age extends BaseAge implements \Stringable
 {
     public function __toString(): string

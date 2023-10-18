@@ -6,14 +6,10 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseGroupeGnOrdre;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Repository\GroupeGnOrdreRepository;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\GroupeGnOrdre
- *
- * @Entity(repositoryClass="LarpManager\Repository\GroupeGnOrdreRepository")
- */
+#[Entity(repositoryClass: GroupeGnOrdreRepository::class)]
 class GroupeGnOrdre extends BaseGroupeGnOrdre
 {
 
