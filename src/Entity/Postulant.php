@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePostulant;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\Postulant
- *
- */
+#[Entity]
 class Postulant extends BasePostulant
 {
 }

@@ -24,6 +24,7 @@ use App\Entity\Classe;
 use LarpManager\Form\Classe\ClasseForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\ClasseController.
@@ -35,6 +36,7 @@ class ClasseController
     /**
      * Présentation des classes.
      */
+    #[Route('/classe', name: 'classe')]
     public function indexAction(Request $request, Application $app)
     {
         $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Classe::class);

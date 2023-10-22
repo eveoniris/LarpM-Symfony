@@ -26,6 +26,7 @@ use LarpManager\Form\Religion\ReligionForm;
 use LarpManager\Form\Religion\ReligionLevelForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\ReligionController.
@@ -47,6 +48,7 @@ class ReligionController
     /**
      * affiche la liste des religions.
      */
+    #[Route('/religion', name: 'religion')]
     public function indexAction(Request $request, Application $app)
     {
         $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Religion::class);

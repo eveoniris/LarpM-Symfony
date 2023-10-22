@@ -11,8 +11,8 @@ use Doctrine\ORM\Mapping\ManyToOne;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'background')]
-#[ORM\Index(columns: ['group_id'], name: 'fk_background_groupe1_idx')]
-#[ORM\Index(columns: ['User_id'], name: 'fk_background_User1_idx')]
+#[ORM\Index(columns: ['groupe_id'], name: 'fk_background_groupe1_idx')]
+#[ORM\Index(columns: ['user_id'], name: 'fk_background_user1_idx')]
 #[ORM\Index(columns: ['gn_id'], name: 'fk_background_gn1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
@@ -28,7 +28,7 @@ class BaseBackground
     #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $text = null;
 
-    #[Column(name: 'visiility', type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(name: 'visibility', type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
     protected ?string $visibility = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
@@ -38,11 +38,11 @@ class BaseBackground
     protected ?\DateTime $update_date;
 
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'backgrounds')]
-    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'objectif_id', nullable: 'false')]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?Groupe $groupe = null;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'backgrounds')]
-    #[JoinColumn(name: 'User_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $User = null;
 
     #[ManyToOne(targetEntity: Gn::class, inversedBy: 'backgrounds')]

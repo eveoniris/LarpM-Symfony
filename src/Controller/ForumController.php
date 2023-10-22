@@ -26,6 +26,7 @@ use LarpManager\Form\PostForm;
 use LarpManager\Form\TopicForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\ForumController.
@@ -37,6 +38,7 @@ class ForumController
     /**
      * Liste des forums de premier niveau.
      */
+    #[Route('/forum', name: 'forum')]
     public function forumAction(Request $request, Application $app)
     {
         if (null == $app['User']) {

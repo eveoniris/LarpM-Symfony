@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping\Entity;
 
-#[Entity()]
+#[Entity]
 class Formulaire extends BaseFormulaire
 {
 }

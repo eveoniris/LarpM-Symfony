@@ -13,11 +13,9 @@ class Document extends BaseDocument implements \Stringable
         return (string) $this->getIdentity();
     }
 
-    /**
-     * Constructeur.
-     */
     public function __construct()
     {
+        parent::__construct();
         $this->setCreationDate(new \DateTime('now'));
         $this->setUpdateDate(new \DateTime('now'));
         $this->setImpression(false);

@@ -11,28 +11,30 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * App\Entity\Territoire.
- *
- * @Table(name="territoire", indexes={@Index(name="fk_zone_politique_zone_politique1_idx", columns={"territoire_id"}), @Index(name="fk_territoire_territoire_guerre1_idx", columns={"territoire_guerre_id"}), @Index(name="fk_territoire_appelation1_idx", columns={"appelation_id"}), @Index(name="fk_territoire_langue1_idx", columns={"langue_id"}), @Index(name="fk_territoire_topic1_idx", columns={"topic_id"}), @Index(name="fk_territoire_religion1_idx", columns={"religion_id"}), @Index(name="fk_territoire_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_territoire_culture1_idx", columns={"culture_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseTerritoire", "extended":"Territoire"})
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'territoire')]
+/*
+#[ORM\Index(columns: ['territoire_id'], name: 'fk_territoire_territoire1_idx')]
+#[ORM\Index(columns: ['territoire_guerre_id'], name: 'fk_territoire_territoire_guerre1_idx')]
+#[ORM\Index(columns: ['appelation_id'], name: 'fk_territoire_appelation1_idx')]
+#[ORM\Index(columns: ['langue_id'], name: 'fk_territoire_langue1_idx')]
+#[ORM\Index(columns: ['topic_id'], name: 'fk_territoire_topic1_idx')]
+#[ORM\Index(columns: ['religion_id'], name: 'fk_territoire_religion1_idx')]
+#[ORM\Index(columns: ['groupe_id'], name: 'fk_territoire_groupe1_idx')]
+#[ORM\Index(columns: ['culture_id'], name: 'fk_territoire_culture1_idx')]
+*/
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseTerritoire', 'extended' => 'Territoire'])]
 class BaseTerritoire
 {
-    /**
-     * @Id
-     *
-     * @Column(type="integer")
-     *
-     * @GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    protected ?int $id = null;
 
     /**
      * @Column(type="string", length=45)

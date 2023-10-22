@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping\Entity;
 
-#[Entity(repositoryClass: 'App\Repository\BaseRuleRepository')]
+#[Entity]
 class Rule extends BaseRule
 {
 }

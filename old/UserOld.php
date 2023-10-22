@@ -284,14 +284,14 @@ class UserOld extends BaseUser implements \Stringable // implements AdvancedUser
      *
      * @param array $roles
      */
-    public function setRoles($roles): void
+    /*public function setRoles($roles): void
     {
         $this->rights = '';
 
         foreach ($roles as $role) {
             $this->addRole($role);
         }
-    }
+    }*/
 
     /**
      * Test whether the User has the given role.
@@ -353,10 +353,10 @@ class UserOld extends BaseUser implements \Stringable // implements AdvancedUser
      *
      * @see getRealUsername
      */
-    public function getUsername()
+    /*public function getUsername()
     {
         return $this->Username ?: $this->email;
-    }
+    }*/
 
     /**
      * Get the actual Username value that was set,
@@ -389,12 +389,12 @@ class UserOld extends BaseUser implements \Stringable // implements AdvancedUser
     /**
      * @see \Serializable::unserialize()
      */
-    public function unserialize($serialized): void
+    /*public function unserialize($serialized): void
     {
         [
             $this->id,
         ] = unserialize($serialized);
-    }
+    }*/
 
     /**
      * Checks whether the User is enabled.

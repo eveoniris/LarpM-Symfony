@@ -1,13 +1,9 @@
 <?php
 
 namespace App\Entity;
+use Doctrine\ORM\Mapping\Entity;
 
-use App\Entity\BasePersonnageHasQuestion;
-
-/**
- * App\Entity\PersonnageHasQuestion
- *
- */
+#[Entity]
 class PersonnageHasQuestion extends BasePersonnageHasQuestion
 {
 }

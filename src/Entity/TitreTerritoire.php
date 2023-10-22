@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseTitreTerritoire;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\TitreTerritoire
- *
- */
+#[Entity]
 class TitreTerritoire extends BaseTitreTerritoire
 {
 }

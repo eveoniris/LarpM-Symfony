@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePersonnageLangues;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\PersonnageLangues
- *
- */
+#[Entity]
 class PersonnageLangues extends BasePersonnageLangues
 {
 }

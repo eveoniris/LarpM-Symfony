@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseSphere;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\Sphere
- *
- */
+#[Entity]
 class Sphere extends BaseSphere
 {
 }

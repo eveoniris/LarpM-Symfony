@@ -1,0 +1,22 @@
+{# The subject line. #}
+{%- block subject -%}{%- autoescape false -%}
+    Votre proposition d'alliance a été refusée.
+{%- endautoescape -%}{%- endblock -%}
+
+{# The plain text message. #}
+{%- block body_text -%}{%- autoescape false -%}
+
+Le groupe {{ alliance.requestedGroupe.nom }} a refusé votre proposition d'alliance.
+
+{{ alliance.messageAllie }}
+
+{%- endautoescape -%}{%- endblock -%}
+
+{# The HTML message. Optional. #}
+{%- block body_html -%}
+
+    <h3>Le groupe {{ alliance.requestedGroupe.nom }} a refusé votre proposition d'alliance</h3>
+    
+    <p>{{ alliance.messageAllie|markdown }}</p>
+
+{%- endblock -%}

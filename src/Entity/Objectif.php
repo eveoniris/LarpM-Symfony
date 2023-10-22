@@ -3,8 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping\Entity;
+use Doctrine\Persistence\ObjectRepository;
 
-#[Entity(repositoryClass: 'App\Repository\ObjectRepository')]
+#[Entity(repositoryClass: ObjectRepository::class)]
 class Objectif extends BaseObjectif
 {
     public function __construct()

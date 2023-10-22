@@ -46,7 +46,7 @@ class BaseAppelation
     protected ArrayCollection $territoires;
 
     #[ManyToOne(targetEntity: Appelation::class, inversedBy: 'appelations')]
-    #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id')]
+    #[JoinColumn(name: 'appelation_id', referencedColumnName: 'id')]
     protected Appelation $appelation;
 
     public function __construct()

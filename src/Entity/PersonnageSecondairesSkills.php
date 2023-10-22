@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePersonnageSecondairesSkills;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\PersonnageSecondairesSkills
- *
- */
+#[Entity]
 class PersonnageSecondairesSkills extends BasePersonnageSecondairesSkills
 {
 }

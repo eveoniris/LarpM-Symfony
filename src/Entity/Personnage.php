@@ -4,8 +4,9 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Entity;
+use App\Repository\PersonnageRepository;
 
-#[Entity(repositoryClass: 'App\Repository\PersonnageRepository')]
+#[Entity(repositoryClass: PersonnageRepository::class)]
 class Personnage extends BasePersonnage implements \Stringable
 {
     /**

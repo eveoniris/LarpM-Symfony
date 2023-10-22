@@ -24,6 +24,7 @@ use App\Entity\Competence;
 use LarpManager\Form\CompetenceForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\CompetenceController.
@@ -35,6 +36,7 @@ class CompetenceController
     /**
      * Liste des compétences.
      */
+    #[Route('/competence', name: 'competence')]
     public function indexAction(Request $request, Application $app)
     {
         if ($app['security.authorization_checker']->isGranted('ROLE_REGLE')) {

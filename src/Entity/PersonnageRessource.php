@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePersonnageRessource;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\PersonnageRessource
- *
- */
+#[Entity]
 class PersonnageRessource extends BasePersonnageRessource
 {
 }

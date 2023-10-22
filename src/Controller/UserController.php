@@ -24,24 +24,22 @@ use App\Entity\Gn;
 use App\Entity\Participant;
 use App\Entity\Restriction;
 use App\Entity\User;
+use Doctrine\Persistence\ManagerRegistry;
 use JasonGrimes\Paginator;
 use LarpManager\Form\EtatCivilForm;
 use LarpManager\Form\User\UserNewForm;
 use LarpManager\Form\User\UserPersonnageDefaultForm;
 use LarpManager\Form\UserFindForm;
 use LarpManager\Form\UserRestrictionForm;
-use Silex\Application;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\DisabledException;
 
-/**
- * LarpManager\Controllers\UserController.
- *
- * @author kevin
- */
-class UserController
+class UserController extends AbstractController
 {
     private bool $isEmailConfirmationRequired = true;
 
@@ -92,7 +90,7 @@ class UserController
                 $data['email'],
                 $plainPassword,
                 $data['Username'],
-                ['ROLE_User']);
+                ['ROLE_USER']);
 
             $User->setIsEnabled(true);
             $app['orm.em']->persist($User);
@@ -344,7 +342,7 @@ class UserController
             $request->request->get('email'),
             $request->request->get('password'),
             $request->request->get('name') ?: null,
-            ['ROLE_User']);
+            ['ROLE_USER']);
 
         if ($Username = $request->request->get('Username')) {
             $User->setUsername($Username);
@@ -361,16 +359,23 @@ class UserController
 
     /**
      * Affiche le détail de l'utilisateur courant.
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function viewSelfAction(Application $app)
+    #[Route('/self', name: 'user.self')]
+    public function viewSelfAction(Request $request): Response|RedirectResponse
     {
-        if (!$app['User']) {
-            return $app->redirect($app['url_generator']->generate('User.login'));
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
         }
 
-        return $app->redirect($app['url_generator']->generate('User.view', ['id' => $app['User']->getId()]));
+        return $this->forward(
+            'App\Controller\UserController::viewAction',
+            [
+                'id' => $user->getId(),
+            ]
+        );
     }
 
     /**
@@ -382,23 +387,23 @@ class UserController
      *
      * @throws NotFoundHttpException if no User is found with that ID
      */
-    public function viewAction(Application $app, Request $request, $id)
+    public function viewAction(Request $request, ManagerRegistry $managerRegistry, int $id)
     {
-        $User = $app['User.manager']->getUser($id);
 
-        if (!$User) {
-            throw new NotFoundHttpException('No User was found with that ID.');
+        $user =$managerRegistry->getRepository(User::class)->find($id);
+
+        if (!$user) {
+            throw new NotFoundHttpException('No user was found with that ID.');
         }
 
-        if (!$User->isEnabled() && !$app['security']->isGranted('ROLE_ADMIN')) {
+        if (!$user->isEnabled() && !$this->isGranted('ROLE_ADMIN')) {
             throw new NotFoundHttpException('That User is disabled (pending email confirmation).');
         }
 
-        return $app['twig']->render('public/User/detail.twig', [
-            'User' => $User,
-        ]);
+        return $this->render('user/detail.twig', ['user' => $user]);
     }
 
+    #[Route('/user/like', name: 'user.like')]
     public function likeAction(Application $app, Request $request, User $User)
     {
         if ($User == $app['User']) {
@@ -469,9 +474,7 @@ class UserController
         ]);
     }
 
-    /**
-     * Login.
-     */
+    #[Route('/user', name: 'user.login')]
     public function loginAction(Application $app, Request $request)
     {
         $authException = $app['User.last_auth_exception']($request);
@@ -541,11 +544,7 @@ class UserController
         ]);
     }
 
-    /**
-     * Enregistre un utilisateur.
-     *
-     * @throws \InvalidArgumentException
-     */
+    #[Route('/user', name: 'user.register')]
     public function registerAction(Application $app, Request $request)
     {
         if ($request->isMethod('POST')) {
@@ -652,13 +651,7 @@ class UserController
         ]);
     }
 
-    /**
-     * Traitement mot de passe oublié.
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     */
+    #[Route('/user', name: 'user.forgot-password')]
     public function forgotPasswordAction(Application $app, Request $request)
     {
         if (!$this->isPasswordResetEnabled) {

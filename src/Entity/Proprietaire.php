@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseProprietaire;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\Proprietaire
- *
- */
+#[Entity]
 class Proprietaire extends BaseProprietaire
 {
 }

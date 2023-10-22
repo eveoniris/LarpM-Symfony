@@ -24,6 +24,7 @@ use App\Entity\Message;
 use LarpManager\Form\NewMessageForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\MessageController.
@@ -35,6 +36,7 @@ class MessageController
     /**
      * Affiche la messagerie de l'utilisateur.
      */
+    #[Route('/messagerie', name: 'messagerie')]
     public function messagerieAction(Request $request, Application $app)
     {
         return $app['twig']->render('public/message/messagerie.twig', [
@@ -65,6 +67,7 @@ class MessageController
     /**
      * Nouveau message.
      */
+    #[Route('/messagerie/new', name: 'message.new')]
     public function newAction(Application $app, Request $request)
     {
         $message = new Message();

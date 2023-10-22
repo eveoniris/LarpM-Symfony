@@ -1,16 +1,161 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="fr">
+<head>
+    {% block head %}
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-        {% block javascripts %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+        <title>LarpManager - {% block title %}{% endblock title %}</title>
+
+        <link rel="shortcut icon" href="{{ app.request.basepath }}/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="{{ app.request.basepath }}/favicon.ico" type="image/x-icon"/>
+
+    {% block stylesheets %}
+    <link rel="stylesheet" href="{{ app.request.basepath }}/css/normalize.css"/>
+    <link rel="stylesheet" href="{{ app.request.basepath }}/font-awesome-4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="{{ app.request.basepath }}/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="{{ app.request.basepath }}/css/cyborg_bootstrap.min.css"/>
+    <link rel="stylesheet"
+          href="{{ app.request.basepath }}/bootstrap-select-1.11.0/css/bootstrap-select.min.css"/>
+    <link rel="stylesheet" href="{{ app.request.basepath }}/Pnotify/css/pnotify.custom.min.css"/>
+    <link rel="stylesheet" href="{{ app.request.basepath }}/css/style.css"/>
+    {% endblock %}
+
+    {% block javascripts %}
+        <script src="{{ app.request.basepath }}/js/jquery-1.11.3.min.js"></script>
+        <script src="{{ app.request.basepath }}/js/bootstrap.min.js"></script>
+        <script src="{{ app.request.basepath }}/Pnotify/js/pnotify.custom.min.js"></script>
+        <script src="{{ app.request.basepath }}/bootstrap-select-1.11.0/js/bootstrap-select.min.js"></script>
+        <script src="{{ app.request.basepath }}/bootstrap-select-1.11.0/js/i18n/defaults-fr_FR.min.js"></script>
+        <script src="{{ app.request.basepath }}/bootstrap-validator/validator-0.11.5.min.js"></script>
+        <script src="{{ app.request.basepath }}/bootstrap-waterfall/bootstrap-waterfall.js"></script>
+
+        {# active pnotify #}
+        <script type="text/javascript">
+            PNotify.prototype.options.styling = "fontawesome";
+
+            function createNotifyError(notice) {
+                new PNotify({
+                    title: $(notice).attr('title'),
+                    text: $(notice).text(),
+                    type: 'notice',
+                    hide: false
+                });
+                $(notice).remove();
+            }
+
+            function createNotifySuccess(notice) {
+                new PNotify({
+                    title: $(notice).attr('title'),
+                    text: $(notice).text(),
+                    type: 'success',
+                    delay: 2000,
+                });
+                $(notice).remove();
+            }
+
+            function createNotifyWarning(notice) {
+                new PNotify({
+                    title: $(notice).attr('title'),
+                    text: $(notice).text(),
+                    type: 'warning',
+                    delay: 2000,
+                });
+                $(notice).remove();
+            }
+
+            $(function () {
+                $("div.notifyError").each(function () {
+                    createNotifyError(this);
+                });
+                $("div.notifySuccess").each(function () {
+                    createNotifySuccess(this);
+                });
+                $("div.notifyWarning").each(function () {
+                    createNotifySuccess(this);
+                });
+            });
+
+        </script>
+
+        {# manipulation des dates #}
+        <script src="{{ app.request.basepath }}/js/moment.js"></script>
+        <script>
+            moment.locale('fr');
+        </script>
+
+        {# Active les tooltip de bootstrap #}
+        <script type="text/javascript">
+            $(function () {
+                $("[data-toggle='tooltip']").tooltip();
+            });
+        </script>
+
+        {# Active bootstrap waterfall #}
+        <script>
+            $(document).ready(function () {
+                $('.waterfall').waterfall();
+            });
+        </script>
+
+        {# editeur tinyMCE #}
+        <script src="{{ app.request.basepath }}/js/tinymce/tinymce.min.js"></script>
+
+        <script type="text/javascript">
+            tinyMCE.init({
+                selector: '.tinymce',
+                theme: "modern",
+                plugins: "spellchecker,insertdatetime,preview,link,autolink",
+                browser_spellcheck: true,
+                menubar: "edit, insert, view, format, tools",
+                toolbar: "undo, redo, formatselect, bold, italic, alignright, aligncenter, alignright, alignjustify, bullist, numlist  link",
+                link_assume_external_targets: true
+            });
+        </script>
+    {% endblock %}
+    {% endblock head %}
+</head>
+<body>
+{% block layout %}
+    {# menu #}
+    <div id="menu">
+        {% block menu %}
+            {% include 'menu.twig' %}
+        {% endblock menu %}
+    </div>
+{% endblock %}
+
+{# corps de la page #}
+<div id="content" class="container-fluid">
+    {% for message in app.session.getFlashBag.get('success') %}
+        <div class="notifySuccess">{{ message }}</div>
+    {% endfor %}
+
+    {% for message in app.session.getFlashBag.get('alert') %}
+        <div class="notifyWarning">{{ message }}</div>
+    {% endfor %}
+
+    {% for message in app.session.getFlashBag.get('error') %}
+        <div class="notifyError">{{ message }}</div>
+    {% endfor %}
+
+    {% block body %}{% endblock body %}
+
+    {# Pied de page #}
+    <footer>
+        <div class="pull-left" style="margin-left: 50px;">
+            <ul>
+                <li><a href="http://www.fedegn.org/">FédéGN</a></li>
+                <li><a href="http://www.eveoniris.com/">Eve-oniris</a></li>
+            </ul>
+        </div>
+        <div class="pull-right" style="margin-right: 50px;">
+            <ul>
+                <li><a href="{{ path('legal') }}">Mentions légales</a></li>
+                <li><a href="{{ path('dev') }}">Développement</a></li>
+            </ul>
+        </div>
+    </footer>
+</div>
+</body>
 </html>

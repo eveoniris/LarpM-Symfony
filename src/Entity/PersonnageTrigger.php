@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePersonnageTrigger;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\PersonnageTrigger
- *
- */
+#[Entity]
 class PersonnageTrigger extends BasePersonnageTrigger
 {
 }

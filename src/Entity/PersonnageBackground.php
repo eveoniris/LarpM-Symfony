@@ -2,17 +2,15 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePersonnageBackground;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\PersonnageBackground
- *
- */
+#[Entity]
 class PersonnageBackground extends BasePersonnageBackground
 {
-	public function __construct()
-	{
-		$this->setCreationDate(new \Datetime('NOW'));
-		$this->setUpdateDate(new \Datetime('NOW'));
-	}
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setCreationDate(new \DateTime('NOW'));
+        $this->setUpdateDate(new \DateTime('NOW'));
+    }
 }

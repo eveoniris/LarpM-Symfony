@@ -2,12 +2,10 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePostView;
+use App\Repository\GroupeGnRepository;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\PostView
- *
- */
+#[Entity]
 class PostView extends BasePostView
 {
 }

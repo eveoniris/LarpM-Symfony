@@ -2,16 +2,14 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePugilatHistory;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\PugilatHistory
- *
- */
+#[Entity]
 class PugilatHistory extends BasePugilatHistory
 {
-	public function __construct()
-	{
-		$this->setDate(new \Datetime('NOW'));
-	}
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setDate(new \DateTime('NOW'));
+    }
 }

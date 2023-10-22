@@ -2,12 +2,8 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseTerritoireGuerre;
-
-/**
- * App\Entity\TerritoireGuerre
- *
- */
+use Doctrine\ORM\Mapping\Entity;
+#[Entity]
 class TerritoireGuerre extends BaseTerritoireGuerre
 {
 }

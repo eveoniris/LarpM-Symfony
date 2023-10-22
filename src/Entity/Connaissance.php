@@ -2,14 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\ClasseRepository;
 use App\Repository\ConnaissanceRepository;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity(repositoryClass: ConnaissanceRepository::class)]
 class Connaissance extends BaseConnaissance
 {
-    public function getFullLabel()
+    public function getFullLabel(): string
     {
         return $this->getLabel();
     }
