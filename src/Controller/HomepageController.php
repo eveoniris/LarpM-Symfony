@@ -26,6 +26,7 @@ use LarpManager\Form\EtatCivilForm;
 use LarpManager\Form\UserRestrictionForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\HomepageController.
@@ -169,6 +170,7 @@ class HomepageController
     /**
      * Affiche une carte du monde.
      */
+    #[Route('/world', name: 'world')]
     public function worldAction(Request $request, Application $app)
     {
         return $app['twig']->render('public/world.twig');
@@ -411,6 +413,7 @@ class HomepageController
     /**
      * Affiche les mentions légales.
      */
+    #[Route('/legal', name: 'legal')]
     public function legalAction(Request $request, Application $app)
     {
         return $app['twig']->render('homepage/legal.twig');
@@ -419,6 +422,7 @@ class HomepageController
     /**
      * Affiche les informations de dev.
      */
+    #[Route('/dev', name: 'dev')]
     public function devAction(Request $request, Application $app)
     {
         return $app['twig']->render('homepage/dev.twig');

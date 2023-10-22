@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
 
 /**
  * App\Entity\Personnage.
@@ -22,13 +23,13 @@ class BasePersonnage
      * @var int
      */
     public $pugilat;
+
     #[ORM\Id, ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER), ORM\GeneratedValue]
     protected int $id;
 
-    /**
-     * @Column(type="string", length=100)
-     */
-    protected $nom;
+
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
+    protected string $nom;
 
     /**
      * @Column(type="string", length=100, nullable=true)
@@ -1866,10 +1867,10 @@ class BasePersonnage
         return $this->personnageLignee;
     }
 
-    public function __sleep()
+    /*public function __sleep()
     {
         return ['id', 'nom', 'surnom', 'intrigue', 'groupe_id', 'classe_id', 'age_id', 'genre_id', 'renomme', 'photo', 'xp', 'territoire_id', 'materiel', 'vivant', 'age_reel', 'trombineUrl', 'User_id', 'richesse', 'heroisme'];
-    }
+    }*/
 
     /**
      * @return la prochaine partipcipation

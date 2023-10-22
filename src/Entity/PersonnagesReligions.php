@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePersonnagesReligions;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\PersonnagesReligions
- *
- */
+#[Entity]
 class PersonnagesReligions extends BasePersonnagesReligions
 {
 }

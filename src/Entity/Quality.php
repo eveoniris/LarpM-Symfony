@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseQuality;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\Quality
- *
- */
+#[Entity]
 class Quality extends BaseQuality
 {
 }

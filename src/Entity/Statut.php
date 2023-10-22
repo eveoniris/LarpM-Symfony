@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseStatut;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\Statut
- *
- */
+#[Entity]
 class Statut extends BaseStatut
 {
 }

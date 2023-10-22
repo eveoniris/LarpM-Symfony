@@ -2,13 +2,10 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseReligionLevel;
+use App\Repository\ReligionLevelRepository;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\ReligionLevel
- *
- * @Entity(repositoryClass="LarpManager\Repository\ReligionLevelRepository")
- */
+#[Entity(repositoryClass: ReligionLevelRepository::class)]
 class ReligionLevel extends BaseReligionLevel
 {
 }

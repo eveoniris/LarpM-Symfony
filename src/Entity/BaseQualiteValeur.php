@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+
 /**
  * App\Entity\QualiteValeur.
  *
@@ -15,12 +19,8 @@ namespace App\Entity;
  */
 class BaseQualiteValeur
 {
-    /**
-     * @Id
-     *
-     * @Column(type="integer")
-     */
-    protected $qualite_id;
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    protected ?int $id = null;
 
     /**
      * @Id

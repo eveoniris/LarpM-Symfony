@@ -1,13 +1,9 @@
 <?php
 
 namespace App\Entity;
+use Doctrine\ORM\Mapping\Entity;
 
-use App\Entity\BasePersonnageHasToken;
-
-/**
- * App\Entity\PersonnageHasToken
- *
- */
+#[Entity]
 class PersonnageHasToken extends BasePersonnageHasToken
 {
 }

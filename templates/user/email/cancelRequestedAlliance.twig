@@ -1,0 +1,18 @@
+{# The subject line. #}
+{%- block subject -%}{%- autoescape false -%}
+    Demande d'alliance annulée.
+{%- endautoescape -%}{%- endblock -%}
+
+{# The plain text message. #}
+{%- block body_text -%}{%- autoescape false -%}
+
+Le groupe {{ alliance.groupe.nom }} vient d'annuler sa demande d'alliance
+
+{%- endautoescape -%}{%- endblock -%}
+
+{# The HTML message. Optional. #}
+{%- block body_html -%}
+
+    <h3>Le groupe {{ alliance.groupe.nom }} vient d'annuler sa demande d'alliance</h3>
+    
+{%- endblock -%}

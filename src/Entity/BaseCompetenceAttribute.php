@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Id;
+
 /**
  * App\Entity\CompetenceAttribute.
  *
@@ -15,19 +18,11 @@ namespace App\Entity;
  */
 class BaseCompetenceAttribute
 {
-    /**
-     * @Id
-     *
-     * @Column(type="integer")
-     */
-    protected $competence_id;
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true], columnDefinition: 'INT AUTO_INCREMENT')]
+    protected int $competence_id;
 
-    /**
-     * @Id
-     *
-     * @Column(type="integer")
-     */
-    protected $attribute_type_id;
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true], columnDefinition: 'INT AUTO_INCREMENT')]
+    protected int $attribute_type_id;
 
     /**
      * @Column(name="`value`", type="integer")

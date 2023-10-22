@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping\Entity;
+use App\Repository\ParticipantRepository;
 
-#[Entity(repositoryClass: 'App\Repository\ParticipantRepository')]
+#[Entity(repositoryClass: ParticipantRepository::class)]
 class Participant extends BaseParticipant implements \Stringable
 {
     public function __construct()
     {
+        parent::__construct();
         $this->setSubscriptionDate(new \DateTime('NOW'));
     }
 

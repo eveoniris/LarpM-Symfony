@@ -2,15 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePersonnageChronologie;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\PersonnageChronologie
- *
- */
+#[Entity]
 class PersonnageChronologie extends BasePersonnageChronologie
 {
-	public function __construct()
-	{
-	}
 }

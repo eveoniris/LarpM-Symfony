@@ -1,0 +1,22 @@
+{# The subject line. #}
+{%- block subject -%}{%- autoescape false -%}
+    Un groupe vous a déclaré la guerre !
+{%- endautoescape -%}{%- endblock -%}
+
+{# The plain text message. #}
+{%- block body_text -%}{%- autoescape false -%}
+
+Le groupe {{ war.groupe.nom }} vous a déclaré la guerre :
+
+{{ war.message }}
+
+{%- endautoescape -%}{%- endblock -%}
+
+{# The HTML message. Optional. #}
+{%- block body_html -%}
+
+    <h3>Le groupe {{ war.groupe.nom }} vous a déclaré la guerre</h3>
+    
+    <p>{{ war.message|markdown }}</p>
+
+{%- endblock -%}

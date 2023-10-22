@@ -3,117 +3,71 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\Restriction.
- *
- * @Table(name="restriction", indexes={@Index(name="fk_restriction_User1_idx", columns={"auteur_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseRestriction", "extended":"Restriction"})
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'restriction')]
+#[ORM\Index(columns: ['auteur_id'], name: 'fk_restriction_user1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseRestriction', 'extended' => 'Restriction'])]
 class BaseRestriction
 {
-    /**
-     * @Id
-     *
-     * @Column(type="integer")
-     *
-     * @GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    protected int $id;
 
-    /**
-     * @Column(type="string", length=90)
-     */
-    protected $label;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 90)]
+    protected string $label;
 
-    /**
-     * @Column(type="datetime", nullable=true)
-     */
-    protected $creation_date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?\DateTime $creation_date = null;
 
-    /**
-     * @Column(type="datetime", nullable=true)
-     */
-    protected $update_date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?\DateTime $update_date = null;
 
-    /**
-     * @ManyToOne(targetEntity="User", inversedBy="restrictionRelatedByAuteurIds")
-     *
-     * @JoinColumn(name="auteur_id", referencedColumnName="id", nullable=false)
-     */
-    protected $UserRelatedByAuteurId;
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'restrictionRelatedByAuteurIds')]
+    #[JoinColumn(name: 'auteur_id', referencedColumnName: 'id', nullable: 'false')]
+    protected User $userRelatedByAuteurId;
 
-    /**
-     * @ManyToMany(targetEntity="User", mappedBy="restrictions")
-     */
-    protected $Users;
+    #[ManyToMany(targetEntity: User::class, mappedBy: 'restrictions')]
+    protected ArrayCollection $users;
 
     public function __construct()
     {
-        $this->Users = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Restriction
-     */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Restriction
-     */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
         return $this;
     }
 
-    /**
-     * Get the value of label.
-     *
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
-    /**
-     * Set the value of creation_date.
-     *
-     * @param \DateTime $creation_date
-     *
-     * @return \App\Entity\Restriction
-     */
-    public function setCreationDate($creation_date)
+    public function setCreationDate(\DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -122,34 +76,20 @@ class BaseRestriction
 
     /**
      * Get the value of creation_date.
-     *
-     * @return \DateTime
      */
-    public function getCreationDate()
+    public function getCreationDate(): ?\DateTime
     {
         return $this->creation_date;
     }
 
-    /**
-     * Set the value of update_date.
-     *
-     * @param \DateTime $update_date
-     *
-     * @return \App\Entity\Restriction
-     */
-    public function setUpdateDate($update_date)
+    public function setUpdateDate(\DateTime $update_date): static
     {
         $this->update_date = $update_date;
 
         return $this;
     }
 
-    /**
-     * Get the value of update_date.
-     *
-     * @return \DateTime
-     */
-    public function getUpdateDate()
+    public function getUpdateDate(): ?\DateTime
     {
         return $this->update_date;
     }
@@ -159,9 +99,9 @@ class BaseRestriction
      *
      * @return \App\Entity\Restriction
      */
-    public function setUserRelatedByAuteurId(User $User = null)
+    public function setUserRelatedByAuteurId(User $user = null): static
     {
-        $this->UserRelatedByAuteurId = $User;
+        $this->userRelatedByAuteurId = $user;
 
         return $this;
     }
@@ -171,43 +111,28 @@ class BaseRestriction
      *
      * @return \App\Entity\User
      */
-    public function getUserRelatedByAuteurId()
+    public function getUserRelatedByAuteurId(): User
     {
-        return $this->UserRelatedByAuteurId;
+        return $this->userRelatedByAuteurId;
     }
 
-    /**
-     * Add User entity to collection.
-     *
-     * @return \App\Entity\Restriction
-     */
-    public function addUser(User $User)
+    public function addUser(User $user): static
     {
-        $this->Users[] = $User;
+        $this->users->add($user);
 
         return $this;
     }
 
-    /**
-     * Remove User entity from collection.
-     *
-     * @return \App\Entity\Restriction
-     */
-    public function removeUser(User $User)
+    public function removeUser(User $User): static
     {
-        $this->Users->removeElement($User);
+        $this->users->removeElement($User);
 
         return $this;
     }
 
-    /**
-     * Get User entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getUsers()
+    public function getUsers(): ArrayCollection
     {
-        return $this->Users;
+        return $this->users;
     }
 
     public function __sleep()

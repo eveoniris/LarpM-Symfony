@@ -10,62 +10,64 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\User.
- *
- * @Table(name="`User`", indexes={@Index(name="fk_User_etat_civil1_idx", columns={"etat_civil_id"}), @Index(name="fk_User_personnage_secondaire1_idx", columns={"personnage_secondaire_id"}), @Index(name="fk_User_personnage1_idx", columns={"personnage_id"})}, uniqueConstraints={@UniqueConstraint(name="email_UNIQUE", columns={"email"}), @UniqueConstraint(name="Username_UNIQUE", columns={"Username"}), @UniqueConstraint(name="id_UNIQUE", columns={"id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseUser", "extended":"User"})
- */
-class BaseUser
+#[Entity]
+#[ORM\Table(name: 'user')]
+#[ORM\Index(columns: ['etat_civil_id'], name: 'fk_user_etat_civil1_idx')]
+#[ORM\Index(columns: ['personnage_secondaire_id'], name: 'fk_user_personnage_secondaire1_idx')]
+#[ORM\Index(columns: ['personnage_id'], name: 'fk_user_personnage1_idx')]
+#[ORM\UniqueConstraint(name: 'email_UNIQUE', columns: ['email'])]
+#[ORM\UniqueConstraint(name: 'username_UNIQUE', columns: ['username'])]
+#[ORM\UniqueConstraint(name: 'id_UNIQUE', columns: ['id'])]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseUser', 'extended' => 'User'])]
+abstract class BaseUser
 {
-    /**
-     * @Id
-     *
-     * @Column(type="integer", options={"unsigned":true})
-     *
-     * @GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    protected ?int $id = null;
 
     /**
      * @Column(type="string", length=100)
      */
-    protected $email;
+    #[Column(name: 'email', type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
+    protected string $email = '';
+
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255)]
+    protected string $password = '';
+
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 180, unique: true)]
+    protected ?string $username = null;
+
+    #[ORM\Column(type: 'json')]
+    protected ?array $roles = [];
 
     /**
-     * @Column(name="`password`", type="string", length=255, nullable=true)
+     * TODO @deprecated.
      */
-    protected $password;
-
     /**
      * @Column(type="string", length=255)
      */
     protected $salt;
 
     /**
+     * TODO @deprecated.
+     */
+    /**
      * @Column(type="string", length=255)
      */
     protected $rights;
 
-    /**
-     * @Column(type="datetime")
-     */
-    protected $creation_date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?\DateTime $creation_date = null;
 
-    /**
-     * @Column(type="string", length=100)
-     */
-    protected $Username;
-
-    /**
-     * @Column(type="boolean")
-     */
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     protected $isEnabled;
 
     /**
@@ -249,36 +251,23 @@ class BaseUser
      */
     protected $topics;
 
-    /**
-     * @OneToOne(targetEntity="EtatCivil", inversedBy="User", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="etat_civil_id", referencedColumnName="id")
-     */
-    protected $etatCivil;
+    #[ORM\OneToOne(inversedBy: 'user', targetEntity: EtatCivil::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'etat_civil_id', referencedColumnName: 'id')]
+    protected EtatCivil $etatCivil;
 
-    /**
-     * @ManyToOne(targetEntity="PersonnageSecondaire", inversedBy="Users", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="personnage_secondaire_id", referencedColumnName="id")
-     */
-    protected $personnageSecondaire;
+    #[ORM\ManyToOne(targetEntity: PersonnageSecondaire::class, cascade: ['persist', 'remove'], inversedBy: 'users')]
+    #[ORM\JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id')]
+    protected PersonnageSecondaire $personnageSecondaire;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="Users")
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id")
-     */
-    protected $personnage;
+    #[ORM\ManyToOne(targetEntity: Personnage::class, cascade: ['persist', 'remove'], inversedBy: 'users')]
+    #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    protected Personnage $personnage;
 
-    /**
-     * @ManyToMany(targetEntity="Restriction", inversedBy="Users")
-     *
-     * @JoinTable(name="User_has_restriction",
-     *     joinColumns={@JoinColumn(name="User_id", referencedColumnName="id", nullable=false)},
-     *     inverseJoinColumns={@JoinColumn(name="restriction_id", referencedColumnName="id", nullable=false)}
-     * )
-     */
-    protected $restrictions;
+    #[ORM\ManyToMany(targetEntity: Restriction::class, inversedBy: 'users')]
+    #[ORM\JoinTable(name: 'user_has_restriction')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'restriction_id', referencedColumnName: 'id', nullable: false)]
+    protected Collection $restrictions;
 
     /**
      * @ManyToMany(targetEntity="Post", mappedBy="Users")
@@ -313,84 +302,32 @@ class BaseUser
         $this->posts = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\User
-     */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of email.
-     *
-     * @param string $email
-     *
-     * @return \App\Entity\User
-     */
-    public function setEmail($email): static
+    public function setEmail(string $email): static
     {
         $this->email = $email;
 
         return $this;
     }
 
-    /**
-     * Get the value of email.
-     *
-     * @return string
-     */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
 
     /**
-     * Set the value of password.
-     *
-     * @param string $password
-     *
-     * @return \App\Entity\User
-     */
-    public function setPassword($password): static
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of password.
-     *
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * Set the value of salt.
-     *
-     * @param string $salt
-     *
-     * @return \App\Entity\User
+     * @deprecated
      */
     public function setSalt($salt): static
     {
@@ -400,27 +337,80 @@ class BaseUser
     }
 
     /**
-     * Get the value of salt.
-     *
-     * @return string
+     * @deprecated
      */
     public function getSalt()
     {
-        return $this->salt;
+        return null;
     }
 
     /**
-     * Set the value of rights.
+     * A visual identifier that represents this user.
      *
-     * @param string $rights
-     *
-     * @return \App\Entity\User
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->username;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @deprecated
      */
     public function setRights($rights): static
     {
         $this->rights = $rights;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getUsername();
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     /**
@@ -437,8 +427,6 @@ class BaseUser
      * Set the value of creation_date.
      *
      * @param \DateTime $creation_date
-     *
-     * @return \App\Entity\User
      */
     public function setCreationDate($creation_date): static
     {
@@ -457,36 +445,35 @@ class BaseUser
         return $this->creation_date;
     }
 
-    /**
-     * Set the value of Username.
-     *
-     * @param string $Username
-     *
-     * @return \App\Entity\User
-     */
-    public function setUsername($Username): static
+    public function setUsername(string $username): static
     {
-        $this->Username = $Username;
+        $this->username = $username;
 
         return $this;
     }
 
     /**
-     * Get the value of Username.
+     * Returns the Username, if not empty, otherwise the email address.
      *
-     * @return string
+     * Email is returned as a fallback because Username is optional,
+     * but the Symfony Security system depends on getUsername() returning a value.
+     * Use getRealUsername() to get the actual Username value.
+     *
+     * This method is required by the UserInterface.
+     *
+     * @return string the Username, if not empty, otherwise the email
+     *
+     * @see getRealUsername
      */
-    public function getUsername()
+    public function getUsername(): string
     {
-        return $this->Username;
+        return $this->username ?: $this->email;
     }
 
     /**
      * Set the value of isEnabled.
      *
      * @param bool $isEnabled
-     *
-     * @return \App\Entity\User
      */
     public function setIsEnabled($isEnabled): static
     {
@@ -509,8 +496,6 @@ class BaseUser
      * Set the value of confirmationToken.
      *
      * @param string $confirmationToken
-     *
-     * @return \App\Entity\User
      */
     public function setConfirmationToken($confirmationToken): static
     {
@@ -533,8 +518,6 @@ class BaseUser
      * Set the value of timePasswordResetRequested.
      *
      * @param int $timePasswordResetRequested
-     *
-     * @return \App\Entity\User
      */
     public function setTimePasswordResetRequested($timePasswordResetRequested): static
     {
@@ -557,8 +540,6 @@ class BaseUser
      * Set the value of trombineUrl.
      *
      * @param string $trombineUrl
-     *
-     * @return \App\Entity\User
      */
     public function setTrombineUrl($trombineUrl): static
     {
@@ -581,8 +562,6 @@ class BaseUser
      * Set the value of lastConnectionDate.
      *
      * @param \DateTime $lastConnectionDate
-     *
-     * @return \App\Entity\User
      */
     public function setLastConnectionDate($lastConnectionDate): static
     {
@@ -601,13 +580,6 @@ class BaseUser
         return $this->lastConnectionDate;
     }
 
-    /**
-     * Set the value of coeur.
-     *
-     * @param int $coeur
-     *
-     * @return \App\Entity\User
-     */
     public function setCoeur($coeur): static
     {
         $this->coeur = $coeur;
@@ -625,11 +597,6 @@ class BaseUser
         return $this->coeur;
     }
 
-    /**
-     * Add Background entity to collection (one to many).
-     *
-     * @return \App\Entity\User
-     */
     public function addBackground(Background $background): static
     {
         $this->backgrounds[] = $background;
@@ -637,11 +604,6 @@ class BaseUser
         return $this;
     }
 
-    /**
-     * Remove Background entity from collection (one to many).
-     *
-     * @return \App\Entity\User
-     */
     public function removeBackground(Background $background): static
     {
         $this->backgrounds->removeElement($background);
@@ -661,8 +623,6 @@ class BaseUser
 
     /**
      * Add Billet entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addBillet(Billet $billet): static
     {
@@ -673,8 +633,6 @@ class BaseUser
 
     /**
      * Remove Billet entity from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeBillet(Billet $billet): static
     {
@@ -695,8 +653,6 @@ class BaseUser
 
     /**
      * Add Debriefing entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addDebriefing(Debriefing $debriefing): static
     {
@@ -707,8 +663,6 @@ class BaseUser
 
     /**
      * Remove Debriefing entity from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeDebriefing(Debriefing $debriefing): static
     {
@@ -729,8 +683,6 @@ class BaseUser
 
     /**
      * Add Document entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addDocument(Document $document): static
     {
@@ -741,8 +693,6 @@ class BaseUser
 
     /**
      * Remove Document entity from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeDocument(Document $document): static
     {
@@ -763,8 +713,6 @@ class BaseUser
 
     /**
      * Add Groupe entity related by `scenariste_id` to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addGroupeRelatedByScenaristeId(Groupe $groupe): static
     {
@@ -775,8 +723,6 @@ class BaseUser
 
     /**
      * Remove Groupe entity related by `scenariste_id` from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeGroupeRelatedByScenaristeId(Groupe $groupe): static
     {
@@ -797,8 +743,6 @@ class BaseUser
 
     /**
      * Add Groupe entity related by `responsable_id` to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addGroupeRelatedByResponsableId(Groupe $groupe): static
     {
@@ -809,8 +753,6 @@ class BaseUser
 
     /**
      * Remove Groupe entity related by `responsable_id` from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeGroupeRelatedByResponsableId(Groupe $groupe): static
     {
@@ -831,8 +773,6 @@ class BaseUser
 
     /**
      * Add Intrigue entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addIntrigue(Intrigue $intrigue): static
     {
@@ -843,8 +783,6 @@ class BaseUser
 
     /**
      * Remove Intrigue entity from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeIntrigue(Intrigue $intrigue): static
     {
@@ -865,8 +803,6 @@ class BaseUser
 
     /**
      * Add IntrigueHasModification entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addIntrigueHasModification(IntrigueHasModification $intrigueHasModification): static
     {
@@ -877,8 +813,6 @@ class BaseUser
 
     /**
      * Remove IntrigueHasModification entity from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeIntrigueHasModification(IntrigueHasModification $intrigueHasModification): static
     {
@@ -899,8 +833,6 @@ class BaseUser
 
     /**
      * Add Message entity related by `auteur` to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addMessageRelatedByAuteur(Message $message): static
     {
@@ -911,8 +843,6 @@ class BaseUser
 
     /**
      * Remove Message entity related by `auteur` from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeMessageRelatedByAuteur(Message $message): static
     {
@@ -933,8 +863,6 @@ class BaseUser
 
     /**
      * Add Message entity related by `destinataire` to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addMessageRelatedByDestinataire(Message $message): static
     {
@@ -945,8 +873,6 @@ class BaseUser
 
     /**
      * Remove Message entity related by `destinataire` from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeMessageRelatedByDestinataire(Message $message): static
     {
@@ -967,8 +893,6 @@ class BaseUser
 
     /**
      * Add Notification entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addNotification(Notification $notification): static
     {
@@ -979,8 +903,6 @@ class BaseUser
 
     /**
      * Remove Notification entity from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeNotification(Notification $notification): static
     {
@@ -1001,8 +923,6 @@ class BaseUser
 
     /**
      * Add Objet entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addObjet(Objet $objet): static
     {
@@ -1013,8 +933,6 @@ class BaseUser
 
     /**
      * Remove Objet entity from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeObjet(Objet $objet): static
     {
@@ -1035,8 +953,6 @@ class BaseUser
 
     /**
      * Add Participant entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addParticipant(Participant $participant): static
     {
@@ -1047,8 +963,6 @@ class BaseUser
 
     /**
      * Remove Participant entity from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeParticipant(Participant $participant): static
     {
@@ -1069,8 +983,6 @@ class BaseUser
 
     /**
      * Add Personnage entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addPersonnage(Personnage $personnage): static
     {
@@ -1081,8 +993,6 @@ class BaseUser
 
     /**
      * Remove Personnage entity from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removePersonnage(Personnage $personnage): static
     {
@@ -1103,8 +1013,6 @@ class BaseUser
 
     /**
      * Add PersonnageBackground entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addPersonnageBackground(PersonnageBackground $personnageBackground): static
     {
@@ -1115,8 +1023,6 @@ class BaseUser
 
     /**
      * Remove PersonnageBackground entity from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removePersonnageBackground(PersonnageBackground $personnageBackground): static
     {
@@ -1137,8 +1043,6 @@ class BaseUser
 
     /**
      * Add Post entity related by `User_id` to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addPostRelatedByUserId(Post $post): static
     {
@@ -1149,8 +1053,6 @@ class BaseUser
 
     /**
      * Remove Post entity related by `User_id` from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removePostRelatedByUserId(Post $post): static
     {
@@ -1160,7 +1062,7 @@ class BaseUser
     }
 
     /**
-     * Get Post entity related by `User_id` collection (one to many).
+     * Get Post entity related by `user_id` collection (one to many).
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -1171,8 +1073,6 @@ class BaseUser
 
     /**
      * Add PostView entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addPostView(PostView $postView): static
     {
@@ -1183,8 +1083,6 @@ class BaseUser
 
     /**
      * Remove PostView entity from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removePostView(PostView $postView): static
     {
@@ -1198,27 +1096,23 @@ class BaseUser
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPostViews()
+    public function getPostViews(): ArrayCollection
     {
         return $this->postViews;
     }
 
     /**
      * Add Question entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addQuestion(Question $question): static
     {
-        $this->questions[] = $question;
+        $this->questions->add($question);
 
         return $this;
     }
 
     /**
      * Remove Question entity from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeQuestion(Question $question): static
     {
@@ -1239,20 +1133,16 @@ class BaseUser
 
     /**
      * Add Relecture entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addRelecture(Relecture $relecture): static
     {
-        $this->relectures[] = $relecture;
+        $this->relectures->add($relecture);
 
         return $this;
     }
 
     /**
      * Remove Relecture entity from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeRelecture(Relecture $relecture): static
     {
@@ -1273,20 +1163,16 @@ class BaseUser
 
     /**
      * Add Restriction entity related by `auteur_id` to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addRestrictionRelatedByAuteurId(Restriction $restriction): static
     {
-        $this->restrictionRelatedByAuteurIds[] = $restriction;
+        $this->restrictionRelatedByAuteurIds->add($restriction);
 
         return $this;
     }
 
     /**
      * Remove Restriction entity related by `auteur_id` from collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function removeRestrictionRelatedByAuteurId(Restriction $restriction): static
     {
@@ -1300,28 +1186,21 @@ class BaseUser
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getRestrictionRelatedByAuteurIds()
+    public function getRestrictionRelatedByAuteurIds(): ArrayCollection
     {
         return $this->restrictionRelatedByAuteurIds;
     }
 
     /**
      * Add Rumeur entity to collection (one to many).
-     *
-     * @return \App\Entity\User
      */
     public function addRumeur(Rumeur $rumeur): static
     {
-        $this->rumeurs[] = $rumeur;
+        $this->rumeurs->add($rumeur);
 
         return $this;
     }
 
-    /**
-     * Remove Rumeur entity from collection (one to many).
-     *
-     * @return \App\Entity\User
-     */
     public function removeRumeur(Rumeur $rumeur): static
     {
         $this->rumeurs->removeElement($rumeur);
@@ -1329,33 +1208,18 @@ class BaseUser
         return $this;
     }
 
-    /**
-     * Get Rumeur entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRumeurs()
+    public function getRumeurs(): ArrayCollection
     {
         return $this->rumeurs;
     }
 
-    /**
-     * Add Topic entity to collection (one to many).
-     *
-     * @return \App\Entity\User
-     */
     public function addTopic(Topic $topic): static
     {
-        $this->topics[] = $topic;
+        $this->topics->add($topic);
 
         return $this;
     }
 
-    /**
-     * Remove Topic entity from collection (one to many).
-     *
-     * @return \App\Entity\User
-     */
     public function removeTopic(Topic $topic): static
     {
         $this->topics->removeElement($topic);
@@ -1363,21 +1227,11 @@ class BaseUser
         return $this;
     }
 
-    /**
-     * Get Topic entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getTopics()
+    public function getTopics(): ArrayCollection
     {
         return $this->topics;
     }
 
-    /**
-     * Set EtatCivil entity (one to one).
-     *
-     * @return \App\Entity\User
-     */
     public function setEtatCivil(EtatCivil $etatCivil): static
     {
         $this->etatCivil = $etatCivil;
@@ -1385,20 +1239,13 @@ class BaseUser
         return $this;
     }
 
-    /**
-     * Get EtatCivil entity (one to one).
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function getEtatCivil()
+    public function getEtatCivil(): EtatCivil
     {
         return $this->etatCivil;
     }
 
     /**
      * Set PersonnageSecondaire entity (many to one).
-     *
-     * @return \App\Entity\User
      */
     public function setPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire = null): static
     {
@@ -1409,19 +1256,12 @@ class BaseUser
 
     /**
      * Get PersonnageSecondaire entity (many to one).
-     *
-     * @return \App\Entity\PersonnageSecondaire
      */
-    public function getPersonnageSecondaire()
+    public function getPersonnageSecondaire(): PersonnageSecondaire
     {
         return $this->personnageSecondaire;
     }
 
-    /**
-     * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\User
-     */
     public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
@@ -1429,34 +1269,19 @@ class BaseUser
         return $this;
     }
 
-    /**
-     * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
-     */
-    public function getPersonnage()
+    public function getPersonnage(): Personnage
     {
         return $this->personnage;
     }
 
-    /**
-     * Add Restriction entity to collection.
-     *
-     * @return \App\Entity\User
-     */
     public function addRestriction(Restriction $restriction): static
     {
         $restriction->addUser($this);
-        $this->restrictions[] = $restriction;
+        $this->restrictions->add($restriction);
 
         return $this;
     }
 
-    /**
-     * Remove Restriction entity from collection.
-     *
-     * @return \App\Entity\User
-     */
     public function removeRestriction(Restriction $restriction): static
     {
         $restriction->removeUser($this);
@@ -1465,33 +1290,18 @@ class BaseUser
         return $this;
     }
 
-    /**
-     * Get Restriction entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRestrictions()
+    public function getRestrictions(): ArrayCollection
     {
         return $this->restrictions;
     }
 
-    /**
-     * Add Post entity to collection.
-     *
-     * @return \App\Entity\User
-     */
     public function addPost(Post $post): static
     {
-        $this->posts[] = $post;
+        $this->posts->add($post);
 
         return $this;
     }
 
-    /**
-     * Remove Post entity from collection.
-     *
-     * @return \App\Entity\User
-     */
     public function removePost(Post $post): static
     {
         $this->posts->removeElement($post);
@@ -1499,18 +1309,13 @@ class BaseUser
         return $this;
     }
 
-    /**
-     * Get Post entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getPosts()
+    public function getPosts(): ArrayCollection
     {
         return $this->posts;
     }
 
     public function __sleep()
     {
-        return ['id', 'email', 'password', 'salt', 'rights', 'creation_date', 'Username', 'isEnabled', 'confirmationToken', 'timePasswordResetRequested', 'etat_civil_id', 'trombineUrl', 'personnage_secondaire_id', 'lastConnectionDate', 'personnage_id', 'coeur'];
+        return ['id', 'email', 'password', 'salt', 'rights', 'creation_date', 'username', 'isEnabled', 'confirmationToken', 'timePasswordResetRequested', 'etatCivil', 'trombineUrl', 'personnageSecondaire', 'lastConnectionDate', 'personnage', 'roles'];
     }
 }

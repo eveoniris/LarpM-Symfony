@@ -10,437 +10,240 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
 
-/**
- * App\Entity\EtatCivil.
- *
- * @Table(name="etat_civil")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"base":"BaseEtatCivil", "extended":"EtatCivil"})
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'etat_civil')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseEtatCivil', 'extended' => 'EtatCivil'])]
 class BaseEtatCivil
 {
-    /**
-     * @var \Doctrine\Common\Collections\ArrayCollection
-     */
-    public $Users;
-    /**
-     * @Id
-     *
-     * @Column(type="integer")
-     *
-     * @GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    public ArrayCollection $users;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $nom;
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $prenom;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $nom = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $prenom_usage;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $prenom = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $telephone;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $prenom_usage = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $photo;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $telephone = null;
 
-    /**
-     * @Column(type="datetime", nullable=true)
-     */
-    protected $date_naissance;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $photo = null;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $probleme_medicaux;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?\DateTime $date_naissance = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $personne_a_prevenir;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $probleme_medicaux = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $tel_pap;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $personne_a_prevenir = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $fedegn;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $tel_pap = null;
 
-    /**
-     * @Column(type="datetime")
-     */
-    protected $creation_date;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $fedegn = null;
 
-    /**
-     * @Column(type="datetime")
-     */
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    protected \DateTime $creation_date;
+
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected $update_date;
 
-    /**
-     * @OneToOne(targetEntity="User", mappedBy="etatCivil", cascade={"persist", "remove"})
-     */
-    protected $User;
+    #[ORM\OneToOne(mappedBy: 'etatCivil', targetEntity: User::class, cascade: ['persist', 'remove'])]
+    protected User $user;
 
     public function __construct()
     {
-        $this->Users = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of nom.
-     *
-     * @param string $nom
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setNom($nom)
+    public function setNom(string $nom): static
     {
         $this->nom = $nom;
 
         return $this;
     }
 
-    /**
-     * Get the value of nom.
-     *
-     * @return string
-     */
-    public function getNom()
+    public function getNom(): ?string
     {
         return $this->nom;
     }
 
-    /**
-     * Set the value of prenom.
-     *
-     * @param string $prenom
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setPrenom($prenom)
+    public function setPrenom(string $prenom): static
     {
         $this->prenom = $prenom;
 
         return $this;
     }
 
-    /**
-     * Get the value of prenom.
-     *
-     * @return string
-     */
-    public function getPrenom()
+    public function getPrenom(): ?string
     {
         return $this->prenom;
     }
 
-    /**
-     * Set the value of prenom_usage.
-     *
-     * @param string $prenom_usage
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setPrenomUsage($prenom_usage)
+    public function setPrenomUsage(string $prenom_usage): static
     {
         $this->prenom_usage = $prenom_usage;
 
         return $this;
     }
 
-    /**
-     * Get the value of prenom_usage.
-     *
-     * @return string
-     */
-    public function getPrenomUsage()
+    public function getPrenomUsage(): ?string
     {
         return $this->prenom_usage;
     }
 
-    /**
-     * Set the value of telephone.
-     *
-     * @param string $telephone
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setTelephone($telephone)
+    public function setTelephone(string $telephone): string
     {
         $this->telephone = $telephone;
 
         return $this;
     }
 
-    /**
-     * Get the value of telephone.
-     *
-     * @return string
-     */
-    public function getTelephone()
+    public function getTelephone(): ?string
     {
         return $this->telephone;
     }
 
-    /**
-     * Set the value of photo.
-     *
-     * @param string $photo
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setPhoto($photo)
+    public function setPhoto(string $photo): static
     {
         $this->photo = $photo;
 
         return $this;
     }
 
-    /**
-     * Get the value of photo.
-     *
-     * @return string
-     */
-    public function getPhoto()
+    public function getPhoto(): ?string
     {
         return $this->photo;
     }
 
-    /**
-     * Set the value of date_naissance.
-     *
-     * @param \DateTime $date_naissance
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setDateNaissance($date_naissance)
+    public function setDateNaissance(?\DateTime $date_naissance): string
     {
         $this->date_naissance = $date_naissance;
 
         return $this;
     }
 
-    /**
-     * Get the value of date_naissance.
-     *
-     * @return \DateTime
-     */
-    public function getDateNaissance()
+    public function getDateNaissance(): ?\DateTime
     {
         return $this->date_naissance;
     }
 
-    /**
-     * Set the value of probleme_medicaux.
-     *
-     * @param string $probleme_medicaux
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setProblemeMedicaux($probleme_medicaux)
+    public function setProblemeMedicaux(string $probleme_medicaux): static
     {
         $this->probleme_medicaux = $probleme_medicaux;
 
         return $this;
     }
 
-    /**
-     * Get the value of probleme_medicaux.
-     *
-     * @return string
-     */
-    public function getProblemeMedicaux()
+    public function getProblemeMedicaux(): ?string
     {
         return $this->probleme_medicaux;
     }
 
-    /**
-     * Set the value of personne_a_prevenir.
-     *
-     * @param string $personne_a_prevenir
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setPersonneAPrevenir($personne_a_prevenir)
+    public function setPersonneAPrevenir(string $personne_a_prevenir): static
     {
         $this->personne_a_prevenir = $personne_a_prevenir;
 
         return $this;
     }
 
-    /**
-     * Get the value of personne_a_prevenir.
-     *
-     * @return string
-     */
-    public function getPersonneAPrevenir()
+    public function getPersonneAPrevenir(): ?string
     {
         return $this->personne_a_prevenir;
     }
 
-    /**
-     * Set the value of tel_pap.
-     *
-     * @param string $tel_pap
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setTelPap($tel_pap)
+    public function setTelPap(string $tel_pap): static
     {
         $this->tel_pap = $tel_pap;
 
         return $this;
     }
 
-    /**
-     * Get the value of tel_pap.
-     *
-     * @return string
-     */
-    public function getTelPap()
+    public function getTelPap(): ?string
     {
         return $this->tel_pap;
     }
 
-    /**
-     * Set the value of fedegn.
-     *
-     * @param string $fedegn
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setFedegn($fedegn)
+    public function setFedegn($fedegn): static
     {
         $this->fedegn = $fedegn;
 
         return $this;
     }
 
-    /**
-     * Get the value of fedegn.
-     *
-     * @return string
-     */
-    public function getFedegn()
+    public function getFedegn(): ?string
     {
         return $this->fedegn;
     }
 
-    /**
-     * Set the value of creation_date.
-     *
-     * @param \DateTime $creation_date
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setCreationDate($creation_date)
+    public function setCreationDate(?\DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
         return $this;
     }
 
-    /**
-     * Get the value of creation_date.
-     *
-     * @return \DateTime
-     */
-    public function getCreationDate()
+    public function getCreationDate(): \DateTime
     {
         return $this->creation_date;
     }
 
-    /**
-     * Set the value of update_date.
-     *
-     * @param \DateTime $update_date
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setUpdateDate($update_date)
+    public function setUpdateDate(?\DateTime $update_date): static
     {
         $this->update_date = $update_date;
 
         return $this;
     }
 
-    /**
-     * Get the value of update_date.
-     *
-     * @return \DateTime
-     */
-    public function getUpdateDate()
+    public function getUpdateDate(): ?\DateTime
     {
         return $this->update_date;
     }
 
-    /**
-     * Set User entity (one to one).
-     *
-     * @return \App\Entity\EtatCivil
-     */
-    public function setUser(User $User = null)
+    public function setUser(User $user = null): static
     {
-        $User->setEtatCivil($this);
-        $this->User = $User;
+        if (null !== $user) {
+            $user->setEtatCivil($this);
+            $this->user = $user;
+        }
 
         return $this;
     }
 
-    /**
-     * Get User entity (one to one).
-     *
-     * @return \App\Entity\User
-     */
-    public function getUser()
+    public function getUser(): User
     {
-        return $this->User;
+        return $this->user;
     }
 
-    public function __sleep()
+  /*  public function __sleep()
     {
         return ['id', 'nom', 'prenom', 'prenom_usage', 'telephone', 'photo', 'date_naissance', 'probleme_medicaux', 'personne_a_prevenir', 'tel_pap', 'fedegn', 'creation_date', 'update_date'];
-    }
+    }*/
 }

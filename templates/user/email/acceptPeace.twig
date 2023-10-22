@@ -1,0 +1,18 @@
+{# The subject line. #}
+{%- block subject -%}{%- autoescape false -%}
+    La paix est acceptée.
+{%- endautoescape -%}{%- endblock -%}
+
+{# The plain text message. #}
+{%- block body_text -%}{%- autoescape false -%}
+
+Le groupe {{ groupe.nom }} a accepté votre demande de paix !
+
+{%- endautoescape -%}{%- endblock -%}
+
+{# The HTML message. Optional. #}
+{%- block body_html -%}
+
+    <h3>Le groupe {{ groupe.nom }} a accepté votre demande de paix</h3>
+
+{%- endblock -%}

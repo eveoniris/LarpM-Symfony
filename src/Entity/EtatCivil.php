@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping\Entity;
+
+#[Entity]
 class EtatCivil extends BaseEtatCivil implements \Stringable
 {
     public function __construct()

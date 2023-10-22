@@ -4,12 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\TechnologiesRessources
- *
- */
-
+#[Entity]
 class TechnologiesRessources extends BaseTechnologiesRessources
 {
-
 }

@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseTrigger;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\Trigger
- *
- */
+#[Entity]
 class Trigger extends BaseTrigger
 {
 }

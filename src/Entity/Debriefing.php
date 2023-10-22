@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity(repositoryClass: DebriefingRepository::class)]
 class Debriefing extends BaseDebriefing
 {
-     public function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->setUpdateDate(new \DateTime('NOW'));

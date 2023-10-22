@@ -2,16 +2,13 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseRenommeHistory;
+use App\Entity\BaseRenommeHistory as parentAlias;
 
-/**
- * App\Entity\RenommeHistory
- *
- */
-class RenommeHistory extends BaseRenommeHistory
+class RenommeHistory extends parentAlias
 {
-	public function __construct()
-	{
-		$this->setDate(new \Datetime('NOW'));
-	}
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setDate(new \DateTime('NOW'));
+    }
 }

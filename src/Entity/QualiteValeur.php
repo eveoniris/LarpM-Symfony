@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseQualiteValeur;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\QualiteValeur
- *
- */
+#[Entity]
 class QualiteValeur extends BaseQualiteValeur
 {
 }

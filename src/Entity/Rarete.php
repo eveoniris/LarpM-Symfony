@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseRarete;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\Rarete
- *
- */
+#[Entity]
 class Rarete extends BaseRarete
 {
 }

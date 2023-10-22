@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+
 /**
  * App\Entity\Rumeur.
  *
@@ -15,14 +19,8 @@ namespace App\Entity;
  */
 class BaseRumeur
 {
-    /**
-     * @Id
-     *
-     * @Column(type="integer", options={"unsigned":true})
-     *
-     * @GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    protected ?int $id = null;
 
     /**
      * @Column(name="`text`", type="text")

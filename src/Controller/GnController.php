@@ -28,6 +28,7 @@ use LarpManager\Form\ParticipantFindForm;
 use LarpManager\Form\PersonnageFindForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * * LarpManager\Controllers\GnController * * @author kevin *
@@ -37,6 +38,7 @@ class GnController
     /**
      * Affiche la liste des gns.
      */
+    #[Route('/gn', name: 'gn.list')]
     public function listAction(Request $request, Application $app)
     {
         $gns = $app['orm.em']->getRepository('\\'.\App\Entity\Gn::class)->findAll();

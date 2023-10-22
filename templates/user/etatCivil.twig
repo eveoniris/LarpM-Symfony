@@ -1,0 +1,23 @@
+{% extends "layout.twig" %}
+
+{% block title %}Informations administratives{% endblock title %}
+
+{% block content %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Mes informations administratives</li>
+	</ol>
+			
+	<div class="well bs-component">
+		<form action="{{ path('user.etatCivil') }}" method="POST" {{ form_enctype(form) }}>
+			<fieldset>
+				<legend>Enregistrement de votre état-civil</legend>
+					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					{{ form(form) }}
+			</fieldset>
+		</form>
+	</div>
+
+	
+{% endblock content %}

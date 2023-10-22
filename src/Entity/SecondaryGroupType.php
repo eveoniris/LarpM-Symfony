@@ -2,12 +2,10 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseSecondaryGroupType;
+use App\Repository\GroupeGnRepository;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\SecondaryGroupType
- *
- */
+#[Entity]
 class SecondaryGroupType extends BaseSecondaryGroupType
 {
 }

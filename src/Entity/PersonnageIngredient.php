@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BasePersonnageIngredient;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\PersonnageIngredient
- *
- */
+#[Entity]
 class PersonnageIngredient extends BasePersonnageIngredient
 {
 }

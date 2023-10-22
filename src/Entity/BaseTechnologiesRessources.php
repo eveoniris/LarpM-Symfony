@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
@@ -13,9 +14,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * App\Entity\BaseTechnologiesRessources.
- */
+#[Entity]
 #[Table(name: 'technologies_ressources')]
 #[InheritanceType('SINGLE_TABLE')]
 #[DiscriminatorColumn(name: 'discr', type: 'string')]

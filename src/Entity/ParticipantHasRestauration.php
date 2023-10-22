@@ -2,16 +2,14 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseParticipantHasRestauration;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\ParticipantHasRestauration
- *
- */
+#[Entity]
 class ParticipantHasRestauration extends BaseParticipantHasRestauration
 {
-	public function __construct()
-	{
-		$this->setDate(new \Datetime('NOW'));	
-	}
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setDate(new \DateTime('NOW'));
+    }
 }

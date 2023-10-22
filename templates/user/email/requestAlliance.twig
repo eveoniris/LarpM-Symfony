@@ -1,0 +1,22 @@
+{# The subject line. #}
+{%- block subject -%}{%- autoescape false -%}
+    Un groupe demande une alliance.
+{%- endautoescape -%}{%- endblock -%}
+
+{# The plain text message. #}
+{%- block body_text -%}{%- autoescape false -%}
+
+Le groupe {{ alliance.groupe.nom }} demande une alliance :
+
+{{ alliance.message }}
+
+{%- endautoescape -%}{%- endblock -%}
+
+{# The HTML message. Optional. #}
+{%- block body_html -%}
+
+    <h3>Le groupe {{ alliance.groupe.nom }} demande une alliance</h3>
+    
+    <p>{{ alliance.message|markdown }}</p>
+
+{%- endblock -%}

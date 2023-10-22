@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseReligionDescription;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\ReligionDescription
- *
- */
+#[Entity]
 class ReligionDescription extends BaseReligionDescription
 {
 }

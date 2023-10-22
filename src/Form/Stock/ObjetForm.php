@@ -40,7 +40,7 @@ class ObjetForm extends AbstractType
             ->add('description', 'textarea', ['required' => false])
             ->add('photo', new PhotoType(), ['required' => false])
             ->add('proprietaire', 'entity', ['required' => false, 'class' => \App\Entity\Proprietaire::class, 'property' => 'nom'])
-            ->add('responsable', 'entity', ['required' => false, 'class' => \App\Entity\User::class, 'property' => 'name'])
+            ->add('responsable', 'entity', ['required' => false, 'class' => \App\Entity\User01::class, 'property' => 'name'])
             ->add('rangement', 'entity', ['required' => false, 'class' => \App\Entity\Rangement::class, 'property' => 'adresse'])
             ->add('etat', 'entity', ['required' => false, 'class' => \App\Entity\Etat::class, 'property' => 'label'])
             ->add('tags', 'entity', ['required' => false, 'class' => \App\Entity\Tag::class, 'property' => 'nom', 'multiple' => true])

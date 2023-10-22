@@ -26,6 +26,7 @@ use LarpManager\Form\Rule\RuleForm;
 use LarpManager\Form\Rule\RuleUpdateForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\RuleController.
@@ -37,6 +38,7 @@ class RuleController
     /**
      * Page de gestion des règles.
      */
+    #[Route('/rule', name: 'rules')]
     public function listAction(Request $request, Application $app)
     {
         $regles = $app['orm.em']->getRepository(\App\Entity\Rule::class)->findAll();

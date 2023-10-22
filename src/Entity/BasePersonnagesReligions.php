@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+
 /**
  * App\Entity\PersonnagesReligions.
  *
@@ -15,14 +19,8 @@ namespace App\Entity;
  */
 class BasePersonnagesReligions
 {
-    /**
-     * @Id
-     *
-     * @Column(type="integer")
-     *
-     * @GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    protected ?int $id = null;
 
     /**
      * @ManyToOne(targetEntity="Religion", inversedBy="personnagesReligions")

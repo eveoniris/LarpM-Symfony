@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseSorts;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * App\Entity\Sorts
- *
- */
+#[Entity]
 class Sorts extends BaseSorts
 {
 }

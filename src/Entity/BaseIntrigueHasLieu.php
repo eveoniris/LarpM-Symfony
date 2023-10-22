@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+
 /**
  * App\Entity\IntrigueHasLieu.
  *
@@ -15,14 +19,8 @@ namespace App\Entity;
  */
 class BaseIntrigueHasLieu
 {
-    /**
-     * @Id
-     *
-     * @Column(type="integer", options={"unsigned":true})
-     *
-     * @GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    protected ?int $id = null;
 
     /**
      * @ManyToOne(targetEntity="Intrigue", inversedBy="intrigueHasLieus", cascade={"persist", "remove"})

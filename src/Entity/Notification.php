@@ -7,9 +7,9 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity]
 class Notification extends BaseNotification
 {
-    public function __contruct(): void
+    public function __construct()
     {
-        parent::__contruct();
+        parent::__construct();
         $this->setDate(new \DateTime('NOW'));
     }
 }
