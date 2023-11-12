@@ -1,56 +1,43 @@
 <?php
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
 
 namespace App\Controller;
 
 use App\Entity\Gn;
 use App\Entity\Loi;
 use App\Entity\Personnage;
+use App\Repository\GnRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use DoctrineProxy\__CG__\App\Entity\Participant;
-use JasonGrimes\Paginator;
 use LarpManager\Form\Gn\GnDeleteForm;
 use LarpManager\Form\Gn\GnForm;
 use LarpManager\Form\ParticipantFindForm;
 use LarpManager\Form\PersonnageFindForm;
-use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * * LarpManager\Controllers\GnController * * @author kevin *
- */
-class GnController
+class GnController extends AbstractController
 {
-    /**
-     * Affiche la liste des gns.
-     */
     #[Route('/gn', name: 'gn.list')]
-    public function listAction(Request $request, Application $app)
+    public function listAction(Request $request, GnRepository $gnRepository): Response
     {
-        $gns = $app['orm.em']->getRepository('\\'.\App\Entity\Gn::class)->findAll();
+        $page = $request->query->getInt('page', 1);
+        $limit = 10;
 
-        return $app['twig']->render('gn/list.twig', [
-            'gns' => $gns,
-        ]);
+        $paginator = $gnRepository->findPaginated($page, $limit);
+
+        return $this->render(
+            'gn/list.twig',
+            [
+                'paginator' => $paginator,
+                'limit' => $limit,
+                'page' => $page,
+            ]
+        );
     }
 
-    /**
-     * Detail d'un gn.
-     */
+    #[Route('/gn/detail', name: 'gn.detail')]
     public function detailAction(Request $request, Application $app, Gn $gn)
     {
         $participant = $app['User']->getParticipant($gn);
@@ -523,9 +510,7 @@ class GnController
         exit;
     }
 
-    /**
-     * Suppression d'un GN.
-     */
+    #[Route('/gn/delete', name: 'gn.delete')]
     public function deleteAction(Request $request, Application $app, Gn $gn)
     {
         $form = $app['form.factory']->createBuilder(new GnDeleteForm(), $gn)
@@ -549,9 +534,7 @@ class GnController
         ]);
     }
 
-    /**
-     * Met à jour un gn *.
-     */
+    #[Route('/gn/update', name: 'gn.update')]
     public function updateAction(Request $request, Application $app, Gn $gn)
     {
         $form = $app['form.factory']->createBuilder(new GnForm(), $gn)

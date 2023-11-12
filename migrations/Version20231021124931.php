@@ -20,12 +20,13 @@ final class Version20231021124931 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE user ADD roles JSON NOT NULL COMMENT \'(DC2Type:json)\'');
-
-
+        $this->addSql('ALTER TABLE user ADD is_enabled TINYINT');
+        $this->addSql('UPDATE user SET is_enabled = isEnabled WHERE is_enabled <> isEnabled');
     }
 
     public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE user DROP roles');
+        $this->addSql('ALTER TABLE user DROP COLUMN is_enabled');
     }
 }

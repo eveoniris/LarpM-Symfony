@@ -4,29 +4,24 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * App\Entity\Gn.
- *
- * @Table(name="gn", indexes={@Index(name="fk_gn_topic1_idx", columns={"topic_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseGn", "extended":"Gn"})
- */
+#[Entity]
+#[ORM\Table(name: 'gn')]
+#[ORM\Index(columns: ['topic_id'], name: 'fk_gn_topic1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseGn', 'extended' => 'Gn'])]
 class BaseGn
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label = '';
 
     /**
      * @Column(type="integer", nullable=true)
@@ -41,12 +36,11 @@ class BaseGn
     /**
      * @Column(type="text", nullable=true)
      */
-    protected $description;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $description = '';
 
-    /**
-     * @Column(type="datetime", nullable=true)
-     */
-    protected $date_debut;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?\DateTime $date_debut = null;
 
     /**
      * @Column(type="datetime", nullable=true)
@@ -181,6 +175,8 @@ class BaseGn
     {
         return $this->id;
     }
+
+
 
     /**
      * Set the value of label.

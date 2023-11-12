@@ -25,6 +25,7 @@ use LarpManager\Form\RestaurationDeleteForm;
 use LarpManager\Form\RestaurationForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\RestaurationsController.
@@ -36,6 +37,7 @@ class RestaurationController
     /**
      * Liste des restaurations.
      */
+    #[Route('/restauration/list', name: 'restauration.list')]
     public function listAction(Request $request, Application $app)
     {
         $restaurations = $app['orm.em']->getRepository('\\'.\App\Entity\Restauration::class)->findAllOrderedByLabel();

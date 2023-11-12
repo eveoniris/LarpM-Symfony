@@ -54,8 +54,8 @@ class BaseDebriefing
     protected $groupe;
 
     #[ManyToOne(targetEntity: 'User', inversedBy: 'debriefings')]
-    #[JoinColumn(name: 'User_id', referencedColumnName: 'id', nullable: false)]
-    protected $User;
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    protected ?User $user = null;
 
     #[ManyToOne(targetEntity: 'User', inversedBy: 'debriefings')]
     #[JoinColumn(name: 'player_id', referencedColumnName: 'id', nullable: false)]
@@ -244,7 +244,7 @@ class BaseDebriefing
      */
     public function setUser(User $User = null)
     {
-        $this->User = $User;
+        $this->user = $User;
 
         return $this;
     }
@@ -256,7 +256,7 @@ class BaseDebriefing
      */
     public function getUser()
     {
-        return $this->User;
+        return $this->user;
     }
 
     /**

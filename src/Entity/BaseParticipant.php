@@ -7,6 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'participant')]
@@ -55,12 +57,9 @@ class BaseParticipant
      */
     protected $gn;
 
-    /**
-     * @ManyToOne(targetEntity="User", inversedBy="participants")
-     *
-     * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
-     */
-    protected $User;
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'participants')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    protected ?User $user = null;
 
     /**
      * @ManyToOne(targetEntity="PersonnageSecondaire", inversedBy="participants")
@@ -335,7 +334,7 @@ class BaseParticipant
      */
     public function setUser(User $User = null)
     {
-        $this->User = $User;
+        $this->user = $User;
 
         return $this;
     }
@@ -347,7 +346,7 @@ class BaseParticipant
      */
     public function getUser()
     {
-        return $this->User;
+        return $this->user;
     }
 
     /**

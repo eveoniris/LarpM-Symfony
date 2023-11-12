@@ -12,6 +12,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
 /**
  * App\Entity\IntrigueHasModification.
@@ -41,12 +43,9 @@ class BaseIntrigueHasModification
      */
     protected $intrigue;
 
-    /**
-     * @ManyToOne(targetEntity="User", inversedBy="intrigueHasModifications")
-     *
-     * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
-     */
-    protected $User;
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'intrigueHasModifications')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    protected ?User $user = null;
 
     public function __construct()
     {
@@ -129,7 +128,7 @@ class BaseIntrigueHasModification
      */
     public function setUser(User $User = null)
     {
-        $this->User = $User;
+        $this->user = $User;
 
         return $this;
     }
@@ -141,7 +140,7 @@ class BaseIntrigueHasModification
      */
     public function getUser()
     {
-        return $this->User;
+        return $this->user;
     }
 
     public function __sleep()

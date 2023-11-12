@@ -43,7 +43,7 @@ class BaseBackground
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'backgrounds')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
-    protected ?User $User = null;
+    protected ?User $user = null;
 
     #[ManyToOne(targetEntity: Gn::class, inversedBy: 'backgrounds')]
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id')]
@@ -146,7 +146,7 @@ class BaseBackground
 
     public function getUser(): ?User
     {
-        return $this->User;
+        return $this->user;
     }
 
     public function setGn(Gn $gn = null): self

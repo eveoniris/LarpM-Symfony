@@ -5,6 +5,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
 /**
  * App\Entity\PersonnageBackground.
@@ -49,12 +51,9 @@ class BasePersonnageBackground
      */
     protected $personnage;
 
-    /**
-     * @ManyToOne(targetEntity="User", inversedBy="personnageBackgrounds")
-     *
-     * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
-     */
-    protected $User;
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'personnageBackgrounds')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    protected ?User $user = null;
 
     /**
      * @ManyToOne(targetEntity="Gn", inversedBy="personnageBackgrounds")
@@ -216,7 +215,7 @@ class BasePersonnageBackground
      */
     public function setUser(User $User = null)
     {
-        $this->User = $User;
+        $this->user = $User;
 
         return $this;
     }
@@ -228,7 +227,7 @@ class BasePersonnageBackground
      */
     public function getUser()
     {
-        return $this->User;
+        return $this->user;
     }
 
     /**

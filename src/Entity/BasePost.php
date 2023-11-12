@@ -3,22 +3,22 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Post.
- *
- * @Table(name="post", indexes={@Index(name="fk_post_topic1_idx", columns={"topic_id"}), @Index(name="fk_post_User1_idx", columns={"User_id"}), @Index(name="fk_post_post1_idx", columns={"post_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BasePost", "extended":"Post"})
- */
-class BasePost
+#[Entity]
+#[ORM\Table(name: 'post')]
+#[ORM\Index(columns: ['topic_id'], name: 'fk_post_topic1_idx')]
+#[ORM\Index(columns: ['user_id'], name: 'fk_post_user1_idx')]
+#[ORM\Index(columns: ['post_id'], name: 'fk_post_post1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePost', 'extended' => 'Post'])] class BasePost
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
@@ -64,12 +64,9 @@ class BasePost
      */
     protected $topic;
 
-    /**
-     * @ManyToOne(targetEntity="User", inversedBy="postRelatedByUserIds")
-     *
-     * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
-     */
-    protected $UserRelatedByUserId;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'postRelatedByUserIds')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    protected User $userRelatedByUserId;
 
     /**
      * @ManyToOne(targetEntity="Post", inversedBy="posts")
