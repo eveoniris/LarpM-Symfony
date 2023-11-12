@@ -25,12 +25,14 @@ use LarpManager\Form\Question\QuestionDeleteForm;
 use LarpManager\Form\Question\QuestionForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 class QuestionController
 {
     /**
      * Liste des question.
      */
+    #[Route('/question', name: 'question')]
     public function indexAction(Request $request, Application $app)
     {
         $questions = $app['orm.em']->getRepository(\App\Entity\Question::class)->findAll();

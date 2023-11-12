@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * App\Controllers\AdminController.
@@ -227,6 +228,7 @@ class AdminController
     /**
      * Fourni les listes des utilisateurs n'ayants pas remplis certaines conditions.
      */
+    #[Route('/admin/rappels', name: 'admin.rappels')]
     public function rappelsAction(Request $request, Application $app)
     {
         $repo = $app['orm.em']->getRepository('\\'.\App\Entity\User::class);

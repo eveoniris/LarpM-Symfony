@@ -13,6 +13,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
 /**
  * App\Entity\PersonnageSecondaire.
@@ -44,12 +46,9 @@ class BasePersonnageSecondaire
      */
     protected $personnageSecondaireCompetences;
 
-    /**
-     * @OneToMany(targetEntity="User", mappedBy="personnageSecondaire", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="id", referencedColumnName="personnage_secondaire_id", nullable=false)
-     */
-    protected $Users;
+    #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: User::class, cascade: ['persist', 'remove'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: 'false')]
+    protected ArrayCollection $users;
 
     /**
      * @ManyToOne(targetEntity="Classe", inversedBy="personnageSecondaires")
@@ -62,7 +61,7 @@ class BasePersonnageSecondaire
     {
         $this->participants = new ArrayCollection();
         $this->personnageSecondaireCompetences = new ArrayCollection();
-        $this->Users = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     /**

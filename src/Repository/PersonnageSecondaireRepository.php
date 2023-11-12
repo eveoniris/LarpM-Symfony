@@ -22,11 +22,6 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-/**
- * LarpManager\Repository\PersonnageSecondaireRepository.
- *
- * @author kevin
- */
 class PersonnageSecondaireRepository extends EntityRepository
 {
     /**
@@ -34,7 +29,7 @@ class PersonnageSecondaireRepository extends EntityRepository
      *
      * @return ArrayCollection $personnageSecondaire
      */
-    public function findAll()
+    public function findAll(): array
     {
         return $this->getEntityManager()
             ->createQuery('SELECT ps FROM App\Entity\PersonnageSecondaire ps')

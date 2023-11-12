@@ -23,6 +23,8 @@ namespace App\Controller;
 use LarpManager\Services\RandomColor\RandomColor;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * LarpManager\Controllers\StatistiqueController.
@@ -31,6 +33,9 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class StatistiqueController
 {
+    // TODO : move to admin dashboard
+    #[Route('/statistique', name: 'statistique')]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access the admin dashboard.')]
     public function indexAction(Request $request, Application $app)
     {
         $repo = $app['orm.em']->getRepository(\App\Entity\Langue::class);

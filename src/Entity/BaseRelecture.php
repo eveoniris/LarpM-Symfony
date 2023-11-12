@@ -3,20 +3,21 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\Relecture.
- *
- * @Table(name="relecture", indexes={@Index(name="fk_relecture_User1_idx", columns={"User_id"}), @Index(name="fk_relecture_intrigue1_idx", columns={"intrigue_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseRelecture", "extended":"Relecture"})
- */
+#[Entity]
+#[ORM\Table(name: 'relecture')]
+#[ORM\Index(columns: ['etat_civil_id'], name: 'fk_user_etat_civil1_idx')]
+#[ORM\Index(columns: ['user_id'], name: 'fk_relecture_User1_idx')]
+#[ORM\Index(columns: ['intrigue_id'], name: 'fk_relecture_intrigue1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseRelecture', 'extended' => 'Relecture'])]
 class BaseRelecture
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
@@ -37,12 +38,9 @@ class BaseRelecture
      */
     protected $remarque;
 
-    /**
-     * @ManyToOne(targetEntity="User", inversedBy="relectures")
-     *
-     * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
-     */
-    protected $User;
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'relectures')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    protected ?User $user = null;
 
     /**
      * @ManyToOne(targetEntity="Intrigue", inversedBy="relectures", cascade={"persist", "remove"})
@@ -158,7 +156,7 @@ class BaseRelecture
      */
     public function setUser(User $User = null)
     {
-        $this->User = $User;
+        $this->user = $User;
 
         return $this;
     }
@@ -170,7 +168,7 @@ class BaseRelecture
      */
     public function getUser()
     {
-        return $this->User;
+        return $this->user;
     }
 
     /**

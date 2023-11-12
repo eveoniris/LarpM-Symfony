@@ -25,12 +25,14 @@ use LarpManager\Form\BilletDeleteForm;
 use LarpManager\Form\BilletForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 class BilletController
 {
     /**
      * Liste des billets.
      */
+    #[Route('/billet/list', name: 'billet.list')]
     public function listAction(Request $request, Application $app)
     {
         $billets = $app['orm.em']->getRepository(\App\Entity\Billet::class)->findAll();

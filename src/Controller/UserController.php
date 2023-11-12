@@ -501,7 +501,9 @@ class UserController extends AbstractController
 
     /**
      * Liste des utilisateurs.
+     * TODO : Move to admin dashboard
      */
+    #[Route('/user/admin/list', name: 'user.admin.list')]
     public function adminListAction(Application $app, Request $request)
     {
         $order_by = $request->get('order_by') ?: 'Username';

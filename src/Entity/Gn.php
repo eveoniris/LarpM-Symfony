@@ -11,7 +11,7 @@ class Gn extends BaseGn implements \Stringable
 {
     public function __toString(): string
     {
-        return $this->getLabel();
+        return $this->getLabel() ?? (string) $this->id ?: '';
     }
 
     /**

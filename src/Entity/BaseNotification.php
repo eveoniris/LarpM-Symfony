@@ -5,6 +5,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
 /**
  * App\Entity\Notification.
@@ -37,12 +39,9 @@ class BaseNotification
      */
     protected $url;
 
-    /**
-     * @ManyToOne(targetEntity="User", inversedBy="notifications")
-     *
-     * @JoinColumn(name="User_id", referencedColumnName="id", nullable=false)
-     */
-    protected $User;
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'notifications')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    protected ?User $user = null;
 
     public function __construct()
     {
@@ -151,7 +150,7 @@ class BaseNotification
      */
     public function setUser(User $User = null)
     {
-        $this->User = $User;
+        $this->user = $User;
 
         return $this;
     }
@@ -163,7 +162,7 @@ class BaseNotification
      */
     public function getUser()
     {
-        return $this->User;
+        return $this->user;
     }
 
     public function __sleep()

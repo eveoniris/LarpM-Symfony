@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Gn;
 use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -52,5 +53,6 @@ class DashboardController extends AbstractDashboardController
         // yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::linktoRoute('LarpManager', 'fas fa-home', 'homepage');
         yield MenuItem::linkToCrud('Utilisateur', 'fas fa-list', User::class);
+        yield MenuItem::linkToCrud('GN', 'fas fa-list', Gn::class);
     }
 }

@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserInterface, \Stringable
 {
-    public function __construct(string $email)
+    public function __construct(string $email = '')
     {
         // @deprecated
         $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);

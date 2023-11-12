@@ -11,27 +11,15 @@
         <link rel="icon" href="{{ app.request.basepath }}/favicon.ico" type="image/x-icon"/>
 
     {% block stylesheets %}
-    <link rel="stylesheet" href="{{ app.request.basepath }}/css/normalize.css"/>
-    <link rel="stylesheet" href="{{ app.request.basepath }}/font-awesome-4.6.3/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="{{ app.request.basepath }}/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="{{ app.request.basepath }}/css/cyborg_bootstrap.min.css"/>
-    <link rel="stylesheet"
-          href="{{ app.request.basepath }}/bootstrap-select-1.11.0/css/bootstrap-select.min.css"/>
-    <link rel="stylesheet" href="{{ app.request.basepath }}/Pnotify/css/pnotify.custom.min.css"/>
-    <link rel="stylesheet" href="{{ app.request.basepath }}/css/style.css"/>
+            {{ encore_entry_link_tags('app') }}
     {% endblock %}
 
     {% block javascripts %}
-        <script src="{{ app.request.basepath }}/js/jquery-1.11.3.min.js"></script>
-        <script src="{{ app.request.basepath }}/js/bootstrap.min.js"></script>
-        <script src="{{ app.request.basepath }}/Pnotify/js/pnotify.custom.min.js"></script>
-        <script src="{{ app.request.basepath }}/bootstrap-select-1.11.0/js/bootstrap-select.min.js"></script>
-        <script src="{{ app.request.basepath }}/bootstrap-select-1.11.0/js/i18n/defaults-fr_FR.min.js"></script>
-        <script src="{{ app.request.basepath }}/bootstrap-validator/validator-0.11.5.min.js"></script>
-        <script src="{{ app.request.basepath }}/bootstrap-waterfall/bootstrap-waterfall.js"></script>
+            {{ encore_entry_script_tags('app') }}
 
         {# active pnotify #}
         <script type="text/javascript">
+            /*
             PNotify.prototype.options.styling = "fontawesome";
 
             function createNotifyError(notice) {
@@ -75,43 +63,18 @@
                     createNotifySuccess(this);
                 });
             });
-
+*/
         </script>
 
         {# manipulation des dates #}
-        <script src="{{ app.request.basepath }}/js/moment.js"></script>
-        <script>
-            moment.locale('fr');
-        </script>
-
-        {# Active les tooltip de bootstrap #}
+           {# Active les tooltip de bootstrap #}
         <script type="text/javascript">
-            $(function () {
+           /* $(function () {
                 $("[data-toggle='tooltip']").tooltip();
-            });
+            });*/
         </script>
 
-        {# Active bootstrap waterfall #}
-        <script>
-            $(document).ready(function () {
-                $('.waterfall').waterfall();
-            });
-        </script>
 
-        {# editeur tinyMCE #}
-        <script src="{{ app.request.basepath }}/js/tinymce/tinymce.min.js"></script>
-
-        <script type="text/javascript">
-            tinyMCE.init({
-                selector: '.tinymce',
-                theme: "modern",
-                plugins: "spellchecker,insertdatetime,preview,link,autolink",
-                browser_spellcheck: true,
-                menubar: "edit, insert, view, format, tools",
-                toolbar: "undo, redo, formatselect, bold, italic, alignright, aligncenter, alignright, alignjustify, bullist, numlist  link",
-                link_assume_external_targets: true
-            });
-        </script>
     {% endblock %}
     {% endblock head %}
 </head>

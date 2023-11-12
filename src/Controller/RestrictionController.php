@@ -25,6 +25,7 @@ use LarpManager\Form\RestrictionDeleteForm;
 use LarpManager\Form\RestrictionForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\RestrictionsController.
@@ -36,6 +37,7 @@ class RestrictionController
     /**
      * Liste des restrictions.
      */
+    #[Route('/restriction/list', name: 'restriction.list')]
     public function listAction(Request $request, Application $app)
     {
         $restrictions = $app['orm.em']->getRepository('\\'.\App\Entity\Restriction::class)->findAllOrderedByLabel();

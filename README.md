@@ -43,3 +43,22 @@ All symfony commands are availble inside the container. You can access to it by 
 
 You can also install and use your local symfony as the whole project folder is mounted as a volume
 
+7) Webpack command Js et CSS
+
+`symfony composer req encore`
+
+`npm install node-sass sass-loader --save-dev`
+
+`npm install bootstrap @popperjs/core bs-custom-file-input --save-dev`
+
+Récuppérer jquery
+`npm install --save-dev jquery`
+
+`npm install --save-dev bootstrap-select`
+`npm install tinymce`
+
+Pour relancer le app.js et css
+`symfony run npm run dev`
+
+Pour ne pas avoir à recompiler en cas de changement
+`symfony run -d npm run watch`

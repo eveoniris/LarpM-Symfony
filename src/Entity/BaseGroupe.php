@@ -3,21 +3,24 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OrderBy;
 
-/**
- * App\Entity\Groupe.
- *
- * @Table(name="groupe", indexes={@Index(name="fk_groupe_Users1_idx", columns={"scenariste_id"}), @Index(name="fk_groupe_User2_idx", columns={"responsable_id"}), @Index(name="fk_groupe_topic1_idx", columns={"topic_id"}), @Index(name="fk_groupe_territoire1_idx", columns={"territoire_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseGroupe", "extended":"Groupe"})
- */
+#[Entity]
+#[ORM\Table(name: 'groupe')]
+#[ORM\Index(columns: ['scenariste_id'], name: 'fk_groupe_users1_idx')]
+#[ORM\Index(columns: ['responsable_id'], name: 'fk_groupe_user2_idx')]
+#[ORM\Index(columns: ['topic_id'], name: 'fk_groupe_topic1_idx')]
+#[ORM\Index(columns: ['territoire_id'], name: 'fk_groupe_territoire1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseGroupe', 'extended' => 'Groupe'])]
 class BaseGroupe
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
@@ -169,19 +172,13 @@ class BaseGroupe
      */
     protected $territoires;
 
-    /**
-     * @ManyToOne(targetEntity="User", inversedBy="groupeRelatedByScenaristeIds")
-     *
-     * @JoinColumn(name="scenariste_id", referencedColumnName="id")
-     */
-    protected $UserRelatedByScenaristeId;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'groupeRelatedByScenaristeIds')]
+    #[ORM\JoinColumn(name: 'scenariste_id', referencedColumnName: 'id')]
+    protected ?User $userRelatedByScenaristeId = null;
 
-    /**
-     * @ManyToOne(targetEntity="User", inversedBy="groupeRelatedByResponsableIds")
-     *
-     * @JoinColumn(name="responsable_id", referencedColumnName="id")
-     */
-    protected $UserRelatedByResponsableId;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'groupeRelatedByResponsableIds')]
+    #[ORM\JoinColumn(name: 'responsable_id', referencedColumnName: 'id')]
+    protected ?User $userRelatedByResponsableId = null;
 
     /**
      * @ManyToOne(targetEntity="Topic", inversedBy="groupes")
@@ -975,9 +972,9 @@ class BaseGroupe
      *
      * @return \App\Entity\Groupe
      */
-    public function setUserRelatedByScenaristeId(User $User = null)
+    public function setUserRelatedByScenaristeId(User $User = null): static
     {
-        $this->UserRelatedByScenaristeId = $User;
+        $this->userRelatedByScenaristeId = $User;
 
         return $this;
     }
@@ -989,7 +986,7 @@ class BaseGroupe
      */
     public function getUserRelatedByScenaristeId()
     {
-        return $this->UserRelatedByScenaristeId;
+        return $this->userRelatedByScenaristeId;
     }
 
     /**
@@ -997,9 +994,9 @@ class BaseGroupe
      *
      * @return \App\Entity\Groupe
      */
-    public function setUserRelatedByResponsableId(User $User = null)
+    public function setUserRelatedByResponsableId(User $User = null): static
     {
-        $this->UserRelatedByResponsableId = $User;
+        $this->userRelatedByResponsableId = $User;
 
         return $this;
     }
@@ -1009,9 +1006,9 @@ class BaseGroupe
      *
      * @return \App\Entity\User
      */
-    public function getUserRelatedByResponsableId()
+    public function getUserRelatedByResponsableId(): ?User
     {
-        return $this->UserRelatedByResponsableId;
+        return $this->userRelatedByResponsableId;
     }
 
     /**

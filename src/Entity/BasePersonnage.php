@@ -3,20 +3,29 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OrderBy;
 
-/**
- * App\Entity\Personnage.
- *
- * @Table(name="personnage", indexes={@Index(name="fk_personnage_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_personnage_archetype1_idx", columns={"classe_id"}), @Index(name="fk_personnage_age1_idx", columns={"age_id"}), @Index(name="fk_personnage_genre1_idx", columns={"genre_id"}), @Index(name="fk_personnage_territoire1_idx", columns={"territoire_id"}), @Index(name="fk_personnage_User1_idx", columns={"User_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BasePersonnage", "extended":"Personnage"})
- */
+#[Entity]
+#[ORM\Table(name: 'personnage')]
+#[ORM\Index(columns: ['groupe_id'], name: 'fk_personnage_groupe1_idx')]
+#[ORM\Index(columns: ['classe_id'], name: 'fk_personnage_archetype1_idx')]
+#[ORM\Index(columns: ['age_id'], name: 'fk_personnage_age1_idx')]
+#[ORM\Index(columns: ['genre_id'], name: 'fk_personnage_genre1_idx')]
+#[ORM\Index(columns: ['territoire_id'], name: 'fk_personnage_territoire1_idx')]
+#[ORM\Index(columns: ['user_id'], name: 'fk_personnage_user1_idx')]
+#[ORM\UniqueConstraint(name: 'email_UNIQUE', columns: ['email'])]
+#[ORM\UniqueConstraint(name: 'username_UNIQUE', columns: ['username'])]
+#[ORM\UniqueConstraint(name: 'id_UNIQUE', columns: ['id'])]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePersonnage', 'extended' => 'Personnage'])]
 class BasePersonnage
 {
     /**
@@ -26,7 +35,6 @@ class BasePersonnage
 
     #[ORM\Id, ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER), ORM\GeneratedValue]
     protected int $id;
-
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
     protected string $nom;
@@ -240,12 +248,9 @@ class BasePersonnage
      */
     protected $territoire;
 
-    /**
-     * @ManyToOne(targetEntity="User", inversedBy="personnages")
-     *
-     * @JoinColumn(name="User_id", referencedColumnName="id")
-     */
-    protected $User;
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'personnages')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    protected ?User $user = null;
 
     /**
      * @ManyToMany(targetEntity="Document", inversedBy="personnages")
@@ -1470,7 +1475,7 @@ class BasePersonnage
      */
     public function setUser(User $User = null)
     {
-        $this->User = $User;
+        $this->user = $User;
 
         return $this;
     }
@@ -1482,7 +1487,7 @@ class BasePersonnage
      */
     public function getUser()
     {
-        return $this->User;
+        return $this->user;
     }
 
     /**

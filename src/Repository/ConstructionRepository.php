@@ -34,7 +34,7 @@ class ConstructionRepository extends EntityRepository
      *
      * @return ArrayCollection $constructions
      */
-    public function findAllOrderedByLabel()
+    public function findAllOrderedByLabel(): array
     {
         return $this->getEntityManager()
             ->createQuery('SELECT r FROM App\Entity\Construction r ORDER BY r.label ASC')
@@ -46,7 +46,7 @@ class ConstructionRepository extends EntityRepository
      *
      * @return ArrayCollection $constructions
      */
-    public function findAll()
+    public function findAll(): array
     {
         return $this->getEntityManager()
             ->createQuery('SELECT r FROM App\Entity\Construction r ORDER BY r.label ASC')

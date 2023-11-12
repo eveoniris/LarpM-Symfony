@@ -48,7 +48,7 @@ class BaseBillet
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'billets')]
     #[JoinColumn(name: 'createur_id', referencedColumnName: 'id', nullable: 'false')]
-    protected ?User $User = null;
+    protected ?User $user = null;
 
     #[ManyToOne(targetEntity: Gn::class, inversedBy: 'billets')]
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
@@ -152,14 +152,14 @@ class BaseBillet
 
     public function setUser(User $User = null): self
     {
-        $this->User = $User;
+        $this->user = $User;
 
         return $this;
     }
 
     public function getUser(): ?User
     {
-        return $this->User;
+        return $this->user;
     }
 
     public function setGn(Gn $gn = null): self

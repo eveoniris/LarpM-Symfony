@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
 /**
  * App\Entity\Objet.
@@ -91,12 +93,9 @@ class BaseObjet
      */
     protected $proprietaire;
 
-    /**
-     * @ManyToOne(targetEntity="User", inversedBy="objets")
-     *
-     * @JoinColumn(name="responsable_id", referencedColumnName="id")
-     */
-    protected $User;
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'objets')]
+    #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: 'false')]
+    protected ?User $user = null;
 
     /**
      * @ManyToOne(targetEntity="Photo", inversedBy="objets", cascade={"persist", "merge", "remove", "detach", "all"})
@@ -451,7 +450,7 @@ class BaseObjet
      */
     public function setUser(User $User = null)
     {
-        $this->User = $User;
+        $this->user = $User;
 
         return $this;
     }
@@ -463,7 +462,7 @@ class BaseObjet
      */
     public function getUser()
     {
-        return $this->User;
+        return $this->user;
     }
 
     /**

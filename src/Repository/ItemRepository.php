@@ -41,7 +41,7 @@ class ItemRepository extends EntityRepository
         return $numeroMax++;
     }
 
-    public function findAll()
+    public function findAll(): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 

@@ -1,35 +1,16 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 namespace App\Repository;
 
 use App\Entity\Gn;
+use App\Entity\User;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * LarpManager\Repository\GnRepository.
- *
- * @author kevin
- */
-class GnRepository extends EntityRepository
+class GnRepository extends BaseRepository
+
 {
     /**
      * Recherche le prochain GN (le plus proche de la date du jour).
@@ -47,7 +28,7 @@ class GnRepository extends EntityRepository
     /**
      * Classe les gn par date (du plus proche au plus lointain).
      */
-    public function findAll()
+    public function findAll(): array
     {
         return $this->findBy([], ['date_debut' => 'DESC']);
     }
@@ -55,7 +36,7 @@ class GnRepository extends EntityRepository
     /**
      * Trouve les gns correspondant aux critères de recherche.
      */
-    public function findCount(array $criteria = [])
+    public function findCount(array $criteria = []): float|bool|int|string|null
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -75,10 +56,57 @@ class GnRepository extends EntityRepository
      *
      * @return ArrayCollection $gns
      */
-    public function findActive()
+    public function findActive(): ArrayCollection
     {
         return $this->getEntityManager()
             ->createQuery('SELECT g FROM App\Entity\Gn g WHERE g.actif = true ORDER BY g.date_debut ASC')
             ->getResult();
+    }
+
+    public function findPaginated(int $page, int $limit = 10): Paginator
+    {
+        $limit = abs($limit);
+
+        $result = [];
+
+        /*
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('c', 'p')
+            ->from('App\Entity\Products', 'p')
+            ->join('p.categories', 'c')
+            ->where("c.slug = '$slug'")
+            ->setMaxResults($limit)
+            ->setFirstResult(($page * $limit) - $limit);
+        */
+
+        $query = $this->getEntityManager()->getRepository(Gn::class)
+            ->createQueryBuilder('gn')
+            ->orderBy('gn.id', 'DESC')
+            ->setMaxResults($limit)
+            ->setFirstResult(($page * $limit) - $limit)
+            ->getQuery();
+
+
+        $paginator = new Paginator($query);
+        return $paginator;
+        $data = $paginator->getQuery()->getResult();
+
+        return $data;
+        /*
+        // On vérifie qu'on a des données
+        if (empty($data)) {
+            return $result;
+        }
+
+        // On calcule le nombre de pages
+        $pages = ceil($paginator->count() / $limit);
+
+        // On remplit le tableau
+        $result['data'] = $data;
+        $result['pages'] = $pages;
+        $result['page'] = $page;
+        $result['limit'] = $limit;
+
+        return $result;*/
     }
 }
