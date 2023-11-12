@@ -62,7 +62,7 @@ abstract class BaseUser
     protected ?\DateTime $creation_date = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
-    protected bool $isEnabled = false;
+    protected ?bool $is_enabled = false;
 
     #[ORM\Column(name: 'confirmationToken', type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
     protected ?string $confirmationToken = null;
@@ -385,14 +385,9 @@ abstract class BaseUser
         return $this->username ?: $this->email;
     }
 
-    /**
-     * Set the value of isEnabled.
-     *
-     * @param bool $isEnabled
-     */
-    public function setIsEnabled($isEnabled): static
+    public function setIsEnabled(bool $isEnabled): static
     {
-        $this->isEnabled = $isEnabled;
+        $this->is_enabled = $isEnabled;
 
         return $this;
     }
@@ -404,7 +399,7 @@ abstract class BaseUser
      */
     public function getIsEnabled()
     {
-        return $this->isEnabled;
+        return $this->is_enabled;
     }
 
     /**
@@ -1231,6 +1226,6 @@ abstract class BaseUser
 
     public function __sleep()
     {
-        return ['id', 'email', 'password', 'salt', 'rights', 'creation_date', 'username', 'isEnabled', 'confirmationToken', 'timePasswordResetRequested', 'etatCivil', 'trombineUrl', 'personnageSecondaire', 'lastConnectionDate', 'personnage', 'roles'];
+        return ['id', 'email', 'password', 'salt', 'rights', 'creation_date', 'username', 'is_enabled', 'confirmationToken', 'timePasswordResetRequested', 'etatCivil', 'trombineUrl', 'personnageSecondaire', 'lastConnectionDate', 'personnage', 'roles'];
     }
 }

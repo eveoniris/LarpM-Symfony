@@ -83,13 +83,13 @@ use Doctrine\ORM\Mapping\OneToMany;
      *     inverseJoinColumns={@JoinColumn(name="User_id", referencedColumnName="id", nullable=false)}
      * )
      */
-    protected $Users;
+    protected $users;
 
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->postViews = new ArrayCollection();
-        $this->Users = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     /**

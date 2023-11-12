@@ -206,12 +206,9 @@ class BasePersonnage
      */
     protected $secondaryGroups;
 
-    /**
-     * @OneToMany(targetEntity="User", mappedBy="personnage")
-     *
-     * @JoinColumn(name="id", referencedColumnName="personnage_id", nullable=false)
-     */
-    protected $Users;
+    #[OneToMany(mappedBy: 'personnage', targetEntity: User::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    protected array $users = [];
 
     /**
      * @ManyToOne(targetEntity="Groupe", inversedBy="personnages")
