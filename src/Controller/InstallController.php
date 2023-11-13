@@ -24,6 +24,7 @@ use Silex\Application;
 use Silex\Provider\DoctrineServiceProvider;
 use Silex\Provider\SecurityServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Yaml\Dumper;
 
 /**
@@ -187,6 +188,7 @@ class InstallController
     /**
      * Affiche la page d'installation de LarpManager.
      */
+    #[Route('/install', name: 'install')]
     public function indexAction(Request $request, Application $app)
     {
         // valeur par défaut

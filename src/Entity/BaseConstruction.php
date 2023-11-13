@@ -3,177 +3,102 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * App\Entity\Construction.
- *
- * @Table(name="construction")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseConstruction", "extended":"Construction"})
- */
-class BaseConstruction
+#[Entity]
+#[ORM\Table(name: 'construction')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseConstruction', 'extended' => 'Construction'])]
+abstract class BaseConstruction
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected ?string $label = null;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $defense;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $defense;
 
-    /**
-     * @ManyToMany(targetEntity="Territoire", mappedBy="constructions")
-     */
-    protected $territoires;
+    #[ORM\ManyToMany(targetEntity: Territoire::class, inversedBy: 'constructions')]
+    protected ArrayCollection $territoires;
 
     public function __construct()
     {
         $this->territoires = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Construction
-     */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Construction
-     */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
         return $this;
     }
 
-    /**
-     * Get the value of label.
-     *
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
-    /**
-     * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Construction
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * Get the value of description.
-     *
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
-    /**
-     * Set the value of defense.
-     *
-     * @param int $defense
-     *
-     * @return \App\Entity\Construction
-     */
-    public function setDefense($defense)
+    public function setDefense(int $defense): static
     {
         $this->defense = $defense;
 
         return $this;
     }
 
-    /**
-     * Get the value of defense.
-     *
-     * @return int
-     */
-    public function getDefense()
+    public function getDefense(): int
     {
         return $this->defense;
     }
 
-    /**
-     * Add Territoire entity to collection.
-     *
-     * @return \App\Entity\Construction
-     */
-    public function addTerritoire(Territoire $territoire)
+    public function addTerritoire(Territoire $territoire): static
     {
         $this->territoires[] = $territoire;
 
         return $this;
     }
 
-    /**
-     * Remove Territoire entity from collection.
-     *
-     * @return \App\Entity\Construction
-     */
-    public function removeTerritoire(Territoire $territoire)
+    public function removeTerritoire(Territoire $territoire): static
     {
         $this->territoires->removeElement($territoire);
 
         return $this;
     }
 
-    /**
-     * Get Territoire entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getTerritoires()
+    public function getTerritoires(): ArrayCollection
     {
         return $this->territoires;
     }

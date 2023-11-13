@@ -68,22 +68,15 @@ use Doctrine\ORM\Mapping\OneToMany;
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected User $userRelatedByUserId;
 
-    /**
-     * @ManyToOne(targetEntity="Post", inversedBy="posts")
-     *
-     * @JoinColumn(name="post_id", referencedColumnName="id")
-     */
-    protected $post;
 
-    /**
-     * @ManyToMany(targetEntity="User", inversedBy="posts")
-     *
-     * @JoinTable(name="watching_User",
-     *     joinColumns={@JoinColumn(name="post_id", referencedColumnName="id", nullable=false)},
-     *     inverseJoinColumns={@JoinColumn(name="User_id", referencedColumnName="id", nullable=false)}
-     * )
-     */
-    protected $users;
+    #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'posts')]
+    #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id')]
+    protected ?Post $post = null;
+
+    #[ORM\ManyToMany(targetEntity: Yser::class, inversedBy: 'posts')]
+    #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    protected array $users = [];
 
     public function __construct()
     {

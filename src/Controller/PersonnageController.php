@@ -67,6 +67,7 @@ use LarpManager\Form\TrombineForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\PersonnageController.
@@ -602,7 +603,8 @@ class PersonnageController
     /**
      * Liste des personnages.
      */
-    public function adminListAction(Request $request, Application $app)
+    #[Route('/personnage/admin/list', name: 'personnage.admin.list')]
+    public function adminListAction(Request $request)
     {
         $routeName = 'personnage.admin.list';
         $twigFilePath = 'admin/personnage/list.twig';
