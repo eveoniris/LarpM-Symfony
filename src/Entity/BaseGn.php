@@ -3,11 +3,13 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
 #[Entity]
 #[ORM\Table(name: 'gn')]
@@ -23,122 +25,74 @@ class BaseGn
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $label = '';
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $xp_creation;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $xp_creation = null;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $date_jeu;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $date_jeu = null;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $description = '';
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $date_debut = null;
 
-    /**
-     * @Column(type="datetime", nullable=true)
-     */
-    protected $date_fin;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?\DateTime $date_fin = null;
 
-    /**
-     * @Column(type="datetime", nullable=true)
-     */
-    protected $date_installation_joueur;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?\DateTime $date_installation_joueur = null;
 
-    /**
-     * @Column(type="datetime", nullable=true)
-     */
-    protected $date_fin_orga;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?\DateTime $date_fin_orga = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $adresse;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected string $adresse;
 
-    /**
-     * @Column(type="boolean")
-     */
-    protected $actif;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    protected bool $actif;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $billetterie;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $billetterie = null;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $conditions_inscription;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $conditions_inscription = null;
 
-    /**
-     * @OneToMany(targetEntity="Annonce", mappedBy="gn")
-     *
-     * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
-     */
-    protected $annonces;
+    #[OneToMany(mappedBy: 'gn', targetEntity: Annonce::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    protected ArrayCollection $annonces;
 
-    /**
-     * @OneToMany(targetEntity="Background", mappedBy="gn")
-     *
-     * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
-     */
-    protected $backgrounds;
+    #[OneToMany(mappedBy: 'gn', targetEntity: Background::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    protected ArrayCollection $backgrounds;
 
-    /**
-     * @OneToMany(targetEntity="Billet", mappedBy="gn")
-     *
-     * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
-     */
-    protected $billets;
+    #[OneToMany(mappedBy: 'gn', targetEntity: Billet::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    protected ArrayCollection $billets;
 
-    /**
-     * @OneToMany(targetEntity="Debriefing", mappedBy="gn")
-     *
-     * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
-     */
-    protected $debriefings;
+    #[OneToMany(mappedBy: 'gn', targetEntity: Debriefing::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    protected ArrayCollection $debriefings;
 
-    /**
-     * @OneToMany(targetEntity="GroupeGn", mappedBy="gn")
-     *
-     * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
-     */
-    protected $groupeGns;
+    #[OneToMany(mappedBy: 'gn', targetEntity: GroupeGn::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    protected ArrayCollection $groupeGns;
 
-    /**
-     * @OneToMany(targetEntity="Participant", mappedBy="gn", cascade={"persist"})
-     *
-     * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
-     */
-    protected $participants;
+    #[OneToMany(mappedBy: 'gn', targetEntity: Participant::class, cascade: ['persist'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    protected ArrayCollection $participants;
 
-    /**
-     * @OneToMany(targetEntity="PersonnageBackground", mappedBy="gn")
-     *
-     * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
-     */
-    protected $personnageBackgrounds;
+    #[OneToMany(mappedBy: 'gn', targetEntity: PersonnageBackground::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    protected ArrayCollection $personnageBackgrounds;
 
-    /**
-     * @OneToMany(targetEntity="Rumeur", mappedBy="gn")
-     *
-     * @JoinColumn(name="id", referencedColumnName="gn_id", nullable=false)
-     */
-    protected $rumeurs;
+    #[OneToMany(mappedBy: 'gn', targetEntity: Rumeur::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    protected ArrayCollection $rumeurs;
 
-    /**
-     * @ManyToOne(targetEntity="Topic", inversedBy="gns", cascade={"persist"})
-     *
-     * @JoinColumn(name="topic_id", referencedColumnName="id", nullable=false)
-     */
-    protected $topic;
+    #[ORM\ManyToOne(targetEntity: Topic::class, cascade: ['persist'], inversedBy: 'gns')]
+    #[ORM\JoinColumn(name: 'topic_id', referencedColumnName: 'id')]
+    protected Topic $topic;
 
     public function __construct()
     {
@@ -152,610 +106,322 @@ class BaseGn
         $this->rumeurs = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-
-
-    /**
-     * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
         return $this;
     }
 
-    /**
-     * Get the value of label.
-     *
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
 
-    /**
-     * Set the value of xp_creation.
-     *
-     * @param int $xp_creation
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setXpCreation($xp_creation)
+    public function setXpCreation(int $xp_creation): static
     {
         $this->xp_creation = $xp_creation;
 
         return $this;
     }
 
-    /**
-     * Get the value of xp_creation.
-     *
-     * @return int
-     */
-    public function getXpCreation()
+    public function getXpCreation(): int
     {
         return $this->xp_creation;
     }
 
-    /**
-     * Set the value of date_jeu.
-     *
-     * @param int $date_jeu
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setDateJeu($date_jeu)
+    public function setDateJeu(int $date_jeu): static
     {
         $this->date_jeu = $date_jeu;
 
         return $this;
     }
 
-    /**
-     * Get the value of date_jeu.
-     *
-     * @return int
-     */
-    public function getDateJeu()
+    public function getDateJeu(): ?int
     {
         return $this->date_jeu;
     }
 
-    /**
-     * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * Get the value of description.
-     *
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * Set the value of date_debut.
-     *
-     * @param \DateTime $date_debut
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setDateDebut($date_debut)
+    public function setDateDebut(\DateTime $date_debut): static
     {
         $this->date_debut = $date_debut;
 
         return $this;
     }
 
-    /**
-     * Get the value of date_debut.
-     *
-     * @return \DateTime
-     */
-    public function getDateDebut()
+    public function getDateDebut(): \DateTime
     {
         return $this->date_debut;
     }
 
-    /**
-     * Set the value of date_fin.
-     *
-     * @param \DateTime $date_fin
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setDateFin($date_fin)
+    public function setDateFin(\DateTime $date_fin): static
     {
         $this->date_fin = $date_fin;
 
         return $this;
     }
 
-    /**
-     * Get the value of date_fin.
-     *
-     * @return \DateTime
-     */
-    public function getDateFin()
+    public function getDateFin(): \DateTime
     {
         return $this->date_fin;
     }
 
-    /**
-     * Set the value of date_installation_joueur.
-     *
-     * @param \DateTime $date_installation_joueur
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setDateInstallationJoueur($date_installation_joueur)
+    public function setDateInstallationJoueur(\DateTime $date_installation_joueur): static
     {
         $this->date_installation_joueur = $date_installation_joueur;
 
         return $this;
     }
 
-    /**
-     * Get the value of date_installation_joueur.
-     *
-     * @return \DateTime
-     */
-    public function getDateInstallationJoueur()
+    public function getDateInstallationJoueur(): \DateTime
     {
         return $this->date_installation_joueur;
     }
 
-    /**
-     * Set the value of date_fin_orga.
-     *
-     * @param \DateTime $date_fin_orga
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setDateFinOrga($date_fin_orga)
+    public function setDateFinOrga(\DateTime $date_fin_orga): static
     {
         $this->date_fin_orga = $date_fin_orga;
 
         return $this;
     }
 
-    /**
-     * Get the value of date_fin_orga.
-     *
-     * @return \DateTime
-     */
-    public function getDateFinOrga()
+    public function getDateFinOrga(): \DateTime
     {
         return $this->date_fin_orga;
     }
 
-    /**
-     * Set the value of adresse.
-     *
-     * @param string $adresse
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setAdresse($adresse)
+    public function setAdresse(string $adresse): static
     {
         $this->adresse = $adresse;
 
         return $this;
     }
 
-    /**
-     * Get the value of adresse.
-     *
-     * @return string
-     */
-    public function getAdresse()
+    public function getAdresse(): string
     {
-        return $this->adresse;
+        return $this->adresse ?? '';
     }
 
-    /**
-     * Set the value of actif.
-     *
-     * @param bool $actif
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setActif($actif)
+    public function setActif(bool $actif): static
     {
         $this->actif = $actif;
 
         return $this;
     }
 
-    /**
-     * Get the value of actif.
-     *
-     * @return bool
-     */
-    public function getActif()
+    public function getActif(): bool
     {
         return $this->actif;
     }
 
-    /**
-     * Set the value of billetterie.
-     *
-     * @param string $billetterie
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setBilletterie($billetterie)
+    public function setBilletterie(string $billetterie): static
     {
         $this->billetterie = $billetterie;
 
         return $this;
     }
 
-    /**
-     * Get the value of billetterie.
-     *
-     * @return string
-     */
-    public function getBilletterie()
+    public function getBilletterie(): string
     {
-        return $this->billetterie;
+        return $this->billetterie ?? '';
     }
 
-    /**
-     * Set the value of conditions_inscription.
-     *
-     * @param string $conditions_inscription
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setConditionsInscription($conditions_inscription)
+    public function setConditionsInscription(string $conditions_inscription): static
     {
         $this->conditions_inscription = $conditions_inscription;
 
         return $this;
     }
 
-    /**
-     * Get the value of conditions_inscription.
-     *
-     * @return string
-     */
-    public function getConditionsInscription()
+    public function getConditionsInscription(): string
     {
-        return $this->conditions_inscription;
+        return $this->conditions_inscription ?? '';
     }
 
-    /**
-     * Add Annonce entity to collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function addAnnonce(Annonce $annonce)
+    public function addAnnonce(Annonce $annonce): static
     {
         $this->annonces[] = $annonce;
 
         return $this;
     }
 
-    /**
-     * Remove Annonce entity from collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function removeAnnonce(Annonce $annonce)
+    public function removeAnnonce(Annonce $annonce): static
     {
         $this->annonces->removeElement($annonce);
 
         return $this;
     }
 
-    /**
-     * Get Annonce entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getAnnonces()
+    public function getAnnonces(): ArrayCollection
     {
         return $this->annonces;
     }
 
-    /**
-     * Add Background entity to collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function addBackground(Background $background)
+    public function addBackground(Background $background): static
     {
         $this->backgrounds[] = $background;
 
         return $this;
     }
 
-    /**
-     * Remove Background entity from collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function removeBackground(Background $background)
+    public function removeBackground(Background $background): static
     {
         $this->backgrounds->removeElement($background);
 
         return $this;
     }
 
-    /**
-     * Get Background entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getBackgrounds()
+    public function getBackgrounds(): ArrayCollection
     {
         return $this->backgrounds;
     }
 
-    /**
-     * Add Billet entity to collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function addBillet(Billet $billet)
+    public function addBillet(Billet $billet): static
     {
         $this->billets[] = $billet;
 
         return $this;
     }
 
-    /**
-     * Remove Billet entity from collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function removeBillet(Billet $billet)
+    public function removeBillet(Billet $billet): static
     {
         $this->billets->removeElement($billet);
 
         return $this;
     }
 
-    /**
-     * Get Billet entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getBillets()
+    public function getBillets(): ArrayCollection
     {
         return $this->billets;
     }
 
-    /**
-     * Add Debriefing entity to collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function addDebriefing(Debriefing $debriefing)
+    public function addDebriefing(Debriefing $debriefing): static
     {
         $this->debriefings[] = $debriefing;
 
         return $this;
     }
 
-    /**
-     * Remove Debriefing entity from collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function removeDebriefing(Debriefing $debriefing)
+    public function removeDebriefing(Debriefing $debriefing): static
     {
         $this->debriefings->removeElement($debriefing);
 
         return $this;
     }
 
-    /**
-     * Get Debriefing entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getDebriefings()
+    public function getDebriefings(): ArrayCollection
     {
         return $this->debriefings;
     }
 
-    /**
-     * Add GroupeGn entity to collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function addGroupeGn(GroupeGn $groupeGn)
+    public function addGroupeGn(GroupeGn $groupeGn): static
     {
         $this->groupeGns[] = $groupeGn;
 
         return $this;
     }
 
-    /**
-     * Remove GroupeGn entity from collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function removeGroupeGn(GroupeGn $groupeGn)
+    public function removeGroupeGn(GroupeGn $groupeGn): static
     {
         $this->groupeGns->removeElement($groupeGn);
 
         return $this;
     }
 
-    /**
-     * Get GroupeGn entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getGroupeGns()
+    public function getGroupeGns(): ArrayCollection
     {
         return $this->groupeGns;
     }
 
-    /**
-     * Add Participant entity to collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function addParticipant(Participant $participant)
+    public function addParticipant(Participant $participant): static
     {
         $this->participants[] = $participant;
 
         return $this;
     }
 
-    /**
-     * Remove Participant entity from collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function removeParticipant(Participant $participant)
+    public function removeParticipant(Participant $participant): static
     {
         $this->participants->removeElement($participant);
 
         return $this;
     }
 
-    /**
-     * Get Participant entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getParticipants()
+    public function getParticipants(): ArrayCollection
     {
         return $this->participants;
     }
 
-    /**
-     * Add PersonnageBackground entity to collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function addPersonnageBackground(PersonnageBackground $personnageBackground)
+    public function addPersonnageBackground(PersonnageBackground $personnageBackground): static
     {
         $this->personnageBackgrounds[] = $personnageBackground;
 
         return $this;
     }
 
-    /**
-     * Remove PersonnageBackground entity from collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function removePersonnageBackground(PersonnageBackground $personnageBackground)
+    public function removePersonnageBackground(PersonnageBackground $personnageBackground): static
     {
         $this->personnageBackgrounds->removeElement($personnageBackground);
 
         return $this;
     }
 
-    /**
-     * Get PersonnageBackground entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getPersonnageBackgrounds()
+    public function getPersonnageBackgrounds(): ArrayCollection
     {
         return $this->personnageBackgrounds;
     }
 
-    /**
-     * Add Rumeur entity to collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function addRumeur(Rumeur $rumeur)
+    public function addRumeur(Rumeur $rumeur): static
     {
         $this->rumeurs[] = $rumeur;
 
         return $this;
     }
 
-    /**
-     * Remove Rumeur entity from collection (one to many).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function removeRumeur(Rumeur $rumeur)
+    public function removeRumeur(Rumeur $rumeur): static
     {
         $this->rumeurs->removeElement($rumeur);
 
         return $this;
     }
 
-    /**
-     * Get Rumeur entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRumeurs()
+    public function getRumeurs(): ArrayCollection
     {
         return $this->rumeurs;
     }
 
-    /**
-     * Set Topic entity (many to one).
-     *
-     * @return \App\Entity\Gn
-     */
-    public function setTopic(Topic $topic = null)
+    public function setTopic(Topic $topic = null): static
     {
         $this->topic = $topic;
 
         return $this;
     }
 
-    /**
-     * Get Topic entity (many to one).
-     *
-     * @return \App\Entity\Topic
-     */
-    public function getTopic()
+    public function getTopic(): Topic
     {
         return $this->topic;
     }

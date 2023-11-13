@@ -15,9 +15,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * App\Entity\CompetenceFamily.
- */
 #[Table(name: 'competence_family')]
 #[InheritanceType('SINGLE_TABLE')]
 #[DiscriminatorColumn(name: 'discr', type: 'string')]
@@ -38,14 +35,14 @@ class BaseCompetenceFamily
     /**
      * @var \Doctrine\Common\Collections\Collection<\App\Entity\Technologie>
      */
-    #[OneToMany(targetEntity: 'Technologie', mappedBy: 'competenceFamily', cascade: ['persist'])]
+    #[OneToMany(mappedBy: 'competenceFamily', targetEntity: 'Technologie', cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_family_id', nullable: false)]
     protected \Doctrine\Common\Collections\Collection $technologies;
 
     /**
      * @var \Doctrine\Common\Collections\Collection<\App\Entity\Competence>
      */
-    #[OneToMany(targetEntity: 'Competence', mappedBy: 'competenceFamily', cascade: ['persist'])]
+    #[OneToMany(mappedBy: 'competenceFamily', targetEntity: 'Competence', cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_family_id', nullable: false)]
     protected \Doctrine\Common\Collections\Collection $competences;
 
@@ -58,7 +55,7 @@ class BaseCompetenceFamily
     /**
      * Set the value of id.
      */
-    public function setId(int $id): CompetenceFamily
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -76,7 +73,7 @@ class BaseCompetenceFamily
     /**
      * Set the value of label.
      */
-    public function setLabel(string $label): CompetenceFamily
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -94,7 +91,7 @@ class BaseCompetenceFamily
     /**
      * Set the value of description.
      */
-    public function setDescription(string $description): CompetenceFamily
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -112,7 +109,7 @@ class BaseCompetenceFamily
     /**
      * Add Competence entity to collection (one to many).
      */
-    public function addCompetence(Competence $competence): CompetenceFamily
+    public function addCompetence(Competence $competence): static
     {
         $this->competences[] = $competence;
 
@@ -122,7 +119,7 @@ class BaseCompetenceFamily
     /**
      * Remove Competence entity from collection (one to many).
      */
-    public function removeCompetence(Competence $competence): CompetenceFamily
+    public function removeCompetence(Competence $competence): static
     {
         $this->competences->removeElement($competence);
 
@@ -140,7 +137,7 @@ class BaseCompetenceFamily
     /**
      * Add Technologie entity to collection (one to many).
      */
-    public function addTechnologie(Technologie $technologie): CompetenceFamily
+    public function addTechnologie(Technologie $technologie): static
     {
         $this->technologies[] = $technologie;
 
@@ -150,7 +147,7 @@ class BaseCompetenceFamily
     /**
      * Remove Technologie entity from collection (one to many).
      */
-    public function removeTechnologie(Technologie $technologie): CompetenceFamily
+    public function removeTechnologie(Technologie $technologie): static
     {
         $this->technologies->removeElement($technologie);
 

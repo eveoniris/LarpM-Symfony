@@ -18,9 +18,9 @@ use Doctrine\ORM\Mapping\Table;
  * App\Entity\Debriefing.
  */
 #[Table(name: 'debriefing')]
-#[Index(name: 'fk_debriefing_groupe1_idx', columns: ['groupe_id'])]
-#[Index(name: 'fk_debriefing_User1_idx', columns: ['User_id'])]
-#[Index(name: 'fk_debriefing_gn1_idx', columns: ['gn_id'])]
+#[Index(columns: ['groupe_id'], name: 'fk_debriefing_groupe1_idx')]
+#[Index(columns: ['User_id'], name: 'fk_debriefing_User1_idx')]
+#[Index(columns: ['gn_id'], name: 'fk_debriefing_gn1_idx')]
 #[InheritanceType('SINGLE_TABLE')]
 #[DiscriminatorColumn(name: 'discr', type: 'string')]
 #[DiscriminatorMap(['base' => 'BaseDebriefing', 'extended' => 'Debriefing'])]

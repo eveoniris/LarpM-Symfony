@@ -2,108 +2,64 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * App\Entity\CultureHasClasse.
- *
- * @Table(name="culture_has_classe", indexes={@Index(name="fk_culture_has_classe_culture1_idx", columns={"culture_id"}), @Index(name="fk_culture_has_classe_classe1_idx", columns={"classe_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseCultureHasClasse", "extended":"CultureHasClasse"})
- */
-class BaseCultureHasClasse
+#[Entity]
+#[ORM\Table(name: 'culture_has_classe')]
+#[ORM\Index(columns: ['fk_culture_has_classe_culture1_idx'], name: 'culture_id')]
+#[ORM\Index(columns: ['fk_culture_has_classe_classe1_idx'], name: 'classe_id')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseCultureHasClasse', 'extended' => 'CultureHasClasse'])]
+abstract class BaseCultureHasClasse
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @ManyToOne(targetEntity="Culture", inversedBy="cultureHasClasses")
-     *
-     * @JoinColumn(name="culture_id", referencedColumnName="id", nullable=false)
-     */
-    protected $culture;
+    #[ORM\ManyToOne(targetEntity: Culture::class, inversedBy: 'cultureHasClasses')]
+    #[ORM\JoinColumn(name: 'culture_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Culture $culture;
 
-    /**
-     * @ManyToOne(targetEntity="Classe", inversedBy="cultureHasClasses")
-     *
-     * @JoinColumn(name="classe_id", referencedColumnName="id", nullable=false)
-     */
-    protected $classe;
+    #[ORM\ManyToOne(targetEntity: Classe::class, inversedBy: 'cultureHasClasses')]
+    #[ORM\JoinColumn(name: 'classe_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Classe $classe;
 
-    public function __construct()
-    {
-    }
-
-    /**
-     * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\CultureHasClasse
-     */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set Culture entity (many to one).
-     *
-     * @return \App\Entity\CultureHasClasse
-     */
-    public function setCulture(Culture $culture = null)
+    public function setCulture(Culture $culture = null): static
     {
         $this->culture = $culture;
 
         return $this;
     }
 
-    /**
-     * Get Culture entity (many to one).
-     *
-     * @return \App\Entity\Culture
-     */
-    public function getCulture()
+    public function getCulture(): Culture
     {
         return $this->culture;
     }
 
-    /**
-     * Set Classe entity (many to one).
-     *
-     * @return \App\Entity\CultureHasClasse
-     */
-    public function setClasse(Classe $classe = null)
+    public function setClasse(Classe $classe = null): static
     {
         $this->classe = $classe;
 
         return $this;
     }
 
-    /**
-     * Get Classe entity (many to one).
-     *
-     * @return \App\Entity\Classe
-     */
-    public function getClasse()
+    public function getClasse(): Classe
     {
         return $this->classe;
     }

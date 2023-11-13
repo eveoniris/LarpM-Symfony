@@ -3,264 +3,147 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * App\Entity\Connaissance.
- *
- * @Table(name="connaissance")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseConnaissance", "extended":"Connaissance"})
- */
-class BaseConnaissance
+#[Entity]
+#[ORM\Table(name: 'connaissance')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseConnaissance', 'extended' => 'Connaissance'])]
+abstract class BaseConnaissance
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label = '';
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $contraintes;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $contraintes = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $documentUrl;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $documentUrl;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $niveau;
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true])]
+    protected int $niveau;
 
-    /**
-     * @Column(type="boolean", nullable=false, options={"default":0})
-     */
-    protected $secret;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: false, options: ['default' => 0])]
+    protected bool $secret = false;
 
-    /**
-     * @ManyToMany(targetEntity="Personnage", mappedBy="connaissances")
-     */
-    protected $personnages;
+    #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'connaissances')]
+    protected ArrayCollection $personnages;
 
     public function __construct()
     {
         $this->personnages = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Connaissance
-     */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Connaissance
-     */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
         return $this;
     }
 
-    /**
-     * Get the value of label.
-     *
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
-    /**
-     * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Connaissance
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * Get the value of description.
-     *
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
-    /**
-     * Set the value of contraintes.
-     *
-     * @param string $contraintes
-     *
-     * @return \App\Entity\Connaissance
-     */
-    public function setContraintes($contraintes)
+    public function setContraintesstring($contraintes): static
     {
         $this->contraintes = $contraintes;
 
         return $this;
     }
 
-    /**
-     * Get the value of contraintes.
-     *
-     * @return string
-     */
-    public function getContraintes()
+    public function getContraintes(): string
     {
-        return $this->contraintes;
+        return $this->contraintes ?? '';
     }
 
-    /**
-     * Set the value of documentUrl.
-     *
-     * @param string $documentUrl
-     *
-     * @return \App\Entity\Connaissance
-     */
-    public function setDocumentUrl($documentUrl)
+    public function setDocumentUrl(string $documentUrl): static
     {
         $this->documentUrl = $documentUrl;
 
         return $this;
     }
 
-    /**
-     * Get the value of documentUrl.
-     *
-     * @return string
-     */
-    public function getDocumentUrl()
+    public function getDocumentUrl(): ?string
     {
         return $this->documentUrl;
     }
 
-    /**
-     * Add Personnage entity to collection.
-     *
-     * @return \App\Entity\Connaissance
-     */
-    public function addPersonnage(Personnage $personnage)
+    public function addPersonnage(Personnage $personnage): static
     {
         $this->personnages[] = $personnage;
 
         return $this;
     }
 
-    /**
-     * Remove Personnage entity from collection.
-     *
-     * @return \App\Entity\Connaissance
-     */
-    public function removePersonnage(Personnage $personnage)
+    public function removePersonnage(Personnage $personnage): static
     {
         $this->personnages->removeElement($personnage);
 
         return $this;
     }
 
-    /**
-     * Get Personnage entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getPersonnages()
+    public function getPersonnages(): ArrayCollection
     {
         return $this->personnages;
     }
 
-    /**
-     * Set the value of niveau.
-     *
-     * @param int $niveau
-     *
-     * @return \App\Entity\Connaissance
-     */
-    public function setNiveau($niveau)
+    public function setNiveau(int $niveau): static
     {
         $this->niveau = $niveau;
 
         return $this;
     }
 
-    /**
-     * Get the value of niveau.
-     *
-     * @return int
-     */
-    public function getNiveau()
+    public function getNiveau(): int
     {
         return $this->niveau;
     }
 
-    /**
-     * Set the value of secret.
-     *
-     * @param bool $secret
-     *
-     * @return \App\Entity\Connaissance
-     */
-    public function setSecret($secret)
+    public function setSecret(bool $secret): static
     {
         $this->secret = $secret;
 
         return $this;
     }
 
-    /**
-     * Get the value of secret.
-     *
-     * @return bool
-     */
-    public function getSecret()
+    public function getSecret(): bool
     {
         return $this->secret;
     }

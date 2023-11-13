@@ -81,12 +81,9 @@ class BaseGroupe
      */
     protected $richesse;
 
-    /**
-     * @OneToMany(targetEntity="Background", mappedBy="groupe")
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
-     */
-    protected $backgrounds;
+    #[OneToMany(mappedBy: 'groupe', targetEntity: Background::class)]
+    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
+    protected array $backgrounds = [];
 
     /**
      * @OneToMany(targetEntity="Debriefing", mappedBy="groupe")
@@ -1003,8 +1000,6 @@ class BaseGroupe
 
     /**
      * Get User entity related by `responsable_id` (many to one).
-     *
-     * @return \App\Entity\User
      */
     public function getUserRelatedByResponsableId(): ?User
     {
