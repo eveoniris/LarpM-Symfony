@@ -1,211 +1,123 @@
 <?php
 
-
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Evenement.
- *
- * @Table(name="evenement")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseEvenement", "extended":"Evenement"})
- */
-class BaseEvenement
+#[ORM\Entity]
+#[ORM\Table(name: 'evenement')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseEvenement', 'extended' => 'Evenement'])]
+abstract class BaseEvenement
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(name="`text`", type="string", length=450)
-     */
-    protected $text;
+    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::STRING, length: 450)]
+    protected string $text;
+
+    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $date;
+
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    protected \DateTime $date_creation;
+
+    protected \DateTime $date_update;
 
     /**
-     * @Column(name="`date`", type="string", length=45)
+     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\IntrigueHasEvenement>|\App\Entity\IntrigueHasEvenement[]
      */
-    protected $date;
-
-    /**
-     * @Column(type="datetime")
-     */
-    protected $date_creation;
-
-    /**
-     * @Column(type="datetime")
-     */
-    protected $date_update;
-
-    /**
-     * @OneToMany(targetEntity="IntrigueHasEvenement", mappedBy="evenement", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="id", referencedColumnName="evenement_id", nullable=false)
-     */
-    protected $intrigueHasEvenements;
+    #[OneToMany(mappedBy: 'evenement', targetEntity: IntrigueHasEvenement::class, cascade: ['persist', 'remove'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'evenement_id', nullable: 'false')]
+    protected ArrayCollection $intrigueHasEvenements;
 
     public function __construct()
     {
         $this->intrigueHasEvenements = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Evenement
-     */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of text.
-     *
-     * @param string $text
-     *
-     * @return \App\Entity\Evenement
-     */
-    public function setText($text)
+    public function setText(string $text): static
     {
         $this->text = $text;
 
         return $this;
     }
 
-    /**
-     * Get the value of text.
-     *
-     * @return string
-     */
-    public function getText()
+    public function getText(): string
     {
-        return $this->text;
+        return $this->text ?? '';
     }
 
-    /**
-     * Set the value of date.
-     *
-     * @param string $date
-     *
-     * @return \App\Entity\Evenement
-     */
-    public function setDate($date)
+    public function setDate(\DateTime $date): static
     {
         $this->date = $date;
 
         return $this;
     }
 
-    /**
-     * Get the value of date.
-     *
-     * @return string
-     */
-    public function getDate()
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
 
-    /**
-     * Set the value of date_creation.
-     *
-     * @param \DateTime $date_creation
-     *
-     * @return \App\Entity\Evenement
-     */
-    public function setDateCreation($date_creation)
+    public function setDateCreation(\DateTime $date_creation): static
     {
         $this->date_creation = $date_creation;
 
         return $this;
     }
 
-    /**
-     * Get the value of date_creation.
-     *
-     * @return \DateTime
-     */
-    public function getDateCreation()
+    public function getDateCreation(): \DateTime
     {
         return $this->date_creation;
     }
 
-    /**
-     * Set the value of date_update.
-     *
-     * @param \DateTime $date_update
-     *
-     * @return \App\Entity\Evenement
-     */
-    public function setDateUpdate($date_update)
+    public function setDateUpdate(\DateTime $date_update): static
     {
         $this->date_update = $date_update;
 
         return $this;
     }
 
-    /**
-     * Get the value of date_update.
-     *
-     * @return \DateTime
-     */
-    public function getDateUpdate()
+    public function getDateUpdate(): \DateTime
     {
         return $this->date_update;
     }
 
-    /**
-     * Add IntrigueHasEvenement entity to collection (one to many).
-     *
-     * @return \App\Entity\Evenement
-     */
-    public function addIntrigueHasEvenement(IntrigueHasEvenement $intrigueHasEvenement)
+    public function addIntrigueHasEvenement(IntrigueHasEvenement $intrigueHasEvenement): static
     {
         $this->intrigueHasEvenements[] = $intrigueHasEvenement;
 
         return $this;
     }
 
-    /**
-     * Remove IntrigueHasEvenement entity from collection (one to many).
-     *
-     * @return \App\Entity\Evenement
-     */
-    public function removeIntrigueHasEvenement(IntrigueHasEvenement $intrigueHasEvenement)
+    public function removeIntrigueHasEvenement(IntrigueHasEvenement $intrigueHasEvenement): static
     {
         $this->intrigueHasEvenements->removeElement($intrigueHasEvenement);
 
         return $this;
     }
 
-    /**
-     * Get IntrigueHasEvenement entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getIntrigueHasEvenements()
+    public function getIntrigueHasEvenements(): ArrayCollection
     {
         return $this->intrigueHasEvenements;
     }

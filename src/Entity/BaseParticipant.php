@@ -75,12 +75,9 @@ class BaseParticipant
      */
     protected $personnage;
 
-    /**
-     * @ManyToOne(targetEntity="Billet", inversedBy="participants")
-     *
-     * @JoinColumn(name="billet_id", referencedColumnName="id")
-     */
-    protected $billet;
+    #[ManyToOne(targetEntity: Billet::class, inversedBy: 'participants')]
+    #[JoinColumn(name: 'billet_id', referencedColumnName: 'id')]
+    protected ?Billet $billet = null;
 
     /**
      * @ManyToOne(targetEntity="GroupeGn", inversedBy="participants")

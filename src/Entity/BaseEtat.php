@@ -3,121 +3,77 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Etat.
- *
- * @Table(name="etat")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseEtat", "extended":"Etat"})
- */
-class BaseEtat
+#[ORM\Entity]
+#[ORM\Table(name: 'etat')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseEtat', 'extended' => 'Etat'])]
+abstract class BaseEtat
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label;
 
     /**
-     * @OneToMany(targetEntity="Objet", mappedBy="etat")
-     *
-     * @JoinColumn(name="id", referencedColumnName="etat_id", nullable=false)
+     * @var \Doctrine\Common\Collections\ArrayCollection<int, \App\Entity\Objet>|\App\Entity\Objet[]
      */
-    protected $objets;
+    #[OneToMany(mappedBy: 'etat', targetEntity: Objet::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'etat_id', nullable: 'false')]
+    protected ArrayCollection $objets;
 
     public function __construct()
     {
         $this->objets = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Etat
-     */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Etat
-     */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
         return $this;
     }
 
-    /**
-     * Get the value of label.
-     *
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
-    /**
-     * Add Objet entity to collection (one to many).
-     *
-     * @return \App\Entity\Etat
-     */
-    public function addObjet(Objet $objet)
+    public function addObjet(Objet $objet): static
     {
         $this->objets[] = $objet;
 
         return $this;
     }
 
-    /**
-     * Remove Objet entity from collection (one to many).
-     *
-     * @return \App\Entity\Etat
-     */
-    public function removeObjet(Objet $objet)
+    public function removeObjet(Objet $objet): static
     {
         $this->objets->removeElement($objet);
 
         return $this;
     }
 
-    /**
-     * Get Objet entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getObjets()
+    public function getObjets(): ArrayCollection
     {
         return $this->objets;
     }

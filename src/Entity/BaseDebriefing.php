@@ -57,7 +57,7 @@ class BaseDebriefing
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected User $user;
 
-    #[ManyToOne(targetEntity: 'User', inversedBy: 'debriefings')]
+    #[ManyToOne(targetEntity: 'User', inversedBy: 'playerDebriefings')]
     #[JoinColumn(name: 'player_id', referencedColumnName: 'id', nullable: false)]
     protected User $player;
 

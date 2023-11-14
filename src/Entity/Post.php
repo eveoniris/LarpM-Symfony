@@ -108,6 +108,6 @@ class Post extends BasePost
      */
     public function isRoot(): bool
     {
-        return null == $this->getPost();
+        return null === $this->getPost();
     }
 }

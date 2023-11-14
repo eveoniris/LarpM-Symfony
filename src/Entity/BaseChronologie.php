@@ -45,7 +45,7 @@ class BaseChronologie
         $this->territoire = new Territoire();
     }
 
-    public function setId(int $id): self
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -57,7 +57,7 @@ class BaseChronologie
         return $this->id;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -69,7 +69,7 @@ class BaseChronologie
         return $this->description;
     }
 
-    public function setYear(int $year): self
+    public function setYear(int $year): static
     {
         $this->year = $year;
 
@@ -81,7 +81,7 @@ class BaseChronologie
         return $this->year;
     }
 
-    public function setMonth(int $month): self
+    public function setMonth(int $month): static
     {
         $this->month = $month;
 
@@ -93,7 +93,7 @@ class BaseChronologie
         return $this->month ?? 1;
     }
 
-    public function setDay(int $day): self
+    public function setDay(int $day): static
     {
         $this->day = $day;
 
@@ -105,7 +105,7 @@ class BaseChronologie
         return $this->day ?? 1;
     }
 
-    public function setVisibilite(string $visibilite): self
+    public function setVisibilite(string $visibilite): static
     {
         $this->visibilite = $visibilite;
 
@@ -117,7 +117,7 @@ class BaseChronologie
         return $this->visibilite;
     }
 
-    public function setTerritoire(Territoire $territoire = null): self
+    public function setTerritoire(Territoire $territoire = null): static
     {
         $this->territoire = $territoire;
 

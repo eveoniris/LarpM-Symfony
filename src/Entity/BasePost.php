@@ -43,12 +43,9 @@ use Doctrine\ORM\Mapping\OneToMany;
      */
     protected $update_date;
 
-    /**
-     * @OneToMany(targetEntity="Post", mappedBy="post")
-     *
-     * @JoinColumn(name="id", referencedColumnName="post_id", nullable=false)
-     */
-    protected $posts;
+    #[OneToMany(mappedBy: 'post', targetEntity: Post::class)]
+    #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id')]
+    protected ArrayCollection $posts;
 
     /**
      * @OneToMany(targetEntity="PostView", mappedBy="post")

@@ -2,72 +2,45 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\ExperienceGain.
- *
- * @Table(name="experience_gain", indexes={@Index(name="fk_experience_gain_personnage1_idx", columns={"personnage_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseExperienceGain", "extended":"ExperienceGain"})
- */
-class BaseExperienceGain
+#[ORM\Entity]
+#[ORM\Table(name: 'experience_gain')]
+#[ORM\Index(columns: ['personnage_id'], name: 'fk_experience_gain_personnage1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseExperienceGain', 'extended' => 'ExperienceGain'])]
+abstract class BaseExperienceGain
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=100)
-     */
-    protected $explanation;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
+    protected string $explanation;
 
-    /**
-     * @Column(type="datetime")
-     */
-    protected $operation_date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    protected \DateTime $operation_date;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $xp_gain;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $xp_gain;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="experienceGains")
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnage;
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'experienceGains')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $personnage;
 
-    public function __construct()
-    {
-    }
-
-    /**
-     * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\ExperienceGain
-     */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -75,93 +48,52 @@ class BaseExperienceGain
     /**
      * Set the value of explanation.
      *
-     * @param string $explanation
-     *
      * @return \App\Entity\ExperienceGain
      */
-    public function setExplanation($explanation)
+    public function setExplanation(string $explanation): static
     {
         $this->explanation = $explanation;
 
         return $this;
     }
 
-    /**
-     * Get the value of explanation.
-     *
-     * @return string
-     */
-    public function getExplanation()
+    public function getExplanation(): string
     {
-        return $this->explanation;
+        return $this->explanation ?? '';
     }
 
-    /**
-     * Set the value of operation_date.
-     *
-     * @param \DateTime $operation_date
-     *
-     * @return \App\Entity\ExperienceGain
-     */
-    public function setOperationDate($operation_date)
+    public function setOperationDate(\DateTime $operation_date): static
     {
         $this->operation_date = $operation_date;
 
         return $this;
     }
 
-    /**
-     * Get the value of operation_date.
-     *
-     * @return \DateTime
-     */
-    public function getOperationDate()
+    public function getOperationDate(): \DateTime
     {
         return $this->operation_date;
     }
 
-    /**
-     * Set the value of xp_gain.
-     *
-     * @param int $xp_gain
-     *
-     * @return \App\Entity\ExperienceGain
-     */
-    public function setXpGain($xp_gain)
+    public function setXpGain(int $xp_gain): static
     {
         $this->xp_gain = $xp_gain;
 
         return $this;
     }
 
-    /**
-     * Get the value of xp_gain.
-     *
-     * @return int
-     */
-    public function getXpGain()
+    public function getXpGain(): int
     {
         return $this->xp_gain;
     }
 
-    /**
-     * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\ExperienceGain
-     */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
         return $this;
     }
 
-    /**
-     * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
-     */
-    public function getPersonnage()
+    public function getPersonnage(): Personnage
     {
         return $this->personnage;
     }
