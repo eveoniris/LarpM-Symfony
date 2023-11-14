@@ -66,7 +66,7 @@ abstract class BaseClasse
         $this->personnageSecondaires = new ArrayCollection();
     }
 
-    public function setId(int $id): self
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -78,7 +78,7 @@ abstract class BaseClasse
         return $this->id;
     }
 
-    public function setLabelMasculin(string $label_masculin): self
+    public function setLabelMasculin(string $label_masculin): static
     {
         $this->label_masculin = $label_masculin;
 
@@ -90,7 +90,7 @@ abstract class BaseClasse
         return $this->label_masculin;
     }
 
-    public function setLabelFeminin(string $label_feminin): self
+    public function setLabelFeminin(string $label_feminin): static
     {
         $this->label_feminin = $label_feminin;
 
@@ -102,7 +102,7 @@ abstract class BaseClasse
         return $this->label_feminin;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -111,10 +111,10 @@ abstract class BaseClasse
 
     public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
-    public function setImageM(string $image_m): self
+    public function setImageM(string $image_m): static
     {
         $this->image_m = $image_m;
 
@@ -123,10 +123,10 @@ abstract class BaseClasse
 
     public function getImageM(): string
     {
-        return $this->image_m;
+        return $this->image_m ?? '';
     }
 
-    public function setImageF(string $image_f): self
+    public function setImageF(string $image_f): static
     {
         $this->image_f = $image_f;
 
@@ -135,10 +135,10 @@ abstract class BaseClasse
 
     public function getImageF(): string
     {
-        return $this->image_f;
+        return $this->image_f ?? '';
     }
 
-    public function setCreation(string $creation): self
+    public function setCreation(string $creation): static
     {
         $this->creation = $creation;
 
@@ -150,14 +150,14 @@ abstract class BaseClasse
         return $this->creation;
     }
 
-    public function addGroupeClasse(GroupeClasse $groupeClasse): self
+    public function addGroupeClasse(GroupeClasse $groupeClasse): static
     {
         $this->groupeClasses[] = $groupeClasse;
 
         return $this;
     }
 
-    public function removeGroupeClasse(GroupeClasse $groupeClasse): self
+    public function removeGroupeClasse(GroupeClasse $groupeClasse): static
     {
         $this->groupeClasses->removeElement($groupeClasse);
 
@@ -169,14 +169,14 @@ abstract class BaseClasse
         return $this->groupeClasses;
     }
 
-    public function addPersonnage(Personnage $personnage): self
+    public function addPersonnage(Personnage $personnage): static
     {
         $this->personnages[] = $personnage;
 
         return $this;
     }
 
-    public function removePersonnage(Personnage $personnage): self
+    public function removePersonnage(Personnage $personnage): static
     {
         $this->personnages->removeElement($personnage);
 
@@ -188,14 +188,14 @@ abstract class BaseClasse
         return $this->personnages;
     }
 
-    public function addPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire): self
+    public function addPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire): static
     {
         $this->personnageSecondaires[] = $personnageSecondaire;
 
         return $this;
     }
 
-    public function removePersonnageSecondaire(PersonnageSecondaire $personnageSecondaire): self
+    public function removePersonnageSecondaire(PersonnageSecondaire $personnageSecondaire): static
     {
         $this->personnageSecondaires->removeElement($personnageSecondaire);
 

@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseBillet', 'extended' => 'Billet'])]
-class BaseBillet
+abstract class BaseBillet
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;

@@ -83,14 +83,11 @@ class BaseGroupe
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: Background::class)]
     #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
-    protected array $backgrounds = [];
+    protected ArrayCollection $backgrounds;
 
-    /**
-     * @OneToMany(targetEntity="Debriefing", mappedBy="groupe")
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
-     */
-    protected $debriefings;
+     #[OneToMany(mappedBy: 'groupe', targetEntity: Debriefing::class)]
+    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
+    protected ArrayCollection $debriefings;
 
     /**
      * @OneToMany(targetEntity="GroupeAllie", mappedBy="groupeRelatedByGroupeId")

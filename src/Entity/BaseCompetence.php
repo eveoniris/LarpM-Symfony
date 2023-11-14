@@ -79,7 +79,7 @@ class BaseCompetence
         $this->personnages = new ArrayCollection();
     }
 
-    public function setId(int $id): self
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -91,7 +91,7 @@ class BaseCompetence
         return $this->id;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -103,7 +103,7 @@ class BaseCompetence
         return $this->description ?? '';
     }
 
-    public function setDocumentUrl(string $documentUrl): self
+    public function setDocumentUrl(string $documentUrl): static
     {
         $this->documentUrl = $documentUrl;
 
@@ -115,7 +115,7 @@ class BaseCompetence
         return $this->documentUrl ?? '';
     }
 
-    public function setMateriel(string $materiel): self
+    public function setMateriel(string $materiel): static
     {
         $this->materiel = $materiel;
 
@@ -127,14 +127,14 @@ class BaseCompetence
         return $this->materiel ?? '';
     }
 
-    public function addCompetenceAttribute(CompetenceAttribute $competenceAttribute): self
+    public function addCompetenceAttribute(CompetenceAttribute $competenceAttribute): static
     {
         $this->competenceAttributes[] = $competenceAttribute;
 
         return $this;
     }
 
-    public function removeCompetenceAttribute(CompetenceAttribute $competenceAttribute): self
+    public function removeCompetenceAttribute(CompetenceAttribute $competenceAttribute): static
     {
         $this->competenceAttributes->removeElement($competenceAttribute);
 
@@ -146,14 +146,14 @@ class BaseCompetence
         return $this->competenceAttributes;
     }
 
-    public function addExperienceUsage(ExperienceUsage $experienceUsage): self
+    public function addExperienceUsage(ExperienceUsage $experienceUsage): static
     {
         $this->experienceUsages[] = $experienceUsage;
 
         return $this;
     }
 
-    public function removeExperienceUsage(ExperienceUsage $experienceUsage): self
+    public function removeExperienceUsage(ExperienceUsage $experienceUsage): static
     {
         $this->experienceUsages->removeElement($experienceUsage);
 
@@ -165,14 +165,14 @@ class BaseCompetence
         return $this->experienceUsages;
     }
 
-    public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): self
+    public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): static
     {
         $this->personnageSecondaireCompetences[] = $personnageSecondaireCompetence;
 
         return $this;
     }
 
-    public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): self
+    public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): static
     {
         $this->personnageSecondaireCompetences->removeElement($personnageSecondaireCompetence);
 
@@ -184,7 +184,7 @@ class BaseCompetence
         return $this->personnageSecondaireCompetences;
     }
 
-    public function setCompetenceFamily(CompetenceFamily $competenceFamily = null): self
+    public function setCompetenceFamily(CompetenceFamily $competenceFamily = null): static
     {
         $this->competenceFamily = $competenceFamily;
 
@@ -196,7 +196,7 @@ class BaseCompetence
         return $this->competenceFamily;
     }
 
-    public function setLevel(Level $level = null): self
+    public function setLevel(Level $level = null): static
     {
         $this->level = $level;
 
@@ -208,7 +208,7 @@ class BaseCompetence
         return $this->level;
     }
 
-    public function addPersonnage(Personnage $personnage): self
+    public function addPersonnage(Personnage $personnage): static
     {
         $personnage->addCompetence($this);
         $this->personnages[] = $personnage;
@@ -216,7 +216,7 @@ class BaseCompetence
         return $this;
     }
 
-    public function removePersonnage(Personnage $personnage): self
+    public function removePersonnage(Personnage $personnage): static
     {
         $personnage->removeCompetence($this);
         $this->personnages->removeElement($personnage);

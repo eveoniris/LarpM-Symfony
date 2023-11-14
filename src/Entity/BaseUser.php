@@ -91,6 +91,11 @@ abstract class BaseUser
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
     protected Collection $debriefings;
 
+    #[OneToMany(mappedBy: 'player', targetEntity: Debriefing::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'player_id', nullable: 'false')]
+    protected Collection $playerDebriefings;
+
+
     #[OneToMany(mappedBy: 'user', targetEntity: Document::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
     protected Collection $documents;
@@ -186,7 +191,7 @@ abstract class BaseUser
     #[ORM\InverseJoinColumn(name: 'restriction_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $restrictions;
 
-    #[ORM\ManyToMany(targetEntity: Post::class, inversedBy: 'users')]
+    #[ORM\ManyToMany(targetEntity: Post::class, mappedBy: 'users')]
     protected Collection $posts;
 
     public function __construct()
