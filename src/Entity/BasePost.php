@@ -73,10 +73,10 @@ use Doctrine\ORM\Mapping\OneToMany;
     #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id')]
     protected ?Post $post = null;
 
-    #[ORM\ManyToMany(targetEntity: Yser::class, inversedBy: 'posts')]
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'posts')]
     #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
-    protected array $users = [];
+    protected ArrayCollection $users;
 
     public function __construct()
     {

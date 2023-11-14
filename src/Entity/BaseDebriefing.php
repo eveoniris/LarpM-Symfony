@@ -41,33 +41,30 @@ class BaseDebriefing
     protected ?string $visibility = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $creation_date = null;
+    protected ?\DateTime $creation_date = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $update_date = null;
+    protected ?\DateTime $update_date = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
     #[ManyToOne(targetEntity: 'Groupe', inversedBy: 'debriefings')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
-    protected $groupe;
+    protected Groupe $groupe;
 
     #[ManyToOne(targetEntity: 'User', inversedBy: 'debriefings')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
-    protected ?User $user = null;
+    protected User $user;
 
     #[ManyToOne(targetEntity: 'User', inversedBy: 'debriefings')]
     #[JoinColumn(name: 'player_id', referencedColumnName: 'id', nullable: false)]
-    protected $player;
+    protected User $player;
 
     #[ManyToOne(targetEntity: 'Gn', inversedBy: 'debriefings')]
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id')]
-    protected $gn;
+    protected Gn $gn;
 
-    public function __construct()
-    {
-    }
 
     /**
      * Set the value of id.
@@ -86,7 +83,7 @@ class BaseDebriefing
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -96,7 +93,7 @@ class BaseDebriefing
      *
      * @return Debriefing
      */
-    public function setTitre(?string $titre)
+    public function setTitre(?string $titre): static
     {
         $this->titre = $titre;
 
@@ -108,9 +105,9 @@ class BaseDebriefing
      *
      * @return string
      */
-    public function getTitre()
+    public function getTitre(): string
     {
-        return $this->titre;
+        return $this->titre ?? '';
     }
 
     /**
@@ -118,7 +115,7 @@ class BaseDebriefing
      *
      * @return Debriefing
      */
-    public function setText(?string $text)
+    public function setText(?string $text): static
     {
         $this->text = $text;
 
@@ -130,9 +127,9 @@ class BaseDebriefing
      *
      * @return string
      */
-    public function getText()
+    public function getText(): string
     {
-        return $this->text;
+        return $this->text ?? '';
     }
 
     /**
@@ -140,7 +137,7 @@ class BaseDebriefing
      *
      * @return Debriefing
      */
-    public function setVisibility(?string $visibility)
+    public function setVisibility(?string $visibility): static
     {
         $this->visibility = $visibility;
 
@@ -152,9 +149,9 @@ class BaseDebriefing
      *
      * @return string
      */
-    public function getVisibility()
+    public function getVisibility(): string
     {
-        return $this->visibility;
+        return $this->visibility ?? '';
     }
 
     /**
@@ -164,7 +161,7 @@ class BaseDebriefing
      *
      * @return Debriefing
      */
-    public function setCreationDate(?\DateTimeInterface $creation_date)
+    public function setCreationDate(?\DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -176,7 +173,7 @@ class BaseDebriefing
      *
      * @return \DateTime
      */
-    public function getCreationDate()
+    public function getCreationDate(): ?\DateTime
     {
         return $this->creation_date;
     }
@@ -188,7 +185,7 @@ class BaseDebriefing
      *
      * @return Debriefing
      */
-    public function setUpdateDate(?\DateTimeInterface $update_date)
+    public function setUpdateDate(?\DateTime $update_date): static
     {
         $this->update_date = $update_date;
 
@@ -200,19 +197,21 @@ class BaseDebriefing
      *
      * @return \DateTime
      */
-    public function getUpdateDate()
+    public function getUpdateDate(): ?\DateTime
     {
         return $this->update_date;
     }
 
-    public function getDocumentUrl()
+    public function getDocumentUrl(): string
     {
-        return $this->documentUrl;
+        return $this->documentUrl ?? '';
     }
 
-    public function setDocumentUrl(mixed $documentUrl): void
+    public function setDocumentUrl(mixed $documentUrl): static
     {
         $this->documentUrl = $documentUrl;
+
+        return $this;
     }
 
     /**
@@ -220,7 +219,7 @@ class BaseDebriefing
      *
      * @return Debriefing
      */
-    public function setGroupe(Groupe $groupe = null)
+    public function setGroupe(Groupe $groupe = null): static
     {
         $this->groupe = $groupe;
 
@@ -232,7 +231,7 @@ class BaseDebriefing
      *
      * @return Groupe
      */
-    public function getGroupe()
+    public function getGroupe(): Groupe
     {
         return $this->groupe;
     }
@@ -242,7 +241,7 @@ class BaseDebriefing
      *
      * @return Debriefing
      */
-    public function setUser(User $User = null)
+    public function setUser(User $User = null): static
     {
         $this->user = $User;
 
@@ -254,7 +253,7 @@ class BaseDebriefing
      *
      * @return User
      */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
@@ -264,7 +263,7 @@ class BaseDebriefing
      *
      * @return Debriefing
      */
-    public function setPlayer(User $player = null)
+    public function setPlayer(User $player = null): static
     {
         $this->player = $player;
 
@@ -276,7 +275,7 @@ class BaseDebriefing
      *
      * @return User
      */
-    public function getPlayer()
+    public function getPlayer(): User
     {
         return $this->player;
     }
@@ -286,7 +285,7 @@ class BaseDebriefing
      *
      * @return Debriefing
      */
-    public function setGn(Gn $gn = null)
+    public function setGn(Gn $gn = null): static
     {
         $this->gn = $gn;
 
@@ -298,7 +297,7 @@ class BaseDebriefing
      *
      * @return Gn
      */
-    public function getGn()
+    public function getGn(): Gn
     {
         return $this->gn;
     }

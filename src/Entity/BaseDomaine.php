@@ -1,52 +1,40 @@
 <?php
 
-
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OrderBy;
 
-/**
- * App\Entity\Domaine.
- *
- * @Table(name="domaine")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseDomaine", "extended":"Domaine"})
- */
-class BaseDomaine
+#[Entity]
+#[ORM\Table(name: 'domaine')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseDomaine', 'extended' => 'Domaine'])]
+abstract class BaseDomaine
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label = '';
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $description;
 
-    /**
-     * @OneToMany(targetEntity="Sort", mappedBy="domaine")
-     *
-     * @JoinColumn(name="id", referencedColumnName="domaine_id", nullable=false)
-     *
-     * @OrderBy({"label" = "ASC", "niveau" = "ASC",})
-     */
-    protected $sorts;
+    #[OneToMany(mappedBy: 'domaine', targetEntity: Sort::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'domaine_id', nullable: 'false')]
+    #[OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
+    protected ArrayCollection $sorts;
 
-    /**
-     * @ManyToMany(targetEntity="Personnage", mappedBy="domaines")
-     */
-    protected $personnages;
+    #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'domaines')]
+    protected ArrayCollection $personnages;
 
     public function __construct()
     {
@@ -54,142 +42,76 @@ class BaseDomaine
         $this->personnages = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Domaine
-     */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Domaine
-     */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
         return $this;
     }
 
-    /**
-     * Get the value of label.
-     *
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
-    /**
-     * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Domaine
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * Get the value of description.
-     *
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
-    /**
-     * Add Sort entity to collection (one to many).
-     *
-     * @return \App\Entity\Domaine
-     */
-    public function addSort(Sort $sort)
+    public function addSort(Sort $sort): static
     {
         $this->sorts[] = $sort;
 
         return $this;
     }
 
-    /**
-     * Remove Sort entity from collection (one to many).
-     *
-     * @return \App\Entity\Domaine
-     */
-    public function removeSort(Sort $sort)
+    public function removeSort(Sort $sort): static
     {
         $this->sorts->removeElement($sort);
 
         return $this;
     }
 
-    /**
-     * Get Sort entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getSorts()
+    public function getSorts(): ArrayCollection
     {
         return $this->sorts;
     }
 
-    /**
-     * Add Personnage entity to collection.
-     *
-     * @return \App\Entity\Domaine
-     */
-    public function addPersonnage(Personnage $personnage)
+    public function addPersonnage(Personnage $personnage): static
     {
         $this->personnages[] = $personnage;
 
         return $this;
     }
 
-    /**
-     * Remove Personnage entity from collection.
-     *
-     * @return \App\Entity\Domaine
-     */
-    public function removePersonnage(Personnage $personnage)
+    public function removePersonnage(Personnage $personnage): static
     {
         $this->personnages->removeElement($personnage);
 
         return $this;
     }
 
-    /**
-     * Get Personnage entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getPersonnages()
+    public function getPersonnages(): ArrayCollection
     {
         return $this->personnages;
     }

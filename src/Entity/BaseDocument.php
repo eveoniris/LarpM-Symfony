@@ -1,109 +1,75 @@
 <?php
 
-
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\Document.
- *
- * @Table(name="document", indexes={@Index(name="fk_document_User1_idx", columns={"User_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseDocument", "extended":"Document"})
- */
-class BaseDocument
+#[Entity]
+#[ORM\Table(name: 'document')]
+#[ORM\Index(columns: ['user_id'], name: 'fk_document_user1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseDocument', 'extended' => 'Document'])]
+abstract class BaseDocument
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $code;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $code = '';
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $titre;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $titre = '';
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $documentUrl;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $documentUrl = '';
 
-    /**
-     * @Column(type="boolean")
-     */
-    protected $cryptage;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    protected bool $cryptage = false;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $statut;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $statut = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $auteur;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $auteur = null;
 
-    /**
-     * @Column(type="datetime")
-     */
-    protected $creation_date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?\DateTime $creation_date = null;
 
-    /**
-     * @Column(type="datetime")
-     */
-    protected $update_date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?\DateTime $update_date = null;
 
-    /**
-     * @Column(type="boolean")
-     */
-    protected $impression;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    protected bool $impression;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'documents')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
 
-    /**
-     * @ManyToMany(targetEntity="Langue", inversedBy="documents")
-     *
-     * @JoinTable(name="document_has_langue",
-     *     joinColumns={@JoinColumn(name="document_id", referencedColumnName="id", nullable=false)},
-     *     inverseJoinColumns={@JoinColumn(name="langue_id", referencedColumnName="id", nullable=false)}
-     * )
-     */
-    protected $langues;
+    #[ORM\ManyToMany(targetEntity: Langue::class, inversedBy: 'documents')]
+    #[ORM\JoinTable(name: 'document_has_langue')]
+    #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: false)]
+    protected ArrayCollection $langues;
 
-    /**
-     * @ManyToMany(targetEntity="Groupe", mappedBy="documents")
-     */
-    protected $groupes;
+    #[ORM\ManyToMany(targetEntity: Groupe::class, inversedBy: 'documents')]
+    protected ArrayCollection $groupes;
 
-    /**
-     * @ManyToMany(targetEntity="Lieu", mappedBy="documents")
-     */
-    protected $lieus;
+    #[ORM\ManyToMany(targetEntity: Lieu::class, inversedBy: 'documents')]
+    protected ArrayCollection $lieus;
 
-    /**
-     * @ManyToMany(targetEntity="Personnage", mappedBy="documents")
-     */
-    protected $personnages;
+    #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'documents')]
+    protected ArrayCollection $personnages;
 
     public function __construct()
     {
@@ -113,298 +79,151 @@ class BaseDocument
         $this->personnages = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Document
-     */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of code.
-     *
-     * @param string $code
-     *
-     * @return \App\Entity\Document
-     */
-    public function setCode($code)
+    public function setCode(string $code): static
     {
         $this->code = $code;
 
         return $this;
     }
 
-    /**
-     * Get the value of code.
-     *
-     * @return string
-     */
-    public function getCode()
+    public function getCode(): string
     {
-        return $this->code;
+        return $this->code ?? '';
     }
 
-    /**
-     * Set the value of titre.
-     *
-     * @param string $titre
-     *
-     * @return \App\Entity\Document
-     */
-    public function setTitre($titre)
+    public function setTitre(string $titre): static
     {
         $this->titre = $titre;
 
         return $this;
     }
 
-    /**
-     * Get the value of titre.
-     *
-     * @return string
-     */
-    public function getTitre()
+    public function getTitre(): string
     {
-        return $this->titre;
+        return $this->titre ?? '';
     }
 
-    /**
-     * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Document
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * Get the value of description.
-     *
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
-    /**
-     * Set the value of documentUrl.
-     *
-     * @param string $documentUrl
-     *
-     * @return \App\Entity\Document
-     */
-    public function setDocumentUrl($documentUrl)
+    public function setDocumentUrl(string $documentUrl): static
     {
         $this->documentUrl = $documentUrl;
 
         return $this;
     }
 
-    /**
-     * Get the value of documentUrl.
-     *
-     * @return string
-     */
-    public function getDocumentUrl()
+    public function getDocumentUrl(): string
     {
         return $this->documentUrl;
     }
 
-    /**
-     * Set the value of cryptage.
-     *
-     * @param bool $cryptage
-     *
-     * @return \App\Entity\Document
-     */
-    public function setCryptage($cryptage)
+    public function setCryptage(bool $cryptage): static
     {
         $this->cryptage = $cryptage;
 
         return $this;
     }
 
-    /**
-     * Get the value of cryptage.
-     *
-     * @return bool
-     */
-    public function getCryptage()
+    public function getCryptage(): bool
     {
         return $this->cryptage;
     }
 
-    /**
-     * Set the value of statut.
-     *
-     * @param string $statut
-     *
-     * @return \App\Entity\Document
-     */
-    public function setStatut($statut)
+    public function setStatut(string $statut): static
     {
         $this->statut = $statut;
 
         return $this;
     }
 
-    /**
-     * Get the value of statut.
-     *
-     * @return string
-     */
-    public function getStatut()
+    public function getStatut(): string
     {
-        return $this->statut;
+        return $this->statut ?? '';
     }
 
-    /**
-     * Set the value of auteur.
-     *
-     * @param string $auteur
-     *
-     * @return \App\Entity\Document
-     */
-    public function setAuteur($auteur)
+    public function setAuteur(string $auteur)
     {
         $this->auteur = $auteur;
 
         return $this;
     }
 
-    /**
-     * Get the value of auteur.
-     *
-     * @return string
-     */
-    public function getAuteur()
+    public function getAuteur(): string
     {
         return $this->auteur;
     }
 
-    /**
-     * Set the value of creation_date.
-     *
-     * @param \DateTime $creation_date
-     *
-     * @return \App\Entity\Document
-     */
-    public function setCreationDate($creation_date)
+    public function setCreationDate(?\DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
         return $this;
     }
 
-    /**
-     * Get the value of creation_date.
-     *
-     * @return \DateTime
-     */
-    public function getCreationDate()
+    public function getCreationDate(): ?\DateTime
     {
         return $this->creation_date;
     }
 
-    /**
-     * Set the value of update_date.
-     *
-     * @param \DateTime $update_date
-     *
-     * @return \App\Entity\Document
-     */
-    public function setUpdateDate($update_date)
+    public function setUpdateDate(?\DateTime $update_date): static
     {
         $this->update_date = $update_date;
 
         return $this;
     }
 
-    /**
-     * Get the value of update_date.
-     *
-     * @return \DateTime
-     */
-    public function getUpdateDate()
+    public function getUpdateDate(): ?\DateTime
     {
         return $this->update_date;
     }
 
-    /**
-     * Set the value of impression.
-     *
-     * @param bool $impression
-     *
-     * @return \App\Entity\Document
-     */
-    public function setImpression($impression)
+    public function setImpression(bool $impression): static
     {
         $this->impression = $impression;
 
         return $this;
     }
 
-    /**
-     * Get the value of impression.
-     *
-     * @return bool
-     */
-    public function getImpression()
+    public function getImpression(): bool
     {
         return $this->impression;
     }
 
-    /**
-     * Set User entity (many to one).
-     *
-     * @return \App\Entity\Document
-     */
-    public function setUser(User $User = null)
+    public function setUser(User $User = null): static
     {
         $this->user = $User;
 
         return $this;
     }
 
-    /**
-     * Get User entity (many to one).
-     *
-     * @return \App\Entity\User
-     */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    /**
-     * Add Langue entity to collection.
-     *
-     * @return \App\Entity\Document
-     */
-    public function addLangue(Langue $langue)
+    public function addLangue(Langue $langue): static
     {
         $langue->addDocument($this);
         $this->langues[] = $langue;
@@ -412,12 +231,7 @@ class BaseDocument
         return $this;
     }
 
-    /**
-     * Remove Langue entity from collection.
-     *
-     * @return \App\Entity\Document
-     */
-    public function removeLangue(Langue $langue)
+    public function removeLangue(Langue $langue): static
     {
         $langue->removeDocument($this);
         $this->langues->removeElement($langue);
@@ -425,114 +239,64 @@ class BaseDocument
         return $this;
     }
 
-    /**
-     * Get Langue entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getLangues()
+    public function getLangues(): ArrayCollection
     {
         return $this->langues;
     }
 
-    /**
-     * Add Groupe entity to collection.
-     *
-     * @return \App\Entity\Document
-     */
-    public function addGroupe(Groupe $groupe)
+    public function addGroupe(Groupe $groupe): static
     {
         $this->groupes[] = $groupe;
 
         return $this;
     }
 
-    /**
-     * Remove Groupe entity from collection.
-     *
-     * @return \App\Entity\Document
-     */
-    public function removeGroupe(Groupe $groupe)
+    public function removeGroupe(Groupe $groupe): static
     {
         $this->groupes->removeElement($groupe);
 
         return $this;
     }
 
-    /**
-     * Get Groupe entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getGroupes()
+    public function getGroupes(): ArrayCollection
     {
         return $this->groupes;
     }
 
-    /**
-     * Add Lieu entity to collection.
-     *
-     * @return \App\Entity\Document
-     */
-    public function addLieu(Lieu $lieu)
+    public function addLieu(Lieu $lieu): static
     {
         $this->lieus[] = $lieu;
 
         return $this;
     }
 
-    /**
-     * Remove Lieu entity from collection.
-     *
-     * @return \App\Entity\Document
-     */
-    public function removeLieu(Lieu $lieu)
+    public function removeLieu(Lieu $lieu): static
     {
         $this->lieus->removeElement($lieu);
 
         return $this;
     }
 
-    /**
-     * Get Lieu entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getLieus()
+    public function getLieus(): ArrayCollection
     {
         return $this->lieus;
     }
 
-    /**
-     * Add Personnage entity to collection.
-     *
-     * @return \App\Entity\Document
-     */
-    public function addPersonnage(Personnage $personnage)
+    public function addPersonnage(Personnage $personnage): static
     {
         $this->personnages[] = $personnage;
 
         return $this;
     }
 
-    /**
-     * Remove Personnage entity from collection.
-     *
-     * @return \App\Entity\Document
-     */
-    public function removePersonnage(Personnage $personnage)
+    public function removePersonnage(Personnage $personnage): static
     {
         $this->personnages->removeElement($personnage);
 
         return $this;
     }
 
-    /**
-     * Get Personnage entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getPersonnages()
+    public function getPersonnages(): ArrayCollection
     {
         return $this->personnages;
     }
