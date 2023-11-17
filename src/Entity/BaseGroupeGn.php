@@ -3,117 +3,80 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\oOne;
 
-/**
- * App\Entity\GroupeGn.
- *
- * @Table(name="groupe_gn", indexes={@Index(name="fk_groupe_gn_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_groupe_gn_gn1_idx", columns={"gn_id"}), @Index(name="fk_groupe_gn_participant1_idx", columns={"responsable_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseGroupeGn", "extended":"GroupeGn"})
- */
-class BaseGroupeGn
+#[ORM\Entity]
+#[ORM\Table(name: 'groupe_gn')]
+#[ORM\Index(columns: ['groupe_id'], name: 'fk_groupe_gn_groupe1_idx')]
+#[ORM\Index(columns: ['gn_id'], name: 'fk_groupe_gn_gn1_idx')]
+#[ORM\Index(columns: ['responsable_id'], name: 'fk_groupe_gn_participant1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseGroupeGn', 'extended' => 'GroupeGn'])]
+abstract class BaseGroupeGn
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(name="`free`", type="boolean")
-     */
-    protected $free;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    protected bool $free = false;
 
-    /**
-     * @Column(type="string", length=10, nullable=true)
-     */
-    protected $code;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 10, nullable: true)]
+    protected ?string $code = null;
 
-    /**
-     * @Column(type="boolean", nullable=true)
-     */
-    protected $jeu_maritime;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    protected bool $jeu_maritime = false;
 
-    /**
-     * @Column(type="boolean", nullable=true)
-     */
-    protected $jeu_strategique;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    protected bool $jeu_strategique = false;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $place_available;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $place_available = 0;
 
-    /**
-     * @Column(type="integer", nullable=false)
-     */
-    protected $agents;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $agents = 0;
 
-    /**
-     * @Column(type="integer", nullable=false)
-     */
-    protected $bateaux;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $bateaux = 0;
 
-    /**
-     * @Column(type="integer", nullable=false)
-     */
-    protected $sieges;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $sieges = 0;
 
-    /**
-     * @Column(type="integer", nullable=false)
-     */
-    protected $initiative;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $initiative = 0;
 
-    /**
-     * @OneToMany(targetEntity="Participant", mappedBy="groupeGn")
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_gn_id", nullable=false)
-     */
-    protected $participants;
+    #[OneToMany(mappedBy: 'groupeGn', targetEntity: Participant::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: 'false')]
+    protected ArrayCollection $participants;
 
-    /**
-     * @ManyToOne(targetEntity="Groupe", inversedBy="groupeGns")
-     *
-     * @JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)
-     */
-    protected $groupe;
+    #[oOne(targetEntity: Groupe::class, inversedBy: 'groupeGns')]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Groupe $groupe;
 
-    /**
-     * @ManyToOne(targetEntity="Gn", inversedBy="groupeGns")
-     *
-     * @JoinColumn(name="gn_id", referencedColumnName="id", nullable=false)
-     */
-    protected $gn;
+    #[oOne(targetEntity: Gn::class, inversedBy: 'groupeGns')]
+    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Gn $gn;
 
-    /**
-     * @ManyToOne(targetEntity="Participant", inversedBy="groupeGns")
-     *
-     * @JoinColumn(name="responsable_id", referencedColumnName="id")
-     */
-    protected $participant;
+    #[oOne(targetEntity: Participant::class, inversedBy: 'groupeGns')]
+    #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Participant $participant;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="groupeGns")
-     *
-     * @JoinColumn(name="suzerain_id", referencedColumnName="id")
-     */
-    protected $suzerain;
+    #[oOne(targetEntity: Personnage::class, inversedBy: 'groupeGns')]
+    #[JoinColumn(name: 'suzerain_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $suzerain;
 
-    /**
-     * @ManyToMany(targetEntity="GroupeGnOrdre", inversedBy="groupeGns")
-     *
-     * @JoinTable(name="groupe_gn_ordre",
-     *     joinColumns={@JoinColumn(name="groupe_gn_id", referencedColumnName="id", nullable=false)},
-     *     inverseJoinColumns={@JoinColumn(name="id", referencedColumnName="id", nullable=false)}
-     * )
-     *
-     * @OrderBy({"ordre" = "ASC",})
-     */
-    protected $groupeGnOrdres;
+    #[ORM\oMany(targetEntity: GroupeGnOrdre::class, inversedBy: 'groupeGns')]
+    #[ORM\JoinTable(name: 'groupe_gn_ordre')]
+    #[ORM\JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\orderBy(['ordre' => 'ASC'])]
+    protected ArrayCollection $groupeGnOrdres;
 
     public function __construct()
     {
@@ -123,12 +86,8 @@ class BaseGroupeGn
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -137,22 +96,16 @@ class BaseGroupeGn
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set the value of free.
-     *
-     * @param bool $free
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setFree($free)
+    public function setFree(bool $free): static
     {
         $this->free = $free;
 
@@ -161,22 +114,16 @@ class BaseGroupeGn
 
     /**
      * Get the value of free.
-     *
-     * @return bool
      */
-    public function getFree()
+    public function getFree(): bool
     {
         return $this->free;
     }
 
     /**
      * Set the value of code.
-     *
-     * @param string $code
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setCode($code)
+    public function setCode(string $code): static
     {
         $this->code = $code;
 
@@ -185,22 +132,16 @@ class BaseGroupeGn
 
     /**
      * Get the value of code.
-     *
-     * @return string
      */
-    public function getCode()
+    public function getCode(): string
     {
         return $this->code;
     }
 
     /**
      * Set the value of jeu_maritime.
-     *
-     * @param bool $jeu_maritime
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setJeuMaritime($jeu_maritime)
+    public function setJeuMaritime(bool $jeu_maritime): static
     {
         $this->jeu_maritime = $jeu_maritime;
 
@@ -209,22 +150,16 @@ class BaseGroupeGn
 
     /**
      * Get the value of jeu_maritime.
-     *
-     * @return bool
      */
-    public function getJeuMaritime()
+    public function getJeuMaritime(): bool
     {
         return $this->jeu_maritime;
     }
 
     /**
      * Set the value of jeu_strategique.
-     *
-     * @param bool $jeu_strategique
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setJeuStrategique($jeu_strategique)
+    public function setJeuStrategique(bool $jeu_strategique): static
     {
         $this->jeu_strategique = $jeu_strategique;
 
@@ -233,22 +168,16 @@ class BaseGroupeGn
 
     /**
      * Get the value of jeu_strategique.
-     *
-     * @return bool
      */
-    public function getJeuStrategique()
+    public function getJeuStrategique(): bool
     {
         return $this->jeu_strategique;
     }
 
     /**
      * Set the value of place_available.
-     *
-     * @param int $place_available
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setPlaceAvailable($place_available)
+    public function setPlaceAvailable(int $place_available): GroupeGn
     {
         $this->place_available = $place_available;
 
@@ -257,22 +186,16 @@ class BaseGroupeGn
 
     /**
      * Get the value of place_available.
-     *
-     * @return int
      */
-    public function getPlaceAvailable()
+    public function getPlaceAvailable(): int
     {
         return $this->place_available;
     }
 
     /**
      * Set the value of agents.
-     *
-     * @param int $agents
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setAgents($agents)
+    public function setAgents(int $agents): static
     {
         $this->agents = $agents;
 
@@ -281,22 +204,16 @@ class BaseGroupeGn
 
     /**
      * Get the value of agents.
-     *
-     * @return int
      */
-    public function getAgents()
+    public function getAgents(): int
     {
         return $this->agents;
     }
 
     /**
      * Set the value of bateaux.
-     *
-     * @param int $bateaux
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setBateaux($bateaux)
+    public function setBateaux(int $bateaux): static
     {
         $this->bateaux = $bateaux;
 
@@ -305,22 +222,16 @@ class BaseGroupeGn
 
     /**
      * Get the value of bateaux.
-     *
-     * @return int
      */
-    public function getBateaux()
+    public function getBateaux(): int
     {
         return $this->bateaux;
     }
 
     /**
      * Set the value of sieges.
-     *
-     * @param int $sieges
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setSieges($sieges)
+    public function setSieges(int $sieges): static
     {
         $this->sieges = $sieges;
 
@@ -329,22 +240,16 @@ class BaseGroupeGn
 
     /**
      * Get the value of sieges.
-     *
-     * @return int
      */
-    public function getSieges()
+    public function getSieges(): int
     {
         return $this->sieges;
     }
 
     /**
      * Set the value of initiative.
-     *
-     * @param int $initiative
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setInitiative($initiative)
+    public function setInitiative(int $initiative): static
     {
         $this->initiative = $initiative;
 
@@ -353,20 +258,16 @@ class BaseGroupeGn
 
     /**
      * Get the value of initiative.
-     *
-     * @return int
      */
-    public function getInitiative()
+    public function getInitiative(): int
     {
         return $this->initiative;
     }
 
     /**
      * Add Participant entity to collection (one to many).
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function addParticipant(Participant $participant)
+    public function addParticipant(Participant $participant): static
     {
         $this->participants[] = $participant;
 
@@ -375,10 +276,8 @@ class BaseGroupeGn
 
     /**
      * Remove Participant entity from collection (one to many).
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function removeParticipant(Participant $participant)
+    public function removeParticipant(Participant $participant): static
     {
         $this->participants->removeElement($participant);
 
@@ -387,20 +286,16 @@ class BaseGroupeGn
 
     /**
      * Get Participant entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getParticipants()
+    public function getParticipants(): ArrayCollection
     {
         return $this->participants;
     }
 
     /**
      * Set Groupe entity (many to one).
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setGroupe(Groupe $groupe = null)
+    public function setGroupe(Groupe $groupe = null): static
     {
         $this->groupe = $groupe;
 
@@ -409,20 +304,16 @@ class BaseGroupeGn
 
     /**
      * Get Groupe entity (many to one).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function getGroupe()
+    public function getGroupe(): Groupe
     {
         return $this->groupe;
     }
 
     /**
      * Set Gn entity (many to one).
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setGn(Gn $gn = null)
+    public function setGn(Gn $gn = null): static
     {
         $this->gn = $gn;
 
@@ -431,20 +322,16 @@ class BaseGroupeGn
 
     /**
      * Get Gn entity (many to one).
-     *
-     * @return \App\Entity\Gn
      */
-    public function getGn()
+    public function getGn(): Gn
     {
         return $this->gn;
     }
 
     /**
      * Set Participant entity (many to one).
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setParticipant(Participant $participant = null)
+    public function setParticipant(Participant $participant = null): static
     {
         $this->participant = $participant;
 
@@ -453,20 +340,16 @@ class BaseGroupeGn
 
     /**
      * Get Participant entity (many to one).
-     *
-     * @return \App\Entity\Participant
      */
-    public function getParticipant()
+    public function getParticipant(): Participant
     {
         return $this->participant;
     }
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function setSuzerain(Personnage $suzerain = null)
+    public function setSuzerain(Personnage $suzerain = null): GroupeGn
     {
         $this->suzerain = $suzerain;
 
@@ -475,20 +358,16 @@ class BaseGroupeGn
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getSuzerain()
+    public function getSuzerain(): Personnage
     {
         return $this->suzerain;
     }
 
     /**
      * Add GroupeGnOrdre entity to collection.
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function addGroupeGnOrdre(GroupeGnOrdre $groupeGnOrdre)
+    public function addGroupeGnOrdre(GroupeGnOrdre $groupeGnOrdre): static
     {
         $groupeGnOrdre->addGroupeGn($this);
         $this->groupeGnOrdres[] = $groupeGnOrdre;
@@ -498,10 +377,8 @@ class BaseGroupeGn
 
     /**
      * Remove GroupeGnOrdre entity from collection.
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function removeGroupeGnOrdre(GroupeGnOrdre $groupeGnOrdre)
+    public function removeGroupeGnOrdre(GroupeGnOrdre $groupeGnOrdre): static
     {
         $groupeGnOrdre->removeGroupeGn($this);
         $this->groupeGnOrdres->removeElement($groupeGnOrdre);
@@ -511,10 +388,8 @@ class BaseGroupeGn
 
     /**
      * Get GroupeGnOrdre entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGroupeGnOrdres()
+    public function getGroupeGnOrdres(): ArrayCollection
     {
         return $this->groupeGnOrdres;
     }

@@ -2,57 +2,39 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * App\Entity\GroupeHasRessource.
- *
- * @Table(name="groupe_has_ressource", indexes={@Index(name="fk_groupe_has_ressource_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_groupe_has_ressource_ressource1_idx", columns={"ressource_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseGroupeHasRessource", "extended":"GroupeHasRessource"})
- */
-class BaseGroupeHasRessource
+#[Entity]
+#[ORM\Table(name: 'groupe_has_ressource')]
+#[ORM\Index(columns: ['groupe_id'], name: 'fk_groupe_has_ressource_groupe1_idx')]
+#[ORM\Index(columns: ['ressource_id'], name: 'fk_groupe_has_ressource_ressource1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseGroupeHasRessource', 'extended' => 'GroupeHasRessource'])]
+abstract class BaseGroupeHasRessource
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $quantite;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $quantite;
 
-    /**
-     * @ManyToOne(targetEntity="Groupe", inversedBy="groupeHasRessources", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)
-     */
-    protected $groupe;
+    #[ORM\ManyToOne(targetEntity: Groupe::class, cascade: ['persist', 'remove'], inversedBy: 'groupeHasRessources')]
+    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
+    protected Groupe $groupe;
 
-    /**
-     * @ManyToOne(targetEntity="Ressource", inversedBy="groupeHasRessources")
-     *
-     * @JoinColumn(name="ressource_id", referencedColumnName="id", nullable=false)
-     */
-    protected $ressource;
-
-    public function __construct()
-    {
-    }
+    #[ORM\ManyToOne(targetEntity: Ressource::class, inversedBy: 'groupeHasRessources')]
+    #[ORM\JoinColumn(name: 'ressource_id', referencedColumnName: 'id')]
+    protected Ressource $ressource;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\GroupeHasRessource
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -61,22 +43,16 @@ class BaseGroupeHasRessource
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set the value of quantite.
-     *
-     * @param int $quantite
-     *
-     * @return \App\Entity\GroupeHasRessource
      */
-    public function setQuantite($quantite)
+    public function setQuantite(int $quantite): static
     {
         $this->quantite = $quantite;
 
@@ -85,20 +61,16 @@ class BaseGroupeHasRessource
 
     /**
      * Get the value of quantite.
-     *
-     * @return int
      */
-    public function getQuantite()
+    public function getQuantite(): int
     {
         return $this->quantite;
     }
 
     /**
      * Set Groupe entity (many to one).
-     *
-     * @return \App\Entity\GroupeHasRessource
      */
-    public function setGroupe(Groupe $groupe = null)
+    public function setGroupe(Groupe $groupe = null): static
     {
         $this->groupe = $groupe;
 
@@ -107,20 +79,16 @@ class BaseGroupeHasRessource
 
     /**
      * Get Groupe entity (many to one).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function getGroupe()
+    public function getGroupe(): Groupe
     {
         return $this->groupe;
     }
 
     /**
      * Set Ressource entity (many to one).
-     *
-     * @return \App\Entity\GroupeHasRessource
      */
-    public function setRessource(Ressource $ressource = null)
+    public function setRessource(Ressource $ressource = null): static
     {
         $this->ressource = $ressource;
 
@@ -129,10 +97,8 @@ class BaseGroupeHasRessource
 
     /**
      * Get Ressource entity (many to one).
-     *
-     * @return \App\Entity\Ressource
      */
-    public function getRessource()
+    public function getRessource(): Ressource
     {
         return $this->ressource;
     }

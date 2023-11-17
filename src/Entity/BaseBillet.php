@@ -27,7 +27,7 @@ abstract class BaseBillet
     #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING)]
     protected string $label = '';
 
-    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
     protected string $description = '';
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]

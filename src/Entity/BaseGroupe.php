@@ -9,8 +9,8 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
-use Doctrine\ORM\Mapping\OrderBy;
 
 #[Entity]
 #[ORM\Table(name: 'groupe')]
@@ -26,145 +26,90 @@ class BaseGroupe
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=100, nullable=true)
-     */
-    protected $nom;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
+    protected ?string $nom = null;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $numero;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $numero;
 
-    /**
-     * @Column(type="string", length=10, nullable=true)
-     */
-    protected $code;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 10, nullable: true)]
+    protected ?string $code = null;
 
-    /**
-     * @Column(type="boolean", nullable=true)
-     */
-    protected $jeu_maritime;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    protected ?bool $jeu_maritime = null;
 
-    /**
-     * @Column(type="boolean", nullable=true)
-     */
-    protected $jeu_strategique;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    protected ?bool $jeu_strategique = null;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $classe_open;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $classe_open = null;
 
-    /**
-     * @Column(type="boolean", nullable=true)
-     */
-    protected $pj;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    protected ?bool $pj = null;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $materiel;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?bool $materiel = null;
 
-    /**
-     * @Column(name="`lock`", type="boolean")
-     */
-    protected $lock;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    protected bool $lock;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $richesse;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $richesse = null;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: Background::class)]
     #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
     protected ArrayCollection $backgrounds;
 
-     #[OneToMany(mappedBy: 'groupe', targetEntity: Debriefing::class)]
+    #[OneToMany(mappedBy: 'groupe', targetEntity: Debriefing::class)]
     #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     protected ArrayCollection $debriefings;
 
-    /**
-     * @OneToMany(targetEntity="GroupeAllie", mappedBy="groupeRelatedByGroupeId")
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
-     */
-    protected $groupeAllieRelatedByGroupeIds;
+    #[OneToMany(mappedBy: 'groupeRelatedByGroupeId', targetEntity: GroupeAllie::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    protected ArrayCollection $groupeAllieRelatedByGroupeIds;
 
-    /**
-     * @OneToMany(targetEntity="GroupeAllie", mappedBy="groupeRelatedByGroupeAllieId")
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_allie_id", nullable=false)
-     */
-    protected $groupeAllieRelatedByGroupeAllieIds;
+    #[OneToMany(mappedBy: 'groupeRelatedByGroupeAllieId', targetEntity: GroupeAllie::class)]
+    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'groupe_allie_id', nullable: false)]
+    protected ArrayCollection $groupeAllieRelatedByGroupeAllieIds;
 
-    /**
-     * @OneToMany(targetEntity="GroupeClasse", mappedBy="groupe", cascade={"persist"})
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
-     */
-    protected $groupeClasses;
+    #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeClasse::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    protected ArrayCollection $groupeClasses;
 
-    /**
-     * @OneToMany(targetEntity="GroupeEnemy", mappedBy="groupeRelatedByGroupeId")
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
-     */
-    protected $groupeEnemyRelatedByGroupeIds;
+    #[OneToMany(mappedBy: 'groupeRelatedByGroupeId', targetEntity: GroupeEnemy::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    protected ArrayCollection $groupeEnemyRelatedByGroupeIds;
 
-    /**
-     * @OneToMany(targetEntity="GroupeEnemy", mappedBy="groupeRelatedByGroupeEnemyId")
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_enemy_id", nullable=false)
-     */
-    protected $groupeEnemyRelatedByGroupeEnemyIds;
+    #[OneToMany(mappedBy: 'groupeRelatedByGroupeEnemyId', targetEntity: GroupeEnemy::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_enemy_id', nullable: false)]
+    protected ArrayCollection $groupeEnemyRelatedByGroupeEnemyIds;
 
-    /**
-     * @OneToMany(targetEntity="GroupeGn", mappedBy="groupe")
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
-     */
-    protected $groupeGns;
+    #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeGn::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    protected ArrayCollection $groupeGns;
 
-    /**
-     * @OneToMany(targetEntity="GroupeHasIngredient", mappedBy="groupe", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
-     */
-    protected $groupeHasIngredients;
+    #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeHasIngredient::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    protected ArrayCollection $groupeHasIngredients;
 
-    /**
-     * @OneToMany(targetEntity="GroupeHasRessource", mappedBy="groupe", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
-     */
-    protected $groupeHasRessources;
+    #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeHasRessource::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    protected ArrayCollection $groupeHasRessources;
 
-    /**
-     * @OneToMany(targetEntity="IntrigueHasGroupe", mappedBy="groupe")
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
-     */
-    protected $intrigueHasGroupes;
+    #[OneToMany(mappedBy: 'groupe', targetEntity: IntrigueHasGroupe::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    protected ArrayCollection $intrigueHasGroupes;
 
-    /**
-     * @OneToMany(targetEntity="Personnage", mappedBy="groupe")
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
-     */
-    protected $personnages;
+    #[OneToMany(mappedBy: 'groupe', targetEntity: Personnage::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    protected ArrayCollection $personnages;
 
-    /**
-     * @OneToMany(targetEntity="Territoire", mappedBy="groupe")
-     *
-     * @JoinColumn(name="id", referencedColumnName="groupe_id", nullable=false)
-     */
-    protected $territoires;
+    #[OneToMany(mappedBy: 'groupe', targetEntity: Territoire::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    protected ArrayCollection $territoires;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'groupeRelatedByScenaristeIds')]
     #[ORM\JoinColumn(name: 'scenariste_id', referencedColumnName: 'id')]
@@ -174,43 +119,27 @@ class BaseGroupe
     #[ORM\JoinColumn(name: 'responsable_id', referencedColumnName: 'id')]
     protected ?User $userRelatedByResponsableId = null;
 
-    /**
-     * @ManyToOne(targetEntity="Topic", inversedBy="groupes")
-     *
-     * @JoinColumn(name="topic_id", referencedColumnName="id", nullable=false)
-     */
-    protected $topic;
+    #[ManyToOne(targetEntity: Topic::class, inversedBy: 'groupes')]
+    #[JoinColumn(name: 'topic_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Topic $topic;
 
-    /**
-     * @ManyToOne(targetEntity="Territoire", inversedBy="groupes")
-     *
-     * @JoinColumn(name="territoire_id", referencedColumnName="id")
-     */
-    protected $territoire;
+    #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'groupes')]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Territoire $territoire;
 
-    /**
-     * @ManyToMany(targetEntity="Document", inversedBy="groupes")
-     *
-     * @JoinTable(name="groupe_has_document",
-     *     joinColumns={@JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)},
-     *     inverseJoinColumns={@JoinColumn(name="document_id", referencedColumnName="id", nullable=false)}
-     * )
-     *
-     * @OrderBy({"code" = "ASC",})
-     */
-    protected $documents;
+    #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'groupes')]
+    #[ORM\JoinTable(name: 'groupe_has_document')]
+    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\OrderBy(['code' => 'ASC'])]
+    protected ArrayCollection $documents;
 
-    /**
-     * @ManyToMany(targetEntity="Item", inversedBy="groupes")
-     *
-     * @JoinTable(name="groupe_has_item",
-     *     joinColumns={@JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)},
-     *     inverseJoinColumns={@JoinColumn(name="item_id", referencedColumnName="id", nullable=false)}
-     * )
-     *
-     * @OrderBy({"label" = "ASC",})
-     */
-    protected $items;
+    #[ORM\ManyToMany(targetEntity: Item::class, inversedBy: 'groupes')]
+    #[ORM\JoinTable(name: 'groupe_has_item')]
+    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'item_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\OrderBy(['label' => 'ASC'])]
+    protected ArrayCollection $items;
 
     public function __construct()
     {
@@ -233,12 +162,8 @@ class BaseGroupe
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -247,22 +172,16 @@ class BaseGroupe
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set the value of nom.
-     *
-     * @param string $nom
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setNom($nom)
+    public function setNom(string $nom): static
     {
         $this->nom = $nom;
 
@@ -271,22 +190,16 @@ class BaseGroupe
 
     /**
      * Get the value of nom.
-     *
-     * @return string
      */
-    public function getNom()
+    public function getNom(): string
     {
-        return $this->nom;
+        return $this->nom ?? '';
     }
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -295,22 +208,16 @@ class BaseGroupe
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     /**
      * Set the value of numero.
-     *
-     * @param int $numero
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setNumero($numero)
+    public function setNumero(int $numero): static
     {
         $this->numero = $numero;
 
@@ -319,22 +226,16 @@ class BaseGroupe
 
     /**
      * Get the value of numero.
-     *
-     * @return int
      */
-    public function getNumero()
+    public function getNumero(): string
     {
         return $this->numero;
     }
 
     /**
      * Set the value of code.
-     *
-     * @param string $code
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setCode($code)
+    public function setCode(string $code): static
     {
         $this->code = $code;
 
@@ -343,22 +244,16 @@ class BaseGroupe
 
     /**
      * Get the value of code.
-     *
-     * @return string
      */
-    public function getCode()
+    public function getCode(): string
     {
         return $this->code;
     }
 
     /**
      * Set the value of jeu_maritime.
-     *
-     * @param bool $jeu_maritime
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setJeuMaritime($jeu_maritime)
+    public function setJeuMaritime(bool $jeu_maritime): static
     {
         $this->jeu_maritime = $jeu_maritime;
 
@@ -367,22 +262,16 @@ class BaseGroupe
 
     /**
      * Get the value of jeu_maritime.
-     *
-     * @return bool
      */
-    public function getJeuMaritime()
+    public function getJeuMaritime(): bool
     {
         return $this->jeu_maritime;
     }
 
     /**
      * Set the value of jeu_strategique.
-     *
-     * @param bool $jeu_strategique
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setJeuStrategique($jeu_strategique)
+    public function setJeuStrategique(bool $jeu_strategique): static
     {
         $this->jeu_strategique = $jeu_strategique;
 
@@ -391,22 +280,16 @@ class BaseGroupe
 
     /**
      * Get the value of jeu_strategique.
-     *
-     * @return bool
      */
-    public function getJeuStrategique()
+    public function getJeuStrategique(): bool
     {
         return $this->jeu_strategique;
     }
 
     /**
      * Set the value of classe_open.
-     *
-     * @param int $classe_open
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setClasseOpen($classe_open)
+    public function setClasseOpen(int $classe_open): static
     {
         $this->classe_open = $classe_open;
 
@@ -415,22 +298,16 @@ class BaseGroupe
 
     /**
      * Get the value of classe_open.
-     *
-     * @return int
      */
-    public function getClasseOpen()
+    public function getClasseOpen(): int
     {
         return $this->classe_open;
     }
 
     /**
      * Set the value of pj.
-     *
-     * @param bool $pj
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setPj($pj)
+    public function setPj(bool $pj): static
     {
         $this->pj = $pj;
 
@@ -439,22 +316,16 @@ class BaseGroupe
 
     /**
      * Get the value of pj.
-     *
-     * @return bool
      */
-    public function getPj()
+    public function getPj(): bool
     {
         return $this->pj;
     }
 
     /**
      * Set the value of materiel.
-     *
-     * @param string $materiel
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setMateriel($materiel)
+    public function setMateriel(string $materiel): static
     {
         $this->materiel = $materiel;
 
@@ -463,22 +334,16 @@ class BaseGroupe
 
     /**
      * Get the value of materiel.
-     *
-     * @return string
      */
-    public function getMateriel()
+    public function getMateriel(): string
     {
-        return $this->materiel;
+        return $this->materiel ?? '';
     }
 
     /**
      * Set the value of lock.
-     *
-     * @param bool $lock
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setLock($lock)
+    public function setLock(bool $lock): static
     {
         $this->lock = $lock;
 
@@ -487,22 +352,16 @@ class BaseGroupe
 
     /**
      * Get the value of lock.
-     *
-     * @return bool
      */
-    public function getLock()
+    public function getLock(): bool
     {
         return $this->lock;
     }
 
     /**
      * Set the value of richesse.
-     *
-     * @param int $richesse
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setRichesse($richesse)
+    public function setRichesse(int $richesse): static
     {
         $this->richesse = $richesse;
 
@@ -511,20 +370,16 @@ class BaseGroupe
 
     /**
      * Get the value of richesse.
-     *
-     * @return int
      */
-    public function getRichesse()
+    public function getRichesse(): int
     {
         return $this->richesse;
     }
 
     /**
      * Add Background entity to collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addBackground(Background $background)
+    public function addBackground(Background $background): static
     {
         $this->backgrounds[] = $background;
 
@@ -533,10 +388,8 @@ class BaseGroupe
 
     /**
      * Remove Background entity from collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeBackground(Background $background)
+    public function removeBackground(Background $background): static
     {
         $this->backgrounds->removeElement($background);
 
@@ -545,20 +398,16 @@ class BaseGroupe
 
     /**
      * Get Background entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getBackgrounds()
+    public function getBackgrounds(): ArrayCollection
     {
         return $this->backgrounds;
     }
 
     /**
      * Add Debriefing entity to collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addDebriefing(Debriefing $debriefing)
+    public function addDebriefing(Debriefing $debriefing): static
     {
         $this->debriefings[] = $debriefing;
 
@@ -567,10 +416,8 @@ class BaseGroupe
 
     /**
      * Remove Debriefing entity from collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeDebriefing(Debriefing $debriefing)
+    public function removeDebriefing(Debriefing $debriefing): static
     {
         $this->debriefings->removeElement($debriefing);
 
@@ -579,20 +426,16 @@ class BaseGroupe
 
     /**
      * Get Debriefing entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getDebriefings()
+    public function getDebriefings(): ArrayCollection
     {
         return $this->debriefings;
     }
 
     /**
      * Add GroupeAllie entity related by `groupe_id` to collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addGroupeAllieRelatedByGroupeId(GroupeAllie $groupeAllie)
+    public function addGroupeAllieRelatedByGroupeId(GroupeAllie $groupeAllie): static
     {
         $this->groupeAllieRelatedByGroupeIds[] = $groupeAllie;
 
@@ -601,10 +444,8 @@ class BaseGroupe
 
     /**
      * Remove GroupeAllie entity related by `groupe_id` from collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeGroupeAllieRelatedByGroupeId(GroupeAllie $groupeAllie)
+    public function removeGroupeAllieRelatedByGroupeId(GroupeAllie $groupeAllie): static
     {
         $this->groupeAllieRelatedByGroupeIds->removeElement($groupeAllie);
 
@@ -613,20 +454,16 @@ class BaseGroupe
 
     /**
      * Get GroupeAllie entity related by `groupe_id` collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGroupeAllieRelatedByGroupeIds()
+    public function getGroupeAllieRelatedByGroupeIds(): ArrayCollection
     {
         return $this->groupeAllieRelatedByGroupeIds;
     }
 
     /**
      * Add GroupeAllie entity related by `groupe_allie_id` to collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addGroupeAllieRelatedByGroupeAllieId(GroupeAllie $groupeAllie)
+    public function addGroupeAllieRelatedByGroupeAllieId(GroupeAllie $groupeAllie): static
     {
         $this->groupeAllieRelatedByGroupeAllieIds[] = $groupeAllie;
 
@@ -635,10 +472,8 @@ class BaseGroupe
 
     /**
      * Remove GroupeAllie entity related by `groupe_allie_id` from collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeGroupeAllieRelatedByGroupeAllieId(GroupeAllie $groupeAllie)
+    public function removeGroupeAllieRelatedByGroupeAllieId(GroupeAllie $groupeAllie): static
     {
         $this->groupeAllieRelatedByGroupeAllieIds->removeElement($groupeAllie);
 
@@ -647,20 +482,16 @@ class BaseGroupe
 
     /**
      * Get GroupeAllie entity related by `groupe_allie_id` collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGroupeAllieRelatedByGroupeAllieIds()
+    public function getGroupeAllieRelatedByGroupeAllieIds(): ArrayCollection
     {
         return $this->groupeAllieRelatedByGroupeAllieIds;
     }
 
     /**
      * Add GroupeClasse entity to collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addGroupeClasse(GroupeClasse $groupeClasse)
+    public function addGroupeClasse(GroupeClasse $groupeClasse): static
     {
         $this->groupeClasses[] = $groupeClasse;
 
@@ -669,10 +500,8 @@ class BaseGroupe
 
     /**
      * Remove GroupeClasse entity from collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeGroupeClasse(GroupeClasse $groupeClasse)
+    public function removeGroupeClasse(GroupeClasse $groupeClasse): static
     {
         $this->groupeClasses->removeElement($groupeClasse);
 
@@ -681,20 +510,16 @@ class BaseGroupe
 
     /**
      * Get GroupeClasse entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGroupeClasses()
+    public function getGroupeClasses(): ArrayCollection
     {
         return $this->groupeClasses;
     }
 
     /**
      * Add GroupeEnemy entity related by `groupe_id` to collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addGroupeEnemyRelatedByGroupeId(GroupeEnemy $groupeEnemy)
+    public function addGroupeEnemyRelatedByGroupeId(GroupeEnemy $groupeEnemy): static
     {
         $this->groupeEnemyRelatedByGroupeIds[] = $groupeEnemy;
 
@@ -703,10 +528,8 @@ class BaseGroupe
 
     /**
      * Remove GroupeEnemy entity related by `groupe_id` from collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeGroupeEnemyRelatedByGroupeId(GroupeEnemy $groupeEnemy)
+    public function removeGroupeEnemyRelatedByGroupeId(GroupeEnemy $groupeEnemy): static
     {
         $this->groupeEnemyRelatedByGroupeIds->removeElement($groupeEnemy);
 
@@ -715,20 +538,16 @@ class BaseGroupe
 
     /**
      * Get GroupeEnemy entity related by `groupe_id` collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGroupeEnemyRelatedByGroupeIds()
+    public function getGroupeEnemyRelatedByGroupeIds(): ArrayCollection
     {
         return $this->groupeEnemyRelatedByGroupeIds;
     }
 
     /**
      * Add GroupeEnemy entity related by `groupe_enemy_id` to collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addGroupeEnemyRelatedByGroupeEnemyId(GroupeEnemy $groupeEnemy)
+    public function addGroupeEnemyRelatedByGroupeEnemyId(GroupeEnemy $groupeEnemy): static
     {
         $this->groupeEnemyRelatedByGroupeEnemyIds[] = $groupeEnemy;
 
@@ -737,10 +556,8 @@ class BaseGroupe
 
     /**
      * Remove GroupeEnemy entity related by `groupe_enemy_id` from collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeGroupeEnemyRelatedByGroupeEnemyId(GroupeEnemy $groupeEnemy)
+    public function removeGroupeEnemyRelatedByGroupeEnemyId(GroupeEnemy $groupeEnemy): static
     {
         $this->groupeEnemyRelatedByGroupeEnemyIds->removeElement($groupeEnemy);
 
@@ -749,20 +566,16 @@ class BaseGroupe
 
     /**
      * Get GroupeEnemy entity related by `groupe_enemy_id` collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGroupeEnemyRelatedByGroupeEnemyIds()
+    public function getGroupeEnemyRelatedByGroupeEnemyIds(): ArrayCollection
     {
         return $this->groupeEnemyRelatedByGroupeEnemyIds;
     }
 
     /**
      * Add GroupeGn entity to collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addGroupeGn(GroupeGn $groupeGn)
+    public function addGroupeGn(GroupeGn $groupeGn): static
     {
         $this->groupeGns[] = $groupeGn;
 
@@ -771,10 +584,8 @@ class BaseGroupe
 
     /**
      * Remove GroupeGn entity from collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeGroupeGn(GroupeGn $groupeGn)
+    public function removeGroupeGn(GroupeGn $groupeGn): static
     {
         $this->groupeGns->removeElement($groupeGn);
 
@@ -783,20 +594,16 @@ class BaseGroupe
 
     /**
      * Get GroupeGn entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGroupeGns()
+    public function getGroupeGns(): ArrayCollection
     {
         return $this->groupeGns;
     }
 
     /**
      * Add GroupeHasIngredient entity to collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient)
+    public function addGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient): static
     {
         $this->groupeHasIngredients[] = $groupeHasIngredient;
 
@@ -805,10 +612,8 @@ class BaseGroupe
 
     /**
      * Remove GroupeHasIngredient entity from collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient)
+    public function removeGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient): static
     {
         $this->groupeHasIngredients->removeElement($groupeHasIngredient);
 
@@ -817,20 +622,16 @@ class BaseGroupe
 
     /**
      * Get GroupeHasIngredient entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGroupeHasIngredients()
+    public function getGroupeHasIngredients(): ArrayCollection
     {
         return $this->groupeHasIngredients;
     }
 
     /**
      * Add GroupeHasRessource entity to collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addGroupeHasRessource(GroupeHasRessource $groupeHasRessource)
+    public function addGroupeHasRessource(GroupeHasRessource $groupeHasRessource): static
     {
         $this->groupeHasRessources[] = $groupeHasRessource;
 
@@ -839,10 +640,8 @@ class BaseGroupe
 
     /**
      * Remove GroupeHasRessource entity from collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeGroupeHasRessource(GroupeHasRessource $groupeHasRessource)
+    public function removeGroupeHasRessource(GroupeHasRessource $groupeHasRessource): static
     {
         $this->groupeHasRessources->removeElement($groupeHasRessource);
 
@@ -851,20 +650,16 @@ class BaseGroupe
 
     /**
      * Get GroupeHasRessource entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGroupeHasRessources()
+    public function getGroupeHasRessources(): ArrayCollection
     {
         return $this->groupeHasRessources;
     }
 
     /**
      * Add IntrigueHasGroupe entity to collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addIntrigueHasGroupe(IntrigueHasGroupe $intrigueHasGroupe)
+    public function addIntrigueHasGroupe(IntrigueHasGroupe $intrigueHasGroupe): static
     {
         $this->intrigueHasGroupes[] = $intrigueHasGroupe;
 
@@ -873,10 +668,8 @@ class BaseGroupe
 
     /**
      * Remove IntrigueHasGroupe entity from collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeIntrigueHasGroupe(IntrigueHasGroupe $intrigueHasGroupe)
+    public function removeIntrigueHasGroupe(IntrigueHasGroupe $intrigueHasGroupe): static
     {
         $this->intrigueHasGroupes->removeElement($intrigueHasGroupe);
 
@@ -885,20 +678,16 @@ class BaseGroupe
 
     /**
      * Get IntrigueHasGroupe entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getIntrigueHasGroupes()
+    public function getIntrigueHasGroupes(): ArrayCollection
     {
         return $this->intrigueHasGroupes;
     }
 
     /**
      * Add Personnage entity to collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addPersonnage(Personnage $personnage)
+    public function addPersonnage(Personnage $personnage): static
     {
         $this->personnages[] = $personnage;
 
@@ -907,10 +696,8 @@ class BaseGroupe
 
     /**
      * Remove Personnage entity from collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removePersonnage(Personnage $personnage)
+    public function removePersonnage(Personnage $personnage): static
     {
         $this->personnages->removeElement($personnage);
 
@@ -919,20 +706,16 @@ class BaseGroupe
 
     /**
      * Get Personnage entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPersonnages()
+    public function getPersonnages(): ArrayCollection
     {
         return $this->personnages;
     }
 
     /**
      * Add Territoire entity to collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addTerritoire(Territoire $territoire)
+    public function addTerritoire(Territoire $territoire): static
     {
         $this->territoires[] = $territoire;
 
@@ -941,10 +724,8 @@ class BaseGroupe
 
     /**
      * Remove Territoire entity from collection (one to many).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeTerritoire(Territoire $territoire)
+    public function removeTerritoire(Territoire $territoire): static
     {
         $this->territoires->removeElement($territoire);
 
@@ -953,18 +734,14 @@ class BaseGroupe
 
     /**
      * Get Territoire entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getTerritoires()
+    public function getTerritoires(): ArrayCollection
     {
         return $this->territoires;
     }
 
     /**
      * Set User entity related by `scenariste_id` (many to one).
-     *
-     * @return \App\Entity\Groupe
      */
     public function setUserRelatedByScenaristeId(User $User = null): static
     {
@@ -975,18 +752,14 @@ class BaseGroupe
 
     /**
      * Get User entity related by `scenariste_id` (many to one).
-     *
-     * @return \App\Entity\User
      */
-    public function getUserRelatedByScenaristeId()
+    public function getUserRelatedByScenaristeId(): ?User
     {
         return $this->userRelatedByScenaristeId;
     }
 
     /**
      * Set User entity related by `responsable_id` (many to one).
-     *
-     * @return \App\Entity\Groupe
      */
     public function setUserRelatedByResponsableId(User $User = null): static
     {
@@ -1005,10 +778,8 @@ class BaseGroupe
 
     /**
      * Set Topic entity (many to one).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setTopic(Topic $topic = null)
+    public function setTopic(Topic $topic = null): static
     {
         $this->topic = $topic;
 
@@ -1017,20 +788,16 @@ class BaseGroupe
 
     /**
      * Get Topic entity (many to one).
-     *
-     * @return \App\Entity\Topic
      */
-    public function getTopic()
+    public function getTopic(): ?Topic
     {
         return $this->topic;
     }
 
     /**
      * Set Territoire entity (many to one).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function setTerritoire(Territoire $territoire = null)
+    public function setTerritoire(Territoire $territoire = null): static
     {
         $this->territoire = $territoire;
 
@@ -1039,8 +806,6 @@ class BaseGroupe
 
     /**
      * Get Territoire entity (many to one).
-     *
-     * @return \App\Entity\Territoire
      */
     public function getTerritoire()
     {
@@ -1049,10 +814,8 @@ class BaseGroupe
 
     /**
      * Add Document entity to collection.
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addDocument(Document $document)
+    public function addDocument(Document $document): static
     {
         $document->addGroupe($this);
         $this->documents[] = $document;
@@ -1062,10 +825,8 @@ class BaseGroupe
 
     /**
      * Remove Document entity from collection.
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeDocument(Document $document)
+    public function removeDocument(Document $document): static
     {
         $document->removeGroupe($this);
         $this->documents->removeElement($document);
@@ -1075,20 +836,16 @@ class BaseGroupe
 
     /**
      * Get Document entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getDocuments()
+    public function getDocuments(): ArrayCollection
     {
         return $this->documents;
     }
 
     /**
      * Add Item entity to collection.
-     *
-     * @return \App\Entity\Groupe
      */
-    public function addItem(Item $item)
+    public function addItem(Item $item): static
     {
         $item->addGroupe($this);
         $this->items[] = $item;
@@ -1098,10 +855,8 @@ class BaseGroupe
 
     /**
      * Remove Item entity from collection.
-     *
-     * @return \App\Entity\Groupe
      */
-    public function removeItem(Item $item)
+    public function removeItem(Item $item): static
     {
         $item->removeGroupe($this);
         $this->items->removeElement($item);
@@ -1111,10 +866,8 @@ class BaseGroupe
 
     /**
      * Get Item entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getItems()
+    public function getItems(): ArrayCollection
     {
         return $this->items;
     }

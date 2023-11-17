@@ -2,57 +2,39 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * App\Entity\GroupeHasIngredient.
- *
- * @Table(name="groupe_has_ingredient", indexes={@Index(name="fk_groupe_has_ingredient_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_groupe_has_ingredient_ingredient1_idx", columns={"ingredient_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseGroupeHasIngredient", "extended":"GroupeHasIngredient"})
- */
-class BaseGroupeHasIngredient
+#[Entity]
+#[ORM\Table(name: 'groupe_has_ingredient')]
+#[ORM\Index(columns: ['groupe_id'], name: 'fk_groupe_has_ingredient_groupe1_idx')]
+#[ORM\Index(columns: ['ingredient_id'], name: 'fk_groupe_has_ingredient_ingredient1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseGroupeHasIngredient', 'extended' => 'GroupeHasIngredient'])]
+abstract class BaseGroupeHasIngredient
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $quantite;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $quantite = 0;
 
-    /**
-     * @ManyToOne(targetEntity="Groupe", inversedBy="groupeHasIngredients", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)
-     */
-    protected $groupe;
+    #[ORM\ManyToOne(targetEntity: Groupe::class, cascade: ['persist', 'remove'], inversedBy: 'groupeHasIngredients')]
+    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
+    protected Groupe $groupe;
 
-    /**
-     * @ManyToOne(targetEntity="Ingredient", inversedBy="groupeHasIngredients")
-     *
-     * @JoinColumn(name="ingredient_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Ingredient::class, inversedBy: 'groupeHasIngredients')]
+    #[ORM\JoinColumn(name: 'ingredient_id', referencedColumnName: 'id')]
     protected $ingredient;
-
-    public function __construct()
-    {
-    }
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\GroupeHasIngredient
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -61,22 +43,16 @@ class BaseGroupeHasIngredient
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set the value of quantite.
-     *
-     * @param int $quantite
-     *
-     * @return \App\Entity\GroupeHasIngredient
      */
-    public function setQuantite($quantite)
+    public function setQuantite(int $quantite): static
     {
         $this->quantite = $quantite;
 
@@ -85,20 +61,16 @@ class BaseGroupeHasIngredient
 
     /**
      * Get the value of quantite.
-     *
-     * @return int
      */
-    public function getQuantite()
+    public function getQuantite(): int
     {
         return $this->quantite;
     }
 
     /**
      * Set Groupe entity (many to one).
-     *
-     * @return \App\Entity\GroupeHasIngredient
      */
-    public function setGroupe(Groupe $groupe = null)
+    public function setGroupe(Groupe $groupe = null): static
     {
         $this->groupe = $groupe;
 
@@ -107,20 +79,16 @@ class BaseGroupeHasIngredient
 
     /**
      * Get Groupe entity (many to one).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function getGroupe()
+    public function getGroupe(): static
     {
         return $this->groupe;
     }
 
     /**
      * Set Ingredient entity (many to one).
-     *
-     * @return \App\Entity\GroupeHasIngredient
      */
-    public function setIngredient(Ingredient $ingredient = null)
+    public function setIngredient(Ingredient $ingredient = null): static
     {
         $this->ingredient = $ingredient;
 
@@ -129,10 +97,8 @@ class BaseGroupeHasIngredient
 
     /**
      * Get Ingredient entity (many to one).
-     *
-     * @return \App\Entity\Ingredient
      */
-    public function getIngredient()
+    public function getIngredient(): Ingredient
     {
         return $this->ingredient;
     }

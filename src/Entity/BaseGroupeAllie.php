@@ -2,72 +2,49 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\GroupeAllie.
- *
- * @Table(name="groupe_allie", indexes={@Index(name="fk_groupe_allie_groupe1_idx", columns={"groupe_id"}), @Index(name="fk_groupe_allie_groupe2_idx", columns={"groupe_allie_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseGroupeAllie", "extended":"GroupeAllie"})
- */
-class BaseGroupeAllie
+#[ORM\Entity]
+#[ORM\Table(name: 'groupe_allie')]
+#[ORM\Index(columns: ['groupe_id'], name: 'fk_groupe_allie_groupe1_idx')]
+#[ORM\Index(columns: ['groupe_allie_id'], name: 'fk_groupe_allie_groupe2_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseGroupeAllie', 'extended' => 'GroupeAllie'])]
+abstract class BaseGroupeAllie
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="boolean")
-     */
-    protected $groupe_accepted;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    protected bool $groupe_accepted = false;
 
-    /**
-     * @Column(type="boolean")
-     */
-    protected $groupe_allie_accepted;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    protected bool $groupe_allie_accepted = false;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $message;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $message = null;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $message_allie;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $message_allie = null;
 
-    /**
-     * @ManyToOne(targetEntity="Groupe", inversedBy="groupeAllieRelatedByGroupeIds")
-     *
-     * @JoinColumn(name="groupe_id", referencedColumnName="id", nullable=false)
-     */
-    protected $groupeRelatedByGroupeId;
+    #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'groupeAllieRelatedByGroupeIds')]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Groupe $groupeRelatedByGroupeId;
 
-    /**
-     * @ManyToOne(targetEntity="Groupe", inversedBy="groupeAllieRelatedByGroupeAllieIds")
-     *
-     * @JoinColumn(name="groupe_allie_id", referencedColumnName="id", nullable=false)
-     */
-    protected $groupeRelatedByGroupeAllieId;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'groupeAllieRelatedByGroupeAllieIds')]
+    #[JoinColumn(name: 'groupe_allie_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Groupe $groupeRelatedByGroupeAllieId;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\GroupeAllie
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -76,22 +53,16 @@ class BaseGroupeAllie
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set the value of groupe_accepted.
-     *
-     * @param bool $groupe_accepted
-     *
-     * @return \App\Entity\GroupeAllie
      */
-    public function setGroupeAccepted($groupe_accepted)
+    public function setGroupeAccepted(bool $groupe_accepted): static
     {
         $this->groupe_accepted = $groupe_accepted;
 
@@ -100,10 +71,8 @@ class BaseGroupeAllie
 
     /**
      * Get the value of groupe_accepted.
-     *
-     * @return bool
      */
-    public function getGroupeAccepted()
+    public function getGroupeAccepted(): bool
     {
         return $this->groupe_accepted;
     }
@@ -112,10 +81,8 @@ class BaseGroupeAllie
      * Set the value of groupe_allie_accepted.
      *
      * @param bool $groupe_allie_accepted
-     *
-     * @return \App\Entity\GroupeAllie
      */
-    public function setGroupeAllieAccepted($groupe_allie_accepted)
+    public function setGroupeAllieAccepted(GroupeAllie $groupe_allie_accepted): static
     {
         $this->groupe_allie_accepted = $groupe_allie_accepted;
 
@@ -124,10 +91,8 @@ class BaseGroupeAllie
 
     /**
      * Get the value of groupe_allie_accepted.
-     *
-     * @return bool
      */
-    public function getGroupeAllieAccepted()
+    public function getGroupeAllieAccepted(): GroupeAllie
     {
         return $this->groupe_allie_accepted;
     }
@@ -136,10 +101,8 @@ class BaseGroupeAllie
      * Set the value of message.
      *
      * @param string $message
-     *
-     * @return \App\Entity\GroupeAllie
      */
-    public function setMessage($message)
+    public function setMessage(GroupeAllie $message): static
     {
         $this->message = $message;
 
@@ -148,22 +111,16 @@ class BaseGroupeAllie
 
     /**
      * Get the value of message.
-     *
-     * @return string
      */
-    public function getMessage()
+    public function getMessage(): string
     {
-        return $this->message;
+        return $this->message ?? '';
     }
 
     /**
      * Set the value of message_allie.
-     *
-     * @param string $message_allie
-     *
-     * @return \App\Entity\GroupeAllie
      */
-    public function setMessageAllie($message_allie)
+    public function setMessageAllie(string $message_allie): static
     {
         $this->message_allie = $message_allie;
 
@@ -172,20 +129,16 @@ class BaseGroupeAllie
 
     /**
      * Get the value of message_allie.
-     *
-     * @return string
      */
-    public function getMessageAllie()
+    public function getMessageAllie(): string
     {
-        return $this->message_allie;
+        return $this->message_allie ?? '';
     }
 
     /**
      * Set Groupe entity related by `groupe_id` (many to one).
-     *
-     * @return \App\Entity\GroupeAllie
      */
-    public function setGroupeRelatedByGroupeId(Groupe $groupe = null)
+    public function setGroupeRelatedByGroupeId(Groupe $groupe = null): static
     {
         $this->groupeRelatedByGroupeId = $groupe;
 
@@ -194,20 +147,16 @@ class BaseGroupeAllie
 
     /**
      * Get Groupe entity related by `groupe_id` (many to one).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function getGroupeRelatedByGroupeId()
+    public function getGroupeRelatedByGroupeId(): Groupe
     {
         return $this->groupeRelatedByGroupeId;
     }
 
     /**
      * Set Groupe entity related by `groupe_allie_id` (many to one).
-     *
-     * @return \App\Entity\GroupeAllie
      */
-    public function setGroupeRelatedByGroupeAllieId(Groupe $groupe = null)
+    public function setGroupeRelatedByGroupeAllieId(Groupe $groupe = null): static
     {
         $this->groupeRelatedByGroupeAllieId = $groupe;
 
@@ -216,10 +165,8 @@ class BaseGroupeAllie
 
     /**
      * Get Groupe entity related by `groupe_allie_id` (many to one).
-     *
-     * @return \App\Entity\Groupe
      */
-    public function getGroupeRelatedByGroupeAllieId()
+    public function getGroupeRelatedByGroupeAllieId(): Groupe
     {
         return $this->groupeRelatedByGroupeAllieId;
     }
