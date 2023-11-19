@@ -2,52 +2,35 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * App\Entity\IntrigueHasDocument.
- *
- * @Table(name="intrigue_has_document", indexes={@Index(name="fk_intrigue_has_document_intrigue1_idx", columns={"intrigue_id"}), @Index(name="fk_intrigue_has_document_document1_idx", columns={"document_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseIntrigueHasDocument", "extended":"IntrigueHasDocument"})
- */
-class BaseIntrigueHasDocument
+#[ORM\Entity]
+#[ORM\Table(name: 'intrigue_has_document')]
+#[ORM\Index(columns: ['intrigue_id'], name: 'fk_intrigue_has_document_intrigue1_idx')]
+#[ORM\Index(columns: ['document_id'], name: 'fk_intrigue_has_document_document1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseIntrigueHasDocument', 'extended' => 'IntrigueHasDocument'])]
+abstract class BaseIntrigueHasDocument
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @ManyToOne(targetEntity="Intrigue", inversedBy="intrigueHasDocuments", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="intrigue_id", referencedColumnName="id", nullable=false)
-     */
-    protected $intrigue;
+    #[ORM\ManyToOne(targetEntity: Intrigue::class, cascade: ['persist', 'remove'], inversedBy: 'intrigueHasDocuments')]
+    #[ORM\JoinColumn(name: 'intrigue_id', referencedColumnName: 'id', nullable: false)]
+    protected Intrigue $intrigue;
 
-    /**
-     * @ManyToOne(targetEntity="Document", inversedBy="intrigueHasDocuments")
-     *
-     * @JoinColumn(name="document_id", referencedColumnName="id", nullable=false)
-     */
-    protected $document;
-
-    public function __construct()
-    {
-    }
+    #[ORM\ManyToOne(targetEntity: Document::class, inversedBy: 'intrigueHasDocuments')]
+    #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
+    protected Document $document;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\IntrigueHasDocument
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -56,20 +39,16 @@ class BaseIntrigueHasDocument
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set Intrigue entity (many to one).
-     *
-     * @return \App\Entity\IntrigueHasDocument
      */
-    public function setIntrigue(Intrigue $intrigue = null)
+    public function setIntrigue(Intrigue $intrigue = null): static
     {
         $this->intrigue = $intrigue;
 
@@ -78,20 +57,16 @@ class BaseIntrigueHasDocument
 
     /**
      * Get Intrigue entity (many to one).
-     *
-     * @return \App\Entity\Intrigue
      */
-    public function getIntrigue()
+    public function getIntrigue(): Intrigue
     {
         return $this->intrigue;
     }
 
     /**
      * Set Document entity (many to one).
-     *
-     * @return \App\Entity\IntrigueHasDocument
      */
-    public function setDocument(Document $document = null)
+    public function setDocument(Document $document = null): static
     {
         $this->document = $document;
 
@@ -100,10 +75,8 @@ class BaseIntrigueHasDocument
 
     /**
      * Get Document entity (many to one).
-     *
-     * @return \App\Entity\Document
      */
-    public function getDocument()
+    public function getDocument(): Document
     {
         return $this->document;
     }

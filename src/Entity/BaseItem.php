@@ -3,100 +3,67 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * App\Entity\Item.
- *
- * @Table(name="item", indexes={@Index(name="fk_item_qualite1_idx", columns={"quality_id"}), @Index(name="fk_item_statut1_idx", columns={"statut_id"}), @Index(name="fk_item_objet1_idx", columns={"objet_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseItem", "extended":"Item"})
- */
-class BaseItem
+#[ORM\Entity]
+#[ORM\Table(name: 'item')]
+#[ORM\Index(columns: ['quality_id'], name: 'fk_item_qualite1_idx')]
+#[ORM\Index(columns: ['statut_id'], name: 'fk_item_statut1_idx')]
+#[ORM\Index(columns: ['objet_id'], name: 'fk_item_objet1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseItem', 'extended' => 'Item'])]
+abstract class BaseItem
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $label;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $label = '';
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $description = '';
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $numero;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $numero = 0;
 
-    /**
-     * @Column(type="string", length=2)
-     */
-    protected $identification;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 2)]
+    protected string $identification = '';
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $special;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $special = '';
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $couleur;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $couleur;
 
-    /**
-     * @Column(type="datetime")
-     */
-    protected $date_creation;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    protected \DateTime $date_creation;
 
-    /**
-     * @Column(type="datetime")
-     */
-    protected $date_update;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    protected \DateTime $date_update;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $quantite;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $quantite = 0;
 
-    /**
-     * @ManyToOne(targetEntity="Quality", inversedBy="items")
-     *
-     * @JoinColumn(name="quality_id", referencedColumnName="id", nullable=false)
-     */
-    protected $quality;
+    #[ORM\ManyToOne(targetEntity: Quality::class, inversedBy: 'items')]
+    #[ORM\JoinColumn(name: 'quality_id', referencedColumnName: 'id')]
+    protected Quality $quality;
 
-    /**
-     * @ManyToOne(targetEntity="Statut", inversedBy="items")
-     *
-     * @JoinColumn(name="statut_id", referencedColumnName="id")
-     */
-    protected $statut;
+    #[ORM\ManyToOne(targetEntity: Statut::class, inversedBy: 'items')]
+    #[ORM\JoinColumn(name: 'statut_id', referencedColumnName: 'id', nullable: false)]
+    protected Statut $statut;
 
-    /**
-     * @ManyToOne(targetEntity="Objet", inversedBy="items")
-     *
-     * @JoinColumn(name="objet_id", referencedColumnName="id", nullable=false)
-     */
-    protected $objet;
+    #[ORM\ManyToOne(targetEntity: Objet::class, inversedBy: 'items')]
+    #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id', nullable: false)]
+    protected Objet $objet;
 
-    /**
-     * @ManyToMany(targetEntity="Groupe", mappedBy="items")
-     */
-    protected $groupes;
+    #[ORM\ManyToMany(targetEntity: Groupe::class, inversedBy: 'items')]
+    protected ArrayCollection $groupes;
 
-    /**
-     * @ManyToMany(targetEntity="Personnage", mappedBy="items")
-     */
+    #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'items')]
     protected $personnages;
 
     public function __construct()
@@ -107,12 +74,8 @@ class BaseItem
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Item
      */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -121,22 +84,16 @@ class BaseItem
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Item
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -145,22 +102,16 @@ class BaseItem
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Item
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -169,22 +120,16 @@ class BaseItem
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     /**
      * Set the value of numero.
-     *
-     * @param int $numero
-     *
-     * @return \App\Entity\Item
      */
-    public function setNumero($numero)
+    public function setNumero(int $numero): static
     {
         $this->numero = $numero;
 
@@ -193,10 +138,8 @@ class BaseItem
 
     /**
      * Get the value of numero.
-     *
-     * @return int
      */
-    public function getNumero()
+    public function getNumero(): int
     {
         return $this->numero;
     }
@@ -205,10 +148,8 @@ class BaseItem
      * Set the value of identification.
      *
      * @param string $identification
-     *
-     * @return \App\Entity\Item
      */
-    public function setIdentification($identification)
+    public function setIdentification($identification): static
     {
         $this->identification = $identification;
 
@@ -217,22 +158,16 @@ class BaseItem
 
     /**
      * Get the value of identification.
-     *
-     * @return string
      */
-    public function getIdentification()
+    public function getIdentification(): static
     {
         return $this->identification;
     }
 
     /**
      * Set the value of special.
-     *
-     * @param string $special
-     *
-     * @return \App\Entity\Item
      */
-    public function setSpecial($special)
+    public function setSpecial(string $special): Item
     {
         $this->special = $special;
 
@@ -241,22 +176,16 @@ class BaseItem
 
     /**
      * Get the value of special.
-     *
-     * @return string
      */
-    public function getSpecial()
+    public function getSpecial(): string
     {
-        return $this->special;
+        return $this->special ?? '';
     }
 
     /**
      * Set the value of couleur.
-     *
-     * @param string $couleur
-     *
-     * @return \App\Entity\Item
      */
-    public function setCouleur($couleur)
+    public function setCouleur(string $couleur): static
     {
         $this->couleur = $couleur;
 
@@ -265,22 +194,18 @@ class BaseItem
 
     /**
      * Get the value of couleur.
-     *
-     * @return string
      */
-    public function getCouleur()
+    public function getCouleur(): string
     {
-        return $this->couleur;
+        return $this->couleur ?? '';
     }
 
     /**
      * Set the value of date_creation.
      *
      * @param \DateTime $date_creation
-     *
-     * @return \App\Entity\Item
      */
-    public function setDateCreation($date_creation)
+    public function setDateCreation($date_creation): static
     {
         $this->date_creation = $date_creation;
 
@@ -289,10 +214,8 @@ class BaseItem
 
     /**
      * Get the value of date_creation.
-     *
-     * @return \DateTime
      */
-    public function getDateCreation()
+    public function getDateCreation(): static
     {
         return $this->date_creation;
     }
@@ -301,10 +224,8 @@ class BaseItem
      * Set the value of date_update.
      *
      * @param \DateTime $date_update
-     *
-     * @return \App\Entity\Item
      */
-    public function setDateUpdate($date_update)
+    public function setDateUpdate($date_update): static
     {
         $this->date_update = $date_update;
 
@@ -313,22 +234,16 @@ class BaseItem
 
     /**
      * Get the value of date_update.
-     *
-     * @return \DateTime
      */
-    public function getDateUpdate()
+    public function getDateUpdate(): \DateTime
     {
         return $this->date_update;
     }
 
     /**
      * Set the value of quantite.
-     *
-     * @param int $quantite
-     *
-     * @return \App\Entity\Item
      */
-    public function setQuantite($quantite)
+    public function setQuantite(int $quantite): static
     {
         $this->quantite = $quantite;
 
@@ -337,20 +252,16 @@ class BaseItem
 
     /**
      * Get the value of quantite.
-     *
-     * @return int
      */
-    public function getQuantite()
+    public function getQuantite(): int
     {
         return $this->quantite;
     }
 
     /**
      * Set Quality entity (many to one).
-     *
-     * @return \App\Entity\Item
      */
-    public function setQuality(Quality $quality = null)
+    public function setQuality(Quality $quality = null): static
     {
         $this->quality = $quality;
 
@@ -359,20 +270,16 @@ class BaseItem
 
     /**
      * Get Quality entity (many to one).
-     *
-     * @return \App\Entity\Quality
      */
-    public function getQuality()
+    public function getQuality(): Quality
     {
         return $this->quality;
     }
 
     /**
      * Set Statut entity (many to one).
-     *
-     * @return \App\Entity\Item
      */
-    public function setStatut(Statut $statut = null)
+    public function setStatut(Statut $statut = null): static
     {
         $this->statut = $statut;
 
@@ -381,20 +288,16 @@ class BaseItem
 
     /**
      * Get Statut entity (many to one).
-     *
-     * @return \App\Entity\Statut
      */
-    public function getStatut()
+    public function getStatut(): Statut
     {
         return $this->statut;
     }
 
     /**
      * Set Objet entity (many to one).
-     *
-     * @return \App\Entity\Item
      */
-    public function setObjet(Objet $objet = null)
+    public function setObjet(Objet $objet = null): static
     {
         $this->objet = $objet;
 
@@ -403,20 +306,16 @@ class BaseItem
 
     /**
      * Get Objet entity (many to one).
-     *
-     * @return \App\Entity\Objet
      */
-    public function getObjet()
+    public function getObjet(): Objet
     {
         return $this->objet;
     }
 
     /**
      * Add Groupe entity to collection.
-     *
-     * @return \App\Entity\Item
      */
-    public function addGroupe(Groupe $groupe)
+    public function addGroupe(Groupe $groupe): static
     {
         $this->groupes[] = $groupe;
 
@@ -425,10 +324,8 @@ class BaseItem
 
     /**
      * Remove Groupe entity from collection.
-     *
-     * @return \App\Entity\Item
      */
-    public function removeGroupe(Groupe $groupe)
+    public function removeGroupe(Groupe $groupe): static
     {
         $this->groupes->removeElement($groupe);
 
@@ -437,20 +334,16 @@ class BaseItem
 
     /**
      * Get Groupe entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGroupes()
+    public function getGroupes(): ArrayCollection
     {
         return $this->groupes;
     }
 
     /**
      * Add Personnage entity to collection.
-     *
-     * @return \App\Entity\Item
      */
-    public function addPersonnage(Personnage $personnage)
+    public function addPersonnage(Personnage $personnage): static
     {
         $this->personnages[] = $personnage;
 
@@ -459,10 +352,8 @@ class BaseItem
 
     /**
      * Remove Personnage entity from collection.
-     *
-     * @return \App\Entity\Item
      */
-    public function removePersonnage(Personnage $personnage)
+    public function removePersonnage(Personnage $personnage): static
     {
         $this->personnages->removeElement($personnage);
 
@@ -471,10 +362,8 @@ class BaseItem
 
     /**
      * Get Personnage entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPersonnages()
+    public function getPersonnages(): ArrayCollection
     {
         return $this->personnages;
     }
