@@ -69,7 +69,7 @@ abstract class BaseGroupeLangue
      */
     public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**

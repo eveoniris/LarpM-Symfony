@@ -6,34 +6,29 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Lignee.
- *
- * @Table(name="lignees")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseLignee", "extended":"Lignee"})
- */
-class BaseLignee
+#[Entity]
+#[ORM\Table(name: 'lignees')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseLignee', 'extended' => 'Lignee'])]
+abstract class BaseLignee
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string")
-     */
-    protected $nom;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING)]
+    protected string $nom;
 
-    /**
-     * @Column(name="`description`", type="text", nullable=true)
-     */
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected $description;
 
     /**
@@ -41,20 +36,14 @@ class BaseLignee
      *
      * @JoinColumn(name="id", referencedColumnName="lignee_id", nullable=false)
      */
-    protected $personnageLignees;
-
-    public function __construct()
-    {
-    }
+    #[OneToMany(mappedBy: 'lignee', targetEntity: PersonnageLignee::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'lignee_id', nullable: 'false')]
+    protected ArrayCollection $personnageLignees;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Lignee
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -63,22 +52,16 @@ class BaseLignee
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set the value of nom.
-     *
-     * @param string $nom
-     *
-     * @return \App\Entity\Lignee
      */
-    public function setNom($nom)
+    public function setNom(string $nom): static
     {
         $this->nom = $nom;
 
@@ -87,22 +70,16 @@ class BaseLignee
 
     /**
      * Get the value of nom.
-     *
-     * @return string
      */
-    public function getNom()
+    public function getNom(): string
     {
-        return $this->nom;
+        return $this->nom ?? '';
     }
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Lignee
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -111,22 +88,22 @@ class BaseLignee
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
-    public function getPersonnageLignees()
+    public function getPersonnageLignees(): ArrayCollection
     {
         return $this->personnageLignees;
     }
 
-    public function setPersonnageLignees(mixed $personnageLignees): void
+    public function setPersonnageLignees(ArrayCollection $personnageLignees): static
     {
         $this->personnageLignees = $personnageLignees;
+
+        return $this;
     }
 
     public function __sleep()

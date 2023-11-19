@@ -71,7 +71,7 @@ class BaseTitre
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -83,7 +83,7 @@ class BaseTitre
      *
      * @return \App\Entity\Titre
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -95,9 +95,9 @@ class BaseTitre
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**

@@ -88,7 +88,7 @@ class BasePriere
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -100,7 +100,7 @@ class BasePriere
      *
      * @return \App\Entity\Priere
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -112,9 +112,9 @@ class BasePriere
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**
@@ -172,7 +172,7 @@ class BasePriere
      *
      * @return \App\Entity\Priere
      */
-    public function setDocumentUrl($documentUrl)
+    public function setDocumentUrl(string $documentUrl): static
     {
         $this->documentUrl = $documentUrl;
 
@@ -184,9 +184,9 @@ class BasePriere
      *
      * @return string
      */
-    public function getDocumentUrl()
+    public function getDocumentUrl(): string
     {
-        return $this->documentUrl;
+        return $this->documentUrl ?? '';
     }
 
     /**

@@ -3,57 +3,41 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Level.
- *
- * @Table(name="`level`")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseLevel", "extended":"Level"})
- */
-class BaseLevel
+#[ORM\Entity]
+#[ORM\Table(name: 'level')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseLevel', 'extended' => 'Level'])]
+abstract class BaseLevel
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(name="`index`", type="integer")
-     */
-    protected $index;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $index;
 
-    /**
-     * @Column(type="string", length=45)
-     */
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected $label;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $cout;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $cout = 0;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $cout_favori;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $cout_favori = 0;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $cout_meconu;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $cout_meconu = 0;
 
-    /**
-     * @OneToMany(targetEntity="Competence", mappedBy="level", cascade={"persist"})
-     *
-     * @JoinColumn(name="id", referencedColumnName="level_id", nullable=false)
-     */
-    protected $competences;
+    #[OneToMany(mappedBy: 'level', targetEntity: Competence::class, cascade: ['persist'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'level_id', nullable: 'false')]
+    protected ?ArrayCollection $competences;
 
     public function __construct()
     {
@@ -62,12 +46,8 @@ class BaseLevel
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Level
      */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -76,22 +56,16 @@ class BaseLevel
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set the value of index.
-     *
-     * @param int $index
-     *
-     * @return \App\Entity\Level
      */
-    public function setIndex($index)
+    public function setIndex(int $index): static
     {
         $this->index = $index;
 
@@ -100,22 +74,16 @@ class BaseLevel
 
     /**
      * Get the value of index.
-     *
-     * @return int
      */
-    public function getIndex()
+    public function getIndex(): int
     {
         return $this->index;
     }
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Level
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -124,22 +92,16 @@ class BaseLevel
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**
      * Set the value of cout.
-     *
-     * @param int $cout
-     *
-     * @return \App\Entity\Level
      */
-    public function setCout($cout)
+    public function setCout(int $cout): static
     {
         $this->cout = $cout;
 
@@ -148,22 +110,16 @@ class BaseLevel
 
     /**
      * Get the value of cout.
-     *
-     * @return int
      */
-    public function getCout()
+    public function getCout(): int
     {
         return $this->cout;
     }
 
     /**
      * Set the value of cout_favori.
-     *
-     * @param int $cout_favori
-     *
-     * @return \App\Entity\Level
      */
-    public function setCoutFavori($cout_favori)
+    public function setCoutFavori(int $cout_favori): static
     {
         $this->cout_favori = $cout_favori;
 
@@ -172,22 +128,16 @@ class BaseLevel
 
     /**
      * Get the value of cout_favori.
-     *
-     * @return int
      */
-    public function getCoutFavori()
+    public function getCoutFavori(): int
     {
         return $this->cout_favori;
     }
 
     /**
      * Set the value of cout_meconu.
-     *
-     * @param int $cout_meconu
-     *
-     * @return \App\Entity\Level
      */
-    public function setCoutMeconu($cout_meconu)
+    public function setCoutMeconu(int $cout_meconu): static
     {
         $this->cout_meconu = $cout_meconu;
 
@@ -196,20 +146,16 @@ class BaseLevel
 
     /**
      * Get the value of cout_meconu.
-     *
-     * @return int
      */
-    public function getCoutMeconu()
+    public function getCoutMeconu(): int
     {
         return $this->cout_meconu;
     }
 
     /**
      * Add Competence entity to collection (one to many).
-     *
-     * @return \App\Entity\Level
      */
-    public function addCompetence(Competence $competence)
+    public function addCompetence(Competence $competence): static
     {
         $this->competences[] = $competence;
 
@@ -218,10 +164,8 @@ class BaseLevel
 
     /**
      * Remove Competence entity from collection (one to many).
-     *
-     * @return \App\Entity\Level
      */
-    public function removeCompetence(Competence $competence)
+    public function removeCompetence(Competence $competence): static
     {
         $this->competences->removeElement($competence);
 
@@ -230,10 +174,8 @@ class BaseLevel
 
     /**
      * Get Competence entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getCompetences()
+    public function getCompetences(): ArrayCollection
     {
         return $this->competences;
     }

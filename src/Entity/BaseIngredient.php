@@ -86,7 +86,7 @@ abstract class BaseIngredient
      */
     public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**

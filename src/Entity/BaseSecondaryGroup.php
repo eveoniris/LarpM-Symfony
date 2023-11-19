@@ -125,7 +125,7 @@ class BaseSecondaryGroup
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -137,7 +137,7 @@ class BaseSecondaryGroup
      *
      * @return \App\Entity\SecondaryGroup
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -149,9 +149,9 @@ class BaseSecondaryGroup
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**

@@ -68,7 +68,7 @@ class BaseAge
 
     public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     public function setDescription(string $description): self

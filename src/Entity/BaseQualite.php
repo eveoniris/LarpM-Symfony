@@ -72,7 +72,7 @@ class BaseQualite
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -84,7 +84,7 @@ class BaseQualite
      *
      * @return \App\Entity\Qualite
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -96,9 +96,9 @@ class BaseQualite
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**

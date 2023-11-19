@@ -63,7 +63,7 @@ class BaseRule
      *
      * @return integer
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -74,7 +74,7 @@ class BaseRule
      * @param string $label
      * @return \App\Entity\Rule
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -86,9 +86,9 @@ class BaseRule
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**

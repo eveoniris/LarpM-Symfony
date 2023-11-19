@@ -71,7 +71,7 @@ class BaseTitreTerritoire
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -83,7 +83,7 @@ class BaseTitreTerritoire
      *
      * @return \App\Entity\TitreTerritoire
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -95,9 +95,9 @@ class BaseTitreTerritoire
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**

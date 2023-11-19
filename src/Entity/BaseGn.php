@@ -127,7 +127,7 @@ class BaseGn
 
     public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     public function setXpCreation(int $xp_creation): static

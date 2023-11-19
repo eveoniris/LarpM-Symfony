@@ -64,7 +64,7 @@ class BaseRestauration
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -76,7 +76,7 @@ class BaseRestauration
      *
      * @return \App\Entity\Restauration
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -88,9 +88,9 @@ class BaseRestauration
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**

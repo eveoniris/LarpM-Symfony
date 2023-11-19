@@ -3,76 +3,55 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OrderBy;
 
-/**
- * App\Entity\Langue.
- *
- * @Table(name="langue", indexes={@Index(name="groupe_langue_id_idx", columns={"groupe_langue_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseLangue", "extended":"Langue"})
- */
-class BaseLangue
+#[ORM\Entity]
+#[ORM\Table(name: 'langue')]
+#[ORM\Index(columns: ['groupe_langue_id'], name: 'groupe_langue_id_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseLangue', 'extended' => 'Langue'])]
+abstract class BaseLangue
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=100)
-     */
-    protected $label;
+    #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
+    protected string $label = '';
 
-    /**
-     * @Column(type="string", length=450, nullable=true)
-     */
-    protected $description;
+    #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING, length: 450, nullable: true)]
+    protected ?string $description = '';
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $diffusion;
+    #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $diffusion = 0;
 
-    /**
-     * @OneToMany(targetEntity="PersonnageLangues", mappedBy="langue")
-     *
-     * @JoinColumn(name="id", referencedColumnName="langue_id", nullable=false)
-     */
-    protected $personnageLangues;
+    #[OneToMany(mappedBy: 'langue', targetEntity: PersonnageLangues::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'langue_id', nullable: 'false')]
+    #[OrderBy(['secret' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC'])]
+    protected ArrayCollection $personnageLangues;
 
-    /**
-     * @OneToMany(targetEntity="Territoire", mappedBy="langue")
-     *
-     * @JoinColumn(name="id", referencedColumnName="langue_id", nullable=false)
-     */
-    protected $territoires;
+    #[OneToMany(mappedBy: 'langue', targetEntity: Territoire::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'langue_id', nullable: 'false')]
+    protected ArrayCollection $territoires;
 
-    /**
-     * @ManyToOne(targetEntity="GroupeLangue", inversedBy="langues")
-     *
-     * @JoinColumn(name="groupe_langue_id", referencedColumnName="id", nullable=false)
-     */
-    protected $groupeLangue;
+    #[OneToMany(mappedBy: 'langue', targetEntity: GroupeLangue::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_langue_id', nullable: 'false')]
+    protected GroupeLangue $groupeLangue;
 
-    /**
-     * @ManyToMany(targetEntity="Document", mappedBy="langues")
-     */
-    protected $documents;
+    #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'langues')]
+    protected ArrayCollection $documents;
 
-    /**
-     * @Column(type="boolean", nullable=false, options={"default":0})
-     */
-    protected $secret;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: false, options: ['default' => 0])]
+    protected bool $secret = false;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $documentUrl;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $documentUrl = null;
 
     public function __construct()
     {
@@ -83,12 +62,8 @@ class BaseLangue
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Langue
      */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -97,22 +72,16 @@ class BaseLangue
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Langue
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -121,22 +90,16 @@ class BaseLangue
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Langue
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -145,22 +108,18 @@ class BaseLangue
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     /**
      * Set the value of diffusion.
      *
      * @param int $diffusion
-     *
-     * @return \App\Entity\Langue
      */
-    public function setDiffusion($diffusion)
+    public function setDiffusion(string $diffusion): static
     {
         $this->diffusion = $diffusion;
 
@@ -169,20 +128,16 @@ class BaseLangue
 
     /**
      * Get the value of diffusion.
-     *
-     * @return int
      */
-    public function getDiffusion()
+    public function getDiffusion(): int
     {
-        return $this->diffusion;
+        return $this->diffusion ?? '';
     }
 
     /**
      * Add PersonnageLangues entity to collection (one to many).
-     *
-     * @return \App\Entity\Langue
      */
-    public function addPersonnageLangues(PersonnageLangues $personnageLangues)
+    public function addPersonnageLangues(PersonnageLangues $personnageLangues): static
     {
         $this->personnageLangues[] = $personnageLangues;
 
@@ -191,10 +146,8 @@ class BaseLangue
 
     /**
      * Remove PersonnageLangues entity from collection (one to many).
-     *
-     * @return \App\Entity\Langue
      */
-    public function removePersonnageLangues(PersonnageLangues $personnageLangues)
+    public function removePersonnageLangues(PersonnageLangues $personnageLangues): static
     {
         $this->personnageLangues->removeElement($personnageLangues);
 
@@ -204,21 +157,17 @@ class BaseLangue
     /**
      * Get PersonnageLangues entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
-     *
      * @OrderBy({"secret" = "ASC", "diffusion" = "DESC", "label" = "ASC"})
      */
-    public function getPersonnageLangues()
+    public function getPersonnageLangues(): ArrayCollection
     {
         return $this->personnageLangues;
     }
 
     /**
      * Add Territoire entity to collection (one to many).
-     *
-     * @return \App\Entity\Langue
      */
-    public function addTerritoire(Territoire $territoire)
+    public function addTerritoire(Territoire $territoire): static
     {
         $this->territoires[] = $territoire;
 
@@ -227,10 +176,8 @@ class BaseLangue
 
     /**
      * Remove Territoire entity from collection (one to many).
-     *
-     * @return \App\Entity\Langue
      */
-    public function removeTerritoire(Territoire $territoire)
+    public function removeTerritoire(Territoire $territoire): static
     {
         $this->territoires->removeElement($territoire);
 
@@ -239,20 +186,16 @@ class BaseLangue
 
     /**
      * Get Territoire entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getTerritoires()
+    public function getTerritoires(): ArrayCollection
     {
         return $this->territoires;
     }
 
     /**
      * Set GroupeLangue entity (many to one).
-     *
-     * @return \App\Entity\Langue
      */
-    public function setGroupeLangue(GroupeLangue $groupeLangue = null)
+    public function setGroupeLangue(GroupeLangue $groupeLangue = null): static
     {
         $this->groupeLangue = $groupeLangue;
 
@@ -261,20 +204,16 @@ class BaseLangue
 
     /**
      * Get GroupeLangue entity (many to one).
-     *
-     * @return \App\Entity\GroupeLangue
      */
-    public function getGroupeLangue()
+    public function getGroupeLangue(): GroupeLangue
     {
         return $this->groupeLangue;
     }
 
     /**
      * Add Document entity to collection.
-     *
-     * @return \App\Entity\Langue
      */
-    public function addDocument(Document $document)
+    public function addDocument(Document $document): static
     {
         $this->documents[] = $document;
 
@@ -283,10 +222,8 @@ class BaseLangue
 
     /**
      * Remove Document entity from collection.
-     *
-     * @return \App\Entity\Langue
      */
-    public function removeDocument(Document $document)
+    public function removeDocument(Document $document): static
     {
         $this->documents->removeElement($document);
 
@@ -295,22 +232,16 @@ class BaseLangue
 
     /**
      * Get Document entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getDocuments()
+    public function getDocuments(): ArrayCollection
     {
         return $this->documents;
     }
 
     /**
      * Set the value of secret.
-     *
-     * @param bool $secret
-     *
-     * @return \App\Entity\Langue
      */
-    public function setSecret($secret)
+    public function setSecret(bool $secret): static
     {
         $this->secret = $secret;
 
@@ -319,22 +250,16 @@ class BaseLangue
 
     /**
      * Get the value of secret.
-     *
-     * @return bool
      */
-    public function getSecret()
+    public function getSecret(): bool
     {
         return $this->secret;
     }
 
     /**
      * Set the value of documentUrl.
-     *
-     * @param string $documentUrl
-     *
-     * @return \App\Entity\Langue
      */
-    public function setDocumentUrl($documentUrl)
+    public function setDocumentUrl(string $documentUrl): static
     {
         $this->documentUrl = $documentUrl;
 
@@ -343,12 +268,10 @@ class BaseLangue
 
     /**
      * Get the value of documentUrl.
-     *
-     * @return string
      */
-    public function getDocumentUrl()
+    public function getDocumentUrl(): string
     {
-        return $this->documentUrl;
+        return $this->documentUrl ?? '';
     }
 
     public function __sleep()

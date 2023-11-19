@@ -69,7 +69,7 @@ class BaseToken
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -81,7 +81,7 @@ class BaseToken
      *
      * @return \App\Entity\Token
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -93,9 +93,9 @@ class BaseToken
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**

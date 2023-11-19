@@ -425,7 +425,7 @@ class BasePersonnage
      *
      * @return \App\Entity\Personnage
      */
-    public function setId(int $id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -437,7 +437,7 @@ class BasePersonnage
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

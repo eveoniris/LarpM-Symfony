@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'billet')]
-#[ORM\Index(columns: ['createur_id'], name: 'fk_billet_User1')]
+#[ORM\Index(columns: ['createur_id'], name: 'fk_billet_user1')]
 #[ORM\Index(columns: ['gn_id'], name: 'fk_billet_gn1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
@@ -80,7 +80,7 @@ abstract class BaseBillet
 
     public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     public function setDescription(string $description): self
@@ -150,9 +150,9 @@ abstract class BaseBillet
         return $this->participants;
     }
 
-    public function setUser(User $User = null): self
+    public function setUser(User $user = null): self
     {
-        $this->user = $User;
+        $this->user = $user;
 
         return $this;
     }
