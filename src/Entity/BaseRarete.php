@@ -63,7 +63,7 @@ class BaseRarete
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -75,7 +75,7 @@ class BaseRarete
      *
      * @return \App\Entity\Rarete
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -87,9 +87,9 @@ class BaseRarete
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**

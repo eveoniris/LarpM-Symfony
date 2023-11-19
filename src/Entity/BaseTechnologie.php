@@ -82,7 +82,7 @@ class BaseTechnologie
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -104,9 +104,9 @@ class BaseTechnologie
      *
      * @return string|null
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**
@@ -136,9 +136,9 @@ class BaseTechnologie
      *
      * @return string
      */
-    public function getDocumentUrl()
+    public function getDocumentUrl(): string
     {
-        return $this->documentUrl;
+        return $this->documentUrl ?? '';
     }
 
     /**

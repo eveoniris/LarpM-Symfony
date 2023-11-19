@@ -89,7 +89,7 @@ class BasePotion
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -101,7 +101,7 @@ class BasePotion
      *
      * @return \App\Entity\Potion
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -113,9 +113,9 @@ class BasePotion
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**
@@ -149,7 +149,7 @@ class BasePotion
      *
      * @return \App\Entity\Potion
      */
-    public function setDocumentUrl($documentUrl)
+    public function setDocumentUrl(string $documentUrl): static
     {
         $this->documentUrl = $documentUrl;
 
@@ -161,9 +161,9 @@ class BasePotion
      *
      * @return string
      */
-    public function getDocumentUrl()
+    public function getDocumentUrl(): string
     {
-        return $this->documentUrl;
+        return $this->documentUrl ?? '';
     }
 
     /**

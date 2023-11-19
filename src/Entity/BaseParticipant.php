@@ -111,7 +111,7 @@ class BaseParticipant
      *
      * @return \App\Entity\Participant
      */
-    public function setId(int $id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -123,7 +123,7 @@ class BaseParticipant
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

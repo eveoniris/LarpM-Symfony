@@ -80,7 +80,7 @@ class BaseQuestion
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -164,7 +164,7 @@ class BaseQuestion
      *
      * @return \App\Entity\Question
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -176,9 +176,9 @@ class BaseQuestion
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**

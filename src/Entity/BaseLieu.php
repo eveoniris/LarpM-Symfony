@@ -3,52 +3,38 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Lieu.
- *
- * @Table(name="lieu")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseLieu", "extended":"Lieu"})
- */
-class BaseLieu
+#[ORM\Entity]
+#[ORM\Table(name: 'lieu')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseLieu', 'extended' => 'Lieu'])]
+abstract class BaseLieu
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $nom;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $nom;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $description = '';
 
-    /**
-     * @OneToMany(targetEntity="IntrigueHasLieu", mappedBy="lieu")
-     *
-     * @JoinColumn(name="id", referencedColumnName="lieu_id", nullable=false)
-     */
-    protected $intrigueHasLieus;
+    #[OneToMany(mappedBy: 'lieu', targetEntity: IntrigueHasLieu::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'lieu_id', nullable: 'false')]
+    protected ArrayCollection $intrigueHasLieus;
 
-    /**
-     * @ManyToMany(targetEntity="Document", inversedBy="lieus")
-     *
-     * @JoinTable(name="lieu_has_document",
-     *     joinColumns={@JoinColumn(name="lieu_id", referencedColumnName="id", nullable=false)},
-     *     inverseJoinColumns={@JoinColumn(name="document_id", referencedColumnName="id", nullable=false)}
-     * )
-     */
-    protected $documents;
+    #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'lieus')]
+    #[ORM\JoinTable(name: 'lieu_has_document')]
+    #[ORM\JoinColumn(name: 'lieu_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
+    protected ArrayCollection $documents;
 
     public function __construct()
     {
@@ -58,12 +44,8 @@ class BaseLieu
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Lieu
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -72,22 +54,16 @@ class BaseLieu
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set the value of nom.
-     *
-     * @param string $nom
-     *
-     * @return \App\Entity\Lieu
      */
-    public function setNom($nom)
+    public function setNom(string $nom): static
     {
         $this->nom = $nom;
 
@@ -96,22 +72,16 @@ class BaseLieu
 
     /**
      * Get the value of nom.
-     *
-     * @return string
      */
-    public function getNom()
+    public function getNom(): static
     {
         return $this->nom;
     }
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Lieu
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -120,20 +90,16 @@ class BaseLieu
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
     /**
      * Add IntrigueHasLieu entity to collection (one to many).
-     *
-     * @return \App\Entity\Lieu
      */
-    public function addIntrigueHasLieu(IntrigueHasLieu $intrigueHasLieu)
+    public function addIntrigueHasLieu(IntrigueHasLieu $intrigueHasLieu): static
     {
         $this->intrigueHasLieus[] = $intrigueHasLieu;
 
@@ -142,10 +108,8 @@ class BaseLieu
 
     /**
      * Remove IntrigueHasLieu entity from collection (one to many).
-     *
-     * @return \App\Entity\Lieu
      */
-    public function removeIntrigueHasLieu(IntrigueHasLieu $intrigueHasLieu)
+    public function removeIntrigueHasLieu(IntrigueHasLieu $intrigueHasLieu): static
     {
         $this->intrigueHasLieus->removeElement($intrigueHasLieu);
 
@@ -154,20 +118,16 @@ class BaseLieu
 
     /**
      * Get IntrigueHasLieu entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getIntrigueHasLieus()
+    public function getIntrigueHasLieus(): ArrayCollection
     {
         return $this->intrigueHasLieus;
     }
 
     /**
      * Add Document entity to collection.
-     *
-     * @return \App\Entity\Lieu
      */
-    public function addDocument(Document $document)
+    public function addDocument(Document $document): static
     {
         $document->addLieu($this);
         $this->documents[] = $document;
@@ -177,10 +137,8 @@ class BaseLieu
 
     /**
      * Remove Document entity from collection.
-     *
-     * @return \App\Entity\Lieu
      */
-    public function removeDocument(Document $document)
+    public function removeDocument(Document $document): static
     {
         $document->removeLieu($this);
         $this->documents->removeElement($document);
@@ -190,10 +148,8 @@ class BaseLieu
 
     /**
      * Get Document entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getDocuments()
+    public function getDocuments(): ArrayCollection
     {
         return $this->documents;
     }

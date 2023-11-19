@@ -3,44 +3,38 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * App\Entity\Loi.
- *
- * @Table(name="loi")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseLoi", "extended":"Loi"})
- */
-class BaseLoi
+#[ORM\Entity]
+#[ORM\Table(name: 'loi')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseLoi', 'extended' => 'Loi'])]
+abstract class BaseLoi
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $label;
+
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $label = null;
 
     /**
      * @Column(type="string", length=45, nullable=true)
      */
-    protected $documentUrl;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $documentUrl = null;
 
     /**
      * @Column(type="text", nullable=true)
      */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @ManyToMany(targetEntity="Territoire", mappedBy="lois")
-     */
-    protected $territoires;
+    #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'lois')]
+    protected ArrayCollection $territoires;
 
     public function __construct()
     {
@@ -49,12 +43,8 @@ class BaseLoi
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Loi
      */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -63,22 +53,16 @@ class BaseLoi
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Loi
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -87,22 +71,16 @@ class BaseLoi
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**
      * Set the value of documentUrl.
-     *
-     * @param string $documentUrl
-     *
-     * @return \App\Entity\Loi
      */
-    public function setDocumentUrl($documentUrl)
+    public function setDocumentUrl(string $documentUrl): static
     {
         $this->documentUrl = $documentUrl;
 
@@ -111,22 +89,16 @@ class BaseLoi
 
     /**
      * Get the value of documentUrl.
-     *
-     * @return string
      */
-    public function getDocumentUrl()
+    public function getDocumentUrl(): string
     {
-        return $this->documentUrl;
+        return $this->documentUrl ?? '';
     }
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Loi
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -135,20 +107,16 @@ class BaseLoi
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     /**
      * Add Territoire entity to collection.
-     *
-     * @return \App\Entity\Loi
      */
-    public function addTerritoire(Territoire $territoire)
+    public function addTerritoire(Territoire $territoire): static
     {
         $this->territoires[] = $territoire;
 
@@ -157,10 +125,8 @@ class BaseLoi
 
     /**
      * Remove Territoire entity from collection.
-     *
-     * @return \App\Entity\Loi
      */
-    public function removeTerritoire(Territoire $territoire)
+    public function removeTerritoire(Territoire $territoire): static
     {
         $this->territoires->removeElement($territoire);
 
@@ -169,10 +135,8 @@ class BaseLoi
 
     /**
      * Get Territoire entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getTerritoires()
+    public function getTerritoires(): ArrayCollection
     {
         return $this->territoires;
     }

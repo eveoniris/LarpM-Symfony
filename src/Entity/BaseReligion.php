@@ -129,7 +129,7 @@ class BaseReligion
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -141,7 +141,7 @@ class BaseReligion
      *
      * @return \App\Entity\Religion
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -153,9 +153,9 @@ class BaseReligion
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**

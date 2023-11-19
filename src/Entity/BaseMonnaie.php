@@ -64,7 +64,7 @@ class BaseMonnaie
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -76,7 +76,7 @@ class BaseMonnaie
      *
      * @return \App\Entity\Monnaie
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -88,9 +88,9 @@ class BaseMonnaie
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**

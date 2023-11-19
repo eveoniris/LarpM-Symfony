@@ -44,7 +44,7 @@ class BaseAttributeType
 
     public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     public function setId(int $id): self

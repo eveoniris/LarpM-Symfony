@@ -84,7 +84,7 @@ class BaseSort
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -96,7 +96,7 @@ class BaseSort
      *
      * @return \App\Entity\Sort
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -108,9 +108,9 @@ class BaseSort
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
-        return $this->label;
+        return $this->label ?? '';
     }
 
     /**
@@ -144,7 +144,7 @@ class BaseSort
      *
      * @return \App\Entity\Sort
      */
-    public function setDocumentUrl($documentUrl)
+    public function setDocumentUrl(string $documentUrl): static
     {
         $this->documentUrl = $documentUrl;
 
@@ -156,9 +156,9 @@ class BaseSort
      *
      * @return string
      */
-    public function getDocumentUrl()
+    public function getDocumentUrl(): string
     {
-        return $this->documentUrl;
+        return $this->documentUrl ?? '';
     }
 
     /**
