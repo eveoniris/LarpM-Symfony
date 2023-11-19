@@ -3,64 +3,48 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Ingredient.
- *
- * @Table(name="ingredient")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseIngredient", "extended":"Ingredient"})
- */
-class BaseIngredient
+#[ORM\Entity]
+#[ORM\Table(name: 'ingredient')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseIngredient', 'extended' => 'Ingredient'])]
+abstract class BaseIngredient
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label = '';
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $niveau;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $niveau = 0;
 
     /**
      * @Column(type="string", length=45)
      */
-    protected $dose;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $dose = '';
 
-    /**
-     * @OneToMany(targetEntity="GroupeHasIngredient", mappedBy="ingredient")
-     *
-     * @JoinColumn(name="id", referencedColumnName="ingredient_id", nullable=false)
-     */
-    protected $groupeHasIngredients;
+    #[OneToMany(mappedBy: 'ingredient', targetEntity: GroupeHasIngredient::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'ingredient_id', nullable: 'false')]
+    protected ?ArrayCollection $groupeHasIngredients;
 
-    /**
-     * @OneToMany(targetEntity="PersonnageIngredient", mappedBy="ingredient")
-     *
-     * @JoinColumn(name="id", referencedColumnName="ingredient_id", nullable=false)
-     */
-    protected $personnageIngredients;
+    #[OneToMany(mappedBy: 'ingredient', targetEntity: PersonnageIngredient::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'ingredient_id', nullable: 'false')]
+    protected ?ArrayCollection $personnageIngredients;
 
-    /**
-     * @ManyToMany(targetEntity="Territoire", mappedBy="ingredients")
-     */
-    protected $territoires;
+    #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'ingredients')]
+    protected ArrayCollection $territoires;
 
     public function __construct()
     {
@@ -71,12 +55,8 @@ class BaseIngredient
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Ingredient
      */
-    public function setId($id)
+    public function setId(int $id): string
     {
         $this->id = $id;
 
@@ -85,22 +65,16 @@ class BaseIngredient
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Ingredient
      */
-    public function setLabel($label)
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -109,22 +83,16 @@ class BaseIngredient
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Ingredient
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -133,22 +101,16 @@ class BaseIngredient
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
     /**
      * Set the value of niveau.
-     *
-     * @param int $niveau
-     *
-     * @return \App\Entity\Ingredient
      */
-    public function setNiveau($niveau)
+    public function setNiveau(int $niveau): static
     {
         $this->niveau = $niveau;
 
@@ -157,22 +119,16 @@ class BaseIngredient
 
     /**
      * Get the value of niveau.
-     *
-     * @return int
      */
-    public function getNiveau()
+    public function getNiveau(): int
     {
         return $this->niveau;
     }
 
     /**
      * Set the value of dose.
-     *
-     * @param string $dose
-     *
-     * @return \App\Entity\Ingredient
      */
-    public function setDose($dose)
+    public function setDose(string $dose): static
     {
         $this->dose = $dose;
 
@@ -181,20 +137,16 @@ class BaseIngredient
 
     /**
      * Get the value of dose.
-     *
-     * @return string
      */
-    public function getDose()
+    public function getDose(): string
     {
         return $this->dose;
     }
 
     /**
      * Add GroupeHasIngredient entity to collection (one to many).
-     *
-     * @return \App\Entity\Ingredient
      */
-    public function addGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient)
+    public function addGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient): static
     {
         $this->groupeHasIngredients[] = $groupeHasIngredient;
 
@@ -203,10 +155,8 @@ class BaseIngredient
 
     /**
      * Remove GroupeHasIngredient entity from collection (one to many).
-     *
-     * @return \App\Entity\Ingredient
      */
-    public function removeGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient)
+    public function removeGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient): static
     {
         $this->groupeHasIngredients->removeElement($groupeHasIngredient);
 
@@ -215,20 +165,16 @@ class BaseIngredient
 
     /**
      * Get GroupeHasIngredient entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGroupeHasIngredients()
+    public function getGroupeHasIngredients(): ArrayCollection
     {
         return $this->groupeHasIngredients;
     }
 
     /**
      * Add PersonnageIngredient entity to collection (one to many).
-     *
-     * @return \App\Entity\Ingredient
      */
-    public function addPersonnageIngredient(PersonnageIngredient $personnageIngredient)
+    public function addPersonnageIngredient(PersonnageIngredient $personnageIngredient): static
     {
         $this->personnageIngredients[] = $personnageIngredient;
 
@@ -237,10 +183,8 @@ class BaseIngredient
 
     /**
      * Remove PersonnageIngredient entity from collection (one to many).
-     *
-     * @return \App\Entity\Ingredient
      */
-    public function removePersonnageIngredient(PersonnageIngredient $personnageIngredient)
+    public function removePersonnageIngredient(PersonnageIngredient $personnageIngredient): static
     {
         $this->personnageIngredients->removeElement($personnageIngredient);
 
@@ -249,20 +193,16 @@ class BaseIngredient
 
     /**
      * Get PersonnageIngredient entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPersonnageIngredients()
+    public function getPersonnageIngredients(): ArrayCollection
     {
         return $this->personnageIngredients;
     }
 
     /**
      * Add Territoire entity to collection.
-     *
-     * @return \App\Entity\Ingredient
      */
-    public function addTerritoire(Territoire $territoire)
+    public function addTerritoire(Territoire $territoire): static
     {
         $this->territoires[] = $territoire;
 
@@ -271,10 +211,8 @@ class BaseIngredient
 
     /**
      * Remove Territoire entity from collection.
-     *
-     * @return \App\Entity\Ingredient
      */
-    public function removeTerritoire(Territoire $territoire)
+    public function removeTerritoire(Territoire $territoire): static
     {
         $this->territoires->removeElement($territoire);
 
@@ -283,10 +221,8 @@ class BaseIngredient
 
     /**
      * Get Territoire entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getTerritoires()
+    public function getTerritoires(): ArrayCollection
     {
         return $this->territoires;
     }

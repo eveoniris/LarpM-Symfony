@@ -2,52 +2,35 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * App\Entity\IntrigueHasLieu.
- *
- * @Table(name="intrigue_has_lieu", indexes={@Index(name="fk_intrigue_has_lieu_intrigue1_idx", columns={"intrigue_id"}), @Index(name="fk_intrigue_has_lieu_lieu1_idx", columns={"lieu_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseIntrigueHasLieu", "extended":"IntrigueHasLieu"})
- */
-class BaseIntrigueHasLieu
+#[ORM\Entity]
+#[ORM\Table(name: 'intrigue_has_lieu')]
+#[ORM\Index(columns: ['intrigue_id'], name: 'fk_intrigue_has_lieu_intrigue1_idx')]
+#[ORM\Index(columns: ['lieu_id'], name: 'fk_intrigue_has_lieu_lieu1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseIntrigueHasLieu', 'extended' => 'IntrigueHasLieu'])]
+abstract class BaseIntrigueHasLieu
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @ManyToOne(targetEntity="Intrigue", inversedBy="intrigueHasLieus", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="intrigue_id", referencedColumnName="id", nullable=false)
-     */
-    protected $intrigue;
+    #[ORM\ManyToOne(targetEntity: Intrigue::class, cascade: ['persist', 'remove'], inversedBy: 'intrigueHasLieus')]
+    #[ORM\JoinColumn(name: 'intrigue_id', referencedColumnName: 'id', nullable: false)]
+    protected Intrigue $intrigue;
 
-    /**
-     * @ManyToOne(targetEntity="Lieu", inversedBy="intrigueHasLieus")
-     *
-     * @JoinColumn(name="lieu_id", referencedColumnName="id", nullable=false)
-     */
-    protected $lieu;
-
-    public function __construct()
-    {
-    }
+    #[ORM\ManyToOne(targetEntity: Lieu::class, cascade: ['persist', 'remove'], inversedBy: 'intrigueHasLieus')]
+    #[ORM\JoinColumn(name: 'lieu_id', referencedColumnName: 'id', nullable: false)]
+    protected Lieu $lieu;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\IntrigueHasLieu
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -56,20 +39,16 @@ class BaseIntrigueHasLieu
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set Intrigue entity (many to one).
-     *
-     * @return \App\Entity\IntrigueHasLieu
      */
-    public function setIntrigue(Intrigue $intrigue = null)
+    public function setIntrigue(Intrigue $intrigue = null): static
     {
         $this->intrigue = $intrigue;
 
@@ -78,20 +57,16 @@ class BaseIntrigueHasLieu
 
     /**
      * Get Intrigue entity (many to one).
-     *
-     * @return \App\Entity\Intrigue
      */
-    public function getIntrigue()
+    public function getIntrigue(): Intrigue
     {
         return $this->intrigue;
     }
 
     /**
      * Set Lieu entity (many to one).
-     *
-     * @return \App\Entity\IntrigueHasLieu
      */
-    public function setLieu(Lieu $lieu = null)
+    public function setLieu(Lieu $lieu = null): static
     {
         $this->lieu = $lieu;
 
@@ -100,10 +75,8 @@ class BaseIntrigueHasLieu
 
     /**
      * Get Lieu entity (many to one).
-     *
-     * @return \App\Entity\Lieu
      */
-    public function getLieu()
+    public function getLieu(): Lieu
     {
         return $this->lieu;
     }
