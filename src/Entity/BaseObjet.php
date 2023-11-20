@@ -4,21 +4,22 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Objet.
- *
- * @Table(name="objet", indexes={@Index(name="fk_objet_etat1_idx", columns={"etat_id"}), @Index(name="fk_objet_possesseur1_idx", columns={"proprietaire_id"}), @Index(name="fk_objet_Users1_idx", columns={"responsable_id"}), @Index(name="fk_objet_photo1_idx", columns={"photo_id"}), @Index(name="fk_objet_rangement1_idx", columns={"rangement_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseObjet", "extended":"Objet"})
- */
-class BaseObjet
+#[ORM\Entity]
+#[ORM\Table(name: 'objet')]
+#[ORM\Index(columns: ['etat_id'], name: 'fk_objet_etat1_idx')]
+#[ORM\Index(columns: ['proprietaire_id'], name: 'fk_objet_possesseur1_idx')]
+#[ORM\Index(columns: ['responsable_id'], name: 'fk_objet_users1_idx')]
+#[ORM\Index(columns: ['photo_id'], name: 'fk_objet_photo1_idx')]
+#[ORM\Index(columns: ['rangement_id'], name: 'fk_objet_rangement1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseObjet', 'extended' => 'Objet'])]
+abstract class BaseObjet
 {
     /**
      * @var \Doctrine\Common\Collections\ArrayCollection
@@ -27,99 +28,63 @@ class BaseObjet
     #[ORM\Id, ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER), ORM\GeneratedValue]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $numero;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $numero = '';
 
-    /**
-     * @Column(type="string", length=100)
-     */
-    protected $nom;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
+    protected string $nom = '';
 
-    /**
-     * @Column(type="string", length=450, nullable=true)
-     */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $nombre;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?float $nombre = null;
 
-    /**
-     * @Column(type="float", nullable=true)
-     */
-    protected $cout;
+    #[Column(type: \Doctrine\DBAL\Types\Types::FLOAT, nullable: true)]
+    protected ?float $cout = null;
 
-    /**
-     * @Column(type="float", nullable=true)
-     */
-    protected $budget;
+    #[Column(type: \Doctrine\DBAL\Types\Types::FLOAT, nullable: true)]
+    protected ?float $budget = null;
 
-    /**
-     * @Column(type="boolean", nullable=true)
-     */
-    protected $investissement;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    protected ?bool $investissement = null;
 
-    /**
-     * @Column(type="datetime", nullable=true)
-     */
-    protected $creation_date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    protected ?\DateTime $creation_date = null;
 
-    /**
-     * @OneToMany(targetEntity="Item", mappedBy="objet")
-     *
-     * @JoinColumn(name="id", referencedColumnName="objet_id", nullable=false)
-     */
-    protected $items;
+    #[OneToMany(mappedBy: 'objet', targetEntity: Item::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'objet_id', nullable: 'false')]
+    protected ArrayCollection $items;
 
-    /**
-     * @OneToOne(targetEntity="ObjetCarac", mappedBy="objet", cascade={"persist", "merge", "remove", "detach", "all"})
-     */
+    #[ORM\OneToOne(inversedBy: 'objet', targetEntity: ObjetCarac::class, cascade: ['persist', 'remove', 'detach', 'all'])]
+    #[ORM\JoinColumn(name: 'etat_civil_id', referencedColumnName: 'id')]
     protected $objetCarac;
 
-    /**
-     * @ManyToOne(targetEntity="Etat", inversedBy="objets")
-     *
-     * @JoinColumn(name="etat_id", referencedColumnName="id")
-     */
-    protected $etat;
+    #[ORM\ManyToOne(targetEntity: Etat::class, inversedBy: 'objets')]
+    #[ORM\JoinColumn(name: 'etat_id', referencedColumnName: 'id')]
+    protected Etat $etat;
 
-    /**
-     * @ManyToOne(targetEntity="Proprietaire", inversedBy="objets")
-     *
-     * @JoinColumn(name="proprietaire_id", referencedColumnName="id")
-     */
-    protected $proprietaire;
+    #[ManyToOne(targetEntity: Proprietaire::class, inversedBy: 'objets')]
+    #[JoinColumn(name: 'proprietaire_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Proprietaire $proprietaire;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'objets')]
     #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
 
-    /**
-     * @ManyToOne(targetEntity="Photo", inversedBy="objets", cascade={"persist", "merge", "remove", "detach", "all"})
-     *
-     * @JoinColumn(name="photo_id", referencedColumnName="id", onDelete="CASCADE")
-     */
-    protected $photo;
+    #[ManyToOne(targetEntity: Photo::class, inversedBy: 'objets', cascade: ['persist', 'merge', 'remove', 'detach', 'all'])]
+    #[JoinColumn(name: 'photo_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected Photo $photo;
 
-    /**
-     * @ManyToOne(targetEntity="Rangement", inversedBy="objets")
-     *
-     * @JoinColumn(name="rangement_id", referencedColumnName="id", nullable=false)
-     */
-    protected $rangement;
+    #[ManyToOne(targetEntity: Rangement::class, inversedBy: 'objets', cascade: ['persist', 'merge', 'remove', 'detach', 'all'])]
+    #[JoinColumn(name: 'rangement_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Rangement $rangement;
 
-    /**
-     * @ManyToMany(targetEntity="Tag", inversedBy="objets")
-     *
-     * @JoinTable(name="objet_tag",
-     *     joinColumns={@JoinColumn(name="objet_id", referencedColumnName="id", nullable=false)},
-     *     inverseJoinColumns={@JoinColumn(name="tag_id", referencedColumnName="id", nullable=false)}
-     * )
-     */
-    protected $tags;
+    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'objets')]
+    #[ORM\JoinTable(name: 'objet_tag')]
+    #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'tag_id', referencedColumnName: 'id', nullable: false)]
+    protected ArrayCollection $tags;
 
     public function __construct()
     {
@@ -130,8 +95,6 @@ class BaseObjet
 
     /**
      * Set the value of id.
-     *
-     * @return \App\Entity\Objet
      */
     public function setId(?int $id): static
     {
@@ -142,8 +105,6 @@ class BaseObjet
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -152,12 +113,8 @@ class BaseObjet
 
     /**
      * Set the value of numero.
-     *
-     * @param string $numero
-     *
-     * @return \App\Entity\Objet
      */
-    public function setNumero($numero)
+    public function setNumero(string $numero): static
     {
         $this->numero = $numero;
 
@@ -166,22 +123,16 @@ class BaseObjet
 
     /**
      * Get the value of numero.
-     *
-     * @return string
      */
-    public function getNumero()
+    public function getNumero(): string
     {
-        return $this->numero;
+        return $this->numero ?? '';
     }
 
     /**
      * Set the value of nom.
-     *
-     * @param string $nom
-     *
-     * @return \App\Entity\Objet
      */
-    public function setNom($nom)
+    public function setNom(string $nom): static
     {
         $this->nom = $nom;
 
@@ -190,20 +141,14 @@ class BaseObjet
 
     /**
      * Get the value of nom.
-     *
-     * @return string
      */
-    public function getNom()
+    public function getNom(): string
     {
-        return $this->nom;
+        return $this->nom ?? '';
     }
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Objet
      */
     public function setDescription(string $description): static
     {
@@ -214,8 +159,6 @@ class BaseObjet
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
     public function getDescription(): string
     {
@@ -224,12 +167,8 @@ class BaseObjet
 
     /**
      * Set the value of nombre.
-     *
-     * @param int $nombre
-     *
-     * @return \App\Entity\Objet
      */
-    public function setNombre($nombre)
+    public function setNombre(int $nombre): static
     {
         $this->nombre = $nombre;
 
@@ -238,22 +177,16 @@ class BaseObjet
 
     /**
      * Get the value of nombre.
-     *
-     * @return int
      */
-    public function getNombre()
+    public function getNombre(): int
     {
         return $this->nombre;
     }
 
     /**
      * Set the value of cout.
-     *
-     * @param float $cout
-     *
-     * @return \App\Entity\Objet
      */
-    public function setCout($cout)
+    public function setCout(float $cout): static
     {
         $this->cout = $cout;
 
@@ -262,22 +195,16 @@ class BaseObjet
 
     /**
      * Get the value of cout.
-     *
-     * @return float
      */
-    public function getCout()
+    public function getCout(): float
     {
         return $this->cout;
     }
 
     /**
      * Set the value of budget.
-     *
-     * @param float $budget
-     *
-     * @return \App\Entity\Objet
      */
-    public function setBudget($budget)
+    public function setBudget(float $budget): static
     {
         $this->budget = $budget;
 
@@ -286,22 +213,16 @@ class BaseObjet
 
     /**
      * Get the value of budget.
-     *
-     * @return float
      */
-    public function getBudget()
+    public function getBudget(): float
     {
         return $this->budget;
     }
 
     /**
      * Set the value of investissement.
-     *
-     * @param bool $investissement
-     *
-     * @return \App\Entity\Objet
      */
-    public function setInvestissement($investissement)
+    public function setInvestissement(bool $investissement): static
     {
         $this->investissement = $investissement;
 
@@ -310,22 +231,16 @@ class BaseObjet
 
     /**
      * Get the value of investissement.
-     *
-     * @return bool
      */
-    public function getInvestissement()
+    public function getInvestissement(): bool
     {
         return $this->investissement;
     }
 
     /**
      * Set the value of creation_date.
-     *
-     * @param \DateTime $creation_date
-     *
-     * @return \App\Entity\Objet
      */
-    public function setCreationDate($creation_date)
+    public function setCreationDate(\DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -334,20 +249,16 @@ class BaseObjet
 
     /**
      * Get the value of creation_date.
-     *
-     * @return \DateTime
      */
-    public function getCreationDate()
+    public function getCreationDate(): \DateTime
     {
         return $this->creation_date;
     }
 
     /**
      * Add Item entity to collection (one to many).
-     *
-     * @return \App\Entity\Objet
      */
-    public function addItem(Item $item)
+    public function addItem(Item $item): ArrayCollection
     {
         $this->items[] = $item;
 
@@ -356,10 +267,8 @@ class BaseObjet
 
     /**
      * Remove Item entity from collection (one to many).
-     *
-     * @return \App\Entity\Objet
      */
-    public function removeItem(Item $item)
+    public function removeItem(Item $item): static
     {
         $this->items->removeElement($item);
 
@@ -368,22 +277,20 @@ class BaseObjet
 
     /**
      * Get Item entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getItems()
+    public function getItems(): ArrayCollection
     {
         return $this->items;
     }
 
     /**
      * Set ObjetCarac entity (one to one).
-     *
-     * @return \App\Entity\Objet
      */
-    public function setObjetCarac(ObjetCarac $objetCarac = null)
+    public function setObjetCarac(ObjetCarac $objetCarac = null): static
     {
-        $objetCarac->setObjet($this);
+        if (null !== $objetCarac) {
+            $objetCarac->setObjet($this);
+        }
         $this->objetCarac = $objetCarac;
 
         return $this;
@@ -391,20 +298,16 @@ class BaseObjet
 
     /**
      * Get ObjetCarac entity (one to one).
-     *
-     * @return \App\Entity\ObjetCarac
      */
-    public function getObjetCarac()
+    public function getObjetCarac(): ObjetCarac
     {
         return $this->objetCarac;
     }
 
     /**
      * Set Etat entity (many to one).
-     *
-     * @return \App\Entity\Objet
      */
-    public function setEtat(Etat $etat = null)
+    public function setEtat(Etat $etat = null): static
     {
         $this->etat = $etat;
 
@@ -413,20 +316,16 @@ class BaseObjet
 
     /**
      * Get Etat entity (many to one).
-     *
-     * @return \App\Entity\Etat
      */
-    public function getEtat()
+    public function getEtat(): Etat
     {
         return $this->etat;
     }
 
     /**
      * Set Proprietaire entity (many to one).
-     *
-     * @return \App\Entity\Objet
      */
-    public function setProprietaire(Proprietaire $proprietaire = null)
+    public function setProprietaire(Proprietaire $proprietaire = null): static
     {
         $this->proprietaire = $proprietaire;
 
@@ -435,42 +334,34 @@ class BaseObjet
 
     /**
      * Get Proprietaire entity (many to one).
-     *
-     * @return \App\Entity\Proprietaire
      */
-    public function getProprietaire()
+    public function getProprietaire(): Proprietaire
     {
         return $this->proprietaire;
     }
 
     /**
      * Set User entity (many to one).
-     *
-     * @return \App\Entity\Objet
      */
-    public function setUser(User $User = null)
+    public function setUser(User $user = null): static
     {
-        $this->user = $User;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
      * Get User entity (many to one).
-     *
-     * @return \App\Entity\User
      */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
 
     /**
      * Set Photo entity (many to one).
-     *
-     * @return \App\Entity\Objet
      */
-    public function setPhoto(Photo $photo = null)
+    public function setPhoto(Photo $photo = null): static
     {
         $this->photo = $photo;
 
@@ -479,20 +370,16 @@ class BaseObjet
 
     /**
      * Get Photo entity (many to one).
-     *
-     * @return \App\Entity\Photo
      */
-    public function getPhoto()
+    public function getPhoto(): Photo
     {
         return $this->photo;
     }
 
     /**
      * Set Rangement entity (many to one).
-     *
-     * @return \App\Entity\Objet
      */
-    public function setRangement(Rangement $rangement = null)
+    public function setRangement(Rangement $rangement = null): static
     {
         $this->rangement = $rangement;
 
@@ -501,20 +388,16 @@ class BaseObjet
 
     /**
      * Get Rangement entity (many to one).
-     *
-     * @return \App\Entity\Rangement
      */
-    public function getRangement()
+    public function getRangement(): Rangement
     {
         return $this->rangement;
     }
 
     /**
      * Add Tag entity to collection.
-     *
-     * @return \App\Entity\Objet
      */
-    public function addTag(Tag $tag)
+    public function addTag(Tag $tag): static
     {
         $tag->addObjet($this);
         $this->tags[] = $tag;
@@ -524,10 +407,8 @@ class BaseObjet
 
     /**
      * Remove Tag entity from collection.
-     *
-     * @return \App\Entity\Objet
      */
-    public function removeTag(Tag $tag)
+    public function removeTag(Tag $tag): static
     {
         $tag->removeObjet($this);
         $this->tags->removeElement($tag);
@@ -537,10 +418,8 @@ class BaseObjet
 
     /**
      * Get Tag entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getTags()
+    public function getTags(): ArrayCollection
     {
         return $this->tags;
     }

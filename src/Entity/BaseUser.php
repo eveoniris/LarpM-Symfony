@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\BaseUserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,7 +13,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[Entity]
+#[Entity(repositoryClass: BaseUserRepository::class)]
 #[ORM\Table(name: 'user')]
 #[ORM\Index(columns: ['etat_civil_id'], name: 'fk_user_etat_civil1_idx')]
 #[ORM\Index(columns: ['personnage_secondaire_id'], name: 'fk_user_personnage_secondaire1_idx')]
