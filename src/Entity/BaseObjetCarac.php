@@ -2,58 +2,37 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * App\Entity\ObjetCarac.
- *
- * @Table(name="objet_carac", indexes={@Index(name="fk_objet_carac_objet1_idx", columns={"objet_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseObjetCarac", "extended":"ObjetCarac"})
- */
-class BaseObjetCarac
+#[ORM\Entity]
+#[ORM\Table(name: 'objet_carac')]
+#[ORM\Index(columns: ['objet_id'], name: 'fk_objet_carac_objet1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseObjetCarac', 'extended' => 'ObjetCarac'])]
+abstract class BaseObjetCarac
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $taille;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $taille = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $poid;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $poid = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $couleur;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 6, nullable: true)]
+    protected ?string $couleur = null;
 
-    /**
-     * @OneToOne(targetEntity="Objet", inversedBy="objetCarac", cascade={"persist", "merge", "remove", "detach", "all"})
-     *
-     * @JoinColumn(name="objet_id", referencedColumnName="id", nullable=false)
-     */
-    protected $objet;
-
-    public function __construct()
-    {
-    }
+    #[ORM\OneToOne(inversedBy: 'objetCarac', targetEntity: Objet::class, cascade: ['persist', 'remove', 'merge', 'detach', 'all'])]
+    #[ORM\JoinColumn(name: 'etat_civil_id', referencedColumnName: 'id')]
+    protected Objet $objetobjet_id;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\ObjetCarac
      */
     public function setId(int $id): static
     {
@@ -64,8 +43,6 @@ class BaseObjetCarac
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -74,12 +51,8 @@ class BaseObjetCarac
 
     /**
      * Set the value of taille.
-     *
-     * @param string $taille
-     *
-     * @return \App\Entity\ObjetCarac
      */
-    public function setTaille($taille)
+    public function setTaille(string $taille): static
     {
         $this->taille = $taille;
 
@@ -88,22 +61,16 @@ class BaseObjetCarac
 
     /**
      * Get the value of taille.
-     *
-     * @return string
      */
-    public function getTaille()
+    public function getTaille(): string
     {
-        return $this->taille;
+        return $this->taille ?? '';
     }
 
     /**
      * Set the value of poid.
-     *
-     * @param string $poid
-     *
-     * @return \App\Entity\ObjetCarac
      */
-    public function setPoid($poid)
+    public function setPoid(string $poid): static
     {
         $this->poid = $poid;
 
@@ -112,22 +79,16 @@ class BaseObjetCarac
 
     /**
      * Get the value of poid.
-     *
-     * @return string
      */
-    public function getPoid()
+    public function getPoid(): string
     {
-        return $this->poid;
+        return $this->poid ?? '';
     }
 
     /**
      * Set the value of couleur.
-     *
-     * @param string $couleur
-     *
-     * @return \App\Entity\ObjetCarac
      */
-    public function setCouleur($couleur)
+    public function setCouleur(string $couleur): static
     {
         $this->couleur = $couleur;
 
@@ -136,18 +97,14 @@ class BaseObjetCarac
 
     /**
      * Get the value of couleur.
-     *
-     * @return string
      */
-    public function getCouleur()
+    public function getCouleur(): string
     {
-        return $this->couleur;
+        return $this->couleur ?? '';
     }
 
     /**
      * Set Objet entity (one to one).
-     *
-     * @return \App\Entity\ObjetCarac
      */
     public function setObjet(Objet $objet)
     {
@@ -158,10 +115,8 @@ class BaseObjetCarac
 
     /**
      * Get Objet entity (one to one).
-     *
-     * @return \App\Entity\Objet
      */
-    public function getObjet()
+    public function getObjet(): object
     {
         return $this->objet;
     }
