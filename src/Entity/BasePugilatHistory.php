@@ -55,7 +55,7 @@ class BasePugilatHistory
      *
      * @return \App\Entity\PugilatHistory
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 

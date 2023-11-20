@@ -79,7 +79,7 @@ class BaseAppelation
         return $this->label ?? '';
     }
 
-    public function setDescription(string $description): string
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 

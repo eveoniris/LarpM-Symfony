@@ -51,7 +51,7 @@ class BaseRarete
      *
      * @return \App\Entity\Rarete
      */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 

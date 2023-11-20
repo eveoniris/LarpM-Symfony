@@ -52,7 +52,7 @@ class BasePersonnageHasQuestion
      *
      * @return \App\Entity\PersonnageHasQuestion
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 

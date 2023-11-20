@@ -65,7 +65,7 @@ class BasePersonnageLignee
      *
      * @return \App\Entity\PersonnageLignee
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 

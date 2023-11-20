@@ -3,42 +3,34 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Monnaie.
- *
- * @Table(name="monnaie")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseMonnaie", "extended":"Monnaie"})
- */
-class BaseMonnaie
+#[ORM\Entity]
+#[ORM\Table(name: 'monnaie')]
+#[ORM\Index(columns: ['createur_id'], name: 'fk_billet_user1')]
+#[ORM\Index(columns: ['gn_id'], name: 'fk_billet_gn1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseMonnaie', 'extended' => 'Monnaie'])]
+abstract class BaseMonnaie
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label;
 
-    /**
-     * @Column(type="text")
-     */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
+    protected string $description;
 
-    /**
-     * @OneToMany(targetEntity="QualityValeur", mappedBy="monnaie")
-     *
-     * @JoinColumn(name="id", referencedColumnName="monnaie_id", nullable=false)
-     */
-    protected $qualityValeurs;
+    #[OneToMany(mappedBy: 'monnaie', targetEntity: QualityValeur::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'monnaie_id', nullable: 'false')]
+    protected ArrayCollection $qualityValeurs;
 
     public function __construct()
     {
@@ -47,12 +39,8 @@ class BaseMonnaie
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Monnaie
      */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -61,8 +49,6 @@ class BaseMonnaie
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -71,10 +57,6 @@ class BaseMonnaie
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Monnaie
      */
     public function setLabel(string $label): static
     {
@@ -85,8 +67,6 @@ class BaseMonnaie
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -95,12 +75,8 @@ class BaseMonnaie
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Monnaie
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -109,20 +85,16 @@ class BaseMonnaie
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     /**
      * Add QualityValeur entity to collection (one to many).
-     *
-     * @return \App\Entity\Monnaie
      */
-    public function addQualityValeur(QualityValeur $qualityValeur)
+    public function addQualityValeur(QualityValeur $qualityValeur): static
     {
         $this->qualityValeurs[] = $qualityValeur;
 
@@ -131,10 +103,8 @@ class BaseMonnaie
 
     /**
      * Remove QualityValeur entity from collection (one to many).
-     *
-     * @return \App\Entity\Monnaie
      */
-    public function removeQualityValeur(QualityValeur $qualityValeur)
+    public function removeQualityValeur(QualityValeur $qualityValeur): static
     {
         $this->qualityValeurs->removeElement($qualityValeur);
 
@@ -143,10 +113,8 @@ class BaseMonnaie
 
     /**
      * Get QualityValeur entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getQualityValeurs()
+    public function getQualityValeurs(): ArrayCollection
     {
         return $this->qualityValeurs;
     }

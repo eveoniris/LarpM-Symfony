@@ -54,7 +54,7 @@ class BasePersonnageSecondairesCompetences
      *
      * @return \App\Entity\PersonnageSecondairesCompetences
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 

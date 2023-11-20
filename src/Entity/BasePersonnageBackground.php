@@ -73,7 +73,7 @@ class BasePersonnageBackground
      *
      * @return \App\Entity\PersonnageBackground
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -97,7 +97,7 @@ class BasePersonnageBackground
      *
      * @return \App\Entity\PersonnageBackground
      */
-    public function setText($text)
+    public function setText(string $text): static
     {
         $this->text = $text;
 
@@ -109,9 +109,9 @@ class BasePersonnageBackground
      *
      * @return string
      */
-    public function getText()
+    public function getText(): string
     {
-        return $this->text;
+        return $this->text ?? '';
     }
 
     /**

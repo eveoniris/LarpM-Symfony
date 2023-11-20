@@ -52,7 +52,7 @@ class BaseParticipantHasRestauration
      *
      * @return \App\Entity\ParticipantHasRestauration
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 

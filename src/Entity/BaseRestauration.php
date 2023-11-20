@@ -52,7 +52,7 @@ class BaseRestauration
      *
      * @return \App\Entity\Restauration
      */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -100,7 +100,7 @@ class BaseRestauration
      *
      * @return \App\Entity\Restauration
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -112,9 +112,9 @@ class BaseRestauration
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     /**

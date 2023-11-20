@@ -67,7 +67,7 @@ class BaseQuality
      *
      * @return \App\Entity\Quality
      */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 

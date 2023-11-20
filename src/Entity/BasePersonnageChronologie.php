@@ -54,7 +54,7 @@ class BasePersonnageChronologie
      *
      * @return \App\Entity\PersonnageChronologie
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 

@@ -60,7 +60,7 @@ class BaseTerritoireGuerre
      *
      * @return \App\Entity\TerritoireGuerre
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 

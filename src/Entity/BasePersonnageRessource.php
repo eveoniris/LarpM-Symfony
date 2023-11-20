@@ -52,7 +52,7 @@ class BasePersonnageRessource
      *
      * @return \App\Entity\PersonnageRessource
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 

@@ -52,7 +52,7 @@ class BasePersonnageIngredient
      *
      * @return \App\Entity\PersonnageIngredient
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 

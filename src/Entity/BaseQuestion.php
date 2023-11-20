@@ -68,7 +68,7 @@ class BaseQuestion
      *
      * @return \App\Entity\Question
      */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -92,7 +92,7 @@ class BaseQuestion
      *
      * @return \App\Entity\Question
      */
-    public function setText($text)
+    public function setText(string $text): static
     {
         $this->text = $text;
 
@@ -104,9 +104,9 @@ class BaseQuestion
      *
      * @return string
      */
-    public function getText()
+    public function getText(): string
     {
-        return $this->text;
+        return $this->text ?? '';
     }
 
     /**

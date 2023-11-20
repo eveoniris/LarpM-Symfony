@@ -113,7 +113,7 @@ class BaseSecondaryGroup
      *
      * @return \App\Entity\SecondaryGroup
      */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -161,7 +161,7 @@ class BaseSecondaryGroup
      *
      * @return \App\Entity\SecondaryGroup
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -173,9 +173,9 @@ class BaseSecondaryGroup
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     /**
