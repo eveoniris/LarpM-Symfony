@@ -2,57 +2,40 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\Membre.
- *
- * @Table(name="membre", indexes={@Index(name="fk_personnage_groupe_secondaire_personnage1_idx", columns={"personnage_id"}), @Index(name="fk_personnage_groupe_secondaire_secondary_group1_idx", columns={"secondary_group_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseMembre", "extended":"Membre"})
- */
-class BaseMembre
+#[ORM\Entity]
+#[ORM\Table(name: 'membre')]
+#[ORM\Index(columns: ['personnage_id'], name: 'fk_personnage_groupe_secondaire_personnage1_idx')]
+#[ORM\Index(columns: ['secondary_group_id'], name: 'fk_personnage_groupe_secondaire_secondary_group1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseMembre', 'extended' => 'Membre'])]
+abstract class BaseMembre
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="boolean", nullable=true)
-     */
-    protected $secret;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    protected bool $secret = false;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="membres")
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnage;
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'membres')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $personnage;
 
-    /**
-     * @ManyToOne(targetEntity="SecondaryGroup", inversedBy="membres")
-     *
-     * @JoinColumn(name="secondary_group_id", referencedColumnName="id", nullable=false)
-     */
-    protected $secondaryGroup;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: SecondaryGroup::class, inversedBy: 'membres')]
+    #[JoinColumn(name: 'secondary_group_id', referencedColumnName: 'id', nullable: 'false')]
+    protected SecondaryGroup $secondaryGroup;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Membre
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -61,8 +44,6 @@ class BaseMembre
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -71,12 +52,8 @@ class BaseMembre
 
     /**
      * Set the value of secret.
-     *
-     * @param bool $secret
-     *
-     * @return \App\Entity\Membre
      */
-    public function setSecret($secret)
+    public function setSecret(bool $secret): static
     {
         $this->secret = $secret;
 
@@ -85,20 +62,16 @@ class BaseMembre
 
     /**
      * Get the value of secret.
-     *
-     * @return bool
      */
-    public function getSecret()
+    public function getSecret(): bool
     {
         return $this->secret;
     }
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\Membre
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -107,20 +80,16 @@ class BaseMembre
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getPersonnage()
+    public function getPersonnage(): Personnage
     {
         return $this->personnage;
     }
 
     /**
      * Set SecondaryGroup entity (many to one).
-     *
-     * @return \App\Entity\Membre
      */
-    public function setSecondaryGroup(SecondaryGroup $secondaryGroup = null)
+    public function setSecondaryGroup(SecondaryGroup $secondaryGroup = null): static
     {
         $this->secondaryGroup = $secondaryGroup;
 
@@ -129,10 +98,8 @@ class BaseMembre
 
     /**
      * Get SecondaryGroup entity (many to one).
-     *
-     * @return \App\Entity\SecondaryGroup
      */
-    public function getSecondaryGroup()
+    public function getSecondaryGroup(): SecondaryGroup
     {
         return $this->secondaryGroup;
     }

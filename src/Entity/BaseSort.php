@@ -72,7 +72,7 @@ class BaseSort
      *
      * @return \App\Entity\Sort
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -120,7 +120,7 @@ class BaseSort
      *
      * @return \App\Entity\Sort
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -132,9 +132,9 @@ class BaseSort
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     /**

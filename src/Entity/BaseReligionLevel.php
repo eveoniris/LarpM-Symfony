@@ -56,7 +56,7 @@ class BaseReligionLevel
      *
      * @return \App\Entity\ReligionLevel
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -128,7 +128,7 @@ class BaseReligionLevel
      *
      * @return \App\Entity\ReligionLevel
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -140,9 +140,9 @@ class BaseReligionLevel
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     /**

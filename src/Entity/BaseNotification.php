@@ -2,59 +2,42 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\Notification.
- *
- * @Table(name="notification", indexes={@Index(name="fk_notification_User1_idx", columns={"User_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseNotification", "extended":"Notification"})
- */
-class BaseNotification
+#[ORM\Entity]
+#[ORM\Table(name: 'notification')]
+#[ORM\Index(columns: ['user_id'], name: 'fk_notification_User1_idx')]
+#[ORM\Index(columns: ['gn_id'], name: 'fk_billet_gn1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseNotification', 'extended' => 'Notification'])]
+abstract class BaseNotification
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(name="`text`", type="text")
-     */
-    protected $text;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
+    protected string $text;
 
-    /**
-     * @Column(name="`date`", type="datetime", nullable=true)
-     */
-    protected $date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    protected ?\DateTime $date = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $url;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $url = '';
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'notifications')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
 
-    public function __construct()
-    {
-    }
-
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Notification
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -63,8 +46,6 @@ class BaseNotification
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -73,12 +54,8 @@ class BaseNotification
 
     /**
      * Set the value of text.
-     *
-     * @param string $text
-     *
-     * @return \App\Entity\Notification
      */
-    public function setText($text)
+    public function setText(string $text): static
     {
         $this->text = $text;
 
@@ -87,22 +64,16 @@ class BaseNotification
 
     /**
      * Get the value of text.
-     *
-     * @return string
      */
-    public function getText()
+    public function getText(): string
     {
-        return $this->text;
+        return $this->text ?? '';
     }
 
     /**
      * Set the value of date.
-     *
-     * @param \DateTime $date
-     *
-     * @return \App\Entity\Notification
      */
-    public function setDate($date)
+    public function setDate(\DateTime $date): static
     {
         $this->date = $date;
 
@@ -111,22 +82,16 @@ class BaseNotification
 
     /**
      * Get the value of date.
-     *
-     * @return \DateTime
      */
-    public function getDate()
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
 
     /**
      * Set the value of url.
-     *
-     * @param string $url
-     *
-     * @return \App\Entity\Notification
      */
-    public function setUrl($url)
+    public function setUrl(string $url): static
     {
         $this->url = $url;
 
@@ -135,32 +100,26 @@ class BaseNotification
 
     /**
      * Get the value of url.
-     *
-     * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
-        return $this->url;
+        return $this->url ?? '';
     }
 
     /**
      * Set User entity (many to one).
-     *
-     * @return \App\Entity\Notification
      */
-    public function setUser(User $User = null)
+    public function setUser(User $user = null): static
     {
-        $this->user = $User;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
      * Get User entity (many to one).
-     *
-     * @return \App\Entity\User
      */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }

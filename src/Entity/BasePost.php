@@ -89,7 +89,7 @@ use Doctrine\ORM\Mapping\OneToMany;
      *
      * @return \App\Entity\Post
      */
-    public function setId($id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -137,7 +137,7 @@ use Doctrine\ORM\Mapping\OneToMany;
      *
      * @return \App\Entity\Post
      */
-    public function setText($text)
+    public function setText(string $text): static
     {
         $this->text = $text;
 
@@ -149,9 +149,9 @@ use Doctrine\ORM\Mapping\OneToMany;
      *
      * @return string
      */
-    public function getText()
+    public function getText(): string
     {
-        return $this->text;
+        return $this->text ?? '';
     }
 
     /**

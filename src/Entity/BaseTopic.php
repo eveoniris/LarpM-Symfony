@@ -138,7 +138,7 @@ class BaseTopic
      *
      * @return \App\Entity\Topic
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -186,7 +186,7 @@ class BaseTopic
      *
      * @return \App\Entity\Topic
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -198,9 +198,9 @@ class BaseTopic
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     /**

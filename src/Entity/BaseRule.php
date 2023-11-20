@@ -51,7 +51,7 @@ class BaseRule
      * @param integer $id
      * @return \App\Entity\Rule
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -120,7 +120,7 @@ class BaseRule
      * @param string $description
      * @return \App\Entity\Rule
      */
-    public function setDescription($description)
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -132,9 +132,9 @@ class BaseRule
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     public function __sleep()

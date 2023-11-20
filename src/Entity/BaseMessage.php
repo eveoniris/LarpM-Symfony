@@ -21,15 +21,11 @@ class BaseMessage
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $title;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $title = null;
 
-    /**
-     * @Column(name="`text`", type="text", nullable=true)
-     */
-    protected $text;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $text = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date;
@@ -37,10 +33,8 @@ class BaseMessage
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $update_date = null;
 
-    /**
-     * @Column(type="boolean", nullable=true)
-     */
-    protected $lu;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    protected bool $lu = false;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'messageRelatedByAuteurs')]
     #[ORM\JoinColumn(name: 'auteur', referencedColumnName: 'id', nullable: false)]
@@ -57,12 +51,8 @@ class BaseMessage
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Message
      */
-    public function setId($id)
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -71,8 +61,6 @@ class BaseMessage
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -81,12 +69,8 @@ class BaseMessage
 
     /**
      * Set the value of title.
-     *
-     * @param string $title
-     *
-     * @return \App\Entity\Message
      */
-    public function setTitle($title)
+    public function setTitle(string $title): static
     {
         $this->title = $title;
 
@@ -95,22 +79,16 @@ class BaseMessage
 
     /**
      * Get the value of title.
-     *
-     * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
-        return $this->title;
+        return $this->title ?? '';
     }
 
     /**
      * Set the value of text.
-     *
-     * @param string $text
-     *
-     * @return \App\Entity\Message
      */
-    public function setText($text)
+    public function setText(string $text): static
     {
         $this->text = $text;
 
@@ -119,22 +97,18 @@ class BaseMessage
 
     /**
      * Get the value of text.
-     *
-     * @return string
      */
-    public function getText()
+    public function getText(): string
     {
-        return $this->text;
+        return $this->text ?? '';
     }
 
     /**
      * Set the value of creation_date.
      *
      * @param \DateTime $creation_date
-     *
-     * @return \App\Entity\Message
      */
-    public function setCreationDate($creation_date)
+    public function setCreationDate(string $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -143,22 +117,16 @@ class BaseMessage
 
     /**
      * Get the value of creation_date.
-     *
-     * @return \DateTime
      */
-    public function getCreationDate()
+    public function getCreationDate(): \DateTime
     {
         return $this->creation_date;
     }
 
     /**
      * Set the value of update_date.
-     *
-     * @param \DateTime $update_date
-     *
-     * @return \App\Entity\Message
      */
-    public function setUpdateDate($update_date): static
+    public function setUpdateDate(\DateTime $update_date): static
     {
         $this->update_date = $update_date;
 
@@ -167,22 +135,16 @@ class BaseMessage
 
     /**
      * Get the value of update_date.
-     *
-     * @return \DateTime
      */
-    public function getUpdateDate()
+    public function getUpdateDate(): \DateTime
     {
         return $this->update_date;
     }
 
     /**
      * Set the value of lu.
-     *
-     * @param bool $lu
-     *
-     * @return \App\Entity\Message
      */
-    public function setLu($lu)
+    public function setLu(bool $lu): static
     {
         $this->lu = $lu;
 
@@ -191,10 +153,8 @@ class BaseMessage
 
     /**
      * Get the value of lu.
-     *
-     * @return bool
      */
-    public function getLu()
+    public function getLu(): bool
     {
         return $this->lu;
     }
