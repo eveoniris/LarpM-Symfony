@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
@@ -11,7 +12,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 /**
  * App\Entity\PersonnageBackground.
  *
- * @Table(name="personnage_background", indexes={@Index(name="fk_personnage_background_personnage1_idx", columns={"personnage_id"}), @Index(name="fk_personnage_background_User1_idx", columns={"User_id"}), @Index(name="fk_personnage_background_gn1_idx", columns={"gn_id"})})
+ * @Table(name="", indexes={@Index(name="", columns={""}), @Index(name="", columns={"User_id"}), @Index(name="fk_personnage_background_gn1_idx", columns={"gn_id"})})
  *
  * @InheritanceType("SINGLE_TABLE")
  *
@@ -19,59 +20,44 @@ use Doctrine\ORM\Mapping\ManyToOne;
  *
  * @DiscriminatorMap({"base":"BasePersonnageBackground", "extended":"PersonnageBackground"})
  */
-class BasePersonnageBackground
+#[ORM\Entity]
+#[ORM\Table(name: 'personnage_background')]
+#[ORM\Index(columns: ['personnage_id'], name: 'fk_personnage_background_personnage1_idx')]
+#[ORM\Index(columns: ['user_id'], name: 'fk_personnage_background_User1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePersonnageBackground', 'extended' => 'PersonnageBackground'])]
+abstract class BasePersonnageBackground
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(name="`text`", type="text", nullable=true)
-     */
-    protected $text;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $text = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $visibility;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $visibility = null;
 
-    /**
-     * @Column(type="datetime")
-     */
-    protected $creation_date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    protected \DateTime $creation_date;
 
-    /**
-     * @Column(type="datetime")
-     */
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
     protected $update_date;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="personnageBackgrounds")
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnage;
+    #[ManyToOne(targetEntity: PersonnageSecondaire::class, inversedBy: 'personnageBackgrounds')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $personnage;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'personnageBackgrounds')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
 
-    /**
-     * @ManyToOne(targetEntity="Gn", inversedBy="personnageBackgrounds")
-     *
-     * @JoinColumn(name="gn_id", referencedColumnName="id", nullable=false)
-     */
+    #[ManyToOne(targetEntity: Gn::class, inversedBy: 'personnageBackgrounds')]
+    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
     protected $gn;
-
-    public function __construct()
-    {
-    }
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\PersonnageBackground
      */
     public function setId(int $id): static
     {
@@ -82,8 +68,6 @@ class BasePersonnageBackground
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -92,10 +76,6 @@ class BasePersonnageBackground
 
     /**
      * Set the value of text.
-     *
-     * @param string $text
-     *
-     * @return \App\Entity\PersonnageBackground
      */
     public function setText(string $text): static
     {
@@ -106,8 +86,6 @@ class BasePersonnageBackground
 
     /**
      * Get the value of text.
-     *
-     * @return string
      */
     public function getText(): string
     {
@@ -116,12 +94,8 @@ class BasePersonnageBackground
 
     /**
      * Set the value of visibility.
-     *
-     * @param string $visibility
-     *
-     * @return \App\Entity\PersonnageBackground
      */
-    public function setVisibility($visibility)
+    public function setVisibility(string $visibility): static
     {
         $this->visibility = $visibility;
 
@@ -130,22 +104,16 @@ class BasePersonnageBackground
 
     /**
      * Get the value of visibility.
-     *
-     * @return string
      */
-    public function getVisibility()
+    public function getVisibility(): string
     {
-        return $this->visibility;
+        return $this->visibility ?? '';
     }
 
     /**
      * Set the value of creation_date.
-     *
-     * @param \DateTime $creation_date
-     *
-     * @return \App\Entity\PersonnageBackground
      */
-    public function setCreationDate($creation_date)
+    public function setCreationDate(\DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -154,22 +122,16 @@ class BasePersonnageBackground
 
     /**
      * Get the value of creation_date.
-     *
-     * @return \DateTime
      */
-    public function getCreationDate()
+    public function getCreationDate(): \DateTime
     {
         return $this->creation_date;
     }
 
     /**
      * Set the value of update_date.
-     *
-     * @param \DateTime $update_date
-     *
-     * @return \App\Entity\PersonnageBackground
      */
-    public function setUpdateDate($update_date)
+    public function setUpdateDate(\DateTime $update_date): static
     {
         $this->update_date = $update_date;
 
@@ -178,20 +140,16 @@ class BasePersonnageBackground
 
     /**
      * Get the value of update_date.
-     *
-     * @return \DateTime
      */
-    public function getUpdateDate()
+    public function getUpdateDate(): \DateTime
     {
         return $this->update_date;
     }
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\PersonnageBackground
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -200,20 +158,16 @@ class BasePersonnageBackground
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getPersonnage()
+    public function getPersonnage(): Personnage
     {
         return $this->personnage;
     }
 
     /**
      * Set User entity (many to one).
-     *
-     * @return \App\Entity\PersonnageBackground
      */
-    public function setUser(User $User = null)
+    public function setUser(User $User = null): static
     {
         $this->user = $User;
 
@@ -222,20 +176,16 @@ class BasePersonnageBackground
 
     /**
      * Get User entity (many to one).
-     *
-     * @return \App\Entity\User
      */
-    public function getUser()
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
     /**
      * Set Gn entity (many to one).
-     *
-     * @return \App\Entity\PersonnageBackground
      */
-    public function setGn(Gn $gn = null)
+    public function setGn(Gn $gn = null): static
     {
         $this->gn = $gn;
 
@@ -244,10 +194,8 @@ class BasePersonnageBackground
 
     /**
      * Get Gn entity (many to one).
-     *
-     * @return \App\Entity\Gn
      */
-    public function getGn()
+    public function getGn(): ?Gn
     {
         return $this->gn;
     }

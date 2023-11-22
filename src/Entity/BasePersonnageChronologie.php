@@ -6,53 +6,35 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\PersonnageChronologie.
- *
- * @Table(name="personnages_chronologie")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BasePersonnageChronologie", "extended":"PersonnageChronologie"})
- */
-class BasePersonnageChronologie
+#[ORM\Entity]
+#[ORM\Table(name: 'personnages_chronologie')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePersonnageChronologie', 'extended' => 'PersonnageChronologie'])]
+abstract class BasePersonnageChronologie
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="PersonnageChronologie")
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnage;
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'PersonnageChronologie')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $personnage;
 
-    /**
-     * @Column(type="string", nullable=true)
-     */
-    protected $evenement;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING)]
+    protected ?string $evenement = null;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $annee;
-
-    public function __construct()
-    {
-    }
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected ?int $annee = null;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\PersonnageChronologie
      */
     public function setId(int $id): static
     {
@@ -63,8 +45,6 @@ class BasePersonnageChronologie
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -73,12 +53,8 @@ class BasePersonnageChronologie
 
     /**
      * Set the value of evenement.
-     *
-     * @param string $evenement
-     *
-     * @return \App\Entity\PersonnageChronologie
      */
-    public function setEvenement($evenement)
+    public function setEvenement(string $evenement): static
     {
         $this->evenement = $evenement;
 
@@ -87,20 +63,16 @@ class BasePersonnageChronologie
 
     /**
      * Get the value of evenement.
-     *
-     * @return string
      */
-    public function getEvenement()
+    public function getEvenement(): string
     {
         return $this->evenement;
     }
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\PersonnageChronologie
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -109,22 +81,16 @@ class BasePersonnageChronologie
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getPersonnage()
+    public function getPersonnage(): Personnage
     {
         return $this->personnage;
     }
 
     /**
      * Set the value of annee.
-     *
-     * @param int $annee
-     *
-     * @return \App\Entity\PersonnageChronologie
      */
-    public function setAnnee($annee)
+    public function setAnnee(int $annee): static
     {
         $this->annee = $annee;
 
@@ -133,10 +99,8 @@ class BasePersonnageChronologie
 
     /**
      * Get the value of annee.
-     *
-     * @return int
      */
-    public function getAnnee()
+    public function getAnnee(): int
     {
         return $this->annee;
     }

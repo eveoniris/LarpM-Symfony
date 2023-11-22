@@ -2,50 +2,35 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\PersonnageSecondairesSkills.
- *
- * @Table(name="personnage_secondaires_skills", indexes={@Index(name="fk_personnage_secondaire_skills_personnage_secondaire_idx", columns={"personnage_secondaire_id"}), @Index(name="fk_personnage_secondaire_skills_competence1_idx", columns={"competence_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BasePersonnageSecondairesSkills", "extended":"PersonnageSecondairesSkills"})
- */
-class BasePersonnageSecondairesSkills
+#[ORM\Entity]
+#[ORM\Table(name: 'personnage_secondaires_skills')]
+#[ORM\Index(columns: ['personnage_secondaire_id'], name: 'fk_personnage_secondaire_skills_personnage_secondaire_idx')]
+#[ORM\Index(columns: ['competence_id'], name: 'fk_personnage_secondaire_skills_competence1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePersonnageSecondairesSkills', 'extended' => 'PersonnageSecondairesSkills'])]
+abstract class BasePersonnageSecondairesSkills
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @ManyToOne(targetEntity="PersonnageSecondaire", inversedBy="personnageSecondairesSkills")
-     *
-     * @JoinColumn(name="personnage_secondaire_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnageSecondaire;
+    #[ManyToOne(targetEntity: PersonnageSecondaire::class, inversedBy: 'personnageSecondairesSkills')]
+    #[JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id', nullable: 'false')]
+    protected PersonnageSecondaire $personnageSecondaire;
 
-    /**
-     * @ManyToOne(targetEntity="Competence", inversedBy="personnageSecondairesSkills")
-     *
-     * @JoinColumn(name="competence_id", referencedColumnName="id", nullable=false)
-     */
-    protected $competence;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Competence::class, inversedBy: 'personnageSecondairesSkills')]
+    #[JoinColumn(name: 'competence_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Competence $competence;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\PersonnageSecondairesSkills
      */
     public function setId(int $id): static
     {
@@ -56,8 +41,6 @@ class BasePersonnageSecondairesSkills
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -66,10 +49,8 @@ class BasePersonnageSecondairesSkills
 
     /**
      * Set PersonnageSecondaire entity (many to one).
-     *
-     * @return \App\Entity\PersonnageSecondairesSkills
      */
-    public function setPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire = null)
+    public function setPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire = null): static
     {
         $this->personnageSecondaire = $personnageSecondaire;
 
@@ -78,20 +59,16 @@ class BasePersonnageSecondairesSkills
 
     /**
      * Get PersonnageSecondaire entity (many to one).
-     *
-     * @return \App\Entity\PersonnageSecondaire
      */
-    public function getPersonnageSecondaire()
+    public function getPersonnageSecondaire(): ?PersonnageSecondaire
     {
         return $this->personnageSecondaire;
     }
 
     /**
      * Set Competence entity (many to one).
-     *
-     * @return \App\Entity\PersonnageSecondairesSkills
      */
-    public function setCompetence(Competence $competence = null)
+    public function setCompetence(Competence $competence = null): static
     {
         $this->competence = $competence;
 
@@ -100,10 +77,8 @@ class BasePersonnageSecondairesSkills
 
     /**
      * Get Competence entity (many to one).
-     *
-     * @return \App\Entity\Competence
      */
-    public function getCompetence()
+    public function getCompetence(): ?Competence
     {
         return $this->competence;
     }

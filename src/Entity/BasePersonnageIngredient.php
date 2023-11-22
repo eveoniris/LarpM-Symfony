@@ -2,55 +2,37 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\PersonnageIngredient.
- *
- * @Table(name="personnage_ingredient", indexes={@Index(name="fk_personnage_ingredient_ingredient1_idx", columns={"ingredient_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BasePersonnageIngredient", "extended":"PersonnageIngredient"})
- */
-class BasePersonnageIngredient
+#[ORM\Entity]
+#[ORM\Table(name: 'personnage_ingredient')]
+#[ORM\Index(columns: ['ingredient_id'], name: 'fk_personnage_ingredient_ingredient1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePersonnageIngredient', 'extended' => 'PersonnageIngredient'])]
+abstract class BasePersonnageIngredient
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $nombre;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $nombre = null;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="personnageIngredients", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnage;
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageIngredients')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $personnage;
 
-    /**
-     * @ManyToOne(targetEntity="Ingredient", inversedBy="personnageIngredients")
-     *
-     * @JoinColumn(name="ingredient_id", referencedColumnName="id", nullable=false)
-     */
-    protected $ingredient;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Ingredient::class, inversedBy: 'personnageIngredients')]
+    #[JoinColumn(name: 'ingredient_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Ingredient $ingredient;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\PersonnageIngredient
      */
     public function setId(int $id): static
     {
@@ -61,8 +43,6 @@ class BasePersonnageIngredient
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -71,12 +51,8 @@ class BasePersonnageIngredient
 
     /**
      * Set the value of nombre.
-     *
-     * @param int $nombre
-     *
-     * @return \App\Entity\PersonnageIngredient
      */
-    public function setNombre($nombre)
+    public function setNombre(int $nombre): static
     {
         $this->nombre = $nombre;
 
@@ -85,20 +61,16 @@ class BasePersonnageIngredient
 
     /**
      * Get the value of nombre.
-     *
-     * @return int
      */
-    public function getNombre()
+    public function getNombre(): int
     {
         return $this->nombre;
     }
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\PersonnageIngredient
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -107,20 +79,16 @@ class BasePersonnageIngredient
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getPersonnage()
+    public function getPersonnage(): ?Personnage
     {
         return $this->personnage;
     }
 
     /**
      * Set Ingredient entity (many to one).
-     *
-     * @return \App\Entity\PersonnageIngredient
      */
-    public function setIngredient(Ingredient $ingredient = null)
+    public function setIngredient(Ingredient $ingredient = null): static
     {
         $this->ingredient = $ingredient;
 
@@ -129,10 +97,8 @@ class BasePersonnageIngredient
 
     /**
      * Get Ingredient entity (many to one).
-     *
-     * @return \App\Entity\Ingredient
      */
-    public function getIngredient()
+    public function getIngredient(): ?Ingredient
     {
         return $this->ingredient;
     }

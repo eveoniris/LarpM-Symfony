@@ -2,53 +2,41 @@
 
 namespace App\Entity;
 
+use App\Repository\BaseUserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Proprietaire.
- *
- * @Table(name="proprietaire")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseProprietaire", "extended":"Proprietaire"})
- */
-class BaseProprietaire
+#[Entity(repositoryClass: BaseUserRepository::class)]
+#[ORM\Table(name: 'proprietaire')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseProprietaire', 'extended' => 'Proprietaire'])]
+abstract class BaseProprietaire
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=100, nullable=true)
-     */
-    protected $nom;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
+    protected ?string $nom = null;
 
-    /**
-     * @Column(type="string", length=450, nullable=true)
-     */
-    protected $adresse;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 450, nullable: true)]
+    protected ?string $adresse = null;
 
-    /**
-     * @Column(type="string", length=100, nullable=true)
-     */
-    protected $mail;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
+    protected ?string $mail = null;
 
-    /**
-     * @Column(type="string", length=100, nullable=true)
-     */
-    protected $tel;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
+    protected ?string $tel = null;
 
-    /**
-     * @OneToMany(targetEntity="Objet", mappedBy="proprietaire")
-     *
-     * @JoinColumn(name="id", referencedColumnName="proprietaire_id", nullable=false)
-     */
-    protected $objets;
+    #[OneToMany(mappedBy: 'proprietaire', targetEntity: Objet::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'proprietaire_id', nullable: 'false')]
+    protected ArrayCollection $objets;
 
     public function __construct()
     {
@@ -57,10 +45,6 @@ class BaseProprietaire
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Proprietaire
      */
     public function setId(int $id): static
     {
@@ -71,8 +55,6 @@ class BaseProprietaire
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -81,12 +63,8 @@ class BaseProprietaire
 
     /**
      * Set the value of nom.
-     *
-     * @param string $nom
-     *
-     * @return \App\Entity\Proprietaire
      */
-    public function setNom($nom)
+    public function setNom(string $nom): static
     {
         $this->nom = $nom;
 
@@ -95,22 +73,16 @@ class BaseProprietaire
 
     /**
      * Get the value of nom.
-     *
-     * @return string
      */
-    public function getNom()
+    public function getNom(): string
     {
-        return $this->nom;
+        return $this->nom ?? '';
     }
 
     /**
      * Set the value of adresse.
-     *
-     * @param string $adresse
-     *
-     * @return \App\Entity\Proprietaire
      */
-    public function setAdresse($adresse)
+    public function setAdresse(string $adresse): static
     {
         $this->adresse = $adresse;
 
@@ -119,22 +91,16 @@ class BaseProprietaire
 
     /**
      * Get the value of adresse.
-     *
-     * @return string
      */
-    public function getAdresse()
+    public function getAdresse(): string
     {
-        return $this->adresse;
+        return $this->adresse ?? '';
     }
 
     /**
      * Set the value of mail.
-     *
-     * @param string $mail
-     *
-     * @return \App\Entity\Proprietaire
      */
-    public function setMail($mail)
+    public function setMail(string $mail): static
     {
         $this->mail = $mail;
 
@@ -143,22 +109,16 @@ class BaseProprietaire
 
     /**
      * Get the value of mail.
-     *
-     * @return string
      */
-    public function getMail()
+    public function getMail(): string
     {
-        return $this->mail;
+        return $this->mail ?? '';
     }
 
     /**
      * Set the value of tel.
-     *
-     * @param string $tel
-     *
-     * @return \App\Entity\Proprietaire
      */
-    public function setTel($tel)
+    public function setTel(string $tel): static
     {
         $this->tel = $tel;
 
@@ -167,20 +127,16 @@ class BaseProprietaire
 
     /**
      * Get the value of tel.
-     *
-     * @return string
      */
-    public function getTel()
+    public function getTel(): string
     {
-        return $this->tel;
+        return $this->tel ?? '';
     }
 
     /**
      * Add Objet entity to collection (one to many).
-     *
-     * @return \App\Entity\Proprietaire
      */
-    public function addObjet(Objet $objet)
+    public function addObjet(Objet $objet): static
     {
         $this->objets[] = $objet;
 
@@ -189,10 +145,8 @@ class BaseProprietaire
 
     /**
      * Remove Objet entity from collection (one to many).
-     *
-     * @return \App\Entity\Proprietaire
      */
-    public function removeObjet(Objet $objet)
+    public function removeObjet(Objet $objet): static
     {
         $this->objets->removeElement($objet);
 
@@ -201,10 +155,8 @@ class BaseProprietaire
 
     /**
      * Get Objet entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getObjets()
+    public function getObjets(): ArrayCollection
     {
         return $this->objets;
     }

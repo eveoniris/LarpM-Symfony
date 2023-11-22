@@ -2,55 +2,38 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\PersonnageHasQuestion.
- *
- * @Table(name="personnage_has_question", indexes={@Index(name="fk_personnage_has_question_personnage1_idx", columns={"personnage_id"}), @Index(name="fk_personnage_has_question_question1_idx", columns={"question_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BasePersonnageHasQuestion", "extended":"PersonnageHasQuestion"})
- */
-class BasePersonnageHasQuestion
+#[ORM\Entity]
+#[ORM\Table(name: 'personnage_has_question')]
+#[ORM\Index(columns: ['personnage_id'], name: 'fk_personnage_has_question_personnage1_idx')]
+#[ORM\Index(columns: ['question_id'], name: 'fk_personnage_has_question_question1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePersonnageHasQuestion', 'extended' => 'PersonnageHasQuestion'])]
+abstract class BasePersonnageHasQuestion
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="boolean")
-     */
-    protected $reponse;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    protected bool $reponse;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="personnageHasQuestions")
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnage;
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageHasQuestions')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $personnage;
 
-    /**
-     * @ManyToOne(targetEntity="Question", inversedBy="personnageHasQuestions")
-     *
-     * @JoinColumn(name="question_id", referencedColumnName="id", nullable=false)
-     */
-    protected $question;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Question::class, inversedBy: 'personnageHasQuestions')]
+    #[JoinColumn(name: 'question_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Question $question;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\PersonnageHasQuestion
      */
     public function setId(int $id): static
     {
@@ -61,8 +44,6 @@ class BasePersonnageHasQuestion
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -71,12 +52,8 @@ class BasePersonnageHasQuestion
 
     /**
      * Set the value of reponse.
-     *
-     * @param bool $reponse
-     *
-     * @return \App\Entity\PersonnageHasQuestion
      */
-    public function setReponse($reponse)
+    public function setReponse(bool $reponse): static
     {
         $this->reponse = $reponse;
 
@@ -85,20 +62,16 @@ class BasePersonnageHasQuestion
 
     /**
      * Get the value of reponse.
-     *
-     * @return bool
      */
-    public function getReponse()
+    public function getReponse(): bool
     {
         return $this->reponse;
     }
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\PersonnageHasQuestion
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -107,20 +80,16 @@ class BasePersonnageHasQuestion
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getPersonnage()
+    public function getPersonnage(): Personnage
     {
         return $this->personnage;
     }
 
     /**
      * Set Question entity (many to one).
-     *
-     * @return \App\Entity\PersonnageHasQuestion
      */
-    public function setQuestion(Question $question = null)
+    public function setQuestion(Question $question = null): static
     {
         $this->question = $question;
 
@@ -129,10 +98,8 @@ class BasePersonnageHasQuestion
 
     /**
      * Get Question entity (many to one).
-     *
-     * @return \App\Entity\Question
      */
-    public function getQuestion()
+    public function getQuestion(): Question
     {
         return $this->question;
     }

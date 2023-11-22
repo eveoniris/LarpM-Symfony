@@ -3,58 +3,53 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
 /**
- * App\Entity\Photo
+ * App\Entity\Photo.
  *
  * @Table(name="photo")
+ *
  * @InheritanceType("SINGLE_TABLE")
+ *
  * @DiscriminatorColumn(name="discr", type="string")
+ *
  * @DiscriminatorMap({"base":"BasePhoto", "extended":"Photo"})
  */
-class BasePhoto
+#[ORM\Entity]
+#[ORM\Table(name: 'photo')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePhoto', 'extended' => 'Photo'])]
+abstract class BasePhoto
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(name="`name`", type="string", length=45)
-     */
-    protected $name;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $name = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $extension;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected string $extension = '';
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $real_name;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $real_name = '';
 
-    /**
-     * @Column(name="`data`", type="blob", nullable=true)
-     */
-    protected $data;
+    #[Column(name: 'data', type: \Doctrine\DBAL\Types\Types::BLOB, nullable: true)]
+    protected ?string $data = null;
 
-    /**
-     * @Column(type="datetime")
-     */
-    protected $creation_date;
+    protected \DateTime $creation_date;
 
-    /**
-     * @Column(type="string", length=100)
-     */
-    protected $filename;
+    protected string $filename = '';
 
-    /**
-     * @OneToMany(targetEntity="Objet", mappedBy="photo", cascade={"persist", "merge", "remove", "detach", "all"})
-     * @JoinColumn(name="id", referencedColumnName="photo_id", nullable=false, onDelete="CASCADE")
-     */
-    protected $objets;
+    #[OneToMany(mappedBy: 'photo', targetEntity: Objet::class, cascade: ['persist', 'remove', 'detach', 'all'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'photo_id', nullable: 'false', onDelete: 'CASCADE')]
+    protected ArrayCollection $objets;
 
     public function __construct()
     {
@@ -63,9 +58,6 @@ class BasePhoto
 
     /**
      * Set the value of id.
-     *
-     * @param integer $id
-     * @return \App\Entity\Photo
      */
     public function setId(int $id): static
     {
@@ -76,8 +68,6 @@ class BasePhoto
 
     /**
      * Get the value of id.
-     *
-     * @return integer
      */
     public function getId(): int
     {
@@ -86,11 +76,8 @@ class BasePhoto
 
     /**
      * Set the value of name.
-     *
-     * @param string $name
-     * @return \App\Entity\Photo
      */
-    public function setName($name)
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -99,21 +86,16 @@ class BasePhoto
 
     /**
      * Get the value of name.
-     *
-     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
-        return $this->name;
+        return $this->name = '';
     }
 
     /**
      * Set the value of extension.
-     *
-     * @param string $extension
-     * @return \App\Entity\Photo
      */
-    public function setExtension($extension)
+    public function setExtension(string $extension): static
     {
         $this->extension = $extension;
 
@@ -122,21 +104,16 @@ class BasePhoto
 
     /**
      * Get the value of extension.
-     *
-     * @return string
      */
-    public function getExtension()
+    public function getExtension(): string
     {
-        return $this->extension;
+        return $this->extension ?? '';
     }
 
     /**
      * Set the value of real_name.
-     *
-     * @param string $real_name
-     * @return \App\Entity\Photo
      */
-    public function setRealName($real_name)
+    public function setRealName(string $real_name): static
     {
         $this->real_name = $real_name;
 
@@ -145,21 +122,16 @@ class BasePhoto
 
     /**
      * Get the value of real_name.
-     *
-     * @return string
      */
-    public function getRealName()
+    public function getRealName(): string
     {
-        return $this->real_name;
+        return $this->real_name ?? '';
     }
 
     /**
      * Set the value of data.
-     *
-     * @param string $data
-     * @return \App\Entity\Photo
      */
-    public function setData($data)
+    public function setData(string $data): static
     {
         $this->data = $data;
 
@@ -168,21 +140,16 @@ class BasePhoto
 
     /**
      * Get the value of data.
-     *
-     * @return string
      */
-    public function getData()
+    public function getData(): string
     {
-        return $this->data;
+        return $this->data ?? '';
     }
 
     /**
      * Set the value of creation_date.
-     *
-     * @param \DateTime $creation_date
-     * @return \App\Entity\Photo
      */
-    public function setCreationDate($creation_date)
+    public function setCreationDate(\DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -191,21 +158,16 @@ class BasePhoto
 
     /**
      * Get the value of creation_date.
-     *
-     * @return \DateTime
      */
-    public function getCreationDate()
+    public function getCreationDate(): \DateTime
     {
         return $this->creation_date;
     }
 
     /**
      * Set the value of filename.
-     *
-     * @param string $filename
-     * @return \App\Entity\Photo
      */
-    public function setFilename($filename)
+    public function setFilename(string $filename): static
     {
         $this->filename = $filename;
 
@@ -214,20 +176,16 @@ class BasePhoto
 
     /**
      * Get the value of filename.
-     *
-     * @return string
      */
-    public function getFilename()
+    public function getFilename(): string
     {
-        return $this->filename;
+        return $this->filename ?? '';
     }
 
     /**
      * Add Objet entity to collection (one to many).
-     *
-     * @return \App\Entity\Photo
      */
-    public function addObjet(Objet $objet)
+    public function addObjet(Objet $objet): static
     {
         $this->objets[] = $objet;
 
@@ -236,10 +194,8 @@ class BasePhoto
 
     /**
      * Remove Objet entity from collection (one to many).
-     *
-     * @return \App\Entity\Photo
      */
-    public function removeObjet(Objet $objet)
+    public function removeObjet(Objet $objet): static
     {
         $this->objets->removeElement($objet);
 
@@ -248,16 +204,14 @@ class BasePhoto
 
     /**
      * Get Objet entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getObjets()
+    public function getObjets(): ArrayCollection
     {
         return $this->objets;
     }
 
     public function __sleep()
     {
-        return array('id', 'name', 'extension', 'real_name', 'data', 'creation_date', 'filename');
+        return ['id', 'name', 'extension', 'real_name', 'data', 'creation_date', 'filename'];
     }
 }

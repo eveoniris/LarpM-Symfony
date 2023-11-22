@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'participant')]
@@ -24,79 +25,53 @@ class BaseParticipant
     protected ?\DateTimeInterface $subscription_date = null;
 
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
-    protected string $billet_date;
+    protected \DateTime $billet_date;
 
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTimeInterface $valide_ci_le = null;
 
-    /**
-     * @OneToMany(targetEntity="GroupeGn", mappedBy="participant")
-     *
-     * @JoinColumn(name="id", referencedColumnName="responsable_id", nullable=false)
-     */
-    protected $groupeGns;
+    #[OneToMany(mappedBy: 'participant', targetEntity: GroupeGn::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'responsable_id', nullable: 'false')]
+    protected ArrayCollection $groupeGns;
 
-    /**
-     * @OneToMany(targetEntity="ParticipantHasRestauration", mappedBy="participant", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="id", referencedColumnName="participant_id", nullable=false)
-     */
-    protected $participantHasRestaurations;
+    #[OneToMany(mappedBy: 'participant', targetEntity: ParticipantHasRestauration::class, cascade: ['persist', 'remove'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: 'false')]
+    protected ArrayCollection $participantHasRestaurations;
 
-    /**
-     * @OneToMany(targetEntity="Reponse", mappedBy="participant")
-     *
-     * @JoinColumn(name="id", referencedColumnName="participant_id", nullable=false)
-     */
-    protected $reponses;
+    #[OneToMany(mappedBy: 'participant', targetEntity: Reponse::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: 'false')]
+    protected ArrayCollection $reponses;
 
-    /**
-     * @ManyToOne(targetEntity="Gn", inversedBy="participants", cascade={"persist"})
-     *
-     * @JoinColumn(name="gn_id", referencedColumnName="id", nullable=false)
-     */
-    protected $gn;
+    #[ManyToOne(inversedBy: 'participant', targetEntity: Gn::class, cascade: ['persist'])]
+    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Gn $gn;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'participants')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
 
-    /**
-     * @ManyToOne(targetEntity="PersonnageSecondaire", inversedBy="participants")
-     *
-     * @JoinColumn(name="personnage_secondaire_id", referencedColumnName="id")
-     */
-    protected $personnageSecondaire;
+    #[ManyToOne(targetEntity: PersonnageSecondaire::class, inversedBy: 'participants')]
+    #[JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id', nullable: 'false')]
+    protected PersonnageSecondaire $personnageSecondaire;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="participants")
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id")
-     */
-    protected $personnage;
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'participants')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    protected Personnage $personnage;
 
     #[ManyToOne(targetEntity: Billet::class, inversedBy: 'participants')]
     #[JoinColumn(name: 'billet_id', referencedColumnName: 'id')]
     protected ?Billet $billet = null;
 
-    /**
-     * @ManyToOne(targetEntity="GroupeGn", inversedBy="participants")
-     *
-     * @JoinColumn(name="groupe_gn_id", referencedColumnName="id")
-     */
-    protected $groupeGn;
+    #[ManyToOne(targetEntity: GroupeGn::class, inversedBy: 'participants')]
+    #[JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id')]
+    protected GroupeGn $groupeGn;
 
-    /**
-     * @ManyToMany(targetEntity="Potion", inversedBy="personnages")
-     *
-     * @JoinTable(name="participant_potions_depart",
-     *     joinColumns={@JoinColumn(name="participant_id", referencedColumnName="id", nullable=false)},
-     *     inverseJoinColumns={@JoinColumn(name="potion_id", referencedColumnName="id", nullable=false)}
-     * )
-     *
-     * @OrderBy({"label" = "ASC", "niveau" = "ASC",})
-     */
-    protected $potions_depart;
+    #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'personnages')]
+    #[ORM\JoinTable(name: 'participant_potions_depart')]
+    #[ORM\JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
+    protected ArrayCollection $potions_depart;
 
     public function __construct()
     {
@@ -108,8 +83,6 @@ class BaseParticipant
 
     /**
      * Set the value of id.
-     *
-     * @return \App\Entity\Participant
      */
     public function setId(int $id): static
     {
@@ -120,8 +93,6 @@ class BaseParticipant
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -132,10 +103,8 @@ class BaseParticipant
      * Set the value of subscription_date.
      *
      * @param \DateTime $subscription_date
-     *
-     * @return \App\Entity\Participant
      */
-    public function setSubscriptionDate(?\DateTimeInterface $subscription_date)
+    public function setSubscriptionDate(?\DateTimeInterface $subscription_date): static
     {
         $this->subscription_date = $subscription_date;
 
@@ -144,10 +113,8 @@ class BaseParticipant
 
     /**
      * Get the value of subscription_date.
-     *
-     * @return \DateTime
      */
-    public function getSubscriptionDate()
+    public function getSubscriptionDate(): \DateTime
     {
         return $this->subscription_date;
     }
@@ -156,10 +123,8 @@ class BaseParticipant
      * Set the value of billet_date.
      *
      * @param \DateTime $billet_date
-     *
-     * @return \App\Entity\Participant
      */
-    public function setBilletDate(string $billet_date)
+    public function setBilletDate(string $billet_date): static
     {
         $this->billet_date = $billet_date;
 
@@ -168,10 +133,8 @@ class BaseParticipant
 
     /**
      * Get the value of billet_date.
-     *
-     * @return \DateTime
      */
-    public function getBilletDate()
+    public function getBilletDate(): \DateTime
     {
         return $this->billet_date;
     }
@@ -180,10 +143,8 @@ class BaseParticipant
      * Set the value of valide_ci_le.
      *
      * @param \DateTime $valide_ci_le
-     *
-     * @return \App\Entity\Participant
      */
-    public function setValideCiLe(?\DateTimeInterface $valide_ci_le)
+    public function setValideCiLe(?\DateTimeInterface $valide_ci_le): static
     {
         $this->valide_ci_le = $valide_ci_le;
 
@@ -192,20 +153,16 @@ class BaseParticipant
 
     /**
      * Get the value of valide_ci_le.
-     *
-     * @return \DateTime
      */
-    public function getValideCiLe()
+    public function getValideCiLe(): \DateTime
     {
         return $this->valide_ci_le;
     }
 
     /**
      * Add GroupeGn entity to collection (one to many).
-     *
-     * @return \App\Entity\Participant
      */
-    public function addGroupeGn(GroupeGn $groupeGn)
+    public function addGroupeGn(GroupeGn $groupeGn): static
     {
         $this->groupeGns[] = $groupeGn;
 
@@ -214,10 +171,8 @@ class BaseParticipant
 
     /**
      * Remove GroupeGn entity from collection (one to many).
-     *
-     * @return \App\Entity\Participant
      */
-    public function removeGroupeGn(GroupeGn $groupeGn)
+    public function removeGroupeGn(GroupeGn $groupeGn): static
     {
         $this->groupeGns->removeElement($groupeGn);
 
@@ -226,20 +181,16 @@ class BaseParticipant
 
     /**
      * Get GroupeGn entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGroupeGns()
+    public function getGroupeGns(): ArrayCollection
     {
         return $this->groupeGns;
     }
 
     /**
      * Add ParticipantHasRestauration entity to collection (one to many).
-     *
-     * @return \App\Entity\Participant
      */
-    public function addParticipantHasRestauration(ParticipantHasRestauration $participantHasRestauration)
+    public function addParticipantHasRestauration(ParticipantHasRestauration $participantHasRestauration): static
     {
         $this->participantHasRestaurations[] = $participantHasRestauration;
 
@@ -248,10 +199,8 @@ class BaseParticipant
 
     /**
      * Remove ParticipantHasRestauration entity from collection (one to many).
-     *
-     * @return \App\Entity\Participant
      */
-    public function removeParticipantHasRestauration(ParticipantHasRestauration $participantHasRestauration)
+    public function removeParticipantHasRestauration(ParticipantHasRestauration $participantHasRestauration): static
     {
         $this->participantHasRestaurations->removeElement($participantHasRestauration);
 
@@ -260,20 +209,16 @@ class BaseParticipant
 
     /**
      * Get ParticipantHasRestauration entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getParticipantHasRestaurations()
+    public function getParticipantHasRestaurations(): ArrayCollection
     {
         return $this->participantHasRestaurations;
     }
 
     /**
      * Add Reponse entity to collection (one to many).
-     *
-     * @return \App\Entity\Participant
      */
-    public function addReponse(Reponse $reponse)
+    public function addReponse(Reponse $reponse): static
     {
         $this->reponses[] = $reponse;
 
@@ -282,10 +227,8 @@ class BaseParticipant
 
     /**
      * Remove Reponse entity from collection (one to many).
-     *
-     * @return \App\Entity\Participant
      */
-    public function removeReponse(Reponse $reponse)
+    public function removeReponse(Reponse $reponse): static
     {
         $this->reponses->removeElement($reponse);
 
@@ -294,20 +237,16 @@ class BaseParticipant
 
     /**
      * Get Reponse entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getReponses()
+    public function getReponses(): ArrayCollection
     {
         return $this->reponses;
     }
 
     /**
      * Set Gn entity (many to one).
-     *
-     * @return \App\Entity\Participant
      */
-    public function setGn(Gn $gn = null)
+    public function setGn(Gn $gn = null): static
     {
         $this->gn = $gn;
 
@@ -316,42 +255,34 @@ class BaseParticipant
 
     /**
      * Get Gn entity (many to one).
-     *
-     * @return \App\Entity\Gn
      */
-    public function getGn()
+    public function getGn(): Gn
     {
         return $this->gn;
     }
 
     /**
      * Set User entity (many to one).
-     *
-     * @return \App\Entity\Participant
      */
-    public function setUser(User $User = null)
+    public function setUser(User $user = null): static
     {
-        $this->user = $User;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
      * Get User entity (many to one).
-     *
-     * @return \App\Entity\User
      */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
 
     /**
      * Set PersonnageSecondaire entity (many to one).
-     *
-     * @return \App\Entity\Participant
      */
-    public function setPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire = null)
+    public function setPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire = null): static
     {
         $this->personnageSecondaire = $personnageSecondaire;
 
@@ -360,20 +291,16 @@ class BaseParticipant
 
     /**
      * Get PersonnageSecondaire entity (many to one).
-     *
-     * @return \App\Entity\PersonnageSecondaire
      */
-    public function getPersonnageSecondaire()
+    public function getPersonnageSecondaire(): PersonnageSecondaire
     {
         return $this->personnageSecondaire;
     }
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\Participant
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -382,20 +309,16 @@ class BaseParticipant
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getPersonnage()
+    public function getPersonnage(): Personnage
     {
         return $this->personnage;
     }
 
     /**
      * Set Billet entity (many to one).
-     *
-     * @return \App\Entity\Participant
      */
-    public function setBillet(Billet $billet = null)
+    public function setBillet(Billet $billet = null): static
     {
         $this->billet = $billet;
 
@@ -404,20 +327,16 @@ class BaseParticipant
 
     /**
      * Get Billet entity (many to one).
-     *
-     * @return \App\Entity\Billet
      */
-    public function getBillet()
+    public function getBillet(): Billet
     {
         return $this->billet;
     }
 
     /**
      * Set GroupeGn entity (many to one).
-     *
-     * @return \App\Entity\Participant
      */
-    public function setGroupeGn(GroupeGn $groupeGn = null)
+    public function setGroupeGn(GroupeGn $groupeGn = null): static
     {
         $this->groupeGn = $groupeGn;
 
@@ -426,20 +345,16 @@ class BaseParticipant
 
     /**
      * Get GroupeGn entity (many to one).
-     *
-     * @return \App\Entity\GroupeGn
      */
-    public function getGroupeGn()
+    public function getGroupeGn(): GroupeGn
     {
         return $this->groupeGn;
     }
 
     /**
      * Add Potion entity to collection.
-     *
-     * @return \App\Entity\Participant
      */
-    public function addPotionDepart(Potion $potion)
+    public function addPotionDepart(Potion $potion): static
     {
         $this->potions_depart[] = $potion;
 
@@ -448,10 +363,8 @@ class BaseParticipant
 
     /**
      * Remove Potion entity from collection.
-     *
-     * @return \App\Entity\Participant
      */
-    public function removePotionDepart(Potion $potion): self
+    public function removePotionDepart(Potion $potion): static
     {
         $this->potions_depart->removeElement($potion);
 
@@ -460,10 +373,8 @@ class BaseParticipant
 
     /**
      * Get Potion entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPotionsDepart()
+    public function getPotionsDepart(): ArrayCollection
     {
         return $this->potions_depart;
     }

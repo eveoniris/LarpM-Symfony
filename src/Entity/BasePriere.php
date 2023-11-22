@@ -3,66 +3,46 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * App\Entity\Priere.
- *
- * @Table(name="priere", indexes={@Index(name="fk_priere_sphere1_idx", columns={"sphere_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BasePriere", "extended":"Priere"})
- */
-class BasePriere
+#[ORM\Entity]
+#[ORM\Table(name: 'priere')]
+#[ORM\Index(columns: ['sphere_id'], name: 'fk_priere_sphere1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePriere', 'extended' => 'Priere'])]
+abstract class BasePriere
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $annonce;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $documentUrl;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $annonce = null;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $niveau;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $documentUrl = null;
 
-    /**
-     * @ManyToOne(targetEntity="Sphere", inversedBy="prieres")
-     *
-     * @JoinColumn(name="sphere_id", referencedColumnName="id", nullable=false)
-     */
-    protected $sphere;
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $niveau;
 
-    /**
-     * @ManyToMany(targetEntity="Personnage", inversedBy="prieres")
-     *
-     * @JoinTable(name="personnages_prieres",
-     *     joinColumns={@JoinColumn(name="priere_id", referencedColumnName="id", nullable=false)},
-     *     inverseJoinColumns={@JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)}
-     * )
-     */
-    protected $personnages;
+    #[ORM\ManyToOne(targetEntity: Sphere::class, inversedBy: 'prieres')]
+    #[ORM\JoinColumn(name: 'sphere_id', referencedColumnName: 'id')]
+    protected Sphere $sphere;
+
+    #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'prieres')]
+    #[ORM\JoinTable(name: 'personnages_prieres')]
+    #[ORM\JoinColumn(name: 'priere_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
+    protected ArrayCollection $personnages;
 
     public function __construct()
     {
@@ -71,10 +51,6 @@ class BasePriere
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Priere
      */
     public function setId(int $id): static
     {
@@ -85,8 +61,6 @@ class BasePriere
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -95,10 +69,6 @@ class BasePriere
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Priere
      */
     public function setLabel(string $label): static
     {
@@ -109,8 +79,6 @@ class BasePriere
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -119,10 +87,6 @@ class BasePriere
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Priere
      */
     public function setDescription(string $description): static
     {
@@ -133,8 +97,6 @@ class BasePriere
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
     public function getDescription(): string
     {
@@ -143,12 +105,8 @@ class BasePriere
 
     /**
      * Set the value of annonce.
-     *
-     * @param string $annonce
-     *
-     * @return \App\Entity\Priere
      */
-    public function setAnnonce($annonce)
+    public function setAnnonce(string $annonce): static
     {
         $this->annonce = $annonce;
 
@@ -157,20 +115,14 @@ class BasePriere
 
     /**
      * Get the value of annonce.
-     *
-     * @return string
      */
-    public function getAnnonce()
+    public function getAnnonce(): string
     {
-        return $this->annonce;
+        return $this->annonce ?? '';
     }
 
     /**
      * Set the value of documentUrl.
-     *
-     * @param string $documentUrl
-     *
-     * @return \App\Entity\Priere
      */
     public function setDocumentUrl(string $documentUrl): static
     {
@@ -181,8 +133,6 @@ class BasePriere
 
     /**
      * Get the value of documentUrl.
-     *
-     * @return string
      */
     public function getDocumentUrl(): string
     {
@@ -193,10 +143,8 @@ class BasePriere
      * Set the value of niveau.
      *
      * @param int $niveau
-     *
-     * @return \App\Entity\Priere
      */
-    public function setNiveau($niveau)
+    public function setNiveau($niveau): static
     {
         $this->niveau = $niveau;
 
@@ -205,20 +153,16 @@ class BasePriere
 
     /**
      * Get the value of niveau.
-     *
-     * @return int
      */
-    public function getNiveau()
+    public function getNiveau(): int
     {
         return $this->niveau;
     }
 
     /**
      * Set Sphere entity (many to one).
-     *
-     * @return \App\Entity\Priere
      */
-    public function setSphere(Sphere $sphere = null)
+    public function setSphere(Sphere $sphere = null): static
     {
         $this->sphere = $sphere;
 
@@ -227,20 +171,16 @@ class BasePriere
 
     /**
      * Get Sphere entity (many to one).
-     *
-     * @return \App\Entity\Sphere
      */
-    public function getSphere()
+    public function getSphere(): ?Sphere
     {
         return $this->sphere;
     }
 
     /**
      * Add Personnage entity to collection.
-     *
-     * @return \App\Entity\Priere
      */
-    public function addPersonnage(Personnage $personnage)
+    public function addPersonnage(Personnage $personnage): static
     {
         $personnage->addPriere($this);
         $this->personnages[] = $personnage;
@@ -250,10 +190,8 @@ class BasePriere
 
     /**
      * Remove Personnage entity from collection.
-     *
-     * @return \App\Entity\Priere
      */
-    public function removePersonnage(Personnage $personnage)
+    public function removePersonnage(Personnage $personnage): static
     {
         $personnage->removePriere($this);
         $this->personnages->removeElement($personnage);
@@ -263,10 +201,8 @@ class BasePriere
 
     /**
      * Get Personnage entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPersonnages()
+    public function getPersonnages(): ArrayCollection
     {
         return $this->personnages;
     }

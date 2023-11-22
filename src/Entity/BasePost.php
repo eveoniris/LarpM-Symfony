@@ -9,7 +9,9 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use phpDocumentor\Reflection\Types\Collection;
 
 #[Entity]
 #[ORM\Table(name: 'post')]
@@ -23,48 +25,36 @@ use Doctrine\ORM\Mapping\OneToMany;
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=450)
-     */
-    protected $title;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 450)]
+    protected string $title;
 
-    /**
-     * @Column(name="`text`", type="text")
-     */
-    protected $text;
+    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::STRING)]
+    protected string $text;
 
-    /**
-     * @Column(type="datetime", nullable=true)
-     */
-    protected $creation_date;
+    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    protected ?\DateTime $creation_date;
 
     /**
      * @Column(type="datetime", nullable=true)
      */
-    protected $update_date;
+    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    protected ?\DateTime $update_date;
 
     #[OneToMany(mappedBy: 'post', targetEntity: Post::class)]
     #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id')]
     protected ArrayCollection $posts;
 
-    /**
-     * @OneToMany(targetEntity="PostView", mappedBy="post")
-     *
-     * @JoinColumn(name="id", referencedColumnName="post_id", nullable=false)
-     */
-    protected $postViews;
+    #[OneToMany(mappedBy: 'post', targetEntity: PostView::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'post_id', nullable: false)]
+    protected ArrayCollection $postViews;
 
-    /**
-     * @ManyToOne(targetEntity="Topic", inversedBy="posts")
-     *
-     * @JoinColumn(name="topic_id", referencedColumnName="id")
-     */
+    #[ManyToOne(targetEntity: Topic::class, inversedBy: 'posts')]
+    #[JoinColumn(name: 'topic_id', referencedColumnName: 'id')]
     protected $topic;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'postRelatedByUserIds')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected User $userRelatedByUserId;
-
 
     #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'posts')]
     #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id')]
@@ -84,10 +74,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Post
      */
     public function setId(int $id): static
     {
@@ -98,8 +84,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -108,12 +92,8 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Set the value of title.
-     *
-     * @param string $title
-     *
-     * @return \App\Entity\Post
      */
-    public function setTitle($title)
+    public function setTitle(string $title): static
     {
         $this->title = $title;
 
@@ -122,20 +102,14 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Get the value of title.
-     *
-     * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
-        return $this->title;
+        return $this->title ?? '';
     }
 
     /**
      * Set the value of text.
-     *
-     * @param string $text
-     *
-     * @return \App\Entity\Post
      */
     public function setText(string $text): static
     {
@@ -146,8 +120,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Get the value of text.
-     *
-     * @return string
      */
     public function getText(): string
     {
@@ -156,12 +128,8 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Set the value of creation_date.
-     *
-     * @param \DateTime $creation_date
-     *
-     * @return \App\Entity\Post
      */
-    public function setCreationDate($creation_date)
+    public function setCreationDate(\DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -170,22 +138,16 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Get the value of creation_date.
-     *
-     * @return \DateTime
      */
-    public function getCreationDate()
+    public function getCreationDate(): ?\DateTime
     {
         return $this->creation_date;
     }
 
     /**
      * Set the value of update_date.
-     *
-     * @param \DateTime $update_date
-     *
-     * @return \App\Entity\Post
      */
-    public function setUpdateDate($update_date)
+    public function setUpdateDate(\DateTime $update_date)
     {
         $this->update_date = $update_date;
 
@@ -194,20 +156,16 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Get the value of update_date.
-     *
-     * @return \DateTime
      */
-    public function getUpdateDate()
+    public function getUpdateDate(): ?\DateTime
     {
         return $this->update_date;
     }
 
     /**
      * Add Post entity to collection (one to many).
-     *
-     * @return \App\Entity\Post
      */
-    public function addPost(Post $post)
+    public function addPost(Post $post): static
     {
         $this->posts[] = $post;
 
@@ -216,10 +174,8 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Remove Post entity from collection (one to many).
-     *
-     * @return \App\Entity\Post
      */
-    public function removePost(Post $post)
+    public function removePost(Post $post): static
     {
         $this->posts->removeElement($post);
 
@@ -228,20 +184,16 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Get Post entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPosts()
+    public function getPosts(): Collection
     {
         return $this->posts;
     }
 
     /**
      * Add PostView entity to collection (one to many).
-     *
-     * @return \App\Entity\Post
      */
-    public function addPostView(PostView $postView)
+    public function addPostView(PostView $postView): static
     {
         $this->postViews[] = $postView;
 
@@ -250,10 +202,8 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Remove PostView entity from collection (one to many).
-     *
-     * @return \App\Entity\Post
      */
-    public function removePostView(PostView $postView)
+    public function removePostView(PostView $postView): static
     {
         $this->postViews->removeElement($postView);
 
@@ -262,20 +212,16 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Get PostView entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPostViews()
+    public function getPostViews(): ArrayCollection
     {
         return $this->postViews;
     }
 
     /**
      * Set Topic entity (many to one).
-     *
-     * @return \App\Entity\Post
      */
-    public function setTopic(Topic $topic = null)
+    public function setTopic(Topic $topic = null): static
     {
         $this->topic = $topic;
 
@@ -284,42 +230,34 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Get Topic entity (many to one).
-     *
-     * @return \App\Entity\Topic
      */
-    public function getTopic()
+    public function getTopic(): Topic
     {
         return $this->topic;
     }
 
     /**
      * Set User entity related by `User_id` (many to one).
-     *
-     * @return \App\Entity\Post
      */
-    public function setUserRelatedByUserId(User $User = null)
+    public function setUserRelatedByUserId(User $user = null): static
     {
-        $this->UserRelatedByUserId = $User;
+        $this->userRelatedByUserId = $user;
 
         return $this;
     }
 
     /**
      * Get User entity related by `User_id` (many to one).
-     *
-     * @return \App\Entity\User
      */
-    public function getUserRelatedByUserId()
+    public function getUserRelatedByUserId(): ?User
     {
-        return $this->UserRelatedByUserId;
+        return $this->userRelatedByUserId;
     }
 
     /**
      * Set Post entity (many to one).
-     *
-     * @return \App\Entity\Post
      */
-    public function setPost(Post $post = null)
+    public function setPost(Post $post = null): static
     {
         $this->post = $post;
 
@@ -328,48 +266,40 @@ use Doctrine\ORM\Mapping\OneToMany;
 
     /**
      * Get Post entity (many to one).
-     *
-     * @return \App\Entity\Post
      */
-    public function getPost()
+    public function getPost(): Post
     {
         return $this->post;
     }
 
     /**
      * Add User entity to collection.
-     *
-     * @return \App\Entity\Post
      */
-    public function addUser(User $User)
+    public function addUser(User $user): static
     {
-        $User->addPost($this);
-        $this->Users[] = $User;
+        $user->addPost($this);
+        $this->users[] = $user;
 
         return $this;
     }
 
     /**
      * Remove User entity from collection.
-     *
-     * @return \App\Entity\Post
      */
-    public function removeUser(User $User)
+    public function removeUser(User $user): static
     {
-        $User->removePost($this);
-        $this->Users->removeElement($User);
+        $user->removePost($this);
+        $this->users->removeElement($user);
 
         return $this;
     }
 
     /**
      * Get User entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getUsers()
+    public function getUsers(): ArrayCollection
     {
-        return $this->Users;
+        return $this->users;
     }
 
     public function __sleep()

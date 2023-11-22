@@ -2,55 +2,37 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\PersonnageRessource.
- *
- * @Table(name="personnage_ressource", indexes={@Index(name="fk_personnage_ressource_ressource1_idx", columns={"ressource_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BasePersonnageRessource", "extended":"PersonnageRessource"})
- */
-class BasePersonnageRessource
+#[ORM\Entity]
+#[ORM\Table(name: 'personnage_ressource')]
+#[ORM\Index(columns: ['ressource_id'], name: 'fk_personnage_ressource_ressource1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePersonnageRessource', 'extended' => 'PersonnageRessource'])]
+abstract class BasePersonnageRessource
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $nombre;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $nombre;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="personnageRessources", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnage;
+    #[ManyToOne(targetEntity: Personnage::class, cascade: ['persist', 'remove'], inversedBy: 'personnageRessources')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $personnage;
 
-    /**
-     * @ManyToOne(targetEntity="Ressource", inversedBy="personnageRessources")
-     *
-     * @JoinColumn(name="ressource_id", referencedColumnName="id", nullable=false)
-     */
-    protected $ressource;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'personnageRessources')]
+    #[JoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Ressource $ressource;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\PersonnageRessource
      */
     public function setId(int $id): static
     {
@@ -61,8 +43,6 @@ class BasePersonnageRessource
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -71,12 +51,8 @@ class BasePersonnageRessource
 
     /**
      * Set the value of nombre.
-     *
-     * @param int $nombre
-     *
-     * @return \App\Entity\PersonnageRessource
      */
-    public function setNombre($nombre)
+    public function setNombre(int $nombre): static
     {
         $this->nombre = $nombre;
 
@@ -85,20 +61,16 @@ class BasePersonnageRessource
 
     /**
      * Get the value of nombre.
-     *
-     * @return int
      */
-    public function getNombre()
+    public function getNombre(): int
     {
         return $this->nombre;
     }
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\PersonnageRessource
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -107,20 +79,16 @@ class BasePersonnageRessource
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getPersonnage()
+    public function getPersonnage(): ?Personnage
     {
         return $this->personnage;
     }
 
     /**
      * Set Ressource entity (many to one).
-     *
-     * @return \App\Entity\PersonnageRessource
      */
-    public function setRessource(Ressource $ressource = null)
+    public function setRessource(Ressource $ressource = null): static
     {
         $this->ressource = $ressource;
 
@@ -129,10 +97,8 @@ class BasePersonnageRessource
 
     /**
      * Get Ressource entity (many to one).
-     *
-     * @return \App\Entity\Ressource
      */
-    public function getRessource()
+    public function getRessource(): ?Resource
     {
         return $this->ressource;
     }
