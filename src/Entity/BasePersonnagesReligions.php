@@ -2,60 +2,42 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\PersonnagesReligions.
- *
- * @Table(name="personnages_religions", indexes={@Index(name="fk_personnage_religion_religion1_idx", columns={"religion_id"}), @Index(name="fk_personnage_religion_religion_level1_idx", columns={"religion_level_id"}), @Index(name="fk_personnages_religions_personnage1_idx", columns={"personnage_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BasePersonnagesReligions", "extended":"PersonnagesReligions"})
- */
-class BasePersonnagesReligions
+#[ORM\Entity]
+#[ORM\Table(name: 'personnages_religions')]
+#[ORM\Index(columns: ['religion_id'], name: 'fk_personnage_religion_religion1_idx')]
+#[ORM\Index(columns: ['religion_level_id'], name: 'fk_personnage_religion_religion_level1_idx')]
+#[ORM\Index(columns: ['"personnage_id"'], name: 'fk_personnages_religions_personnage1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePersonnagesReligions', 'extended' => 'PersonnagesReligions'])]
+abstract class BasePersonnagesReligions
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @ManyToOne(targetEntity="Religion", inversedBy="personnagesReligions")
-     *
-     * @JoinColumn(name="religion_id", referencedColumnName="id", nullable=false)
-     * @JoinColumn(name="religion_label", referencedColumnName="label", nullable=false)
-     *
-     * @OrderBy({"religion_label" = "ASC",})
-     */
-    protected $religion;
+    #[ManyToOne(targetEntity: Religion::class, inversedBy: 'personnagesReligions')]
+    #[JoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'religion_label', referencedColumnName: 'label', nullable: 'false')]
+    #[ORM\OrderBy(['religion_label' => 'ASC'])]
+    protected Religion $religion;
 
-    /**
-     * @ManyToOne(targetEntity="ReligionLevel", inversedBy="personnagesReligions")
-     *
-     * @JoinColumn(name="religion_level_id", referencedColumnName="id", nullable=false)
-     */
-    protected $religionLevel;
+    #[ManyToOne(targetEntity: ReligionLevel::class, inversedBy: 'personnagesReligions')]
+    #[JoinColumn(name: 'religion_level_id', referencedColumnName: 'id', nullable: 'false')]
+    protected ReligionLevel $religionLevel;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="personnagesReligions")
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnage;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnagesReligions')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $personnage;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\PersonnagesReligions
      */
     public function setId(int $id): static
     {
@@ -66,8 +48,6 @@ class BasePersonnagesReligions
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -76,10 +56,8 @@ class BasePersonnagesReligions
 
     /**
      * Set Religion entity (many to one).
-     *
-     * @return \App\Entity\PersonnagesReligions
      */
-    public function setReligion(Religion $religion = null)
+    public function setReligion(Religion $religion = null): static
     {
         $this->religion = $religion;
 
@@ -88,20 +66,16 @@ class BasePersonnagesReligions
 
     /**
      * Get Religion entity (many to one).
-     *
-     * @return \App\Entity\Religion
      */
-    public function getReligion()
+    public function getReligion(): ?Religion
     {
         return $this->religion;
     }
 
     /**
      * Set ReligionLevel entity (many to one).
-     *
-     * @return \App\Entity\PersonnagesReligions
      */
-    public function setReligionLevel(ReligionLevel $religionLevel = null)
+    public function setReligionLevel(ReligionLevel $religionLevel = null): static
     {
         $this->religionLevel = $religionLevel;
 
@@ -110,20 +84,16 @@ class BasePersonnagesReligions
 
     /**
      * Get ReligionLevel entity (many to one).
-     *
-     * @return \App\Entity\ReligionLevel
      */
-    public function getReligionLevel()
+    public function getReligionLevel(): ?ReligionLevel
     {
         return $this->religionLevel;
     }
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\PersonnagesReligions
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -132,10 +102,8 @@ class BasePersonnagesReligions
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getPersonnage()
+    public function getPersonnage(): ?Personnage
     {
         return $this->personnage;
     }

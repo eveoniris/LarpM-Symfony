@@ -6,64 +6,43 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\PersonnageLignee.
- *
- * @Table(name="personnages_lignee")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BasePersonnageLignee", "extended":"PersonnageLignee"})
- */
-class BasePersonnageLignee
+#[ORM\Entity]
+#[ORM\Table(name: 'personnages_lignee')]
+#[ORM\Index(columns: ['createur_id'], name: 'fk_billet_user1')]
+#[ORM\Index(columns: ['gn_id'], name: 'fk_billet_gn1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePersonnageLignee', 'extended' => 'PersonnageLignee'])]
+abstract class BasePersonnageLignee
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="PersonnageLignee")
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnage;
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'PersonnageLignee')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $personnage;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="PersonnageLignee")
-     *
-     * @JoinColumn(name="parent1_id", referencedColumnName="id", nullable=false)
-     */
-    protected $parent1;
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'PersonnageLignee')]
+    #[JoinColumn(name: 'parent1_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $parent1;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="PersonnageLignee")
-     *
-     * @JoinColumn(name="parent2_id", referencedColumnName="id", nullable=false)
-     */
-    protected $parent2;
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'PersonnageLignee')]
+    #[JoinColumn(name: 'parent2_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $parent2;
 
-    /**
-     * @ManyToOne(targetEntity="Lignee", inversedBy="PersonnageLignee")
-     *
-     * @JoinColumn(name="lignee_id", referencedColumnName="id", nullable=false)
-     */
-    protected $lignee;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Lignee::class, inversedBy: 'PersonnageLignee')]
+    #[JoinColumn(name: 'lignee_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Lignee $lignee;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\PersonnageLignee
      */
     public function setId(int $id): static
     {
@@ -74,8 +53,6 @@ class BasePersonnageLignee
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -84,10 +61,8 @@ class BasePersonnageLignee
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\PersonnageLignee
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -96,20 +71,16 @@ class BasePersonnageLignee
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getPersonnage()
+    public function getPersonnage(): ?Personnage
     {
         return $this->personnage;
     }
 
     /**
      * Set Parent1 entity (many to one).
-     *
-     * @return \App\Entity\PersonnageLignee
      */
-    public function setParent1(Personnage $parent1 = null)
+    public function setParent1(Personnage $parent1 = null): static
     {
         $this->parent1 = $parent1;
 
@@ -118,20 +89,16 @@ class BasePersonnageLignee
 
     /**
      * Get Parent1 entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getParent1()
+    public function getParent1(): ?Personnage
     {
         return $this->parent1;
     }
 
     /**
      * Set Parent2 entity (many to one).
-     *
-     * @return \App\Entity\PersonnageLignee
      */
-    public function setParent2(Personnage $parent2 = null)
+    public function setParent2(Personnage $parent2 = null): static
     {
         $this->parent2 = $parent2;
 
@@ -140,20 +107,16 @@ class BasePersonnageLignee
 
     /**
      * Get Parent2 entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getParent2()
+    public function getParent2(): ?Personnage
     {
         return $this->parent2;
     }
 
     /**
      * Set Lignee entity (many to one).
-     *
-     * @return \App\Entity\PersonnageLignee
      */
-    public function setLignee(Lignee $lignee = null)
+    public function setLignee(Lignee $lignee = null): static
     {
         $this->lignee = $lignee;
 
@@ -162,10 +125,8 @@ class BasePersonnageLignee
 
     /**
      * Get Lignee entity (many to one).
-     *
-     * @return \App\Entity\PersonnageLignee
      */
-    public function getLignee()
+    public function getLignee(): ?Lignee
     {
         return $this->lignee;
     }

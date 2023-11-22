@@ -2,22 +2,21 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\PersonnageLangues.
- *
- * @Table(name="personnage_langues", indexes={@Index(name="fk_personnage_langues_personnage1_idx", columns={"personnage_id"}), @Index(name="fk_personnage_langues_langue1_idx", columns={"langue_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BasePersonnageLangues", "extended":"PersonnageLangues"})
- */
-class BasePersonnageLangues
+#[ORM\Entity]
+#[ORM\Table(name: 'personnage_langues')]
+#[ORM\Index(columns: ['personnage_id'], name: 'fk_personnage_langues_personnage1_idx')]
+#[ORM\Index(columns: ['langue_id'], name: 'fk_personnage_langues_langue1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePersonnageLangues', 'extended' => 'PersonnageLangues'])]
+abstract class BasePersonnageLangues
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
@@ -25,14 +24,12 @@ class BasePersonnageLangues
     /**
      * @Column(name="`source`", type="string", length=45)
      */
-    protected $source;
+    #[Column(name: 'source', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $source = '';
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="personnageLangues")
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnage;
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageLangues')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $personnage;
 
     /**
      * @ManyToOne(targetEntity="Langue", inversedBy="personnageLangues")
@@ -41,18 +38,13 @@ class BasePersonnageLangues
      *
      * @OrderBy({"secret" = "ASC", "label" = "ASC"})
      */
-    protected $langue;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Langue::class, inversedBy: 'personnageLangues')]
+    #[JoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: 'false')]
+    #[ORM\OrderBy(['secret' => 'ASC',  'label' => 'ASC'])]
+    protected Langue $langue;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\PersonnageLangues
      */
     public function setId(int $id): static
     {
@@ -63,8 +55,6 @@ class BasePersonnageLangues
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -73,12 +63,8 @@ class BasePersonnageLangues
 
     /**
      * Set the value of source.
-     *
-     * @param string $source
-     *
-     * @return \App\Entity\PersonnageLangues
      */
-    public function setSource($source)
+    public function setSource(string $source): static
     {
         $this->source = $source;
 
@@ -87,20 +73,16 @@ class BasePersonnageLangues
 
     /**
      * Get the value of source.
-     *
-     * @return string
      */
-    public function getSource()
+    public function getSource(): string
     {
-        return $this->source;
+        return $this->source ?? '';
     }
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\PersonnageLangues
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -109,20 +91,16 @@ class BasePersonnageLangues
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getPersonnage()
+    public function getPersonnage(): ?Personnage
     {
         return $this->personnage;
     }
 
     /**
      * Set Langue entity (many to one).
-     *
-     * @return \App\Entity\PersonnageLangues
      */
-    public function setLangue(Langue $langue = null)
+    public function setLangue(Langue $langue = null): static
     {
         $this->langue = $langue;
 
@@ -131,10 +109,8 @@ class BasePersonnageLangues
 
     /**
      * Get Langue entity (many to one).
-     *
-     * @return \App\Entity\Langue
      */
-    public function getLangue()
+    public function getLangue(): ?Langue
     {
         return $this->langue;
     }

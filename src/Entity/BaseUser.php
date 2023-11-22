@@ -96,7 +96,6 @@ abstract class BaseUser
     #[JoinColumn(name: 'id', referencedColumnName: 'player_id', nullable: 'false')]
     protected Collection $playerDebriefings;
 
-
     #[OneToMany(mappedBy: 'user', targetEntity: Document::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
     protected Collection $documents;

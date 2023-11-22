@@ -2,55 +2,38 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\ParticipantHasRestauration.
- *
- * @Table(name="participant_has_restauration", indexes={@Index(name="fk_participant_has_restauration_participant1_idx", columns={"participant_id"}), @Index(name="fk_participant_has_restauration_restauration1_idx", columns={"restauration_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseParticipantHasRestauration", "extended":"ParticipantHasRestauration"})
- */
-class BaseParticipantHasRestauration
+#[ORM\Entity]
+#[ORM\Table(name: 'participant_has_restauration')]
+#[ORM\Index(columns: ['participant_id'], name: 'fk_participant_has_restauration_participant1_idx')]
+#[ORM\Index(columns: ['restauration_id'], name: 'fk_participant_has_restauration_restauration1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseParticipantHasRestauration', 'extended' => 'ParticipantHasRestauration'])]
+abstract class BaseParticipantHasRestauration
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(name="`date`", type="datetime")
-     */
-    protected $date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    protected \DateTime $date;
 
-    /**
-     * @ManyToOne(targetEntity="Participant", inversedBy="participantHasRestaurations", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="participant_id", referencedColumnName="id", nullable=false)
-     */
-    protected $participant;
+    #[ManyToOne(targetEntity: Participant::class, inversedBy: 'participantHasRestaurations', cascade: ['persist', 'remove'])]
+    #[JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Participant $participant;
 
-    /**
-     * @ManyToOne(targetEntity="Restauration", inversedBy="participantHasRestaurations")
-     *
-     * @JoinColumn(name="restauration_id", referencedColumnName="id", nullable=false)
-     */
-    protected $restauration;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Restauration::class, inversedBy: 'participantHasRestaurations', cascade: ['persist', 'remove'])]
+    #[JoinColumn(name: 'restauration_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Restauration $restauration;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\ParticipantHasRestauration
      */
     public function setId(int $id): static
     {
@@ -61,8 +44,6 @@ class BaseParticipantHasRestauration
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -71,12 +52,8 @@ class BaseParticipantHasRestauration
 
     /**
      * Set the value of date.
-     *
-     * @param \DateTime $date
-     *
-     * @return \App\Entity\ParticipantHasRestauration
      */
-    public function setDate($date)
+    public function setDate(\DateTime $date): static
     {
         $this->date = $date;
 
@@ -85,20 +62,16 @@ class BaseParticipantHasRestauration
 
     /**
      * Get the value of date.
-     *
-     * @return \DateTime
      */
-    public function getDate()
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
 
     /**
      * Set Participant entity (many to one).
-     *
-     * @return \App\Entity\ParticipantHasRestauration
      */
-    public function setParticipant(Participant $participant = null)
+    public function setParticipant(Participant $participant = null): static
     {
         $this->participant = $participant;
 
@@ -107,20 +80,16 @@ class BaseParticipantHasRestauration
 
     /**
      * Get Participant entity (many to one).
-     *
-     * @return \App\Entity\Participant
      */
-    public function getParticipant()
+    public function getParticipant(): Participant
     {
         return $this->participant;
     }
 
     /**
      * Set Restauration entity (many to one).
-     *
-     * @return \App\Entity\ParticipantHasRestauration
      */
-    public function setRestauration(Restauration $restauration = null)
+    public function setRestauration(Restauration $restauration = null): static
     {
         $this->restauration = $restauration;
 
@@ -129,10 +98,8 @@ class BaseParticipantHasRestauration
 
     /**
      * Get Restauration entity (many to one).
-     *
-     * @return \App\Entity\Restauration
      */
-    public function getRestauration()
+    public function getRestauration(): Restauration
     {
         return $this->restauration;
     }

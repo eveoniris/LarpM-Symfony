@@ -2,58 +2,39 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\PugilatHistory.
- *
- * @Table(name="pugilat_history", indexes={@Index(name="fk_pugilat_history_personnage1_idx", columns={"personnage_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BasePugilatHistory", "extended":"PugilatHistory"})
- */
-class BasePugilatHistory
+#[ORM\Entity]
+#[ORM\Table(name: 'pugilat_history')]
+#[ORM\Index(columns: ['personnage_id'], name: 'fk_pugilat_history_personnage1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BasePugilatHistory', 'extended' => 'PugilatHistory'])]
+abstract class BasePugilatHistory
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(name="`date`", type="date")
-     */
-    protected $date;
+    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    protected \DateTime $date;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $pugilat;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $pugilat;
 
-    /**
-     * @Column(type="text")
-     */
-    protected $explication;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
+    protected string $explication;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="pugilatHistories")
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnage;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'pugilatHistories')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $personnage;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\PugilatHistory
      */
     public function setId(int $id): static
     {
@@ -64,8 +45,6 @@ class BasePugilatHistory
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -74,12 +53,8 @@ class BasePugilatHistory
 
     /**
      * Set the value of date.
-     *
-     * @param \DateTime $date
-     *
-     * @return \App\Entity\PugilatHistory
      */
-    public function setDate($date)
+    public function setDate(\DateTime $date): static
     {
         $this->date = $date;
 
@@ -88,22 +63,16 @@ class BasePugilatHistory
 
     /**
      * Get the value of date.
-     *
-     * @return \DateTime
      */
-    public function getDate()
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
 
     /**
      * Set the value of pugilat.
-     *
-     * @param int $pugilat
-     *
-     * @return \App\Entity\PugilatHistory
      */
-    public function setPugilat($pugilat)
+    public function setPugilat(int $pugilat): static
     {
         $this->pugilat = $pugilat;
 
@@ -112,22 +81,16 @@ class BasePugilatHistory
 
     /**
      * Get the value of pugilat.
-     *
-     * @return int
      */
-    public function getPugilat()
+    public function getPugilat(): int
     {
         return $this->pugilat;
     }
 
     /**
      * Set the value of explication.
-     *
-     * @param string $explication
-     *
-     * @return \App\Entity\PugilatHistory
      */
-    public function setExplication($explication)
+    public function setExplication(string $explication): static
     {
         $this->explication = $explication;
 
@@ -136,20 +99,16 @@ class BasePugilatHistory
 
     /**
      * Get the value of explication.
-     *
-     * @return string
      */
-    public function getExplication()
+    public function getExplication(): string
     {
-        return $this->explication;
+        return $this->explication ?? '';
     }
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\PugilatHistory
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -158,10 +117,8 @@ class BasePugilatHistory
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getPersonnage()
+    public function getPersonnage(): ?Personnage
     {
         return $this->personnage;
     }
