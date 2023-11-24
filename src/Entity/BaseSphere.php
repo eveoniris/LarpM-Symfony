@@ -3,22 +3,19 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Sphere.
- *
- * @Table(name="sphere")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseSphere", "extended":"Sphere"})
- */
-class BaseSphere
+#[ORM\Entity]
+#[ORM\Table(name: 'sphere')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseSphere', 'extended' => 'Sphere'])]
+abstract class BaseSphere
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
@@ -26,26 +23,24 @@ class BaseSphere
     /**
      * @Column(type="string", length=45, nullable=true)
      */
-    protected $label;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true, length: 45)]
+    protected ?string $label = null;
 
     /**
      * @OneToMany(targetEntity="Priere", mappedBy="sphere")
      *
      * @JoinColumn(name="id", referencedColumnName="sphere_id", nullable=false)
      */
-    protected $prieres;
+    #[OneToMany(mappedBy: 'sphere', targetEntity: Priere::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'sphere_id', nullable: 'false')]
+    protected ArrayCollection $prieres;
 
-    /**
-     * @ManyToMany(targetEntity="Religion", inversedBy="spheres")
-     *
-     * @JoinTable(name="religions_spheres",
-     *     joinColumns={@JoinColumn(name="sphere_id", referencedColumnName="id", nullable=false)},
-     *     inverseJoinColumns={@JoinColumn(name="religion_id", referencedColumnName="id", nullable=false)}
-     * )
-     *
-     * @OrderBy({"label" = "ASC",})
-     */
-    protected $religions;
+    #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'spheres')]
+    #[ORM\JoinTable(name: 'religions_spheres')]
+    #[ORM\JoinColumn(name: 'sphere_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\OrderBy(['label' => 'ASC'])]
+    protected ArrayCollection $religions;
 
     public function __construct()
     {
@@ -55,10 +50,6 @@ class BaseSphere
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Sphere
      */
     public function setId(int $id): static
     {
@@ -69,8 +60,6 @@ class BaseSphere
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -79,10 +68,6 @@ class BaseSphere
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Sphere
      */
     public function setLabel(string $label): static
     {
@@ -93,8 +78,6 @@ class BaseSphere
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -103,10 +86,8 @@ class BaseSphere
 
     /**
      * Add Priere entity to collection (one to many).
-     *
-     * @return \App\Entity\Sphere
      */
-    public function addPriere(Priere $priere)
+    public function addPriere(Priere $priere): static
     {
         $this->prieres[] = $priere;
 
@@ -115,10 +96,8 @@ class BaseSphere
 
     /**
      * Remove Priere entity from collection (one to many).
-     *
-     * @return \App\Entity\Sphere
      */
-    public function removePriere(Priere $priere)
+    public function removePriere(Priere $priere): static
     {
         $this->prieres->removeElement($priere);
 
@@ -127,20 +106,16 @@ class BaseSphere
 
     /**
      * Get Priere entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPrieres()
+    public function getPrieres(): Prieres
     {
         return $this->prieres;
     }
 
     /**
      * Add Religion entity to collection.
-     *
-     * @return \App\Entity\Sphere
      */
-    public function addReligion(Religion $religion)
+    public function addReligion(Religion $religion): static
     {
         $religion->addSphere($this);
         $this->religions[] = $religion;
@@ -150,10 +125,8 @@ class BaseSphere
 
     /**
      * Remove Religion entity from collection.
-     *
-     * @return \App\Entity\Sphere
      */
-    public function removeReligion(Religion $religion)
+    public function removeReligion(Religion $religion): static
     {
         $religion->removeSphere($this);
         $this->religions->removeElement($religion);
@@ -163,10 +136,8 @@ class BaseSphere
 
     /**
      * Get Religion entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getReligions()
+    public function getReligions(): ArrayCollection
     {
         return $this->religions;
     }

@@ -3,45 +3,34 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\ReligionLevel.
- *
- * @Table(name="religion_level")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseReligionLevel", "extended":"ReligionLevel"})
- */
-class BaseReligionLevel
+#[ORM\Entity]
+#[ORM\Table(name: 'religion_level')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseReligionLevel', 'extended' => 'ReligionLevel'])]
+abstract class BaseReligionLevel
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
 
-    /**
-     * @Column(name="`index`", type="integer")
-     */
-    protected $index;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label = '';
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, name: 'index')]
+    protected int $index = 0;
 
-    /**
-     * @OneToMany(targetEntity="PersonnagesReligions", mappedBy="religionLevel")
-     *
-     * @JoinColumn(name="id", referencedColumnName="religion_level_id", nullable=false)
-     */
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $description = null;
+
+    #[OneToMany(mappedBy: 'religionLevel', targetEntity: PersonnagesReligions::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'religion_level_id', nullable: 'false')]
     protected $personnagesReligions;
 
     public function __construct()
@@ -51,10 +40,6 @@ class BaseReligionLevel
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\ReligionLevel
      */
     public function setId(int $id): static
     {
@@ -65,8 +50,6 @@ class BaseReligionLevel
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -75,10 +58,6 @@ class BaseReligionLevel
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\ReligionLevel
      */
     public function setLabel(string $label): static
     {
@@ -89,8 +68,6 @@ class BaseReligionLevel
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -99,12 +76,8 @@ class BaseReligionLevel
 
     /**
      * Set the value of index.
-     *
-     * @param int $index
-     *
-     * @return \App\Entity\ReligionLevel
      */
-    public function setIndex($index)
+    public function setIndex(int $index): static
     {
         $this->index = $index;
 
@@ -113,20 +86,14 @@ class BaseReligionLevel
 
     /**
      * Get the value of index.
-     *
-     * @return int
      */
-    public function getIndex()
+    public function getIndex(): int
     {
         return $this->index;
     }
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\ReligionLevel
      */
     public function setDescription(string $description): static
     {
@@ -137,8 +104,6 @@ class BaseReligionLevel
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
     public function getDescription(): string
     {
@@ -147,10 +112,8 @@ class BaseReligionLevel
 
     /**
      * Add PersonnagesReligions entity to collection (one to many).
-     *
-     * @return \App\Entity\ReligionLevel
      */
-    public function addPersonnagesReligions(PersonnagesReligions $personnagesReligions)
+    public function addPersonnagesReligions(PersonnagesReligions $personnagesReligions): static
     {
         $this->personnagesReligions[] = $personnagesReligions;
 
@@ -159,10 +122,8 @@ class BaseReligionLevel
 
     /**
      * Remove PersonnagesReligions entity from collection (one to many).
-     *
-     * @return \App\Entity\ReligionLevel
      */
-    public function removePersonnagesReligions(PersonnagesReligions $personnagesReligions)
+    public function removePersonnagesReligions(PersonnagesReligions $personnagesReligions): static
     {
         $this->personnagesReligions->removeElement($personnagesReligions);
 
@@ -171,10 +132,8 @@ class BaseReligionLevel
 
     /**
      * Get PersonnagesReligions entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPersonnagesReligions()
+    public function getPersonnagesReligions(): ArrayCollection
     {
         return $this->personnagesReligions;
     }

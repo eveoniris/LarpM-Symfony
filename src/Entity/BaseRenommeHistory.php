@@ -2,58 +2,39 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\RenommeHistory.
- *
- * @Table(name="renomme_history", indexes={@Index(name="fk_renomme_history_personnage1_idx", columns={"personnage_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseRenommeHistory", "extended":"RenommeHistory"})
- */
-class BaseRenommeHistory
+#[ORM\Entity]
+#[ORM\Table(name: 'renomme_history')]
+#[ORM\Index(columns: ['personnage_id'], name: 'fk_renomme_history_personnage1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseRenommeHistory', 'extended' => 'RenommeHistory'])]
+abstract class BaseRenommeHistory
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $renomme;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $renomme = 0;
 
-    /**
-     * @Column(type="text")
-     */
-    protected $explication;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING)]
+    protected string $explication = '';
 
-    /**
-     * @Column(name="`date`", type="datetime")
-     */
-    protected $date;
+    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    protected \DateTime $date;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="renommeHistories")
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnage;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'renommeHistories')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $personnage;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\RenommeHistory
      */
     public function setId(int $id): static
     {
@@ -64,8 +45,6 @@ class BaseRenommeHistory
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -74,12 +53,8 @@ class BaseRenommeHistory
 
     /**
      * Set the value of renomme.
-     *
-     * @param int $renomme
-     *
-     * @return \App\Entity\RenommeHistory
      */
-    public function setRenomme($renomme)
+    public function setRenomme(int $renomme): static
     {
         $this->renomme = $renomme;
 
@@ -88,22 +63,16 @@ class BaseRenommeHistory
 
     /**
      * Get the value of renomme.
-     *
-     * @return int
      */
-    public function getRenomme()
+    public function getRenomme(): int
     {
         return $this->renomme;
     }
 
     /**
      * Set the value of explication.
-     *
-     * @param string $explication
-     *
-     * @return \App\Entity\RenommeHistory
      */
-    public function setExplication($explication)
+    public function setExplication(string $explication): static
     {
         $this->explication = $explication;
 
@@ -112,22 +81,16 @@ class BaseRenommeHistory
 
     /**
      * Get the value of explication.
-     *
-     * @return string
      */
-    public function getExplication()
+    public function getExplication(): static
     {
         return $this->explication;
     }
 
     /**
      * Set the value of date.
-     *
-     * @param \DateTime $date
-     *
-     * @return \App\Entity\RenommeHistory
      */
-    public function setDate($date)
+    public function setDate(\DateTime $date): static
     {
         $this->date = $date;
 
@@ -136,20 +99,16 @@ class BaseRenommeHistory
 
     /**
      * Get the value of date.
-     *
-     * @return \DateTime
      */
-    public function getDate()
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\RenommeHistory
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -158,10 +117,8 @@ class BaseRenommeHistory
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getPersonnage()
+    public function getPersonnage(): Personnage
     {
         return $this->personnage;
     }

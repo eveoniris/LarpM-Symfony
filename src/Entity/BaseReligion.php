@@ -3,103 +3,70 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Religion.
- *
- * @Table(name="religion", indexes={@Index(name="fk_religion_topic1_idx", columns={"topic_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseReligion", "extended":"Religion"})
- */
-class BaseReligion
+#[ORM\Entity]
+#[ORM\Table(name: 'religion')]
+#[ORM\Index(columns: ['topic_id'], name: 'fk_religion_topic1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseReligion', 'extended' => 'Religion'])]
+abstract class BaseReligion
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label = '';
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $blason;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $blason = null;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description_orga;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $description_orga = null;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description_fervent;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $description_fervent;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description_pratiquant;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $description_pratiquant;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description_fanatique;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $description_fanatique;
 
-    /**
-     * @Column(type="boolean", nullable=false, options={"default":0})
-     */
-    protected $secret;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true, options: ['default' => 0])]
+    protected ?bool $secret = null;
 
-    /**
-     * @OneToMany(targetEntity="PersonnagesReligions", mappedBy="religion")
-     *
-     * @JoinColumn(name="id", referencedColumnName="religion_id", nullable=false)
-     */
-    protected $personnagesReligions;
+    #[OneToMany(mappedBy: 'religion', targetEntity: PersonnagesReligions::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: 'false')]
+    protected ArrayCollection $personnagesReligions;
 
-    /**
-     * @OneToMany(targetEntity="ReligionDescription", mappedBy="religion")
-     *
-     * @JoinColumn(name="id", referencedColumnName="religion_id", nullable=false)
-     */
-    protected $religionDescriptions;
+    #[OneToMany(mappedBy: 'religion', targetEntity: ReligionDescription::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: 'false')]
+    protected ArrayCollection $religionDescriptions;
 
-    /**
-     * @OneToMany(targetEntity="Territoire", mappedBy="religion")
-     *
-     * @JoinColumn(name="id", referencedColumnName="religion_id", nullable=false)
-     */
-    protected $territoires;
+    #[OneToMany(mappedBy: 'religion', targetEntity: Territoire::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: 'false')]
+    protected ArrayCollection $territoires;
 
-    /**
-     * @ManyToOne(targetEntity="Topic", inversedBy="religions")
-     *
-     * @JoinColumn(name="topic_id", referencedColumnName="id", nullable=false)
-     */
-    protected $topic;
+    #[ManyToOne(targetEntity: Topic::class, inversedBy: 'religions')]
+    #[JoinColumn(name: 'topic_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Topic $topic;
 
-    /**
-     * @ManyToMany(targetEntity="Personnage", mappedBy="religions")
-     */
-    protected $personnages;
+    #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'religions')]
+    protected ArrayCollection $personnages;
 
-    /**
-     * @ManyToMany(targetEntity="Sphere", mappedBy="religions")
-     */
-    protected $spheres;
+    #[ORM\ManyToMany(targetEntity: Sphere::class, mappedBy: 'religions')]
+    protected ArrayCollection $spheres;
 
     public function __construct()
     {
@@ -112,10 +79,6 @@ class BaseReligion
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Religion
      */
     public function setId(int $id): static
     {
@@ -126,8 +89,6 @@ class BaseReligion
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -136,10 +97,6 @@ class BaseReligion
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Religion
      */
     public function setLabel(string $label): static
     {
@@ -150,8 +107,6 @@ class BaseReligion
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -160,10 +115,6 @@ class BaseReligion
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Religion
      */
     public function setDescription(string $description): static
     {
@@ -174,8 +125,6 @@ class BaseReligion
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
     public function getDescription(): string
     {
@@ -184,12 +133,8 @@ class BaseReligion
 
     /**
      * Set the value of blason.
-     *
-     * @param string $blason
-     *
-     * @return \App\Entity\Religion
      */
-    public function setBlason($blason)
+    public function setBlason(string $blason): static
     {
         $this->blason = $blason;
 
@@ -198,22 +143,16 @@ class BaseReligion
 
     /**
      * Get the value of blason.
-     *
-     * @return string
      */
-    public function getBlason()
+    public function getBlason(): string
     {
-        return $this->blason;
+        return $this->blason ?? '';
     }
 
     /**
      * Set the value of description_orga.
-     *
-     * @param string $description_orga
-     *
-     * @return \App\Entity\Religion
      */
-    public function setDescriptionOrga($description_orga)
+    public function setDescriptionOrga(string $description_orga): static
     {
         $this->description_orga = $description_orga;
 
@@ -222,22 +161,16 @@ class BaseReligion
 
     /**
      * Get the value of description_orga.
-     *
-     * @return string
      */
-    public function getDescriptionOrga()
+    public function getDescriptionOrga(): string
     {
-        return $this->description_orga;
+        return $this->description_orga ?? '';
     }
 
     /**
      * Set the value of description_fervent.
-     *
-     * @param string $description_fervent
-     *
-     * @return \App\Entity\Religion
      */
-    public function setDescriptionFervent($description_fervent)
+    public function setDescriptionFervent(string $description_fervent): static
     {
         $this->description_fervent = $description_fervent;
 
@@ -246,22 +179,16 @@ class BaseReligion
 
     /**
      * Get the value of description_fervent.
-     *
-     * @return string
      */
-    public function getDescriptionFervent()
+    public function getDescriptionFervent(): string
     {
-        return $this->description_fervent;
+        return $this->description_fervent ?? '';
     }
 
     /**
      * Set the value of description_pratiquant.
-     *
-     * @param string $description_pratiquant
-     *
-     * @return \App\Entity\Religion
      */
-    public function setDescriptionPratiquant($description_pratiquant)
+    public function setDescriptionPratiquant(string $description_pratiquant): static
     {
         $this->description_pratiquant = $description_pratiquant;
 
@@ -270,22 +197,16 @@ class BaseReligion
 
     /**
      * Get the value of description_pratiquant.
-     *
-     * @return string
      */
-    public function getDescriptionPratiquant()
+    public function getDescriptionPratiquant(): string
     {
-        return $this->description_pratiquant;
+        return $this->description_pratiquant ?? '';
     }
 
     /**
      * Set the value of description_fanatique.
-     *
-     * @param string $description_fanatique
-     *
-     * @return \App\Entity\Religion
      */
-    public function setDescriptionFanatique($description_fanatique)
+    public function setDescriptionFanatique(string $description_fanatique): static
     {
         $this->description_fanatique = $description_fanatique;
 
@@ -294,22 +215,16 @@ class BaseReligion
 
     /**
      * Get the value of description_fanatique.
-     *
-     * @return string
      */
-    public function getDescriptionFanatique()
+    public function getDescriptionFanatique(): string
     {
-        return $this->description_fanatique;
+        return $this->description_fanatique ?? '';
     }
 
     /**
      * Set the value of secret.
-     *
-     * @param int $secret
-     *
-     * @return \App\Entity\Religion
      */
-    public function setSecret($secret)
+    public function setSecret(int $secret): static
     {
         $this->secret = $secret;
 
@@ -318,20 +233,16 @@ class BaseReligion
 
     /**
      * Get the value of secret.
-     *
-     * @return int
      */
-    public function getSecret()
+    public function getSecret(): int
     {
         return $this->secret;
     }
 
     /**
      * Add PersonnagesReligions entity to collection (one to many).
-     *
-     * @return \App\Entity\Religion
      */
-    public function addPersonnagesReligions(PersonnagesReligions $personnagesReligions)
+    public function addPersonnagesReligions(PersonnagesReligions $personnagesReligions): static
     {
         $this->personnagesReligions[] = $personnagesReligions;
 
@@ -340,10 +251,8 @@ class BaseReligion
 
     /**
      * Remove PersonnagesReligions entity from collection (one to many).
-     *
-     * @return \App\Entity\Religion
      */
-    public function removePersonnagesReligions(PersonnagesReligions $personnagesReligions)
+    public function removePersonnagesReligions(PersonnagesReligions $personnagesReligions): static
     {
         $this->personnagesReligions->removeElement($personnagesReligions);
 
@@ -352,20 +261,16 @@ class BaseReligion
 
     /**
      * Get PersonnagesReligions entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPersonnagesReligions()
+    public function getPersonnagesReligions(): ArrayCollection
     {
         return $this->personnagesReligions;
     }
 
     /**
      * Add ReligionDescription entity to collection (one to many).
-     *
-     * @return \App\Entity\Religion
      */
-    public function addReligionDescription(ReligionDescription $religionDescription)
+    public function addReligionDescription(ReligionDescription $religionDescription): static
     {
         $this->religionDescriptions[] = $religionDescription;
 
@@ -374,10 +279,8 @@ class BaseReligion
 
     /**
      * Remove ReligionDescription entity from collection (one to many).
-     *
-     * @return \App\Entity\Religion
      */
-    public function removeReligionDescription(ReligionDescription $religionDescription)
+    public function removeReligionDescription(ReligionDescription $religionDescription): static
     {
         $this->religionDescriptions->removeElement($religionDescription);
 
@@ -386,20 +289,16 @@ class BaseReligion
 
     /**
      * Get ReligionDescription entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getReligionDescriptions()
+    public function getReligionDescriptions(): ArrayCollection
     {
         return $this->religionDescriptions;
     }
 
     /**
      * Add Territoire entity to collection (one to many).
-     *
-     * @return \App\Entity\Religion
      */
-    public function addTerritoire(Territoire $territoire)
+    public function addTerritoire(Territoire $territoire): static
     {
         $this->territoires[] = $territoire;
 
@@ -408,10 +307,8 @@ class BaseReligion
 
     /**
      * Remove Territoire entity from collection (one to many).
-     *
-     * @return \App\Entity\Religion
      */
-    public function removeTerritoire(Territoire $territoire)
+    public function removeTerritoire(Territoire $territoire): static
     {
         $this->territoires->removeElement($territoire);
 
@@ -420,20 +317,16 @@ class BaseReligion
 
     /**
      * Get Territoire entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getTerritoires()
+    public function getTerritoires(): ArrayCollection
     {
         return $this->territoires;
     }
 
     /**
      * Set Topic entity (many to one).
-     *
-     * @return \App\Entity\Religion
      */
-    public function setTopic(Topic $topic = null)
+    public function setTopic(Topic $topic = null): static
     {
         $this->topic = $topic;
 
@@ -442,20 +335,16 @@ class BaseReligion
 
     /**
      * Get Topic entity (many to one).
-     *
-     * @return \App\Entity\Topic
      */
-    public function getTopic()
+    public function getTopic(): Topic
     {
         return $this->topic;
     }
 
     /**
      * Add Personnage entity to collection.
-     *
-     * @return \App\Entity\Religion
      */
-    public function addPersonnage(Personnage $personnage)
+    public function addPersonnage(Personnage $personnage): static
     {
         $this->personnages[] = $personnage;
 
@@ -464,10 +353,8 @@ class BaseReligion
 
     /**
      * Remove Personnage entity from collection.
-     *
-     * @return \App\Entity\Religion
      */
-    public function removePersonnage(Personnage $personnage)
+    public function removePersonnage(Personnage $personnage): static
     {
         $this->personnages->removeElement($personnage);
 
@@ -476,20 +363,16 @@ class BaseReligion
 
     /**
      * Get Personnage entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPersonnages()
+    public function getPersonnages(): ArrayCollection
     {
         return $this->personnages;
     }
 
     /**
      * Add Sphere entity to collection.
-     *
-     * @return \App\Entity\Religion
      */
-    public function addSphere(Sphere $sphere)
+    public function addSphere(Sphere $sphere): static
     {
         $this->spheres[] = $sphere;
 
@@ -498,10 +381,8 @@ class BaseReligion
 
     /**
      * Remove Sphere entity from collection.
-     *
-     * @return \App\Entity\Religion
      */
-    public function removeSphere(Sphere $sphere)
+    public function removeSphere(Sphere $sphere): static
     {
         $this->spheres->removeElement($sphere);
 
@@ -510,10 +391,8 @@ class BaseReligion
 
     /**
      * Get Sphere entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSpheres()
+    public function getSpheres(): ArrayCollection
     {
         return $this->spheres;
     }

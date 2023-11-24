@@ -3,42 +3,32 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Restauration.
- *
- * @Table(name="restauration")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseRestauration", "extended":"Restauration"})
- */
-class BaseRestauration
+#[ORM\Entity]
+#[ORM\Table(name: 'restauration')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseRestauration', 'extended' => 'Restauration'])]
+abstract class BaseRestauration
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected ?string $label = null;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @OneToMany(targetEntity="ParticipantHasRestauration", mappedBy="restauration")
-     *
-     * @JoinColumn(name="id", referencedColumnName="restauration_id", nullable=false)
-     */
-    protected $participantHasRestaurations;
+    #[OneToMany(mappedBy: 'restauration', targetEntity: ParticipantHasRestauration::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'restauration_id', nullable: 'false')]
+    protected ArrayCollection $participantHasRestaurations;
 
     public function __construct()
     {
@@ -47,10 +37,6 @@ class BaseRestauration
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Restauration
      */
     public function setId(int $id): static
     {
@@ -61,8 +47,6 @@ class BaseRestauration
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -71,10 +55,6 @@ class BaseRestauration
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Restauration
      */
     public function setLabel(string $label): static
     {
@@ -85,8 +65,6 @@ class BaseRestauration
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -95,10 +73,6 @@ class BaseRestauration
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Restauration
      */
     public function setDescription(string $description): static
     {
@@ -109,8 +83,6 @@ class BaseRestauration
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
     public function getDescription(): string
     {
@@ -119,10 +91,8 @@ class BaseRestauration
 
     /**
      * Add ParticipantHasRestauration entity to collection (one to many).
-     *
-     * @return \App\Entity\Restauration
      */
-    public function addParticipantHasRestauration(ParticipantHasRestauration $participantHasRestauration)
+    public function addParticipantHasRestauration(ParticipantHasRestauration $participantHasRestauration): static
     {
         $this->participantHasRestaurations[] = $participantHasRestauration;
 
@@ -131,10 +101,8 @@ class BaseRestauration
 
     /**
      * Remove ParticipantHasRestauration entity from collection (one to many).
-     *
-     * @return \App\Entity\Restauration
      */
-    public function removeParticipantHasRestauration(ParticipantHasRestauration $participantHasRestauration)
+    public function removeParticipantHasRestauration(ParticipantHasRestauration $participantHasRestauration): static
     {
         $this->participantHasRestaurations->removeElement($participantHasRestauration);
 
@@ -143,10 +111,8 @@ class BaseRestauration
 
     /**
      * Get ParticipantHasRestauration entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getParticipantHasRestaurations()
+    public function getParticipantHasRestaurations(): ArrayCollection
     {
         return $this->participantHasRestaurations;
     }
