@@ -2,61 +2,45 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\Rumeur.
- *
- * @Table(name="rumeur", indexes={@Index(name="fk_rumeur_territoire1_idx", columns={"territoire_id"}), @Index(name="fk_rumeur_User1_idx", columns={"User_id"}), @Index(name="fk_rumeur_gn1_idx", columns={"gn_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseRumeur", "extended":"Rumeur"})
- */
-class BaseRumeur
+#[ORM\Entity]
+#[ORM\Table(name: 'rumeur')]
+#[ORM\Index(columns: ['territoire_id'], name: 'fk_rumeur_territoire1_idx')]
+#[ORM\Index(columns: ['user_id'], name: 'fk_rumeur_user1_idx')]
+#[ORM\Index(columns: ['gn_id'], name: 'fk_rumeur_gn1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseRumeur', 'extended' => 'Rumeur'])]
+abstract class BaseRumeur
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(name="`text`", type="text")
-     */
-    protected $text;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, name: 'text')]
+    protected string $text = '';
 
-    /**
-     * @Column(type="datetime")
-     */
-    protected $creation_date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    protected ?\DateTime $creation_date = null;
 
-    /**
-     * @Column(type="datetime")
-     */
-    protected $update_date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    protected ?\DateTime $update_date = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $visibility;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected $visibility = '';
 
-    /**
-     * @ManyToOne(targetEntity="Gn", inversedBy="rumeurs")
-     *
-     * @JoinColumn(name="gn_id", referencedColumnName="id", nullable=false)
-     */
-    protected $gn;
+    #[ManyToOne(targetEntity: Gn::class, inversedBy: 'rumeurs')]
+    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Gn $gn;
 
-    /**
-     * @ManyToOne(targetEntity="Territoire", inversedBy="rumeurs")
-     *
-     * @JoinColumn(name="territoire_id", referencedColumnName="id")
-     */
-    protected $territoire;
+    #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'rumeurs')]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Territoire $territoire;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'rumeurs')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
@@ -64,14 +48,12 @@ class BaseRumeur
 
     public function __construct()
     {
+        $this->creation_date = new \DateTime('now');
+        $this->update_date = new \DateTime('now');
     }
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Rumeur
      */
     public function setId(int $id): static
     {
@@ -82,8 +64,6 @@ class BaseRumeur
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -92,10 +72,6 @@ class BaseRumeur
 
     /**
      * Set the value of text.
-     *
-     * @param string $text
-     *
-     * @return \App\Entity\Rumeur
      */
     public function setText(string $text): static
     {
@@ -106,8 +82,6 @@ class BaseRumeur
 
     /**
      * Get the value of text.
-     *
-     * @return string
      */
     public function getText(): string
     {
@@ -116,12 +90,8 @@ class BaseRumeur
 
     /**
      * Set the value of creation_date.
-     *
-     * @param \DateTime $creation_date
-     *
-     * @return \App\Entity\Rumeur
      */
-    public function setCreationDate($creation_date)
+    public function setCreationDate(\DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -130,22 +100,16 @@ class BaseRumeur
 
     /**
      * Get the value of creation_date.
-     *
-     * @return \DateTime
      */
-    public function getCreationDate()
+    public function getCreationDate(): \DateTime
     {
         return $this->creation_date;
     }
 
     /**
      * Set the value of update_date.
-     *
-     * @param \DateTime $update_date
-     *
-     * @return \App\Entity\Rumeur
      */
-    public function setUpdateDate($update_date)
+    public function setUpdateDate(\DateTime $update_date): static
     {
         $this->update_date = $update_date;
 
@@ -154,22 +118,16 @@ class BaseRumeur
 
     /**
      * Get the value of update_date.
-     *
-     * @return \DateTime
      */
-    public function getUpdateDate()
+    public function getUpdateDate(): \DateTime
     {
         return $this->update_date;
     }
 
     /**
      * Set the value of visibility.
-     *
-     * @param string $visibility
-     *
-     * @return \App\Entity\Rumeur
      */
-    public function setVisibility($visibility)
+    public function setVisibility(string $visibility): static
     {
         $this->visibility = $visibility;
 
@@ -178,20 +136,16 @@ class BaseRumeur
 
     /**
      * Get the value of visibility.
-     *
-     * @return string
      */
-    public function getVisibility()
+    public function getVisibility(): string
     {
-        return $this->visibility;
+        return $this->visibility ?? '';
     }
 
     /**
      * Set Gn entity (many to one).
-     *
-     * @return \App\Entity\Rumeur
      */
-    public function setGn(Gn $gn = null)
+    public function setGn(Gn $gn = null): static
     {
         $this->gn = $gn;
 
@@ -200,20 +154,16 @@ class BaseRumeur
 
     /**
      * Get Gn entity (many to one).
-     *
-     * @return \App\Entity\Gn
      */
-    public function getGn()
+    public function getGn(): Gn
     {
         return $this->gn;
     }
 
     /**
      * Set Territoire entity (many to one).
-     *
-     * @return \App\Entity\Rumeur
      */
-    public function setTerritoire(Territoire $territoire = null)
+    public function setTerritoire(Territoire $territoire = null): static
     {
         $this->territoire = $territoire;
 
@@ -222,32 +172,26 @@ class BaseRumeur
 
     /**
      * Get Territoire entity (many to one).
-     *
-     * @return \App\Entity\Territoire
      */
-    public function getTerritoire()
+    public function getTerritoire(): Territoire
     {
         return $this->territoire;
     }
 
     /**
      * Set User entity (many to one).
-     *
-     * @return \App\Entity\Rumeur
      */
-    public function setUser(User $User = null)
+    public function setUser(User $user = null): static
     {
-        $this->User = $User;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
      * Get User entity (many to one).
-     *
-     * @return \App\Entity\User
      */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }

@@ -3,41 +3,32 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\SecondaryGroupType.
- *
- * @Table(name="secondary_group_type")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseSecondaryGroupType", "extended":"SecondaryGroupType"})
- */
-class BaseSecondaryGroupType
+#[ORM\Entity]
+#[ORM\Table(name: 'secondary_group_type')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseSecondaryGroupType', 'extended' => 'SecondaryGroupType'])]
+abstract class BaseSecondaryGroupType
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label = '';
 
-    /**
-     * @OneToMany(targetEntity="SecondaryGroup", mappedBy="secondaryGroupType")
-     *
-     * @JoinColumn(name="id", referencedColumnName="secondary_group_type_id", nullable=false)
-     */
-    protected $secondaryGroups;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $description = null;
+
+    #[OneToMany(mappedBy: 'secondaryGroupType', targetEntity: SecondaryGroup::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_type_id', nullable: 'false')]
+    protected ArrayCollection $secondaryGroups;
 
     public function __construct()
     {
@@ -46,10 +37,6 @@ class BaseSecondaryGroupType
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\SecondaryGroupType
      */
     public function setId(int $id): static
     {
@@ -60,8 +47,6 @@ class BaseSecondaryGroupType
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -70,10 +55,6 @@ class BaseSecondaryGroupType
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\SecondaryGroupType
      */
     public function setLabel(string $label): static
     {
@@ -84,8 +65,6 @@ class BaseSecondaryGroupType
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -94,10 +73,6 @@ class BaseSecondaryGroupType
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\SecondaryGroupType
      */
     public function setDescription(string $description): static
     {
@@ -108,8 +83,6 @@ class BaseSecondaryGroupType
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
     public function getDescription(): string
     {
@@ -118,10 +91,8 @@ class BaseSecondaryGroupType
 
     /**
      * Add SecondaryGroup entity to collection (one to many).
-     *
-     * @return \App\Entity\SecondaryGroupType
      */
-    public function addSecondaryGroup(SecondaryGroup $secondaryGroup)
+    public function addSecondaryGroup(SecondaryGroup $secondaryGroup): static
     {
         $this->secondaryGroups[] = $secondaryGroup;
 
@@ -130,10 +101,8 @@ class BaseSecondaryGroupType
 
     /**
      * Remove SecondaryGroup entity from collection (one to many).
-     *
-     * @return \App\Entity\SecondaryGroupType
      */
-    public function removeSecondaryGroup(SecondaryGroup $secondaryGroup)
+    public function removeSecondaryGroup(SecondaryGroup $secondaryGroup): static
     {
         $this->secondaryGroups->removeElement($secondaryGroup);
 
@@ -142,10 +111,8 @@ class BaseSecondaryGroupType
 
     /**
      * Get SecondaryGroup entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSecondaryGroups()
+    public function getSecondaryGroups(): ArrayCollection
     {
         return $this->secondaryGroups;
     }

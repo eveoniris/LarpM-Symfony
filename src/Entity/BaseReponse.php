@@ -2,55 +2,39 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Symfony\Component\Mime\Encoder\QpEncoder;
 
-/**
- * App\Entity\Reponse.
- *
- * @Table(name="reponse", indexes={@Index(name="fk_reponse_idx", columns={"question_id"}), @Index(name="fk_reponse_participant1_idx", columns={"participant_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseReponse", "extended":"Reponse"})
- */
-class BaseReponse
+#[ORM\Entity]
+#[ORM\Table(name: 'billet')]
+#[ORM\Index(columns: ['question_id'], name: 'fk_reponse_idx')]
+#[ORM\Index(columns: ['participant_id'], name: 'fk_reponse_participant1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseReponse', 'extended' => 'Reponse'])]
+abstract class BaseReponse
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $reponse;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $reponse;
 
-    /**
-     * @ManyToOne(targetEntity="Question", inversedBy="reponses")
-     *
-     * @JoinColumn(name="question_id", referencedColumnName="id", nullable=false)
-     */
-    protected $question;
+    #[ManyToOne(targetEntity: Question::class, inversedBy: 'reponses')]
+    #[JoinColumn(name: 'question_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Question $question;
 
-    /**
-     * @ManyToOne(targetEntity="Participant", inversedBy="reponses")
-     *
-     * @JoinColumn(name="participant_id", referencedColumnName="id", nullable=false)
-     */
-    protected $participant;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Participant::class, inversedBy: 'reponses')]
+    #[JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Participant $participant;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Reponse
      */
     public function setId(int $id): static
     {
@@ -61,8 +45,6 @@ class BaseReponse
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -71,12 +53,8 @@ class BaseReponse
 
     /**
      * Set the value of reponse.
-     *
-     * @param string $reponse
-     *
-     * @return \App\Entity\Reponse
      */
-    public function setReponse($reponse)
+    public function setReponse(string $reponse): static
     {
         $this->reponse = $reponse;
 
@@ -85,20 +63,16 @@ class BaseReponse
 
     /**
      * Get the value of reponse.
-     *
-     * @return string
      */
-    public function getReponse()
+    public function getReponse(): string
     {
-        return $this->reponse;
+        return $this->reponse ?? '';
     }
 
     /**
      * Set Question entity (many to one).
-     *
-     * @return \App\Entity\Reponse
      */
-    public function setQuestion(Question $question = null)
+    public function setQuestion(Question $question = null): static
     {
         $this->question = $question;
 
@@ -107,20 +81,16 @@ class BaseReponse
 
     /**
      * Get Question entity (many to one).
-     *
-     * @return \App\Entity\Question
      */
-    public function getQuestion()
+    public function getQuestion(): Question
     {
         return $this->question;
     }
 
     /**
      * Set Participant entity (many to one).
-     *
-     * @return \App\Entity\Reponse
      */
-    public function setParticipant(Participant $participant = null)
+    public function setParticipant(Participant $participant = null): static
     {
         $this->participant = $participant;
 
@@ -129,10 +99,8 @@ class BaseReponse
 
     /**
      * Get Participant entity (many to one).
-     *
-     * @return \App\Entity\Participant
      */
-    public function getParticipant()
+    public function getParticipant(): Participant
     {
         return $this->participant;
     }

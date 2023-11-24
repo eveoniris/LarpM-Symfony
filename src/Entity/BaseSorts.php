@@ -2,62 +2,42 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\Sorts.
- *
- * @Table(name="sorts", indexes={@Index(name="fk_sorts_domaine1_idx", columns={"domaine_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseSorts", "extended":"Sorts"})
- */
-class BaseSorts
+#[ORM\Entity]
+#[ORM\Table(name: 'sorts')]
+#[ORM\Index(columns: ['domaine_id'], name: 'fk_sorts_domaine1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseSorts', 'extended' => 'Sorts'])]
+abstract class BaseSorts
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label = '';
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $documentUrl;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $niveau;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $documentUrl = null;
 
-    /**
-     * @ManyToOne(targetEntity="Domaine", inversedBy="sorts")
-     *
-     * @JoinColumn(name="domaine_id", referencedColumnName="id", nullable=false)
-     */
-    protected $domaine;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $niveau = 0;
 
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Domaine::class, inversedBy: 'sorts')]
+    #[JoinColumn(name: 'domaine_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Domaine $domaine;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Sorts
      */
     public function setId(int $id): static
     {
@@ -68,8 +48,6 @@ class BaseSorts
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -78,10 +56,6 @@ class BaseSorts
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Sorts
      */
     public function setLabel(string $label): static
     {
@@ -92,8 +66,6 @@ class BaseSorts
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -102,10 +74,6 @@ class BaseSorts
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Sorts
      */
     public function setDescription(string $description): static
     {
@@ -116,8 +84,6 @@ class BaseSorts
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
     public function getDescription(): string
     {
@@ -126,10 +92,6 @@ class BaseSorts
 
     /**
      * Set the value of documentUrl.
-     *
-     * @param string $documentUrl
-     *
-     * @return \App\Entity\Sorts
      */
     public function setDocumentUrl(string $documentUrl): static
     {
@@ -140,8 +102,6 @@ class BaseSorts
 
     /**
      * Get the value of documentUrl.
-     *
-     * @return string
      */
     public function getDocumentUrl(): string
     {
@@ -150,12 +110,8 @@ class BaseSorts
 
     /**
      * Set the value of niveau.
-     *
-     * @param int $niveau
-     *
-     * @return \App\Entity\Sorts
      */
-    public function setNiveau($niveau)
+    public function setNiveau(int $niveau): static
     {
         $this->niveau = $niveau;
 
@@ -164,20 +120,16 @@ class BaseSorts
 
     /**
      * Get the value of niveau.
-     *
-     * @return int
      */
-    public function getNiveau()
+    public function getNiveau(): int
     {
         return $this->niveau;
     }
 
     /**
      * Set Domaine entity (many to one).
-     *
-     * @return \App\Entity\Sorts
      */
-    public function setDomaine(Domaine $domaine = null)
+    public function setDomaine(Domaine $domaine = null): static
     {
         $this->domaine = $domaine;
 
@@ -186,10 +138,8 @@ class BaseSorts
 
     /**
      * Get Domaine entity (many to one).
-     *
-     * @return \App\Entity\Domaine
      */
-    public function getDomaine()
+    public function getDomaine(): Domaine
     {
         return $this->domaine;
     }

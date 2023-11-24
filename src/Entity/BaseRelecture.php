@@ -2,18 +2,18 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
 #[Entity]
 #[ORM\Table(name: 'relecture')]
 #[ORM\Index(columns: ['etat_civil_id'], name: 'fk_user_etat_civil1_idx')]
-#[ORM\Index(columns: ['user_id'], name: 'fk_relecture_User1_idx')]
+#[ORM\Index(columns: ['user_id'], name: 'fk_relecture_user1_idx')]
 #[ORM\Index(columns: ['intrigue_id'], name: 'fk_relecture_intrigue1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
@@ -26,39 +26,31 @@ class BaseRelecture
     /**
      * @Column(name="`date`", type="datetime")
      */
-    protected $date;
+    #[Column(name: 'name', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    protected \DateTime $date;
 
     /**
      * @Column(type="string", length=45)
      */
-    protected $statut;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $statut;
 
     /**
      * @Column(type="text", nullable=true)
      */
-    protected $remarque;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: 45)]
+    protected string $remarque = '';
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'relectures')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
 
-    /**
-     * @ManyToOne(targetEntity="Intrigue", inversedBy="relectures", cascade={"persist", "remove"})
-     *
-     * @JoinColumn(name="intrigue_id", referencedColumnName="id", nullable=false)
-     */
-    protected $intrigue;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Intrigue::class, inversedBy: 'relectures', cascade: ['persist', 'remove'])]
+    #[JoinColumn(name: 'intrigue_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Intrigue $intrigue;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Relecture
      */
     public function setId(int $id): static
     {
@@ -69,8 +61,6 @@ class BaseRelecture
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -79,12 +69,8 @@ class BaseRelecture
 
     /**
      * Set the value of date.
-     *
-     * @param \DateTime $date
-     *
-     * @return \App\Entity\Relecture
      */
-    public function setDate($date)
+    public function setDate(\DateTime $date): static
     {
         $this->date = $date;
 
@@ -93,22 +79,16 @@ class BaseRelecture
 
     /**
      * Get the value of date.
-     *
-     * @return \DateTime
      */
-    public function getDate()
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
 
     /**
      * Set the value of statut.
-     *
-     * @param string $statut
-     *
-     * @return \App\Entity\Relecture
      */
-    public function setStatut($statut)
+    public function setStatut(string $statut): static
     {
         $this->statut = $statut;
 
@@ -117,22 +97,16 @@ class BaseRelecture
 
     /**
      * Get the value of statut.
-     *
-     * @return string
      */
-    public function getStatut()
+    public function getStatut(): string
     {
         return $this->statut;
     }
 
     /**
      * Set the value of remarque.
-     *
-     * @param string $remarque
-     *
-     * @return \App\Entity\Relecture
      */
-    public function setRemarque($remarque)
+    public function setRemarque(string $remarque): static
     {
         $this->remarque = $remarque;
 
@@ -141,42 +115,34 @@ class BaseRelecture
 
     /**
      * Get the value of remarque.
-     *
-     * @return string
      */
-    public function getRemarque()
+    public function getRemarque(): string
     {
         return $this->remarque;
     }
 
     /**
      * Set User entity (many to one).
-     *
-     * @return \App\Entity\Relecture
      */
-    public function setUser(User $User = null)
+    public function setUser(User $user = null): static
     {
-        $this->user = $User;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
      * Get User entity (many to one).
-     *
-     * @return \App\Entity\User
      */
-    public function getUser()
+    public function getUser(): static
     {
         return $this->user;
     }
 
     /**
      * Set Intrigue entity (many to one).
-     *
-     * @return \App\Entity\Relecture
      */
-    public function setIntrigue(Intrigue $intrigue = null)
+    public function setIntrigue(Intrigue $intrigue = null): static
     {
         $this->intrigue = $intrigue;
 
@@ -185,10 +151,8 @@ class BaseRelecture
 
     /**
      * Get Intrigue entity (many to one).
-     *
-     * @return \App\Entity\Intrigue
      */
-    public function getIntrigue()
+    public function getIntrigue(): Intrigue
     {
         return $this->intrigue;
     }

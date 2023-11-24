@@ -3,62 +3,45 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\Sort.
- *
- * @Table(name="sort", indexes={@Index(name="fk_sort_domaine1_idx", columns={"domaine_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseSort", "extended":"Sort"})
- */
-class BaseSort
+#[ORM\Entity]
+#[ORM\Table(name: 'sort')]
+#[ORM\Index(columns: ['domaine_id'], name: 'fk_sort_domaine1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseSort', 'extended' => 'Sort'])]
+abstract class BaseSort
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[Column(length: 45, type: \Doctrine\DBAL\Types\Types::STRING)]
+    protected string $label = '';
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[Column(nullable: true, type: \Doctrine\DBAL\Types\Types::STRING)]
+    protected ?string $description = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $documentUrl;
+    #[Column(length: 45, type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $documentUrl = null;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $niveau;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $niveau = 0;
 
-    /**
-     * @ManyToOne(targetEntity="Domaine", inversedBy="sorts")
-     *
-     * @JoinColumn(name="domaine_id", referencedColumnName="id", nullable=false)
-     */
-    protected $domaine;
+    #[ManyToOne(targetEntity: Domaine::class, inversedBy: 'sorts')]
+    #[JoinColumn(name: 'domaine_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Domaine $domaine;
 
-    /**
-     * @Column(type="boolean", nullable=false, options={"default":0})
-     */
-    protected $secret;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: false, options: ['default' => 0])]
+    protected bool $secret = false;
 
-    /**
-     * @ManyToMany(targetEntity="Personnage", mappedBy="sorts")
-     */
-    protected $personnages;
+    #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'sorts')]
+    protected ArrayCollection $personnages;
 
     public function __construct()
     {
@@ -67,10 +50,6 @@ class BaseSort
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Sort
      */
     public function setId(int $id): static
     {
@@ -81,8 +60,6 @@ class BaseSort
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -91,10 +68,6 @@ class BaseSort
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Sort
      */
     public function setLabel(string $label): static
     {
@@ -105,8 +78,6 @@ class BaseSort
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -115,10 +86,6 @@ class BaseSort
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Sort
      */
     public function setDescription(string $description): static
     {
@@ -129,8 +96,6 @@ class BaseSort
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
     public function getDescription(): string
     {
@@ -139,10 +104,6 @@ class BaseSort
 
     /**
      * Set the value of documentUrl.
-     *
-     * @param string $documentUrl
-     *
-     * @return \App\Entity\Sort
      */
     public function setDocumentUrl(string $documentUrl): static
     {
@@ -153,8 +114,6 @@ class BaseSort
 
     /**
      * Get the value of documentUrl.
-     *
-     * @return string
      */
     public function getDocumentUrl(): string
     {
@@ -165,10 +124,8 @@ class BaseSort
      * Set the value of niveau.
      *
      * @param int $niveau
-     *
-     * @return \App\Entity\Sort
      */
-    public function setNiveau($niveau)
+    public function setNiveau($niveau): static
     {
         $this->niveau = $niveau;
 
@@ -177,20 +134,16 @@ class BaseSort
 
     /**
      * Get the value of niveau.
-     *
-     * @return int
      */
-    public function getNiveau()
+    public function getNiveau(): int
     {
         return $this->niveau;
     }
 
     /**
      * Set Domaine entity (many to one).
-     *
-     * @return \App\Entity\Sort
      */
-    public function setDomaine(Domaine $domaine = null)
+    public function setDomaine(Domaine $domaine = null): static
     {
         $this->domaine = $domaine;
 
@@ -199,20 +152,16 @@ class BaseSort
 
     /**
      * Get Domaine entity (many to one).
-     *
-     * @return \App\Entity\Domaine
      */
-    public function getDomaine()
+    public function getDomaine(): Domaine
     {
         return $this->domaine;
     }
 
     /**
      * Add Personnage entity to collection.
-     *
-     * @return \App\Entity\Sort
      */
-    public function addPersonnage(Personnage $personnage)
+    public function addPersonnage(Personnage $personnage): static
     {
         $this->personnages[] = $personnage;
 
@@ -221,10 +170,8 @@ class BaseSort
 
     /**
      * Remove Personnage entity from collection.
-     *
-     * @return \App\Entity\Sort
      */
-    public function removePersonnage(Personnage $personnage)
+    public function removePersonnage(Personnage $personnage): static
     {
         $this->personnages->removeElement($personnage);
 
@@ -233,22 +180,16 @@ class BaseSort
 
     /**
      * Get Personnage entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPersonnages()
+    public function getPersonnages(): ArrayCollection
     {
         return $this->personnages;
     }
 
     /**
      * Set the value of secret.
-     *
-     * @param bool $secret
-     *
-     * @return \App\Entity\Sort
      */
-    public function setSecret($secret)
+    public function setSecret(bool $secret): static
     {
         $this->secret = $secret;
 
@@ -257,10 +198,8 @@ class BaseSort
 
     /**
      * Get the value of secret.
-     *
-     * @return bool
      */
-    public function getSecret()
+    public function getSecret(): bool
     {
         return $this->secret;
     }
