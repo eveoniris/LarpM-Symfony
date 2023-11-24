@@ -3,54 +3,40 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Question.
- *
- * @Table(name="question", indexes={@Index(name="fk_question_User1_idx", columns={"User_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseQuestion", "extended":"Question"})
- */
-class BaseQuestion
+#[ORM\Entity]
+#[ORM\Table(name: 'question')]
+#[ORM\Index(columns: ['user_id'], name: 'fk_question_user1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseQuestion', 'extended' => 'Question'])]
+abstract class BaseQuestion
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(name="`text`", type="text")
-     */
-    protected $text;
+    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::STRING)]
+    protected string $text;
 
-    /**
-     * @Column(name="`date`", type="datetime")
-     */
-    protected $date;
+    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    protected \DateTime $date;
 
-    /**
-     * @Column(type="text")
-     */
-    protected $choix;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
+    protected string $choix = '';
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label = '';
 
-    /**
-     * @OneToMany(targetEntity="Reponse", mappedBy="question")
-     *
-     * @JoinColumn(name="id", referencedColumnName="question_id", nullable=false)
-     */
-    protected $reponses;
+    #[OneToMany(mappedBy: 'question', targetEntity: Reponse::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'question_id', nullable: 'false')]
+    protected ArrayCollection $reponses;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'questions')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
@@ -63,10 +49,6 @@ class BaseQuestion
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Question
      */
     public function setId(int $id): static
     {
@@ -77,8 +59,6 @@ class BaseQuestion
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -87,10 +67,6 @@ class BaseQuestion
 
     /**
      * Set the value of text.
-     *
-     * @param string $text
-     *
-     * @return \App\Entity\Question
      */
     public function setText(string $text): static
     {
@@ -101,8 +77,6 @@ class BaseQuestion
 
     /**
      * Get the value of text.
-     *
-     * @return string
      */
     public function getText(): string
     {
@@ -111,12 +85,8 @@ class BaseQuestion
 
     /**
      * Set the value of date.
-     *
-     * @param \DateTime $date
-     *
-     * @return \App\Entity\Question
      */
-    public function setDate($date)
+    public function setDate(\DateTime $date): static
     {
         $this->date = $date;
 
@@ -125,22 +95,16 @@ class BaseQuestion
 
     /**
      * Get the value of date.
-     *
-     * @return \DateTime
      */
-    public function getDate()
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
 
     /**
      * Set the value of choix.
-     *
-     * @param string $choix
-     *
-     * @return \App\Entity\Question
      */
-    public function setChoix($choix)
+    public function setChoix(string $choix): static
     {
         $this->choix = $choix;
 
@@ -149,20 +113,14 @@ class BaseQuestion
 
     /**
      * Get the value of choix.
-     *
-     * @return string
      */
-    public function getChoix()
+    public function getChoix(): string
     {
         return $this->choix;
     }
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Question
      */
     public function setLabel(string $label): static
     {
@@ -173,8 +131,6 @@ class BaseQuestion
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -183,10 +139,8 @@ class BaseQuestion
 
     /**
      * Add Reponse entity to collection (one to many).
-     *
-     * @return \App\Entity\Question
      */
-    public function addReponse(Reponse $reponse)
+    public function addReponse(Reponse $reponse): static
     {
         $this->reponses[] = $reponse;
 
@@ -195,10 +149,8 @@ class BaseQuestion
 
     /**
      * Remove Reponse entity from collection (one to many).
-     *
-     * @return \App\Entity\Question
      */
-    public function removeReponse(Reponse $reponse)
+    public function removeReponse(Reponse $reponse): static
     {
         $this->reponses->removeElement($reponse);
 
@@ -207,32 +159,26 @@ class BaseQuestion
 
     /**
      * Get Reponse entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getReponses()
+    public function getReponses(): ArrayCollection
     {
         return $this->reponses;
     }
 
     /**
      * Set User entity (many to one).
-     *
-     * @return \App\Entity\Question
      */
-    public function setUser(User $User = null)
+    public function setUser(User $user = null): static
     {
-        $this->user = $User;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
      * Get User entity (many to one).
-     *
-     * @return \App\Entity\User
      */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }

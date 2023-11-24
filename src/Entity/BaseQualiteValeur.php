@@ -2,64 +2,46 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\QualiteValeur.
- *
- * @Table(name="qualite_valeur", indexes={@Index(name="fk_qualite_valeur_qualite1_idx", columns={"qualite_id"}), @Index(name="fk_qualite_valeur_monnaie1_idx", columns={"monnaie_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseQualiteValeur", "extended":"QualiteValeur"})
- */
-class BaseQualiteValeur
+#[ORM\Entity]
+#[ORM\Table(name: 'qualite_valeur')]
+#[ORM\Index(columns: ['qualite_id'], name: 'fk_qualite_valeur_qualite1_idx')]
+#[ORM\Index(columns: ['monnaie_id'], name: 'fk_qualite_valeur_monnaie1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseQualiteValeur', 'extended' => 'QualiteValeur'])]
+abstract class BaseQualiteValeur
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Id
-     *
-     * @Column(type="integer")
-     */
-    protected $monnaie_id;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $monnaie_id;
 
-    /**
-     * @Column(type="integer")
-     */
-    protected $nombre;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $qualite_id;
 
-    /**
-     * @ManyToOne(targetEntity="Qualite", inversedBy="qualiteValeurs")
-     *
-     * @JoinColumn(name="qualite_id", referencedColumnName="id", nullable=false)
-     */
-    protected $qualite;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected int $nombre;
 
-    /**
-     * @ManyToOne(targetEntity="Monnaie", inversedBy="qualiteValeurs")
-     *
-     * @JoinColumn(name="monnaie_id", referencedColumnName="id", nullable=false)
-     */
-    protected $monnaie;
+    #[ManyToOne(targetEntity: Qualite::class, inversedBy: 'qualiteValeurs')]
+    #[JoinColumn(name: 'qualite_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Qualite $qualite;
 
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Monnaie::class, inversedBy: 'qualiteValeurs')]
+    #[JoinColumn(name: 'monnaie_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Monnaie $monnaie;
 
     /**
      * Set the value of qualite_id.
-     *
-     * @param int $qualite_id
-     *
-     * @return \App\Entity\QualiteValeur
      */
-    public function setQualiteId($qualite_id)
+    public function setQualiteId(int $qualite_id): static
     {
         $this->qualite_id = $qualite_id;
 
@@ -68,22 +50,16 @@ class BaseQualiteValeur
 
     /**
      * Get the value of qualite_id.
-     *
-     * @return int
      */
-    public function getQualiteId()
+    public function getQualiteId(): int
     {
         return $this->qualite_id;
     }
 
     /**
      * Set the value of monnaie_id.
-     *
-     * @param int $monnaie_id
-     *
-     * @return \App\Entity\QualiteValeur
      */
-    public function setMonnaieId($monnaie_id)
+    public function setMonnaieId(int $monnaie_id): QualiteValeur
     {
         $this->monnaie_id = $monnaie_id;
 
@@ -92,22 +68,16 @@ class BaseQualiteValeur
 
     /**
      * Get the value of monnaie_id.
-     *
-     * @return int
      */
-    public function getMonnaieId()
+    public function getMonnaieId(): int
     {
         return $this->monnaie_id;
     }
 
     /**
      * Set the value of nombre.
-     *
-     * @param int $nombre
-     *
-     * @return \App\Entity\QualiteValeur
      */
-    public function setNombre($nombre)
+    public function setNombre(int $nombre): static
     {
         $this->nombre = $nombre;
 
@@ -116,20 +86,16 @@ class BaseQualiteValeur
 
     /**
      * Get the value of nombre.
-     *
-     * @return int
      */
-    public function getNombre()
+    public function getNombre(): int
     {
         return $this->nombre;
     }
 
     /**
      * Set Qualite entity (many to one).
-     *
-     * @return \App\Entity\QualiteValeur
      */
-    public function setQualite(Qualite $qualite = null)
+    public function setQualite(Qualite $qualite = null): static
     {
         $this->qualite = $qualite;
 
@@ -138,20 +104,16 @@ class BaseQualiteValeur
 
     /**
      * Get Qualite entity (many to one).
-     *
-     * @return \App\Entity\Qualite
      */
-    public function getQualite()
+    public function getQualite(): Qualite
     {
         return $this->qualite;
     }
 
     /**
      * Set Monnaie entity (many to one).
-     *
-     * @return \App\Entity\QualiteValeur
      */
-    public function setMonnaie(Monnaie $monnaie = null)
+    public function setMonnaie(Monnaie $monnaie = null): static
     {
         $this->monnaie = $monnaie;
 
@@ -160,10 +122,8 @@ class BaseQualiteValeur
 
     /**
      * Get Monnaie entity (many to one).
-     *
-     * @return \App\Entity\Monnaie
      */
-    public function getMonnaie()
+    public function getMonnaie(): Monnaie
     {
         return $this->monnaie;
     }

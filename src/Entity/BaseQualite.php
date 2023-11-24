@@ -3,9 +3,12 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
 /**
  * App\Entity\Qualite.
@@ -18,34 +21,29 @@ use Doctrine\ORM\Mapping\Id;
  *
  * @DiscriminatorMap({"base":"BaseQualite", "extended":"Qualite"})
  */
-class BaseQualite
+#[ORM\Entity]
+#[ORM\Table(name: 'qualite')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseBillet', 'extended' => 'Qualite'])]
+abstract class BaseQualite
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label = '';
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $numero;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $numero = null;
 
-    /**
-     * @OneToMany(targetEntity="Item", mappedBy="qualite")
-     *
-     * @JoinColumn(name="id", referencedColumnName="qualite_id", nullable=false)
-     */
-    protected $items;
+    #[OneToMany(mappedBy: 'qualite', targetEntity: Item::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'qualite_id', nullable: 'false')]
+    protected ArrayCollection $items;
 
-    /**
-     * @OneToMany(targetEntity="QualiteValeur", mappedBy="qualite")
-     *
-     * @JoinColumn(name="id", referencedColumnName="qualite_id", nullable=false)
-     */
-    protected $qualiteValeurs;
+    #[OneToMany(mappedBy: 'qualite', targetEntity: QualiteValeur::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'qualite_id', nullable: 'false')]
+    protected ArrayCollection $qualiteValeurs;
 
     public function __construct()
     {
@@ -55,10 +53,6 @@ class BaseQualite
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Qualite
      */
     public function setId(int $id): static
     {
@@ -69,8 +63,6 @@ class BaseQualite
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -79,10 +71,6 @@ class BaseQualite
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Qualite
      */
     public function setLabel(string $label): static
     {
@@ -93,8 +81,6 @@ class BaseQualite
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -103,12 +89,8 @@ class BaseQualite
 
     /**
      * Set the value of numero.
-     *
-     * @param int $numero
-     *
-     * @return \App\Entity\Qualite
      */
-    public function setNumero($numero)
+    public function setNumero(int $numero): static
     {
         $this->numero = $numero;
 
@@ -117,20 +99,16 @@ class BaseQualite
 
     /**
      * Get the value of numero.
-     *
-     * @return int
      */
-    public function getNumero()
+    public function getNumero(): ?int
     {
         return $this->numero;
     }
 
     /**
      * Add Item entity to collection (one to many).
-     *
-     * @return \App\Entity\Qualite
      */
-    public function addItem(Item $item)
+    public function addItem(Item $item): static
     {
         $this->items[] = $item;
 
@@ -139,10 +117,8 @@ class BaseQualite
 
     /**
      * Remove Item entity from collection (one to many).
-     *
-     * @return \App\Entity\Qualite
      */
-    public function removeItem(Item $item)
+    public function removeItem(Item $item): static
     {
         $this->items->removeElement($item);
 
@@ -151,20 +127,16 @@ class BaseQualite
 
     /**
      * Get Item entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getItems()
+    public function getItems(): ArrayCollection
     {
         return $this->items;
     }
 
     /**
      * Add QualiteValeur entity to collection (one to many).
-     *
-     * @return \App\Entity\Qualite
      */
-    public function addQualiteValeur(QualiteValeur $qualiteValeur)
+    public function addQualiteValeur(QualiteValeur $qualiteValeur): static
     {
         $this->qualiteValeurs[] = $qualiteValeur;
 
@@ -173,10 +145,8 @@ class BaseQualite
 
     /**
      * Remove QualiteValeur entity from collection (one to many).
-     *
-     * @return \App\Entity\Qualite
      */
-    public function removeQualiteValeur(QualiteValeur $qualiteValeur)
+    public function removeQualiteValeur(QualiteValeur $qualiteValeur): static
     {
         $this->qualiteValeurs->removeElement($qualiteValeur);
 
@@ -185,10 +155,8 @@ class BaseQualite
 
     /**
      * Get QualiteValeur entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getQualiteValeurs()
+    public function getQualiteValeurs(): ArrayCollection
     {
         return $this->qualiteValeurs;
     }
