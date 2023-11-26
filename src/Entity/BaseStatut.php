@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -31,12 +32,12 @@ abstract class BaseStatut
     /**
      * @Column(type="text", nullable=true)
      */
-    #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
     #[OneToMany(mappedBy: 'statut', targetEntity: Item::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'statut_id', nullable: 'false')]
-    protected $items;
+    protected Collection $items;
 
     public function __construct()
     {
