@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 use App\Repository\BilletRepository;
 
@@ -22,7 +22,7 @@ class Billet extends BaseBillet implements \Stringable
         return $this->getGn()?->getLabel().' - '.$this->getLabel();
     }
 
-    public function getUsers(): ArrayCollection
+    public function getUsers(): Collection
     {
         $result = new ArrayCollection();
 

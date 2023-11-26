@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -32,15 +32,15 @@ class BaseParticipant
 
     #[OneToMany(mappedBy: 'participant', targetEntity: GroupeGn::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'responsable_id', nullable: 'false')]
-    protected ArrayCollection $groupeGns;
+    protected Collection $groupeGns;
 
     #[OneToMany(mappedBy: 'participant', targetEntity: ParticipantHasRestauration::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: 'false')]
-    protected ArrayCollection $participantHasRestaurations;
+    protected Collection $participantHasRestaurations;
 
     #[OneToMany(mappedBy: 'participant', targetEntity: Reponse::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: 'false')]
-    protected ArrayCollection $reponses;
+    protected Collection $reponses;
 
     #[ManyToOne(inversedBy: 'participant', targetEntity: Gn::class, cascade: ['persist'])]
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
@@ -71,7 +71,7 @@ class BaseParticipant
     #[ORM\JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
-    protected ArrayCollection $potions_depart;
+    protected Collection $potions_depart;
 
     public function __construct()
     {
@@ -182,7 +182,7 @@ class BaseParticipant
     /**
      * Get GroupeGn entity collection (one to many).
      */
-    public function getGroupeGns(): ArrayCollection
+    public function getGroupeGns(): Collection
     {
         return $this->groupeGns;
     }
@@ -210,7 +210,7 @@ class BaseParticipant
     /**
      * Get ParticipantHasRestauration entity collection (one to many).
      */
-    public function getParticipantHasRestaurations(): ArrayCollection
+    public function getParticipantHasRestaurations(): Collection
     {
         return $this->participantHasRestaurations;
     }
@@ -238,7 +238,7 @@ class BaseParticipant
     /**
      * Get Reponse entity collection (one to many).
      */
-    public function getReponses(): ArrayCollection
+    public function getReponses(): Collection
     {
         return $this->reponses;
     }
@@ -374,7 +374,7 @@ class BaseParticipant
     /**
      * Get Potion entity collection.
      */
-    public function getPotionsDepart(): ArrayCollection
+    public function getPotionsDepart(): Collection
     {
         return $this->potions_depart;
     }

@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 use App\Repository\CompetenceRepository;
 
@@ -14,7 +14,7 @@ class Competence extends BaseCompetence implements \Stringable
         return $this->getLabel();
     }
 
-    public function getPersonnagesGn(int $gnId): ArrayCollection
+    public function getPersonnagesGn(int $gnId): Collection
     {
         $liste = new ArrayCollection();
         foreach ($this->getPersonnages() as $personnage) {

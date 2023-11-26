@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -61,7 +61,7 @@ abstract class BaseItem
     protected Objet $objet;
 
     #[ORM\ManyToMany(targetEntity: Groupe::class, inversedBy: 'items')]
-    protected ArrayCollection $groupes;
+    protected Collection $groupes;
 
     #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'items')]
     protected $personnages;
@@ -335,7 +335,7 @@ abstract class BaseItem
     /**
      * Get Groupe entity collection.
      */
-    public function getGroupes(): ArrayCollection
+    public function getGroupes(): Collection
     {
         return $this->groupes;
     }
@@ -363,7 +363,7 @@ abstract class BaseItem
     /**
      * Get Personnage entity collection.
      */
-    public function getPersonnages(): ArrayCollection
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }

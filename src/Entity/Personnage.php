@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 use App\Repository\PersonnageRepository;
 
@@ -38,7 +38,7 @@ class Personnage extends BasePersonnage implements \Stringable
     /**
      * Fourni tous les gns auquel participe un personnage.
      */
-    public function getGns(): ArrayCollection
+    public function getGns(): Collection
     {
         $gns = new ArrayCollection();
 
@@ -137,7 +137,7 @@ class Personnage extends BasePersonnage implements \Stringable
      *
      * @param unknown $visibility
      */
-    public function getBackgrounds($visibility = null): ArrayCollection
+    public function getBackgrounds($visibility = null): Collection
     {
         $backgrounds = new ArrayCollection();
         foreach ($this->getPersonnageBackgrounds() as $background) {
@@ -389,7 +389,7 @@ class Personnage extends BasePersonnage implements \Stringable
     /**
      * Fourni la liste des langues connues.
      */
-    public function getLanguages(): ArrayCollection
+    public function getLanguages(): Collection
     {
         $languages = new ArrayCollection();
         foreach ($this->getPersonnageLangues() as $personnageLangue) {
@@ -695,7 +695,7 @@ class Personnage extends BasePersonnage implements \Stringable
     /**
      * Fourni le score d'héroïsme.
      */
-    public function getHeroisme(): int|float
+    public function getHeroisme(): int
     {
         $heroisme = 0;
 

@@ -4,7 +4,7 @@
 namespace App\Entity;
 
 use App\Repository\TopicRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity(repositoryClass: TopicRepository::class)]
@@ -31,7 +31,7 @@ class Topic extends BaseTopic implements \Stringable
     /**
      * Retourne la liste des topics classé par la date de publication de leurs posts.
      */
-    public function getTopicsOrderByLastPost($app = null): ArrayCollection
+    public function getTopicsOrderByLastPost($app = null): Collection
     {
         $topics = $this->getTopics();
         $iterator = $topics->getIterator();
@@ -58,7 +58,7 @@ class Topic extends BaseTopic implements \Stringable
     /**
      * Fourni la liste des posts d'un topic classé par date de publication (en prennant en compte les réponses).
      */
-    public function getPostsOrderByDate(): ArrayCollection
+    public function getPostsOrderByDate(): Collection
     {
         $posts = $this->getPosts();
         $iterator = $posts->getIterator();

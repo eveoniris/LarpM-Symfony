@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -75,68 +74,68 @@ class BasePersonnage
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceGain::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $experienceGains;
+    protected Collection $experienceGains;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceUsage::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $experienceUsages;
+    protected Collection $experienceUsages;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: HeroismeHistory::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $heroismeHistories;
+    protected Collection $heroismeHistories;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: Membre::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $membres;
+    protected Collection $membres;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: Participant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $participants;
+    protected Collection $participants;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageBackground::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $personnageBackgrounds;
+    protected Collection $personnageBackgrounds;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageHasToken::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $personnageHasTokens;
+    protected Collection $personnageHasTokens;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageIngredient::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $personnageIngredients;
+    protected Collection $personnageIngredients;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageLangues::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
     #[OrderBy(['secret' => 'ASC', 'langue' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC'])]
-    protected ArrayCollection $personnageLangues;
+    protected Collection $personnageLangues;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageRessource::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $personnageRessources;
+    protected Collection $personnageRessources;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageTrigger::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $personnageTriggers;
+    protected Collection $personnageTriggers;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnagesReligions::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $personnagesReligions;
+    protected Collection $personnagesReligions;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: Postulant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $postulants;
+    protected Collection $postulants;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: RenommeHistory::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $renommeHistories;
+    protected Collection $renommeHistories;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: SecondaryGroup::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $secondaryGroups;
+    protected Collection $secondaryGroups;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: User::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $users;
+    protected Collection $users;
 
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'personnages')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
@@ -167,76 +166,76 @@ class BasePersonnage
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'Document_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['code' => 'ASC'])]
-    protected ArrayCollection $documents;
+    protected Collection $documents;
 
     #[ORM\ManyToMany(targetEntity: Item::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_has_item')]
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'item_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['label' => 'ASC'])]
-    protected ArrayCollection $items;
+    protected Collection $items;
 
     #[ORM\ManyToMany(targetEntity: Technologie::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_has_technologie')]
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'technologie_id', referencedColumnName: 'id', nullable: false)]
-    protected ArrayCollection $technologies;
+    protected Collection $technologies;
 
     #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_religion_description')]
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
-    protected ArrayCollection $religions;
+    protected Collection $religions;
 
     #[ORM\ManyToMany(targetEntity: Competence::class, mappedBy: 'personnages')]
     #[ORM\OrderBy(['competenceFamily' => 'ASC', 'level' => 'ASC'])]
-    protected ArrayCollection $competences;
+    protected Collection $competences;
 
     #[ORM\ManyToMany(targetEntity: Domaine::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_domaines')]
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'domaine_id', referencedColumnName: 'id', nullable: false)]
-    protected ArrayCollection $domaines;
+    protected Collection $domaines;
 
     #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'users')]
     #[ORM\JoinTable(name: 'personnages_potions')]
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
-    protected ArrayCollection $potions;
+    protected Collection $potions;
 
     #[ORM\ManyToMany(targetEntity: Priere::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_prieres')]
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'priere_id', referencedColumnName: 'id', nullable: false)]
-    protected ArrayCollection $prieres;
+    protected Collection $prieres;
 
     #[ORM\ManyToMany(targetEntity: Sort::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_sorts')]
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'sort_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
-    protected ArrayCollection $sorts;
+    protected Collection $sorts;
 
     #[ORM\ManyToMany(targetEntity: Connaissance::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_connaissances')]
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'connaissance_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
-    protected ArrayCollection $connaissances;
+    protected Collection $connaissances;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PugilatHistory::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $pugilatHistories;
+    protected Collection $pugilatHistories;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageChronologie::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
     #[ORM\OrderBy(['annee' => 'ASC', 'id' => 'ASC'])]
-    protected ArrayCollection $personnageChronologie;
+    protected Collection $personnageChronologie;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageLignee::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    protected ArrayCollection $personnageLignee;
+    protected Collection $personnageLignee;
 
     public function __construct()
     {
@@ -557,7 +556,7 @@ class BasePersonnage
     /**
      * Get ExperienceGain entity collection (one to many).
      */
-    public function getExperienceGains(): ArrayCollection
+    public function getExperienceGains(): Collection
     {
         return $this->experienceGains;
     }
@@ -585,7 +584,7 @@ class BasePersonnage
     /**
      * Get ExperienceUsage entity collection (one to many).
      */
-    public function getExperienceUsages(): ArrayCollection
+    public function getExperienceUsages(): Collection
     {
         return $this->experienceUsages;
     }
@@ -613,7 +612,7 @@ class BasePersonnage
     /**
      * Get HeroismeHistory entity collection (one to many).
      */
-    public function getHeroismeHistories(): ArrayCollection
+    public function getHeroismeHistories(): Collection
     {
         return $this->heroismeHistories;
     }
@@ -641,7 +640,7 @@ class BasePersonnage
     /**
      * Get PugilatHistory entity collection (one to many).
      */
-    public function getPugilatHistories(): ArrayCollection
+    public function getPugilatHistories(): Collection
     {
         return $this->pugilatHistories;
     }
@@ -669,7 +668,7 @@ class BasePersonnage
     /**
      * Get Membre entity collection (one to many).
      */
-    public function getMembres(): ArrayCollection
+    public function getMembres(): Collection
     {
         return $this->membres;
     }
@@ -697,7 +696,7 @@ class BasePersonnage
     /**
      * Get Participant entity collection (one to many).
      */
-    public function getParticipants(): ArrayCollection
+    public function getParticipants(): Collection
     {
         return $this->participants;
     }
@@ -725,7 +724,7 @@ class BasePersonnage
     /**
      * Get PersonnageBackground entity collection (one to many).
      */
-    public function getPersonnageBackgrounds(): ArrayCollection
+    public function getPersonnageBackgrounds(): Collection
     {
         return $this->personnageBackgrounds;
     }
@@ -753,7 +752,7 @@ class BasePersonnage
     /**
      * Get PersonnageHasToken entity collection (one to many).
      */
-    public function getPersonnageHasTokens(): ArrayCollection
+    public function getPersonnageHasTokens(): Collection
     {
         return $this->personnageHasTokens;
     }
@@ -781,7 +780,7 @@ class BasePersonnage
     /**
      * Get PersonnageIngredient entity collection (one to many).
      */
-    public function getPersonnageIngredients(): ArrayCollection
+    public function getPersonnageIngredients(): Collection
     {
         return $this->personnageIngredients;
     }
@@ -809,7 +808,7 @@ class BasePersonnage
     /**
      * Get PersonnageLangues entity collection (one to many).
      */
-    public function getPersonnageLangues(): ArrayCollection
+    public function getPersonnageLangues(): Collection
     {
         return $this->personnageLangues;
     }
@@ -837,7 +836,7 @@ class BasePersonnage
     /**
      * Get PersonnageRessource entity collection (one to many).
      */
-    public function getPersonnageRessources(): ArrayCollection
+    public function getPersonnageRessources(): Collection
     {
         return $this->personnageRessources;
     }
@@ -865,7 +864,7 @@ class BasePersonnage
     /**
      * Get PersonnageTrigger entity collection (one to many).
      */
-    public function getPersonnageTriggers(): ArrayCollection
+    public function getPersonnageTriggers(): Collection
     {
         return $this->personnageTriggers;
     }
@@ -893,7 +892,7 @@ class BasePersonnage
     /**
      * Get PersonnagesReligions entity collection (one to many).
      */
-    public function getPersonnagesReligions(): ArrayCollection
+    public function getPersonnagesReligions(): Collection
     {
         $iterator = $this->personnagesReligions->getIterator();
         $iterator->uasort(static function (PersonnagesReligions $a, PersonnagesReligions $b): int {
@@ -927,7 +926,7 @@ class BasePersonnage
     /**
      * Get Postulant entity collection (one to many).
      */
-    public function getPostulants(): ArrayCollection
+    public function getPostulants(): Collection
     {
         return $this->postulants;
     }
@@ -955,7 +954,7 @@ class BasePersonnage
     /**
      * Get RenommeHistory entity collection (one to many).
      */
-    public function getRenommeHistories(): ArrayCollection
+    public function getRenommeHistories(): Collection
     {
         return $this->renommeHistories;
     }
@@ -983,7 +982,7 @@ class BasePersonnage
     /**
      * Get SecondaryGroup entity collection (one to many).
      */
-    public function getSecondaryGroups(): ArrayCollection
+    public function getSecondaryGroups(): Collection
     {
         return $this->secondaryGroups;
     }
@@ -1011,7 +1010,7 @@ class BasePersonnage
     /**
      * Get User entity collection (one to many).
      */
-    public function getUsers(): ArrayCollection
+    public function getUsers(): Collection
     {
         return $this->users;
     }
@@ -1149,7 +1148,7 @@ class BasePersonnage
     /**
      * Get Document entity collection.
      */
-    public function getDocuments(): ArrayCollection
+    public function getDocuments(): Collection
     {
         return $this->documents;
     }
@@ -1179,7 +1178,7 @@ class BasePersonnage
     /**
      * Get Item entity collection.
      */
-    public function getItems(): ArrayCollection
+    public function getItems(): Collection
     {
         return $this->items;
     }
@@ -1209,7 +1208,7 @@ class BasePersonnage
     /**
      * Get Technologie entity collection.
      */
-    public function getTechnologies(): ArrayCollection
+    public function getTechnologies(): Collection
     {
         return $this->technologies;
     }
@@ -1239,7 +1238,7 @@ class BasePersonnage
     /**
      * Get Religion entity collection.
      */
-    public function getReligions(): ArrayCollection
+    public function getReligions(): Collection
     {
         return $this->religions;
     }
@@ -1267,7 +1266,7 @@ class BasePersonnage
     /**
      * Get Competence entity collection.
      */
-    public function getCompetences(): ArrayCollection
+    public function getCompetences(): Collection
     {
         $iterator = $this->competences->getIterator();
         $iterator->uasort(static function (Competence $a, Competence $b): int {
@@ -1302,7 +1301,7 @@ class BasePersonnage
     /**
      * Get Domaine entity collection.
      */
-    public function getDomaines(): ArrayCollection
+    public function getDomaines(): Collection
     {
         return $this->domaines;
     }
@@ -1332,7 +1331,7 @@ class BasePersonnage
     /**
      * Get Potion entity collection.
      */
-    public function getPotions(): ArrayCollection
+    public function getPotions(): Collection
     {
         return $this->potions;
     }
@@ -1360,7 +1359,7 @@ class BasePersonnage
     /**
      * Get Priere entity collection.
      */
-    public function getPrieres(): ArrayCollection
+    public function getPrieres(): Collection
     {
         return $this->prieres;
     }
@@ -1390,7 +1389,7 @@ class BasePersonnage
     /**
      * Get Sort entity collection.
      */
-    public function getSorts(): ArrayCollection
+    public function getSorts(): Collection
     {
         return $this->sorts;
     }
@@ -1420,7 +1419,7 @@ class BasePersonnage
     /**
      * Get Connaissance entity collection.
      */
-    public function getConnaissances(): ArrayCollection
+    public function getConnaissances(): Collection
     {
         return $this->connaissances;
     }
@@ -1428,7 +1427,7 @@ class BasePersonnage
     /**
      * Get personnageChronologie entity collection.
      */
-    public function getPersonnageChronologie(): ArrayCollection
+    public function getPersonnageChronologie(): Collection
     {
         return $this->personnageChronologie;
     }
@@ -1436,7 +1435,7 @@ class BasePersonnage
     /**
      * Get personnageLignee entity collection.
      */
-    public function getPersonnageLignee(): ArrayCollection
+    public function getPersonnageLignee(): Collection
     {
         return $this->personnageLignee;
     }

@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -34,7 +34,7 @@ abstract class BaseLoi
     protected ?string $description = null;
 
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'lois')]
-    protected ArrayCollection $territoires;
+    protected Collection $territoires;
 
     public function __construct()
     {
@@ -136,7 +136,7 @@ abstract class BaseLoi
     /**
      * Get Territoire entity collection.
      */
-    public function getTerritoires(): ArrayCollection
+    public function getTerritoires(): Collection
     {
         return $this->territoires;
     }

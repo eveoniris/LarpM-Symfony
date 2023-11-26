@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -60,35 +60,35 @@ class BaseGn
 
     #[OneToMany(mappedBy: 'gn', targetEntity: Annonce::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
-    protected ArrayCollection $annonces;
+    protected Collection $annonces;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: Background::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
-    protected ArrayCollection $backgrounds;
+    protected Collection $backgrounds;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: Billet::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
-    protected ArrayCollection $billets;
+    protected Collection $billets;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: Debriefing::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
-    protected ArrayCollection $debriefings;
+    protected Collection $debriefings;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: GroupeGn::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
-    protected ArrayCollection $groupeGns;
+    protected Collection $groupeGns;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: Participant::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
-    protected ArrayCollection $participants;
+    protected Collection $participants;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: PersonnageBackground::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
-    protected ArrayCollection $personnageBackgrounds;
+    protected Collection $personnageBackgrounds;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: Rumeur::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
-    protected ArrayCollection $rumeurs;
+    protected Collection $rumeurs;
 
     #[ORM\ManyToOne(targetEntity: Topic::class, cascade: ['persist'], inversedBy: 'gns')]
     #[ORM\JoinColumn(name: 'topic_id', referencedColumnName: 'id')]
@@ -276,7 +276,7 @@ class BaseGn
         return $this;
     }
 
-    public function getAnnonces(): ArrayCollection
+    public function getAnnonces(): Collection
     {
         return $this->annonces;
     }
@@ -295,7 +295,7 @@ class BaseGn
         return $this;
     }
 
-    public function getBackgrounds(): ArrayCollection
+    public function getBackgrounds(): Collection
     {
         return $this->backgrounds;
     }
@@ -314,7 +314,7 @@ class BaseGn
         return $this;
     }
 
-    public function getBillets(): ArrayCollection
+    public function getBillets(): Collection
     {
         return $this->billets;
     }
@@ -333,7 +333,7 @@ class BaseGn
         return $this;
     }
 
-    public function getDebriefings(): ArrayCollection
+    public function getDebriefings(): Collection
     {
         return $this->debriefings;
     }
@@ -352,7 +352,7 @@ class BaseGn
         return $this;
     }
 
-    public function getGroupeGns(): ArrayCollection
+    public function getGroupeGns(): Collection
     {
         return $this->groupeGns;
     }
@@ -371,7 +371,7 @@ class BaseGn
         return $this;
     }
 
-    public function getParticipants(): ArrayCollection
+    public function getParticipants(): Collection
     {
         return $this->participants;
     }
@@ -390,7 +390,7 @@ class BaseGn
         return $this;
     }
 
-    public function getPersonnageBackgrounds(): ArrayCollection
+    public function getPersonnageBackgrounds(): Collection
     {
         return $this->personnageBackgrounds;
     }
@@ -409,7 +409,7 @@ class BaseGn
         return $this;
     }
 
-    public function getRumeurs(): ArrayCollection
+    public function getRumeurs(): Collection
     {
         return $this->rumeurs;
     }

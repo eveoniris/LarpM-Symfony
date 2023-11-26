@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -39,11 +39,11 @@ abstract class BaseQualite
 
     #[OneToMany(mappedBy: 'qualite', targetEntity: Item::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'qualite_id', nullable: 'false')]
-    protected ArrayCollection $items;
+    protected Collection $items;
 
     #[OneToMany(mappedBy: 'qualite', targetEntity: QualiteValeur::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'qualite_id', nullable: 'false')]
-    protected ArrayCollection $qualiteValeurs;
+    protected Collection $qualiteValeurs;
 
     public function __construct()
     {
@@ -128,7 +128,7 @@ abstract class BaseQualite
     /**
      * Get Item entity collection (one to many).
      */
-    public function getItems(): ArrayCollection
+    public function getItems(): Collection
     {
         return $this->items;
     }
@@ -156,7 +156,7 @@ abstract class BaseQualite
     /**
      * Get QualiteValeur entity collection (one to many).
      */
-    public function getQualiteValeurs(): ArrayCollection
+    public function getQualiteValeurs(): Collection
     {
         return $this->qualiteValeurs;
     }

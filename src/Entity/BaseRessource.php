@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
@@ -125,7 +124,7 @@ class BaseRessource
      *
      * @return Collection
      */
-    public function getGroupeHasRessources(): ArrayCollection
+    public function getGroupeHasRessources(): Collection
     {
         return $this->groupeHasRessources;
     }
@@ -155,7 +154,7 @@ class BaseRessource
      *
      * @return Collection
      */
-    public function getPersonnageRessources(): ArrayCollection
+    public function getPersonnageRessources(): Collection
     {
         return $this->personnageRessources;
     }
@@ -185,7 +184,7 @@ class BaseRessource
      *
      * @return Collection
      */
-    public function getTechnologiesRessources(): ArrayCollection
+    public function getTechnologiesRessources(): Collection
     {
         return $this->technologiesRessources;
     }

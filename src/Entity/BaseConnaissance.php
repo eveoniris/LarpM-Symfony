@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -38,7 +38,7 @@ abstract class BaseConnaissance
     protected bool $secret = false;
 
     #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'connaissances')]
-    protected ArrayCollection $personnages;
+    protected Collection $personnages;
 
     public function __construct()
     {
@@ -119,7 +119,7 @@ abstract class BaseConnaissance
         return $this;
     }
 
-    public function getPersonnages(): ArrayCollection
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }

@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
-use phpDocumentor\Reflection\Types\Collection;
 
 #[Entity]
 #[ORM\Table(name: 'post')]
@@ -31,22 +30,19 @@ use phpDocumentor\Reflection\Types\Collection;
     #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::STRING)]
     protected string $text;
 
-    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date;
 
-    /**
-     * @Column(type="datetime", nullable=true)
-     */
-    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
     protected ?\DateTime $update_date;
 
     #[OneToMany(mappedBy: 'post', targetEntity: Post::class)]
     #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id')]
-    protected ArrayCollection $posts;
+    protected Collection $posts;
 
     #[OneToMany(mappedBy: 'post', targetEntity: PostView::class)]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'post_id', nullable: false)]
-    protected ArrayCollection $postViews;
+    protected Collection $postViews;
 
     #[ManyToOne(targetEntity: Topic::class, inversedBy: 'posts')]
     #[JoinColumn(name: 'topic_id', referencedColumnName: 'id')]
@@ -63,7 +59,7 @@ use phpDocumentor\Reflection\Types\Collection;
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'posts')]
     #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
-    protected ArrayCollection $users;
+    protected Collection $users;
 
     public function __construct()
     {
@@ -213,7 +209,7 @@ use phpDocumentor\Reflection\Types\Collection;
     /**
      * Get PostView entity collection (one to many).
      */
-    public function getPostViews(): ArrayCollection
+    public function getPostViews(): Collection
     {
         return $this->postViews;
     }
@@ -297,7 +293,7 @@ use phpDocumentor\Reflection\Types\Collection;
     /**
      * Get User entity collection.
      */
-    public function getUsers(): ArrayCollection
+    public function getUsers(): Collection
     {
         return $this->users;
     }

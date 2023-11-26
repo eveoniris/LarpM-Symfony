@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -61,55 +61,55 @@ class BaseGroupe
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: Background::class)]
     #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
-    protected ArrayCollection $backgrounds;
+    protected Collection $backgrounds;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: Debriefing::class)]
     #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
-    protected ArrayCollection $debriefings;
+    protected Collection $debriefings;
 
     #[OneToMany(mappedBy: 'groupeRelatedByGroupeId', targetEntity: GroupeAllie::class)]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
-    protected ArrayCollection $groupeAllieRelatedByGroupeIds;
+    protected Collection $groupeAllieRelatedByGroupeIds;
 
     #[OneToMany(mappedBy: 'groupeRelatedByGroupeAllieId', targetEntity: GroupeAllie::class)]
     #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'groupe_allie_id', nullable: false)]
-    protected ArrayCollection $groupeAllieRelatedByGroupeAllieIds;
+    protected Collection $groupeAllieRelatedByGroupeAllieIds;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeClasse::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
-    protected ArrayCollection $groupeClasses;
+    protected Collection $groupeClasses;
 
     #[OneToMany(mappedBy: 'groupeRelatedByGroupeId', targetEntity: GroupeEnemy::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
-    protected ArrayCollection $groupeEnemyRelatedByGroupeIds;
+    protected Collection $groupeEnemyRelatedByGroupeIds;
 
     #[OneToMany(mappedBy: 'groupeRelatedByGroupeEnemyId', targetEntity: GroupeEnemy::class)]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_enemy_id', nullable: false)]
-    protected ArrayCollection $groupeEnemyRelatedByGroupeEnemyIds;
+    protected Collection $groupeEnemyRelatedByGroupeEnemyIds;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeGn::class)]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
-    protected ArrayCollection $groupeGns;
+    protected Collection $groupeGns;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeHasIngredient::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
-    protected ArrayCollection $groupeHasIngredients;
+    protected Collection $groupeHasIngredients;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeHasRessource::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
-    protected ArrayCollection $groupeHasRessources;
+    protected Collection $groupeHasRessources;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: IntrigueHasGroupe::class)]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
-    protected ArrayCollection $intrigueHasGroupes;
+    protected Collection $intrigueHasGroupes;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: Personnage::class)]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
-    protected ArrayCollection $personnages;
+    protected Collection $personnages;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: Territoire::class)]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
-    protected ArrayCollection $territoires;
+    protected Collection $territoires;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'groupeRelatedByScenaristeIds')]
     #[ORM\JoinColumn(name: 'scenariste_id', referencedColumnName: 'id')]
@@ -132,14 +132,14 @@ class BaseGroupe
     #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['code' => 'ASC'])]
-    protected ArrayCollection $documents;
+    protected Collection $documents;
 
     #[ORM\ManyToMany(targetEntity: Item::class, inversedBy: 'groupes')]
     #[ORM\JoinTable(name: 'groupe_has_item')]
     #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'item_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['label' => 'ASC'])]
-    protected ArrayCollection $items;
+    protected Collection $items;
 
     public function __construct()
     {
@@ -399,7 +399,7 @@ class BaseGroupe
     /**
      * Get Background entity collection (one to many).
      */
-    public function getBackgrounds(): ArrayCollection
+    public function getBackgrounds(): Collection
     {
         return $this->backgrounds;
     }
@@ -427,7 +427,7 @@ class BaseGroupe
     /**
      * Get Debriefing entity collection (one to many).
      */
-    public function getDebriefings(): ArrayCollection
+    public function getDebriefings(): Collection
     {
         return $this->debriefings;
     }
@@ -455,7 +455,7 @@ class BaseGroupe
     /**
      * Get GroupeAllie entity related by `groupe_id` collection (one to many).
      */
-    public function getGroupeAllieRelatedByGroupeIds(): ArrayCollection
+    public function getGroupeAllieRelatedByGroupeIds(): Collection
     {
         return $this->groupeAllieRelatedByGroupeIds;
     }
@@ -483,7 +483,7 @@ class BaseGroupe
     /**
      * Get GroupeAllie entity related by `groupe_allie_id` collection (one to many).
      */
-    public function getGroupeAllieRelatedByGroupeAllieIds(): ArrayCollection
+    public function getGroupeAllieRelatedByGroupeAllieIds(): Collection
     {
         return $this->groupeAllieRelatedByGroupeAllieIds;
     }
@@ -511,7 +511,7 @@ class BaseGroupe
     /**
      * Get GroupeClasse entity collection (one to many).
      */
-    public function getGroupeClasses(): ArrayCollection
+    public function getGroupeClasses(): Collection
     {
         return $this->groupeClasses;
     }
@@ -539,7 +539,7 @@ class BaseGroupe
     /**
      * Get GroupeEnemy entity related by `groupe_id` collection (one to many).
      */
-    public function getGroupeEnemyRelatedByGroupeIds(): ArrayCollection
+    public function getGroupeEnemyRelatedByGroupeIds(): Collection
     {
         return $this->groupeEnemyRelatedByGroupeIds;
     }
@@ -567,7 +567,7 @@ class BaseGroupe
     /**
      * Get GroupeEnemy entity related by `groupe_enemy_id` collection (one to many).
      */
-    public function getGroupeEnemyRelatedByGroupeEnemyIds(): ArrayCollection
+    public function getGroupeEnemyRelatedByGroupeEnemyIds(): Collection
     {
         return $this->groupeEnemyRelatedByGroupeEnemyIds;
     }
@@ -595,7 +595,7 @@ class BaseGroupe
     /**
      * Get GroupeGn entity collection (one to many).
      */
-    public function getGroupeGns(): ArrayCollection
+    public function getGroupeGns(): Collection
     {
         return $this->groupeGns;
     }
@@ -623,7 +623,7 @@ class BaseGroupe
     /**
      * Get GroupeHasIngredient entity collection (one to many).
      */
-    public function getGroupeHasIngredients(): ArrayCollection
+    public function getGroupeHasIngredients(): Collection
     {
         return $this->groupeHasIngredients;
     }
@@ -651,7 +651,7 @@ class BaseGroupe
     /**
      * Get GroupeHasRessource entity collection (one to many).
      */
-    public function getGroupeHasRessources(): ArrayCollection
+    public function getGroupeHasRessources(): Collection
     {
         return $this->groupeHasRessources;
     }
@@ -679,7 +679,7 @@ class BaseGroupe
     /**
      * Get IntrigueHasGroupe entity collection (one to many).
      */
-    public function getIntrigueHasGroupes(): ArrayCollection
+    public function getIntrigueHasGroupes(): Collection
     {
         return $this->intrigueHasGroupes;
     }
@@ -707,7 +707,7 @@ class BaseGroupe
     /**
      * Get Personnage entity collection (one to many).
      */
-    public function getPersonnages(): ArrayCollection
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }
@@ -735,7 +735,7 @@ class BaseGroupe
     /**
      * Get Territoire entity collection (one to many).
      */
-    public function getTerritoires(): ArrayCollection
+    public function getTerritoires(): Collection
     {
         return $this->territoires;
     }
@@ -837,7 +837,7 @@ class BaseGroupe
     /**
      * Get Document entity collection.
      */
-    public function getDocuments(): ArrayCollection
+    public function getDocuments(): Collection
     {
         return $this->documents;
     }
@@ -867,7 +867,7 @@ class BaseGroupe
     /**
      * Get Item entity collection.
      */
-    public function getItems(): ArrayCollection
+    public function getItems(): Collection
     {
         return $this->items;
     }

@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -31,10 +31,10 @@ abstract class BaseDomaine
     #[OneToMany(mappedBy: 'domaine', targetEntity: Sort::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'domaine_id', nullable: 'false')]
     #[OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
-    protected ArrayCollection $sorts;
+    protected Collection $sorts;
 
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'domaines')]
-    protected ArrayCollection $personnages;
+    protected Collection $personnages;
 
     public function __construct()
     {
@@ -92,7 +92,7 @@ abstract class BaseDomaine
         return $this;
     }
 
-    public function getSorts(): ArrayCollection
+    public function getSorts(): Collection
     {
         return $this->sorts;
     }
@@ -111,7 +111,7 @@ abstract class BaseDomaine
         return $this;
     }
 
-    public function getPersonnages(): ArrayCollection
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }

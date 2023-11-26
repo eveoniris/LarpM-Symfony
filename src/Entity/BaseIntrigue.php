@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -48,35 +48,35 @@ abstract class BaseIntrigue
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasEvenement::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
-    protected ArrayCollection $intrigueHasEvenements;
+    protected Collection $intrigueHasEvenements;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasGroupe::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
-    protected ArrayCollection $intrigueHasGroupes;
+    protected Collection $intrigueHasGroupes;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasGroupeSecondaire::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
-    protected ArrayCollection $intrigueHasGroupeSecondaires;
+    protected Collection $intrigueHasGroupeSecondaires;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasLieu::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
-    protected ArrayCollection $intrigueHasLieus;
+    protected Collection $intrigueHasLieus;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasDocument::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
-    protected ArrayCollection $intrigueHasDocuments;
+    protected Collection $intrigueHasDocuments;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasModification::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
-    protected ArrayCollection $intrigueHasModifications;
+    protected Collection $intrigueHasModifications;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasObjectif::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
-    protected ArrayCollection $intrigueHasObjectifs;
+    protected Collection $intrigueHasObjectifs;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: Relecture::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
-    protected ArrayCollection $relectures;
+    protected Collection $relectures;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'intrigues')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
@@ -263,7 +263,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasEvenement entity collection (one to many).
      */
-    public function getIntrigueHasEvenements(): ArrayCollection
+    public function getIntrigueHasEvenements(): Collection
     {
         return $this->intrigueHasEvenements;
     }
@@ -291,7 +291,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasGroupe entity collection (one to many).
      */
-    public function getIntrigueHasGroupes(): ArrayCollection
+    public function getIntrigueHasGroupes(): Collection
     {
         return $this->intrigueHasGroupes;
     }
@@ -319,7 +319,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasGroupeSecondaire entity collection (one to many).
      */
-    public function getIntrigueHasGroupeSecondaires(): ArrayCollection
+    public function getIntrigueHasGroupeSecondaires(): Collection
     {
         return $this->intrigueHasGroupeSecondaires;
     }
@@ -347,7 +347,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasLieu entity collection (one to many).
      */
-    public function getIntrigueHasLieus(): ArrayCollection
+    public function getIntrigueHasLieus(): Collection
     {
         return $this->intrigueHasLieus;
     }
@@ -375,7 +375,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasDocument entity collection (one to many).
      */
-    public function getIntrigueHasDocuments(): ArrayCollection
+    public function getIntrigueHasDocuments(): Collection
     {
         return $this->intrigueHasDocuments;
     }
@@ -403,7 +403,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasModification entity collection (one to many).
      */
-    public function getIntrigueHasModifications(): ArrayCollection
+    public function getIntrigueHasModifications(): Collection
     {
         return $this->intrigueHasModifications;
     }
@@ -431,7 +431,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasObjectif entity collection (one to many).
      */
-    public function getIntrigueHasObjectifs(): ArrayCollection
+    public function getIntrigueHasObjectifs(): Collection
     {
         return $this->intrigueHasObjectifs;
     }
@@ -459,7 +459,7 @@ abstract class BaseIntrigue
     /**
      * Get Relecture entity collection (one to many).
      */
-    public function getRelectures(): ArrayCollection
+    public function getRelectures(): Collection
     {
         return $this->relectures;
     }

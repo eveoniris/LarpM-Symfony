@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -36,7 +36,7 @@ class BaseRestriction
     protected User $userRelatedByAuteurId;
 
     #[ManyToMany(targetEntity: User::class, mappedBy: 'restrictions')]
-    protected ArrayCollection $users;
+    protected Collection $users;
 
     public function __construct()
     {
@@ -130,7 +130,7 @@ class BaseRestriction
         return $this;
     }
 
-    public function getUsers(): ArrayCollection
+    public function getUsers(): Collection
     {
         return $this->users;
     }

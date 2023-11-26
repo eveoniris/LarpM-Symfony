@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -48,25 +48,25 @@ abstract class BaseReligion
 
     #[OneToMany(mappedBy: 'religion', targetEntity: PersonnagesReligions::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: 'false')]
-    protected ArrayCollection $personnagesReligions;
+    protected Collection $personnagesReligions;
 
     #[OneToMany(mappedBy: 'religion', targetEntity: ReligionDescription::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: 'false')]
-    protected ArrayCollection $religionDescriptions;
+    protected Collection $religionDescriptions;
 
     #[OneToMany(mappedBy: 'religion', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: 'false')]
-    protected ArrayCollection $territoires;
+    protected Collection $territoires;
 
     #[ManyToOne(targetEntity: Topic::class, inversedBy: 'religions')]
     #[JoinColumn(name: 'topic_id', referencedColumnName: 'id', nullable: 'false')]
     protected Topic $topic;
 
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'religions')]
-    protected ArrayCollection $personnages;
+    protected Collection $personnages;
 
     #[ORM\ManyToMany(targetEntity: Sphere::class, mappedBy: 'religions')]
-    protected ArrayCollection $spheres;
+    protected Collection $spheres;
 
     public function __construct()
     {
@@ -262,7 +262,7 @@ abstract class BaseReligion
     /**
      * Get PersonnagesReligions entity collection (one to many).
      */
-    public function getPersonnagesReligions(): ArrayCollection
+    public function getPersonnagesReligions(): Collection
     {
         return $this->personnagesReligions;
     }
@@ -290,7 +290,7 @@ abstract class BaseReligion
     /**
      * Get ReligionDescription entity collection (one to many).
      */
-    public function getReligionDescriptions(): ArrayCollection
+    public function getReligionDescriptions(): Collection
     {
         return $this->religionDescriptions;
     }
@@ -318,7 +318,7 @@ abstract class BaseReligion
     /**
      * Get Territoire entity collection (one to many).
      */
-    public function getTerritoires(): ArrayCollection
+    public function getTerritoires(): Collection
     {
         return $this->territoires;
     }
@@ -364,7 +364,7 @@ abstract class BaseReligion
     /**
      * Get Personnage entity collection.
      */
-    public function getPersonnages(): ArrayCollection
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }
@@ -392,7 +392,7 @@ abstract class BaseReligion
     /**
      * Get Sphere entity collection.
      */
-    public function getSpheres(): ArrayCollection
+    public function getSpheres(): Collection
     {
         return $this->spheres;
     }

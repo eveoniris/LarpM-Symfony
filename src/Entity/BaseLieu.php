@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -28,13 +28,13 @@ abstract class BaseLieu
 
     #[OneToMany(mappedBy: 'lieu', targetEntity: IntrigueHasLieu::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'lieu_id', nullable: 'false')]
-    protected ArrayCollection $intrigueHasLieus;
+    protected Collection $intrigueHasLieus;
 
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'lieus')]
     #[ORM\JoinTable(name: 'lieu_has_document')]
     #[ORM\JoinColumn(name: 'lieu_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
-    protected ArrayCollection $documents;
+    protected Collection $documents;
 
     public function __construct()
     {
@@ -119,7 +119,7 @@ abstract class BaseLieu
     /**
      * Get IntrigueHasLieu entity collection (one to many).
      */
-    public function getIntrigueHasLieus(): ArrayCollection
+    public function getIntrigueHasLieus(): Collection
     {
         return $this->intrigueHasLieus;
     }
@@ -149,7 +149,7 @@ abstract class BaseLieu
     /**
      * Get Document entity collection.
      */
-    public function getDocuments(): ArrayCollection
+    public function getDocuments(): Collection
     {
         return $this->documents;
     }

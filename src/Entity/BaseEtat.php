@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -28,7 +28,7 @@ abstract class BaseEtat
      */
     #[OneToMany(mappedBy: 'etat', targetEntity: Objet::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'etat_id', nullable: 'false')]
-    protected ArrayCollection $objets;
+    protected Collection $objets;
 
     public function __construct()
     {
@@ -73,7 +73,7 @@ abstract class BaseEtat
         return $this;
     }
 
-    public function getObjets(): ArrayCollection
+    public function getObjets(): Collection
     {
         return $this->objets;
     }

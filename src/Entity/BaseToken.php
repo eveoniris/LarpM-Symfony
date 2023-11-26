@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -31,7 +31,7 @@ abstract class BaseToken
 
     #[OneToMany(mappedBy: 'token', targetEntity: PersonnageHasToken::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'token_id', nullable: 'false')]
-    protected ArrayCollection $personnageHasTokens;
+    protected Collection $personnageHasTokens;
 
     public function __construct()
     {
@@ -133,7 +133,7 @@ abstract class BaseToken
     /**
      * Get PersonnageHasToken entity collection (one to many).
      */
-    public function getPersonnageHasTokens(): ArrayCollection
+    public function getPersonnageHasTokens(): Collection
     {
         return $this->personnageHasTokens;
     }

@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -30,7 +30,7 @@ abstract class BaseRarete
 
     #[OneToMany(mappedBy: 'rarete', targetEntity: Ressource::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'rarete_id', nullable: 'false')]
-    protected ArrayCollection $ressources;
+    protected Collection $ressources;
 
     public function __construct()
     {
@@ -114,7 +114,7 @@ abstract class BaseRarete
     /**
      * Get Ressource entity collection (one to many).
      */
-    public function getRessources(): ArrayCollection
+    public function getRessources(): Collection
     {
         return $this->ressources;
     }

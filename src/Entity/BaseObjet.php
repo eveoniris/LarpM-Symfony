@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\JoinColumn;
@@ -54,7 +54,7 @@ abstract class BaseObjet
 
     #[OneToMany(mappedBy: 'objet', targetEntity: Item::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'objet_id', nullable: 'false')]
-    protected ArrayCollection $items;
+    protected Collection $items;
 
     #[ORM\OneToOne(inversedBy: 'objet', targetEntity: ObjetCarac::class, cascade: ['persist', 'remove', 'detach', 'all'])]
     #[ORM\JoinColumn(name: 'etat_civil_id', referencedColumnName: 'id')]
@@ -84,7 +84,7 @@ abstract class BaseObjet
     #[ORM\JoinTable(name: 'objet_tag')]
     #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'tag_id', referencedColumnName: 'id', nullable: false)]
-    protected ArrayCollection $tags;
+    protected Collection $tags;
 
     public function __construct()
     {
@@ -258,7 +258,7 @@ abstract class BaseObjet
     /**
      * Add Item entity to collection (one to many).
      */
-    public function addItem(Item $item): ArrayCollection
+    public function addItem(Item $item): Collection
     {
         $this->items[] = $item;
 
@@ -278,7 +278,7 @@ abstract class BaseObjet
     /**
      * Get Item entity collection (one to many).
      */
-    public function getItems(): ArrayCollection
+    public function getItems(): Collection
     {
         return $this->items;
     }
@@ -419,7 +419,7 @@ abstract class BaseObjet
     /**
      * Get Tag entity collection.
      */
-    public function getTags(): ArrayCollection
+    public function getTags(): Collection
     {
         return $this->tags;
     }

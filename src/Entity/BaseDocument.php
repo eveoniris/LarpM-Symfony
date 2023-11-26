@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -60,16 +60,16 @@ abstract class BaseDocument
     #[ORM\JoinTable(name: 'document_has_langue')]
     #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: false)]
-    protected ArrayCollection $langues;
+    protected Collection $langues;
 
     #[ORM\ManyToMany(targetEntity: Groupe::class, inversedBy: 'documents')]
-    protected ArrayCollection $groupes;
+    protected Collection $groupes;
 
     #[ORM\ManyToMany(targetEntity: Lieu::class, inversedBy: 'documents')]
-    protected ArrayCollection $lieus;
+    protected Collection $lieus;
 
     #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'documents')]
-    protected ArrayCollection $personnages;
+    protected Collection $personnages;
 
     public function __construct()
     {
@@ -239,7 +239,7 @@ abstract class BaseDocument
         return $this;
     }
 
-    public function getLangues(): ArrayCollection
+    public function getLangues(): Collection
     {
         return $this->langues;
     }
@@ -258,7 +258,7 @@ abstract class BaseDocument
         return $this;
     }
 
-    public function getGroupes(): ArrayCollection
+    public function getGroupes(): Collection
     {
         return $this->groupes;
     }
@@ -277,7 +277,7 @@ abstract class BaseDocument
         return $this;
     }
 
-    public function getLieus(): ArrayCollection
+    public function getLieus(): Collection
     {
         return $this->lieus;
     }
@@ -296,7 +296,7 @@ abstract class BaseDocument
         return $this;
     }
 
-    public function getPersonnages(): ArrayCollection
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }

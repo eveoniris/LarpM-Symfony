@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -24,15 +24,15 @@ abstract class BasePersonnageSecondaire
 
     #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: Participant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: 'false')]
-    protected ArrayCollection $participants;
+    protected Collection $participants;
 
     #[OneToMany(mappedBy: 'personnageSecondaire', cascade: ['persist'], targetEntity: PersonnageSecondaireCompetence::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: 'false')]
-    protected ArrayCollection $personnageSecondaireCompetences;
+    protected Collection $personnageSecondaireCompetences;
 
     #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: User::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: 'false')]
-    protected ArrayCollection $users;
+    protected Collection $users;
 
     #[ManyToOne(targetEntity: Classe::class, inversedBy: 'personnageSecondaires')]
     #[JoinColumn(name: 'classe_id', referencedColumnName: 'id', nullable: 'false')]
@@ -86,7 +86,7 @@ abstract class BasePersonnageSecondaire
     /**
      * Get Participant entity collection (one to many).
      */
-    public function getParticipants(): ArrayCollection
+    public function getParticipants(): Collection
     {
         return $this->participants;
     }
@@ -114,7 +114,7 @@ abstract class BasePersonnageSecondaire
     /**
      * Get PersonnageSecondaireCompetence entity collection (one to many).
      */
-    public function getPersonnageSecondaireCompetences(): ArrayCollection
+    public function getPersonnageSecondaireCompetences(): Collection
     {
         return $this->personnageSecondaireCompetences;
     }
@@ -142,7 +142,7 @@ abstract class BasePersonnageSecondaire
     /**
      * Get User entity collection (one to many).
      */
-    public function getUsers(): ArrayCollection
+    public function getUsers(): Collection
     {
         return $this->users;
     }

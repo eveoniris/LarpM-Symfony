@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -41,16 +41,16 @@ abstract class BaseSecondaryGroup
 
     #[OneToMany(mappedBy: 'secondaryGroup', targetEntity: IntrigueHasGroupeSecondaire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_id', nullable: 'false')]
-    protected ArrayCollection $intrigueHasGroupeSecondaires;
+    protected Collection $intrigueHasGroupeSecondaires;
 
     #[OneToMany(mappedBy: 'secondaryGroup', targetEntity: Membre::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_id', nullable: 'false')]
     #[ORM\OrderBy(['id' => 'ASC'])]
-    protected ArrayCollection $membres;
+    protected Collection $membres;
 
     #[OneToMany(mappedBy: 'secondaryGroup', targetEntity: Postulant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_id', nullable: 'false')]
-    protected ArrayCollection $postulants;
+    protected Collection $postulants;
 
     #[ManyToOne(targetEntity: SecondaryGroupType::class, inversedBy: 'secondaryGroups')]
     #[JoinColumn(name: 'secondary_group_type_id', referencedColumnName: 'id', nullable: 'false')]
@@ -202,7 +202,7 @@ abstract class BaseSecondaryGroup
     /**
      * Get IntrigueHasGroupeSecondaire entity collection (one to many).
      */
-    public function getIntrigueHasGroupeSecondaires(): ArrayCollection
+    public function getIntrigueHasGroupeSecondaires(): Collection
     {
         return $this->intrigueHasGroupeSecondaires;
     }
@@ -230,7 +230,7 @@ abstract class BaseSecondaryGroup
     /**
      * Get Membre entity collection (one to many).
      */
-    public function getMembres(): ArrayCollection
+    public function getMembres(): Collection
     {
         return $this->membres;
     }
@@ -258,7 +258,7 @@ abstract class BaseSecondaryGroup
     /**
      * Get Postulant entity collection (one to many).
      */
-    public function getPostulants(): ArrayCollection
+    public function getPostulants(): Collection
     {
         return $this->postulants;
     }

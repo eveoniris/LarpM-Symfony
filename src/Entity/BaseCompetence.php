@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -39,21 +39,21 @@ class BaseCompetence
      */
     #[OneToMany(mappedBy: 'competence', targetEntity: CompetenceAttribute::class, cascade: ['all'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
-    protected ArrayCollection $competenceAttributes;
+    protected Collection $competenceAttributes;
 
     /**
      * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\ExperienceUsage>|\App\Entity\ExperienceUsage[]
      */
     #[OneToMany(mappedBy: 'competence', targetEntity: ExperienceUsage::class, cascade: ['all'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
-    protected ArrayCollection $experienceUsages;
+    protected Collection $experienceUsages;
 
     /**
      * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\PersonnageSecondaireCompetence>|\App\Entity\PersonnageSecondaireCompetence[]
      */
     #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageSecondaireCompetence::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
-    protected ArrayCollection $personnageSecondaireCompetences;
+    protected Collection $personnageSecondaireCompetences;
 
     #[ManyToOne(targetEntity: CompetenceFamily::class, cascade: ['persist'], inversedBy: 'competences')]
     #[JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: 'false')]
@@ -69,7 +69,7 @@ class BaseCompetence
     #[ORM\JoinTable(name: 'personnages_competences')]
     #[ORM\JoinColumn(name: 'competence_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
-    protected ArrayCollection $personnages;
+    protected Collection $personnages;
 
     public function __construct()
     {
@@ -141,7 +141,7 @@ class BaseCompetence
         return $this;
     }
 
-    public function getCompetenceAttributes(): ArrayCollection
+    public function getCompetenceAttributes(): Collection
     {
         return $this->competenceAttributes;
     }
@@ -160,7 +160,7 @@ class BaseCompetence
         return $this;
     }
 
-    public function getExperienceUsages(): ArrayCollection
+    public function getExperienceUsages(): Collection
     {
         return $this->experienceUsages;
     }
@@ -179,7 +179,7 @@ class BaseCompetence
         return $this;
     }
 
-    public function getPersonnageSecondaireCompetences(): ArrayCollection
+    public function getPersonnageSecondaireCompetences(): Collection
     {
         return $this->personnageSecondaireCompetences;
     }
@@ -224,7 +224,7 @@ class BaseCompetence
         return $this;
     }
 
-    public function getPersonnages(): ArrayCollection
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }

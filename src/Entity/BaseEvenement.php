@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -36,7 +36,7 @@ abstract class BaseEvenement
      */
     #[OneToMany(mappedBy: 'evenement', targetEntity: IntrigueHasEvenement::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'evenement_id', nullable: 'false')]
-    protected ArrayCollection $intrigueHasEvenements;
+    protected Collection $intrigueHasEvenements;
 
     public function __construct()
     {
@@ -117,7 +117,7 @@ abstract class BaseEvenement
         return $this;
     }
 
-    public function getIntrigueHasEvenements(): ArrayCollection
+    public function getIntrigueHasEvenements(): Collection
     {
         return $this->intrigueHasEvenements;
     }

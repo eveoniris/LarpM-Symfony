@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -30,7 +30,7 @@ abstract class BaseRangement
 
     #[OneToMany(mappedBy: 'rangement', targetEntity: Objet::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'rangement_id', nullable: 'false')]
-    protected ArrayCollection $objets;
+    protected Collection $objets;
 
     #[ManyToOne(targetEntity: Localisation::class, inversedBy: 'rangements')]
     #[JoinColumn(name: 'localisation_id', referencedColumnName: 'id', nullable: 'false')]
@@ -118,7 +118,7 @@ abstract class BaseRangement
     /**
      * Get Objet entity collection (one to many).
      */
-    public function getObjets(): ArrayCollection
+    public function getObjets(): Collection
     {
         return $this->objets;
     }
