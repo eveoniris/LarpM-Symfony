@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,7 +18,7 @@ abstract class BaseTerritoireGuerre
 {
     #[OneToMany(mappedBy: 'territoireGuerre', targetEntity: Territoire::class)]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'territoire_groupe_id', nullable: false)]
-    protected ArrayCollection $territoires;
+    protected Collection $territoires;
 
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;

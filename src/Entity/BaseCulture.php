@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -32,7 +32,7 @@ abstract class BaseCulture
 
     #[OneToMany(mappedBy: 'culture', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'culture_id', nullable: 'false')]
-    protected ArrayCollection $territoires;
+    protected Collection $territoires;
 
     public function __construct()
     {
@@ -101,7 +101,7 @@ abstract class BaseCulture
         return $this;
     }
 
-    public function getTerritoires(): ArrayCollection
+    public function getTerritoires(): Collection
     {
         return $this->territoires;
     }

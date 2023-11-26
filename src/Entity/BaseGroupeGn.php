@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -53,7 +53,7 @@ abstract class BaseGroupeGn
 
     #[OneToMany(mappedBy: 'groupeGn', targetEntity: Participant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: 'false')]
-    protected ArrayCollection $participants;
+    protected Collection $participants;
 
     #[oOne(targetEntity: Groupe::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
@@ -76,7 +76,7 @@ abstract class BaseGroupeGn
     #[ORM\JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'id', referencedColumnName: 'id', nullable: false)]
     #[ORM\orderBy(['ordre' => 'ASC'])]
-    protected ArrayCollection $groupeGnOrdres;
+    protected Collection $groupeGnOrdres;
 
     public function __construct()
     {
@@ -287,7 +287,7 @@ abstract class BaseGroupeGn
     /**
      * Get Participant entity collection (one to many).
      */
-    public function getParticipants(): ArrayCollection
+    public function getParticipants(): Collection
     {
         return $this->participants;
     }
@@ -389,7 +389,7 @@ abstract class BaseGroupeGn
     /**
      * Get GroupeGnOrdre entity collection.
      */
-    public function getGroupeGnOrdres(): ArrayCollection
+    public function getGroupeGnOrdres(): Collection
     {
         return $this->groupeGnOrdres;
     }

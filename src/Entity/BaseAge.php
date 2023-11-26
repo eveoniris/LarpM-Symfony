@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -40,7 +40,7 @@ class BaseAge
      */
     #[OneToMany(mappedBy: 'age', targetEntity: Personnage::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'age_id', nullable: 'false')]
-    protected ArrayCollection $personnages;
+    protected Collection $personnages;
 
     public function __construct()
     {
@@ -133,7 +133,7 @@ class BaseAge
         return $this;
     }
 
-    public function getPersonnages(): ArrayCollection|\Doctrine\Common\Collections\Collection
+    public function getPersonnages():Collection
     {
         return $this->personnages;
     }

@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -25,27 +25,27 @@ abstract class BaseLangue
     #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
     protected string $label = '';
 
-    #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING, length: 450, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 450, nullable: true)]
     protected ?string $description = '';
 
-    #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
     protected ?int $diffusion = 0;
 
     #[OneToMany(mappedBy: 'langue', targetEntity: PersonnageLangues::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'langue_id', nullable: 'false')]
     #[OrderBy(['secret' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC'])]
-    protected ArrayCollection $personnageLangues;
+    protected Collection $personnageLangues;
 
     #[OneToMany(mappedBy: 'langue', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'langue_id', nullable: 'false')]
-    protected ArrayCollection $territoires;
+    protected Collection $territoires;
 
     #[OneToMany(mappedBy: 'langue', targetEntity: GroupeLangue::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_langue_id', nullable: 'false')]
     protected GroupeLangue $groupeLangue;
 
     #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'langues')]
-    protected ArrayCollection $documents;
+    protected Collection $documents;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: false, options: ['default' => 0])]
     protected bool $secret = false;
@@ -159,7 +159,7 @@ abstract class BaseLangue
      *
      * @OrderBy({"secret" = "ASC", "diffusion" = "DESC", "label" = "ASC"})
      */
-    public function getPersonnageLangues(): ArrayCollection
+    public function getPersonnageLangues(): Collection
     {
         return $this->personnageLangues;
     }
@@ -187,7 +187,7 @@ abstract class BaseLangue
     /**
      * Get Territoire entity collection (one to many).
      */
-    public function getTerritoires(): ArrayCollection
+    public function getTerritoires(): Collection
     {
         return $this->territoires;
     }
@@ -233,7 +233,7 @@ abstract class BaseLangue
     /**
      * Get Document entity collection.
      */
-    public function getDocuments(): ArrayCollection
+    public function getDocuments(): Collection
     {
         return $this->documents;
     }

@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -50,7 +50,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     /**
      * Fourni la liste de tous les événements futur auquel l'utilisateur participe.
      */
-    public function getFuturEvents(): ArrayCollection
+    public function getFuturEvents(): Collection
     {
         $futurEvents = new ArrayCollection();
         $now = new \DateTime('NOW');
@@ -93,7 +93,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     /**
      * Fourni tous les billets d'un utilisateur.
      */
-    public function getBillets(): ArrayCollection
+    public function getBillets(): Collection
     {
         $billets = new ArrayCollection();
         foreach ($this->getParticipants() as $participant) {
@@ -108,7 +108,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     /**
      * Fourni la liste des tous les GN auquel l'utillisateur participe.
      */
-    public function getGns(): ArrayCollection
+    public function getGns(): Collection
     {
         $gns = new ArrayCollection();
         foreach ($this->getParticipants() as $participant) {
@@ -173,7 +173,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     /**
      * TODO Fourni la liste de tous les posts qu'un utilisateur n'a pas lu.
      */
-    public function newPosts(Topic $topic): ArrayCollection
+    public function newPosts(Topic $topic): Collection
     {
         $newPosts = new ArrayCollection();
         foreach ($topic->getPosts() as $post) {

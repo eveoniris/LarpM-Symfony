@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -29,7 +29,7 @@ abstract class BaseGroupeLangue
 
     #[OneToMany(mappedBy: 'groupeLangue', targetEntity: Langue::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_langue_id', nullable: 'false')]
-    protected ArrayCollection $langues;
+    protected Collection $langues;
 
     public function __construct()
     {
@@ -113,7 +113,7 @@ abstract class BaseGroupeLangue
     /**
      * Get Langue entity collection (one to many).
      */
-    public function getLangues(): ArrayCollection
+    public function getLangues(): Collection
     {
         return $this->langues;
     }

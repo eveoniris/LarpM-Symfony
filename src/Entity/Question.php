@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\QuestionRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity(repositoryClass: QuestionRepository::class)]
@@ -47,7 +47,7 @@ class Question extends BaseQuestion
      *
      * @param unknown $rep
      */
-    public function getParticipants($rep): ArrayCollection
+    public function getParticipants($rep): Collection
     {
         $participants = new ArrayCollection();
 

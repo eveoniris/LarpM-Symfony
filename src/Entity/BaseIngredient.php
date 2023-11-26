@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -44,7 +44,7 @@ abstract class BaseIngredient
     protected ?ArrayCollection $personnageIngredients;
 
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'ingredients')]
-    protected ArrayCollection $territoires;
+    protected Collection $territoires;
 
     public function __construct()
     {
@@ -166,7 +166,7 @@ abstract class BaseIngredient
     /**
      * Get GroupeHasIngredient entity collection (one to many).
      */
-    public function getGroupeHasIngredients(): ArrayCollection
+    public function getGroupeHasIngredients(): Collection
     {
         return $this->groupeHasIngredients;
     }
@@ -194,7 +194,7 @@ abstract class BaseIngredient
     /**
      * Get PersonnageIngredient entity collection (one to many).
      */
-    public function getPersonnageIngredients(): ArrayCollection
+    public function getPersonnageIngredients(): Collection
     {
         return $this->personnageIngredients;
     }
@@ -222,7 +222,7 @@ abstract class BaseIngredient
     /**
      * Get Territoire entity collection.
      */
-    public function getTerritoires(): ArrayCollection
+    public function getTerritoires(): Collection
     {
         return $this->territoires;
     }

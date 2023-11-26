@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -42,7 +42,7 @@ abstract class BasePriere
     #[ORM\JoinTable(name: 'personnages_prieres')]
     #[ORM\JoinColumn(name: 'priere_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
-    protected ArrayCollection $personnages;
+    protected Collection $personnages;
 
     public function __construct()
     {
@@ -202,7 +202,7 @@ abstract class BasePriere
     /**
      * Get Personnage entity collection.
      */
-    public function getPersonnages(): ArrayCollection
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }

@@ -6,7 +6,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -38,7 +38,7 @@ abstract class BaseLignee
      */
     #[OneToMany(mappedBy: 'lignee', targetEntity: PersonnageLignee::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'lignee_id', nullable: 'false')]
-    protected ArrayCollection $personnageLignees;
+    protected Collection $personnageLignees;
 
     /**
      * Set the value of id.
@@ -94,7 +94,7 @@ abstract class BaseLignee
         return $this->description ?? '';
     }
 
-    public function getPersonnageLignees(): ArrayCollection
+    public function getPersonnageLignees(): Collection
     {
         return $this->personnageLignees;
     }

@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\GroupeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity(repositoryClass: GroupeRepository::class)]
@@ -82,7 +82,7 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Toutes les importations du groupe.
      */
-    public function getImportations(): ArrayCollection
+    public function getImportations(): Collection
     {
         $ressources = new ArrayCollection();
         foreach ($this->getTerritoires() as $territoire) {
@@ -95,7 +95,7 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Toutes les exporations du groupe.
      */
-    public function getExportations(): ArrayCollection
+    public function getExportations(): Collection
     {
         $ressources = new ArrayCollection();
         foreach ($this->getTerritoires() as $territoire) {
@@ -108,7 +108,7 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Fourni tous les ingrédients obtenu par le groupe grace à ses territoires.
      */
-    public function getIngredients(): ArrayCollection
+    public function getIngredients(): Collection
     {
         $ingredients = new ArrayCollection();
         foreach ($this->getTerritoires() as $territoire) {
@@ -131,7 +131,7 @@ class Groupe extends BaseGroupe implements \Stringable
      *
      * @param unknown $rarete
      */
-    public function getRessourcesNeeded($rarete = null): ArrayCollection
+    public function getRessourcesNeeded($rarete = null): Collection
     {
         $ressources = new ArrayCollection();
 
@@ -206,7 +206,7 @@ class Groupe extends BaseGroupe implements \Stringable
      *
      * @param unknown $visibility
      */
-    public function getBacks($visibility = null): ArrayCollection
+    public function getBacks($visibility = null): Collection
     {
         $backgrounds = new ArrayCollection();
         foreach ($this->getBackgrounds() as $background) {
@@ -285,7 +285,7 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Fourni la liste des toutes les alliances de ce groupe.
      */
-    public function getAlliances(): ArrayCollection
+    public function getAlliances(): Collection
     {
         $alliances = new ArrayCollection();
 
@@ -307,7 +307,7 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Fourni la liste de toutes les alliances en cours de négotiation.
      */
-    public function getWaitingAlliances(): ArrayCollection
+    public function getWaitingAlliances(): Collection
     {
         $alliances = new ArrayCollection();
 
@@ -329,7 +329,7 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Fourni la liste de toutes les demandes d'alliances.
      */
-    public function getRequestedAlliances(): ArrayCollection
+    public function getRequestedAlliances(): Collection
     {
         $alliances = new ArrayCollection();
 
@@ -345,7 +345,7 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Fourni la liste de toutes les alliances demandés.
      */
-    public function getSelfRequestedAlliances(): ArrayCollection
+    public function getSelfRequestedAlliances(): Collection
     {
         $alliances = new ArrayCollection();
 
@@ -361,7 +361,7 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Fourni tous les ennemis du groupe.
      */
-    public function getEnnemies(): ArrayCollection
+    public function getEnnemies(): Collection
     {
         $enemies = new ArrayCollection();
 
@@ -383,7 +383,7 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Fourni la liste des anciens ennemis.
      */
-    public function getOldEnemies(): ArrayCollection
+    public function getOldEnemies(): Collection
     {
         $enemies = new ArrayCollection();
 
@@ -405,7 +405,7 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Fournie toutes les negociation de paix en cours.
      */
-    public function getWaitingPeace(): ArrayCollection
+    public function getWaitingPeace(): Collection
     {
         $enemies = new ArrayCollection();
 

@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -40,7 +40,7 @@ abstract class BasePotion
      * @ManyToMany(targetEntity="Personnage", mappedBy="potions")
      */
     #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'potions')]
-    protected ArrayCollection $personnages;
+    protected Collection $personnages;
 
     public function __construct()
     {
@@ -196,7 +196,7 @@ abstract class BasePotion
     /**
      * Get Personnage entity collection.
      */
-    public function getPersonnages(): ArrayCollection
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }

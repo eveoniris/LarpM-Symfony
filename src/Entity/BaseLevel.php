@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -175,7 +175,7 @@ abstract class BaseLevel
     /**
      * Get Competence entity collection (one to many).
      */
-    public function getCompetences(): ArrayCollection
+    public function getCompetences(): Collection
     {
         return $this->competences;
     }

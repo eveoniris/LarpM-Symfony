@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\TerritoireRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 
 /**
@@ -16,45 +16,6 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity(repositoryClass: TerritoireRepository::class)]
 class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringable
 {
-    /**
-     * @ManyToMany(targetEntity="Ressource", inversedBy="importateurs" )
-     *
-     * @JoinTable(name="territoire_importation",
-     *     joinColumns={@JoinColumn(name="territoire_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="ressource_id", referencedColumnName="id")}
-     * )
-     */
-    protected $importations;
-
-    /**
-     * @ManyToMany(targetEntity="Ressource", inversedBy="exportateurs")
-     *
-     * @JoinTable(name="territoire_exportation",
-     *     joinColumns={@JoinColumn(name="territoire_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="ressource_id", referencedColumnName="id")}
-     * )
-     */
-    protected $exportations;
-
-    /**
-     * @ManyToMany(targetEntity="Langue", inversedBy="territoireSecondaires")
-     *
-     * @JoinTable(name="territoire_langue",
-     *     joinColumns={@JoinColumn(name="territoire_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="langue_id", referencedColumnName="id")}
-     * )
-     */
-    protected $langues;
-
-    /**
-     * @ManyToMany(targetEntity="Religion", inversedBy="territoireSecondaires")
-     *
-     * @JoinTable(name="territoire_religion",
-     *     joinColumns={@JoinColumn(name="territoire_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="religion_id", referencedColumnName="id")}
-     * )
-     */
-    protected $religions;
 
     /**
      * Constructeur.
@@ -187,11 +148,13 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Fourni la culture d'un territoire ou à défaut la culture du territoire parent.
      */
-    public function getCulture()
+    public function getCulture(): ?Culture
     {
-        if ($this->culture) {
+        if (isset($this->culture)) {
             return parent::getCulture();
-        } elseif ($this->getTerritoire()) {
+        }
+
+        if ($this->getTerritoire()) {
             return $this->getTerritoire()->getCulture();
         }
 
@@ -269,7 +232,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Fourni tous les ancêtres d'un territoire.
      */
-    public function getAncestors(): ArrayCollection
+    public function getAncestors(): Collection
     {
         $ancestors = new ArrayCollection();
         if ($this->getTerritoire()) {
@@ -532,11 +495,12 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Fourni le nom de tous les groupes présents dans ce territoire.
      */
-    public function getGroupes(): array
+    public function getGroupes(): Collection
     {
-        $groupes = [];
+        $groupes = new ArrayCollection();
+
         if ($this->getGroupe()) {
-            $groupes[] = $this->getGroupe()->getNom();
+            $groupes->add($this->getGroupe()->getNom());
         }
 
         foreach ($this->getTerritoires() as $territoire) {

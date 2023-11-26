@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -33,14 +33,14 @@ abstract class BaseSphere
      */
     #[OneToMany(mappedBy: 'sphere', targetEntity: Priere::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'sphere_id', nullable: 'false')]
-    protected ArrayCollection $prieres;
+    protected Collection $prieres;
 
     #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'spheres')]
     #[ORM\JoinTable(name: 'religions_spheres')]
     #[ORM\JoinColumn(name: 'sphere_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['label' => 'ASC'])]
-    protected ArrayCollection $religions;
+    protected Collection $religions;
 
     public function __construct()
     {
@@ -137,7 +137,7 @@ abstract class BaseSphere
     /**
      * Get Religion entity collection.
      */
-    public function getReligions(): ArrayCollection
+    public function getReligions(): Collection
     {
         return $this->religions;
     }

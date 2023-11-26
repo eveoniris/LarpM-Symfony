@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -40,7 +40,7 @@ abstract class BaseLocalisation
 
     #[OneToMany(mappedBy: 'localisation', targetEntity: Rangement::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'localisation_id', nullable: 'false')]
-    protected ArrayCollection $rangements;
+    protected Collection $rangements;
 
     public function __construct()
     {
@@ -139,7 +139,7 @@ abstract class BaseLocalisation
      * Get Rangement entity collection (one to many).
      *
           */
-    public function getRangements(): ArrayCollection
+    public function getRangements(): Collection
     {
         return $this->rangements;
     }

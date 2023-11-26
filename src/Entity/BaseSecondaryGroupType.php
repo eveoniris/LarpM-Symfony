@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -28,7 +28,7 @@ abstract class BaseSecondaryGroupType
 
     #[OneToMany(mappedBy: 'secondaryGroupType', targetEntity: SecondaryGroup::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_type_id', nullable: 'false')]
-    protected ArrayCollection $secondaryGroups;
+    protected Collection $secondaryGroups;
 
     public function __construct()
     {
@@ -112,7 +112,7 @@ abstract class BaseSecondaryGroupType
     /**
      * Get SecondaryGroup entity collection (one to many).
      */
-    public function getSecondaryGroups(): ArrayCollection
+    public function getSecondaryGroups(): Collection
     {
         return $this->secondaryGroups;
     }

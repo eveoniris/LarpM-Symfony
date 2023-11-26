@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -35,7 +34,7 @@ class BaseObjectif
      */
     #[OneToMany(mappedBy: 'objectif', targetEntity: IntrigueHasObjectif::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'objectif_id', nullable: 'false')]
-    protected ArrayCollection $intrigueHasObjectifs;
+    protected Collection $intrigueHasObjectifs;
 
     public function __construct()
     {

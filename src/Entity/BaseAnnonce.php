@@ -38,10 +38,6 @@ class BaseAnnonce
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id')]
     protected ?Gn $gn = null;
 
-    public function __construct()
-    {
-    }
-
     public function setId(int $id): self
     {
         $this->id = $id;

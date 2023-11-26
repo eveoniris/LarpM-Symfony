@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\JoinTable;
@@ -21,21 +21,21 @@ class Classe extends BaseClasse
         inverseJoinColumns: ['JoinColumn' => ['name' => 'competence_family_id', 'referencedColumnName' => 'id']]
     )]
     #[OrderBy(['label' => \Doctrine\Common\Collections\Criteria::ASC])]
-    protected ArrayCollection $competenceFamilyFavorites;
+    protected Collection $competenceFamilyFavorites;
 
     #[ManyToMany(targetEntity: CompetenceFamily::class, inversedBy: 'classeNormales')]
     #[JoinTable(name: 'classe_competence_family_normale')]
     #[ORM\JoinColumn(name: 'class_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
     #[OrderBy(['label' => \Doctrine\Common\Collections\Criteria::ASC])]
-    protected ArrayCollection $competenceFamilyNormales;
+    protected Collection $competenceFamilyNormales;
 
     #[ManyToMany(targetEntity: CompetenceFamily::class, inversedBy: 'classeCreations')]
     #[JoinTable(name: 'classe_competence_family_creation')]
     #[ORM\JoinColumn(name: 'class_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
     #[OrderBy(['label' => \Doctrine\Common\Collections\Criteria::ASC])]
-    protected ArrayCollection $competenceFamilyCreations;
+    protected Collection $competenceFamilyCreations;
 
     public function __construct()
     {
@@ -101,7 +101,7 @@ class Classe extends BaseClasse
         return $this;
     }
 
-    public function getCompetenceFamilyFavorites(): ArrayCollection
+    public function getCompetenceFamilyFavorites(): Collection
     {
         return $this->competenceFamilyFavorites;
     }
@@ -122,7 +122,7 @@ class Classe extends BaseClasse
         return $this;
     }
 
-    public function getCompetenceFamilyNormales(): ArrayCollection
+    public function getCompetenceFamilyNormales(): Collection
     {
         return $this->competenceFamilyNormales;
     }
@@ -143,7 +143,7 @@ class Classe extends BaseClasse
         return $this;
     }
 
-    public function getCompetenceFamilyCreations(): ArrayCollection
+    public function getCompetenceFamilyCreations(): Collection
     {
         return $this->competenceFamilyCreations;
     }

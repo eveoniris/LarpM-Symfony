@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -46,31 +46,31 @@ abstract class BaseTopic
 
     #[OneToMany(mappedBy: 'topic', targetEntity: Gn::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'topic_id', nullable: 'false')]
-    protected ArrayCollection $gns;
+    protected Collection $gns;
 
     #[OneToMany(mappedBy: 'topic', targetEntity: Groupe::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'topic_id', nullable: 'false')]
-    protected ArrayCollection $groupes;
+    protected Collection $groupes;
 
     #[OneToMany(mappedBy: 'topic', targetEntity: Post::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'topic_id', nullable: 'false')]
-    protected ArrayCollection $posts;
+    protected Collection $posts;
 
     #[OneToMany(mappedBy: 'topic', targetEntity: Religion::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'topic_id', nullable: 'false')]
-    protected ArrayCollection $religions;
+    protected Collection $religions;
 
     #[OneToMany(mappedBy: 'topic', targetEntity: SecondaryGroup::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'topic_id', nullable: 'false')]
-    protected ArrayCollection $secondaryGroups;
+    protected Collection $secondaryGroups;
 
     #[OneToMany(mappedBy: 'topic', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'topic_id', nullable: 'false')]
-    protected ArrayCollection $territoires;
+    protected Collection $territoires;
 
     #[OneToMany(mappedBy: 'topic', targetEntity: Topic::class)]
     #[JoinColumn(name: 'topic_id', referencedColumnName: 'billet_id', nullable: 'false')]
-    protected ArrayCollection $topics;
+    protected Collection $topics;
 
     #[ManyToOne(targetEntity: Topic::class, inversedBy: 'topics')]
     #[JoinColumn(name: 'topic_id', referencedColumnName: 'id', nullable: 'false')]
@@ -258,7 +258,7 @@ abstract class BaseTopic
     /**
      * Get Gn entity collection (one to many).
      */
-    public function getGns(): ArrayCollection
+    public function getGns(): Collection
     {
         return $this->gns;
     }
@@ -286,7 +286,7 @@ abstract class BaseTopic
     /**
      * Get Groupe entity collection (one to many).
      */
-    public function getGroupes(): ArrayCollection
+    public function getGroupes(): Collection
     {
         return $this->groupes;
     }
@@ -314,7 +314,7 @@ abstract class BaseTopic
     /**
      * Get Post entity collection (one to many).
      */
-    public function getPosts(): ArrayCollection
+    public function getPosts(): Collection
     {
         return $this->posts;
     }
@@ -342,7 +342,7 @@ abstract class BaseTopic
     /**
      * Get Religion entity collection (one to many).
      */
-    public function getReligions(): ArrayCollection
+    public function getReligions(): Collection
     {
         return $this->religions;
     }
@@ -370,7 +370,7 @@ abstract class BaseTopic
     /**
      * Get SecondaryGroup entity collection (one to many).
      */
-    public function getSecondaryGroups(): ArrayCollection
+    public function getSecondaryGroups(): Collection
     {
         return $this->secondaryGroups;
     }
@@ -398,7 +398,7 @@ abstract class BaseTopic
     /**
      * Get Territoire entity collection (one to many).
      */
-    public function getTerritoires(): ArrayCollection
+    public function getTerritoires(): Collection
     {
         return $this->territoires;
     }
@@ -426,7 +426,7 @@ abstract class BaseTopic
     /**
      * Get Topic entity collection (one to many).
      */
-    public function getTopics(): ArrayCollection
+    public function getTopics(): Collection
     {
         return $this->topics;
     }
@@ -434,7 +434,7 @@ abstract class BaseTopic
     /**
      * Set Topic entity (many to one).
      */
-    public function setTopic(Topic $topic = null): ArrayCollection
+    public function setTopic(Topic $topic = null): Collection
     {
         $this->topic = $topic;
 

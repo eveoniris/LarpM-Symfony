@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\RestaurationRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity(repositoryClass: RestaurationRepository::class)]
@@ -12,7 +12,7 @@ class Restauration extends BaseRestauration
     /**
      * Fourni la liste des utilisateurs classé par GN.
      */
-    public function getUserByGn(): ArrayCollection
+    public function getUserByGn(): Collection
     {
         $result = new ArrayCollection();
         foreach ($this->getParticipantHasRestaurations() as $participantHasRestauration) {
@@ -36,7 +36,7 @@ class Restauration extends BaseRestauration
     /**
      * Fourni la liste des restrictions classé par GN.
      */
-    public function getRestrictionByGn(): ArrayCollection
+    public function getRestrictionByGn(): Collection
     {
         $result = new ArrayCollection();
         foreach ($this->getParticipantHasRestaurations() as $participantHasRestauration) {

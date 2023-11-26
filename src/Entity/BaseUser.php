@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\BaseUserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -1011,7 +1010,7 @@ abstract class BaseUser
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPostViews(): ArrayCollection
+    public function getPostViews(): Collection
     {
         return $this->postViews;
     }
@@ -1101,7 +1100,7 @@ abstract class BaseUser
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getRestrictionRelatedByAuteurIds(): ArrayCollection
+    public function getRestrictionRelatedByAuteurIds(): Collection
     {
         return $this->restrictionRelatedByAuteurIds;
     }
@@ -1123,7 +1122,7 @@ abstract class BaseUser
         return $this;
     }
 
-    public function getRumeurs(): ArrayCollection
+    public function getRumeurs(): Collection
     {
         return $this->rumeurs;
     }
@@ -1142,7 +1141,7 @@ abstract class BaseUser
         return $this;
     }
 
-    public function getTopics(): ArrayCollection
+    public function getTopics(): Collection
     {
         return $this->topics;
     }
@@ -1205,7 +1204,7 @@ abstract class BaseUser
         return $this;
     }
 
-    public function getRestrictions(): ArrayCollection
+    public function getRestrictions(): Collection
     {
         return $this->restrictions;
     }
@@ -1224,7 +1223,7 @@ abstract class BaseUser
         return $this;
     }
 
-    public function getPosts(): ArrayCollection
+    public function getPosts(): Collection
     {
         return $this->posts;
     }

@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -28,7 +28,7 @@ abstract class BaseTitre
 
     #[OneToMany(mappedBy: 'titre', targetEntity: TitreTerritoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'titre_id', nullable: 'false')]
-    protected ArrayCollection $titreTerritoires;
+    protected Collection $titreTerritoires;
 
     public function __construct()
     {
@@ -112,7 +112,7 @@ abstract class BaseTitre
     /**
      * Get TitreTerritoire entity collection (one to many).
      */
-    public function getTitreTerritoires(): ArrayCollection
+    public function getTitreTerritoires(): Collection
     {
         return $this->titreTerritoires;
     }

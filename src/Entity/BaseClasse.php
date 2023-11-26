@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -43,21 +43,21 @@ abstract class BaseClasse
      */
     #[OneToMany(mappedBy: 'classe', targetEntity: GroupeClasse::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
-    protected ArrayCollection $groupeClasses;
+    protected Collection $groupeClasses;
 
     /**
      * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Personnage>|\App\Entity\Personnage[]
      */
     #[OneToMany(mappedBy: 'classe', targetEntity: Personnage::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
-    protected ArrayCollection $personnages;
+    protected Collection $personnages;
 
     /**
      * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\PersonnageSecondaire>|\App\Entity\PersonnageSecondaire[]
      */
     #[OneToMany(mappedBy: 'classe', targetEntity: PersonnageSecondaire::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
-    protected ArrayCollection $personnageSecondaires;
+    protected Collection $personnageSecondaires;
 
     public function __construct()
     {
@@ -164,7 +164,7 @@ abstract class BaseClasse
         return $this;
     }
 
-    public function getGroupeClasses(): ArrayCollection
+    public function getGroupeClasses(): Collection
     {
         return $this->groupeClasses;
     }
@@ -183,7 +183,7 @@ abstract class BaseClasse
         return $this;
     }
 
-    public function getPersonnages(): ArrayCollection
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }
@@ -202,7 +202,7 @@ abstract class BaseClasse
         return $this;
     }
 
-    public function getPersonnageSecondaires(): ArrayCollection
+    public function getPersonnageSecondaires(): Collection
     {
         return $this->personnageSecondaires;
     }

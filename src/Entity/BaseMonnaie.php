@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -30,7 +30,7 @@ abstract class BaseMonnaie
 
     #[OneToMany(mappedBy: 'monnaie', targetEntity: QualityValeur::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'monnaie_id', nullable: 'false')]
-    protected ArrayCollection $qualityValeurs;
+    protected Collection $qualityValeurs;
 
     public function __construct()
     {
@@ -114,7 +114,7 @@ abstract class BaseMonnaie
     /**
      * Get QualityValeur entity collection (one to many).
      */
-    public function getQualityValeurs(): ArrayCollection
+    public function getQualityValeurs(): Collection
     {
         return $this->qualityValeurs;
     }

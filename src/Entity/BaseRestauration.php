@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -28,7 +28,7 @@ abstract class BaseRestauration
 
     #[OneToMany(mappedBy: 'restauration', targetEntity: ParticipantHasRestauration::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'restauration_id', nullable: 'false')]
-    protected ArrayCollection $participantHasRestaurations;
+    protected Collection $participantHasRestaurations;
 
     public function __construct()
     {
@@ -112,7 +112,7 @@ abstract class BaseRestauration
     /**
      * Get ParticipantHasRestauration entity collection (one to many).
      */
-    public function getParticipantHasRestaurations(): ArrayCollection
+    public function getParticipantHasRestaurations(): Collection
     {
         return $this->participantHasRestaurations;
     }

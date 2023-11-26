@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -36,7 +36,7 @@ abstract class BaseQuestion
 
     #[OneToMany(mappedBy: 'question', targetEntity: Reponse::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'question_id', nullable: 'false')]
-    protected ArrayCollection $reponses;
+    protected Collection $reponses;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'questions')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
@@ -160,7 +160,7 @@ abstract class BaseQuestion
     /**
      * Get Reponse entity collection (one to many).
      */
-    public function getReponses(): ArrayCollection
+    public function getReponses(): Collection
     {
         return $this->reponses;
     }

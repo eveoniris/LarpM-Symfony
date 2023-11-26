@@ -10,7 +10,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -107,27 +107,27 @@ class BaseTerritoire
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: Chronologie::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'zone_politique_id', nullable: 'false')]
-    protected ArrayCollection $chronologies;
+    protected Collection $chronologies;
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: Groupe::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: 'false')]
-    protected ArrayCollection $groupes;
+    protected Collection $groupes;
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: Personnage::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: 'false')]
-    protected ArrayCollection $personnages;
+    protected Collection $personnages;
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: Rumeur::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: 'false')]
-    protected ArrayCollection $rumeurs;
+    protected Collection $rumeurs;
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: 'false')]
-    protected ArrayCollection $territoires;
+    protected Collection $territoires;
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: TitreTerritoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: 'false')]
-    protected ArrayCollection $titreTerritoires;
+    protected Collection $titreTerritoires;
 
     #[ORM\ManyToOne(targetEntity: Territoire::class, inversedBy: 'territoires')]
     #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
@@ -157,10 +157,10 @@ class BaseTerritoire
     #[ORM\JoinTable(name: 'territoire_quete')]
     #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'territoire_cible_id', referencedColumnName: 'id', nullable: false)]
-    protected ArrayCollection $territoireCibles;
+    protected Collection $territoireCibles;
 
     #[ORM\ManyToMany(targetEntity: Territoire::class, inversedBy: 'territoireCibles')]
-    protected ArrayCollection $territoireStarts;
+    protected Collection $territoireStarts;
 
     #[ORM\ManyToOne(targetEntity: Groupe::class, inversedBy: 'territoires')]
     #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
@@ -168,26 +168,50 @@ class BaseTerritoire
 
     #[ORM\ManyToOne(targetEntity: Culture::class, inversedBy: 'territoires')]
     #[ORM\JoinColumn(name: 'culture_id', referencedColumnName: 'id')]
-    protected Culture $culture;
+    protected ?Culture $culture =null;
 
     #[ORM\ManyToMany(targetEntity: Construction::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_has_construction')]
     #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'construction_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['label' => 'ASC'])]
-    protected ArrayCollection $constructions;
+    protected Collection $constructions;
 
     #[ORM\ManyToMany(targetEntity: Loi::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_has_loi')]
     #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'loi_id', referencedColumnName: 'id', nullable: false)]
-    protected ArrayCollection $lois;
+    protected Collection $lois;
 
     #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_ingredient')]
     #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'ingredient_id', referencedColumnName: 'id', nullable: false)]
-    protected ArrayCollection $ingredients;
+    protected Collection $ingredients;
+
+    #[ORM\ManyToMany(targetEntity: Ressource::class, inversedBy: 'territoires')]
+    #[ORM\JoinTable(name: 'territoire_importation')]
+    #[ORM\JoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
+    protected Collection $importations;
+
+    #[ORM\ManyToMany(targetEntity: Ressource::class, inversedBy: 'exportateurs')]
+    #[ORM\JoinTable(name: 'territoire_exportation')]
+    #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
+    protected Collection $exportations;
+
+    #[ORM\ManyToMany(targetEntity: Langue::class, inversedBy: 'territoireSecondaires')]
+    #[ORM\JoinTable(name: 'territoire_langue')]
+    #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: false)]
+    protected Collection $langues;
+
+    #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'territoireSecondaires')]
+    #[ORM\JoinTable(name: 'territoire_religion')]
+    #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
+    protected Collection $religions;
 
     public function __construct()
     {
@@ -206,8 +230,6 @@ class BaseTerritoire
 
     /**
      * Set the value of id.
-     *
-     * @return BaseTerritoire
      */
     public function setId(int $id): static
     {
@@ -667,7 +689,7 @@ class BaseTerritoire
     /**
      * Get Chronologie entity collection (one to many).
      */
-    public function getChronologies(): ArrayCollection
+    public function getChronologies(): Collection
     {
         return $this->chronologies;
     }
@@ -695,7 +717,7 @@ class BaseTerritoire
     /**
      * Get territoireCibles entity collection.
      */
-    public function getTerritoireCibles(): ArrayCollection
+    public function getTerritoireCibles(): Collection
     {
         return $this->territoireCibles;
     }
@@ -723,7 +745,7 @@ class BaseTerritoire
     /**
      * Get TerritoireStarts entity collection.
      */
-    public function getTerritoireStarts(): ArrayCollection
+    public function getTerritoireStarts(): Collection
     {
         return $this->territoireStarts;
     }
@@ -751,7 +773,7 @@ class BaseTerritoire
     /**
      * Get Groupe entity collection (one to many).
      */
-    public function getGroupes(): ArrayCollection
+    public function getGroupes(): Collection
     {
         return $this->groupes;
     }
@@ -779,7 +801,7 @@ class BaseTerritoire
     /**
      * Get Personnage entity collection (one to many).
      */
-    public function getPersonnages(): ArrayCollection
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }
@@ -807,7 +829,7 @@ class BaseTerritoire
     /**
      * Get Rumeur entity collection (one to many).
      */
-    public function getRumeurs(): ArrayCollection
+    public function getRumeurs(): Collection
     {
         return $this->rumeurs;
     }
@@ -835,7 +857,7 @@ class BaseTerritoire
     /**
      * Get Territoire entity collection (one to many).
      */
-    public function getTerritoires(): ArrayCollection
+    public function getTerritoires(): Collection
     {
         return $this->territoires;
     }
@@ -863,7 +885,7 @@ class BaseTerritoire
     /**
      * Get TitreTerritoire entity collection (one to many).
      */
-    public function getTitreTerritoires(): ArrayCollection
+    public function getTitreTerritoires(): Collection
     {
         return $this->titreTerritoires;
     }
@@ -1007,7 +1029,7 @@ class BaseTerritoire
     /**
      * Get Culture entity (many to one).
      */
-    public function getCulture(): Culture
+    public function getCulture(): ?Culture
     {
         return $this->culture;
     }
@@ -1037,7 +1059,7 @@ class BaseTerritoire
     /**
      * Get Construction entity collection.
      */
-    public function getConstructions(): ArrayCollection
+    public function getConstructions(): Collection
     {
         return $this->constructions;
     }
@@ -1067,7 +1089,7 @@ class BaseTerritoire
     /**
      * Get Loi entity collection.
      */
-    public function getLois(): ArrayCollection
+    public function getLois(): Collection
     {
         return $this->lois;
     }
@@ -1097,7 +1119,7 @@ class BaseTerritoire
     /**
      * Get Ingredient entity collection.
      */
-    public function getIngredients(): ArrayCollection
+    public function getIngredients(): Collection
     {
         return $this->ingredients;
     }

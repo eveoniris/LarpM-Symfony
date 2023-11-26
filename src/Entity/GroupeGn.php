@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\GroupeGnRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity(repositoryClass: GroupeGnRepository::class)]
@@ -47,7 +47,7 @@ class GroupeGn extends BaseGroupeGn
     /**
      * Fourni la liste des personnages de cette session de jeu.
      */
-    public function getPersonnages(): ArrayCollection
+    public function getPersonnages(): Collection
     {
         $personnages = new ArrayCollection();
 

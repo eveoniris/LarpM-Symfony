@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -36,14 +35,14 @@ class BaseAppelation
      */
     #[OneToMany(mappedBy: 'appelation', targetEntity: Appelation::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id', nullable: 'false')]
-    protected ArrayCollection $appelations;
+    protected Collection $appelations;
 
     /**
      * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Territoire>|\App\Entity\Territoire[]
      */
     #[OneToMany(mappedBy: 'appelation', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id', nullable: 'false')]
-    protected ArrayCollection $territoires;
+    protected Collection $territoires;
 
     #[ManyToOne(targetEntity: Appelation::class, inversedBy: 'appelations')]
     #[JoinColumn(name: 'appelation_id', referencedColumnName: 'id')]

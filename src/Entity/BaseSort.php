@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -41,7 +41,7 @@ abstract class BaseSort
     protected bool $secret = false;
 
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'sorts')]
-    protected ArrayCollection $personnages;
+    protected Collection $personnages;
 
     public function __construct()
     {
@@ -181,7 +181,7 @@ abstract class BaseSort
     /**
      * Get Personnage entity collection.
      */
-    public function getPersonnages(): ArrayCollection
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }

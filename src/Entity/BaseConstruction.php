@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -29,7 +29,7 @@ abstract class BaseConstruction
     protected int $defense;
 
     #[ORM\ManyToMany(targetEntity: Territoire::class, inversedBy: 'constructions')]
-    protected ArrayCollection $territoires;
+    protected Collection $territoires;
 
     public function __construct()
     {
@@ -98,7 +98,7 @@ abstract class BaseConstruction
         return $this;
     }
 
-    public function getTerritoires(): ArrayCollection
+    public function getTerritoires(): Collection
     {
         return $this->territoires;
     }
