@@ -3,50 +3,37 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\TerritoireGuerre.
- *
- * @Table(name="territoire_guerre")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseTerritoireGuerre", "extended":"TerritoireGuerre"})
- */
-class BaseTerritoireGuerre
+#[ORM\Entity]
+#[ORM\Table(name: 'territoire_guerre')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseTerritoireGuerre', 'extended' => 'TerritoireGuerre'])]
+abstract class BaseTerritoireGuerre
 {
-    /**
-     * @var \Doctrine\Common\Collections\ArrayCollection
-     */
-    public $territoires;
+    #[OneToMany(mappedBy: 'territoireGuerre', targetEntity: Territoire::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'territoire_groupe_id', nullable: false)]
+    protected ArrayCollection $territoires;
 
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $puissance;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $puissance;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $puissance_max;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $puissance_max;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $protection;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $protection = null;
 
-    /**
-     * @OneToOne(targetEntity="Territoire", mappedBy="territoireGuerre")
-     */
-    protected $territoire;
+    #[ORM\OneToOne(mappedBy: 'territoireGuerre', targetEntity: Territoire::class)]
+    protected Territoire $territoire;
 
     public function __construct()
     {
@@ -55,10 +42,6 @@ class BaseTerritoireGuerre
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\TerritoireGuerre
      */
     public function setId(int $id): static
     {
@@ -69,8 +52,6 @@ class BaseTerritoireGuerre
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -79,12 +60,8 @@ class BaseTerritoireGuerre
 
     /**
      * Set the value of puissance.
-     *
-     * @param int $puissance
-     *
-     * @return \App\Entity\TerritoireGuerre
      */
-    public function setPuissance($puissance)
+    public function setPuissance(int $puissance): static
     {
         $this->puissance = $puissance;
 
@@ -93,22 +70,16 @@ class BaseTerritoireGuerre
 
     /**
      * Get the value of puissance.
-     *
-     * @return int
      */
-    public function getPuissance()
+    public function getPuissance(): int
     {
         return $this->puissance;
     }
 
     /**
      * Set the value of puissance_max.
-     *
-     * @param int $puissance_max
-     *
-     * @return \App\Entity\TerritoireGuerre
      */
-    public function setPuissanceMax($puissance_max)
+    public function setPuissanceMax(int $puissance_max): static
     {
         $this->puissance_max = $puissance_max;
 
@@ -117,10 +88,8 @@ class BaseTerritoireGuerre
 
     /**
      * Get the value of puissance_max.
-     *
-     * @return int
      */
-    public function getPuissanceMax()
+    public function getPuissanceMax(): int
     {
         return $this->puissance_max;
     }
@@ -129,10 +98,8 @@ class BaseTerritoireGuerre
      * Set the value of protection.
      *
      * @param int $protection
-     *
-     * @return \App\Entity\TerritoireGuerre
      */
-    public function setProtection($protection)
+    public function setProtection($protection): static
     {
         $this->protection = $protection;
 
@@ -141,22 +108,18 @@ class BaseTerritoireGuerre
 
     /**
      * Get the value of protection.
-     *
-     * @return int
      */
-    public function getProtection()
+    public function getProtection(): int
     {
         return $this->protection;
     }
 
     /**
      * Set Territoire entity (one to one).
-     *
-     * @return \App\Entity\TerritoireGuerre
      */
-    public function setTerritoire(Territoire $territoire = null)
+    public function setTerritoire(Territoire $territoire = null): static
     {
-        $territoire->setTerritoireGuerre($this);
+        $territoire?->setTerritoireGuerre($this);
         $this->territoire = $territoire;
 
         return $this;
@@ -164,10 +127,8 @@ class BaseTerritoireGuerre
 
     /**
      * Get Territoire entity (one to one).
-     *
-     * @return \App\Entity\Territoire
      */
-    public function getTerritoire()
+    public function getTerritoire(): Territoire
     {
         return $this->territoire;
     }

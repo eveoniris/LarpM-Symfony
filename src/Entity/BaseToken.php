@@ -3,47 +3,35 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Token.
- *
- * @Table(name="token")
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseToken", "extended":"Token"})
- */
-class BaseToken
+#[ORM\Entity]
+#[ORM\Table(name: 'token')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseToken', 'extended' => 'Token'])]
+abstract class BaseToken
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $label;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $label = '';
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $tag;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $tag = '';
 
-    /**
-     * @OneToMany(targetEntity="PersonnageHasToken", mappedBy="token")
-     *
-     * @JoinColumn(name="id", referencedColumnName="token_id", nullable=false)
-     */
-    protected $personnageHasTokens;
+    #[OneToMany(mappedBy: 'token', targetEntity: PersonnageHasToken::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'token_id', nullable: 'false')]
+    protected ArrayCollection $personnageHasTokens;
 
     public function __construct()
     {
@@ -52,10 +40,6 @@ class BaseToken
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Token
      */
     public function setId(int $id): static
     {
@@ -66,8 +50,6 @@ class BaseToken
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -76,10 +58,6 @@ class BaseToken
 
     /**
      * Set the value of label.
-     *
-     * @param string $label
-     *
-     * @return \App\Entity\Token
      */
     public function setLabel(string $label): static
     {
@@ -90,8 +68,6 @@ class BaseToken
 
     /**
      * Get the value of label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -100,10 +76,6 @@ class BaseToken
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Token
      */
     public function setDescription(string $description): static
     {
@@ -114,8 +86,6 @@ class BaseToken
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
     public function getDescription(): string
     {
@@ -124,12 +94,8 @@ class BaseToken
 
     /**
      * Set the value of tag.
-     *
-     * @param string $tag
-     *
-     * @return \App\Entity\Token
      */
-    public function setTag($tag)
+    public function setTag(string $tag): static
     {
         $this->tag = $tag;
 
@@ -138,20 +104,16 @@ class BaseToken
 
     /**
      * Get the value of tag.
-     *
-     * @return string
      */
-    public function getTag()
+    public function getTag(): string
     {
         return $this->tag;
     }
 
     /**
      * Add PersonnageHasToken entity to collection (one to many).
-     *
-     * @return \App\Entity\Token
      */
-    public function addPersonnageHasToken(PersonnageHasToken $personnageHasToken)
+    public function addPersonnageHasToken(PersonnageHasToken $personnageHasToken): static
     {
         $this->personnageHasTokens[] = $personnageHasToken;
 
@@ -160,10 +122,8 @@ class BaseToken
 
     /**
      * Remove PersonnageHasToken entity from collection (one to many).
-     *
-     * @return \App\Entity\Token
      */
-    public function removePersonnageHasToken(PersonnageHasToken $personnageHasToken)
+    public function removePersonnageHasToken(PersonnageHasToken $personnageHasToken): static
     {
         $this->personnageHasTokens->removeElement($personnageHasToken);
 
@@ -172,10 +132,8 @@ class BaseToken
 
     /**
      * Get PersonnageHasToken entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPersonnageHasTokens()
+    public function getPersonnageHasTokens(): ArrayCollection
     {
         return $this->personnageHasTokens;
     }

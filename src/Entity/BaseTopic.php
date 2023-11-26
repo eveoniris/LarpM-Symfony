@@ -3,122 +3,82 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * App\Entity\Topic.
- *
- * @Table(name="topic", indexes={@Index(name="fk_topic_topic1_idx", columns={"topic_id"}), @Index(name="fk_topic_User1_idx", columns={"User_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseTopic", "extended":"Topic"})
- */
-class BaseTopic
+#[ORM\Entity]
+#[ORM\Table(name: 'topic')]
+#[ORM\Index(columns: ['topic_id'], name: 'fk_topic_topic1_idx')]
+#[ORM\Index(columns: ['user_id'], name: 'fk_topic_ser1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseTopic', 'extended' => 'Topic'])]
+abstract class BaseTopic
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=450)
-     */
-    protected $title;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 450)]
+    protected string $title = '';
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @Column(type="datetime", nullable=true)
-     */
-    protected $creation_date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    protected ?\DateTime $creation_date = null;
 
-    /**
-     * @Column(type="datetime", nullable=true)
-     */
-    protected $update_date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    protected ?\DateTime $update_date = null;
 
-    /**
-     * @Column(name="`right`", type="string", length=45, nullable=true)
-     */
-    protected $right;
+    #[Column(name: 'right', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $right = null;
 
-    /**
-     * @Column(type="integer", nullable=true)
-     */
-    protected $object_id;
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    protected ?int $object_id = null;
 
-    /**
-     * @Column(name="`key`", type="string", length=45, nullable=true)
-     */
-    protected $key;
+    #[Column(name: 'key', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    protected ?string $key = null;
 
-    /**
-     * @OneToMany(targetEntity="Gn", mappedBy="topic", cascade={"persist"})
-     *
-     * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
-     */
-    protected $gns;
+    #[OneToMany(mappedBy: 'topic', targetEntity: Gn::class, cascade: ['persist'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'topic_id', nullable: 'false')]
+    protected ArrayCollection $gns;
 
-    /**
-     * @OneToMany(targetEntity="Groupe", mappedBy="topic")
-     *
-     * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
-     */
-    protected $groupes;
+    #[OneToMany(mappedBy: 'topic', targetEntity: Groupe::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'topic_id', nullable: 'false')]
+    protected ArrayCollection $groupes;
 
-    /**
-     * @OneToMany(targetEntity="Post", mappedBy="topic")
-     *
-     * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
-     */
-    protected $posts;
+    #[OneToMany(mappedBy: 'topic', targetEntity: Post::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'topic_id', nullable: 'false')]
+    protected ArrayCollection $posts;
 
-    /**
-     * @OneToMany(targetEntity="Religion", mappedBy="topic")
-     *
-     * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
-     */
-    protected $religions;
+    #[OneToMany(mappedBy: 'topic', targetEntity: Religion::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'topic_id', nullable: 'false')]
+    protected ArrayCollection $religions;
 
-    /**
-     * @OneToMany(targetEntity="SecondaryGroup", mappedBy="topic")
-     *
-     * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
-     */
-    protected $secondaryGroups;
+    #[OneToMany(mappedBy: 'topic', targetEntity: SecondaryGroup::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'topic_id', nullable: 'false')]
+    protected ArrayCollection $secondaryGroups;
 
-    /**
-     * @OneToMany(targetEntity="Territoire", mappedBy="topic")
-     *
-     * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
-     */
-    protected $territoires;
+    #[OneToMany(mappedBy: 'topic', targetEntity: Territoire::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'topic_id', nullable: 'false')]
+    protected ArrayCollection $territoires;
 
-    /**
-     * @OneToMany(targetEntity="Topic", mappedBy="topic")
-     *
-     * @JoinColumn(name="id", referencedColumnName="topic_id", nullable=false)
-     */
-    protected $topics;
+    #[OneToMany(mappedBy: 'topic', targetEntity: Topic::class)]
+    #[JoinColumn(name: 'topic_id', referencedColumnName: 'billet_id', nullable: 'false')]
+    protected ArrayCollection $topics;
 
-    /**
-     * @ManyToOne(targetEntity="Topic", inversedBy="topics")
-     *
-     * @JoinColumn(name="topic_id", referencedColumnName="id")
-     */
-    protected $topic;
+    #[ManyToOne(targetEntity: Topic::class, inversedBy: 'topics')]
+    #[JoinColumn(name: 'topic_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Topic $topic;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'topics')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
-    protected ?User $user = null;
+    protected User $user;
 
     public function __construct()
     {
@@ -133,10 +93,6 @@ class BaseTopic
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Topic
      */
     public function setId(int $id): static
     {
@@ -147,8 +103,6 @@ class BaseTopic
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -157,12 +111,8 @@ class BaseTopic
 
     /**
      * Set the value of title.
-     *
-     * @param string $title
-     *
-     * @return \App\Entity\Topic
      */
-    public function setTitle($title)
+    public function setTitle(string $title): static
     {
         $this->title = $title;
 
@@ -171,20 +121,14 @@ class BaseTopic
 
     /**
      * Get the value of title.
-     *
-     * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
     /**
      * Set the value of description.
-     *
-     * @param string $description
-     *
-     * @return \App\Entity\Topic
      */
     public function setDescription(string $description): static
     {
@@ -195,8 +139,6 @@ class BaseTopic
 
     /**
      * Get the value of description.
-     *
-     * @return string
      */
     public function getDescription(): string
     {
@@ -205,12 +147,8 @@ class BaseTopic
 
     /**
      * Set the value of creation_date.
-     *
-     * @param \DateTime $creation_date
-     *
-     * @return \App\Entity\Topic
      */
-    public function setCreationDate($creation_date)
+    public function setCreationDate(\DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -219,22 +157,16 @@ class BaseTopic
 
     /**
      * Get the value of creation_date.
-     *
-     * @return \DateTime
      */
-    public function getCreationDate()
+    public function getCreationDate(): \DateTime
     {
         return $this->creation_date;
     }
 
     /**
      * Set the value of update_date.
-     *
-     * @param \DateTime $update_date
-     *
-     * @return \App\Entity\Topic
      */
-    public function setUpdateDate($update_date)
+    public function setUpdateDate(\DateTime $update_date): static
     {
         $this->update_date = $update_date;
 
@@ -243,22 +175,16 @@ class BaseTopic
 
     /**
      * Get the value of update_date.
-     *
-     * @return \DateTime
      */
-    public function getUpdateDate()
+    public function getUpdateDate(): \DateTime
     {
         return $this->update_date;
     }
 
     /**
      * Set the value of right.
-     *
-     * @param string $right
-     *
-     * @return \App\Entity\Topic
      */
-    public function setRight($right)
+    public function setRight(string $right): static
     {
         $this->right = $right;
 
@@ -267,22 +193,16 @@ class BaseTopic
 
     /**
      * Get the value of right.
-     *
-     * @return string
      */
-    public function getRight()
+    public function getRight(): string
     {
-        return $this->right;
+        return $this->right ?? '';
     }
 
     /**
      * Set the value of object_id.
-     *
-     * @param int $object_id
-     *
-     * @return \App\Entity\Topic
      */
-    public function setObjectId($object_id)
+    public function setObjectId(int $object_id): static
     {
         $this->object_id = $object_id;
 
@@ -291,22 +211,16 @@ class BaseTopic
 
     /**
      * Get the value of object_id.
-     *
-     * @return int
      */
-    public function getObjectId()
+    public function getObjectId(): int
     {
         return $this->object_id;
     }
 
     /**
      * Set the value of key.
-     *
-     * @param string $key
-     *
-     * @return \App\Entity\Topic
      */
-    public function setKey($key)
+    public function setKey(string $key): static
     {
         $this->key = $key;
 
@@ -315,20 +229,16 @@ class BaseTopic
 
     /**
      * Get the value of key.
-     *
-     * @return string
      */
-    public function getKey()
+    public function getKey(): string
     {
         return $this->key;
     }
 
     /**
      * Add Gn entity to collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function addGn(Gn $gn)
+    public function addGn(Gn $gn): static
     {
         $this->gns[] = $gn;
 
@@ -337,10 +247,8 @@ class BaseTopic
 
     /**
      * Remove Gn entity from collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function removeGn(Gn $gn)
+    public function removeGn(Gn $gn): static
     {
         $this->gns->removeElement($gn);
 
@@ -349,20 +257,16 @@ class BaseTopic
 
     /**
      * Get Gn entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGns()
+    public function getGns(): ArrayCollection
     {
         return $this->gns;
     }
 
     /**
      * Add Groupe entity to collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function addGroupe(Groupe $groupe)
+    public function addGroupe(Groupe $groupe): static
     {
         $this->groupes[] = $groupe;
 
@@ -371,10 +275,8 @@ class BaseTopic
 
     /**
      * Remove Groupe entity from collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function removeGroupe(Groupe $groupe)
+    public function removeGroupe(Groupe $groupe): static
     {
         $this->groupes->removeElement($groupe);
 
@@ -383,20 +285,16 @@ class BaseTopic
 
     /**
      * Get Groupe entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getGroupes()
+    public function getGroupes(): ArrayCollection
     {
         return $this->groupes;
     }
 
     /**
      * Add Post entity to collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function addPost(Post $post)
+    public function addPost(Post $post): static
     {
         $this->posts[] = $post;
 
@@ -405,10 +303,8 @@ class BaseTopic
 
     /**
      * Remove Post entity from collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function removePost(Post $post)
+    public function removePost(Post $post): static
     {
         $this->posts->removeElement($post);
 
@@ -417,20 +313,16 @@ class BaseTopic
 
     /**
      * Get Post entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPosts()
+    public function getPosts(): ArrayCollection
     {
         return $this->posts;
     }
 
     /**
      * Add Religion entity to collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function addReligion(Religion $religion)
+    public function addReligion(Religion $religion): static
     {
         $this->religions[] = $religion;
 
@@ -439,10 +331,8 @@ class BaseTopic
 
     /**
      * Remove Religion entity from collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function removeReligion(Religion $religion)
+    public function removeReligion(Religion $religion): static
     {
         $this->religions->removeElement($religion);
 
@@ -451,20 +341,16 @@ class BaseTopic
 
     /**
      * Get Religion entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getReligions()
+    public function getReligions(): ArrayCollection
     {
         return $this->religions;
     }
 
     /**
      * Add SecondaryGroup entity to collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function addSecondaryGroup(SecondaryGroup $secondaryGroup)
+    public function addSecondaryGroup(SecondaryGroup $secondaryGroup): static
     {
         $this->secondaryGroups[] = $secondaryGroup;
 
@@ -473,10 +359,8 @@ class BaseTopic
 
     /**
      * Remove SecondaryGroup entity from collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function removeSecondaryGroup(SecondaryGroup $secondaryGroup)
+    public function removeSecondaryGroup(SecondaryGroup $secondaryGroup): static
     {
         $this->secondaryGroups->removeElement($secondaryGroup);
 
@@ -485,20 +369,16 @@ class BaseTopic
 
     /**
      * Get SecondaryGroup entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSecondaryGroups()
+    public function getSecondaryGroups(): ArrayCollection
     {
         return $this->secondaryGroups;
     }
 
     /**
      * Add Territoire entity to collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function addTerritoire(Territoire $territoire)
+    public function addTerritoire(Territoire $territoire): static
     {
         $this->territoires[] = $territoire;
 
@@ -507,10 +387,8 @@ class BaseTopic
 
     /**
      * Remove Territoire entity from collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function removeTerritoire(Territoire $territoire)
+    public function removeTerritoire(Territoire $territoire): static
     {
         $this->territoires->removeElement($territoire);
 
@@ -519,20 +397,16 @@ class BaseTopic
 
     /**
      * Get Territoire entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getTerritoires()
+    public function getTerritoires(): ArrayCollection
     {
         return $this->territoires;
     }
 
     /**
      * Add Topic entity to collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function addTopic(Topic $topic)
+    public function addTopic(Topic $topic): static
     {
         $this->topics[] = $topic;
 
@@ -541,10 +415,8 @@ class BaseTopic
 
     /**
      * Remove Topic entity from collection (one to many).
-     *
-     * @return \App\Entity\Topic
      */
-    public function removeTopic(Topic $topic)
+    public function removeTopic(Topic $topic): static
     {
         $this->topics->removeElement($topic);
 
@@ -553,20 +425,16 @@ class BaseTopic
 
     /**
      * Get Topic entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getTopics()
+    public function getTopics(): ArrayCollection
     {
         return $this->topics;
     }
 
     /**
      * Set Topic entity (many to one).
-     *
-     * @return \App\Entity\Topic
      */
-    public function setTopic(Topic $topic = null)
+    public function setTopic(Topic $topic = null): ArrayCollection
     {
         $this->topic = $topic;
 
@@ -575,20 +443,16 @@ class BaseTopic
 
     /**
      * Get Topic entity (many to one).
-     *
-     * @return \App\Entity\Topic
      */
-    public function getTopic()
+    public function getTopic(): static
     {
         return $this->topic;
     }
 
     /**
      * Set User entity (many to one).
-     *
-     * @return \App\Entity\Topic
      */
-    public function setUser(User $User = null)
+    public function setUser(User $User = null): static
     {
         $this->user = $User;
 
@@ -597,10 +461,8 @@ class BaseTopic
 
     /**
      * Get User entity (many to one).
-     *
-     * @return \App\Entity\User
      */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }

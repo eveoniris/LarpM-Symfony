@@ -32,13 +32,13 @@ class BaseTechnologiesRessources
     #[Assert\NotBlank]
     protected ?int $quantite = null;
 
-    #[ManyToOne(targetEntity: 'Technologie', inversedBy: 'technologieRessource', cascade: ['persist'])]
+    #[ManyToOne(targetEntity: 'Technologie', cascade: ['persist'], inversedBy: 'technologieRessource')]
     #[JoinColumn(name: 'technologie_id', referencedColumnName: 'id')]
     protected \App\Entity\Technologie $technologie;
 
-    #[ManyToOne(targetEntity: 'Ressource', inversedBy: 'technologieRessource', cascade: ['persist'])]
+    #[ManyToOne(targetEntity: 'Ressource', cascade: ['persist'], inversedBy: 'technologieRessource')]
     #[JoinColumn(name: 'ressource_id', referencedColumnName: 'id')]
-    protected $ressource;
+    protected Ressource $ressource;
 
     public function getId(): ?int
     {
@@ -73,7 +73,7 @@ class BaseTechnologiesRessources
     /**
      * @return Ressource
      */
-    public function getRessource()
+    public function getRessource(): Ressource
     {
         return $this->ressource;
     }

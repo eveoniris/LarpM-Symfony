@@ -45,13 +45,13 @@ class BaseTechnologie
     /**
      * @var \Doctrine\Common\Collections\Collection<\App\Entity\BaseTechnologiesRessources>
      */
-    #[OneToMany(targetEntity: 'BaseTechnologiesRessources', mappedBy: 'technologie', cascade: ['persist'])]
+    #[OneToMany(mappedBy: 'technologie', targetEntity: 'BaseTechnologiesRessources', cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'technology_id', nullable: false)]
     protected \Doctrine\Common\Collections\Collection $ressources;
 
-    #[ManyToOne(targetEntity: 'CompetenceFamily', inversedBy: 'technologies', cascade: ['persist'])]
+    #[ManyToOne(targetEntity: 'CompetenceFamily', cascade: ['persist'], inversedBy: 'technologies')]
     #[JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: true)]
-    protected $competenceFamily;
+    protected CompetenceFamily $competenceFamily;
 
     /**
      * @var \Doctrine\Common\Collections\Collection<\App\Entity\Personnage>
@@ -70,7 +70,7 @@ class BaseTechnologie
      *
      * @return Technologie
      */
-    public function setId(?int $id)
+    public function setId(?int $id): static
     {
         $this->id = $id;
 
@@ -92,7 +92,7 @@ class BaseTechnologie
      *
      * @return Technologie
      */
-    public function setLabel(?string $label)
+    public function setLabel(?string $label): static
     {
         $this->label = $label;
 
@@ -114,7 +114,7 @@ class BaseTechnologie
      *
      * @return Technologie
      */
-    public function setDescription(?string $description)
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
 
@@ -144,9 +144,11 @@ class BaseTechnologie
     /**
      * Set the value of documentUrl.
      */
-    public function setDocumentUrl(?string $documentUrl): void
+    public function setDocumentUrl(?string $documentUrl): static
     {
         $this->documentUrl = $documentUrl;
+
+        return $this;
     }
 
     /**
@@ -154,7 +156,7 @@ class BaseTechnologie
      *
      * @return bool
      */
-    public function isSecret()
+    public function isSecret(): bool
     {
         return $this->secret;
     }
@@ -174,7 +176,7 @@ class BaseTechnologie
      *
      * @return Technologie
      */
-    public function addRessources($ressource)
+    public function addRessources(TechnologiesRessources $ressource): static
     {
         $this->ressources[] = $ressource;
 
@@ -188,7 +190,7 @@ class BaseTechnologie
      *
      * @return Technologie
      */
-    public function removeTechnologie($ressource)
+    public function removeTechnologie(TechnologiesRessources $ressource): static
     {
         $this->ressources->removeElement($ressource);
 
@@ -200,7 +202,7 @@ class BaseTechnologie
      *
      * @return Collection
      */
-    public function getRessources()
+    public function getRessources(): Collection
     {
         return $this->ressources;
     }
@@ -212,7 +214,7 @@ class BaseTechnologie
      *
      * @return BaseTechnologie
      */
-    public function setCompetenceFamily($competenceFamily)
+    public function setCompetenceFamily(CompetenceFamily $competenceFamily): static
     {
         $this->competenceFamily = $competenceFamily;
 
@@ -224,7 +226,7 @@ class BaseTechnologie
      *
      * @return CompetenceFamily
      */
-    public function getCompetenceFamily()
+    public function getCompetenceFamily():CompetenceFamily
     {
         return $this->competenceFamily;
     }
@@ -236,7 +238,7 @@ class BaseTechnologie
      *
      * @return Technologie
      */
-    public function addPersonnage($personnage)
+    public function addPersonnage(Personnage $personnage)
     {
         $this->personnages[] = $personnage;
 
@@ -250,7 +252,7 @@ class BaseTechnologie
      *
      * @return Technologie
      */
-    public function removePersonnage($personnage)
+    public function removePersonnage(Personnage $personnage): static
     {
         $this->personnages->removeElement($personnage);
 
@@ -262,7 +264,7 @@ class BaseTechnologie
      *
      * @return Collection
      */
-    public function getPersonnages()
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }

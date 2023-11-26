@@ -9,53 +9,36 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\Trigger.
- *
- * @Table(name="`trigger`", indexes={@Index(name="fk_trigger_idx", columns={"personnage_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BaseTrigger", "extended":"Trigger"})
- */
-class BaseTrigger
+#[ORM\Entity]
+#[ORM\Table(name: 'trigger')]
+#[ORM\Index(columns: ['personnage_id'], name: 'fk_trigger_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseTrigger', 'extended' => 'Trigger'])]
+abstract class BaseTrigger
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45)
-     */
-    protected $tag;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $tag;
 
-    /**
-     * @Column(type="boolean")
-     */
-    protected $done;
+    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    protected bool $done = false;
 
-    /**
-     * @ManyToOne(targetEntity="Personnage", inversedBy="triggers")
-     *
-     * @JoinColumn(name="personnage_id", referencedColumnName="id", nullable=false)
-     */
-    protected $personnage;
-
-    public function __construct()
-    {
-    }
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'triggers')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Personnage $personnage;
 
     /**
      * Set the value of id.
-     *
-     * @param int $id
-     *
-     * @return \App\Entity\Trigger
      */
     public function setId(int $id): static
     {
@@ -66,8 +49,6 @@ class BaseTrigger
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -76,12 +57,8 @@ class BaseTrigger
 
     /**
      * Set the value of tag.
-     *
-     * @param string $tag
-     *
-     * @return \App\Entity\Trigger
      */
-    public function setTag($tag)
+    public function setTag(string $tag): static
     {
         $this->tag = $tag;
 
@@ -90,22 +67,16 @@ class BaseTrigger
 
     /**
      * Get the value of tag.
-     *
-     * @return string
      */
-    public function getTag()
+    public function getTag(): string
     {
-        return $this->tag;
+        return $this->tag ?? '';
     }
 
     /**
      * Set the value of done.
-     *
-     * @param bool $done
-     *
-     * @return \App\Entity\Trigger
      */
-    public function setDone($done)
+    public function setDone(bool $done): static
     {
         $this->done = $done;
 
@@ -114,20 +85,16 @@ class BaseTrigger
 
     /**
      * Get the value of done.
-     *
-     * @return bool
      */
-    public function getDone()
+    public function getDone(): bool
     {
         return $this->done;
     }
 
     /**
      * Set Personnage entity (many to one).
-     *
-     * @return \App\Entity\Trigger
      */
-    public function setPersonnage(Personnage $personnage = null)
+    public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -136,10 +103,8 @@ class BaseTrigger
 
     /**
      * Get Personnage entity (many to one).
-     *
-     * @return \App\Entity\Personnage
      */
-    public function getPersonnage()
+    public function getPersonnage(): Personnage
     {
         return $this->personnage;
     }
