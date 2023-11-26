@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -133,7 +134,7 @@ class BaseAge
         return $this;
     }
 
-    public function getPersonnages():Collection
+    public function getPersonnages(): Collection
     {
         return $this->personnages;
     }
