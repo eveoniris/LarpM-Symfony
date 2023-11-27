@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Symfony\Component\Mime\Encoder\QpEncoder;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'billet')]
+#[ORM\Table(name: 'reponse')]
 #[ORM\Index(columns: ['question_id'], name: 'fk_reponse_idx')]
 #[ORM\Index(columns: ['participant_id'], name: 'fk_reponse_participant1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]

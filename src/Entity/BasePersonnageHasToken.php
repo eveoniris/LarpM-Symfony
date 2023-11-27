@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\Entity]
 #[ORM\Table(name: 'personnage_has_token')]
 #[ORM\Index(columns: ['token_id'], name: 'fk_personnage_has_token_token1_idx')]
-#[ORM\Index(columns: ['gn_id'], name: 'fk_billet_gn1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageHasToken', 'extended' => 'PersonnageHasToken'])]

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -28,49 +29,49 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnage', 'extended' => 'Personnage'])]
 class BasePersonnage
 {
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     public int $pugilat = 1;
 
-    #[ORM\Id, ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER), ORM\GeneratedValue]
+    #[ORM\Id, ORM\Column(type: Types::INTEGER), ORM\GeneratedValue]
     protected int $id;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
+    #[Column(type: Types::STRING, length: 100)]
     protected string $nom;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
+    #[Column(type: Types::STRING, length: 100, nullable: true)]
     protected ?string $surnom = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $intrigue = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $renomme;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
+    #[Column(type: Types::STRING, length: 100, nullable: true)]
     protected ?string $photo = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $xp;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $materiel = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[Column(type: Types::BOOLEAN)]
     protected bool $vivant = true;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $age_reel = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $trombineUrl = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $richesse = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $heroisme = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $sensible = null;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceGain::class)]
@@ -161,6 +162,10 @@ class BasePersonnage
     #[ManyToOne(targetEntity: User::class, inversedBy: 'personnages')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
+
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageHasQuestion::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    protected Collection $personnageHasQuestions;
 
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_has_document')]
@@ -1453,5 +1458,17 @@ class BasePersonnage
         }
 
         return $prochain;
+    }
+
+    public function setPersonnageHasQuestions(Collection $personnageHasQuestions): static
+    {
+        $this->personnageHasQuestions = $personnageHasQuestions;
+
+        return $this;
+    }
+
+    public function getPersonnageHasQuestions(): Collection
+    {
+        return $this->personnageHasQuestions;
     }
 }

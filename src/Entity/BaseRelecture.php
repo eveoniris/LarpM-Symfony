@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\ManyToOne;
 
 #[Entity]
 #[ORM\Table(name: 'relecture')]
-#[ORM\Index(columns: ['etat_civil_id'], name: 'fk_user_etat_civil1_idx')]
 #[ORM\Index(columns: ['user_id'], name: 'fk_relecture_user1_idx')]
 #[ORM\Index(columns: ['intrigue_id'], name: 'fk_relecture_intrigue1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]

@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'billet')]
+#[ORM\Table(name: 'postulant')]
 #[ORM\Index(columns: ['secondary_group_id'], name: 'fk_postulant_secondary_group1_idx')]
 #[ORM\Index(columns: ['personnage_id'], name: 'fk_postulant_personnage1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]

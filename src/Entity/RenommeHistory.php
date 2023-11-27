@@ -2,13 +2,10 @@
 
 namespace App\Entity;
 
-use App\Entity\BaseRenommeHistory as parentAlias;
+use Doctrine\ORM\Mapping as ORM;
 
-class RenommeHistory extends parentAlias
+#[ORM\Entity()]
+class RenommeHistory extends BaseRenommeHistory
 {
-    public function __construct()
-    {
-        parent::__construct();
-        $this->setDate(new \DateTime('NOW'));
-    }
+
 }

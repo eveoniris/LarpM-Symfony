@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'billet')]
-#[ORM\Index(columns: ['createur_id'], name: 'fk_billet_user1')]
-#[ORM\Index(columns: ['gn_id'], name: 'fk_billet_gn1_idx')]
+#[ORM\Table(name: 'tag')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseTag', 'extended' => 'Tag'])]
