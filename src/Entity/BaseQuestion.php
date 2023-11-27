@@ -43,9 +43,21 @@ abstract class BaseQuestion
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
 
+    #[OneToMany(mappedBy: 'question', targetEntity: PersonnageHasQuestion::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'question_id', nullable: 'false')]
+    protected Collection $personnageHasQuestions;
+
     public function __construct()
     {
         $this->reponses = new ArrayCollection();
+    }
+
+    /**
+     * Get the value of id.
+     */
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     /**
@@ -59,11 +71,11 @@ abstract class BaseQuestion
     }
 
     /**
-     * Get the value of id.
+     * Get the value of text.
      */
-    public function getId(): int
+    public function getText(): string
     {
-        return $this->id;
+        return $this->text ?? '';
     }
 
     /**
@@ -77,11 +89,11 @@ abstract class BaseQuestion
     }
 
     /**
-     * Get the value of text.
+     * Get the value of date.
      */
-    public function getText(): string
+    public function getDate(): \DateTime
     {
-        return $this->text ?? '';
+        return $this->date;
     }
 
     /**
@@ -95,11 +107,11 @@ abstract class BaseQuestion
     }
 
     /**
-     * Get the value of date.
+     * Get the value of choix.
      */
-    public function getDate(): \DateTime
+    public function getChoix(): string
     {
-        return $this->date;
+        return $this->choix;
     }
 
     /**
@@ -113,11 +125,11 @@ abstract class BaseQuestion
     }
 
     /**
-     * Get the value of choix.
+     * Get the value of label.
      */
-    public function getChoix(): string
+    public function getLabel(): string
     {
-        return $this->choix;
+        return $this->label ?? '';
     }
 
     /**
@@ -128,14 +140,6 @@ abstract class BaseQuestion
         $this->label = $label;
 
         return $this;
-    }
-
-    /**
-     * Get the value of label.
-     */
-    public function getLabel(): string
-    {
-        return $this->label ?? '';
     }
 
     /**
@@ -167,6 +171,14 @@ abstract class BaseQuestion
     }
 
     /**
+     * Get User entity (many to one).
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
      * Set User entity (many to one).
      */
     public function setUser(User $user = null): static
@@ -176,16 +188,20 @@ abstract class BaseQuestion
         return $this;
     }
 
-    /**
-     * Get User entity (many to one).
-     */
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
     public function __sleep()
     {
         return ['id', 'text', 'date', 'User_id', 'choix', 'label'];
+    }
+
+    public function getPersonnageHasQuestions(): Collection
+    {
+        return $this->personnageHasQuestions;
+    }
+
+    public function setPersonnageHasQuestions(Collection $personnageHasQuestions): static
+    {
+        $this->personnageHasQuestions = $personnageHasQuestions;
+
+        return $this;
     }
 }

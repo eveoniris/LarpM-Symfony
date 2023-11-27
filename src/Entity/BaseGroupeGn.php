@@ -56,23 +56,23 @@ abstract class BaseGroupeGn
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: 'false')]
     protected Collection $participants;
 
-    #[oOne(targetEntity: Groupe::class, inversedBy: 'groupeGns')]
+    #[ORM\ManyToOne(targetEntity: Groupe::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
     protected Groupe $groupe;
 
-    #[oOne(targetEntity: Gn::class, inversedBy: 'groupeGns')]
+    #[ORM\ManyToOne(targetEntity: Gn::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
     protected Gn $gn;
 
-    #[oOne(targetEntity: Participant::class, inversedBy: 'groupeGns')]
+    #[ORM\ManyToOne(targetEntity: Participant::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: 'false')]
     protected Participant $participant;
 
-    #[oOne(targetEntity: Personnage::class, inversedBy: 'groupeGns')]
+    #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'suzerain_id', referencedColumnName: 'id', nullable: 'false')]
     protected Personnage $suzerain;
 
-    #[ORM\oMany(targetEntity: GroupeGnOrdre::class, inversedBy: 'groupeGns')]
+    #[ORM\ManyToMany(targetEntity: GroupeGnOrdre::class, inversedBy: 'groupeGns')]
     #[ORM\JoinTable(name: 'groupe_gn_ordre')]
     #[ORM\JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'id', referencedColumnName: 'id', nullable: false)]

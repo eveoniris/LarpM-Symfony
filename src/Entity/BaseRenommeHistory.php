@@ -33,6 +33,11 @@ abstract class BaseRenommeHistory
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
     protected Personnage $personnage;
 
+    public function __construct()
+    {
+        $this->setDate(new \DateTime('NOW'));
+    }
+
     /**
      * Set the value of id.
      */

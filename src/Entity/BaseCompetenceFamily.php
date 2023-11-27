@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
@@ -22,10 +23,10 @@ use Doctrine\ORM\Mapping\Table;
 class BaseCompetenceFamily
 {
     #[Id]
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
-    #[GeneratedValue(strategy: 'AUTO')]
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, columnDefinition: 'INT AUTO_INCREMENT')]
     protected ?int $id = null;
 
+    #[Id]
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected ?string $label = null;
 

@@ -28,8 +28,8 @@ abstract class BaseObjetCarac
     protected ?string $couleur = null;
 
     #[ORM\OneToOne(inversedBy: 'objetCarac', targetEntity: Objet::class, cascade: ['persist', 'remove', 'merge', 'detach', 'all'])]
-    #[ORM\JoinColumn(name: 'etat_civil_id', referencedColumnName: 'id')]
-    protected Objet $objetobjet_id;
+    #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id')]
+    protected Objet $objet;
 
     /**
      * Set the value of id.
@@ -106,7 +106,7 @@ abstract class BaseObjetCarac
     /**
      * Set Objet entity (one to one).
      */
-    public function setObjet(Objet $objet)
+    public function setObjet(Objet $objet): static
     {
         $this->objet = $objet;
 

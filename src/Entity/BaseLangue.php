@@ -41,8 +41,8 @@ abstract class BaseLangue
     #[JoinColumn(name: 'id', referencedColumnName: 'langue_id', nullable: 'false')]
     protected Collection $territoires;
 
-    #[OneToMany(mappedBy: 'langue', targetEntity: GroupeLangue::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_langue_id', nullable: 'false')]
+    #[ORM\ManyToOne(targetEntity: GroupeLangue::class, inversedBy: 'langue')]
+    #[JoinColumn(name: 'groupe_langue_id', referencedColumnName: 'id', nullable: 'false')]
     protected GroupeLangue $groupeLangue;
 
     #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'langues')]
