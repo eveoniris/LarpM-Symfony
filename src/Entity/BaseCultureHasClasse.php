@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping\Id;
 
 #[Entity]
 #[ORM\Table(name: 'culture_has_classe')]
-#[ORM\Index(columns: ['fk_culture_has_classe_culture1_idx'], name: 'culture_id')]
-#[ORM\Index(columns: ['fk_culture_has_classe_classe1_idx'], name: 'classe_id')]
+#[ORM\Index(columns: ['culture_id'], name: 'fk_culture_has_classe_culture1_idx')]
+#[ORM\Index(columns: ['classe_id'], name: 'fk_culture_has_classe_classe1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseCultureHasClasse', 'extended' => 'CultureHasClasse'])]

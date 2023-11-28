@@ -73,9 +73,6 @@ abstract class BaseGroupeGn
     protected Personnage $suzerain;
 
     #[ORM\ManyToMany(targetEntity: GroupeGnOrdre::class, inversedBy: 'groupeGns')]
-    #[ORM\JoinTable(name: 'groupe_gn_ordre')]
-    #[ORM\JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'id', referencedColumnName: 'id', nullable: false)]
     #[ORM\orderBy(['ordre' => 'ASC'])]
     protected Collection $groupeGnOrdres;
 

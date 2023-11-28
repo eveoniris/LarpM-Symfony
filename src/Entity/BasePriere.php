@@ -40,9 +40,6 @@ abstract class BasePriere
     protected Sphere $sphere;
 
     #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'prieres')]
-    #[ORM\JoinTable(name: 'personnages_prieres')]
-    #[ORM\JoinColumn(name: 'priere_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $personnages;
 
     public function __construct()

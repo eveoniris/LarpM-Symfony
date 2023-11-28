@@ -11,8 +11,6 @@ use Doctrine\ORM\Mapping\ManyToOne;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'notification')]
-#[ORM\Index(columns: ['user_id'], name: 'fk_notification_User1_idx')]
-#[ORM\Index(columns: ['gn_id'], name: 'fk_billet_gn1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseNotification', 'extended' => 'Notification'])]

@@ -37,9 +37,6 @@ abstract class BasePotion
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
     protected ?bool $secret = null;
 
-    /**
-     * @ManyToMany(targetEntity="Personnage", mappedBy="potions")
-     */
     #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'potions')]
     protected Collection $personnages;
 

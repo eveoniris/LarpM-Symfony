@@ -24,9 +24,9 @@ abstract class BaseReligionDescription
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
     protected ?string $description = null;
 
-    #[ORM\ManyToOne(targetEntity: Personnage::class, cascade: ['persist', 'remove'], inversedBy: 'users')]
-    #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
-    protected $religion;
+    #[ORM\ManyToOne(targetEntity: Religion::class, inversedBy: 'religionDescriptions')]
+    #[ORM\JoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
+    protected Religion $religion;
 
     #[ORM\ManyToOne(targetEntity: ReligionLevel::class, inversedBy: 'religionDescriptions')]
     #[ORM\JoinColumn(name: 'religion_level_id', referencedColumnName: 'id', nullable: false)]
