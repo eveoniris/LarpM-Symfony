@@ -13,8 +13,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'monnaie')]
-#[ORM\Index(columns: ['createur_id'], name: 'fk_billet_user1')]
-#[ORM\Index(columns: ['gn_id'], name: 'fk_billet_gn1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseMonnaie', 'extended' => 'Monnaie'])]

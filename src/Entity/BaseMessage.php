@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\Id;
 #[Entity]
 #[ORM\Table(name: 'message')]
 #[ORM\Index(columns: ['auteur'], name: 'fk_message_user1_idx')]
-#[ORM\Index(columns: ['personnage_secondaire_id'], name: 'fk_user_personnage_secondaire1_idx')]
 #[ORM\Index(columns: ['destinataire'], name: 'fk_message_user2_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
