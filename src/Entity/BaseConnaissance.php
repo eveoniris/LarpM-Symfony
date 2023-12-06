@@ -32,13 +32,13 @@ abstract class BaseConnaissance
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl;
 
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true])]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true])]
     protected int $niveau;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: false, options: ['default' => 0])]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: false, options: ['default' => 0])]
     protected bool $secret = false;
 
-    #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'connaissances')]
+    #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'connaissances')]
     protected Collection $personnages;
 
     public function __construct()

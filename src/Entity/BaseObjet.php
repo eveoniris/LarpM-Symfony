@@ -22,10 +22,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseObjet', 'extended' => 'Objet'])]
 abstract class BaseObjet
 {
-    /**
-     * @var \Doctrine\Common\Collections\ArrayCollection
-     */
-    public $objetCaracs;
     #[ORM\Id, ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER), ORM\GeneratedValue]
     protected ?int $id = null;
 
@@ -59,7 +55,7 @@ abstract class BaseObjet
 
     #[ORM\OneToOne(inversedBy: 'objet', targetEntity: ObjetCarac::class, cascade: ['persist', 'remove', 'detach', 'all'])]
     #[ORM\JoinColumn(name: 'etat_civil_id', referencedColumnName: 'id')]
-    protected $objetCarac;
+    protected Collection $objetCaracs;
 
     #[ORM\ManyToOne(targetEntity: Etat::class, inversedBy: 'objets')]
     #[ORM\JoinColumn(name: 'etat_id', referencedColumnName: 'id')]
@@ -77,7 +73,7 @@ abstract class BaseObjet
     #[JoinColumn(name: 'photo_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected Photo $photo;
 
-    #[ManyToOne(targetEntity: Rangement::class, inversedBy: 'objets', cascade: ['persist', 'merge', 'remove', 'detach', 'all'])]
+    #[ManyToOne(targetEntity: Rangement::class, cascade: ['persist', 'merge', 'remove', 'detach', 'all'], inversedBy: 'objets')]
     #[JoinColumn(name: 'rangement_id', referencedColumnName: 'id', nullable: 'false')]
     protected Rangement $rangement;
 

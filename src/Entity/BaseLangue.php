@@ -34,7 +34,7 @@ abstract class BaseLangue
 
     #[OneToMany(mappedBy: 'langue', targetEntity: PersonnageLangues::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'langue_id', nullable: 'false')]
-    #[OrderBy(['secret' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC'])]
+    #[OrderBy(['langue' => 'ASC'])]
     protected Collection $personnageLangues;
 
     #[OneToMany(mappedBy: 'langue', targetEntity: Territoire::class)]

@@ -39,7 +39,7 @@ abstract class BasePriere
     #[ORM\JoinColumn(name: 'sphere_id', referencedColumnName: 'id')]
     protected Sphere $sphere;
 
-    #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'prieres')]
+    #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'prieres')]
     protected Collection $personnages;
 
     public function __construct()

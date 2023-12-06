@@ -63,13 +63,13 @@ abstract class BaseDocument
     #[ORM\InverseJoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $langues;
 
-    #[ORM\ManyToMany(targetEntity: Groupe::class, inversedBy: 'documents')]
+    #[ORM\ManyToMany(targetEntity: Groupe::class, mappedBy: 'documents')]
     protected Collection $groupes;
 
-    #[ORM\ManyToMany(targetEntity: Lieu::class, inversedBy: 'documents')]
+    #[ORM\ManyToMany(targetEntity: Lieu::class, mappedBy: 'documents')]
     protected Collection $lieus;
 
-    #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'documents')]
+    #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'documents')]
     protected Collection $personnages;
 
     public function __construct()

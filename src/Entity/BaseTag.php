@@ -19,15 +19,9 @@ abstract class BaseTag
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=100, nullable=true)
-     */
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
     protected string $nom;
 
-    /**
-     * @ManyToMany(targetEntity="Objet", mappedBy="tags")
-     */
     #[ORM\ManyToMany(targetEntity: Objet::class, inversedBy: 'tags')]
     protected Collection $objets;
 
