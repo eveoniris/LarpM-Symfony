@@ -13,9 +13,9 @@ services:
       MYSQL_USER: admin
       MYSQL_PASSWORD: password
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
+      # - database_data:/var/lib/postgresql/data:rw
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
+     - ./docker/db/data:/var/lib/mysql/data:rw
 ###< doctrine/doctrine-bundle ###
 
   app:
@@ -36,4 +36,3 @@ volumes:
 ###> doctrine/doctrine-bundle ###
   database_data:
 ###< doctrine/doctrine-bundle ###
-

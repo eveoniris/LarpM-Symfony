@@ -105,7 +105,7 @@ class BasePersonnage
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageLangues::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    #[OrderBy(['secret' => 'ASC', 'langue' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC'])]
+    #[OrderBy(['langue' => 'ASC'])]
     protected Collection $personnageLangues;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageRessource::class)]
@@ -200,7 +200,7 @@ class BasePersonnage
     #[ORM\InverseJoinColumn(name: 'domaine_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $domaines;
 
-    #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'users')]
+    #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_potions')]
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id', nullable: false)]

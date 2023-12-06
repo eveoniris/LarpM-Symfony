@@ -61,11 +61,11 @@ abstract class BaseItem
     #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id', nullable: false)]
     protected Objet $objet;
 
-    #[ORM\ManyToMany(targetEntity: Groupe::class, inversedBy: 'items')]
+    #[ORM\ManyToMany(targetEntity: Groupe::class, mappedBy: 'items')]
     protected Collection $groupes;
 
-    #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'items')]
-    protected $personnages;
+    #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'items')]
+    protected Collection $personnages;
 
     public function __construct()
     {

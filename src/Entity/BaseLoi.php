@@ -22,15 +22,9 @@ abstract class BaseLoi
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $label = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $description = null;
 

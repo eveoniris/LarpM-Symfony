@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OrderBy;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'personnage_langues')]
@@ -21,9 +22,6 @@ abstract class BasePersonnageLangues
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(name="`source`", type="string", length=45)
-     */
     #[Column(name: 'source', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $source = '';
 
@@ -31,16 +29,9 @@ abstract class BasePersonnageLangues
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
     protected Personnage $personnage;
 
-    /**
-     * @ManyToOne(targetEntity="Langue", inversedBy="personnageLangues")
-     *
-     * @JoinColumn(name="langue_id", referencedColumnName="id", nullable=false)
-     *
-     * @OrderBy({"secret" = "ASC", "label" = "ASC"})
-     */
     #[ManyToOne(targetEntity: Langue::class, inversedBy: 'personnageLangues')]
     #[JoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: 'false')]
-    #[ORM\OrderBy(['secret' => 'ASC',  'label' => 'ASC'])]
+    #[OrderBy(['secret' => 'ASC', 'langue' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC'])]
     protected Langue $langue;
 
     /**

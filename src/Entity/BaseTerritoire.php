@@ -169,7 +169,7 @@ class BaseTerritoire
 
     #[ORM\ManyToOne(targetEntity: Culture::class, inversedBy: 'territoires')]
     #[ORM\JoinColumn(name: 'culture_id', referencedColumnName: 'id')]
-    protected ?Culture $culture =null;
+    protected ?Culture $culture = null;
 
     #[ORM\ManyToMany(targetEntity: Construction::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_has_construction')]

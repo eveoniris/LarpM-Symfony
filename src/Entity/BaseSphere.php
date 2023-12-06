@@ -21,17 +21,9 @@ abstract class BaseSphere
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true, length: 45)]
     protected ?string $label = null;
 
-    /**
-     * @OneToMany(targetEntity="Priere", mappedBy="sphere")
-     *
-     * @JoinColumn(name="id", referencedColumnName="sphere_id", nullable=false)
-     */
     #[OneToMany(mappedBy: 'sphere', targetEntity: Priere::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'sphere_id', nullable: 'false')]
     protected Collection $prieres;
