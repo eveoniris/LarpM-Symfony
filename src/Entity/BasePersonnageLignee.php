@@ -23,7 +23,7 @@ abstract class BasePersonnageLignee
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'PersonnageLignee')]
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageLignee')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
     protected Personnage $personnage;
 
