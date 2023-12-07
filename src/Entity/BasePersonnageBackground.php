@@ -44,7 +44,7 @@ abstract class BasePersonnageBackground
     #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
     protected $update_date;
 
-    #[ManyToOne(targetEntity: PersonnageSecondaire::class, inversedBy: 'personnageBackgrounds')]
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageBackgrounds')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
     protected Personnage $personnage;
 

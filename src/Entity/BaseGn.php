@@ -35,22 +35,22 @@ class BaseGn
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $description = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $date_debut = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $date_fin = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $date_installation_joueur = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $date_fin_orga = null;
 
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected string $adresse;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     protected bool $actif;
 
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
@@ -59,36 +59,36 @@ class BaseGn
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
     protected ?string $conditions_inscription = null;
 
-    #[OneToMany(mappedBy: 'gn', targetEntity: Annonce::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: Annonce::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $annonces;
 
-    #[OneToMany(mappedBy: 'gn', targetEntity: Background::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: Background::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $backgrounds;
 
-    #[OneToMany(mappedBy: 'gn', targetEntity: Billet::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: Billet::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $billets;
 
-    #[OneToMany(mappedBy: 'gn', targetEntity: Debriefing::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: Debriefing::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $debriefings;
 
-    #[OneToMany(mappedBy: 'gn', targetEntity: GroupeGn::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: GroupeGn::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $groupeGns;
 
-    #[OneToMany(mappedBy: 'gn', targetEntity: Participant::class, cascade: ['persist'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: Participant::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $participants;
 
-    #[OneToMany(mappedBy: 'gn', targetEntity: PersonnageBackground::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: PersonnageBackground::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $personnageBackgrounds;
 
-    #[OneToMany(mappedBy: 'gn', targetEntity: Rumeur::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: Rumeur::class)]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $rumeurs;
 
     #[ORM\ManyToOne(targetEntity: Topic::class, cascade: ['persist'], inversedBy: 'gns')]

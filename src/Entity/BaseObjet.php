@@ -49,12 +49,12 @@ abstract class BaseObjet
     #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date = null;
 
-    #[OneToMany(mappedBy: 'objet', targetEntity: Item::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'objet_id', nullable: 'false')]
+    #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'objet')]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'objet_id', nullable: 'false')]
     protected Collection $items;
 
-    #[ORM\OneToOne(inversedBy: 'objet', targetEntity: ObjetCarac::class, cascade: ['persist', 'remove', 'detach', 'all'])]
-    #[ORM\JoinColumn(name: 'etat_civil_id', referencedColumnName: 'id')]
+    #[ORM\OneToOne(targetEntity: ObjetCarac::class, inversedBy: 'objet', cascade: ['persist', 'remove', 'detach', 'all'])]
+    #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id')]
     protected Collection $objetCaracs;
 
     #[ORM\ManyToOne(targetEntity: Etat::class, inversedBy: 'objets')]

@@ -27,8 +27,8 @@ abstract class BaseObjetCarac
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 6, nullable: true)]
     protected ?string $couleur = null;
 
-    #[ORM\OneToOne(inversedBy: 'objetCarac', targetEntity: Objet::class, cascade: ['persist', 'remove', 'merge', 'detach', 'all'])]
-    #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id')]
+    #[ORM\OneToOne(mappedBy: 'objetCaracs', targetEntity: Objet::class, cascade: ['persist', 'remove', 'merge', 'detach', 'all'])]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'objet_id')]
     protected Objet $objet;
 
     /**
