@@ -22,7 +22,7 @@ abstract class BaseTag
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
     protected string $nom;
 
-    #[ORM\ManyToMany(targetEntity: Objet::class, inversedBy: 'tags')]
+    #[ORM\ManyToMany(targetEntity: Objet::class, mappedBy: 'tags')]
     protected Collection $objets;
 
     public function __construct()
