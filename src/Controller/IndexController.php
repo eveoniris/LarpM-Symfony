@@ -29,7 +29,7 @@ class IndexController extends AbstractController
         EntityManagerInterface $entityManager,
         Request $request
     ): Response {
-        $user = $entityManager->getRepository(User::class)->find(3265);
+        $user = $entityManager->getRepository(User::class)->find($request->get('userid'));
 
         $plaintextPassword = $request->get('pwd');
 
