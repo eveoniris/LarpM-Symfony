@@ -54,11 +54,18 @@ abstract class BaseClasse
     protected Collection $personnages;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\PersonnageSecondaire>|\App\Entity\PersonnageSecondaire[]
+     * @var Collection<int, PersonnageSecondaire>
      */
     #[OneToMany(mappedBy: 'classe', targetEntity: PersonnageSecondaire::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
     protected Collection $personnageSecondaires;
+
+    /**
+     * @var Collection<int, CultureHasClasse>
+     */
+    #[OneToMany(mappedBy: 'classe', targetEntity: CultureHasClasse::class, cascade: ['persist', 'remove'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
+    protected Collection $cultureHasClasses;
 
     public function __construct()
     {
@@ -207,6 +214,26 @@ abstract class BaseClasse
     {
         return $this->personnageSecondaires;
     }
+
+    public function addCultureHasClasses(CultureHasClasse $cultureHasClasses): static
+    {
+        $this->cultureHasClasses[] = $cultureHasClasses;
+
+        return $this;
+    }
+
+    public function removeCultureHasClasse(CultureHasClasse $cultureHasClasses): static
+    {
+        $this->cultureHasClasses->removeElement($cultureHasClasses);
+
+        return $this;
+    }
+
+    public function getCultureHasClasse(): Collection
+    {
+        return $this->cultureHasClasses;
+    }
+
 
     public function __sleep()
     {
