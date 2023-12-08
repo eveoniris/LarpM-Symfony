@@ -165,7 +165,7 @@ class BaseTerritoire
 
     #[ORM\ManyToOne(targetEntity: Groupe::class, inversedBy: 'territoires')]
     #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
-    protected Groupe $groupe;
+    protected ?Groupe $groupe = null;
 
     #[ORM\ManyToOne(targetEntity: Culture::class, inversedBy: 'territoires')]
     #[ORM\JoinColumn(name: 'culture_id', referencedColumnName: 'id')]
@@ -190,7 +190,7 @@ class BaseTerritoire
     #[ORM\InverseJoinColumn(name: 'ingredient_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $ingredients;
 
-    #[ORM\ManyToMany(targetEntity: Ressource::class, inversedBy: 'territoires')]
+    #[ORM\ManyToMany(targetEntity: Ressource::class, inversedBy: 'importateurs')]
     #[ORM\JoinTable(name: 'territoire_importation')]
     #[ORM\JoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
@@ -227,6 +227,10 @@ class BaseTerritoire
         $this->ingredients = new ArrayCollection();
         $this->territoireCibles = new ArrayCollection();
         $this->territoireStarts = new ArrayCollection();
+        $this->importations = new ArrayCollection();
+        $this->exportations = new ArrayCollection();
+        $this->langues = new ArrayCollection();
+        $this->religions = new ArrayCollection();
     }
 
     /**
@@ -1123,6 +1127,78 @@ class BaseTerritoire
     public function getIngredients(): Collection
     {
         return $this->ingredients;
+    }
+
+    /**
+     * Add Langue entity to collection.
+     *
+     */
+    public function addLangue(Langue $langue): static
+    {
+        $langue->addTerritoireSecondaire($this);
+        $this->langues[] = $langue;
+
+        return $this;
+    }
+
+    /**
+     * Remove Langue entity from collection.
+     *
+     */
+    public function removeLangue(Langue $langue): static
+    {
+        $langue->removeTerritoireSecondaire($this);
+        $this->langues->removeElement($langue);
+
+        return $this;
+    }
+
+    /**
+     * Get Langue entity collection.
+     *
+     */
+    public function getLangues(): Collection
+    {
+        return $this->langues;
+    }
+
+    /**
+     * Ajoute une religion dans la collection de religion.
+
+     */
+    public function addReligion(Religion $religion): static
+    {
+        $religion->addTerritoireSecondaire($this);
+        $this->religions[] = $religion;
+
+        return $this;
+    }
+
+    /**
+     * Retire une religion de la collection de religion.
+     *
+     */
+    public function removeReligion(Religion $religion): static
+    {
+        $religion->removeTerritoireSecondaire($this);
+        $this->religions->removeElement($religion);
+
+        return $this;
+    }
+
+    /**
+     * Fourni la collection de religions.
+     */
+    public function getReligions(): Collection
+    {
+        return $this->religions;
+    }
+
+    public function setGroupeNull(): static
+    {
+        $this->groupe = null;
+
+        return $this;
     }
 
     public function __sleep()

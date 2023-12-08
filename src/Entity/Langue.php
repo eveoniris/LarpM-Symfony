@@ -10,16 +10,6 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity(repositoryClass: LangueRepository::class)]
 class Langue extends BaseLangue implements \Stringable
 {
-    /**
-     * @ManyToMany(targetEntity="Territoire", mappedBy="langues")
-     */
-    protected $territoireSecondaires;
-
-    public function __construct()
-    {
-        $this->territoireSecondaires = new ArrayCollection();
-        parent::__construct();
-    }
 
     public function __toString(): string
     {
@@ -31,24 +21,6 @@ class Langue extends BaseLangue implements \Stringable
         return $this->getLabel().' : '.$this->getDescription();
     }
 
-    public function getTerritoireSecondaires()
-    {
-        return $this->territoireSecondaires;
-    }
-
-    public function addTerritoireSecondaire(Territoire $territoire): static
-    {
-        $this->territoireSecondaires[] = $territoire;
-
-        return $this;
-    }
-
-    public function removeTerritoireSecondaire(Territoire $territoire): static
-    {
-        $this->territoireSecondaires->removeElement($territoire);
-
-        return $this;
-    }
 
     /**
      * Fourni la liste des territoires ou la langue est la langue principale.
