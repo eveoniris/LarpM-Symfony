@@ -69,6 +69,9 @@ abstract class BaseReligion
     #[ORM\ManyToMany(targetEntity: Sphere::class, mappedBy: 'religions')]
     protected Collection $spheres;
 
+    #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'religions')]
+    protected ArrayCollection $territoireSecondaires;
+
     public function __construct()
     {
         $this->personnagesReligions = new ArrayCollection();
@@ -76,6 +79,7 @@ abstract class BaseReligion
         $this->territoires = new ArrayCollection();
         $this->personnages = new ArrayCollection();
         $this->spheres = new ArrayCollection();
+        $this->territoireSecondaires = new ArrayCollection();
     }
 
     /**
@@ -397,6 +401,35 @@ abstract class BaseReligion
     {
         return $this->spheres;
     }
+
+    /**
+     * Fourni la liste des territoires ou la religion est une religion secondaire.
+     */
+    public function getTerritoireSecondaires(): ArrayCollection
+    {
+        return $this->territoireSecondaires;
+    }
+
+    /**
+     * Ajoute un territoire dans la liste des territoires ou la religion est une religion secondaire.
+     */
+    public function addTerritoireSecondaire(Territoire $territoire): static
+    {
+        $this->territoireSecondaires[] = $territoire;
+
+        return $this;
+    }
+
+    /**
+     * Retire un territoire de la liste des territoires ou la religion est une religion secondaire.
+     */
+    public function removeTerritoireSecondaire(Territoire $territoire): static
+    {
+        $this->territoireSecondaires->removeElement($territoire);
+
+        return $this;
+    }
+
 
     public function __sleep()
     {

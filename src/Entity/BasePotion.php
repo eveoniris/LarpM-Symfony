@@ -40,6 +40,9 @@ abstract class BasePotion
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'potions')]
     protected Collection $personnages;
 
+    #[ORM\ManyToMany(targetEntity: Participant::class, mappedBy: 'potions_depart')]
+    protected Collection $participants;
+
     public function __construct()
     {
         $this->personnages = new ArrayCollection();
@@ -120,7 +123,7 @@ abstract class BasePotion
     /**
      * Set the value of niveau.
      */
-    public function setNiveau(int $niveau): string
+    public function setNiveau(int $niveau): static
     {
         $this->niveau = $niveau;
 
@@ -197,6 +200,25 @@ abstract class BasePotion
     public function getPersonnages(): Collection
     {
         return $this->personnages;
+    }
+
+    public function addParticipant(Participant $participant): static
+    {
+        $this->participants[] = $participant;
+
+        return $this;
+    }
+
+    public function removeParticipant(Participant $participant): static
+    {
+        $this->participants->removeElement($participant);
+
+        return $this;
+    }
+
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
     }
 
     public function __sleep()

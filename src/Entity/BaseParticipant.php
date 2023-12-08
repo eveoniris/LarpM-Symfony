@@ -67,7 +67,7 @@ class BaseParticipant
     #[ORM\JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id')]
     protected GroupeGn $groupeGn;
 
-    #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'personnages')]
+    #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'participants')]
     #[ORM\JoinTable(name: 'participant_potions_depart')]
     #[ORM\JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id', nullable: false)]

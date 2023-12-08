@@ -23,10 +23,6 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
      */
     public function __construct()
     {
-        $this->importations = new ArrayCollection();
-        $this->exportations = new ArrayCollection();
-        $this->langues = new ArrayCollection();
-        $this->religions = new ArrayCollection();
         $this->setOrdreSocial(3);
         parent::__construct();
     }
@@ -398,85 +394,6 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
         }
 
         return $this->importations;
-    }
-
-    /**
-     * Add Langue entity to collection.
-     *
-     * @return \App\Entity\Territoire
-     */
-    public function addLangue(Langue $langue): static
-    {
-        $langue->addTerritoireSecondaire($this);
-        $this->langues[] = $langue;
-
-        return $this;
-    }
-
-    /**
-     * Remove Langue entity from collection.
-     *
-     * @return \App\Entity\Territoire
-     */
-    public function removeLangue(Langue $langue): static
-    {
-        $langue->removeTerritoireSecondaire($this);
-        $this->langues->removeElement($langue);
-
-        return $this;
-    }
-
-    /**
-     * Get Langue entity collection.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getLangues()
-    {
-        return $this->langues;
-    }
-
-    /**
-     * Ajoute une religion dans la collection de religion.
-     *
-     * @return \App\Entity\Territoire
-     */
-    public function addReligion(Religion $religion): static
-    {
-        $religion->addTerritoireSecondaire($this);
-        $this->religions[] = $religion;
-
-        return $this;
-    }
-
-    /**
-     * Retire une religion de la collection de religion.
-     *
-     * @return \App\Entity\Territoire
-     */
-    public function removeReligion(Religion $religion): static
-    {
-        $religion->removeTerritoireSecondaire($this);
-        $this->religions->removeElement($religion);
-
-        return $this;
-    }
-
-    /**
-     * Fourni la collection de religions.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getReligions()
-    {
-        return $this->religions;
-    }
-
-    public function setGroupeNull(): static
-    {
-        $this->groupe = null;
-
-        return $this;
     }
 
     public function getGroupesFull(): array

@@ -54,11 +54,15 @@ abstract class BaseLangue
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
+    #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'langues')]
+    protected ArrayCollection $territoireSecondaires;
+
     public function __construct()
     {
         $this->personnageLangues = new ArrayCollection();
         $this->territoires = new ArrayCollection();
         $this->documents = new ArrayCollection();
+        $this->territoireSecondaires = new ArrayCollection();
     }
 
     /**
@@ -274,6 +278,26 @@ abstract class BaseLangue
     {
         return $this->documentUrl ?? '';
     }
+
+    public function getTerritoireSecondaires(): ArrayCollection
+    {
+        return $this->territoireSecondaires;
+    }
+
+    public function addTerritoireSecondaire(Territoire $territoire): static
+    {
+        $this->territoireSecondaires[] = $territoire;
+
+        return $this;
+    }
+
+    public function removeTerritoireSecondaire(Territoire $territoire): static
+    {
+        $this->territoireSecondaires->removeElement($territoire);
+
+        return $this;
+    }
+
 
     public function __sleep()
     {
