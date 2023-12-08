@@ -4,10 +4,10 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
-use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
@@ -33,35 +33,49 @@ class BaseRessource
     protected ?string $label = null;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<\App\Entity\GroupeHasRessource>
+     * @var Collection<GroupeHasRessource>
      */
     #[OneToMany(mappedBy: 'ressource', targetEntity: 'GroupeHasRessource')]
     #[JoinColumn(name: 'id', referencedColumnName: 'ressource_id', nullable: false)]
-    protected \Doctrine\Common\Collections\Collection $groupeHasRessources;
+    protected Collection $groupeHasRessources;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<\App\Entity\PersonnageRessource>
+     * @var Collection<PersonnageRessource>
      */
     #[OneToMany(mappedBy: 'ressource', targetEntity: 'PersonnageRessource')]
     #[JoinColumn(name: 'id', referencedColumnName: 'ressource_id', nullable: false)]
-    protected \Doctrine\Common\Collections\Collection $personnageRessources;
+    protected Collection $personnageRessources;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<\App\Entity\TechnologiesRessources>
+     * @var Collection<TechnologiesRessources>
      */
     #[OneToMany(mappedBy: 'ressource', targetEntity: 'TechnologiesRessources')]
     #[JoinColumn(name: 'id', referencedColumnName: 'ressource_id', nullable: false)]
-    protected \Doctrine\Common\Collections\Collection $technologiesRessources;
+    protected Collection $technologiesRessources;
 
     #[ManyToOne(targetEntity: 'Rarete', inversedBy: 'ressources')]
     #[JoinColumn(name: 'rarete_id', referencedColumnName: 'id', nullable: false)]
-    protected \App\Entity\Rarete $rarete;
+    protected Rarete $rarete;
+
+    /**
+     * @var Collection<Territoire>
+     */
+    #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'exportations')]
+    protected Collection $exportateurs;
+
+    /**
+     * @var Collection<Territoire>
+     */
+    #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'importations')]
+    protected Collection $importateurs;
 
     public function __construct()
     {
         $this->groupeHasRessources = new ArrayCollection();
         $this->personnageRessources = new ArrayCollection();
         $this->technologiesRessources = new ArrayCollection();
+        $this->exportateurs = new ArrayCollection();
+        $this->importateurs = new ArrayCollection();
     }
 
     /**
@@ -122,8 +136,6 @@ class BaseRessource
 
     /**
      * Get GroupeHasRessource entity collection (one to many).
-     *
-     * @return Collection
      */
     public function getGroupeHasRessources(): Collection
     {
@@ -152,8 +164,6 @@ class BaseRessource
 
     /**
      * Get PersonnageRessource entity collection (one to many).
-     *
-     * @return Collection
      */
     public function getPersonnageRessources(): Collection
     {
@@ -182,8 +192,6 @@ class BaseRessource
 
     /**
      * Get TechnologiesRessources entity collection (one to many).
-     *
-     * @return Collection
      */
     public function getTechnologiesRessources(): Collection
     {
@@ -206,6 +214,44 @@ class BaseRessource
     public function getRarete(): Rarete
     {
         return $this->rarete;
+    }
+
+    public function getExportateurs(): Collection
+    {
+        return $this->exportateurs;
+    }
+
+    public function getImportateurs(): Collection
+    {
+        return $this->importateurs;
+    }
+
+    public function addImportateur($territoire): static
+    {
+        $this->importateurs[] = $territoire;
+
+        return $this;
+    }
+
+    public function removeImportateur($territoire): static
+    {
+        $this->importateurs->removeElement($territoire);
+
+        return $this;
+    }
+
+    public function addExportateur($territoire): static
+    {
+        $this->exportateurs[] = $territoire;
+
+        return $this;
+    }
+
+    public function removeExportateur($territoire): static
+    {
+        $this->exportateurs->removeElement($territoire);
+
+        return $this;
     }
 
     public function __sleep()
