@@ -35,9 +35,14 @@ abstract class BaseCulture
     #[JoinColumn(name: 'id', referencedColumnName: 'culture_id', nullable: 'false')]
     protected Collection $territoires;
 
+    #[OneToMany(mappedBy: 'culture', targetEntity: CultureHasClasse::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'culture_id', nullable: 'false')]
+    protected Collection $cultureHasClasses;
+
     public function __construct()
     {
         $this->territoires = new ArrayCollection();
+        $this->cultureHasClasses = new ArrayCollection();
     }
 
     public function setId(int $id): static
@@ -105,6 +110,25 @@ abstract class BaseCulture
     public function getTerritoires(): Collection
     {
         return $this->territoires;
+    }
+
+    public function addCultureHasClasses(CultureHasClasse $cultureHasClasses): static
+    {
+        $this->cultureHasClasses[] = $cultureHasClasses;
+
+        return $this;
+    }
+
+    public function removeCultureHasClasse(CultureHasClasse $cultureHasClasses): static
+    {
+        $this->cultureHasClasses->removeElement($cultureHasClasses);
+
+        return $this;
+    }
+
+    public function getCultureHasClasse(): Collection
+    {
+        return $this->cultureHasClasses;
     }
 
     public function __sleep()
