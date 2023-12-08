@@ -160,7 +160,7 @@ class BaseTerritoire
     #[ORM\InverseJoinColumn(name: 'territoire_cible_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $territoireCibles;
 
-    #[ORM\ManyToMany(targetEntity: Territoire::class, inversedBy: 'territoireCibles')]
+    #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'territoireCibles')]
     protected Collection $territoireStarts;
 
     #[ORM\ManyToOne(targetEntity: Groupe::class, inversedBy: 'territoires')]
@@ -171,7 +171,7 @@ class BaseTerritoire
     #[ORM\JoinColumn(name: 'culture_id', referencedColumnName: 'id')]
     protected ?Culture $culture = null;
 
-    #[ORM\ManyToMany(targetEntity: Construction::class, inversedBy: 'territoires')]
+    #[ORM\ManyToMany(targetEntity: Construction::class, mappedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_has_construction')]
     #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'construction_id', referencedColumnName: 'id', nullable: false)]
