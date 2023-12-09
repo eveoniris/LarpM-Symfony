@@ -62,7 +62,7 @@ class BaseTechnologie
     public function __construct()
     {
         $this->personnages = new ArrayCollection();
-        $this->ressources = new ArrayCollection();
+        $this->technologieRessource = new ArrayCollection();
     }
 
     /**
@@ -178,7 +178,7 @@ class BaseTechnologie
      */
     public function addRessources(TechnologiesRessources $ressource): static
     {
-        $this->ressources[] = $ressource;
+        $this->technologieRessource[] = $ressource;
 
         return $this;
     }
@@ -192,7 +192,7 @@ class BaseTechnologie
      */
     public function removeTechnologie(TechnologiesRessources $ressource): static
     {
-        $this->ressources->removeElement($ressource);
+        $this->technologieRessource->removeElement($ressource);
 
         return $this;
     }
@@ -204,7 +204,7 @@ class BaseTechnologie
      */
     public function getRessources(): Collection
     {
-        return $this->ressources;
+        return $this->technologieRessource;
     }
 
     /**
