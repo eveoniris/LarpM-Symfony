@@ -31,6 +31,10 @@ abstract class BasePersonnageSecondaire
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: 'false')]
     protected Collection $personnageSecondaireCompetences;
 
+    #[OneToMany(mappedBy: 'personnageSecondaire', cascade: ['persist'], targetEntity: PersonnageSecondairesSkills::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: 'false')]
+    protected Collection $personnageSecondairesSkills;
+
     #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: User::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: 'false')]
     protected Collection $users;
@@ -43,6 +47,7 @@ abstract class BasePersonnageSecondaire
     {
         $this->participants = new ArrayCollection();
         $this->personnageSecondaireCompetences = new ArrayCollection();
+        $this->personnageSecondairesSkills = new ArrayCollection();
         $this->users = new ArrayCollection();
     }
 
