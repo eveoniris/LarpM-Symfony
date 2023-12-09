@@ -19,7 +19,7 @@ abstract class BaseTerritoireGuerre
 {
     #[OneToMany(mappedBy: 'territoireGuerre', targetEntity: Territoire::class)]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'territoire_groupe_id', nullable: false)]
-    protected Collection $territoires;
+    protected Collection $territoire;
 
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
@@ -33,12 +33,9 @@ abstract class BaseTerritoireGuerre
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
     protected ?int $protection = null;
 
-    #[ORM\OneToOne(mappedBy: 'territoireGuerre', targetEntity: Territoire::class)]
-    protected Territoire $territoire;
-
     public function __construct()
     {
-        $this->territoires = new ArrayCollection();
+        //$this->territoires = new ArrayCollection();
     }
 
     /**
