@@ -244,6 +244,14 @@ class BasePersonnage
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
     protected Collection $personnageLignee;
 
+    #[OneToMany(mappedBy: 'parent1', targetEntity: PersonnageLignee::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'parent1_id', nullable: 'false')]
+    protected Collection $PersonnageLigneeParent1;
+
+    #[OneToMany(mappedBy: 'parent2', targetEntity: PersonnageLignee::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'parent2_id', nullable: 'false')]
+    protected Collection $PersonnageLigneeParent2;
+
     public function __construct()
     {
         $this->experienceGains = new ArrayCollection();
