@@ -24,7 +24,6 @@ abstract class BasePersonnagesReligions
 
     #[ManyToOne(targetEntity: Religion::class, inversedBy: 'personnagesReligions')]
     #[JoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: 'false')]
-    #[JoinColumn(name: 'religion_label', referencedColumnName: 'label', nullable: 'false')]
     #[ORM\OrderBy(['religion_label' => 'ASC'])]
     protected Religion $religion;
 
