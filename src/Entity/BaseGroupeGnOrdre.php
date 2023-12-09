@@ -26,11 +26,11 @@ abstract class BaseGroupeGnOrdre
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING)]
     protected string $extra;
 
-    #[ManyToOne(targetEntity: GroupeGn::class, inversedBy: 'groupeGnOrdre')]
+    #[ManyToOne(targetEntity: GroupeGn::class, inversedBy: 'groupeGnOrdres')]
     #[JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id', nullable: 'false')]
     protected GroupeGn $groupeGn;
 
-    #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'groupeGnOrdre')]
+    #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'groupeGnOrdres')]
     #[JoinColumn(name: 'cible_id', referencedColumnName: 'id', nullable: 'false')]
     protected Territoire $cible;
 

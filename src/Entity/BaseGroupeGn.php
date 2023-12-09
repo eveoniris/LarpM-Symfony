@@ -52,9 +52,14 @@ abstract class BaseGroupeGn
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected int $initiative = 0;
 
-    #[OneToMany(mappedBy: 'groupeGn', targetEntity: Participant::class)]
+    #[ORM\OneToMany(mappedBy: 'groupeGn', targetEntity: Participant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: 'false')]
     protected Collection $participants;
+
+    #[ORM\OneToMany(mappedBy: 'groupeGn', targetEntity: GroupeGnOrdre::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: 'false')]
+    #[ORM\orderBy(['ordre' => 'ASC'])]
+    protected Collection $groupeGnOrdres;
 
     #[ORM\ManyToOne(targetEntity: Groupe::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
@@ -70,11 +75,7 @@ abstract class BaseGroupeGn
 
     #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'suzerain_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Personnage $suzerain;
-
-    #[ORM\ManyToMany(targetEntity: GroupeGnOrdre::class, inversedBy: 'groupeGns')]
-    #[ORM\orderBy(['ordre' => 'ASC'])]
-    protected Collection $groupeGnOrdres;
+    protected Personnage $suzerain;    
 
     public function __construct()
     {
