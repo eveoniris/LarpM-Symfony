@@ -28,7 +28,7 @@ abstract class BaseObjetCarac
     protected ?string $couleur = null;
 
     #[ORM\OneToOne(mappedBy: 'objetCaracs', targetEntity: Objet::class, cascade: ['persist', 'remove', 'merge', 'detach', 'all'])]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'objet_id')]
+    #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id')]
     protected Objet $objet;
 
     /**
