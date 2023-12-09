@@ -67,6 +67,25 @@ abstract class BaseClasse
     #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
     protected Collection $cultureHasClasses;
 
+    #[ManyToOne(targetEntity: CompetenceFamily::class, inversedBy: 'classeFavorites')]
+    #[JoinTable(name: 'classe_competence_family_favorite', joinColumns: ['name' => 'class_id', 'referencedColumnName' => 'id'], inverseJoinColumns: ['JoinColumn' => ['name' => 'competence_family_id', 'referencedColumnName' => 'id']])]
+    #[OrderBy(['label' => \Doctrine\Common\Collections\Criteria::ASC])]
+    protected Collection $competenceFamilyFavorites;
+
+    #[ManyToMany(targetEntity: CompetenceFamily::class, inversedBy: 'classeNormales')]
+    #[JoinTable(name: 'classe_competence_family_normale')]
+    #[ORM\JoinColumn(name: 'class_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
+    #[OrderBy(['label' => \Doctrine\Common\Collections\Criteria::ASC])]
+    protected Collection $competenceFamilyNormales;
+
+    #[ManyToMany(targetEntity: CompetenceFamily::class, inversedBy: 'classeCreations')]
+    #[JoinTable(name: 'classe_competence_family_creation')]
+    #[ORM\JoinColumn(name: 'class_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
+    #[OrderBy(['label' => \Doctrine\Common\Collections\Criteria::ASC])]
+    protected Collection $competenceFamilyCreations;
+
     public function __construct()
     {
         $this->groupeClasses = new ArrayCollection();
