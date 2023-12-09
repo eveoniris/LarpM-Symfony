@@ -34,6 +34,10 @@ abstract class BaseReligionLevel
     #[JoinColumn(name: 'id', referencedColumnName: 'religion_level_id', nullable: 'false')]
     protected $personnagesReligions;
 
+    #[OneToMany(mappedBy: 'religionLevel', targetEntity: ReligionDescription::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'religion_level_id', nullable: 'false')]
+    protected $religionDescriptions;
+
     public function __construct()
     {
         $this->personnagesReligions = new ArrayCollection();
