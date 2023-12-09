@@ -130,6 +130,10 @@ class BaseTerritoire
     #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: 'false')]
     protected Collection $titreTerritoires;
 
+    #[OneToMany(mappedBy: 'cible', targetEntity: GroupeGnOrdre::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'cible_id', nullable: 'false')]
+    protected Collection $groupeGnOrdres;
+
     #[ORM\ManyToOne(targetEntity: Territoire::class, inversedBy: 'territoires')]
     #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
     protected Territoire $territoire;
