@@ -56,6 +56,10 @@ class BaseCompetence
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
     protected Collection $personnageSecondaireCompetences;
 
+    #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageSecondairesSkills::class, cascade: ['persist'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
+    protected Collection $personnageSecondairesSkills;
+
     #[ManyToOne(targetEntity: CompetenceFamily::class, cascade: ['persist'], inversedBy: 'competences')]
     #[JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: 'false')]
     #[OrderBy(['competence_family_label' => \Doctrine\Common\Collections\Criteria::ASC])]
@@ -76,6 +80,7 @@ class BaseCompetence
         $this->competenceAttributes = new ArrayCollection();
         $this->experienceUsages = new ArrayCollection();
         $this->personnageSecondaireCompetences = new ArrayCollection();
+        $this->personnageSecondairesSkills = new ArrayCollection();
         $this->personnages = new ArrayCollection();
     }
 
