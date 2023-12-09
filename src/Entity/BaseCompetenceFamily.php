@@ -26,7 +26,6 @@ class BaseCompetenceFamily
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, columnDefinition: 'INT AUTO_INCREMENT')]
     protected ?int $id = null;
 
-    #[Id]
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected ?string $label = null;
 
