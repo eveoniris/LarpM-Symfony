@@ -56,6 +56,10 @@ class BaseCompetence
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
     protected Collection $personnageSecondaireCompetences;
 
+    #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageSecondairesCompetences::class, cascade: ['persist'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
+    protected Collection $personnageSecondairesCompetences;
+
     #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageSecondairesSkills::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
     protected Collection $personnageSecondairesSkills;
@@ -80,6 +84,7 @@ class BaseCompetence
         $this->competenceAttributes = new ArrayCollection();
         $this->experienceUsages = new ArrayCollection();
         $this->personnageSecondaireCompetences = new ArrayCollection();
+        $this->personnageSecondairesCompetences = new ArrayCollection();
         $this->personnageSecondairesSkills = new ArrayCollection();
         $this->personnages = new ArrayCollection();
     }
