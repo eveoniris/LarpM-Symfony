@@ -17,9 +17,9 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseTerritoireGuerre', 'extended' => 'TerritoireGuerre'])]
 abstract class BaseTerritoireGuerre
 {
-    #[OneToMany(mappedBy: 'territoireGuerre', targetEntity: Territoire::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'territoire_groupe_id', nullable: false)]
-    protected Collection $territoire;
+    #[OneToOne(targetEntity: Territoire::class, mappedBy: 'territoireGuerre')]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'territoire_guerre_id', nullable: false)]
+    protected Territoire $territoire;
 
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
