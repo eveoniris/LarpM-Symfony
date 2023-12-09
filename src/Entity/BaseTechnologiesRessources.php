@@ -36,7 +36,7 @@ class BaseTechnologiesRessources
     #[JoinColumn(name: 'technologie_id', referencedColumnName: 'id')]
     protected \App\Entity\Technologie $technologie;
 
-    #[ManyToOne(targetEntity: 'Ressource', cascade: ['persist'], inversedBy: 'technologieRessource')]
+    #[ManyToOne(targetEntity: 'Ressource', cascade: ['persist'], inversedBy: 'technologiesRessources')]
     #[JoinColumn(name: 'ressource_id', referencedColumnName: 'id')]
     protected Ressource $ressource;
 
