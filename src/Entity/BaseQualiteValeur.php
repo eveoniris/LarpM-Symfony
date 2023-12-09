@@ -34,7 +34,7 @@ abstract class BaseQualiteValeur
     #[JoinColumn(name: 'qualite_id', referencedColumnName: 'id', nullable: 'false')]
     protected Qualite $qualite;
 
-    #[ManyToOne(targetEntity: Monnaie::class, inversedBy: 'qualiteValeurs')]
+    #[ManyToOne(targetEntity: Monnaie::class, inversedBy: 'qualityValeurs')]
     #[JoinColumn(name: 'monnaie_id', referencedColumnName: 'id', nullable: 'false')]
     protected Monnaie $monnaie;
 
