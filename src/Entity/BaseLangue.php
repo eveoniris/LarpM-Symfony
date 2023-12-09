@@ -41,7 +41,7 @@ abstract class BaseLangue
     #[JoinColumn(name: 'id', referencedColumnName: 'langue_id', nullable: 'false')]
     protected Collection $territoires;
 
-    #[ORM\ManyToOne(targetEntity: GroupeLangue::class, inversedBy: 'langue')]
+    #[ORM\ManyToOne(targetEntity: GroupeLangue::class, inversedBy: 'langues')]
     #[JoinColumn(name: 'groupe_langue_id', referencedColumnName: 'id', nullable: 'false')]
     protected GroupeLangue $groupeLangue;
 
