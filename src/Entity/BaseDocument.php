@@ -53,8 +53,8 @@ abstract class BaseDocument
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     protected bool $impression;
 
-    #[ManyToOne(targetEntity: User::class, inversedBy: 'documents')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'documents')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
 
     #[ORM\ManyToMany(targetEntity: Langue::class, inversedBy: 'documents')]
@@ -71,6 +71,10 @@ abstract class BaseDocument
 
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'documents')]
     protected Collection $personnages;
+
+    #[ORM\OneToMany(targetEntity: IntrigueHasDocument::class, mappedBy: 'document')]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'document_id', nullable: 'false')]
+    protected Collection $intrigueHasDocuments;
 
     public function __construct()
     {
