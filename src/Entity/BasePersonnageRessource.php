@@ -27,7 +27,7 @@ abstract class BasePersonnageRessource
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
     protected Personnage $personnage;
 
-    #[ManyToOne(targetEntity: User::class, inversedBy: 'personnageRessources')]
+    #[ManyToOne(targetEntity: Ressource::class, inversedBy: 'personnageRessources')]
     #[JoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: 'false')]
     protected Ressource $ressource;
 
