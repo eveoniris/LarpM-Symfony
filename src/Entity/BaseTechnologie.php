@@ -47,7 +47,7 @@ class BaseTechnologie
      */
     #[OneToMany(mappedBy: 'technologie', targetEntity: 'BaseTechnologiesRessources', cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'technology_id', nullable: false)]
-    protected \Doctrine\Common\Collections\Collection $ressources;
+    protected \Doctrine\Common\Collections\Collection $technologieRessource;
 
     #[ManyToOne(targetEntity: 'CompetenceFamily', cascade: ['persist'], inversedBy: 'technologies')]
     #[JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: true)]
