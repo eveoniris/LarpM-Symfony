@@ -58,7 +58,6 @@ class BaseCompetence
 
     #[ManyToOne(targetEntity: CompetenceFamily::class, cascade: ['persist'], inversedBy: 'competences')]
     #[JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: 'false')]
-    #[JoinColumn(name: 'competence_family_label', referencedColumnName: 'label', nullable: 'false')]
     #[OrderBy(['competence_family_label' => \Doctrine\Common\Collections\Criteria::ASC])]
     protected CompetenceFamily $competenceFamily;
 
