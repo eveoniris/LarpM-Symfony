@@ -2,27 +2,12 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\JoinTable;
-use Doctrine\ORM\Mapping\ManyToMany;
-use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\OrderBy;
 use App\Repository\ClasseRepository;
+use Doctrine\ORM\Mapping\Entity;
 
 #[Entity(repositoryClass: ClasseRepository::class)]
 class Classe extends BaseClasse
 {
-    public function __construct()
-    {
-        $this->competenceFamilyFavorites = new ArrayCollection();
-        $this->competenceFamilyNormales = new ArrayCollection();
-        $this->competenceFamilyCreations = new ArrayCollection();
-        parent::__construct();
-    }
-
     public function __toString(): string
     {
         return $this->getLabel();
@@ -61,68 +46,5 @@ class Classe extends BaseClasse
     public function getLabel(): string
     {
         return $this->getLabelFeminin().' / '.$this->getLabelMasculin();
-    }
-
-    public function addCompetenceFamilyFavorite(CompetenceFamily $competenceFamily): self
-    {
-        $competenceFamily->addClasseFavorite($this);
-        $this->competenceFamilyFavorites[] = $competenceFamily;
-
-        return $this;
-    }
-
-    public function removeCompetenceFamilyFavorite(CompetenceFamily $competenceFamily): self
-    {
-        $competenceFamily->removeClasseFavorite($this);
-        $this->competenceFamilyFavorites->removeElement($competenceFamily);
-
-        return $this;
-    }
-
-    public function getCompetenceFamilyFavorites(): Collection
-    {
-        return $this->competenceFamilyFavorites;
-    }
-
-    public function addCompetenceFamilyNormale(CompetenceFamily $competenceFamily): self
-    {
-        $competenceFamily->addClasseNormale($this);
-        $this->competenceFamilyNormales[] = $competenceFamily;
-
-        return $this;
-    }
-
-    public function removeCompetenceFamilyNormale(CompetenceFamily $competenceFamily): self
-    {
-        $competenceFamily->removeClasseNormale($this);
-        $this->competenceFamilyNormales->removeElement($competenceFamily);
-
-        return $this;
-    }
-
-    public function getCompetenceFamilyNormales(): Collection
-    {
-        return $this->competenceFamilyNormales;
-    }
-
-    public function addCompetenceFamilyCreation(CompetenceFamily $competenceFamily): self
-    {
-        $competenceFamily->addClasseCreation($this);
-        $this->competenceFamilyCreations[] = $competenceFamily;
-
-        return $this;
-    }
-
-    public function removeCompetenceFamilyCreation(CompetenceFamily $competenceFamily): self
-    {
-        $competenceFamily->removeClasseCreation($this);
-        $this->competenceFamilyCreations->removeElement($competenceFamily);
-
-        return $this;
-    }
-
-    public function getCompetenceFamilyCreations(): Collection
-    {
-        return $this->competenceFamilyCreations;
     }
 }

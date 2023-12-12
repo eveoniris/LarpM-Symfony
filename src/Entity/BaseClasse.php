@@ -9,7 +9,10 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OrderBy;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'classe')]
@@ -91,6 +94,10 @@ abstract class BaseClasse
         $this->groupeClasses = new ArrayCollection();
         $this->personnages = new ArrayCollection();
         $this->personnageSecondaires = new ArrayCollection();
+
+        $this->competenceFamilyFavorites = new ArrayCollection();
+        $this->competenceFamilyNormales = new ArrayCollection();
+        $this->competenceFamilyCreations = new ArrayCollection();
     }
 
     public function setId(int $id): static
@@ -253,6 +260,68 @@ abstract class BaseClasse
         return $this->cultureHasClasses;
     }
 
+    public function addCompetenceFamilyFavorite(CompetenceFamily $competenceFamily): static
+    {
+        $competenceFamily->addClasseFavorite($this);
+        $this->competenceFamilyFavorites[] = $competenceFamily;
+
+        return $this;
+    }
+
+    public function removeCompetenceFamilyFavorite(CompetenceFamily $competenceFamily): static
+    {
+        $competenceFamily->removeClasseFavorite($this);
+        $this->competenceFamilyFavorites->removeElement($competenceFamily);
+
+        return $this;
+    }
+
+    public function getCompetenceFamilyFavorites(): Collection
+    {
+        return $this->competenceFamilyFavorites;
+    }
+
+    public function addCompetenceFamilyNormale(CompetenceFamily $competenceFamily): static
+    {
+        $competenceFamily->addClasseNormale($this);
+        $this->competenceFamilyNormales[] = $competenceFamily;
+
+        return $this;
+    }
+
+    public function removeCompetenceFamilyNormale(CompetenceFamily $competenceFamily): static
+    {
+        $competenceFamily->removeClasseNormale($this);
+        $this->competenceFamilyNormales->removeElement($competenceFamily);
+
+        return $this;
+    }
+
+    public function getCompetenceFamilyNormales(): Collection
+    {
+        return $this->competenceFamilyNormales;
+    }
+
+    public function addCompetenceFamilyCreation(CompetenceFamily $competenceFamily): static
+    {
+        $competenceFamily->addClasseCreation($this);
+        $this->competenceFamilyCreations[] = $competenceFamily;
+
+        return $this;
+    }
+
+    public function removeCompetenceFamilyCreation(CompetenceFamily $competenceFamily): static
+    {
+        $competenceFamily->removeClasseCreation($this);
+        $this->competenceFamilyCreations->removeElement($competenceFamily);
+
+        return $this;
+    }
+
+    public function getCompetenceFamilyCreations(): Collection
+    {
+        return $this->competenceFamilyCreations;
+    }
 
     public function __sleep()
     {
