@@ -17,10 +17,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseTerritoireGuerre', 'extended' => 'TerritoireGuerre'])]
 abstract class BaseTerritoireGuerre
 {
-    #[OneToOne(targetEntity: Territoire::class, mappedBy: 'territoireGuerre')]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'territoire_guerre_id', nullable: false)]
-    protected Territoire $territoire;
-
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
@@ -32,6 +28,10 @@ abstract class BaseTerritoireGuerre
 
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
     protected ?int $protection = null;
+
+    #[ORM\OneToOne(targetEntity: Territoire::class, inversedBy: 'territoireGuerre')]
+    #[ORM\JoinColumn(name: 'territoire_guerre_id', referencedColumnName: 'id', nullable: false)]
+    protected Territoire $territoire;
 
     public function __construct()
     {

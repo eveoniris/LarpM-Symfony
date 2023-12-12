@@ -138,7 +138,7 @@ class BaseTerritoire
     #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
     protected Territoire $territoire;
 
-    #[ORM\OneToOne(inversedBy: 'territoire', targetEntity: TerritoireGuerre::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'territoire', targetEntity: TerritoireGuerre::class)]
     #[ORM\JoinColumn(name: 'territoire_guerre_id', referencedColumnName: 'id')]
     protected TerritoireGuerre $territoireGuerre;
 
