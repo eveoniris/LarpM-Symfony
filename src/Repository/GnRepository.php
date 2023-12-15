@@ -3,14 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Gn;
-use App\Entity\User;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Doctrine\Persistence\ManagerRegistry;
 
 class GnRepository extends BaseRepository
-
 {
     /**
      * Recherche le prochain GN (le plus proche de la date du jour).
@@ -86,8 +82,8 @@ class GnRepository extends BaseRepository
             ->setFirstResult(($page * $limit) - $limit)
             ->getQuery();
 
-
         $paginator = new Paginator($query);
+
         return $paginator;
         $data = $paginator->getQuery()->getResult();
 

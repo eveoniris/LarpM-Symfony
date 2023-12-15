@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Billets{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -10,13 +10,15 @@
 	</ol>
 
 	<div class="well well-sm">
-	
+
+		{% include '_partials/pagination.html.twig' %}
+
 		<div class="btn-toolbar" role="toolbar" aria-label="...">
 			<div class="btn-group" role="group" aria-label="...">
 				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter un billet" href="{{ path('billet.add') }}"><i class="fa fa-plus"></i></a>
 			</div>
 		</div>
-	</div>	
+
 	
 		<table class="table table-condensed table-striped table-bordered">
 			<thead>
@@ -26,14 +28,14 @@
 					<th>GN</th>
 					<th>FédéGN</th>
 					<th>Quantité</th>
-					<th />
+					<th>Action</th>
 				</tr>
 			</thead>
 			<tbody>
-				{% for billet in billets %}
+				{% for billet in paginator %}
 				<tr>
 					<td>{{ billet.label }}</td>
-					<td>{{ billet.description|markdown }}</td>
+					<td>{{ billet.description|markdown_to_html }}</td>
 					<td>{{ billet.gn }}</td>
 					<td>
 						{% if billet.fedegn %}
@@ -57,5 +59,8 @@
 			</tbody>
 		</table>
 
-	
+	{% include '_partials/pagination.html.twig' %}
+
+	</div>
+
 {% endblock %}

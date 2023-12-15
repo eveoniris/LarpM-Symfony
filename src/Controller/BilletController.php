@@ -1,50 +1,42 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 namespace App\Controller;
 
 use App\Entity\Billet;
+use App\Repository\BilletRepository;
 use LarpManager\Form\BilletDeleteForm;
 use LarpManager\Form\BilletForm;
-use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class BilletController
+class BilletController extends AbstractController
 {
     /**
      * Liste des billets.
      */
     #[Route('/billet/list', name: 'billet.list')]
-    public function listAction(Request $request, Application $app)
+    public function listAction(Request $request, BilletRepository $billetRepository): Response
     {
-        $billets = $app['orm.em']->getRepository(\App\Entity\Billet::class)->findAll();
+        $page = $request->query->getInt('page', 1);
+        $limit = 10;
 
-        return $app['twig']->render('admin\billet\list.twig', [
-            'billets' => $billets,
-        ]);
+        $paginator = $billetRepository->findPaginated($page, $limit);
+
+        return $this->render(
+            'billet\list.twig',
+            [
+                'paginator' => $paginator,
+                'limit' => $limit,
+                'page' => $page,
+            ]
+        );
     }
 
     /**
      * Ajout d'un billet.
      */
+    #[Route('/billet/add', name: 'billet.add')]
     public function addAction(Request $request, Application $app)
     {
         $billet = new Billet();
@@ -80,6 +72,7 @@ class BilletController
     /**
      * Détail d'un billet.
      */
+    #[Route('/billet/detail', name: 'billet.detail')]
     public function detailAction(Request $request, Application $app, Billet $billet)
     {
         return $app['twig']->render('admin\billet\detail.twig', [
@@ -90,6 +83,7 @@ class BilletController
     /**
      * Mise à jour d'un billet.
      */
+    #[Route('/billet/update', name: 'billet.update')]
     public function updateAction(Request $request, Application $app, Billet $billet)
     {
         $form = $app['form.factory']->createBuilder(new BilletForm(), $billet)
@@ -117,6 +111,7 @@ class BilletController
     /**
      * Suppression d'un billet.
      */
+    #[Route('/billet/delete', name: 'billet.delete')]
     public function deleteAction(Request $request, Application $app, Billet $billet)
     {
         $form = $app['form.factory']->createBuilder(new BilletDeleteForm(), $billet)
