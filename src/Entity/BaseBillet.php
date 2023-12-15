@@ -28,7 +28,7 @@ abstract class BaseBillet
     protected string $label = '';
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
-    protected string $description = '';
+    protected ?string $description = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $creation_date;
@@ -44,7 +44,7 @@ abstract class BaseBillet
      */
     #[OneToMany(mappedBy: 'billet', targetEntity: Participant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'billet_id', nullable: 'false')]
-    protected ?ArrayCollection $participants = null;
+    protected ?Collection $participants = null;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'billets')]
     #[JoinColumn(name: 'createur_id', referencedColumnName: 'id', nullable: 'false')]
@@ -92,7 +92,7 @@ abstract class BaseBillet
 
     public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     public function setCreationDate(\DateTime $creation_date): self
