@@ -62,3 +62,7 @@ Pour relancer le app.js et css
 
 Pour ne pas avoir à recompiler en cas de changement
 `symfony run -d npm run watch`
+
+8) Tips
+Si le clear:cache échoue :
+   php -d memory_limit=-1 bin/console cache:clear
