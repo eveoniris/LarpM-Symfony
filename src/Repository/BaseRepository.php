@@ -2,9 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Billet;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Persistence\ManagerRegistry;
 
 abstract class BaseRepository extends ServiceEntityRepository
 {
@@ -18,12 +19,18 @@ abstract class BaseRepository extends ServiceEntityRepository
         return str_replace(['Repository', '\\\\'], ['', '\Entity\\'], static::class);
     }
 
+    public static function getEntityAlias(): string
+    {
+        return strtolower(str_replace(['App\Repository\\', 'Repository'], ['', ''], static::class));
+    }
+
     public function findPaginated(int $page, int $limit = 10): Paginator
     {
         $limit = min(10, $limit);
         $page = min(1, $page);
-        $entity = static::getEntityClass();
-        $alias = strtolower($entity);
+        $entity = $this->getEntityName();
+        $alias = static::getEntityAlias();
+
 
         $query = $this->getEntityManager()
             ->getRepository($entity)
