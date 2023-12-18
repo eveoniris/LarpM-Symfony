@@ -29,7 +29,7 @@
 							</div>
 							<div id="collapse{{ loop.index }}" class="panel-collapse collapse " role="tabpanel" aria-labelledby="heading{{ loop.index }}">
 								<div class="panel-body">
-									{{ message.text|markdown }}
+									{{ message.text|markdown_to_html }}
 								</div>
 							</div>
 						</div>

@@ -21,7 +21,7 @@
 				<li>Pays : {{ chronologie.territoire.nom }}</li>
 				<li>Pays : {{ chronologie.visibilite }}</li>
 				<li>Date : {{ chronologie.year }} {{ chronologie.month }} {{ chronologie.day }}</li>
-				<li>Description : {{ chronologie.description|markdown }}</li>
+				<li>Description : {{ chronologie.description|markdown_to_html }}</li>
 				</ul>
 			
 				{{ form(form) }}

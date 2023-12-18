@@ -16,7 +16,7 @@
 		<h4>{{ monnaie.label }}</h4>
 		<div class="list-group">
 			<div class="list-group-item">
-				Description : {{ monnaie.description|markdown }}
+				Description : {{ monnaie.description|markdown_to_html }}
 			</div>
 		</div>
 	</div>

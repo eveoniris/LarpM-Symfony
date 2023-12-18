@@ -93,9 +93,4 @@ abstract class BaseGenre
     {
         return $this->personnages;
     }
-
-    public function __sleep()
-    {
-        return ['id', 'label', 'description'];
-    }
 }

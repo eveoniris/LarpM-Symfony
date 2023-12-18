@@ -26,7 +26,6 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnage', 'extended' => 'Personnage'])]
 class BasePersonnage
 {
-    #[Column(type: Types::INTEGER)]
     public int $pugilat = 1;
 
     #[ORM\Id, ORM\Column(type: Types::INTEGER), ORM\GeneratedValue]
@@ -59,7 +58,7 @@ class BasePersonnage
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $age_reel = null;
 
-    #[Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Column(name: 'trombineUrl', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $trombineUrl = null;
 
     #[Column(type: Types::INTEGER, nullable: true)]
@@ -136,9 +135,11 @@ class BasePersonnage
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
     protected Collection $users;
 
+    /*
     #[OneToMany(mappedBy: 'suzerain', targetEntity: GroupeGn::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'suzerain_id', nullable: 'false')]
     protected Collection $groupeGns;
+    */
 
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'personnages')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]

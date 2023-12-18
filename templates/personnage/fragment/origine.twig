@@ -10,7 +10,7 @@
 				<h4>{{ personnage.territoire.nom }}</h4>
 			</center>
 			<p>
-			{{ personnage.territoire.description|markdown }}		
+			{{ personnage.territoire.description|markdown_to_html }}
 			</p>
 		{% else %}
 			<p>

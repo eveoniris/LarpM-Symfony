@@ -16,7 +16,7 @@
 			<fieldset>
 				<legend>Supression d'une technologie</legend>
 					{{ technologie.label }}
-					{{ technologie.description|markdown }}
+					{{ technologie.description|markdown_to_html }}
 					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
 					{{ form(form) }}
 			</fieldset>

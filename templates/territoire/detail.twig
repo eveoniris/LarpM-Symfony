@@ -99,7 +99,7 @@
     				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
     				Attention, ce territoire n'a pas de description.
     				{% else %}
-    					{{ territoire.description|markdown }}
+    					{{ territoire.description|markdown_to_html }}
     				{% endif %}
     				</p>
     				<p class="list-group-item-text">
@@ -107,7 +107,7 @@
     				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
     				Attention, ce territoire n'a pas de description connue des seuls habitants.
     				{% else %}
-    					{{ territoire.descriptionSecrete|markdown }}
+    					{{ territoire.descriptionSecrete|markdown_to_html }}
     				{% endif %}
     				</p>
 	    		</div>

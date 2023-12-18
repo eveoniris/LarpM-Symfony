@@ -20,7 +20,7 @@
 			{% for regle in regles %}
 				<a class="list-group-item" href="{{ path('participant.regle.detail', {'participant': participant.id, 'rule': regle.id}) }}">
 					<h5 class="list-group-item-heading">{{ regle.label }}</h5>
-					<p class="list-group-item-text">{{ regle.description|markdown }}</p>
+					<p class="list-group-item-text">{{ regle.description|markdown_to_html }}</p>
 				</a>
 			{% endfor %}
 		</div>

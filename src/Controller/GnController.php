@@ -62,6 +62,7 @@ class GnController extends AbstractController
     /**
      * Fiche de personnage d'un participant au GN.
      */
+    #[Route('/gn/personnage', name: 'gn.personnage')]
     public function personnageAction(Request $request, Application $app, Gn $gn)
     {
         $participant = $app['User']->getParticipant($gn);

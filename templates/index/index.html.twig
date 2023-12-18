@@ -1,9 +1,35 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}LarpManager{% endblock %}
+{% block title %}Acceuil{% endblock title %}
 
 {% block body %}
 
-Par Crom !
+    {% if user %}
+        {% include 'homepage/index.twig' with {'user': user} %}
+    {% else %}
+        {% include 'homepage/not_connected.twig' %}
+    {% endif %}
 
-{% endblock %}
+    <hr />
+    <h3>Test Design</h3>
+    <div class="container shadow min-vh-100 py-2 panel">
+        <div class="row">
+            <div class="col">
+                <h2>Bootstrap 5.3 Dark Mode Switch</h2>
+                <p>
+                    <button class="btn btn-primary me-2 element">Primary</button>
+                    <button class="btn btn-secondary me-2">Secondary</button>
+                    <button class="btn btn-danger me-2">Danger</button>
+                </p>
+            </div>
+            <Div class="col-auto">
+
+                <button class="btn btn-dark shadow" id="btnSwitch">Toggle Mode</button>
+            </Div>
+        </div>
+    </div>
+
+    End Test
+    <hr />
+
+{% endblock body %}

@@ -17,6 +17,6 @@ Le groupe {{ alliance.requestedGroupe.nom }} a refusé votre proposition d'allia
 
     <h3>Le groupe {{ alliance.requestedGroupe.nom }} a refusé votre proposition d'alliance</h3>
     
-    <p>{{ alliance.messageAllie|markdown }}</p>
+    <p>{{ alliance.messageAllie|markdown_to_html }}</p>
 
 {%- endblock -%}

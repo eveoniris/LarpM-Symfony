@@ -33,4 +33,13 @@ $(document).ready(function() {
         toolbar: "undo, redo, formatselect, bold, italic, alignright, aligncenter, alignright, alignjustify, bullist, numlist  link",
         link_assume_external_targets: true
     });
+
+    document.getElementById('btnSwitch').addEventListener('click',()=>{
+        console.log(document.documentElement.getAttribute('data-bs-theme'));
+        if (document.documentElement.getAttribute('data-bs-theme') === 'dark') {
+            document.documentElement.setAttribute('data-bs-theme','light')
+        } else {
+            document.documentElement.setAttribute('data-bs-theme','dark')
+        }
+    })
 });

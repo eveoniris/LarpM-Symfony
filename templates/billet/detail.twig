@@ -16,7 +16,7 @@
 		<h4>{{ billet.label }}</h4>
 		<div class="list-group">
 			<div class="list-group-item">
-				Description : {{ billet.description|markdown }}
+				Description : {{ billet.description|markdown_to_html }}
 			</div>
 			<div class="list-group-item">
 				GN : {{ billet.gn }}

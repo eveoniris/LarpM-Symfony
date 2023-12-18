@@ -27,7 +27,7 @@ Cliquez sur le lien ci-dessous pour accéder directement à l'intrigue :
     <p>L'intrigue {{ intrigue.titre }} fait référence à votre groupe {{ groupe.nom }}.</p>
     <p>Cette intrigue vient d'être relue.</p>
 
-	<p>{{ intrigue.description|markdown }}</p>
+	<p>{{ intrigue.description|markdown_to_html }}</p>
 
     <p>
         <a href="{{ url }}"> Suivez ce lien pour accéder directement à l'intrigue</a>.

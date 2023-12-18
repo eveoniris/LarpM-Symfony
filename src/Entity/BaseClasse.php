@@ -322,9 +322,4 @@ abstract class BaseClasse
     {
         return $this->competenceFamilyCreations;
     }
-
-    public function __sleep()
-    {
-        return ['id', 'label_masculin', 'label_feminin', 'description', 'image_m', 'image_f', 'creation'];
-    }
 }

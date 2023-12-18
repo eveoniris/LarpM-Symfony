@@ -57,14 +57,14 @@
 				<div class="header">
 					<h5>{{ domaine.label }}</h5>
 				</div>
-				<p>{{ domaine.description|markdown }}</p>
+				<p>{{ domaine.description|markdown_to_html }}</p>
 				<div class="list-group">
 					{# il ne fait afficher que les sorts correspondant au niveau du mage #}
 					{% for sort in domaine.sorts %}
 						{% if sort.niveau <= personnage.competenceNiveau('Magie') %}
 							<div class="list-group-item">
 								<div class="list-group-item-heading">{{ sort.label }} - Niveau {{ sort.niveau }}</div>
-								<div class="list-group-item-text">{{ sort.description|markdown }}</div>
+								<div class="list-group-item-text">{{ sort.description|markdown_to_html }}</div>
 							</div>
 						{% endif %}
 					{% endfor %}

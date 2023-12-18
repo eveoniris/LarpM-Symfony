@@ -105,7 +105,7 @@ TOTAL : {{ groupe.richesseTotale|default(0) }} pièces d'argent
 
 <h6><i class="fa fa-circle"></i><strong>&nbsp;Autre</strong>. <a href="{{ path('groupe.envelope', {'groupe':groupe.id}) }}"><strong>Modifier le contenu</strong></a></h6>
 <div class="white-box">
-{{ groupe.materiel|markdown }}
+{{ groupe.materiel|markdown_to_html }}
 </div>
 
 

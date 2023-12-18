@@ -1204,9 +1204,4 @@ class BaseTerritoire
 
         return $this;
     }
-
-    public function __sleep()
-    {
-        return ['id', 'nom', 'description', 'capitale', 'politique', 'dirigeant', 'population', 'symbole', 'tech_level', 'territoire_id', 'territoire_guerre_id', 'appelation_id', 'langue_id', 'topic_id', 'religion_id', 'type_racial', 'inspiration', 'armes_predilection', 'vetements', 'noms_masculin', 'noms_feminin', 'frontieres', 'geojson', 'color', 'groupe_id', 'tresor', 'resistance', 'blason', 'description_secrete', 'statut', 'culture_id', 'ordre_social'];
-    }
 }

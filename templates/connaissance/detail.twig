@@ -33,14 +33,14 @@
 	<div class="panel panel-default">
 		<div class="panel-heading"><h4>Description</h4></div>
 		<div class="panel-body">
-			<p>{{ connaissance.description|markdown }}</p>
+			<p>{{ connaissance.description|markdown_to_html }}</p>
 		</div>
 	</div>
 	{% if connaissance.contraintes %}
 	<div class="panel panel-default">
 		<div class="panel-heading"><h4>Contraintes</h4></div>
 		<div class="panel-body">
-			<p>{{ connaissance.contraintes|markdown }}</p>
+			<p>{{ connaissance.contraintes|markdown_to_html }}</p>
 		</div>
 	</div>
 	{% endif %}

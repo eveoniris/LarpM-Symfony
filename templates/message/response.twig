@@ -35,7 +35,7 @@
 		<div class="col-md-6">
 			<div class="panel panel-conan">
 					<div class="panel-heading">{{ message.userRelatedByAuteur.userName }} -- {{ message.creationDate|date('Y-m-d H:i:s') }} -- <strong>{{ message.title }}</strong></div>
-					<div class="panel-body">{{ message.text|markdown }}</div>
+					<div class="panel-body">{{ message.text|markdown_to_html }}</div>
 			<div>
 		</div>
 	</div>

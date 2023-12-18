@@ -71,7 +71,6 @@ abstract class BaseUser
     #[ORM\Column(name: 'timePasswordResetRequested', type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true, options: ['unsigned' => true])]
     protected ?int $timePasswordResetRequested = null;
 
-    #[ORM\Column(name: 'trombineUrl', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $trombineUrl = null;
 
     #[Column(name: 'lastConnectionDate', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
@@ -175,15 +174,15 @@ abstract class BaseUser
 
     #[ORM\OneToOne(inversedBy: 'user', targetEntity: EtatCivil::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'etat_civil_id', referencedColumnName: 'id')]
-    protected EtatCivil $etatCivil;
+    protected ?EtatCivil $etatCivil = null;
 
     #[ORM\ManyToOne(targetEntity: PersonnageSecondaire::class, cascade: ['persist', 'remove'], inversedBy: 'users')]
     #[ORM\JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id')]
-    protected PersonnageSecondaire $personnageSecondaire;
+    protected ?PersonnageSecondaire $personnageSecondaire = null;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class, cascade: ['persist', 'remove'], inversedBy: 'users')]
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
-    protected Personnage $personnage;
+    protected ?Personnage $personnage = null;
 
     #[ORM\ManyToMany(targetEntity: Restriction::class, inversedBy: 'users')]
     #[ORM\JoinTable(name: 'user_has_restriction')]
@@ -1154,7 +1153,7 @@ abstract class BaseUser
         return $this;
     }
 
-    public function getEtatCivil(): EtatCivil
+    public function getEtatCivil(): ?EtatCivil
     {
         return $this->etatCivil;
     }
@@ -1172,7 +1171,7 @@ abstract class BaseUser
     /**
      * Get PersonnageSecondaire entity (many to one).
      */
-    public function getPersonnageSecondaire(): PersonnageSecondaire
+    public function getPersonnageSecondaire(): ?PersonnageSecondaire
     {
         return $this->personnageSecondaire;
     }
@@ -1184,7 +1183,7 @@ abstract class BaseUser
         return $this;
     }
 
-    public function getPersonnage(): Personnage
+    public function getPersonnage(): ?Personnage
     {
         return $this->personnage;
     }

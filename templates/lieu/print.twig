@@ -25,7 +25,7 @@
 			{% for lieu in lieux %}
 			<tr>
 				<td>{{ lieu.nom }}</td>
-				<td>{{ lieu.description|markdown }}</td>
+				<td>{{ lieu.description|markdown_to_html }}</td>
 				<td>{% if lieu.documents|length > 0 %}Document(s) : {{ lieu.documents|join(', ') }}{% else %}Aucune documents entreposés{% endif %}</td>
 			</tr>
 			{% endfor %}

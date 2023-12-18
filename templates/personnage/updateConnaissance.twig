@@ -33,8 +33,8 @@
 							Non
 						{% endif %}
 					</td>
-					<td>{{ connaissance.description|markdown}}</td>					
-					<td>{{ connaissance.contraintes|markdown}}</td>
+					<td>{{ connaissance.description|markdown_to_html}}</td>
+					<td>{{ connaissance.contraintes|markdown_to_html}}</td>
 					<td>{% if personnage in connaissance.personnages  %}
 						<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Retirer cette connaissance"
 							href="{{ path('personnage.admin.remove.connaissance',{'personnage':personnage.id, 'connaissance':connaissance.id}) }}">

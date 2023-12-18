@@ -33,7 +33,7 @@
     				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
     				Attention, cette religion n'a pas de description.
     				{% else %}
-    					{{ religion.description|markdown }}
+    					{{ religion.description|markdown_to_html }}
     				{% endif %}
     			</p>
 	    	</div>
@@ -45,7 +45,7 @@
     				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
     				Attention, cette religion n'a pas de description.
     				{% else %}
-    					{{ religion.descriptionOrga|markdown }}
+    					{{ religion.descriptionOrga|markdown_to_html }}
     				{% endif %}
     			</p>
 	    	</div>	    	
@@ -57,7 +57,7 @@
     				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
     				Attention, cette religion n'a pas de description.
     				{% else %}
-    					{{ religion.descriptionPratiquant|markdown }}
+    					{{ religion.descriptionPratiquant|markdown_to_html }}
     				{% endif %}
     			</p>
 	    	</div>
@@ -69,7 +69,7 @@
     				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
     				Attention, cette religion n'a pas de description.
     				{% else %}
-    					{{ religion.descriptionFervent|markdown }}
+    					{{ religion.descriptionFervent|markdown_to_html }}
     				{% endif %}
     			</p>
 	    	</div>
@@ -81,7 +81,7 @@
     				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
     				Attention, cette religion n'a pas de description.
     				{% else %}
-    					{{ religion.descriptionFanatique|markdown }}
+    					{{ religion.descriptionFanatique|markdown_to_html }}
     				{% endif %}
     			</p>
 	    	</div>

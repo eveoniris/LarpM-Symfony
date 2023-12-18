@@ -125,7 +125,7 @@
 					<td>{{ priere.niveau }}</td>
 					<td>Non</td>			
 					<td>{{ priere.sphere.label }}</td>		
-					<td>{{ priere.description|markdown}}</td>
+					<td>{{ priere.description|markdown_to_html}}</td>
 					<td>{% if personnage in priere.personnages  %}
 							<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Retirer cette priere"
 							   href="{{ path('personnage.admin.remove.priere',{'personnage':personnage.id, 'priere':priere.id}) }}">

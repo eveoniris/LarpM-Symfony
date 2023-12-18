@@ -16,7 +16,7 @@
 			<fieldset>
 				<legend>Supression d'une connaissance</legend>
 					{{ connaissance.label }} -- {{ connaissance.niveau }}
-					{{ connaissance.description|markdown }}
+					{{ connaissance.description|markdown_to_html }}
 					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
 					{{ form(form) }}
 			</fieldset>

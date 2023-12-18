@@ -17,7 +17,7 @@
 		<h5>{{ regle.label }}</h5>
 	</div>
 	
-	<blockquote>{{ regle.description|markdown }}</blockquote>
+	<blockquote>{{ regle.description|markdown_to_html }}</blockquote>
 
 	<div class="list-group-item">
 		Si le PDF n'apparait pas correctement dans votre navigateur, <a href="{{ path('participant.regle.document',{'participant': participant.id, 'rule': regle.id}) }}">cliquez ici</a> pour télécharger le fichier.

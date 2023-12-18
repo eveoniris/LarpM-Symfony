@@ -15,7 +15,7 @@
 				</div>
 			</h4>
 			{% if competenceFamily.description %}
-				<p class="list-group-item-text text-default">{{ competenceFamily.description|markdown }}</p>
+				<p class="list-group-item-text text-default">{{ competenceFamily.description|markdown_to_html }}</p>
 			{% else %}
 				<p class="list-group-item-text text-warning">Attention, cette famille de compétence n'a pas description</p>
 			{%  endif %}

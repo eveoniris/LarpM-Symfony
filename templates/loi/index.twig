@@ -20,7 +20,7 @@
 				<div class="row">
 					<div class="col-md-8">
 						{{ loi.label }}
-						{{ loi.description|markdown }}
+						{{ loi.description|markdown_to_html }}
 						{% if not loi.documentUrl %}
 							<p class="list-group-item-text text-warning">Attention, cette loi n'a pas de document associé</p>
 						{% else %}

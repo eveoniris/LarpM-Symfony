@@ -31,7 +31,7 @@
 							</div>
 							<div id="collapse{{ loop.index }}" class="panel-collapse collapse " role="tabpanel" aria-labelledby="heading{{ loop.index }}">
 								<div class="panel-body">
-									{{ message.text|markdown }}
+									{{ message.text|markdown_to_html }}
 									<a href="{{ path('message.response', {'message': message.id}) }}" data-toggle="tooltip" data-placement="top" title="Répondre"><i class="fa fa-reply" aria-hidden="true"></i></a>
 								</div>
 							</div>

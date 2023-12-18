@@ -16,7 +16,7 @@
 			<fieldset>
 				<legend>Supression d'une potion</legend>
 					{{ potion.label }} - Niveau {{ potion.niveau }}
-					{{ potion.description|markdown }}
+					{{ potion.description|markdown_to_html }}
 					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
 					{{ form(form) }}
 			</fieldset>

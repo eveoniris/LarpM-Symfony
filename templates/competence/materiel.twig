@@ -21,8 +21,8 @@
 	<tr>
 		<td>{{ competence.competenceFamily.label }}</td>
 		<td>{{ competence.level.label }}</td>
-		<td>{{ competence.description|markdown }}</td>
-		<td>{{ competence.materiel|markdown }}</td>
+		<td>{{ competence.description|markdown_to_html }}</td>
+		<td>{{ competence.materiel|markdown_to_html }}</td>
 		<td>
 			{% if competence.documentUrl %}
 				<a href="{{ path('competence.document',{'competence' : competence.id, 'document':competence.documentUrl}) }}">Téléchargez le document</a>

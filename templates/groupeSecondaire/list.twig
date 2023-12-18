@@ -100,7 +100,7 @@
 					<td><a href="{{ path('groupeSecondaire.admin.update', {'groupe':groupeSecondaire.id}) }}">{{ groupeSecondaire.id }}</td>
 					<td>{% if groupeSecondaire.secret %}<span style="color:red;">Secret</span>{% else %} -- {% endif %}</td>
 					<td><a href="{{ path('groupeSecondaire.admin.detail', {'groupe':groupeSecondaire.id}) }}">{{ groupeSecondaire.label }}</td>
-					<td>{{ groupeSecondaire.description|markdown }}</td>
+					<td>{{ groupeSecondaire.description|markdown_to_html }}</td>
 					<td>{{ groupeSecondaire.secondaryGroupType.label }}</td>
 					<td>{{ groupeSecondaire.membres|length }}</td>
 				</tr>

@@ -23,7 +23,7 @@
 						<span style="color:red;">Sort secret</span><br />
 						{% endif %}
 						{{ sort.label }} -- {{ sort.niveau }}
-						{{ sort.description|markdown }}
+						{{ sort.description|markdown_to_html }}
 						{% if sort.documentUrl %}
 							<a href="{{ path('magie.sort.document', {'sort': sort.id, 'document': sort.documentUrl}) }}">Télécharger le pdf associé</a>
 						{% else %}

@@ -44,7 +44,7 @@
 					</div>
 					<h5>#{{ token.id }} {{ token.label }} -- {{ token.tag }}</h5>
 				</div>
-				<div class="list-group-item-text">{{ token.description|markdown }}</div>					
+				<div class="list-group-item-text">{{ token.description|markdown_to_html }}</div>
 		    </div>
 
 		{% endfor %}

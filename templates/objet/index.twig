@@ -70,8 +70,8 @@ td {white-space: normal; text-overflow: ellipsis;}
 					    	</div>
 					    </td>
 					    <td>{{ item.quantite }}</td>
-		    			<td st>{{ item.description|markdown }}</td>
-		    			<td>{{ item.special|markdown }}</td>
+		    			<td st>{{ item.description|markdown_to_html }}</td>
+		    			<td>{{ item.special|markdown_to_html }}</td>
 		    			<td>
 		    				{% for groupe in item.groupes %}
 		    					<a href="{{ path('groupe.detail', {'index':groupe.id}) }}">{{ groupe }}</a><br />

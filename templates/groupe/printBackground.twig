@@ -10,14 +10,14 @@
 <h3>Background du chef de groupe</h3>
 {% for background in groupe.backs('GROUPE_OWNER') %}
 	<div style="page-break-after: always;">
-		{{ background.text|markdown }}
+		{{ background.text|markdown_to_html }}
 	</div>
 {% endfor %}
 
 <h3>Background du groupe</h3>
 {% for background in groupe.backs('GROUPE_MEMBER') %}
 	<div style="page-break-after: always;">
-		{{ background.text|markdown }}
+		{{ background.text|markdown_to_html }}
 	</div>
 {% endfor %}
 
@@ -27,7 +27,7 @@
 {% for personnage in groupe.personnages %}
 	<h4>{{ personnage.identity }}</h4>
 	{% for background in personnage.backgrounds('OWNER') %}
-		{{ background.text|markdown }}
+		{{ background.text|markdown_to_html }}
 	{% endfor %}
 	<hr />
 {% endfor %}

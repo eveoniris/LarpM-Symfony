@@ -16,7 +16,7 @@
 			<fieldset>
 				<legend>Supression d'un sort</legend>
 					{{ sort.label }} -- {{ sort.niveau }}
-					{{ sort.description|markdown }}
+					{{ sort.description|markdown_to_html }}
 					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
 					{{ form(form) }}
 			</fieldset>

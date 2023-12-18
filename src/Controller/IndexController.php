@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\AnnonceRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,11 +14,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class IndexController extends AbstractController
 {
     #[Route('/', name: 'homepage')]
-    public function index(Request $request): Response
+    public function index(Request $request, AnnonceRepository $annonceRepository): Response
     {
-        // $user = $this->entityManager->getRepository(User::class)->find(3265);
-        return $this->render('index/index.html.twig', [
+         return $this->render('index/index.html.twig', [
             'controller_name' => 'IndexController',
+            'user' => $this->getUser(),
+            'annonces' => $annonceRepository->findBy([], ['id' => 'DESC']),
         ]);
     }
 

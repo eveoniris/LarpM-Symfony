@@ -15,7 +15,7 @@
 			<h5>{{ token.label }} -- {{ token.tag }}</h5>
 		</div>
 		<p>
-			{{ token.description|markdown }}
+			{{ token.description|markdown_to_html }}
 		</p>
 		<div class="btn-toolbar" role="toolbar" aria-label="...">
 			<div class="btn-group" role="group" aria-label="...">
