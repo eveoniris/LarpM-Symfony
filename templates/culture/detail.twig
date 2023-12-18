@@ -20,14 +20,14 @@
 	<div class="panel panel-default">
 		<div class="panel-heading"><h4>Description</h4></div>
 		<div class="panel-body">
-			<p>{{ culture.description|markdown }}</p>
+			<p>{{ culture.description|markdown_to_html }}</p>
 		</div>
 	</div>
 	
 	<div class="panel panel-default">
 		<div class="panel-heading"><h4>Description complète</h4></div>
 		<div class="panel-body">
-			<p>{{ culture.descriptionComplete|markdown }}</p>
+			<p>{{ culture.descriptionComplete|markdown_to_html }}</p>
 		</div>
 	</div>
 	

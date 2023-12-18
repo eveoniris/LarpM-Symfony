@@ -41,7 +41,7 @@
 				{% for restauration in restaurations %}
 					<tr>
 						<td>{{ restauration.label }}</td>
-						<td>{{ restauration.description|markdown }}</td>
+						<td>{{ restauration.description|markdown_to_html }}</td>
 						<td>
 							{% for userByGn in restauration.userByGn %}
 								{{ userByGn.gn.label }} : {{ userByGn.count }}<br />

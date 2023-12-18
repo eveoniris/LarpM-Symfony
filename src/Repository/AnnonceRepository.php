@@ -20,15 +20,22 @@
 
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use App\Entity\Annonce;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * LarpManager\Repository\AnnonceRepository.
  *
  * @author kevin
  */
-class AnnonceRepository extends EntityRepository
+class AnnonceRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Annonce::class);
+    }
+
     /**
      * Trouve les annonces correspondant aux critères de recherche.
      */

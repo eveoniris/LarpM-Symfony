@@ -17,6 +17,6 @@ Le groupe {{ war.groupe.nom }} vous a déclaré la guerre :
 
     <h3>Le groupe {{ war.groupe.nom }} vous a déclaré la guerre</h3>
     
-    <p>{{ war.message|markdown }}</p>
+    <p>{{ war.message|markdown_to_html }}</p>
 
 {%- endblock -%}

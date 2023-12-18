@@ -719,7 +719,7 @@
 										{% for background in personnage.personnageBackgrounds %}
 											<h6 class="list-group-item-heading">Background ({{ background.gn.label }}) - <strong>{{ background.visibility|explainVisibility }}</strong></h6>
 											<a href="{{ path('personnage.admin.background.update', {'personnage': personnage.id, 'background': background.id}) }}">Modifier le background</a>
-											{{ background.text|markdown }}
+											{{ background.text|markdown_to_html }}
 										{% endfor %}
 									{% else %}
 										<p class="list-group-item-text">

@@ -30,6 +30,7 @@ use LarpManager\Form\GroupeGn\GroupeGnResponsableForm;
 use LarpManager\Repository\ParticipantRepository;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\GroupeGnController.
@@ -345,6 +346,7 @@ class GroupeGnController
     /**
      * Détail d'un groupe.
      */
+    #[Route('/groupeGn/groupe', name: 'groupeGn.groupe')]
     public function groupeAction(Request $request, Application $app, GroupeGn $groupeGn)
     {
         $participant = $app['User']->getParticipant($groupeGn->getGn());

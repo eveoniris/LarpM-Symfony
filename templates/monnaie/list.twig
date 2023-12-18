@@ -30,7 +30,7 @@
 			{% for monnaie in monnaies %}
 			<tr>
 				<td>{{ monnaie.label }}</td>
-				<td>{{ monnaie.description|markdown }}</td>
+				<td>{{ monnaie.description|markdown_to_html }}</td>
 				<td>
 					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 						<div class="btn-group" role="group" aria-label="...">

@@ -69,7 +69,7 @@
 			{% for intrigue in intrigues %}
 				<tr>
 					<td>{{ intrigue.titre }}</td>
-					<td>{{ intrigue.description|markdown }}</td>
+					<td>{{ intrigue.description|markdown_to_html }}</td>
 					<td>{{ intrigue.user.username }}</td>
 					<td>{{ intrigue.dateCreation|date('Y-m-d') }}</td>
 					<td>{{ intrigue.dateUpdate|date('Y-m-d') }}</td>

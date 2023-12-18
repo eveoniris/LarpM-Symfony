@@ -9,24 +9,24 @@
 			<h6>{% if personnageReligion.religion.secret %}<span style="color:red;">Secret</span> - {% endif %}{{ personnageReligion.religion.label }} - {{ personnageReligion.religionLevel.label }}</h6>
 			<a href="{{ path('forum.topic',{'index': personnageReligion.religion.topic.id }) }}">Forum</a>
 			<p class="list-group-item-text">
-				{{ personnageReligion.religion.description|markdown }}
+				{{ personnageReligion.religion.description|markdown_to_html }}
 			</p>
 			{% if personnageReligion.religionLevel.index >= 1 %}
 				<p class="list-group-item-text">
 					<h6>{{ personnageReligion.religion.label }} - Informations supplémentaires pour les Pratiquants :</h6>
-					{{ personnageReligion.religion.descriptionPratiquant|markdown }}
+					{{ personnageReligion.religion.descriptionPratiquant|markdown_to_html }}
 				</p>
 			{% endif %}
 			{% if personnageReligion.religionLevel.index >= 2 %}
 				<p class="list-group-item-text">
 					<h6>{{ personnageReligion.religion.label }} - Informations supplémentaires pour les Fervents :</h6>
-					{{ personnageReligion.religion.descriptionFervent|markdown }}
+					{{ personnageReligion.religion.descriptionFervent|markdown_to_html }}
 				</p>
 			{% endif %}
 			{% if personnageReligion.religionLevel.index >= 3 %}
 				<p class="list-group-item-text">
 					<h6>{{ personnageReligion.religion.label }} - Informations supplémentaires pour les Fanatiques :</h6>
-					{{ personnageReligion.religion.descriptionFanatique|markdown }}
+					{{ personnageReligion.religion.descriptionFanatique|markdown_to_html }}
 				</p>
 			{% endif %}
 		</li>
@@ -46,7 +46,7 @@
 	 		{%  if  personnage.territoire.religion %}
 		 		<h6>{{ personnage.territoire.religion.label }}</h6>
 		 		<p class="list-group-item-text">
-		 			{{ personnage.territoire.religion.descriptionPratiquant|markdown }}
+		 			{{ personnage.territoire.religion.descriptionPratiquant|markdown_to_html }}
 		 		</p>
 		 	{% else %}
 		 		<h6>Votre pays ne dispose pas de religion principale</h6>
@@ -55,7 +55,7 @@
 	 		{% for religion in personnage.territoire.religions %}
 	 			<h6>{{ religion.label }}</h6>
 	 			<p class="list-group-item-text">
-	 				{{ religion.descriptionPratiquant|markdown }}
+	 				{{ religion.descriptionPratiquant|markdown_to_html }}
 	 			</p>
 	 		{% else %}
 	 			<h6>Votre pays ne dispose pas de religions secondaires</h6>
@@ -68,7 +68,7 @@
 	 		{% for religion in personnage.religions %}
 	 			<h6>{{ religion.label }}</h6>
 	 			<p class="list-group-item-text">
-	 				{{ religion.descriptionPratiquant|markdown }}
+	 				{{ religion.descriptionPratiquant|markdown_to_html }}
 	 			</p>
 	 		{% endfor %}
 	 	{% endif %}

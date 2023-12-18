@@ -12,11 +12,11 @@
 		<div class="row">
 		  	<div class="col-md-12">
 		  		<p>Vous avez choisi de participer à {{ gn.label }}</p>
-		  		<p>{{ gn.description|markdown }}</p>
+		  		<p>{{ gn.description|markdown_to_html }}</p>
 		  		<div></div>
 		  		
 		  		{% if gn.conditionsInscription %}
-			  		<p>{{ gn.conditionsInscription|markdown}}</p>		  		
+			  		<p>{{ gn.conditionsInscription|markdown_to_html}}</p>
 		  		{% endif %}
 		  	</div>	  		  	
 		</div>

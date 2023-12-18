@@ -23,7 +23,7 @@
 							<small><a target="_blank" href="{{ path('rules.get',{'rule': regle.url}) }}"><i class="fa fa-download"></i> Téléchargez le fichier</a></small>
 						</div>
 					</h5>
-					<p class="list-group-item-text">{{ regle.description|markdown }}</p>
+					<p class="list-group-item-text">{{ regle.description|markdown_to_html }}</p>
 				</div>
 		{% endfor %}
 		</div>

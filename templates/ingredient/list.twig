@@ -19,7 +19,7 @@
 				<div class="row">
 					<div class="col-md-8">
 						<strong>{{ ingredient.label }} - {{ ingredient.color }} (Niveau {{ ingredient.niveau }}) : {{ ingredient.dose }}</strong>
-						{{ ingredient.description|markdown }}						
+						{{ ingredient.description|markdown_to_html }}
 					</div>
 					<div class="col-md-4">
 						<a href="{{ path('ingredient.admin.update',{'ingredient':ingredient.id}) }}"><i class="fa fa-pencil"></i> Modifier</a>&nbsp;|&nbsp;

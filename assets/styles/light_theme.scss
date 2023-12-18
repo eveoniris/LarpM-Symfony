@@ -1,0 +1,26 @@
+/* Customize variable */
+$primary: #001199;
+
+
+/* Customize Theme */
+
+[data-bs-theme="light"] {
+  --bs-primary: #{$light};
+  --bs-primary-bg-subtle: #{$primary};
+  --bs-primary-bg-subtle-dark: #{$primary};
+
+  .btn-primary {
+    --bs-btn-bg: #{$primary};
+  }
+
+  .panel {
+    color: #{$dark-text-emphasis};
+    background-color: #{$dark-bg-subtle};
+    border-color: #{$dark-border-subtle};
+  }
+
+  .panel-conan > .panel-heading {
+    background: url('#') no-repeat scroll 25% 40% / 100% 100% #FFAA80;
+    color: #{$dark-text-emphasis};
+  }
+}

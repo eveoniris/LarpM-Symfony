@@ -19,10 +19,10 @@
 					</div>
 					<div class="panel-body">
 		      			<blockquote>
-		      				<p>{{ competence.competenceFamily.description|markdown }}</p>
+		      				<p>{{ competence.competenceFamily.description|markdown_to_html }}</p>
 		      			</blockquote>
 		      			<h6>{{competence.level.label }}</h6>
-		      			<p>{{ competence.description|markdown }}</p>
+		      			<p>{{ competence.description|markdown_to_html }}</p>
 		    		</div>
 		  		</div>
 		  	</div>

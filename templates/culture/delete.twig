@@ -16,7 +16,7 @@
 			<fieldset>
 				<legend>Supression d'une culture</legend>
 					{{ culture.label }}
-					{{ culture.description|markdown }}
+					{{ culture.description|markdown_to_html }}
 					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
 					{{ form(form) }}
 			</fieldset>

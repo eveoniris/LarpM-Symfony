@@ -19,7 +19,7 @@
 				
 				<h6><i class="fa fa-circle"></i>&nbsp;{{ intrigue.titre }}</h6>
 				<div class="white-box">
-					{{ intrigue.description|markdown }}
+					{{ intrigue.description|markdown_to_html }}
 				</div>
 				
 				<h6><i class="fa fa-circle"></i>&nbsp;Groupes concernés</h6>
@@ -90,12 +90,12 @@
 				
 				<h6><i class="fa fa-circle"></i>&nbsp;Intrigue</h6>
 				<div class="white-box">
-					{{ intrigue.text|markdown }}
+					{{ intrigue.text|markdown_to_html }}
 				</div>
 				
 				<h6><i class="fa fa-circle"></i>&nbsp;Résolution</h6>
 				<div class="white-box">
-					{{ intrigue.resolution|markdown }}
+					{{ intrigue.resolution|markdown_to_html }}
 				</div>
 			</div>
 			<div class="col-md-6">
@@ -115,7 +115,7 @@
 				{% for relecture in intrigue.relectures %}
 					<div class="white-box">
 						<strong>{{ relecture.date|date('Y-m-d H:i:s') }} :</strong> <strong><a href="{{ path('user.view', {'id': intrigue.user.id}) }}">{{ relecture.user.username }}</a></strong> a relu l'intrigue. Statut donné : <strong>{{ relecture.statut }}</strong>
-						{{ relecture.remarque|markdown }}
+						{{ relecture.remarque|markdown_to_html }}
 					</div>
 				{% else %}
 					Aucune relectures n'a été faite.

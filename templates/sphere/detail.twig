@@ -23,7 +23,7 @@
 			<ul>
 			{% for priere in  sphere.prieres %}
 				<li>{{ priere.label }} - {{ priere.niveau }} :
-					{{ priere.description|markdown }}
+					{{ priere.description|markdown_to_html }}
 				</li>
 			{% endfor %}
 			</ul>

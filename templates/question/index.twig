@@ -22,8 +22,8 @@
 						<table class="table">
 							<tr>
 								<td>{{ question.label }}</td>
-								<td>{{ question.text|markdown }}</td>
-								<td>{{ question.choix|markdown }}</td>
+								<td>{{ question.text|markdown_to_html }}</td>
+								<td>{{ question.choix|markdown_to_html }}</td>
 								{% for reponse in question.choix|split(';') %}
 									<td>
 										<strong>{{ reponse }}</strong> : {{ question.reponsesCount(reponse) }}

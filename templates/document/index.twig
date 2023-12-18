@@ -128,7 +128,7 @@
 				<tr>
 					<td>{{ document.code }} -- {{ document.titre }}</td>
 					<td>{% if document.impression %}Imprimé{% else %}Non imprimé{% endif %}</td>
-					<td>{{ document.description|markdown }}</td>
+					<td>{{ document.description|markdown_to_html }}</td>
 					<td>{% if document.langues|length > 0 %}{{ document.langues|join(', ') }}{% else %}Aucune langue définie{% endif %}</td>
 					<td>{% if document.lieus|length > 0 %}{{ document.lieus|join(', ') }}{% else %}Non défini{% endif %}</td>
 					<td>{% if document.groupes|length > 0 %}{{ document.groupes|join(', ') }}{% else %}Non défini{% endif %}</td>

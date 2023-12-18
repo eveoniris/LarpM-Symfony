@@ -16,7 +16,7 @@
 		<h4>{{ lieu.nom }}</h4>
 		<div class="list-group">
 			<div class="list-group-item">
-				Description : {{ lieu.description|markdown }}
+				Description : {{ lieu.description|markdown_to_html }}
 			</div>
 			<div class="list-group-item">
 				<a href=" {{ path('lieu.documents', {'lieu': lieu.id}) }}">Modifier la liste de documents</a><br />

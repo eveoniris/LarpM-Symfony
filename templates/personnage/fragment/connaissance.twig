@@ -8,7 +8,7 @@
 			{% for connaissance in personnage.connaissances %}
 				<div class="list-group-item">
 					<div class="list-group-item-heading">{% if connaissance.secret %}<span style="color:red;">Secret</span> - {% endif %}<strong>{{ connaissance.label }}</strong></div>
-					<div class="list-group-item-text">{{ connaissance.description|markdown }}</div>
+					<div class="list-group-item-text">{{ connaissance.description|markdown_to_html }}</div>
 					<p class="list-group-item-text">
 						{% if connaissance.documentUrl %}
 							<a class="btn btn-default btn-sm" href="{{ path('participant.connaissance.detail',{'participant': participant.id, 'connaissance' : connaissance.id}) }}">

@@ -48,7 +48,7 @@
 						<em>Reçu le {{ message.creationDate|date('Y-m-d H:i:s') }}</em>
 					</div>
 					<div class="panel-body">
-						{{ message.text|markdown }}
+						{{ message.text|markdown_to_html }}
 					</div>
 					<div class="panel-footer">
 						<a href="{{ path('user.messagerie.message.response',{'id': user.id, 'message':message.id}) }}" class="btn btn-primary">Répondre</a>
@@ -68,7 +68,7 @@
 						<em>Envoyé le {{ message.creationDate|date('Y-m-d H:i:s') }}</em>
 					</div>
 					<div class="panel-body">
-						{{ message.text|markdown }}
+						{{ message.text|markdown_to_html }}
 					</div>
 				</div>
 			{% else %}
@@ -84,7 +84,7 @@
 						<em>Reçu le {{ message.creationDate|date('Y-m-d H:i:s') }}</em>
 					</div>
 					<div class="panel-body">
-						{{ message.text|markdown }}
+						{{ message.text|markdown_to_html }}
 					</div>
 					<div class="panel-footer">
 						<a href="{{ path('user.messagerie.message.response',{'id': user.id, 'message':message.id}) }}" class="btn btn-default">Répondre</a>

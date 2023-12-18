@@ -33,7 +33,7 @@
 				{% for lieu in lieux %}
 				<tr>
 					<td>{{ lieu.nom }}</td>
-					<td>{{ lieu.description|markdown }}</td>
+					<td>{{ lieu.description|markdown_to_html }}</td>
 					<td>{% if lieu.documents|length > 0 %}{{ lieu.documents|join(', ') }}{% else %}Aucune document entreposés{% endif %}</td>
 					<td>
 						<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">

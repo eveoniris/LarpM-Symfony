@@ -20,7 +20,7 @@
 	<div class="panel panel-default">
 		<div class="panel-heading"><h4>Description</h4></div>
 		<div class="panel-body">
-			<p>{{ domaine.description|markdown }}</p>
+			<p>{{ domaine.description|markdown_to_html }}</p>
 		</div>
 	</div>
 	
@@ -33,7 +33,7 @@
 				<div class="list-group-item">
 					<div class="list-group-item-heading"><h6>Label</h6></div>
 					<div class="list-group-item-text">{{ sort.label }}</div>
-					<div class="list-group-item-text">{{ sort.description|markdown }}</div>
+					<div class="list-group-item-text">{{ sort.description|markdown_to_html }}</div>
 				</div>	
 			{% endfor %}
 			</div>

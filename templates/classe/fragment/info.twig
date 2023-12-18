@@ -10,7 +10,7 @@
 	{% for classe in classes %}
 		<div class="list-group-item">
 			<div class="list-group-item-heading"><h6>{{ classe.label }}</h6></div>
-			<div class="list-group-item-text">{{ classe.description|markdown }}</div>
+			<div class="list-group-item-text">{{ classe.description|markdown_to_html }}</div>
 			<div class="list-group-item-text">
 				<strong>Compétences acquises à la création du personnage :</strong>
 				{% for competenceFamily in classe.competenceFamilyCreations %}

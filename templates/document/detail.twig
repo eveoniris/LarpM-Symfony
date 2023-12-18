@@ -27,7 +27,7 @@
 						Auteur : {{ document.auteur }}
 					</div>
 					<div class="list-group-item">
-						Description : {{ document.description|markdown }}
+						Description : {{ document.description|markdown_to_html }}
 					</div>
 					<div class="list-group-item">
 						Groupes : 

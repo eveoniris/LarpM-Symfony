@@ -8,8 +8,8 @@
 		<div class="list-group">
 		{% for domaine in personnage.domaines %}
 			<div class="list-group-item">
-				<div class="list-group-item-heading"><strong>{{ domaine.label|markdown }}</strong></div>
-				<div class="list-group-item-text">{{ domaine.description|markdown }}</div>
+				<div class="list-group-item-heading"><strong>{{ domaine.label|markdown_to_html }}</strong></div>
+				<div class="list-group-item-text">{{ domaine.description|markdown_to_html }}</div>
 			</div>
 		{% endfor %}
 		</div>

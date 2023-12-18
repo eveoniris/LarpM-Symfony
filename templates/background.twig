@@ -21,7 +21,7 @@
 			{% elseif background.visibility == 'PUBLIC' %}
 				Background visible à tous les joueurs
 			{% endif %}
-			{{ background.text|markdown }}
+			{{ background.text|markdown_to_html }}
 		{% else %}
 			Votre groupe n'a pas encore de background validé.  
 		{% endfor %}
@@ -30,7 +30,7 @@
 			<div class="header"><h5>Vos backgrounds personnels</h5></div>
 			
 			{% for background in backsJoueur %}
-				{{ background.text|markdown }}
+				{{ background.text|markdown_to_html }}
 			{% endfor %}
 		{% endif %}	
 		

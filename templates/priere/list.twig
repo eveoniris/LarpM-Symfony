@@ -21,7 +21,7 @@
 					<div class="col-md-8">
 						{{ priere.sphere.label }} - Niveau {{ priere.niveau }}<br />
 						{{ priere.label }}
-						{{ priere.description|markdown }}
+						{{ priere.description|markdown_to_html }}
 						{% if priere.documentUrl %}
 							<a href="{{ path('magie.priere.document', {'priere': priere.id, 'document': priere.documentUrl}) }}">Télécharger le pdf associé</a>
 						{% else %}

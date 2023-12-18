@@ -8,7 +8,7 @@
 				<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
 		    	Attention, ce groupe n'a pas de description.
 		    {% else %}
-		    	{{ groupe.description|markdown }}
+		    	{{ groupe.description|markdown_to_html }}
 		    {% endif %}
 		    
 		    <a href="{{ path('groupe.description', {'groupe': groupe.id}) }}"><i class="fa fa-pencil"></i> Modifier la description</a>
@@ -205,8 +205,3 @@
 		</div>
 	</div>
 </div>
-
-						
-	    			
-	    				
-    				    			

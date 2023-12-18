@@ -31,7 +31,7 @@ Cliquez sur le lien ci-dessous pour accéder directement au forum :
     
     <h5>{{ post.title }} -- par {{ post.user.username }}</h5>
 
-	<p>{{ post.text|markdown }}</p>
+	<p>{{ post.text|markdown_to_html }}</p>
 
     <p>
         <a href="{{ postUrl }}"> Suivez ce lien pour accéder directement au forum</a>.

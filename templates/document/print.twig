@@ -35,7 +35,7 @@
 				<td>{{ document.code }}</td>
 				<td>{{ document.titre }}</td>
 				<td>{% if document.impression %}Imprimé{% else %}Non imprimé{% endif %}</td>
-				<td>{{ document.description|markdown }}</td>
+				<td>{{ document.description|markdown_to_html }}</td>
 				<td>{% if document.langues|length > 0 %}Langue(s) : {{ document.langues|join(', ') }}{% else %}Aucune langue définie{% endif %}</td>
 				<td>{% if document.lieus|length > 0 %}Entreposé dans : {{ document.lieus|join(', ') }}{% else %}Non défini{% endif %}</td>
 				<td>{% if document.groupes|length > 0 %}Possédé par les groupes : {{ document.groupes|join(', ') }}{% else %}Non défini{% endif %}</td>

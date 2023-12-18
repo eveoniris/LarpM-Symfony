@@ -43,7 +43,7 @@
 						</h4>
 						<p class="list-group-item-text">		
 							{% if territoire.description %}
-								<p class="text-default">{{ territoire.description|markdown }} ...</p>
+								<p class="text-default">{{ territoire.description|markdown_to_html }} ...</p>
 							{% else %}
 								<p class="text-warning">Attention, ce territoire n'a pas description</p>
 							{%  endif %}
@@ -77,7 +77,7 @@
 							</h4>
 							<p class="list-group-item-text">		
 								{% if region.description %}
-									<p class="text-default">{{ region.description|markdown }} ...</p>
+									<p class="text-default">{{ region.description|markdown_to_html }} ...</p>
 								{% else %}
 									<p class="text-warning">Attention, ce territoire n'a pas description</p>
 								{%  endif %}
@@ -111,7 +111,7 @@
 								</h4>
 								<p class="list-group-item-text">		
 									{% if fief.description %}
-										<p class="text-default">{{ fief.description|markdown }} ...</p>
+										<p class="text-default">{{ fief.description|markdown_to_html }} ...</p>
 									{% else %}
 										<p class="text-warning">Attention, ce territoire n'a pas description</p>
 									{%  endif %}

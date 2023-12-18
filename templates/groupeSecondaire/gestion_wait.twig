@@ -23,7 +23,7 @@
 							<strong>{{ postulant.personnage.publicName }}</strong>
 						</div>
 						<div class="list-group-item-text">
-							{{ postulant.explanation|markdown }}
+							{{ postulant.explanation|markdown_to_html }}
 						</div>
 					</div>
 				</div>

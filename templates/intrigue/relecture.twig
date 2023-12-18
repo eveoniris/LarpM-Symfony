@@ -16,7 +16,7 @@
 			<div class="col-md-8">
 			<h6><i class="fa fa-circle"></i>&nbsp;{{ intrigue.titre }}</h6>
 				<div class="white-box">
-					{{ intrigue.description|markdown }}
+					{{ intrigue.description|markdown_to_html }}
 				</div>
 				
 				<h6><i class="fa fa-circle"></i>&nbsp;Groupes concernés</h6>
@@ -76,12 +76,12 @@
 				
 				<h6><i class="fa fa-circle"></i>&nbsp;Intrigue</h6>
 				<div class="white-box">
-					{{ intrigue.text|markdown }}
+					{{ intrigue.text|markdown_to_html }}
 				</div>
 				
 				<h6><i class="fa fa-circle"></i>&nbsp;Résolution</h6>
 				<div class="white-box">
-					{{ intrigue.resolution|markdown }}
+					{{ intrigue.resolution|markdown_to_html }}
 				</div>
 			</div>
 			<div class="col-md-4">

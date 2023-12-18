@@ -25,7 +25,7 @@
 							<em>Envoyé le {{ message.creationDate|date('Y-m-d H:i:s') }}</em>
 						</div>
 						<div class="list-group-item-text">
-							<p>{{ message.text|markdown }}</p>
+							<p>{{ message.text|markdown_to_html }}</p>
 						</div>
 					</div>
 				</div>

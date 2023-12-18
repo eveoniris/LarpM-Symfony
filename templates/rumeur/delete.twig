@@ -15,7 +15,7 @@
 			<fieldset>
 				<legend>Suppression d'une rumeur</legend>
 				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
-				{{ rumeur.text|markdown }}
+				{{ rumeur.text|markdown_to_html }}
 				<strong>Attention ! vous allez supprimer définitivement cette rumeur. Etes vous sur de vous ?</strong>
 				{{ form(form) }}
 			</fieldset>

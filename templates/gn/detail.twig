@@ -23,7 +23,7 @@
 	   			{% if not gn.description %}
 	   				<span class="text-danger">Attention, ce gn n'a pas de description.</span>
 	    		{% else %}
-	    			{{ gn.description|markdown }}
+	    			{{ gn.description|markdown_to_html }}
 	    		{% endif %}
 	
 		    	<h6>Création d'un personnage</h6>

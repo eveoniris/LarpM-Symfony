@@ -9,7 +9,7 @@
 			{% for technologie in personnage.technologies %}
 				<div class="list-group-item">
 					{% if technologie.secret %}<span style="color:red;">Secret</span> - {% endif %}<div class="list-group-item-heading"><strong>{{ technologie.label }}</strong></div>
-					<div class="list-group-item-text">{{ technologie.description|markdown }}</div>
+					<div class="list-group-item-text">{{ technologie.description|markdown_to_html }}</div>
 					<p class="list-group-item-text">
 					{% if technologie.documentUrl %}
 						<a class="btn btn-default btn-sm" href="{{ path('participant.technologie.document',{'participant': participant.id, 'technologie' : technologie.id, 'filename': technologie.printlabel}) }}">

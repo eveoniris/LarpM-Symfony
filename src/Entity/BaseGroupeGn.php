@@ -9,8 +9,6 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\OneToMany;
-use Doctrine\ORM\Mapping\oOne;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'groupe_gn')]
@@ -40,16 +38,12 @@ abstract class BaseGroupeGn
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected int $place_available = 0;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected int $agents = 0;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected int $bateaux = 0;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected int $sieges = 0;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected int $initiative = 0;
 
     #[ORM\OneToMany(mappedBy: 'groupeGn', targetEntity: Participant::class)]
@@ -73,9 +67,11 @@ abstract class BaseGroupeGn
     #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: 'false')]
     protected Participant $participant;
 
+   /*
     #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'suzerain_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Personnage $suzerain;    
+    protected Personnage $suzerain;
+   */
 
     public function __construct()
     {

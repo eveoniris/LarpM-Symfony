@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseAge', 'extended' => 'Age'])]
-class BaseAge
+abstract class BaseAge
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
@@ -137,10 +137,5 @@ class BaseAge
     public function getPersonnages(): Collection
     {
         return $this->personnages;
-    }
-
-    public function __sleep()
-    {
-        return ['id', 'label', 'description', 'bonus', 'enableCreation', 'minimumValue'];
     }
 }

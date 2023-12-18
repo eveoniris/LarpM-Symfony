@@ -17,6 +17,6 @@ Le groupe {{ alliance.groupe.nom }} demande une alliance :
 
     <h3>Le groupe {{ alliance.groupe.nom }} demande une alliance</h3>
     
-    <p>{{ alliance.message|markdown }}</p>
+    <p>{{ alliance.message|markdown_to_html }}</p>
 
 {%- endblock -%}

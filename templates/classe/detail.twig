@@ -24,7 +24,7 @@
     				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
     				Attention, cette classe n'a pas de description.
     				{% else %}
-    					{{ classe.description|markdown }}
+    					{{ classe.description|markdown_to_html }}
     				{% endif %}
     				</p>
 	    		</div>

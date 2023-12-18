@@ -33,14 +33,14 @@
 	<div class="panel panel-default">
 		<div class="panel-heading"><h4>Description</h4></div>
 		<div class="panel-body">
-			<p>{{ priere.description|markdown }}</p>
+			<p>{{ priere.description|markdown_to_html }}</p>
 		</div>
 	</div>
 	
 	<div class="panel panel-default">
 		<div class="panel-heading"><h4>Annonce</h4></div>
 		<div class="panel-body">
-			<p>{{ priere.annonce|markdown }}</p>
+			<p>{{ priere.annonce|markdown_to_html }}</p>
 		</div>
 	</div>
 	

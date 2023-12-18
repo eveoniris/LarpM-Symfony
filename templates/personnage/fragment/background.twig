@@ -6,7 +6,7 @@
 {% if personnage.backgrounds('OWNER')|length > 0 %}
 	{% for background in personnage.personnageBackgrounds %}
 		<h6 class="list-group-item-heading">Background ({{ background.gn.label }})</h6>
-		{{ background.text|markdown }}
+		{{ background.text|markdown_to_html }}
 	{% endfor %}
 {% else %}
 	<p class="list-group-item-text">
