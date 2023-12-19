@@ -19,16 +19,18 @@ class BilletController extends AbstractController
     public function listAction(Request $request, BilletRepository $billetRepository): Response
     {
         $page = $request->query->getInt('page', 1);
+        $orderBy = $request->query->getString('order_by', 'id');
+        $orderDir = $request->query->getString('order_dir', 'ASC');
         $limit = 10;
 
-        $paginator = $billetRepository->findPaginated($page, $limit);
+        $paginator = $billetRepository->findPaginated($page, $limit, $orderBy, $orderDir);
 
         return $this->render(
             'billet\list.twig',
             [
                 'paginator' => $paginator,
                 'limit' => $limit,
-                'page' => $page,
+                'page' => $page
             ]
         );
     }
