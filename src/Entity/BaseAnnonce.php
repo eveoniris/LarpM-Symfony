@@ -122,8 +122,8 @@ class BaseAnnonce
         return $this->gn;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'title', 'text', 'creation_date', 'update_date', 'archive', 'gn_id'];
-    }
+    } */
 }

@@ -132,8 +132,8 @@ class BaseCompetenceAttribute
         return $this->attributeType;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['competence_id', 'attribute_type_id', 'value'];
-    }
+    } */
 }

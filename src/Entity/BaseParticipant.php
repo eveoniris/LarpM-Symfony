@@ -380,8 +380,8 @@ class BaseParticipant
         return $this->potions_depart;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'gn_id', 'subscription_date', 'User_id', 'personnage_secondaire_id', 'personnage_id', 'billet_id', 'billet_date', 'groupe_gn_id', 'valide_ci_le'];
-    }
+    } */
 }

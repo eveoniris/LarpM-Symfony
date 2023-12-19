@@ -188,10 +188,10 @@ abstract class BaseQuestion
         return $this;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'text', 'date', 'User_id', 'choix', 'label'];
-    }
+    } */
 
     public function getPersonnageHasQuestions(): Collection
     {

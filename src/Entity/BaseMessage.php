@@ -185,8 +185,8 @@ class BaseMessage
         return $this->userRelatedByDestinataire;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'title', 'text', 'creation_date', 'update_date', 'lu', 'auteur', 'destinataire'];
-    }
+    } */
 }

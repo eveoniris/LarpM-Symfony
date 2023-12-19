@@ -136,8 +136,8 @@ abstract class BaseLoi
         return $this->territoires;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'documentUrl', 'description'];
-    }
+    } */
 }

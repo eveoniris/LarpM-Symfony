@@ -104,8 +104,8 @@ abstract class BaseReligionDescription
         return $this->religionLevel;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'description', 'religion_id', 'religion_level_id'];
-    }
+    } */
 }

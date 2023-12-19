@@ -155,8 +155,8 @@ abstract class BaseLieu
         return $this->documents;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'nom', 'description'];
-    }
+    } */
 }

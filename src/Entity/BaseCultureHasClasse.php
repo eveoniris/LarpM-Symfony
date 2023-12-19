@@ -64,8 +64,8 @@ abstract class BaseCultureHasClasse
         return $this->classe;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'culture_id', 'classe_id'];
-    }
+    } */
 }

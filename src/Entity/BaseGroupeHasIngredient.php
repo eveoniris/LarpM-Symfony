@@ -103,8 +103,8 @@ abstract class BaseGroupeHasIngredient
         return $this->ingredient;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'quantite', 'groupe_id', 'ingredient_id'];
-    }
+    } */
 }

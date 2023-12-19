@@ -389,8 +389,8 @@ abstract class BaseGroupeGn
         return $this->groupeGnOrdres;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'groupe_id', 'gn_id', 'responsable_id', 'free', 'code', 'jeu_maritime', 'jeu_strategique', 'place_available'];
-    }
+    } */
 }

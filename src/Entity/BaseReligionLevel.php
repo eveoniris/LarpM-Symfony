@@ -143,8 +143,8 @@ abstract class BaseReligionLevel
         return $this->personnagesReligions;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'index', 'description'];
-    }
+    } */
 }

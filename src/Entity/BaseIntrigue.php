@@ -483,8 +483,8 @@ abstract class BaseIntrigue
         return $this->user;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'description', 'titre', 'text', 'resolution', 'date_creation', 'date_update', 'User_id', 'state'];
-    }
+    } */
 }

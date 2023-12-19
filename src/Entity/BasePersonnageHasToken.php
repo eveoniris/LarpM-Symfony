@@ -82,8 +82,8 @@ abstract class BasePersonnageHasToken
         return $this->token;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'personnage_id', 'token_id'];
-    }
+    } */
 }

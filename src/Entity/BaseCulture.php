@@ -131,8 +131,8 @@ abstract class BaseCulture
         return $this->cultureHasClasses;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description', 'description_complete'];
-    }
+    } */
 }

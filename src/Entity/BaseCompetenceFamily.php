@@ -162,8 +162,8 @@ class BaseCompetenceFamily
         return $this->technologies;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description'];
-    }
+    } */
 }

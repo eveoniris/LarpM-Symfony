@@ -117,8 +117,8 @@ abstract class BaseDomaine
         return $this->personnages;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description'];
-    }
+    } */
 }

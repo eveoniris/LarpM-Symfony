@@ -123,8 +123,8 @@ abstract class BaseEvenement
         return $this->intrigueHasEvenements;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'text', 'date', 'date_creation', 'date_update'];
-    }
+    } */
 }

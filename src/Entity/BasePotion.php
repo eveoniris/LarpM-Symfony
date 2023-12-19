@@ -221,8 +221,8 @@ abstract class BasePotion
         return $this->participants;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description', 'documentUrl', 'niveau', 'numero', 'secret'];
-    }
+    } */
 }

@@ -373,8 +373,8 @@ abstract class BaseItem
         return $this->personnages;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description', 'numero', 'identification', 'quality_id', 'special', 'couleur', 'date_creation', 'date_update', 'statut_id', 'objet_id', 'quantite'];
-    }
+    } */
 }

@@ -80,8 +80,8 @@ abstract class BaseGroupeClasse
         return $this->classe;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'groupe_id', 'classe_id'];
-    }
+    } */
 }

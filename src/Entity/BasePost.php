@@ -299,8 +299,8 @@ use Doctrine\ORM\Mapping\OneToMany;
         return $this->users;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'title', 'text', 'creation_date', 'update_date', 'topic_id', 'User_id', 'post_id'];
-    }
+    } */
 }

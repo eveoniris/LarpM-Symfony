@@ -108,8 +108,8 @@ abstract class BaseIntrigueHasModification
         return $this->user;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'date', 'intrigue_id', 'User_id'];
-    }
+    } */
 }

@@ -101,8 +101,8 @@ abstract class BaseRule
         return $this->description ?? '';
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'url', 'description'];
-    }
+    } */
 }

@@ -174,8 +174,8 @@ abstract class BaseBillet
         return $this->gn;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description', 'creation_date', 'update_date', 'createur_id', 'gn_id', 'fedegn'];
-    }
+    } */
 }

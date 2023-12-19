@@ -105,8 +105,8 @@ abstract class BaseReponse
         return $this->participant;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'question_id', 'reponse', 'participant_id'];
-    }
+    } */
 }

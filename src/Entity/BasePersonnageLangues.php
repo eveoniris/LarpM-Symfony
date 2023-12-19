@@ -106,8 +106,8 @@ abstract class BasePersonnageLangues
         return $this->langue;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'personnage_id', 'langue_id', 'source'];
-    }
+    } */
 }

@@ -79,8 +79,8 @@ class BaseAttributeType
         return $this->competenceAttributes;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['label', 'id'];
-    }
+    } */
 }

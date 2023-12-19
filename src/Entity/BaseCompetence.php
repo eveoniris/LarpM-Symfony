@@ -239,8 +239,8 @@ class BaseCompetence
         return $this->personnages;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'description', 'competence_family_id', 'level_id', 'documentUrl', 'materiel'];
-    }
+    } */
 }

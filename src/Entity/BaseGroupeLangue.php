@@ -119,8 +119,8 @@ abstract class BaseGroupeLangue
         return $this->langues;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'couleur'];
-    }
+    } */
 }

@@ -98,8 +98,8 @@ abstract class BaseExperienceGain
         return $this->personnage;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'explanation', 'operation_date', 'xp_gain', 'personnage_id'];
-    }
+    } */
 }

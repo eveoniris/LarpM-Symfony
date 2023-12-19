@@ -167,8 +167,8 @@ abstract class BaseGroupeEnemy
         return $this->groupeRelatedByGroupeEnemyId;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'groupe_id', 'groupe_enemy_id', 'groupe_peace', 'groupe_enemy_peace', 'message', 'message_enemy'];
-    }
+    } */
 }

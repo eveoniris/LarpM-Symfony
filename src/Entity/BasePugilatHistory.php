@@ -123,8 +123,8 @@ abstract class BasePugilatHistory
         return $this->personnage;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'date', 'pugilat', 'explication', 'personnage_id'];
-    }
+    } */
 }

@@ -302,8 +302,8 @@ class BaseDebriefing
         return $this->gn;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'titre', 'text', 'visibility', 'creation_date', 'update_date', 'groupe_id', 'User_id', 'gn_id'];
-    }
+    } */
 }

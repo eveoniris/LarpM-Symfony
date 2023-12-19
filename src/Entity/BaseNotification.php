@@ -122,8 +122,8 @@ abstract class BaseNotification
         return $this->user;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'text', 'date', 'User_id', 'url'];
-    }
+    } */
 }

@@ -109,8 +109,8 @@ class BaseObjectif
         return $this->intrigueHasObjectifs;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'text', 'date_creation', 'date_update'];
-    }
+    } */
 }

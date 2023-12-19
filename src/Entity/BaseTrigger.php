@@ -109,8 +109,8 @@ abstract class BaseTrigger
         return $this->personnage;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'personnage_id', 'tag', 'done'];
-    }
+    } */
 }

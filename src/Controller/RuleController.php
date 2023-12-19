@@ -21,11 +21,13 @@
 namespace App\Controller;
 
 use App\Entity\Rule;
+use App\Repository\RuleRepository;
 use LarpManager\Form\Rule\RuleDeleteForm;
 use LarpManager\Form\Rule\RuleForm;
 use LarpManager\Form\Rule\RuleUpdateForm;
-use Silex\Application;
+//use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -33,19 +35,34 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author kevin
  */
-class RuleController
+class RuleController extends AbstractController
 {
     /**
      * Page de gestion des règles.
      */
     #[Route('/rule', name: 'rules')]
-    public function listAction(Request $request, Application $app)
+    public function listAction(Request $request, RuleRepository $ruleRepository): Response
     {
-        $regles = $app['orm.em']->getRepository(\App\Entity\Rule::class)->findAll();
+        $page = $request->query->getInt('page', 1);
+        $limit = 10;
 
-        return $app['twig']->render('rule/list.twig', [
-            'regles' => $regles,
-        ]);
+        $paginator = $ruleRepository->findPaginated($page, $limit);
+
+        return $this->render(
+            'rule\list.twig',
+            [
+                'paginator' => $paginator,
+                'limit' => $limit,
+                'page' => $page,
+            ]
+        );
+
+
+        //$regles = $app['orm.em']->getRepository(\App\Entity\Rule::class)->findAll();
+
+        //return $app['twig']->render('rule/list.twig', [
+        //    'regles' => $regles,
+        //]);
     }
 
     /**

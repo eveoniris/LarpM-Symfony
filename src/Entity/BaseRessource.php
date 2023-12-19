@@ -254,8 +254,8 @@ class BaseRessource
         return $this;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'rarete_id'];
-    }
+    } */
 }

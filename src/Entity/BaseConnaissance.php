@@ -149,8 +149,8 @@ abstract class BaseConnaissance
         return $this->secret;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description', 'documentUrl', 'niveau', 'secret'];
-    }
+    } */
 }

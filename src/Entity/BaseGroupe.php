@@ -873,8 +873,8 @@ class BaseGroupe
         return $this->items;
     }
 
-    public function __sleep()
+    /*public function __sleep()
     {
         return ['id', 'nom', 'description', 'numero', 'code', 'jeu_maritime', 'jeu_strategique', 'scenariste_id', 'classe_open', 'responsable_id', 'topic_id', 'pj', 'materiel', 'lock', 'territoire_id', 'richesse'];
-    }
+    }*/
 }

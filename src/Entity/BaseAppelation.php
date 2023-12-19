@@ -153,8 +153,8 @@ class BaseAppelation
         return $this->appelation;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'appelation_id', 'label', 'description', 'titre'];
-    }
+    } */
 }

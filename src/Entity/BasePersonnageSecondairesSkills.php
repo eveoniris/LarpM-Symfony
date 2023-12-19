@@ -83,8 +83,8 @@ abstract class BasePersonnageSecondairesSkills
         return $this->competence;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'personnage_secondaire_id', 'competence_id'];
-    }
+    } */
 }

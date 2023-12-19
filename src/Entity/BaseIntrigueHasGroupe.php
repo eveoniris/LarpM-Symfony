@@ -81,8 +81,8 @@ abstract class BaseIntrigueHasGroupe
         return $this->groupe;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'intrigue_id', 'groupe_id'];
-    }
+    } */
 }

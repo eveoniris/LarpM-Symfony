@@ -468,8 +468,8 @@ abstract class BaseTopic
         return $this->user;
     }
 
-    public function __sleep()
+    /*public function __sleep()
     {
         return ['id', 'title', 'description', 'creation_date', 'update_date', 'topic_id', 'User_id', 'right', 'object_id', 'key'];
-    }
+    }*/
 }

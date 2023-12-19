@@ -136,8 +136,8 @@ class BaseRestriction
         return $this->users;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'creation_date', 'update_date', 'auteur_id'];
-    }
+    } */
 }

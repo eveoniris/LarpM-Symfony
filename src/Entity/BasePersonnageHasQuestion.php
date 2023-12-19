@@ -104,8 +104,8 @@ abstract class BasePersonnageHasQuestion
         return $this->question;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'reponse', 'personnage_id', 'question_id'];
-    }
+    } */
 }

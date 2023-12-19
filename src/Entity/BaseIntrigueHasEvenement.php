@@ -75,8 +75,8 @@ abstract class BaseIntrigueHasEvenement
         return $this->evenement;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'intrigue_id', 'evenement_id'];
-    }
+    } */
 }

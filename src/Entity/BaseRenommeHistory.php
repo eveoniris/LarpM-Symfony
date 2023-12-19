@@ -128,8 +128,8 @@ abstract class BaseRenommeHistory
         return $this->personnage;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'renomme', 'explication', 'date', 'personnage_id'];
-    }
+    } */
 }

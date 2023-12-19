@@ -431,8 +431,8 @@ abstract class BaseReligion
     }
 
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description', 'topic_id', 'blason', 'description_orga', 'description_fervent', 'description_pratiquant', 'description_fanatique', 'secret'];
-    }
+    } */
 }

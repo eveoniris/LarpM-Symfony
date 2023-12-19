@@ -200,8 +200,8 @@ abstract class BasePersonnageBackground
         return $this->gn;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'personnage_id', 'text', 'visibility', 'creation_date', 'update_date', 'User_id', 'gn_id'];
-    }
+    } */
 }

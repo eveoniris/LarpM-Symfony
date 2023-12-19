@@ -104,8 +104,8 @@ abstract class BaseQualityValeur
         return $this->monnaie;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'quality_id', 'monnaie_id', 'nombre'];
-    }
+    } */
 }

@@ -118,8 +118,8 @@ abstract class BaseRestauration
         return $this->participantHasRestaurations;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description'];
-    }
+    } */
 }

@@ -162,8 +162,8 @@ abstract class BaseQualite
         return $this->qualiteValeurs;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'numero'];
-    }
+    } */
 }

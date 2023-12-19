@@ -145,8 +145,8 @@ abstract class BasePostulant
         return $this->personnage;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'date', 'secondary_group_id', 'personnage_id', 'explanation', 'waiting'];
-    }
+    } */
 }

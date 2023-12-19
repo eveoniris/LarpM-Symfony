@@ -81,8 +81,8 @@ abstract class BaseIntrigueHasLieu
         return $this->lieu;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'intrigue_id', 'lieu_id'];
-    }
+    } */
 }

@@ -318,8 +318,8 @@ abstract class BaseSecondaryGroup
         return $this->topic;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description', 'secondary_group_type_id', 'personnage_id', 'topic_id', 'description_secrete', 'secret', 'materiel'];
-    }
+    } */
 }
