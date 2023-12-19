@@ -104,8 +104,8 @@ abstract class BaseParticipantHasRestauration
         return $this->restauration;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'participant_id', 'restauration_id', 'date'];
-    }
+    } */
 }

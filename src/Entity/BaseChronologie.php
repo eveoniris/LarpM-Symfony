@@ -129,8 +129,8 @@ class BaseChronologie
         return $this->territoire;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'description', 'zone_politique_id', 'year', 'month', 'day', 'visibilite'];
-    }
+    } */
 }

@@ -105,8 +105,8 @@ abstract class BasePersonnageChronologie
         return $this->annee;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'personnage_id', 'evenement', 'annee'];
-    }
+    } */
 }

@@ -135,8 +135,8 @@ abstract class BaseSphere
         return $this->religions;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label'];
-    }
+    } */
 }

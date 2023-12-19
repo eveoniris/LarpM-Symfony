@@ -82,8 +82,8 @@ abstract class BaseIntrigueHasObjectif
         return $this->objectif;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'intrigue_id', 'objectif_id'];
-    }
+    } */
 }

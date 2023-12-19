@@ -79,8 +79,8 @@ abstract class BaseEtat
         return $this->objets;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label'];
-    }
+    } */
 }

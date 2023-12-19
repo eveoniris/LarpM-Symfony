@@ -421,8 +421,8 @@ abstract class BaseObjet
         return $this->tags;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'numero', 'nom', 'description', 'etat_id', 'proprietaire_id', 'responsable_id', 'nombre', 'cout', 'budget', 'investissement', 'creation_date', 'photo_id', 'rangement_id'];
-    }
+    } */
 }

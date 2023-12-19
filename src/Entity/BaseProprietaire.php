@@ -162,8 +162,8 @@ abstract class BaseProprietaire
         return $this->objets;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'nom', 'adresse', 'mail', 'tel'];
-    }
+    } */
 }

@@ -121,8 +121,8 @@ abstract class BaseObjetCarac
         return $this->objet;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'objet_id', 'taille', 'poid', 'couleur'];
-    }
+    } */
 }

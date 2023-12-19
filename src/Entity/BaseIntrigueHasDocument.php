@@ -81,8 +81,8 @@ abstract class BaseIntrigueHasDocument
         return $this->document;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'intrigue_id', 'document_id'];
-    }
+    } */
 }

@@ -124,8 +124,8 @@ abstract class BasePostView
         return $this->user;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'date', 'post_id', 'user_id'];
-    }
+    } */
 }

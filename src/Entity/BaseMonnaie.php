@@ -118,8 +118,8 @@ abstract class BaseMonnaie
         return $this->qualityValeurs;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description'];
-    }
+    } */
 }

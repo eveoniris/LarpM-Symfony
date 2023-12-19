@@ -196,8 +196,8 @@ abstract class BaseRumeur
         return $this->user;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'text', 'gn_id', 'territoire_id', 'User_id', 'creation_date', 'update_date', 'visibility'];
-    }
+    } */
 }

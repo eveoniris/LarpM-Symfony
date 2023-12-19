@@ -103,8 +103,8 @@ abstract class BasePersonnageIngredient
         return $this->ingredient;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'personnage_id', 'ingredient_id', 'nombre'];
-    }
+    } */
 }

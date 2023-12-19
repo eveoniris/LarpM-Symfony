@@ -103,8 +103,8 @@ abstract class BaseGroupeHasRessource
         return $this->ressource;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'quantite', 'groupe_id', 'ressource_id'];
-    }
+    } */
 }

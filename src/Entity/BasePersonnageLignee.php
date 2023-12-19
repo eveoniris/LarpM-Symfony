@@ -129,8 +129,8 @@ abstract class BasePersonnageLignee
         return $this->lignee;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'personnage_id', 'parent1_id', 'parent2_id', 'ligne_id'];
-    }
+    } */
 }

@@ -118,8 +118,8 @@ abstract class BaseTitre
         return $this->titreTerritoires;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'renomme'];
-    }
+    } */
 }

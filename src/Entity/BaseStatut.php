@@ -124,8 +124,8 @@ abstract class BaseStatut
         return $this->items;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description'];
-    }
+    } */
 }

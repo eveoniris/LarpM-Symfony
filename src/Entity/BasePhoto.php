@@ -211,8 +211,8 @@ abstract class BasePhoto
         return $this->objets;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'name', 'extension', 'real_name', 'data', 'creation_date', 'filename'];
-    }
+    } */
 }

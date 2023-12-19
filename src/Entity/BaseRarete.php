@@ -118,8 +118,8 @@ abstract class BaseRarete
         return $this->ressources;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'value'];
-    }
+    } */
 }

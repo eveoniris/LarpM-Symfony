@@ -107,8 +107,8 @@ abstract class BaseLignee
         return $this;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'nom', 'description'];
-    }
+    } */
 }

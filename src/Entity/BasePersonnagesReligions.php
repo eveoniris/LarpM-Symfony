@@ -107,8 +107,8 @@ abstract class BasePersonnagesReligions
         return $this->personnage;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'religion_id', 'religion_level_id', 'personnage_id'];
-    }
+    } */
 }

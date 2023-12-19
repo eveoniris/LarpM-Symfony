@@ -181,8 +181,8 @@ abstract class BaseLevel
         return $this->competences;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'index', 'label', 'cout', 'cout_favori', 'cout_meconu'];
-    }
+    } */
 }

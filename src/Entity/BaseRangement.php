@@ -142,8 +142,8 @@ abstract class BaseRangement
         return $this->localisation;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'localisation_id', 'label', 'precision'];
-    }
+    } */
 }

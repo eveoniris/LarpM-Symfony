@@ -427,8 +427,8 @@ class BaseGn
         return $this->topic;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'xp_creation', 'description', 'date_debut', 'date_fin', 'date_installation_joueur', 'date_fin_orga', 'adresse', 'topic_id', 'actif', 'billetterie', 'conditions_inscription'];
-    }
+    } */
 }

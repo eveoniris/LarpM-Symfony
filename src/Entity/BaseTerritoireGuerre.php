@@ -131,8 +131,8 @@ abstract class BaseTerritoireGuerre
         return $this->territoire;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'puissance', 'puissance_max', 'protection'];
-    }
+    } */
 }

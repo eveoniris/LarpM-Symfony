@@ -104,8 +104,8 @@ abstract class BaseTitreTerritoire
         return $this->territoire;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'titre_id', 'territoire_id'];
-    }
+    } */
 }

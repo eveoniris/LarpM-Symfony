@@ -156,8 +156,8 @@ class BaseRelecture
         return $this->intrigue;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'date', 'statut', 'remarque', 'User_id', 'intrigue_id'];
-    }
+    } */
 }

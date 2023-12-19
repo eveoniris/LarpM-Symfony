@@ -44,8 +44,8 @@ abstract class BaseFormulaire
         return $this->title ?? '';
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'title'];
-    }
+    } */
 }

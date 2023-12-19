@@ -205,8 +205,8 @@ abstract class BaseSort
         return $this->secret;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description', 'domaine_id', 'documentUrl', 'niveau'];
-    }
+    } */
 }

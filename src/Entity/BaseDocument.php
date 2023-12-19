@@ -306,8 +306,8 @@ abstract class BaseDocument
         return $this->personnages;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'code', 'titre', 'description', 'documentUrl', 'cryptage', 'statut', 'auteur', 'User_id', 'creation_date', 'update_date', 'impression'];
-    }
+    } */
 }

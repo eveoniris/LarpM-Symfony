@@ -118,8 +118,8 @@ abstract class BaseSecondaryGroupType
         return $this->secondaryGroups;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description'];
-    }
+    } */
 }

@@ -104,8 +104,8 @@ abstract class BaseMembre
         return $this->secondaryGroup;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'personnage_id', 'secondary_group_id', 'secret'];
-    }
+    } */
 }

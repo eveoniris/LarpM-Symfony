@@ -1228,8 +1228,8 @@ abstract class BaseUser
         return $this->posts;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'email', 'password', 'salt', 'rights', 'creation_date', 'username', 'is_enabled', 'confirmationToken', 'timePasswordResetRequested', 'etatCivil', 'trombineUrl', 'personnageSecondaire', 'lastConnectionDate', 'personnage', 'roles'];
-    }
+    } */
 }

@@ -103,8 +103,8 @@ abstract class BasePersonnageRessource
         return $this->ressource;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'personnage_id', 'ressource_id', 'nombre'];
-    }
+    } */
 }

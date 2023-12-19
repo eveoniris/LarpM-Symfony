@@ -144,8 +144,8 @@ abstract class BaseSorts
         return $this->domaine;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description', 'domaine_id', 'documentUrl', 'niveau'];
-    }
+    } */
 }

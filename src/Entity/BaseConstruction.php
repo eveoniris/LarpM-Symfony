@@ -104,8 +104,8 @@ abstract class BaseConstruction
         return $this->territoires;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description', 'defense'];
-    }
+    } */
 }

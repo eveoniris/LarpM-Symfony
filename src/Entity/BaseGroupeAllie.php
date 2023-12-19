@@ -171,8 +171,8 @@ abstract class BaseGroupeAllie
         return $this->groupeRelatedByGroupeAllieId;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'groupe_id', 'groupe_allie_id', 'groupe_accepted', 'groupe_allie_accepted', 'message', 'message_allie'];
-    }
+    } */
 }

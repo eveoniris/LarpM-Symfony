@@ -205,8 +205,8 @@ abstract class BasePriere
         return $this->personnages;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'label', 'description', 'annonce', 'documentUrl', 'niveau', 'sphere_id'];
-    }
+    } */
 }

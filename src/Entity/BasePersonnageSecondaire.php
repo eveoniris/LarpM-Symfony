@@ -176,8 +176,8 @@ abstract class BasePersonnageSecondaire
         return $this->classe;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'classe_id'];
-    }
+    } */
 }

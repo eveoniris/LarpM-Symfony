@@ -94,8 +94,8 @@ abstract class BaseTag
         return $this->objets;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'nom'];
-    }
+    } */
 }

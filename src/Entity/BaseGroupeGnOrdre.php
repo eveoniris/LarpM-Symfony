@@ -124,8 +124,8 @@ abstract class BaseGroupeGnOrdre
         return $this->groupeGn;
     }
 
-    public function __sleep()
+    /* public function __sleep()
     {
         return ['id', 'ordre', 'groupe_gn_id', 'cible_id'];
-    }
+    } */
 }
