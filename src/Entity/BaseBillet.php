@@ -39,6 +39,9 @@ abstract class BaseBillet
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     protected bool $fedegn = false;
 
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    protected ?int $gn_id = null;
+
     /**
      * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Participant>|\App\Entity\Participant[]
      */
@@ -165,6 +168,7 @@ abstract class BaseBillet
     public function setGn(Gn $gn = null): self
     {
         $this->gn = $gn;
+        $this->gn_id = $gn.getId();
 
         return $this;
     }

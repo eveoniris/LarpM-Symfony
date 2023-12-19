@@ -25,7 +25,24 @@
 				<tr>
 					<th>Nom</th>
 					<th>Description</th>
-					<th>GN</th>
+					<th>
+						{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'gn' %}
+							<a href="{{ path('billet.list', {'order_by': 'gn', 'order_dir': 'DESC'}) }}">
+						{%  else %}
+							<a href="{{ path('billet.list', {'order_by': 'gn', 'order_dir': 'ASC'}) }}">
+						{% endif %}
+							GN	
+						{% if app.request.get('order_by') == 'gn'  %}
+							{% if app.request.get('order_dir') == 'ASC' %}
+								<span class="caret"></span>
+							{%else%}
+									<span class="dropup">
+    									<span class="caret"></span>
+									</span>
+								{% endif %}
+						{% endif %}
+						</a>
+					</th>
 					<th>FédéGN</th>
 					<th>Quantité</th>
 					<th>Action</th>
