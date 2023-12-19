@@ -66,3 +66,10 @@ Pour ne pas avoir à recompiler en cas de changement
 8) Tips
 Si le clear:cache échoue :
    php -d memory_limit=-1 bin/console cache:clear
+
+9) mise à jour
+Commande pour maj aller sur le container (voir point 6) puis faire :
+- docker compose build
+- docker compose pull
+- composer install
+- composer recipes:install
