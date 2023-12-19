@@ -27,7 +27,7 @@ abstract class BaseRepository extends ServiceEntityRepository
     public function findPaginated(int $page, int $limit = 10): Paginator
     {
         $limit = min(10, $limit);
-        $page = min(1, $page);
+        $page = max(1, $page);
         $entity = $this->getEntityName();
         $alias = static::getEntityAlias();
 
