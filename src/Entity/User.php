@@ -32,6 +32,23 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         return $this;
     }
 
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
+    {
+        // New larp password storage; we keep "password" field's name for the older one
+        // until we fully switch the larp
+        return $this->getPwd() ?? '';
+    }
+
+    public function setPassword(string $password): static
+    {
+        // we use a different password column until we switch the new larp
+        $this->pwd = $password;
+
+        return $this;
+    }
 
     /**
      * Recherche si l'utilisateur à un événement futur de prévu.
@@ -448,7 +465,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         // because that's how we distinguish between email and Username when signing in.
         // (It's possible to sign in by providing either one.)
         if ($this->getRealUsername() && str_contains($this->getRealUsername(), '@')) {
-            $errors['Username'] = 'Username cannot contain the "@" symbol.';
+            $errors['username'] = 'Username cannot contain the "@" symbol.';
         }
 
         return $errors;

@@ -40,6 +40,10 @@ abstract class BaseUser
     #[Assert\NotBlank]
     protected string $password = '';
 
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255)]
+    #[Assert\NotBlank]
+    protected ?string $pwd = '';
+
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 180, unique: true)]
     #[Assert\NotBlank]
     protected ?string $username = null;
@@ -47,15 +51,9 @@ abstract class BaseUser
     #[ORM\Column(type: 'json')]
     protected ?array $roles = [];
 
-    /**
-     * @deprecated.
-     */
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
     protected ?string $salt = null;
 
-    /**
-     * @deprecated.
-     */
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255)]
     protected string $rights = '';
 
@@ -309,8 +307,20 @@ abstract class BaseUser
     }
 
     /**
-     * @deprecated
+     * @see PasswordAuthenticatedUserInterface
      */
+    public function getPwd(): ?string
+    {
+        return $this->pwd;
+    }
+
+    public function setPwd(string $password): static
+    {
+        $this->pwd = $password;
+
+        return $this;
+    }
+
     public function setRights($rights): static
     {
         $this->rights = $rights;
