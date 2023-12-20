@@ -3,7 +3,7 @@ version: '3.8'
 services:
 ###> doctrine/doctrine-bundle ###
   database:
-    image: mariadb:10.11
+    image: mariadb:11.2.2
     ports:
       - "30202:3306"
     restart: unless-stopped
@@ -13,9 +13,9 @@ services:
       MYSQL_USER: admin
       MYSQL_PASSWORD: password
     volumes:
-      # - database_data:/var/lib/postgresql/data:rw
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-     - ./docker/db/data:/var/lib/mysql/data:rw
+      - ./docker/db/data:/var/lib/mysql:rw
+      - ./docker/db/initData:/docker-entrypoint-initdb.d # bootstrap .sql files on first strat
 ###< doctrine/doctrine-bundle ###
 
   app:

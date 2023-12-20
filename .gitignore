@@ -2,6 +2,10 @@
 .idea
 /object/
 
+###> local dev
+/docker/db/initData/z_insertLocalPrivateData.sql
+###< local dev
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
