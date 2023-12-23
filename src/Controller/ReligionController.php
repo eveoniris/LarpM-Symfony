@@ -66,16 +66,17 @@ class ReligionController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $orderBy = $request->query->getString('order_by', 'id');
         $orderDir = $request->query->getString('order_dir', 'ASC');
-        dump($this->getUser()->getRoles());
+        $limit = 10;
+        
         if (in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
             $where = '1=1';
         } else {
             $where = 'r.secret = 0';
         }
-        $limit = 10;
+        
 
         $paginator = $religionRepository->findPaginated($page, $limit, $orderBy, $orderDir, $where);
-        dump("ici");
+        
         return $this->render(
             'religion\list.twig',
             [
