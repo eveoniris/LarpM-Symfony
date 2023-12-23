@@ -68,13 +68,15 @@ use LarpManager\Form\TrombineForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\ParticipantController.
  *
  * @author kevin
  */
-class ParticipantController
+class ParticipantController extends AbstractController
 {
     /**
      * Interface Joueur d'un jeu.
@@ -1062,9 +1064,10 @@ class ParticipantController
     /**
      * Détail d'une règle.
      */
-    public function regleDetailAction(Request $request, Application $app, Participant $participant, Rule $rule)
+    #[Route('/{participant}/regle/{rule}', name: 'participant.regle.detail')]
+    public function regleDetailAction(Request $request, Participant $participant, Rule $rule)
     {
-        return $app['twig']->render('public/rule/detail.twig', [
+        return $this->render('public/rule/detail.twig', [
             'regle' => $rule,
             'participant' => $participant,
         ]);

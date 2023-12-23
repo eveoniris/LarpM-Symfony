@@ -6,7 +6,6 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Page d'accueil</a></li>
-		<li><a href="{{ path('gn.detail', {'gn' : participant.gn.id}) }}">{{ participant.gn.label }}</a></li>
 		<li class="active">Règles</li>
 	</ol>
 	
@@ -18,7 +17,7 @@
 		
 		<div class="list-group">
 			{% for regle in regles %}
-				<a class="list-group-item" href="{{ path('participant.regle.detail', {'participant': participant.id, 'rule': regle.id}) }}">
+				<a class="list-group-item" href="{{ regle.url }}">
 					<h5 class="list-group-item-heading">{{ regle.label }}</h5>
 					<p class="list-group-item-text">{{ regle.description|markdown_to_html }}</p>
 				</a>
