@@ -65,7 +65,7 @@ class ReligionController extends AbstractController
         $orderDir = $request->query->getString('order_dir', 'ASC');
         $limit = 10;
         
-        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+        if ($this->isGranted('ROLE_REGLE')) {
             $where = '1=1';
         } else {
             $where = 'r.secret = 0';

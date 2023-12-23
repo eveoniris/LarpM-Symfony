@@ -29,7 +29,7 @@ class BaseCompetence
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, length: 45, nullable: true)]
+    #[Column(name: 'documentUrl', type: \Doctrine\DBAL\Types\Types::TEXT, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]

@@ -38,11 +38,11 @@ abstract class BaseLevel
 
     #[OneToMany(mappedBy: 'level', targetEntity: Competence::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'level_id', nullable: 'false')]
-    protected ?ArrayCollection $competences;
+    protected ?Collection $competences;
 
     public function __construct()
     {
-        $this->competences = new ArrayCollection();
+        $this->competences = new Collection();
     }
 
     /**

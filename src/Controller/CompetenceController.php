@@ -21,32 +21,38 @@
 namespace App\Controller;
 
 use App\Entity\Competence;
-use LarpManager\Form\CompetenceForm;
-use Silex\Application;
+use App\Repository\CompetenceRepository;
+use App\Form\CompetenceForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * LarpManager\Controllers\CompetenceController.
  *
  * @author kevin
  */
-class CompetenceController
+class CompetenceController extends AbstractController
 {
     /**
      * Liste des compétences.
      */
     #[Route('/competence', name: 'competence')]
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(CompetenceRepository $competenceRepository, EntityManagerInterface $entityManager): Response
     {
-        if ($app['security.authorization_checker']->isGranted('ROLE_REGLE')) {
-            $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Competence::class);
-            $competences = $repo->findAllOrderedByLabel();
+        if ($this->isGranted('ROLE_REGLE')) {
+           $competences = $competenceRepository->findAllOrderedByLabel();
         } else {
-            $competences = $app['larp.manager']->getRootCompetences();
+            $competences = $competenceRepository->getRootCompetences($entityManager);
         }
 
-        return $app['twig']->render('competence/list.twig', ['competences' => $competences]);
+        return $this->render(
+            'competence/list.twig', 
+            [
+                'competences' => $competences
+            ]
+        );
     }
 
     /**
