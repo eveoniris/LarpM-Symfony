@@ -35,7 +35,7 @@ abstract class BaseObjet
     protected ?string $description = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
-    protected ?float $nombre = null;
+    protected ?int $nombre = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::FLOAT, nullable: true)]
     protected ?float $cout = null;
