@@ -21,13 +21,16 @@
 namespace App\Controller;
 
 use App\Repository\ReligionRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use LarpManager\Form\Religion\ReligionBlasonForm;
-use LarpManager\Form\Religion\ReligionForm;
-use LarpManager\Form\Religion\ReligionLevelForm;
+use App\Entity\Religion;
+use App\Form\Religion\ReligionBlasonForm;
+use App\Form\Religion\ReligionForm;
+use App\Form\Religion\ReligionLevelForm;
+use App\Repository\TopicRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * LarpManager\Controllers\ReligionController.
@@ -39,11 +42,16 @@ class ReligionController extends AbstractController
     /**
      * Liste des perso ayant cette religion.
      */
-    public function persoAction(Request $request, Application $app)
+    public function persoAction(Request $request): Response
     {
         $religion = $request->get('religion');
 
-        return $app['twig']->render('admin/religion/perso.twig', ['religion' => $religion]);
+        return $this->render(
+            'admin/religion/perso.twig', 
+            [
+                'religion' => $religion
+            ]
+        );
     }
 
     /**
@@ -52,17 +60,6 @@ class ReligionController extends AbstractController
     #[Route('/religion', name: 'religion')]
     public function indexAction(Request $request, ReligionRepository $religionRepository): Response
     {
-        /*
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Religion::class);
-        if ($app['security.authorization_checker']->isGranted('ROLE_REGLE')) {
-            $religions = $repo->findAllOrderedByLabel();
-        } else {
-            $religions = $repo->findAllPublicOrderedByLabel();
-        }
-
-        return $app['twig']->render('religion/list.twig', ['religions' => $religions]);
-        */
-
         $page = $request->query->getInt('page', 1);
         $orderBy = $request->query->getString('order_by', 'id');
         $orderDir = $request->query->getString('order_dir', 'ASC');
@@ -90,44 +87,50 @@ class ReligionController extends AbstractController
     /**
      * affiche la liste des religions.
      */
-    public function mailAction(Request $request, Application $app)
+    public function mailAction(Request $request, ReligionRepository $religionRepository): Response
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Religion::class);
-        $religions = $repo->findAllOrderedByLabel();
+        $religions = $religionRepository->findAllOrderedByLabel();
 
-        return $app['twig']->render('admin/religion/mail.twig', ['religions' => $religions]);
+        return $this->render(
+            'admin/religion/mail.twig', 
+            [
+                'religions' => $religions
+            ]
+        );
     }
 
     /**
      * Detail d'une religion.
      */
-    public function detailAction(Request $request, Application $app)
+    #[Route('/religion/{id}')]
+    public function detailAction(Religion $religion): Response
     {
-        $id = $request->get('index');
-
-        $religion = $app['orm.em']->find('\\'.\App\Entity\Religion::class, $id);
-
-        return $app['twig']->render('admin/religion/detail.twig', ['religion' => $religion]);
+        return $this->render(
+            'admin/religion/detail.twig', 
+            [
+                'religion' => $religion
+            ]
+        );
     }
 
     /**
      * Ajoute une religion.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(EntityManagerInterface $entityManager, Request $request, TopicRepository $topicRepository): Response
     {
-        $religion = new \App\Entity\Religion();
+        $religion = new Religion();
 
-        $form = $app['form.factory']->createBuilder(new ReligionForm(), $religion)
+        $form = $this->createForm(ReligionForm::class, $religion)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+        ;
 
         $form->handleRequest($request);
 
         // si l'utilisateur soumet une nouvelle religion
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $religion = $form->getData();
-
+            
             /**
              * Création du topic associés à cette religion
              * Ce topic doit être placé dans le topic "culte".
@@ -137,34 +140,39 @@ class ReligionController extends AbstractController
             $topic = new \App\Entity\Topic();
             $topic->setTitle($religion->getLabel());
             $topic->setDescription($religion->getDescription());
-            $topic->setUser($app['User']);
-            $topic->setTopic($app['larp.manager']->findTopic('TOPIC_CULTE'));
+            $topic->setUser($this->getUser());
+            $topic->setTopic($topicRepository->findOneByKey('TOPIC_CULTE'));
             $topic->setRight('CULTE');
 
-            $app['orm.em']->persist($topic);
-            $app['orm.em']->flush();
+            $entityManager->persist($topic);
+            $entityManager->flush();
 
             $religion->setTopic($topic);
-            $app['orm.em']->persist($religion);
-            $app['orm.em']->flush();
+            $entityManager->persist($religion);
+            $entityManager->flush();
 
             $topic->setObjectId($religion->getId());
-            $app['orm.em']->flush();
+            $entityManager->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La religion a été ajoutée.');
+            $this->addFlash('success', 'La religion a été ajoutée.');
 
             // l'utilisateur est redirigé soit vers la liste des religions, soit vers de nouveau
             // vers le formulaire d'ajout d'une religion
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('religion'), 303);
+                //return $app->redirect($app['url_generator']->generate('religion'), 303);
+                return $this->redirectToRoute('religion', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('religion.add'), 303);
+                //return $app->redirect($app['url_generator']->generate('religion.add'), 303);
+                return $this->redirectToRoute('religion.add', [], 303);
             }
         }
 
-        return $app['twig']->render('admin/religion/add.twig', [
-            'form' => $form->createView(),
-        ]);
+        return $this->render(
+            'admin/religion/add.twig', 
+            [
+                'form' => $form->createView(),
+            ]
+        );
     }
 
     /**
@@ -173,16 +181,15 @@ class ReligionController extends AbstractController
      * Si l'utilisateur clique sur "supprimer", la religion est supprimée et l'utilisateur est
      * redirigé vers la liste des religions.
      */
-    public function updateAction(Request $request, Application $app)
+    #[Route('/religion/edit/{id}', name: 'religion_edit')]
+    public function updateAction(EntityManagerInterface $entityManager, Request $request, int $id)
     {
-        $id = $request->get('index');
+        $religion = $entityManager->getRepository(Religion::class)->find($id);
 
-        $religion = $app['orm.em']->find('\\'.\App\Entity\Religion::class, $id);
-
-        $form = $app['form.factory']->createBuilder(new ReligionForm(), $religion)
+        $form = $this->createForm(ReligionForm::class, $religion)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+        ;
 
         $originalSpheres = new ArrayCollection();
         foreach ($religion->getSpheres() as $sphere) {
@@ -204,23 +211,28 @@ class ReligionController extends AbstractController
                         $sphere->removeReligion($religion);
                     }
                 }
-                $app['orm.em']->persist($religion);
-                $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La religion a été mise à jour.');
+                $entityManager->persist($religion);
+                $entityManager->flush();
+                $this->addFlash('success', 'La religion a été mise à jour.');
 
-                return $app->redirect($app['url_generator']->generate('religion.detail', ['index' => $id]), 303);
+                //return $app->redirect($app['url_generator']->generate('religion.detail', ['index' => $id]), 303);
+                return $this->redirectToRoute('religion.detail', [], 303);
             } elseif ($form->get('delete')->isClicked()) {
                 /*$app['orm.em']->remove($religion);
-                        $app['orm.em']->flush();
-                        $app['session']->getFlashBag()->add('success', 'La religion a été supprimée.');*/
-                return $app->redirect($app['url_generator']->generate('religion'), 303);
+                $app['orm.em']->flush();
+                $this->addFlash('success', 'La religion a été supprimée.');*/
+                //return $app->redirect($app['url_generator']->generate('religion'), 303);
+                return $this->redirectToRoute('religion', [], 303);
             }
         }
 
-        return $app['twig']->render('admin/religion/update.twig', [
-            'religion' => $religion,
-            'form' => $form->createView(),
-        ]);
+        return $this->render(
+            'admin/religion/update.twig', 
+            [
+                'religion' => $religion,
+                'form' => $form->createView(),
+            ]
+        );
     }
 
     /**
@@ -244,7 +256,7 @@ class ReligionController extends AbstractController
             $extension = $files['blason']->guessExtension();
 
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
+                $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
 
                 return $app->redirect($app['url_generator']->generate('religion.detail', ['index' => $religion->getId()]), 303);
             }
@@ -259,7 +271,7 @@ class ReligionController extends AbstractController
             $app['orm.em']->persist($religion);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le blason a été enregistré');
+            $this->addFlash('success', 'Le blason a été enregistré');
 
             return $app->redirect($app['url_generator']->generate('religion.detail', ['index' => $religion->getId()]), 303);
         }
@@ -314,7 +326,7 @@ class ReligionController extends AbstractController
             $app['orm.em']->persist($religionLevel);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le niveau de religion a été ajoutée.');
+            $this->addFlash('success', 'Le niveau de religion a été ajoutée.');
 
             // l'utilisateur est redirigé soit vers la liste des niveaux de religions, soit vers de nouveau
             // vers le formulaire d'ajout d'un niveau de religion
@@ -355,13 +367,13 @@ class ReligionController extends AbstractController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($religionLevel);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le niveau de religion a été mise à jour.');
+                $this->addFlash('success', 'Le niveau de religion a été mise à jour.');
 
                 return $app->redirect($app['url_generator']->generate('religion.level.detail', ['index' => $id]), 303);
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($religionLevel);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le niveau de religion a été supprimée.');
+                $this->addFlash('success', 'Le niveau de religion a été supprimée.');
 
                 return $app->redirect($app['url_generator']->generate('religion.level'), 303);
             }

@@ -46,12 +46,12 @@ class RuleController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $limit = 10;
 
-        $paginator = $ruleRepository->findPaginated($page, $limit);
+        $regles = $ruleRepository->findPaginated($page, $limit);
 
         return $this->render(
             'rule\list.twig',
             [
-                'paginator' => $paginator,
+                'regles' => $regles,
                 'limit' => $limit,
                 'page' => $page,
             ]
