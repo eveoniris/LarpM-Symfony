@@ -52,7 +52,7 @@ class BaseGroupe
     protected ?bool $pj = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
-    protected ?bool $materiel = null;
+    protected ?string $materiel = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     protected bool $lock;

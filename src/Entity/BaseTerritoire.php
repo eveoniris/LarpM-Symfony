@@ -94,7 +94,7 @@ class BaseTerritoire
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
     protected int $resistance = 0;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, length: 45, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $blason = null;
 
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
