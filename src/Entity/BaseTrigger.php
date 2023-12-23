@@ -33,9 +33,9 @@ abstract class BaseTrigger
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     protected bool $done = false;
 
-    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'triggers')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Personnage $personnage;
+    //#[ManyToOne(targetEntity: Personnage::class, inversedBy: 'triggers')]
+    //#[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    //protected Personnage $personnage;
 
     /**
      * Set the value of id.
@@ -94,20 +94,20 @@ abstract class BaseTrigger
     /**
      * Set Personnage entity (many to one).
      */
-    public function setPersonnage(Personnage $personnage = null): static
+    /*public function setPersonnage(Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
         return $this;
-    }
+    }*/
 
     /**
      * Get Personnage entity (many to one).
      */
-    public function getPersonnage(): Personnage
+    /*public function getPersonnage(): Personnage
     {
         return $this->personnage;
-    }
+    }*/
 
     /* public function __sleep()
     {
