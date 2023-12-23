@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class GroupeAllieRepository extends EntityRepository
+class GroupeAllieRepository extends BaseRepository
 {
     /**
      * Fourni toutes les alliances en cours.

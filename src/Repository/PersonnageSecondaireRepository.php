@@ -22,7 +22,7 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-class PersonnageSecondaireRepository extends EntityRepository
+class PersonnageSecondaireRepository extends BaseRepository
 {
     /**
      * Trouve tous les personnages secondaires.

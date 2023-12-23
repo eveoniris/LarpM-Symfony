@@ -28,7 +28,7 @@ use Doctrine\ORM\QueryBuilder;
  *
  * @author Gectou4
  */
-class PriereRepository extends EntityRepository
+class PriereRepository extends BaseRepository
 {
     /**
      * Trouve le nombre de prières correspondant aux critères de recherche.

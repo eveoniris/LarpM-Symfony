@@ -10,9 +10,11 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
-use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OrderBy;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'classe')]
@@ -40,7 +42,7 @@ abstract class BaseClasse
     protected ?string $image_f = null;
 
     #[Column(name: 'creation', type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
-    protected bool $creation = false;
+    protected ?bool $creation = false;
 
     /**
      * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\GroupeClasse>|\App\Entity\GroupeClasse[]
@@ -70,35 +72,22 @@ abstract class BaseClasse
     #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
     protected Collection $cultureHasClasses;
 
-    #[ManyToOne(targetEntity: CompetenceFamily::class, inversedBy: 'classeFavorites')]
-    #[JoinTable(name: 'classe_competence_family_favorite', joinColumns: ['name' => 'class_id', 'referencedColumnName' => 'id'], inverseJoinColumns: ['JoinColumn' => ['name' => 'competence_family_id', 'referencedColumnName' => 'id']])]
-    #[OrderBy(['label' => \Doctrine\Common\Collections\Criteria::ASC])]
+    #[JoinTable(name: 'classe_competence_family_favorite')]
+    #[JoinColumn(name: 'classe_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: CompetenceFamily::class)]
     protected Collection $competenceFamilyFavorites;
 
-    /*
-    #[ManyToMany(targetEntity: CompetenceFamily::class, inversedBy: 'classeNormales')]
     #[JoinTable(name: 'classe_competence_family_normale')]
-    #[ORM\JoinColumn(name: 'class_id', referencedColumnName: 'id')]
-    #[ORM\InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
-    #[OrderBy(['label' => \Doctrine\Common\Collections\Criteria::ASC])]
-    protected Collection $competenceFamilyNormales;
-    */
-    #[ManyToOne(targetEntity: CompetenceFamily::class, inversedBy: 'classeFavorites')]
-    #[JoinTable(name: 'classe_competence_family_normale', joinColumns: ['name' => 'class_id', 'referencedColumnName' => 'id'], inverseJoinColumns: ['JoinColumn' => ['name' => 'competence_family_id', 'referencedColumnName' => 'id']])]
-    #[OrderBy(['label' => \Doctrine\Common\Collections\Criteria::ASC])]
+    #[JoinColumn(name: 'classe_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: CompetenceFamily::class)]
     protected Collection $competenceFamilyNormales;
 
-    /*
-    #[ManyToMany(targetEntity: CompetenceFamily::class, inversedBy: 'classeCreations')]
     #[JoinTable(name: 'classe_competence_family_creation')]
-    #[ORM\JoinColumn(name: 'class_id', referencedColumnName: 'id')]
-    #[ORM\InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
-    #[OrderBy(['label' => \Doctrine\Common\Collections\Criteria::ASC])]
-    protected Collection $competenceFamilyCreations;
-    */
-    #[ManyToOne(targetEntity: CompetenceFamily::class, inversedBy: 'classeFavorites')]
-    #[JoinTable(name: 'classe_competence_family_creation', joinColumns: ['name' => 'class_id', 'referencedColumnName' => 'id'], inverseJoinColumns: ['JoinColumn' => ['name' => 'competence_family_id', 'referencedColumnName' => 'id']])]
-    #[OrderBy(['label' => \Doctrine\Common\Collections\Criteria::ASC])]
+    #[JoinColumn(name: 'classe_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: CompetenceFamily::class)]
     protected Collection $competenceFamilyCreations;
 
     public function __construct()

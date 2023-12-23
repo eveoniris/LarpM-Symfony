@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class RessourceRepository extends EntityRepository
+class RessourceRepository extends BaseRepository
 {
     /**
      * Fourni la liste des ressources communes.

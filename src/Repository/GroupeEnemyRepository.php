@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class GroupeEnemyRepository extends EntityRepository
+class GroupeEnemyRepository extends BaseRepository
 {
     /**
      * Fourni touttes les guerres en cours.

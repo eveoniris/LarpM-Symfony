@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class SecondaryGroupRepository extends EntityRepository
+class SecondaryGroupRepository extends BaseRepository
 {
     /**
      * Trouve tous les groupes secondaire publics.

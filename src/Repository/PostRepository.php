@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class PostRepository extends EntityRepository
+class PostRepository extends BaseRepository
 {
     /**
      * trouve tous les derniers posts classé par date de publication (en prennant en compte les réponses).

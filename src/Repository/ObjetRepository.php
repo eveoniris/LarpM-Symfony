@@ -5,7 +5,7 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
-class ObjetRepository extends EntityRepository
+class ObjetRepository extends BaseRepository
 {
     final public const CRIT_WITHOUT = -1;
 

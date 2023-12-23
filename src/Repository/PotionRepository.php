@@ -29,7 +29,7 @@ use Doctrine\ORM\QueryBuilder;
  *
  * @author kevin
  */
-class PotionRepository extends EntityRepository
+class PotionRepository extends BaseRepository
 {
     /**
      * Trouve toute les potions en fonction de leur niveau.

@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class BackgroundRepository extends EntityRepository
+class BackgroundRepository extends BaseRepository
 {
     /**
      * Trouve les background correspondant aux critères de recherche.

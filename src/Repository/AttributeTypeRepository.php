@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author jsy  
  */
-class AttributeTypeRepository extends EntityRepository
+class AttributeTypeRepository extends BaseRepository
 {
     /**
      * Find all classes ordered by label

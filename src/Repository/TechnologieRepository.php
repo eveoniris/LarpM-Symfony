@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author Kevin F.
  */
-class TechnologieRepository extends EntityRepository
+class TechnologieRepository extends BaseRepository
 {
     /**
      * Find all public technologies ordered by label.

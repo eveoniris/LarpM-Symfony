@@ -28,7 +28,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class JoueurRepository extends EntityRepository
+class JoueurRepository extends BaseRepository
 {
     /**
      * Recherche à partir du prénom.

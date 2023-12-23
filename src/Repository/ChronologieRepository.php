@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class ChronologieRepository extends EntityRepository
+class ChronologieRepository extends BaseRepository
 {
 
 }

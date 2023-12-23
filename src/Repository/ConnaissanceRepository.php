@@ -10,7 +10,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author Kevin F.
  */
-class ConnaissanceRepository extends EntityRepository
+class ConnaissanceRepository extends BaseRepository
 {
     /**
      * @return ArrayCollection $Connaissance

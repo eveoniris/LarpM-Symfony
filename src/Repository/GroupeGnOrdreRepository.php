@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author Kevin F.
  */
-class GroupeGnOrdreRepository extends EntityRepository
+class GroupeGnOrdreRepository extends BaseRepository
 {
     /**
      * Trouve un groupe en fonction de son code.

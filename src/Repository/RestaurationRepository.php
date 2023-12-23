@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class RestaurationRepository extends EntityRepository
+class RestaurationRepository extends BaseRepository
 {
     /**
      * Fourni la liste des restrictions alimentaires.

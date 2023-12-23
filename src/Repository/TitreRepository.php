@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class TitreRepository extends EntityRepository
+class TitreRepository extends BaseRepository
 {
     /**
      * Trouve tous les titres classé par renommé.

@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class AppelationRepository extends EntityRepository
+class AppelationRepository extends BaseRepository
 {
     public $app;
 

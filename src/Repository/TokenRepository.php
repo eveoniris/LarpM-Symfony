@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  * 
  * @author kevin
  */
-class TokenRepository extends EntityRepository
+class TokenRepository extends BaseRepository
 {
 	/**
 	 * Fourni tous les tokens classé par ordre alphabétique

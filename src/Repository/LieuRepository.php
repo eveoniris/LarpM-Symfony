@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class LieuRepository extends EntityRepository
+class LieuRepository extends BaseRepository
 {
     /**
      * Trouve tous les lieux classé par ordre alphabétique.

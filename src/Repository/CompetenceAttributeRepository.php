@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author jsy  
  */
-class CompetenceAttributeRepository extends EntityRepository
+class CompetenceAttributeRepository extends BaseRepository
 {
    
 }

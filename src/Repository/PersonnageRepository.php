@@ -29,7 +29,7 @@ use Doctrine\ORM\QueryBuilder;
  *
  * @author kevin
  */
-class PersonnageRepository extends EntityRepository
+class PersonnageRepository extends BaseRepository
 {
     /**
      * Trouve le nombre de personnages correspondant aux critères de recherche.
