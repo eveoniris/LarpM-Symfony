@@ -1,30 +1,42 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Religions{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage')  }}">Accueil</a></li>
 		<li class="active">Les religions</li>
 	</ol>
-	
-	<div class="list-group">
-		{% for religion in religions %}
-			<div class="list-group-item">
-				<h5 class="list-group-item-heading header">{{ religion.label }}</h5>
-				<div class="rows clearfix">
-					<div class="col-md-2">
-						{% if religion.blason %}
-		      				<img width="160" src="{{ path('blason.get', {'blason' : religion.blason }) }}" />
+
+	<div class="well well-sm">
+
+		{% include '_partials/pagination.html.twig' %}
+
+		<table class="table table-condensed table-striped table-bordered">
+			<thead>
+				<tr>
+					<th>Nom</th>
+					<th>Blason</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for religion in paginator %}
+				<tr>
+					<td>{{ religion.label }}</td>
+					<td>{% if religion.blason %}
+		      				<img width="160" src="{{religion.blason}}" />
 		      			{% endif %}
-				    </div>
-				    <div class="col-md-10">
-						<p class="list-group-item-text">{{ religion.description|markdown_to_html }}</p>
-					</div>
-				</div>
-			</div>
-		{% endfor %}
+					</td>
+					<td>{{ religion.description|markdown_to_html }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+	{% include '_partials/pagination.html.twig' %}
+
 	</div>
 	
-{% endblock content %}
+{% endblock %}

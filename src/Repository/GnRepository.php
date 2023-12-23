@@ -59,7 +59,7 @@ class GnRepository extends BaseRepository
             ->getResult();
     }
 
-    public function findPaginated(int $page, int $limit = 10, string $orderby = 'id', string $orderdir = 'ASC'): Paginator
+    public function findPaginated(int $page, int $limit = 10, string $orderby = 'id', string $orderdir = 'ASC', $where = '1=1'): Paginator
     {
         $limit = abs($limit);
 

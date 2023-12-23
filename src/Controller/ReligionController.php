@@ -20,12 +20,13 @@
 
 namespace App\Controller;
 
+use App\Repository\ReligionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use LarpManager\Form\Religion\ReligionBlasonForm;
 use LarpManager\Form\Religion\ReligionForm;
 use LarpManager\Form\Religion\ReligionLevelForm;
-use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -33,7 +34,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author kevin
  */
-class ReligionController
+class ReligionController extends AbstractController
 {
     /**
      * Liste des perso ayant cette religion.
@@ -49,8 +50,9 @@ class ReligionController
      * affiche la liste des religions.
      */
     #[Route('/religion', name: 'religion')]
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request, ReligionRepository $religionRepository): Response
     {
+        /*
         $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Religion::class);
         if ($app['security.authorization_checker']->isGranted('ROLE_REGLE')) {
             $religions = $repo->findAllOrderedByLabel();
@@ -59,6 +61,29 @@ class ReligionController
         }
 
         return $app['twig']->render('religion/list.twig', ['religions' => $religions]);
+        */
+
+        $page = $request->query->getInt('page', 1);
+        $orderBy = $request->query->getString('order_by', 'id');
+        $orderDir = $request->query->getString('order_dir', 'ASC');
+        dump($this->getUser()->getRoles());
+        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+            $where = '1=1';
+        } else {
+            $where = 'r.secret = 0';
+        }
+        $limit = 10;
+
+        $paginator = $religionRepository->findPaginated($page, $limit, $orderBy, $orderDir, $where);
+        dump("ici");
+        return $this->render(
+            'religion\list.twig',
+            [
+                'paginator' => $paginator,
+                'limit' => $limit,
+                'page' => $page
+            ]
+        );
     }
 
     /**
