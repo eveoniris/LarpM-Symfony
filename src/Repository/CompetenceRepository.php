@@ -23,13 +23,15 @@ namespace App\Repository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\CompetenceFamily;
 
 /**
  * LarpManager\Repository\CompetenceRepository.
  *
  * @author kevin
  */
-class CompetenceRepository extends EntityRepository
+class CompetenceRepository extends BaseRepository
 {
     /**
      * Find all competences ordered by label.
@@ -57,4 +59,32 @@ class CompetenceRepository extends EntityRepository
             ->addOrderBy('cf.label')
             ->addOrderBy('l.index');
     }
+
+    /**
+	 * Fourni la liste des compétences de premier niveau
+	 */
+	public function getRootCompetences(EntityManagerInterface $entityManager): ArrayCollection
+	{
+		$rootCompetences = new ArrayCollection();
+	
+		$repo = $entityManager->getRepository(CompetenceFamily::class);
+		$competenceFamilies = $repo->findAll();
+	
+		foreach ( $competenceFamilies as $competenceFamily)
+		{
+			$competence = $competenceFamily->getFirstCompetence();
+			if ( $competence )
+			{
+				$rootCompetences->add($competence);
+			}
+		}
+		
+		// trie des competences disponibles
+		$iterator = $rootCompetences->getIterator();
+		$iterator->uasort(function ($a, $b) {
+			return ($a->getLabel() < $b->getLabel()) ? -1 : 1;
+		});
+		
+		return  new ArrayCollection(iterator_to_array($iterator));
+	}
 }
