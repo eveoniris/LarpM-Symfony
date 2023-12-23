@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -70,16 +69,16 @@ abstract class BaseReligion
     protected Collection $spheres;
 
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'religions')]
-    protected ArrayCollection $territoireSecondaires;
+    protected Collection $territoireSecondaires;
 
     public function __construct()
     {
-        $this->personnagesReligions = new ArrayCollection();
-        $this->religionDescriptions = new ArrayCollection();
-        $this->territoires = new ArrayCollection();
-        $this->personnages = new ArrayCollection();
-        $this->spheres = new ArrayCollection();
-        $this->territoireSecondaires = new ArrayCollection();
+        $this->personnagesReligions = new Collection();
+        $this->religionDescriptions = new Collection();
+        $this->territoires = new Collection();
+        $this->personnages = new Collection();
+        $this->spheres = new Collection();
+        $this->territoireSecondaires = new Collection();
     }
 
     /**
@@ -405,7 +404,7 @@ abstract class BaseReligion
     /**
      * Fourni la liste des territoires ou la religion est une religion secondaire.
      */
-    public function getTerritoireSecondaires(): ArrayCollection
+    public function getTerritoireSecondaires(): Collection
     {
         return $this->territoireSecondaires;
     }

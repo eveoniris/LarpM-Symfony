@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class ReligionRepository extends EntityRepository
+class ReligionRepository extends BaseRepository
 {
     /**
      * Find all religions ordered by label.

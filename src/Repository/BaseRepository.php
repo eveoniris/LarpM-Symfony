@@ -24,17 +24,18 @@ abstract class BaseRepository extends ServiceEntityRepository
         return strtolower(str_replace(['App\Repository\\', 'Repository'], ['', ''], static::class));
     }
 
-    public function findPaginated(int $page, int $limit = 10, string $orderby = 'id', string $orderdir = 'ASC'): Paginator
+    public function findPaginated(int $page, int $limit = 10, string $orderby = 'id', string $orderdir = 'ASC', string $where = '1=1'): Paginator
     {
         $limit = min(10, $limit);
         $page = max(1, $page);
         $entity = $this->getEntityName();
         $alias = static::getEntityAlias();
-
+        $where = '1=1';
 
         $query = $this->getEntityManager()
             ->getRepository($entity)
             ->createQueryBuilder($alias)
+            ->where($where)
             ->orderBy($alias.'.'.$orderby.' '.$orderdir.','.$alias.'.id', 'ASC')
             //->orderBy($alias.'.id', 'ASC')
             ->setMaxResults($limit)
