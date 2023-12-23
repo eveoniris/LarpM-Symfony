@@ -6,9 +6,9 @@ use App\Entity\Gn;
 use App\Entity\Loi;
 use App\Entity\Personnage;
 use App\Repository\GnRepository;
+use App\Repository\QuestionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use DoctrineProxy\__CG__\App\Entity\Participant;
 use LarpManager\Form\Gn\GnDeleteForm;
 use LarpManager\Form\Gn\GnForm;
 use LarpManager\Form\ParticipantFindForm;
@@ -26,6 +26,7 @@ class GnController extends AbstractController
         $limit = 10;
 
         $paginator = $gnRepository->findPaginated($page, $limit);
+        dump($paginator);
 
         return $this->render(
             'gn/list.twig',
@@ -38,21 +39,21 @@ class GnController extends AbstractController
     }
 
     #[Route('/gn/detail', name: 'gn.detail')]
-    public function detailAction(Request $request, Application $app, Gn $gn)
+    public function detailAction(Gn $gn, QuestionRepository $questionRepository): Response
     {
-        $participant = $app['User']->getParticipant($gn);
+        $participant = $this->getUser()->getParticipant($gn);
 
         if (null != $participant && $participant->getBesoinValidationCi()) {
             // L'utilisateur n'a pas validé les CG.
-            return $app->redirect($app['url_generator']->generate('User.gn.validationci', [
+            /*return $app->redirect($app['url_generator']->generate('User.gn.validationci', [
                 'gn' => $gn->getId(),
-            ]), 303);
+            ]), 303);*/
+            return $this->redirectToRoute('User.gn.validationci', ['gn' => $gn->getId()], 303);
         }
 
-        $repo = $app['orm.em']->getRepository(\App\Entity\Question::class);
-        $questions = $repo->findByParticipant($participant);
+        $questions = $questionRepository->findByParticipant($participant);
 
-        return $app['twig']->render('gn/detail.twig', [
+        return $this->render('gn/detail.twig', [
             'gn' => $gn,
             'participant' => $participant,
             'questions' => $questions,

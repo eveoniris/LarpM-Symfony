@@ -435,7 +435,7 @@ abstract class BaseTopic
     /**
      * Set Topic entity (many to one).
      */
-    public function setTopic(Topic $topic = null): Collection
+    public function setTopic(Topic $topic = null): static
     {
         $this->topic = $topic;
 
