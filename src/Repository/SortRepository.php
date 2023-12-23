@@ -29,7 +29,7 @@ use Doctrine\ORM\QueryBuilder;
  *
  * @author kevin
  */
-class SortRepository extends EntityRepository
+class SortRepository extends BaseRepository
 {
     /**
      * Find all Apprenti sorts ordered by label.

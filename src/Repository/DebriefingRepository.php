@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class DebriefingRepository extends EntityRepository
+class DebriefingRepository extends BaseRepository
 {
     /**
      * Trouve les debriefing correspondant aux critères de recherche.

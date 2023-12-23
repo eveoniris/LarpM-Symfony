@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class GroupeLangueRepository extends EntityRepository
+class GroupeLangueRepository extends BaseRepository
 {
     /**
      * Find all groupelangues ordered by label.

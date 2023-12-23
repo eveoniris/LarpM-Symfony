@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class ReligionLevelRepository extends EntityRepository
+class ReligionLevelRepository extends BaseRepository
 {
     /**
      * trouve tous les niveaux de religion classé par index.

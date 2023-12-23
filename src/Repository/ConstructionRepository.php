@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author Kevin F.
  */
-class ConstructionRepository extends EntityRepository
+class ConstructionRepository extends BaseRepository
 {
     /**
      * Find all constructions ordered by label.

@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Entity\Groupe;
 use Doctrine\ORM\EntityRepository;
 
-class GroupeRepository extends EntityRepository
+class GroupeRepository extends BaseRepository
 {
     /**
      * Trouve tous les groupes classé par ordre alphabétique.

@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class LangueRepository extends EntityRepository
+class LangueRepository extends BaseRepository
 {
     /**
      * Find all visible langues ordered by label.

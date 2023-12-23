@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class UserRepositoryOld extends EntityRepository
+class UserRepositoryOld extends BaseRepository
 {
     /**
      * Fourni la liste des derniers utilisateurs connectés.

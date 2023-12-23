@@ -28,7 +28,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class IntrigueRepository extends EntityRepository
+class IntrigueRepository extends BaseRepository
 {
     /**
      * Recherche d'une liste d'intrigue.

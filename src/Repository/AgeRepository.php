@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class AgeRepository extends EntityRepository
+class AgeRepository extends BaseRepository
 {
     /**
      * Trouve tous les ages classé par index.

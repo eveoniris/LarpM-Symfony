@@ -28,7 +28,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class RumeurRepository extends EntityRepository
+class RumeurRepository extends BaseRepository
 {
     /**
      * Recherche d'une liste d'rumeur.

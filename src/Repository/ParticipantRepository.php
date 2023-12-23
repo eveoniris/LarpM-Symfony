@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class ParticipantRepository extends EntityRepository
+class ParticipantRepository extends BaseRepository
 {
     /**
      * Trouve le nombre d'utilisateurs correspondant aux critères de recherche.

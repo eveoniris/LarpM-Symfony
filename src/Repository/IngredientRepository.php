@@ -9,7 +9,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author Kevin F.
  */
-class IngredientRepository extends EntityRepository
+class IngredientRepository extends BaseRepository
 {
     /**
      * Find all ingredients ordered by label.

@@ -28,7 +28,7 @@ use Doctrine\ORM\QueryBuilder;
  *
  * @author kevin
  */
-class DocumentRepository extends EntityRepository
+class DocumentRepository extends BaseRepository
 {
     /**
      * Find all classes ordered by label.

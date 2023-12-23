@@ -21,34 +21,46 @@
 namespace App\Controller;
 
 use App\Entity\Classe;
-use LarpManager\Form\Classe\ClasseForm;
-use Silex\Application;
+use App\Repository\ClasseRepository;
+use App\Form\Classe\ClasseForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * LarpManager\Controllers\ClasseController.
  *
  * @author kevin
  */
-class ClasseController
+class ClasseController extends AbstractController
 {
     /**
      * Présentation des classes.
      */
     #[Route('/classe', name: 'classe')]
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request, ClasseRepository $classeRepository): Response
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Classe::class);
-        $classes = $repo->findAllOrderedByLabel();
+        $page = $request->query->getInt('page', 1);
+        $limit = 10;
 
-        return $app['twig']->render('classe/list.twig', ['classes' => $classes]);
+        $classes = $classeRepository->findPaginated($page, $limit);
+
+        return $this->render(
+            'classe\list.twig',
+            [
+                'classes' => $classes,
+                'limit' => $limit,
+                'page' => $page,
+            ]
+        );
     }
 
     /**
      * Ajout d'une classe.
      */
-    public function addAction(Request $request, Application $app)
+    #[Route('/classe/add', name: 'classe.add')]
+    public function addAction(Request $request, ClasseRepository $classeRepository): Response
     {
         $classe = new \App\Entity\Classe();
 
@@ -62,10 +74,10 @@ class ClasseController
         if ($form->isValid()) {
             $classe = $form->getData();
 
-            $app['orm.em']->persist($classe);
-            $app['orm.em']->flush();
+            $entityManager->persist($classe);
+            $entityManager->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La classe a été ajoutée.');
+            $this->addFlash('success', 'La classe a été ajoutée.');
 
             if ($form->get('save')->isClicked()) {
                 return $app->redirect($app['url_generator']->generate('classe'), 303);
@@ -82,12 +94,15 @@ class ClasseController
     /**
      * Mise à jour d'une classe.
      */
-    public function updateAction(Request $request, Application $app, Classe $classe)
+    #[Route('/classe/{id}/update', name: 'classe.update')]
+    public function updateAction(EntityManagerInterface $entityManager, Request $request, int $id)
     {
-        $form = $app['form.factory']->createBuilder(new ClasseForm(), $classe)
+        $classe = $entityManager->getRepository(Classe::class)->find($id);
+        
+        $form = $this->createForm(ClasseForm::class, $classe)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+        ;
 
         $form->handleRequest($request);
 
@@ -95,19 +110,20 @@ class ClasseController
             $classe = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                $app['orm.em']->persist($classe);
-                $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La classe a été mise à jour.');
+                $entityManager->persist($classe);
+                $entityManager->flush();
+                $this->addFlash('success', 'La classe a été mise à jour.');
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($classe);
-                $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La classe a été supprimée.');
+                $entityManager->remove($classe);
+                $entityManager->flush();
+                $this->addFlash('success', 'La classe a été supprimée.');
             }
 
-            return $app->redirect($app['url_generator']->generate('classe'));
+            //return $app->redirect($app['url_generator']->generate('classe'));
+            return $this->redirectToRoute('TODO', [], 303);
         }
 
-        return $app['twig']->render('classe/update.twig', [
+        return $this->render('classe/update.twig', [
             'classe' => $classe,
             'form' => $form->createView(),
         ]);
@@ -116,8 +132,22 @@ class ClasseController
     /**
      * Détail d'une classe.
      */
-    public function detailAction(Request $request, Application $app, Classe $classe)
+    #[Route('/classe/{id}', name: 'classe.detail')]
+    public function detailAction(EntityManagerInterface $entityManager, int $id)
     {
-        return $app['twig']->render('admin/classe/detail.twig', ['classe' => $classe]);
+        $classe = $entityManager->getRepository(Classe::class)->find($id);
+        
+        return $this->render('admin/classe/detail.twig', ['classe' => $classe]);
+    }
+
+    /**
+     * Persos d'une classe.
+     */
+    #[Route('/classe/{id}/perso', name: 'classe.perso')]
+    public function persoAction(EntityManagerInterface $entityManager, int $id)
+    {
+        $classe = $entityManager->getRepository(Classe::class)->find($id);
+
+        return $this->render('admin/classe/perso.twig', ['classe' => $classe]);
     }
 }

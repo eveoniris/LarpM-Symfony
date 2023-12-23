@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-class LigneesRepository extends EntityRepository
+class LigneesRepository extends BaseRepository
 {
     /**
      * Trouve toutes les lignées.

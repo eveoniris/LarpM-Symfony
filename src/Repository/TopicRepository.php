@@ -30,7 +30,7 @@ use Doctrine\ORM\Query\Parameter;
  *
  * @author kevin
  */
-class TopicRepository extends EntityRepository
+class TopicRepository extends BaseRepository
 {
     /**
      * Trouve tous les topics de premier niveau (qui ne sont pas des sous-forums).

@@ -28,7 +28,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class QuestionRepository extends EntityRepository
+class QuestionRepository extends BaseRepository
 {
     /**
      * Trouve toutes les questions auquel le participant n'a pas répondu.

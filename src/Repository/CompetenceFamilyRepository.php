@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class CompetenceFamilyRepository extends EntityRepository
+class CompetenceFamilyRepository extends BaseRepository
 {
     /**
      * Find all classes ordered by label.

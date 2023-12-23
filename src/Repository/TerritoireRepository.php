@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class TerritoireRepository extends EntityRepository
+class TerritoireRepository extends BaseRepository
 {
     /**
      * Find all territoire ordered by nom.

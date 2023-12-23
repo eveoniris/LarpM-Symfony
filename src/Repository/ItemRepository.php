@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author kevin
  */
-class ItemRepository extends EntityRepository
+class ItemRepository extends BaseRepository
 {
     /**
      * Recherche le prochain GN (le plus proche de la date du jour).
