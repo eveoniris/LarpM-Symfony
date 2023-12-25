@@ -3,6 +3,7 @@
 /object/
 
 ###> local dev
+docker/db/data
 /docker/db/initData/z_insertLocalPrivateData.sql
 ###< local dev
 
@@ -49,4 +50,3 @@ yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 package-lock.json
 package.json
-docker/db/

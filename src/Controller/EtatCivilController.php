@@ -23,6 +23,7 @@ namespace App\Controller;
 use App\Entity\EtatCivil;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\EtatCivilController.
@@ -34,9 +35,10 @@ class EtatCivilController
     /**
      * Affiche l'état civil de l'utilisateur.
      */
-    public function detailAction(Application $app, Request $request, EtatCivil $etatCivil)
+    #[Route('/etat-civil/detail', name: 'etatCivil.detail')]
+    public function detailAction(Request $request, EtatCivil $etatCivil)
     {
-        return $app['twig']->render('admin/etatCivil/detail.twig', [
+        return $this->render('admin/etatCivil/detail.twig', [
             'etatCivil' => $etatCivil,
         ]);
     }
