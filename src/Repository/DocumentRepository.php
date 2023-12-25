@@ -58,7 +58,7 @@ class DocumentRepository extends BaseRepository
     /**
      * Trouve les documents correspondant aux critères de recherche.
      */
-    public function findList(?string $type, $value, array $order = ['by' => 'titre', 'dir' => 'ASC'], int $limit = 50, int $offset = 0)
+    public function findList($type, $value, array $order = ['by' => 'titre', 'dir' => 'ASC'], int $limit = 50, int $offset = 0)
     {
         $qb = $this->getQueryBuilder($type, $value);
         $qb->setFirstResult($offset);

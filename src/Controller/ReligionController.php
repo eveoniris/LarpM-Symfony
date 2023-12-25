@@ -26,6 +26,7 @@ use App\Form\Religion\ReligionBlasonForm;
 use App\Form\Religion\ReligionForm;
 use App\Form\Religion\ReligionLevelForm;
 use App\Repository\TopicRepository;
+use Doctrine\Common\Collections\Criteria;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -141,7 +142,7 @@ class ReligionController extends AbstractController
             $topic->setTitle($religion->getLabel());
             $topic->setDescription($religion->getDescription());
             $topic->setUser($this->getUser());
-            $topic->setTopic($topicRepository->findOneByKey('TOPIC_CULTE'));
+            $topic->setTopic($topicRepository->findOneBy(['kay' => 'TOPIC_CULTE']));
             $topic->setRight('CULTE');
 
             $entityManager->persist($topic);

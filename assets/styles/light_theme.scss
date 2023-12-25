@@ -2,12 +2,14 @@
 $primary: #001199;
 
 
+
 /* Customize Theme */
 
 [data-bs-theme="light"] {
   --bs-primary: #{$light};
   --bs-primary-bg-subtle: #{$primary};
   --bs-primary-bg-subtle-dark: #{$primary};
+  --bs-breadcrumb-bg-color: #{$dark-bg-subtle};
 
   .btn-primary {
     --bs-btn-bg: #{$primary};

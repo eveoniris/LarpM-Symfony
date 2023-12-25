@@ -30,24 +30,6 @@ class GnRepository extends BaseRepository
     }
 
     /**
-     * Trouve les gns correspondant aux critères de recherche.
-     */
-    public function findCount(array $criteria = []): float|bool|int|string|null
-    {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-
-        $qb->select($qb->expr()->count('g'));
-        $qb->from(\App\Entity\Gn::class, 'g');
-
-        foreach ($criteria as $criter) {
-            $qb->andWhere('?1');
-            $qb->setParameter(1, $criter);
-        }
-
-        return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    /**
      * Trouve tous les gns actifs.
      *
      * @return ArrayCollection $gns

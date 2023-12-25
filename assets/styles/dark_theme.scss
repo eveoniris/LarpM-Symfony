@@ -1,13 +1,13 @@
 /* Customize variable */
 // $primary: #001199;
 
-
 /* Customize Theme */
 
 [data-bs-theme="dark"] {
   --bs-primary: #{$dark};
   --bs-primary-bg-subtle: #{$primary};
   --bs-primary-bg-subtle-dark: #{$primary};
+  --bs-breadcrumb-bg-color: #{$dark-bg-subtle-dark};
 
   .btn-primary {
     --bs-btn-bg: #{$primary};

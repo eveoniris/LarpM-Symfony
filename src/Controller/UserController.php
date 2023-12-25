@@ -6,13 +6,9 @@ use App\Entity\Gn;
 use App\Entity\Participant;
 use App\Entity\Restriction;
 use App\Entity\User;
+use App\Form\UserFindForm;
+use App\Repository\UserRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use JasonGrimes\Paginator;
-use LarpManager\Form\EtatCivilForm;
-use LarpManager\Form\User\UserNewForm;
-use LarpManager\Form\User\UserPersonnageDefaultForm;
-use LarpManager\Form\UserFindForm;
-use LarpManager\Form\UserRestrictionForm;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,7 +51,8 @@ class UserController extends AbstractController
     /**
      * Création d'un nouvel utilisateur.
      */
-    public function adminNewAction(Application $app, Request $request)
+    #[Route('/user/admin/new', name: 'user.admin.new')]
+    public function adminNewAction(Request $request)
     {
         $form = $app['form.factory']->createBuilder(new UserNewForm(), [])
             ->add('save', 'submit', ['label' => "Créer l'utilisateur"])
@@ -366,16 +363,14 @@ class UserController extends AbstractController
     /**
      * View User action.
      *
-     * @param int $id
-     *
      * @return Response
      *
      * @throws NotFoundHttpException if no User is found with that ID
      */
+    #[Route('/user/{id}', name: 'user.view')]
     public function viewAction(Request $request, ManagerRegistry $managerRegistry, int $id)
     {
-
-        $user =$managerRegistry->getRepository(User::class)->find($id);
+        $user = $managerRegistry->getRepository(User::class)->find($id);
 
         if (!$user) {
             throw new NotFoundHttpException('No user was found with that ID.');
@@ -413,7 +408,8 @@ class UserController extends AbstractController
      *
      * @throws NotFoundHttpException if no User is found with that ID
      */
-    public function editAction(Application $app, Request $request, $id)
+    #[Route('/user/{id}/edit', name: 'user.edit')]
+    public function editAction(Request $request, $id)
     {
         $errors = [];
 
@@ -486,49 +482,51 @@ class UserController extends AbstractController
 
     /**
      * Liste des utilisateurs.
-     * TODO : Move to admin dashboard
      */
     #[Route('/user/admin/list', name: 'user.admin.list')]
-    public function adminListAction(Application $app, Request $request)
+    public function adminListAction(Request $request, UserRepository $userRepository): Response
     {
-        $order_by = $request->get('order_by') ?: 'Username';
-        $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
-        $offset = ($page - 1) * $limit;
-        $criteria = [];
+        $orderBy = $request->query->getString('order_by', 'username');
+        $orderDir = 'ASC' === $request->query->getString('order_dir', 'ASC') ? 'ASC' : 'DESC';
+
+        $limit = (int) ($request->query->getInt('limit') ?: 50);
+        $page = (int) ($request->query->getInt('page') ?: 1);
+
         $type = null;
         $value = null;
 
-        $form = $app['form.factory']->createBuilder(new UserFindForm())->getForm();
-
+        $form = $this->createFormBuilder(new UserFindForm())
+            ->getForm();
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $type = $data['type'];
             $value = $data['value'];
         }
 
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\User::class);
-        $Users = $repo->findList(
-            $type,
-            $value,
-            ['by' => $order_by, 'dir' => $order_dir],
+        $query = $userRepository->createQueryBuilder('u')
+             ->orderBy('u.'.$orderBy, $orderDir);
+
+        if ($type) {
+            $query->where($type.' = ?1');
+            $query->setParameter(1, $value);
+        }
+
+        $paginator = $userRepository->findPaginatedQuery(
+            $query->getQuery(),
             $limit,
-            $offset);
-
-        $numResults = $repo->findCount($criteria);
-
-        $paginator = new Paginator($numResults, $limit, $page,
-            $app['url_generator']->generate('User.admin.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
+            $page
         );
 
-        return $app['twig']->render('admin/User/list.twig', [
-            'Users' => $Users,
-            'paginator' => $paginator,
-            'form' => $form->createView(),
-        ]);
+        return $this->render(
+            'user/list.twig',
+            [
+                'paginator' => $paginator,
+                'limit' => $limit,
+                'page' => $page,
+                'form' => $form->createView(),
+            ]);
     }
 
     #[Route('/user', name: 'user.register')]

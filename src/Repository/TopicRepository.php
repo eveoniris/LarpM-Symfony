@@ -21,14 +21,21 @@
 namespace App\Repository;
 
 use App\Entity\Topic;
+use App\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Parameter;
+use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 /**
- * LarpManager\Repository\TopicRepository.
+ * @extends ServiceEntityRepository<User>
  *
- * @author kevin
+ * @implements PasswordUpgraderInterface<User>
+ *
+ * @method Topic|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Topic|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Topic[]    findAll()
+ * @method int        count()
+ * @method Topic[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class TopicRepository extends BaseRepository
 {

@@ -133,7 +133,8 @@ class ParticipantController extends AbstractController
     /**
      * Création d'un nouveau participant.
      */
-    public function newAction(Application $app, Request $request, User $User)
+    #[Route('/participant/new', name: 'participant.new')]
+    public function newAction(Request $request, User $User)
     {
         $participant = new Participant();
         $participant->setUser($User);
