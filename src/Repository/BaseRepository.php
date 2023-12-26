@@ -31,6 +31,20 @@ abstract class BaseRepository extends ServiceEntityRepository
         return str_replace(['Repository', '\\\\'], ['', '\Entity\\'], static::class);
     }
 
+    public function getColumnNames(): array
+    {
+        return $this->getEntityManager()
+            ->getClassMetadata(static::getEntityClass())
+            ->getColumnNames();
+    }
+
+    public function getFieldNames(): array
+    {
+        return $this->getEntityManager()
+            ->getClassMetadata(static::getEntityClass())
+            ->getFieldNames();
+    }
+
     public static function getEntityAlias(): string
     {
         return strtolower(str_replace(['App\Repository\\', 'Repository'], ['', ''], static::class));
@@ -73,13 +87,13 @@ abstract class BaseRepository extends ServiceEntityRepository
         return new Paginator($query);
     }
 
-    public function findPaginatedQuery(Query $query, $limit = null, $offset = null): Paginator
+    public function findPaginatedQuery(Query $query, int $limit = null, $offset = null): Paginator
     {
-        $limit = min(10, $limit);
-        $page = max(1, $offset);
+        $limit = min(100, max(1, $limit));
+        $offset = max(1, $offset);
 
         $query->setMaxResults($limit)
-            ->setFirstResult(($page - 1) * $limit);
+            ->setFirstResult(($offset - 1) * $limit);
 
         return new Paginator($query);
     }

@@ -1,24 +1,57 @@
 {% set _currentRoute = app.request.attributes.get('_route') %}
 {% set _currentParams = app.request.query.all|merge(app.request.attributes.get('_route_params')) %}
 
-{% set lastPage = (paginator.count / limit)|round(1, 'ceil') %}
+{% set total = paginator.count %}
+{% set pageQueryParam = 'page' %}
+{% set nearbyPagesLimit = 4 %}
+{% set lastPage = (total / limit)|round(0, 'ceil') %}
+
 
 {% if lastPage > 1 %}
     <nav>
         <ul class="pagination justify-content-center">
             <li class="page-item{{ page <= 1 ? ' disabled' : '' }}">
-                <a class="page-link" href="{{ path(_currentRoute, _currentParams|merge({page: page - 1})) }}" aria-label="Previous">
-                    &laquo; Previous
+                <a class="page-link" href="{{ path(_currentRoute, _currentParams|merge({page: page - 1})) }}"
+                   aria-label="Previous">
+                    &laquo;
                 </a>
             </li>
-            {% for i in lastPage %}
-                <li class="page-item {% if i == page %}active{% endif %}">
-                    <a class="page-link" href="{{ path(_currentRoute, _currentParams|merge({page: i})) }}">{{ i }}</a>
-                </li>
+
+            {% for i in 1..lastPage %}
+                {% if 0 == (page - nearbyPagesLimit) - loop.index %}
+                    <li class="page-item"><a
+                                href="{{ (app.request.pathInfo ~ '?' ~ (app.request.query.all|merge({(pageQueryParam): 1})|url_encode))|e }}"
+                                class="page-link">1</a></li>
+                    {% if 1 != loop.index %}
+                        <li class="page-item">
+                            <a href="{{ (app.request.pathInfo ~ '?' ~ (app.request.query.all|merge({(pageQueryParam): (loop.index / 2)|round(0, 'ceil')})|url_encode))|e }}"
+                                class="page-link">...</a>
+                        </li>
+                    {% endif %}
+                {% elseif 0 == (page + nearbyPagesLimit) - loop.index  and (page + nearbyPagesLimit) < lastPage %}
+                    <li class="page-item">
+                        <a href="{{ (app.request.pathInfo ~ '?' ~ (app.request.query.all|merge({(pageQueryParam): min(loop.index * 2, lastPage - 1)})|url_encode))|e }}"
+                                class="page-link">...</a>
+                    </li>
+                {% elseif 0 < (page - nearbyPagesLimit) - loop.index %}
+                {% elseif 0 > (page + nearbyPagesLimit) - loop.index %}
+                {% else %}
+                    <li class="page-item{{ page == loop.index ? ' active' }}">
+                        <a href="{{ (app.request.pathInfo ~ '?' ~ (app.request.query.all|merge({(pageQueryParam): loop.index})|url_encode))|e }}"
+                           class="page-link">{{ loop.index }}</a>
+                    </li>
+                {% endif %}
             {% endfor %}
+            {% if page != lastPage  and (page + nearbyPagesLimit) < lastPage %}
+                <li class="page-item"><a
+                            href="{{ (app.request.pathInfo ~ '?' ~ (app.request.query.all|merge({(pageQueryParam): lastPage})|url_encode))|e }}"
+                            class="page-link">{{ lastPage }}</a></li>
+            {% endif %}
+
             <li class="page-item {{ page >= lastPage ? ' disabled' : '' }}">
-                <a class="page-link" href="{{ path(_currentRoute, _currentParams|merge({page: page + 1})) }}" aria-label="Next">
-                    Next &raquo;
+                <a class="page-link" href="{{ path(_currentRoute, _currentParams|merge({page: page + 1})) }}"
+                   aria-label="Next">
+                    &raquo;
                 </a>
             </li>
         </ul>
