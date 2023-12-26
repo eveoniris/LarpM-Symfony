@@ -19,8 +19,18 @@
     border-color: #{$dark-border-subtle-dark};
   }
 
-  .panel-conan > .panel-heading {
+  .panel-conan > .panel-heading, .header > h5 {
     background: url("../img/header.png") no-repeat scroll 25% 40% / 110% 110% #8B360C;
     color: #{$dark-text-emphasis-dark};
+  }
+
+  .well {
+    background-color: #{$dark-bg-subtle-dark};
+    border: 1px solid #{$dark-border-subtle-dark};
+    box-shadow: inset 0 0 1px #{$dark-text-emphasis-dark};
+  }
+
+  .well blockquote {
+    border-color: #{$dark-text-emphasis-dark};
   }
 }
