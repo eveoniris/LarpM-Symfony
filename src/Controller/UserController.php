@@ -9,7 +9,6 @@ use App\Entity\User;
 use App\Form\UserFindForm;
 use App\Repository\UserRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -486,17 +485,17 @@ class UserController extends AbstractController
     #[Route('/user/admin/list', name: 'user.admin.list')]
     public function adminListAction(Request $request, UserRepository $userRepository): Response
     {
-        $orderBy = $request->query->getString('order_by', 'username');
-        $orderDir = 'ASC' === $request->query->getString('order_dir', 'ASC') ? 'ASC' : 'DESC';
-
-        $limit = (int) ($request->query->getInt('limit') ?: 50);
-        $page = (int) ($request->query->getInt('page') ?: 1);
+        [$orderBy, $orderDir, $limit, $page] = $this->getPagninatorProperties(
+            $request,
+            $userRepository,
+            'username',
+            25
+        );
 
         $type = null;
         $value = null;
 
-        $form = $this->createFormBuilder(new UserFindForm())
-            ->getForm();
+        $form = $this->createFormBuilder(new UserFindForm())->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -506,11 +505,11 @@ class UserController extends AbstractController
         }
 
         $query = $userRepository->createQueryBuilder('u')
-             ->orderBy('u.'.$orderBy, $orderDir);
+            ->orderBy('u.'.$orderBy, $orderDir);
 
         if ($type) {
-            $query->where($type.' = ?1');
-            $query->setParameter(1, $value);
+            $query->where($type.' = :type');
+            $query->setParameter('type', $value);
         }
 
         $paginator = $userRepository->findPaginatedQuery(
