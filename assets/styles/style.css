@@ -138,28 +138,6 @@ nav > .menu__box > li {
     text-align: center;
 }
 
-.breadcrumb {
-    padding: 8px 15px;
-    margin-bottom: 20px;
-    list-style: none;
-    background-color: #222222;
-    border-radius: 4px
-}
-
-.breadcrumb>li {
-    display: inline-block
-}
-
-.breadcrumb>li+li:before {
-    content: "/\00a0";
-    padding: 0 5px;
-    color: #ffffff
-}
-
-.breadcrumb>.active {
-    color: #888888
-}
-
 /* end nav */
 
 /******* OLDER ******/
