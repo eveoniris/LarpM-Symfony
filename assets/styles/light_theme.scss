@@ -11,6 +11,28 @@ $primary: #001199;
   --bs-primary-bg-subtle-dark: #{$primary};
   --bs-breadcrumb-bg-color: #{$dark-bg-subtle};
 
+  .breadcrumb {
+    background-color: #{$dark-bg-subtle};
+    padding: 8px 15px;
+    margin-bottom: 20px;
+    list-style: none;
+    border-radius: 4px
+  }
+
+  .breadcrumb>li {
+    display: inline-block
+  }
+
+  .breadcrumb>li+li:before {
+    content: "/\00a0";
+    padding: 0 5px;
+    color: #ffffff
+  }
+
+  .breadcrumb>.active {
+    color: #888888
+  }
+
   .btn-primary {
     --bs-btn-bg: #{$primary};
   }

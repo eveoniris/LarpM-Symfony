@@ -8,10 +8,10 @@
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
 		<li class="active">Liste des utilisateurs</li>
 	</ol>
-	
-	<div class="well well-sm">
 
-		{% include '_partials/pagination.html.twig' %}
+	{% include '_partials/pagination.html.twig' %}
+
+	<div class="well well-sm">
 
 		<div class="header">
 			<h5>Liste des utilisateurs</h5>
@@ -146,6 +146,8 @@
 			{% endfor %}
 	    	</tbody>
 	    </table>
-		{% include '_partials/pagination.html.twig' %}
 	</div>
+
+	{% include '_partials/pagination.html.twig' %}
+
 {% endblock %}
