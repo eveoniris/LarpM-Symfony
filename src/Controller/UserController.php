@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\DisabledException;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class UserController extends AbstractController
 {
@@ -51,6 +52,7 @@ class UserController extends AbstractController
      * Création d'un nouvel utilisateur.
      */
     #[Route('/user/admin/new', name: 'user.admin.new')]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     public function adminNewAction(Request $request)
     {
         $form = $app['form.factory']->createBuilder(new UserNewForm(), [])
@@ -483,6 +485,7 @@ class UserController extends AbstractController
      * Liste des utilisateurs.
      */
     #[Route('/user/admin/list', name: 'user.admin.list')]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     public function adminListAction(Request $request, UserRepository $userRepository): Response
     {
         [$orderBy, $orderDir, $limit, $page] = $this->getPagninatorProperties(
