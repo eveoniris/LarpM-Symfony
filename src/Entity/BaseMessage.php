@@ -33,7 +33,7 @@ class BaseMessage
     protected ?\DateTime $update_date = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
-    protected bool $lu = false;
+    protected ?bool $lu = false;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'messageRelatedByAuteurs')]
     #[ORM\JoinColumn(name: 'auteur', referencedColumnName: 'id', nullable: false)]
@@ -155,7 +155,7 @@ class BaseMessage
      */
     public function getLu(): bool
     {
-        return $this->lu;
+        return $this->lu ?? false;
     }
 
     public function setUserRelatedByAuteur(User $User = null): static

@@ -21,46 +21,44 @@
 namespace App\Controller;
 
 use App\Entity\Message;
+use App\Repository\BaseRepository;
 use LarpManager\Form\NewMessageForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * LarpManager\Controllers\MessageController.
- *
- * @author kevin
- */
-class MessageController
+class MessageController extends AbstractController
 {
     /**
      * Affiche la messagerie de l'utilisateur.
      */
     #[Route('/messagerie', name: 'messagerie')]
-    public function messagerieAction(Request $request, Application $app)
+    public function messagerieAction(Request $request)
     {
-        return $app['twig']->render('public/message/messagerie.twig', [
-            'User' => $app['User'],
+        return $this->render('message/messagerie.twig', [
+            'user' => $this->getUser(),
         ]);
     }
 
     /**
      * Affiche les messages archiver de l'utilisateur.
      */
-    public function archiveAction(Request $request, Application $app)
+    #[Route('/messagerie/archive', name: 'message.archives')]
+    public function archiveAction(Request $request)
     {
-        return $app['twig']->render('public/message/archive.twig', [
-            'User' => $app['User'],
+        return $this->render('message/archive.twig', [
+            'user' => $this->getUser(),
         ]);
     }
 
     /**
      * Affiche les messages envoyé par l'utilisateur.
      */
-    public function envoyeAction(Request $request, Application $app)
+    #[Route('/messagerie/envoye', name: 'message.envoye')]
+    public function envoyeAction(Request $request)
     {
-        return $app['twig']->render('public/message/envoye.twig', [
-            'User' => $app['User'],
+        return $this->render('message/envoye.twig', [
+            'user' => $this->getUser(),
         ]);
     }
 
@@ -68,14 +66,14 @@ class MessageController
      * Nouveau message.
      */
     #[Route('/messagerie/new', name: 'message.new')]
-    public function newAction(Application $app, Request $request)
+    public function newAction(Request $request)
     {
         $message = new Message();
-        $message->setUserRelatedByAuteur($app['User']);
+        $message->setUserRelatedByAuteur($this->getUser());
 
         $to_id = $request->get('to');
         if ($to_id) {
-            $to = $app['converter.User']->convert($to_id);
+            $to = $app['converter.user']->convert($to_id);
             $message->setUserRelatedByDestinataire($to);
         }
 
@@ -119,6 +117,7 @@ class MessageController
      * @throws NotFoundHttpException
      * @throws AccessDeniedException
      */
+    #[Route('/messagerie/message-archive', name: 'message.archive')]
     public function messageArchiveAction(Application $app, Request $request, Message $message): bool
     {
         if ($message->getUserRelatedByDestinataire() != $app['User']) {
@@ -135,6 +134,7 @@ class MessageController
     /**
      * Répondre à un message.
      */
+    #[Route('/messagerie/response', name: 'message.response')]
     public function messageResponseAction(Application $app, Request $request, Message $message)
     {
         $reponse = new \App\Entity\Message();
