@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Messagerie{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -17,7 +17,7 @@
 			<div class="panel-body">
 			
 				<div class="panel panel-group"  id="accordion" role="tablist" aria-multiselectable="true">
-					{% for message in user.messageRelatedByDestinataires if not message.lu %}
+					{% for message in user.messageRelatedByDestinataires|filter(message => message.lu != 1) %}
 						<div class="panel panel-default">
 							<div class="panel-heading" role="tab" id="heading{{ loop.index }}">
 								<div class="pull-right">
@@ -52,7 +52,7 @@
 	</div>
 
 	
-{% endblock content %}
+{% endblock body %}
 
 {% block javascript %}
 
