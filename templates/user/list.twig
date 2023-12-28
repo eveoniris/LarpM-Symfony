@@ -22,9 +22,11 @@
 				<div class="btn-toolbar" role="toolbar" aria-label="...">
 
 					{{ form_start(form, {"action": path('user.admin.list')}) }}
-						{{ form_widget(form) }}
 						<div class="form-group">
 							<div class="input-group">
+								 {{ form_widget(form.value) }}
+
+								{{ form_widget(form.type)}}
 								<div class="input-group-btn">
 									<button type="submit" class="btn btn-default" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
 									<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('user.admin.list') }}"><i class="fa fa-refresh"></i></a>

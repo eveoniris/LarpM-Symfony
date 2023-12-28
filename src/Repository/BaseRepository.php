@@ -6,6 +6,7 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -87,8 +88,11 @@ abstract class BaseRepository extends ServiceEntityRepository
         return new Paginator($query);
     }
 
-    public function findPaginatedQuery(Query $query, int $limit = null, $offset = null): Paginator
-    {
+    public function findPaginatedQuery(
+        Query $query,
+        int $limit = null,
+        $offset = null
+    ): Paginator {
         $limit = min(100, max(1, $limit));
         $offset = max(1, $offset);
 
@@ -96,5 +100,39 @@ abstract class BaseRepository extends ServiceEntityRepository
             ->setFirstResult(($offset - 1) * $limit);
 
         return new Paginator($query);
+    }
+
+    /**
+     * Be sure to control orderBy allowed fields.
+     */
+    public function getPaginator(
+        QueryBuilder $qb = null,
+        int $limit = 25,
+        int $page = 1,
+        array $orderBy = [],
+        string $alias = null,
+        array $criterias = []
+    ): Paginator {
+        $alias ??= static::getEntityAlias();
+        $limit = min(100, max(1, $limit));
+        $offset = max(1, $page);
+        $qb ??= $this->createQueryBuilder($alias);
+
+        if (!empty($orderBy)) {
+            foreach ($orderBy as $field => $direction) {
+                $qb->addOrderBy($field, $direction);
+            }
+        }
+
+        $qb->setFirstResult(($offset - 1) * $limit)
+        ->setMaxResults($limit);
+
+        if (!empty($criterias)) {
+            foreach ($criterias as $criteria) {
+                $qb->addCriteria($criteria);
+            }
+        }
+
+        return new Paginator($qb);
     }
 }
