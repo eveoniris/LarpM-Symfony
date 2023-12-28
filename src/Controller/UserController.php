@@ -529,6 +529,8 @@ class UserController extends AbstractController
                         Criteria::expr()?->contains($alias.'.username', $value)
                     )->orWhere(
                         Criteria::expr()?->contains($alias.'.email', $value)
+                    )->orWhere(
+                        Criteria::expr()?->contains($alias.'.roles', $value)
                     );
                 }
             } else {
