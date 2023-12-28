@@ -2,10 +2,11 @@
 {% set _currentParams = app.request.query.all|merge(app.request.attributes.get('_route_params')) %}
 
 {% set total = paginator.count %}
+{% set page = (paginator.getQuery.getFirstResult/max(1, paginator.getQuery.getMaxResults))|round(0, 'floor')+1 %}
+{% set limit = paginator.getQuery.getMaxResults %}
 {% set pageQueryParam = 'page' %}
 {% set nearbyPagesLimit = 4 %}
-{% set lastPage = (total / limit)|round(0, 'ceil') %}
-
+{% set lastPage = (total / max(1, limit))|round(0, 'ceil') %}
 
 {% if lastPage > 1 %}
     <nav>
@@ -24,7 +25,7 @@
                                 class="page-link">1</a></li>
                     {% if 1 != loop.index %}
                         <li class="page-item">
-                            <a href="{{ (app.request.pathInfo ~ '?' ~ (app.request.query.all|merge({(pageQueryParam): (loop.index / 2)|round(0, 'ceil')})|url_encode))|e }}"
+                            <a href="{{ (app.request.pathInfo ~ '?' ~ (app.request.query.all|merge({(pageQueryParam): (loop.index / 2)|round(0, 'ceil')+1})|url_encode))|e }}"
                                 class="page-link">...</a>
                         </li>
                     {% endif %}

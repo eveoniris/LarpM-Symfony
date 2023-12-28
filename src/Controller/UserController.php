@@ -6,8 +6,10 @@ use App\Entity\Gn;
 use App\Entity\Participant;
 use App\Entity\Restriction;
 use App\Entity\User;
+use App\Form\Entity\UserSearch;
 use App\Form\UserFindForm;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -488,47 +490,75 @@ class UserController extends AbstractController
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     public function adminListAction(Request $request, UserRepository $userRepository): Response
     {
-        [$orderBy, $orderDir, $limit, $page] = $this->getPagninatorProperties(
-            $request,
-            $userRepository,
-            'username',
-            25
-        );
-
         $type = null;
         $value = null;
 
-        $form = $this->createFormBuilder(new UserFindForm())->getForm();
+        $userSearch = new UserSearch();
+        $form = $this->createForm(UserFindForm::class, $userSearch);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            $type = $data['type'];
-            $value = $data['value'];
+            $type = $data->getType();
+            $value = $data->getValue();
         }
 
-        $query = $userRepository->createQueryBuilder('u')
-            ->orderBy('u.'.$orderBy, $orderDir);
+        /** Sample with QUERY
+         * $query = $userRepository->createQueryBuilder('u')
+         * ->orderBy('u.'.$orderBy, $orderDir);.
+         *
+         * if ($type) {
+         * $query->where($type.' = :type');
+         * $query->setParameter('type', $value);
+         * }
+         * $paginator = $userRepository->findPaginatedQuery(
+         * $query->getQuery()
+         * );
+         */
+        $alias = UserRepository::getEntityAlias();
 
-        if ($type) {
-            $query->where($type.' = :type');
-            $query->setParameter('type', $value);
+        $criterias = [];
+        if (!empty($value)) {
+            if (empty($type) || '*' === $type) {
+                if (is_numeric($value)) {
+                    $criterias[] = Criteria::create()->where(
+                        Criteria::expr()?->contains($alias.'.id', $value)
+                    );
+                } else {
+                    $criterias[] = Criteria::create()->where(
+                        Criteria::expr()?->contains($alias.'.username', $value)
+                    )->orWhere(
+                        Criteria::expr()?->contains($alias.'.email', $value)
+                    );
+                }
+            } else {
+                $criterias[] = Criteria::create()->andWhere(
+                    Criteria::expr()?->contains($alias.'.'.$type, $value)
+                );
+            }
         }
 
-        $paginator = $userRepository->findPaginatedQuery(
-            $query->getQuery(),
-            $limit,
-            $page
+        $orderBy = $this->getRequestOrder(
+            defOrderBy: 'username',
+            alias: $alias,
+            allowedFields: $userRepository->getFieldNames()
+        );
+
+        $paginator = $userRepository->getPaginator(
+            limit: $this->getRequestLimit(),
+            page: $this->getRequestPage(),
+            orderBy: $orderBy,
+            alias: $alias,
+            criterias: $criterias
         );
 
         return $this->render(
             'user/list.twig',
             [
                 'paginator' => $paginator,
-                'limit' => $limit,
-                'page' => $page,
                 'form' => $form->createView(),
-            ]);
+            ]
+        );
     }
 
     #[Route('/user', name: 'user.register')]

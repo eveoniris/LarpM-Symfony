@@ -4,48 +4,98 @@ namespace App\Controller;
 
 use App\Repository\BaseRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
 {
     public function __construct(
         protected EntityManagerInterface $entityManager,
+        protected RequestStack $requestStack,
         // Cache $cache,
     ) {
     }
 
-    protected function getPagninatorProperties(
-        Request $request,
-        BaseRepository $entityRepository,
-        string $defOrderBy = 'id',
-        int $defLimit = 50
-    ): array {
-        $orderBy = $request->query->getString('order_by', $defOrderBy);
-        $orderDir = 'ASC' === $request->query->getString('order_dir', 'ASC') ? 'ASC' : 'DESC';
-        $limit = $request->query->getInt('limit', $defLimit);
-        $page = $request->query->getInt('page', 1);
+    protected function getRequestLimit(int $defLimit = 10): int
+    {
+        $request = $this->requestStack?->getCurrentRequest();
 
-        if (!\in_array($orderBy, $entityRepository->getFieldNames(), true)) {
+        if (!$request) {
+            return $defLimit;
+        }
+
+        $limit = $request->query->getInt('limit', $defLimit);
+
+        if (!is_numeric($limit)) {
+            return $defLimit;
+        }
+
+        // We limit between 1 and 100
+        return min(100, max(1, $limit));
+    }
+
+    protected function getRequestPage(int $defPage = 1): int
+    {
+        $request = $this->requestStack?->getCurrentRequest();
+
+        if (!$request) {
+            return $defPage;
+        }
+
+        $page = $request->query->getInt('page', $defPage);
+
+        if (!is_numeric($page)) {
+            $page = $defPage;
+        }
+
+        // Page can be lower than 1
+        return max(1, $page);
+    }
+
+    protected function getRequestOrder(
+        string $defOrderBy = 'id',
+        string $defOrderDir = 'ASC',
+        string $alias = null,
+        array $allowedFields = null
+    ): array {
+        $request = $this->requestStack?->getCurrentRequest();
+        if (!$request) {
+            return [];
+        }
+
+        $orderBy = $request->query->getString('order_by', $defOrderBy);
+        $orderDir = $request->query->getString('order_dir', $defOrderDir);
+
+        if (!empty($allowedFields) && !\in_array($orderBy, $allowedFields, true)) {
             $orderBy = $defOrderBy;
         }
 
-        if (!is_numeric($limit)) {
-            $limit = $defLimit;
+        if (!\in_array($orderDir, ['ASC', 'DESC'], true)) {
+            $orderDir = $defOrderDir;
         }
 
-        if (!is_numeric($page)) {
-            $page = 1;
+        if ($alias) {
+            $orderBy = $alias.'.'.$orderBy;
         }
 
-        // limit between 1 and 100
-        $limit = min(100, max(1, $limit));
-        $page = max(1, $page);
+        return [$orderBy => $orderDir];
+    }
+
+    protected function getPagninatorProperties(
+        BaseRepository $entityRepository,
+        string $defOrderBy = 'id',
+        int $defLimit = 50,
+        string $defOrderDir = 'ASC'
+    ): array {
+        $request = $this->requestStack?->getCurrentRequest();
+
+        if (!$request) {
+            return [];
+        }
 
         return [
-            $orderBy,
-            $orderDir,
-            $limit,
-            $page,
+            ...$this->getRequestOrder($defOrderBy, $defOrderDir),
+            $this->getRequestLimit($defLimit),
+            $this->getRequestPage(1),
         ];
     }
 }

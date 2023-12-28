@@ -38,7 +38,7 @@ abstract class BaseUser
 
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255)]
     #[Assert\NotBlank]
-    protected string $password = '';
+    protected ?string $password = '';
 
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255)]
     #[Assert\NotBlank]
