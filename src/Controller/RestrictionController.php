@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -91,7 +92,7 @@ class RestrictionController extends AbstractController
      * Ajouter une restriction alimentaire.
      */
     #[Route('/restriction/add', name: 'restriction.add')]
-    public function addAction(Request $request, EntityManagerInterface $entityManager): Response
+    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(RestrictionForm::class, new Restriction())
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
@@ -134,7 +135,7 @@ class RestrictionController extends AbstractController
      * Mise à jour d'un lieu.
      */
     #[Route('/restriction/update/{id}', name: 'restriction.update')]
-    public function updateAction(Request $request, #[MapEntity] Restriction $restriction, EntityManagerInterface $entityManager): Response
+    public function updateAction(Request $request, #[MapEntity] Restriction $restriction, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(RestrictionForm::class, $restriction)
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);

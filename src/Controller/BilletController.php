@@ -3,9 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Billet;
+use App\Form\BilletDeleteForm;
+use App\Form\BilletForm;
 use App\Repository\BilletRepository;
-use LarpManager\Form\BilletDeleteForm;
-use LarpManager\Form\BilletForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -39,112 +43,120 @@ class BilletController extends AbstractController
      * Ajout d'un billet.
      */
     #[Route('/billet/add', name: 'billet.add')]
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request, BilletRepository $repository, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $billet = new Billet();
         $gnId = $request->get('gn');
 
         if ($gnId) {
-            $gn = $app['orm.em']->getRepository(\App\Entity\Gn::class)->find($gnId);
+            $gn = $repository->find($gnId);
             $billet->setGn($gn);
         }
 
-        $form = $app['form.factory']->createBuilder(new BilletForm(), $billet)
-            ->add('submit', 'submit', ['label' => 'Valider'])
-            ->getForm();
+        $form = $this->createForm(BilletForm::class, $billet)
+            ->add('submit', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $billet = $form->getData();
             $billet->setCreateur($this->getUser());
-            $app['orm.em']->persist($billet);
-            $app['orm.em']->flush();
+            $entityManager->persist($billet);
+            $entityManager->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le billet a été ajouté.');
+            $request->getSession()->getFlashBag()->add('success', 'Le billet a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('billet.list'), 303);
+            return $this->redirectToRoute('billet.list', [], 303);
         }
 
-        return $app['twig']->render('admin\billet\add.twig', [
-            'form' => $form->createView(),
-        ]);
+        return $this->render(
+            'billet\add.twig',
+            [
+                'form' => $form->createView(),
+            ]
+        );
     }
 
     /**
      * Détail d'un billet.
      */
-    #[Route('/billet/detail', name: 'billet.detail')]
-    public function detailAction(Request $request, Application $app, Billet $billet)
+    #[Route('/billet/detail/{billet}', name: 'billet.detail')]
+    public function detailAction(Request $request, #[MapEntity] Billet $billet): Response
     {
-        return $app['twig']->render('admin\billet\detail.twig', [
-            'billet' => $billet,
-        ]);
+        return $this->render(
+            'billet\detail.twig',
+            ['billet' => $billet]
+        );
     }
 
     /**
      * Mise à jour d'un billet.
      */
-    #[Route('/billet/update', name: 'billet.update')]
-    public function updateAction(Request $request, Application $app, Billet $billet)
+    #[Route('/billet/update/{billet}', name: 'billet.update')]
+    public function updateAction(Request $request, #[MapEntity] Billet $billet, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $form = $app['form.factory']->createBuilder(new BilletForm(), $billet)
-            ->add('submit', 'submit', ['label' => 'Valider'])
-            ->getForm();
+        $form = $this->createForm(BilletForm::class, $billet)
+            ->add('submit', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $billet = $form->getData();
-            $app['orm.em']->persist($billet);
-            $app['orm.em']->flush();
+            $entityManager->persist($billet);
+            $entityManager->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le billet a été mis à jour.');
+            $request->getSession()->getFlashBag()->add('success', 'Le billet a été mis à jour.');
 
-            return $app->redirect($app['url_generator']->generate('billet.list'), 303);
+            return $this->redirectToRoute('billet.list', [], 303);
         }
 
-        return $app['twig']->render('admin\billet\update.twig', [
-            'form' => $form->createView(),
-            'billet' => $billet,
-        ]);
+        return $this->render('billet\update.twig',
+            [
+                'form' => $form->createView(),
+                'billet' => $billet,
+            ]
+        );
     }
 
     /**
      * Suppression d'un billet.
      */
-    #[Route('/billet/delete', name: 'billet.delete')]
-    public function deleteAction(Request $request, Application $app, Billet $billet)
+    #[Route('/billet/delete/{billet}', name: 'billet.delete')]
+    public function deleteAction(Request $request, Billet $billet, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $form = $app['form.factory']->createBuilder(new BilletDeleteForm(), $billet)
-            ->add('submit', 'submit', ['label' => 'Valider'])
-            ->getForm();
+        $form = $this->createForm(BilletDeleteForm::class, $billet)
+            ->add('submit', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $billet = $form->getData();
-            $app['orm.em']->remove($billet);
-            $app['orm.em']->flush();
+            $entityManager->remove($billet); // TODO constraint on Participants
+            $entityManager->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le billet a été supprimé.');
+            $request->getSession()->getFlashBag()->add('success', 'Le billet a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('billet.list'), 303);
+            return $this->redirectToRoute('billet.list', [], 303);
         }
 
-        return $app['twig']->render('admin\billet\delete.twig', [
-            'form' => $form->createView(),
-            'billet' => $billet,
-        ]);
+        return $this->render(
+            'billet\delete.twig',
+            [
+                'form' => $form->createView(),
+                'billet' => $billet,
+            ]
+        );
     }
 
     /**
      * Liste des utilisateurs ayant ce billet.
      */
-    public function participantsAction(Request $request, Application $app, Billet $billet)
+    #[Route('/billet/participants/{billet}', name: 'billet.participants')]
+    public function participantsAction(Request $request, #[MapEntity] Billet $billet): Response
     {
-        return $app['twig']->render('admin\billet\participants.twig', [
-            'billet' => $billet,
-        ]);
+        return $this->render(
+            'billet\participants.twig',
+            ['billet' => $billet]
+        );
     }
 }

@@ -168,7 +168,7 @@ abstract class BaseBillet
     public function setGn(Gn $gn = null): self
     {
         $this->gn = $gn;
-        $this->gn_id = $gn.getId();
+        $this->gn_id = $gn?->getId();
 
         return $this;
     }
