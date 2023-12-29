@@ -325,9 +325,9 @@ class MagieController
         // on ne peux télécharger que les documents des compétences que l'on connait
         /*if  ( ! $app['security.authorization_checker']->isGranted('ROLE_REGLE') )
         {
-        if ( $app['User']->getPersonnage() )
+        if ( $this->getUser()->getPersonnage() )
         {
-        if ( ! $app['User']->getPersonnage()->getCompetences()->contains($competence) )
+        if ( ! $this->getUser()->getPersonnage()->getCompetences()->contains($competence) )
         {
         $app['session']->getFlashBag()->add('error', 'Vous n\'avez pas les droits necessaires');
         }
@@ -869,9 +869,9 @@ class MagieController
         // on ne peux télécharger que les documents des compétences que l'on connait
         /*if  ( ! $app['security.authorization_checker']->isGranted('ROLE_REGLE') )
         {
-            if ( $app['User']->getPersonnage() )
+            if ( $this->getUser()->getPersonnage() )
             {
-                if ( ! $app['User']->getPersonnage()->getCompetences()->contains($competence) )
+                if ( ! $this->getUser()->getPersonnage()->getCompetences()->contains($competence) )
                 {
                     $app['session']->getFlashBag()->add('error', 'Vous n\'avez pas les droits necessaires');
                 }

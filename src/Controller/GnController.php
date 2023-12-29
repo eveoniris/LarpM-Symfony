@@ -66,7 +66,7 @@ class GnController extends AbstractController
     #[Route('/gn/personnage', name: 'gn.personnage')]
     public function personnageAction(Request $request, Application $app, Gn $gn)
     {
-        $participant = $app['User']->getParticipant($gn);
+        $participant = $this->getUser()->getParticipant($gn);
         $personnage = $participant->getPersonnage();
         if (!$personnage) {
             $app['session']->getFlashBag()->add('error', "Vous n'avez pas encore de personnage.");
@@ -225,7 +225,7 @@ class GnController extends AbstractController
             $topic = new \App\Entity\Topic();
             $topic->setTitle($gn->getLabel());
             $topic->setDescription($gn->getDescription());
-            $topic->setUser($app['User']); // défini les droits d'accés à ce forum // (les participants au GN ont le droits d'accéder à ce forum)
+            $topic->setUser($this->getUser()); // défini les droits d'accés à ce forum // (les participants au GN ont le droits d'accéder à ce forum)
             $topic->setRight('GN_PARTICIPANT');
             $gn->setTopic($topic);
             $app['orm.em']->persist($gn);

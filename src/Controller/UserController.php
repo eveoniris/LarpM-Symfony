@@ -108,13 +108,13 @@ class UserController extends AbstractController
      */
     public function personnageDefaultAction(Application $app, Request $request, User $User)
     {
-        if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN') && !$User == $app['User']) {
+        if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN') && !$User == $this->getUser()) {
             $app['session']->getFlashBag()->add('error', 'Vous n\'avez pas les droits necessaires pour cette opération.');
 
             return $app->redirect($app['url_generator']->generate('homepage'), 303);
         }
 
-        $form = $app['form.factory']->createBuilder(new UserPersonnageDefaultForm(), $app['User'], ['User_id' => $User->getId()])
+        $form = $app['form.factory']->createBuilder(new UserPersonnageDefaultForm(), $this->getUser(), ['User_id' => $User->getId()])
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->getForm();
 
@@ -143,7 +143,7 @@ class UserController extends AbstractController
     #[Route('/user/restriction', name: 'user.restriction')]
     public function restrictionAction(Application $app, Request $request)
     {
-        $form = $app['form.factory']->createBuilder(new UserRestrictionForm(), $app['User'])
+        $form = $app['form.factory']->createBuilder(new UserRestrictionForm(), $this->getUser())
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->getForm();
 
@@ -154,7 +154,7 @@ class UserController extends AbstractController
             $newRestriction = $form->get('new_restriction')->getData();
             if ($newRestriction) {
                 $restriction = new Restriction();
-                $restriction->setUserRelatedByAuteurId($app['User']);
+                $restriction->setUserRelatedByAuteurId($this->getUser());
                 $restriction->setLabel($newRestriction);
 
                 $app['orm.em']->persist($restriction);
@@ -186,7 +186,7 @@ class UserController extends AbstractController
 
         if ($form->isValid() && (!$gn->getBesoinValidationCi() || 'ok' == $request->request->get('acceptCi'))) {
             $participant = new Participant();
-            $participant->setUser($app['User']);
+            $participant->setUser($this->getUser());
             $participant->setGn($gn);
 
             if ($gn->getBesoinValidationCi()) {
@@ -218,7 +218,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isValid() && 'ok' == $request->request->get('acceptCi')) {
-            $participant = $app['User']->getParticipant($gn);
+            $participant = $this->getUser()->getParticipant($gn);
             $participant->setValideCiLe(new \DateTime('NOW'));
 
             $app['orm.em']->persist($participant);
@@ -240,7 +240,7 @@ class UserController extends AbstractController
      */
     public function UserHasBilletDetailAction(Application $app, Request $request, UserHasBillet $UserHasBillet)
     {
-        if ($UserHasBillet->getUser() != $app['User']) {
+        if ($UserHasBillet->getUser() != $this->getUser()) {
             $app['session']->getFlashBag()->add('error', 'Vous ne pouvez pas acceder à cette information');
 
             return $app->redirect($app['url_generator']->generate('homepage'), 303);
@@ -256,7 +256,7 @@ class UserController extends AbstractController
      */
     public function UserHasBilletListAction(Application $app, Request $request)
     {
-        $UserHasBillets = $app['User']->getUserHasBillets();
+        $UserHasBillets = $this->getUser()->getUserHasBillets();
 
         return $app['twig']->render('public/UserHasBillet/list.twig', [
             'UserHasBillets' => $UserHasBillets,
@@ -270,7 +270,7 @@ class UserController extends AbstractController
     public function fedegnAction(Application $app, Request $request)
     {
         return $app['twig']->render('public/User/fedegn.twig', [
-            'etatCivil' => $app['User']->getEtatCivil(),
+            'etatCivil' => $this->getUser()->getEtatCivil(),
         ]);
     }
 
@@ -280,7 +280,7 @@ class UserController extends AbstractController
     #[Route('/user/etatCivil', name: 'user.etatCivil')]
     public function etatCivilAction(Application $app, Request $request)
     {
-        $etatCivil = $app['User']->getEtatCivil();
+        $etatCivil = $this->getUser()->getEtatCivil();
 
         if (!$etatCivil) {
             $etatCivil = new \App\Entity\EtatCivil();
@@ -294,9 +294,9 @@ class UserController extends AbstractController
 
         if ($form->isValid()) {
             $etatCivil = $form->getData();
-            $app['User']->setEtatCivil($etatCivil);
+            $this->getUser()->setEtatCivil($etatCivil);
 
-            $app['orm.em']->persist($app['User']);
+            $app['orm.em']->persist($this->getUser());
             $app['orm.em']->persist($etatCivil);
             $app['orm.em']->flush();
 
@@ -389,13 +389,13 @@ class UserController extends AbstractController
     #[Route('/user/like', name: 'user.like')]
     public function likeAction(Application $app, Request $request, User $User)
     {
-        if ($User == $app['User']) {
+        if ($User == $this->getUser()) {
             $app['session']->getFlashBag()->add('error', 'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !');
         } else {
             $User->addCoeur();
             $app['orm.em']->persist($User);
             $app['orm.em']->flush();
-            $app['notify']->coeur($app['User'], $User);
+            $app['notify']->coeur($this->getUser(), $User);
             $app['session']->getFlashBag()->add('success', 'Votre coeur a été envoyé !');
         }
 

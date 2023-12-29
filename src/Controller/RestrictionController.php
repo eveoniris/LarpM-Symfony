@@ -1,66 +1,67 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 namespace App\Controller;
 
 use App\Entity\Restriction;
-use LarpManager\Form\RestrictionDeleteForm;
-use LarpManager\Form\RestrictionForm;
-use Silex\Application;
+use App\Form\RestrictionDeleteForm;
+use App\Form\RestrictionForm;
+use App\Repository\RestrictionRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use JetBrains\PhpStorm\NoReturn;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * LarpManager\Controllers\RestrictionsController.
- *
- * @author kevin
- */
-class RestrictionController
+class RestrictionController extends AbstractController
 {
     /**
      * Liste des restrictions.
      */
     #[Route('/restriction/list', name: 'restriction.list')]
-    public function listAction(Request $request, Application $app)
+    public function listAction(Request $request, RestrictionRepository $repository): Response
     {
-        $restrictions = $app['orm.em']->getRepository('\\'.\App\Entity\Restriction::class)->findAllOrderedByLabel();
+        $alias = 'r';
 
-        return $app['twig']->render('admin/restriction/list.twig', ['restrictions' => $restrictions]);
+        $orderBy = $this->getRequestOrder(
+            defOrderBy: 'label',
+            alias: $alias,
+            allowedFields: $repository->getFieldNames()
+        );
+
+        $paginator = $repository->getPaginator(
+            limit: $this->getRequestLimit(25),
+            page: $this->getRequestPage(),
+            orderBy: $orderBy,
+            alias: $alias,
+        );
+
+        return $this->render(
+            'restriction/list.twig',
+            ['paginator' => $paginator]
+        );
     }
 
     /**
      * Imprimer la liste des restrictions.
      */
-    public function printAction(Request $request, Application $app)
+    #[Route('/restriction/print', name: 'restriction.print')]
+    public function printAction(Request $request, RestrictionRepository $repository): Response
     {
-        $restrictions = $app['orm.em']->getRepository('\\'.\App\Entity\Restriction::class)->findAllOrderedByLabel();
+        $restrictions = $repository->findAllOrderedByLabel();
 
-        return $app['twig']->render('admin/restriction/print.twig', ['restrictions' => $restrictions]);
+        return $this->render('restriction/print.twig', ['restrictions' => $restrictions]);
     }
 
     /**
      * Télécharger la liste des restrictions alimentaires.
      */
-    public function downloadAction(Request $request, Application $app): void
+    #[NoReturn]
+    #[Route('/restriction/download', name: 'restriction.download')]
+    public function downloadAction(Request $request, RestrictionRepository $repository): void
     {
-        $restrictions = $app['orm.em']->getRepository('\\'.\App\Entity\Restriction::class)->findAllOrderedByLabel();
+        $restrictions = $repository->findAllOrderedByLabel();
 
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename=eveoniris_restrictions_'.date('Ymd').'.csv');
@@ -89,32 +90,33 @@ class RestrictionController
     /**
      * Ajouter une restriction alimentaire.
      */
-    public function addAction(Request $request, Application $app)
+    #[Route('/restriction/add', name: 'restriction.add')]
+    public function addAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $form = $app['form.factory']->createBuilder(new RestrictionForm(), new Restriction())
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+        $form = $this->createForm(RestrictionForm::class, new Restriction())
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $restriction = $form->getData();
-            $restriction->setAuteur($app['User']);
+            $restriction->setAuteur($this->getUser());
 
-            $app['orm.em']->persist($restriction);
-            $app['orm.em']->flush();
+            $entityManager->persist($restriction);
+            $entityManager->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La restriction a été ajouté.');
+            $request->getSession()->getFlashBag()->add('success', 'La restriction a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('restriction.list'), 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('restriction.add'), 303);
+                return $this->redirectToRoute('restriction.list', [], 303);
+            }
+            if ($form->get('save_continue')->isClicked()) {
+                return $this->redirectToRoute('restriction.add', [], 303);
             }
         }
 
-        return $app['twig']->render('admin/restriction/add.twig', [
+        return $this->render('restriction/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -122,33 +124,34 @@ class RestrictionController
     /**
      * Détail d'une restriction alimentaire.
      */
-    public function detailAction(Request $request, Application $app, Restriction $restriction)
+    #[Route('/restriction/detail/{id}', name: 'restriction.detail')]
+    public function detailAction(Request $request, #[MapEntity] Restriction $restriction): Response
     {
-        return $app['twig']->render('admin/restriction/detail.twig', ['restriction' => $restriction]);
+        return $this->render('restriction/detail.twig', ['restriction' => $restriction]);
     }
 
     /**
      * Mise à jour d'un lieu.
      */
-    public function updateAction(Request $request, Application $app, Restriction $restriction)
+    #[Route('/restriction/update/{id}', name: 'restriction.update')]
+    public function updateAction(Request $request, #[MapEntity] Restriction $restriction, EntityManagerInterface $entityManager): Response
     {
-        $form = $app['form.factory']->createBuilder(new RestrictionForm(), $restriction)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(RestrictionForm::class, $restriction)
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $restriction = $form->getData();
-            $app['orm.em']->persist($restriction);
-            $app['orm.em']->flush();
+            $entityManager->persist($restriction);
+            $entityManager->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La restriction alimentaire a été modifié.');
+            $request->getSession()->getFlashBag()->add('success', 'La restriction alimentaire a été modifié.');
 
-            return $app->redirect($app['url_generator']->generate('restriction.list'), 303);
+            return $this->redirectToRoute('restriction.list', [], 303);
         }
 
-        return $app['twig']->render('admin/restriction/update.twig', [
+        return $this->render('restriction/update.twig', [
             'restriction' => $restriction,
             'form' => $form->createView(),
         ]);
@@ -157,26 +160,26 @@ class RestrictionController
     /**
      * Suppression d'une restriction alimentaire.
      */
-    public function deleteAction(Request $request, Application $app, Restriction $restriction)
+    #[Route('/restriction/delete/{id}', name: 'restriction.delete')]
+    public function deleteAction(Request $request, #[MapEntity] Restriction $restriction, EntityManagerInterface $entityManager): Response
     {
-        $form = $app['form.factory']->createBuilder(new RestrictionDeleteForm(), $restriction)
-            ->add('save', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+        $form = $this->createForm(RestrictionDeleteForm::class, $restriction)
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $restriction = $form->getData();
 
-            $app['orm.em']->remove($restriction);
-            $app['orm.em']->flush();
+            $entityManager->remove($restriction);
+            $entityManager->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La restriction alimentaire a été supprimé.');
+            $request->getSession()->getFlashBag()->add('success', 'La restriction alimentaire a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('restriction.list'), 303);
+            return $this->redirectToRoute('restriction.list', [], 303);
         }
 
-        return $app['twig']->render('admin/restriction/delete.twig', [
+        return $this->render('restriction/delete.twig', [
             'restriction' => $restriction,
             'form' => $form->createView(),
         ]);

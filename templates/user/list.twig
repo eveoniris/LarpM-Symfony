@@ -9,14 +9,12 @@
 		<li class="active">Liste des utilisateurs</li>
 	</ol>
 
-	{% include '_partials/pagination.html.twig' %}
-
 	<div class="well well-sm">
 
 		<div class="header">
 			<h5>Liste des utilisateurs</h5>
 		</div>
-		
+
 		<ul class="list-group">
 			<li class="list-group-item">	
 				<div class="btn-toolbar" role="toolbar" aria-label="...">
@@ -42,7 +40,10 @@
 			</li>
 
 	    </ul>
-	    
+	</div>
+
+	{% include '_partials/pagination.html.twig' %}
+
 		<table class="table table-striped table-bordered table-condensed">
 			<thead>
 				<tr>
@@ -148,7 +149,7 @@
 			{% endfor %}
 	    	</tbody>
 	    </table>
-	</div>
+
 
 	{% include '_partials/pagination.html.twig' %}
 

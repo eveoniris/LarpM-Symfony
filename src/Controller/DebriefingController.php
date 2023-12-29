@@ -120,7 +120,7 @@ class DebriefingController
 
         if ($form->isValid() && $form->isSubmitted()) {
             $debriefing = $form->getData();
-            $debriefing->setUser($app['User']);
+            $debriefing->setUser($this->getUser());
 
             if ($this->handleDocument($request, $app, $form, $debriefing)) {
                 $app['orm.em']->persist($debriefing);

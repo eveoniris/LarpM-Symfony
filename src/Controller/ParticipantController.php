@@ -452,7 +452,7 @@ class ParticipantController extends AbstractController
                 return $app->redirect($app['url_generator']->generate('participant.personnage.trombine', ['participant' => $participant->getId(), 'personnage' => $personnage->getId()]), 303);
             }
 
-            $trombineFilename = hash('md5', $app['User']->getUsername().$filename.time()).'.'.$extension;
+            $trombineFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
 
             $image = $app['imagine']->open($files['trombine']->getPathname());
             $image->resize($image->getSize()->widen(160));
@@ -781,7 +781,7 @@ class ParticipantController extends AbstractController
         if ($form->isValid()) {
             $personnage = $form->getData();
 
-            $personnage->setUser($app['User']);
+            $personnage->setUser($this->getUser());
             $participant->setPersonnage($personnage);
 
             // Ajout des points d'expérience gagné à la création d'un personnage
@@ -1217,7 +1217,7 @@ class ParticipantController extends AbstractController
         ));
 
         // recherche les backgrounds liés au groupe (visibilité == GROUP_OWNER)
-        if ($app['User'] == $participant->getGroupeGn()->getGroupe()->getUserRelatedByResponsableId()) {
+        if ($this->getUser() == $participant->getGroupeGn()->getGroupe()->getUserRelatedByResponsableId()) {
             $backsGroupe = new ArrayCollection(array_merge(
                 $participant->getGroupeGn()->getGroupe()->getBacks('GROUPE_OWNER')->toArray(),
                 $backsGroupe->toArray()
@@ -2564,7 +2564,7 @@ class ParticipantController extends AbstractController
     {
         $message = new Message();
 
-        $message->setUserRelatedByAuteur($app['User']);
+        $message->setUserRelatedByAuteur($this->getUser());
         $message->setUserRelatedByDestinataire($postulant->getPersonnage()->getUser());
         $message->setCreationDate(new \DateTime('NOW'));
         $message->setUpdateDate(new \DateTime('NOW'));
@@ -3050,9 +3050,9 @@ class ParticipantController extends AbstractController
 
         if ($form->isValid()) {
             $joueur = $form->getData();
-            $app['User']->setJoueur($joueur);
+            $this->getUser()->setJoueur($joueur);
 
-            $app['orm.em']->persist($app['User']);
+            $app['orm.em']->persist($this->getUser());
             $app['orm.em']->persist($joueur);
             $app['orm.em']->flush();
 

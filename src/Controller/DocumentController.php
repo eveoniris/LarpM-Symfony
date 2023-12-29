@@ -196,7 +196,7 @@ class DocumentController
 
         if ($form->isValid()) {
             $document = $form->getData();
-            $document->setUser($app['User']);
+            $document->setUser($this->getUser());
 
             $files = $request->files->get($form->getName());
 
@@ -210,7 +210,7 @@ class DocumentController
                 return $app->redirect($app['url_generator']->generate('document.add'), 303);
             }
 
-            $documentFilename = hash('md5', $app['User']->getUsername().$filename.time()).'.'.$extension;
+            $documentFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
 
             $files['document']->move($path, $documentFilename);
 
@@ -268,7 +268,7 @@ class DocumentController
                     return $app->redirect($app['url_generator']->generate('document.add'), 303);
                 }
 
-                $documentFilename = hash('md5', $app['User']->getUsername().$filename.time()).'.'.$extension;
+                $documentFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
 
                 $files['document']->move($path, $documentFilename);
 

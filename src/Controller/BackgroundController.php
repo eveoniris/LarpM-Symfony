@@ -157,7 +157,7 @@ class BackgroundController
 
         if ($form->isValid()) {
             $background = $form->getData();
-            $background->setUser($app['User']);
+            $background->setUser($this->getUser());
 
             $app['orm.em']->persist($background);
             $app['orm.em']->flush();

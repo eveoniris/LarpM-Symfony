@@ -103,7 +103,7 @@ class RumeurController
 
         if ($form->isValid()) {
             $rumeur = $form->getData();
-            $rumeur->setUser($app['User']);
+            $rumeur->setUser($this->getUser());
 
             $app['orm.em']->persist($rumeur);
             $app['orm.em']->flush();

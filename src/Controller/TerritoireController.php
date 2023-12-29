@@ -360,7 +360,7 @@ class TerritoireController
             $topic = new \App\Entity\Topic();
             $topic->setTitle($territoire->getNom());
             $topic->setDescription($territoire->getDescription());
-            $topic->setUser($app['User']);
+            $topic->setUser($this->getUser());
             // défini les droits d'accés à ce forum
             // (les membres du groupe ont le droit d'accéder à ce forum)
             $topic->setRight('TERRITOIRE_MEMBER');
@@ -523,7 +523,7 @@ class TerritoireController
                 return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
             }
 
-            $blasonFilename = hash('md5', $app['User']->getUsername().$filename.time()).'.'.$extension;
+            $blasonFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
 
             $image = $app['imagine']->open($files['blason']->getPathname());
             $image->resize($image->getSize()->widen(160));
@@ -628,7 +628,7 @@ class TerritoireController
         $topic = new \App\Entity\Topic();
         $topic->setTitle($territoire->getNom());
         $topic->setDescription($territoire->getDescription());
-        $topic->setUser($app['User']);
+        $topic->setUser($this->getUser());
         $topic->setRight('TERRITOIRE_MEMBER');
         $topic->setObjectId($territoire->getId());
         $topic->addTerritoire($territoire);

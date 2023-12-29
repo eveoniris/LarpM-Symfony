@@ -248,8 +248,8 @@ class CompetenceController extends AbstractController
         $competence = $request->get('competence');
 
         // on ne peux télécharger que les documents des compétences que l'on connait
-        if (!$app['security.authorization_checker']->isGranted('ROLE_REGLE') && $app['User']->getPersonnage()) {
-            if (!$app['User']->getPersonnage()->getCompetences()->contains($competence)) {
+        if (!$app['security.authorization_checker']->isGranted('ROLE_REGLE') && $this->getUser()->getPersonnage()) {
+            if (!$this->getUser()->getPersonnage()->getCompetences()->contains($competence)) {
                 $app['session']->getFlashBag()->add('error', "Vous n'avez pas les droits necessaires");
             }
         }

@@ -41,7 +41,7 @@ class ForumController
     #[Route('/forum', name: 'forum')]
     public function forumAction(Request $request, Application $app)
     {
-        if (null == $app['User']) {
+        if (null == $this->getUser()) {
             return $app->redirect($app['url_generator']->generate('User.login', 303));
         }
 
@@ -55,7 +55,7 @@ class ForumController
         $allTopics = $app['orm.em']->getRepository('\\'.\App\Entity\Topic::class)->findAll();
         foreach ($allTopics as $topic) {
             if ($app['security.authorization_checker']->isGranted('TOPIC_RIGHT', $topic)) {
-                $newPosts = new ArrayCollection(array_merge($newPosts->toArray(), $app['User']->newPosts($topic)->toArray()));
+                $newPosts = new ArrayCollection(array_merge($newPosts->toArray(), $this->getUser()->newPosts($topic)->toArray()));
             }
         }
 
@@ -100,7 +100,7 @@ class ForumController
 
         if ($form->isValid()) {
             $topic = $form->getData();
-            $topic->setUser($app['User']);
+            $topic->setUser($this->getUser());
 
             $app['orm.em']->persist($topic);
             $app['orm.em']->flush();
@@ -122,7 +122,7 @@ class ForumController
      */
     public function topicAction(Request $request, Application $app)
     {
-        if (null == $app['User']) {
+        if (null == $this->getUser()) {
             return $app->redirect($app['url_generator']->generate('User.login', 303));
         }
 
@@ -157,11 +157,11 @@ class ForumController
         if ($form->isValid()) {
             $post = $form->getData();
             $post->setTopic($topic);
-            $post->setUser($app['User']);
-            $post->addWatchingUser($app['User']);
+            $post->setUser($this->getUser());
+            $post->addWatchingUser($this->getUser());
 
             // ajout de la signature
-            $personnage = $app['User']->getPersonnage();
+            $personnage = $this->getUser()->getPersonnage();
             if ($personnage) {
                 $text = $post->getText();
                 $text .= '<address><strong>Envoyé par</strong><br />'.$personnage->getNom().' '.$personnage->getSurnom().'<address>';
@@ -187,7 +187,7 @@ class ForumController
      */
     public function postAction(Request $request, Application $app)
     {
-        if (null == $app['User']) {
+        if (null == $this->getUser()) {
             return $app->redirect($app['url_generator']->generate('User.login', 303));
         }
 
@@ -197,19 +197,19 @@ class ForumController
             ->find($postId);
 
         // Mettre à jour les vues de ce post (et de toutes ces réponses)
-        if (!$app['User']->alreadyView($post)) {
+        if (!$this->getUser()->alreadyView($post)) {
             $postView = new \App\Entity\PostView();
             $postView->setDate(new \DateTime('NOW'));
-            $postView->setUser($app['User']);
+            $postView->setUser($this->getUser());
             $postView->setPost($post);
             $app['orm.em']->persist($postView);
         }
 
         foreach ($post->getPosts() as $p) {
-            if (!$app['User']->alreadyView($p)) {
+            if (!$this->getUser()->alreadyView($p)) {
                 $postView = new \App\Entity\PostView();
                 $postView->setDate(new \DateTime('NOW'));
-                $postView->setUser($app['User']);
+                $postView->setUser($this->getUser());
                 $postView->setPost($p);
 
                 $app['orm.em']->persist($postView);
@@ -245,17 +245,17 @@ class ForumController
         if ($form->isValid()) {
             $post = $form->getData();
             $post->setPost($postToResponse);
-            $post->setUser($app['User']);
+            $post->setUser($this->getUser());
 
             // ajout de la signature
-            $personnage = $app['User']->getPersonnage();
+            $personnage = $this->getUser()->getPersonnage();
             if ($personnage) {
                 $text = $post->getText();
                 $text .= '<address><strong>Envoyé par</strong><br />'.$personnage->getNom().' '.$personnage->getSurnom().'<address>';
                 $post->setText($text);
             }
 
-            $postToResponse->addWatchingUser($app['User']);
+            $postToResponse->addWatchingUser($this->getUser());
             $app['orm.em']->persist($postToResponse);
             $app['orm.em']->persist($post);
             $app['orm.em']->flush();
@@ -267,7 +267,7 @@ class ForumController
                     continue;
                 }
 
-                if ($User == $app['User']) {
+                if ($User == $this->getUser()) {
                     continue;
                 }
 
@@ -329,7 +329,7 @@ class ForumController
         $post = $app['orm.em']->getRepository('\\'.\App\Entity\Post::class)
             ->find($postId);
 
-        $post->addWatchingUser($app['User']);
+        $post->addWatchingUser($this->getUser());
 
         $app['orm.em']->persist($post);
         $app['orm.em']->flush();
@@ -349,7 +349,7 @@ class ForumController
         $post = $app['orm.em']->getRepository('\\'.\App\Entity\Post::class)
             ->find($postId);
 
-        $post->removeWatchingUser($app['User']);
+        $post->removeWatchingUser($this->getUser());
 
         $app['orm.em']->persist($post);
         $app['orm.em']->flush();
@@ -434,7 +434,7 @@ class ForumController
         if ($form->isValid()) {
             $topic = $form->getData();
             $topic->setTopic($topicRelated);
-            $topic->setUser($app['User']);
+            $topic->setUser($this->getUser());
             $topic->setRight($topicRelated->getRight());
             $topic->setObjectId($topicRelated->getObjectId());
 

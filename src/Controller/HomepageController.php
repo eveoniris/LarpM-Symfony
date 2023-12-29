@@ -22,6 +22,7 @@ namespace App\Controller;
 
 use App\Entity\EtatCivil;
 use App\Entity\Restriction;
+use Doctrine\ORM\EntityManagerInterface;
 use LarpManager\Form\EtatCivilForm;
 use LarpManager\Form\UserRestrictionForm;
 use Silex\Application;
@@ -33,56 +34,54 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author kevin
  */
-class HomepageController
+class HomepageController extends AbstractController
 {
     /**
      * Choix de la page d'acceuil en fonction de l'état de l'utilisateur.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager)
     {
-        if (!$app['User']) {
-            return $this->notConnectedIndexAction($request, $app);
+        if (!$this->getUser()) {
+            return $this->notConnectedIndexAction($request);
         }
 
-        $app['User'] = $app['User.manager']->refreshUser($app['User']);
-
-        if (!$app['User']->getEtatCivil()) {
-            return $app->redirect($app['url_generator']->generate('newUser.step1'), 303);
+        if (!$this->getUser()->getEtatCivil()) {
+            return $this->redirectToRoute('newUser.step1', [], 303);
         }
 
-        $repoAnnonce = $app['orm.em']->getRepository(\App\Entity\Annonce::class);
+        $repoAnnonce = $entityManager->getRepository(\App\Entity\Annonce::class);
         $annonces = $repoAnnonce->findBy(['archive' => false, 'gn' => null], ['update_date' => 'DESC']);
 
-        return $app['twig']->render('homepage/index.twig', [
+        return $this->render('homepage/index.twig', [
             'annonces' => $annonces,
-            'User' => $app['User'],
+            'user' => $this->getUser(),
         ]);
     }
 
     /**
      * Première étape pour un nouvel utilisateur.
      */
-    public function newUserStep1Action(Request $request, Application $app)
+    public function newUserStep1Action(Request $request, EntityManagerInterface $entityManager)
     {
-        if ($app['User']->getEtatCivil()) {
-            $repoAnnonce = $app['orm.em']->getRepository(\App\Entity\Annonce::class);
+        if ($this->getUser()->getEtatCivil()) {
+            $repoAnnonce = $entityManager->getRepository(\App\Entity\Annonce::class);
             $annonces = $repoAnnonce->findBy(['archive' => false, 'gn' => null], ['update_date' => 'DESC']);
 
-            return $app['twig']->render('homepage/index.twig', [
+            return $this->render('homepage/index.twig', [
                 'annonces' => $annonces,
-                'User' => $app['User'],
+                'User' => $this->getUser(),
             ]);
         }
 
-        return $app['twig']->render('public/newUser/step1.twig', []);
+        return $this->render('public/newUser/step1.twig', []);
     }
 
     /**
      * Seconde étape pour un nouvel utilisateur : enregistrer les informations administratives.
      */
-    public function newUserStep2Action(Request $request, Application $app)
+    public function newUserStep2Action(Request $request)
     {
-        $etatCivil = $app['User']->getEtatCivil();
+        $etatCivil = $this->getUser()?->getEtatCivil();
         if (!$etatCivil) {
             $etatCivil = new EtatCivil();
         }
@@ -94,9 +93,9 @@ class HomepageController
 
         if ($form->isValid()) {
             $etatCivil = $form->getData();
-            $app['User']->setEtatCivil($etatCivil);
+            $this->getUser()->setEtatCivil($etatCivil);
 
-            $app['orm.em']->persist($app['User']);
+            $app['orm.em']->persist($this->getUser());
             $app['orm.em']->flush();
 
             return $app->redirect($app['url_generator']->generate('newUser.step3'), 303);
@@ -112,7 +111,7 @@ class HomepageController
      */
     public function newUserStep3Action(Request $request, Application $app)
     {
-        $form = $app['form.factory']->createBuilder(new UserRestrictionForm(), $app['User'])
+        $form = $app['form.factory']->createBuilder(new UserRestrictionForm(), $this->getUser())
             ->getForm();
 
         $form->handleRequest($request);
@@ -122,7 +121,7 @@ class HomepageController
             $newRestriction = $form->get('new_restriction')->getData();
             if ($newRestriction) {
                 $restriction = new Restriction();
-                $restriction->setUserRelatedByAuteurId($app['User']);
+                $restriction->setUserRelatedByAuteurId($this->getUser());
                 $restriction->setLabel($newRestriction);
 
                 $app['orm.em']->persist($restriction);
@@ -345,8 +344,8 @@ class HomepageController
 
                 // mettre en surbrillance le groupe de l'utilisateur
                 $highlight = false;
-                if ($app['User']) {
-                    foreach ($app['User']->getParticipants() as $participant) {
+                if ($this->getUser()) {
+                    foreach ($this->getUser()->getParticipants() as $participant) {
                         if ($participant->getGn() == $gn && $participant->getGroupeGn()) {
                             if ($participant->getGroupeGn()->getGroupe() == $groupe) {
                                 $highlight = true;

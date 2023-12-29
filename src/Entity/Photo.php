@@ -26,7 +26,7 @@ class Photo extends BasePhoto
         $extension = $this->file->guessExtension();
 
         // create a unique filename
-        $photoFilename = hash('md5', $app['User']->getUsername().$filename.time()).'.'.$extension;
+        $photoFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
 
         $this->setExtension($this->file->guessExtension());
 
@@ -58,7 +58,7 @@ class Photo extends BasePhoto
         $filename = $this->getName();
         $extension = $this->getExtension();
 
-        $photoFilename = hash('md5', $app['User']->getUsername().$filename.time()).'.'.$extension;
+        $photoFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
 
         $image = $app['imagine']->read($this->getData());
         $image->resize($image->getSize()->widen(480));
