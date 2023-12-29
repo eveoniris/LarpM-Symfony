@@ -226,7 +226,7 @@ class GroupeGnController
      */
     public function joueurAddAction(Request $request, Application $app, GroupeGn $groupeGn)
     {
-        $participant = $app['User']->getParticipant($groupeGn->getGn());
+        $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
         $form = $app['form.factory']->createBuilder()
             ->add('participant', 'entity', [
@@ -317,7 +317,7 @@ class GroupeGnController
      */
     public function placeAvailableAction(Request $request, Application $app, GroupeGn $groupeGn)
     {
-        $participant = $app['User']->getParticipant($groupeGn->getGn());
+        $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
         $form = $app['form.factory']->createBuilder(new GroupeGnPlaceAvailableForm(), $groupeGn)
             ->add('submit', 'submit', ['label' => 'Enregistrer'])
@@ -349,7 +349,7 @@ class GroupeGnController
     #[Route('/groupeGn/groupe', name: 'groupeGn.groupe')]
     public function groupeAction(Request $request, Application $app, GroupeGn $groupeGn)
     {
-        $participant = $app['User']->getParticipant($groupeGn->getGn());
+        $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
         return $app['twig']->render('public/groupe/detail.twig', [
             'groupe' => $groupeGn->getGroupe(),

@@ -52,7 +52,7 @@ class QuestionController
 
         if ($form->isValid()) {
             $question = $form->getData();
-            $question->setUser($app['User']);
+            $question->setUser($this->getUser());
             $question->setDate(new \DateTime('NOW'));
 
             $app['orm.em']->persist($question);

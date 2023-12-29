@@ -125,7 +125,7 @@ class GroupeSecondaireController
             $topic = new \App\Entity\Topic();
             $topic->setTitle($groupeSecondaire->getLabel());
             $topic->setDescription($groupeSecondaire->getDescription());
-            $topic->setUser($app['User']);
+            $topic->setUser($this->getUser());
             $topic->setTopic($app['larp.manager']->findTopic('TOPIC_GROUPE_SECONDAIRE'));
             $app['orm.em']->persist($topic);
 

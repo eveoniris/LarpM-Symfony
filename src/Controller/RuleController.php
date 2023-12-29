@@ -90,7 +90,7 @@ class RuleController extends AbstractController
                 return $app->redirect($app['url_generator']->generate('rules'), 303);
             }
 
-            $ruleFilename = hash('md5', $app['User']->getUsername().$filename.time()).'.'.$extension;
+            $ruleFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
 
             $files['rule']->move($path, $filename);
 

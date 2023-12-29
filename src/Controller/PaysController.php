@@ -30,7 +30,7 @@ class PaysController
 
         if ($form->isValid()) {
             $pays = $form->getData();
-            $pays->setCreator($app['User']);
+            $pays->setCreator($this->getUser());
 
             $app['orm.em']->persist($pays);
             $app['orm.em']->flush();

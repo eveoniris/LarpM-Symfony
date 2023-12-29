@@ -118,7 +118,7 @@ class IntrigueController
             } elseif (!$intrigue->getText()) {
                 $app['session']->getFlashBag()->add('error', 'le texte de votre intrigue est obligatoire.');
             } else {
-                $intrigue->setUser($app['User']);
+                $intrigue->setUser($this->getUser());
 
                 /*
                  * Pour tous les groupes de l'intrigue
@@ -169,7 +169,7 @@ class IntrigueController
                  * Envoyer une notification à tous les scénaristes des groupes concernés (hors utilisateur courant)
                  */
                 foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
-                    if (false == $app['User']->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
+                    if (false == $this->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
                         $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
                     }
                 }
@@ -353,7 +353,7 @@ class IntrigueController
              * Création d'une ligne dans la liste des modifications de l'intrigue.
              */
             $modification = new IntrigueHasModification();
-            $modification->setUser($app['User']);
+            $modification->setUser($this->getUser());
             $modification->setIntrigue($intrigue);
             $app['orm.em']->persist($modification);
             $app['orm.em']->persist($intrigue);
@@ -363,7 +363,7 @@ class IntrigueController
              * Envoyer une notification à tous les scénaristes des groupes concernés (hors utilisateur courant)
              */
             foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
-                if (false == $app['User']->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
+                if (false == $this->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
                     $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
                 }
             }
@@ -372,7 +372,7 @@ class IntrigueController
              * Envoyer une notification à tous les utilisateurs ayant préalablement modifier cette intrigue (hors utilisateur courant, et hors scénariste d'un groupe concerné)
              */
             foreach ($intrigue->getIntrigueHasModifications() as $modification) {
-                if ($modification->getUser() != $app['User']) {
+                if ($modification->getUser() != $this->getUser()) {
                     $sendNotification = true;
                     foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
                         if (true == $modification->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
@@ -436,7 +436,7 @@ class IntrigueController
 
         if ($form->isValid()) {
             $relecture = $form->getData();
-            $relecture->setUser($app['User']);
+            $relecture->setUser($this->getUser());
             $relecture->setIntrigue($intrigue);
 
             $app['orm.em']->persist($relecture);
@@ -446,7 +446,7 @@ class IntrigueController
              * Envoyer une notification à tous les scénaristes des groupes concernés (hors utilisateur courant)
              */
             foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
-                if (false == $app['User']->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
+                if (false == $this->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
                     $app['notify']->relecture($intrigue, $intrigueHasGroupe->getGroupe());
                 }
             }

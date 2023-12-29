@@ -37,7 +37,7 @@ class NotificationController
      */
     public function removeAction(Application $app, Request $request, Notification $notification): bool
     {
-        if ($notification->getUser() != $app['User']) {
+        if ($notification->getUser() != $this->getUser()) {
             return false;
         }
 
@@ -58,7 +58,7 @@ class NotificationController
         $qb->select('n');
         $qb->join('n.User', 'u');
         $qb->where('u.id = :UserId');
-        $qb->setParameter('UserId', $app['User']->getId());
+        $qb->setParameter('UserId', $this->getUser()->getId());
 
         $notifications = $qb->getQuery()->getArrayResult();
 
@@ -67,8 +67,8 @@ class NotificationController
             $notifications[$key] = $value;
         }
 
-        $app['User']->setLastConnectionDate(new \DateTime('NOW'));
-        $app['orm.em']->persist($app['User']);
+        $this->getUser()->setLastConnectionDate(new \DateTime('NOW'));
+        $app['orm.em']->persist($this->getUser());
         $app['orm.em']->flush();
 
         $lastConnected = $app['orm.em']->getRepository(\App\Entity\User::class)->lastConnected();

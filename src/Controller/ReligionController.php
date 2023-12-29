@@ -262,7 +262,7 @@ class ReligionController extends AbstractController
                 return $app->redirect($app['url_generator']->generate('religion.detail', ['index' => $religion->getId()]), 303);
             }
 
-            $blasonFilename = hash('md5', $app['User']->getUsername().$filename.time()).'.'.$extension;
+            $blasonFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
 
             $image = $app['imagine']->open($files['blason']->getPathname());
             $image->resize($image->getSize()->widen(160));

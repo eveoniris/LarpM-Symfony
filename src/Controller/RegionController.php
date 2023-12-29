@@ -29,7 +29,7 @@ class RegionController
 
         if ($form->isValid()) {
             $region = $form->getData();
-            $region->setCreator($app['User']);
+            $region->setCreator($this->getUser());
 
             $app['orm.em']->persist($region);
             $app['orm.em']->flush();

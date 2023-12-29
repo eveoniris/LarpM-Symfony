@@ -39,9 +39,9 @@ class JoueurController
 
         if ($form->isValid()) {
             $joueur = $form->getData();
-            $app['User']->setJoueur($joueur);
+            $this->getUser()->setJoueur($joueur);
 
-            $app['orm.em']->persist($app['User']);
+            $app['orm.em']->persist($this->getUser());
             $app['orm.em']->persist($joueur);
             $app['orm.em']->flush();
 

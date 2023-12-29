@@ -138,7 +138,7 @@ class PersonnageController
                 return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
             }
 
-            $trombineFilename = hash('md5', $app['User']->getUsername().$filename.time()).'.'.$extension;
+            $trombineFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
 
             $image = $app['imagine']->open($files['trombine']->getPathname());
             $image->resize($image->getSize()->widen(160));
@@ -174,8 +174,8 @@ class PersonnageController
 
         if ($form->isValid()) {
             $personnage = $form->getData();
-            $app['User']->addPersonnage($personnage);
-            $app['orm.em']->persist($app['User']);
+            $this->getUser()->addPersonnage($personnage);
+            $app['orm.em']->persist($this->getUser());
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
@@ -697,12 +697,12 @@ class PersonnageController
             // essaye de récupérer le participant du gn actif
             $gn = $app['larp.manager']->getGnActif();
             if ($gn) {
-                $participant = $app['User']->getParticipant($gn);
+                $participant = $this->getUser()->getParticipant($gn);
             }
 
             if (!$participant) {
                 // sinon récupère le dernier dans la liste
-                $participant = $app['User']->getLastParticipant();
+                $participant = $this->getUser()->getLastParticipant();
             }
         } else {
             $participant = $app['orm.em']->getRepository('\\'.\App\Entity\Participant::class)->find($participant);
@@ -900,7 +900,7 @@ class PersonnageController
         $background = new \App\Entity\PersonnageBackground();
 
         $background->setPersonnage($personnage);
-        $background->setUser($app['User']);
+        $background->setUser($this->getUser());
 
         $form = $app['form.factory']->createBuilder(new PersonnageBackgroundForm(), $background)
             ->add('visibility', 'choice', [

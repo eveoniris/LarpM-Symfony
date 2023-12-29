@@ -1232,7 +1232,7 @@ class GroupeController
             $topic = new \App\Entity\Topic();
             $topic->setTitle($groupe->getNom());
             $topic->setDescription($groupe->getDescription());
-            $topic->setUser($app['User']);
+            $topic->setUser($this->getUser());
             // défini les droits d'accés à ce forum
             // (les membres du groupe ont le droit d'accéder à ce forum)
             $topic->setRight('GROUPE_MEMBER');

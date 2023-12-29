@@ -87,7 +87,7 @@ class MessageController extends AbstractController
             $message = $form->getData();
 
             // ajout de la signature
-            $personnage = $app['User']->getPersonnage();
+            $personnage = $this->getUser()->getPersonnage();
             if ($personnage) {
                 $text = $message->getText();
                 $text .= '<address><strong>Envoyé par</strong><br />'.$personnage->getNom().' '.$personnage->getSurnom().'<address>';
@@ -120,7 +120,7 @@ class MessageController extends AbstractController
     #[Route('/messagerie/message-archive', name: 'message.archive')]
     public function messageArchiveAction(Application $app, Request $request, Message $message): bool
     {
-        if ($message->getUserRelatedByDestinataire() != $app['User']) {
+        if ($message->getUserRelatedByDestinataire() != $this->getUser()) {
             return false;
         }
 
@@ -139,7 +139,7 @@ class MessageController extends AbstractController
     {
         $reponse = new \App\Entity\Message();
 
-        $reponse->setUserRelatedByAuteur($app['User']);
+        $reponse->setUserRelatedByAuteur($this->getUser());
         $reponse->setUserRelatedByDestinataire($message->getUserRelatedByAuteur());
         $reponse->setTitle('Réponse à "'.$message->getTitle().'"');
         $reponse->setCreationDate(new \DateTime('NOW'));
@@ -155,7 +155,7 @@ class MessageController extends AbstractController
             $message = $form->getData();
 
             // ajout de la signature
-            $personnage = $app['User']->getPersonnageRelatedByPersonnageId();
+            $personnage = $this->getUser()->getPersonnageRelatedByPersonnageId();
             if ($personnage) {
                 $text = $message->getText();
                 $text .= '<address><strong>Envoyé par</strong><br />'.$personnage->getNom().' '.$personnage->getSurnom().'<address>';
@@ -176,7 +176,7 @@ class MessageController extends AbstractController
 
         return $app['twig']->render('public/message/response.twig', [
             'message' => $message,
-            'User' => $app['User'],
+            'User' => $this->getUser(),
             'form' => $form->createView(),
         ]);
     }

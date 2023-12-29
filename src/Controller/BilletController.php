@@ -57,7 +57,7 @@ class BilletController extends AbstractController
 
         if ($form->isValid()) {
             $billet = $form->getData();
-            $billet->setCreateur($app['User']);
+            $billet->setCreateur($this->getUser());
             $app['orm.em']->persist($billet);
             $app['orm.em']->flush();
 
