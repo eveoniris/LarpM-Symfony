@@ -23,7 +23,10 @@ bsCustomFileInput.init();
 require('bootstrap');
 
 $(document).ready(function() {
+    $("[data-toggle='tooltip']").tooltip();
+    $("[data-bs-toggle='tooltip']").tooltip();
 
+    // Editeur de text
     tinymce.init({
         selector: '.tinymce',
         theme: "modern",
@@ -34,6 +37,7 @@ $(document).ready(function() {
         link_assume_external_targets: true
     });
 
+    // Switch de theme. TODO: En session || cookie
     document.getElementById('btnSwitch').addEventListener('click',()=>{
         console.log(document.documentElement.getAttribute('data-bs-theme'));
         if (document.documentElement.getAttribute('data-bs-theme') === 'dark') {
