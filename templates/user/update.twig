@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Modifier l'utilisateur : {{ user.displayName }}{% endblock %}
 
-{% block content %}
+{% block body %}
 
 	{% if error %}
         <div class="alert alert-danger">{{ error|nl2br }}</div>

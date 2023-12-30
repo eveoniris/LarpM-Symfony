@@ -1,4 +1,4 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Diplomatie{% endblock title %}
 
@@ -39,7 +39,7 @@
 </style>
 {% endblock style %}
 
-{% block content %}
+{% block body %}
 <a href="{{ path('groupe.diplomatie.print') }}">Impression</a>
 <table class="diplo">
 	<thead>
@@ -78,4 +78,4 @@
 	</tbody>
 </table>
 
-{% endblock content %}
+{% endblock body %}

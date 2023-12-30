@@ -1,4 +1,4 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Objets{% endblock title %}
 
@@ -10,7 +10,7 @@
 </style>
 {% endblock style %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -90,4 +90,4 @@
 	 	</table>
 	 </div>
 	
-{% endblock content %}
+{% endblock body %}

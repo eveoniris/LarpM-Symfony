@@ -416,7 +416,7 @@ class UserController extends AbstractController
     {
         $errors = [];
 
-        $User = $app['User.manager']->getUser($id);
+        $User = $this->getUser($id);
 
         if (!$User) {
             throw new NotFoundHttpException('No User was found with that ID.');
@@ -438,7 +438,7 @@ class UserController extends AbstractController
                 }
             }
 
-            if ($app['security']->isGranted('ROLE_ADMIN') && $request->request->has('roles')) {
+            if ($this->isGranted('ROLE_ADMIN') && $request->request->has('roles')) {
                 $User->setRoles($request->request->get('roles'));
             }
 
@@ -447,14 +447,14 @@ class UserController extends AbstractController
             if ([] === $errors) {
                 $app['User.manager']->update($User);
                 $msg = 'Saved account information.'.($request->request->get('password') ? ' Changed password.' : '');
-                $app['session']->getFlashBag()->set('alert', $msg);
+                $this->addFlash('alert', $msg);
             }
         }
 
-        return $app['twig']->render('admin/User/update.twig', [
+        return $this->render('user/update.twig', [
             'error' => implode("\n", $errors),
-            'User' => $User,
-            'available_roles' => $app['larp.manager']->getAvailableRoles(),
+            'user' => $User,
+            'available_roles' => $this->getParameter('security.role_hierarchy.roles'),
         ]);
     }
 
@@ -593,7 +593,7 @@ class UserController extends AbstractController
                     // Log the User in to the new account.
                     $app['User.manager']->loginAsUser($User);
 
-                    $app['session']->getFlashBag()->set('success', 'Votre compte a été créé ! vous pouvez maintenant rejoindre un groupe et créer votre personnage');
+                    $this->addFlash('success', 'Votre compte a été créé ! vous pouvez maintenant rejoindre un groupe et créer votre personnage');
 
                     return $app->redirect($app['url_generator']->generate('homepage'));
                 }
@@ -625,7 +625,7 @@ class UserController extends AbstractController
         $User = $repo->findOneByConfirmationToken($token);
 
         if (!$User) {
-            $app['session']->getFlashBag()->set('alert', 'Désolé, votre lien de confirmation a expiré.');
+            $this->addFlash('alert', 'Désolé, votre lien de confirmation a expiré.');
 
             return $app->redirect($app['url_generator']->generate('User.login'));
         }
@@ -636,7 +636,7 @@ class UserController extends AbstractController
         $app['orm.em']->flush();
 
         $app['User.manager']->loginAsUser($User);
-        $app['session']->getFlashBag()->set('alert', 'Merci ! Votre compte a été activé.');
+        $this->addFlash('alert', 'Merci ! Votre compte a été activé.');
 
         return $app->redirect($app['url_generator']->generate('newUser.step1', ['id' => $User->getId()]));
     }
@@ -695,7 +695,7 @@ class UserController extends AbstractController
                 $app['orm.em']->flush();
 
                 $app['User.mailer']->sendResetMessage($User);
-                $app['session']->getFlashBag()->set('alert', 'Les instructions pour enregistrer votre mot de passe ont été envoyé par mail.');
+                $this->addFlash('alert', 'Les instructions pour enregistrer votre mot de passe ont été envoyé par mail.');
                 $app['session']->set('_security.last_Username', $email);
 
                 return $app->redirect($app['url_generator']->generate('User.login'));
@@ -741,7 +741,7 @@ class UserController extends AbstractController
         }
 
         if ($tokenExpired) {
-            $app['session']->getFlashBag()->set('alert', 'Sorry, your password reset link has expired.');
+            $this->addFlash('alert', 'Sorry, your password reset link has expired.');
 
             return $app->redirect($app['url_generator']->generate('User.login'));
         }
@@ -761,7 +761,7 @@ class UserController extends AbstractController
                 $app['orm.em']->persist($User);
                 $app['orm.em']->flush();
                 $app['User.manager']->loginAsUser($User);
-                $app['session']->getFlashBag()->set('alert', 'Your password has been reset and you are now signed in.');
+                $this->addFlash('alert', 'Your password has been reset and you are now signed in.');
 
                 return $app->redirect($app['url_generator']->generate('User.view', ['id' => $User->getId()]));
             }

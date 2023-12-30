@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Rappels{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 <ul class="list-group" id="haut">
 	<li class="list-group-item"><a href="#usersWithoutEtatCivil">Liste des utilisateurs sans etat-civil ({{ usersWithoutEtatCivil|length }})</a></li>
@@ -14,4 +14,4 @@
 	</li>
 </ul>
 
-{% endblock content %}
+{% endblock body %}

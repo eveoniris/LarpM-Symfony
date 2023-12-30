@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Background{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -21,7 +21,7 @@
 		</form>
 	</div>
 	
-{% endblock content %}
+{% endblock body %}
 
 
 {% block javascript %}
