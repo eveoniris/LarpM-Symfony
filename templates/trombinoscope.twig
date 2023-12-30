@@ -1,4 +1,4 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Trombinoscope{% endblock title %}
 
@@ -31,7 +31,7 @@ a {
 </style>
 {% endblock style %}
 
-{% block content %}
+{% block body %}
 
 <div class="well well-sm">
 	<div class="header"><h5>Personnages participants à {{ gn.label }}</h5></div>
@@ -101,4 +101,4 @@ a {
   		{% endfor %}
   	</ul>
 </div>
-{% endblock content %}
+{% endblock body %}

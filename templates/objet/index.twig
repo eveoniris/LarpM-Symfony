@@ -1,4 +1,4 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Objets{% endblock title %}
 
@@ -12,7 +12,7 @@ td {white-space: normal; text-overflow: ellipsis;}
 </style>
 {% endblock style %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -102,4 +102,4 @@ td {white-space: normal; text-overflow: ellipsis;}
 	  		</table>
 	  </div>
 	
-{% endblock content %}
+{% endblock body %}

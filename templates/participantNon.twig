@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Rappels{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 <h2>Liste des NON participants (utilisateurs n'étant pas dans un groupe)  - {{ participants|length }} participants</h2>
 <ul class="list-group">
@@ -10,4 +10,4 @@
 	<li class="list-group-item">{{ participant.user.etatCivil.nom }} {{ participant.user.etatCivil.prenom }} {{ participant.user.email }} - {{ participant.user.etatCivil.dateNaissance|date("Y-m-d") }}</li>
 {% endfor %}
 </ul>
-{% endblock content %}
+{% endblock body %}

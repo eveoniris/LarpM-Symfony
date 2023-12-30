@@ -14,7 +14,7 @@ table tr td {
 {% endblock style %}
 
 
-{% block content %}
+{% block body %}
     	
 	<h2>Groupe {{groupe.numero }} - {{ groupe.nom }}</h2>
 	
@@ -139,4 +139,4 @@ table tr td {
 		</ul>
 		<strong>Récompenses : </strong>{{ quete.recompenses|join(', ') }}
 	</div>
-{% endblock content %}
+{% endblock body %}

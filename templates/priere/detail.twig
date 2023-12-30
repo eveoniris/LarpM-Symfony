@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Prieres{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -46,4 +46,4 @@
 	
 	<a href="{{ path('magie.priere.update',{'priere': priere.id}) }}"><button class="btn btn-default"><i class="fa fa-pencil"></i> Modifier</button></a>
 		
-{% endblock content %}
+{% endblock body %}

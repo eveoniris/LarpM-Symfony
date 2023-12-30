@@ -3,7 +3,7 @@
 {% set displayAdminToolbar = displayAdminToolbar is defined ? displayAdminToolbar : true %}
 {% set displaySearchFilter = displaySearchFilter is defined ? displaySearchFilter : true %}
 
-{% block content %}
+{% block body %}
 
 {% if paginator.totalItems == 1 %}
 	<strong>1</strong> personnage trouvé.
@@ -48,4 +48,4 @@ Résultats affichés : <strong>{{ paginator.currentPageFirstItem }} - {{ paginat
 </div>
 			
 			
-{% endblock content %}
+{% endblock body %}
