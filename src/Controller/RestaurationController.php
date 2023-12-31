@@ -6,7 +6,7 @@ use App\Entity\Restauration;
 use App\Form\RestaurationDeleteForm;
 use App\Form\RestaurationForm;
 use App\Repository\RestaurationRepository;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -97,11 +97,11 @@ class RestaurationController extends AbstractController
      */
     #[Route('/restauration/add', name: 'restauration.add')]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this page.')]
-    public function addAction(Request $request, EntityManager $entityManager): RedirectResponse|Response
+    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(RestaurationForm::class, new Restauration())
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -201,7 +201,7 @@ class RestaurationController extends AbstractController
      */
     #[Route('/restauration/{id}/update', name: 'restauration.update')]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this page.')]
-    public function updateAction(Request $request, #[MapEntity] Restauration $restauration, EntityManager $entityManager): Response
+    public function updateAction(Request $request, #[MapEntity] Restauration $restauration, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(RestaurationForm::class, $restauration)
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -231,7 +231,7 @@ class RestaurationController extends AbstractController
      */
     #[Route('/restauration/{id}/delete', name: 'restauration.delete')]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this page.')]
-    public function deleteAction(Request $request, #[MapEntity] Restauration $restauration, EntityManager $entityManager): RedirectResponse|Response
+    public function deleteAction(Request $request, #[MapEntity] Restauration $restauration, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(RestaurationDeleteForm::class, $restauration)
             ->add('save', SubmitType::class, ['label' => 'Supprimer']);
