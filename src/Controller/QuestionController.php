@@ -27,7 +27,7 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class QuestionController
+class QuestionController extends AbstractController
 {
     /**
      * Liste des question.
@@ -58,9 +58,9 @@ class QuestionController
             $app['orm.em']->persist($question);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La question a été ajoutée.');
+           $this->addFlash('success', 'La question a été ajoutée.');
 
-            return $app->redirect($app['url_generator']->generate('question'), 303);
+            return $this->redirectToRoute('question', [], 303);
         }
 
         return $app['twig']->render('admin\question\add.twig', [
@@ -94,9 +94,9 @@ class QuestionController
             $app['orm.em']->persist($question);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La question a été mise à jour.');
+           $this->addFlash('success', 'La question a été mise à jour.');
 
-            return $app->redirect($app['url_generator']->generate('question'), 303);
+            return $this->redirectToRoute('question', [], 303);
         }
 
         return $app['twig']->render('admin\question\update.twig', [
@@ -126,9 +126,9 @@ class QuestionController
             $app['orm.em']->remove($question);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La question a été supprimée.');
+           $this->addFlash('success', 'La question a été supprimée.');
 
-            return $app->redirect($app['url_generator']->generate('question'), 303);
+            return $this->redirectToRoute('question', [], 303);
         }
 
         return $app['twig']->render('admin\question\delete.twig', [

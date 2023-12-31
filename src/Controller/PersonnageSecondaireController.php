@@ -32,7 +32,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class PersonnageSecondaireController
+class PersonnageSecondaireController extends AbstractController
 {
     /**
      * affiche la liste des personnages secondaires.
@@ -77,9 +77,9 @@ class PersonnageSecondaireController
             $app['orm.em']->persist($personnageSecondaire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage secondaire été sauvegardé');
+           $this->addFlash('success', 'Le personnage secondaire été sauvegardé');
 
-            return $app->redirect($app['url_generator']->generate('personnageSecondaire.list'), 303);
+            return $this->redirectToRoute('personnageSecondaire.list', [], 303);
         }
 
         return $app['twig']->render('admin/personnageSecondaire/add.twig', [
@@ -127,9 +127,9 @@ class PersonnageSecondaireController
 
             $app['orm.em']->persist($personnageSecondaire);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'Le personnage secondaire a été mis à jour.');
+           $this->addFlash('success', 'Le personnage secondaire a été mis à jour.');
 
-            return $app->redirect($app['url_generator']->generate('personnageSecondaire.list'));
+            return $this->redirectToRoute('personnageSecondaire.list');
         }
 
         return $app['twig']->render('admin/personnageSecondaire/update.twig', [
@@ -159,9 +159,9 @@ class PersonnageSecondaireController
             $app['orm.em']->remove($personnageSecondaire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage secondaire a été supprimé.');
+           $this->addFlash('success', 'Le personnage secondaire a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('personnageSecondaire.list'), 303);
+            return $this->redirectToRoute('personnageSecondaire.list', [], 303);
         }
 
         return $app['twig']->render('admin/personnageSecondaire/delete.twig', [

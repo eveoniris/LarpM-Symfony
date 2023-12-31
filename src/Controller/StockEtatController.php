@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class StockEtatController
+class StockEtatController extends AbstractController
 {
     public function indexAction(Request $request, Application $app)
     {
@@ -57,9 +57,9 @@ class StockEtatController
             $app['orm.em']->persist($etat);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'état a été ajouté.');
+           $this->addFlash('success', 'L\'état a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('stock_etat_index'));
+            return $this->redirectToRoute('stock_etat_index');
         }
 
         return $app['twig']->render('stock/etat/add.twig', ['form' => $form->createView()]);
@@ -85,14 +85,14 @@ class StockEtatController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($etat);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'L\'état a été mis à jour.');
+               $this->addFlash('success', 'L\'état a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($etat);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'L\'état a été supprimé.');
+               $this->addFlash('success', 'L\'état a été supprimé.');
             }
 
-            return $app->redirect($app['url_generator']->generate('stock_etat_index'));
+            return $this->redirectToRoute('stock_etat_index');
         }
 
         return $app['twig']->render('stock/etat/update.twig', [

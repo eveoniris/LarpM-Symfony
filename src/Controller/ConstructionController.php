@@ -31,7 +31,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class ConstructionController
+class ConstructionController extends AbstractController
 {
     /**
      * Présentation des constructions.
@@ -64,9 +64,9 @@ class ConstructionController
             $app['orm.em']->persist($construction);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La construction a été ajoutée.');
+           $this->addFlash('success', 'La construction a été ajoutée.');
 
-            return $app->redirect($app['url_generator']->generate('construction.detail', ['construction' => $construction->getId()]), 303);
+            return $this->redirectToRoute('construction.detail', ['construction' => $construction->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/construction/add.twig', [
@@ -94,9 +94,9 @@ class ConstructionController
             $app['orm.em']->persist($construction);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La construction a été modifié.');
+           $this->addFlash('success', 'La construction a été modifié.');
 
-            return $app->redirect($app['url_generator']->generate('construction.detail', ['construction' => $construction->getId()]), 303);
+            return $this->redirectToRoute('construction.detail', ['construction' => $construction->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/construction/update.twig', [
@@ -124,9 +124,9 @@ class ConstructionController
             $app['orm.em']->remove($construction);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La construction a été supprimée.');
+           $this->addFlash('success', 'La construction a été supprimée.');
 
-            return $app->redirect($app['url_generator']->generate('construction'), 303);
+            return $this->redirectToRoute('construction', [], 303);
         }
 
         return $app['twig']->render('admin/construction/delete.twig', [

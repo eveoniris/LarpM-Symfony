@@ -74,7 +74,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author kevin
  */
-class PersonnageController
+class PersonnageController extends AbstractController
 {
     /**
      * Selection du personnage courant.
@@ -83,7 +83,7 @@ class PersonnageController
     {
         $app['personnage.manager']->setCurrentPersonnage($personnage->getId());
 
-        return $app->redirect($app['url_generator']->generate('homepage'), 303);
+        return $this->redirectToRoute('homepage', [], 303);
     }
 
     /**
@@ -93,7 +93,7 @@ class PersonnageController
     {
         $app['personnage.manager']->resetCurrentPersonnage();
 
-        return $app->redirect($app['url_generator']->generate('homepage'), 303);
+        return $this->redirectToRoute('homepage', [], 303);
     }
 
     /**
@@ -133,9 +133,9 @@ class PersonnageController
             $extension = $files['trombine']->guessExtension();
 
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
+               $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
 
-                return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+                return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
             }
 
             $trombineFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
@@ -148,9 +148,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La photo a été enregistrée');
+           $this->addFlash('success', 'La photo a été enregistrée');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/trombine.twig', [
@@ -180,9 +180,9 @@ class PersonnageController
             $app['orm.em']->flush();
 
             $app['personnage.manager']->setCurrentPersonnage($personnage);
-            $app['session']->getFlashBag()->add('success', 'Votre personnage a été créé');
+           $this->addFlash('success', 'Votre personnage a été créé');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('public/personnage/new.twig', [
@@ -217,9 +217,9 @@ class PersonnageController
             $ages = $app['orm.em']->getRepository('\\'.\App\Entity\Age::class)->findAll();
 
             if (!$token) {
-                $app['session']->getFlashBag()->add('error', "Le jeton VIEILLESSE n'existe pas !");
+               $this->addFlash('error', "Le jeton VIEILLESSE n'existe pas !");
 
-                return $app->redirect($app['url_generator']->generate('homepage'), 303);
+                return $this->redirectToRoute('homepage', [], 303);
             }
 
             foreach ($personnages as $personnage) {
@@ -259,9 +259,9 @@ class PersonnageController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Tous les personnages ont reçu un jeton vieillesse.');
+           $this->addFlash('success', 'Tous les personnages ont reçu un jeton vieillesse.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('admin/personnage/vieillir.twig', [
@@ -286,9 +286,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé');
+           $this->addFlash('success', 'Le personnage a été sauvegardé');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/age.twig', [
@@ -353,9 +353,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé');
+           $this->addFlash('success', 'Le personnage a été sauvegardé');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/updateTechnologie.twig', [
@@ -385,9 +385,9 @@ class PersonnageController
 
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', $nomTechnologie.' a été ajoutée.');
+       $this->addFlash('success', $nomTechnologie.' a été ajoutée.');
 
-        return $app->redirect($app['url_generator']->generate('personnage.technologie.update', ['personnage' => $personnage->getId(), 303]));
+        return $this->redirectToRoute('personnage.technologie.update', ['personnage' => $personnage->getId(), 303]);
     }
 
     /**
@@ -409,9 +409,9 @@ class PersonnageController
 
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', $nomTechnologie.' a été retirée.');
+       $this->addFlash('success', $nomTechnologie.' a été retirée.');
 
-        return $app->redirect($app['url_generator']->generate('personnage.technologie.update', ['personnage' => $personnage->getId(), 303]));
+        return $this->redirectToRoute('personnage.technologie.update', ['personnage' => $personnage->getId(), 303]);
     }
 
     /**
@@ -464,9 +464,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé');
+           $this->addFlash('success', 'Le personnage a été sauvegardé');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/materiel.twig', [
@@ -504,9 +504,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le statut du personnage a été modifié');
+           $this->addFlash('success', 'Le statut du personnage a été modifié');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/statut.twig', [
@@ -565,9 +565,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été transféré');
+           $this->addFlash('success', 'Le personnage a été transféré');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/transfert.twig', [
@@ -674,9 +674,9 @@ class PersonnageController
             $app['orm.em']->persist($historique);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Les points d\'expériences ont été ajoutés');
+           $this->addFlash('success', 'Les points d\'expériences ont été ajoutés');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/xp.twig', [
@@ -768,11 +768,11 @@ class PersonnageController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre personnage a été sauvegardé.');
+           $this->addFlash('success', 'Votre personnage a été sauvegardé.');
             if ($participant && $participant->getGroupe()) {
-                return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $participant->getGroupe()->getId()]), 303);
+                return $this->redirectToRoute('groupe.detail', ['index' => $participant->getGroupe()->getId()], [], 303);
             } else {
-                return $app->redirect($app['url_generator']->generate('homepage'), 303);
+                return $this->redirectToRoute('homepage', [], 303);
             }
         }
 
@@ -851,9 +851,9 @@ class PersonnageController
             $app['orm.em']->remove($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été supprimé.');
+           $this->addFlash('success', 'Le personnage a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('admin/personnage/delete.twig', [
@@ -881,9 +881,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/update.twig', [
@@ -919,9 +919,9 @@ class PersonnageController
             $app['orm.em']->persist($background);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le background a été sauvegardé.');
+           $this->addFlash('success', 'Le background a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/addBackground.twig', [
@@ -956,9 +956,9 @@ class PersonnageController
             $app['orm.em']->persist($background);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le background a été sauvegardé.');
+           $this->addFlash('success', 'Le background a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/updateBackground.twig', [
@@ -994,9 +994,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/updateRenomme.twig', [
@@ -1030,9 +1030,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/updateHeroisme.twig', [
@@ -1066,9 +1066,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/updatePugilat.twig', [
@@ -1117,9 +1117,9 @@ class PersonnageController
 
         $app['orm.em']->persist($personnage);
         $app['orm.em']->flush();
-        $app['session']->getFlashBag()->add('success', 'Le jeton '.$token->getTag().' a été ajouté.');
+       $this->addFlash('success', 'Le jeton '.$token->getTag().' a été ajouté.');
 
-        return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+        return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
     }
 
     /**
@@ -1153,9 +1153,9 @@ class PersonnageController
 
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', 'Le jeton a été retiré.');
+       $this->addFlash('success', 'Le jeton a été retiré.');
 
-        return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+        return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
     }
 
     /**
@@ -1179,9 +1179,9 @@ class PersonnageController
             $app['orm.em']->persist($trigger);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le déclencheur a été ajouté.');
+           $this->addFlash('success', 'Le déclencheur a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/addTrigger.twig', [
@@ -1209,9 +1209,9 @@ class PersonnageController
             $app['orm.em']->remove($trigger);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le déclencheur a été supprimé.');
+           $this->addFlash('success', 'Le déclencheur a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/deleteTrigger.twig', [
@@ -1259,9 +1259,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/updateDomaine.twig', [
@@ -1339,9 +1339,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/updateLangue.twig', [
@@ -1422,9 +1422,9 @@ class PersonnageController
 
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', $nomPriere.' a été ajoutée.');
+       $this->addFlash('success', $nomPriere.' a été ajoutée.');
 
-        return $app->redirect($app['url_generator']->generate('personnage.admin.update.priere', ['personnage' => $personnage->getId(), 303]));
+        return $this->redirectToRoute('personnage.admin.update.priere', ['personnage' => $personnage->getId(), 303]);
     }
 
     /**
@@ -1446,9 +1446,9 @@ class PersonnageController
 
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', $nomPriere.' a été retirée.');
+       $this->addFlash('success', $nomPriere.' a été retirée.');
 
-        return $app->redirect($app['url_generator']->generate('personnage.admin.update.priere', ['personnage' => $personnage->getId(), 303]));
+        return $this->redirectToRoute('personnage.admin.update.priere', ['personnage' => $personnage->getId(), 303]);
     }
 
     /**
@@ -1485,9 +1485,9 @@ class PersonnageController
 
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', $nomConnaissance.' '.$niveauConnaissance.' a été ajouté.');
+       $this->addFlash('success', $nomConnaissance.' '.$niveauConnaissance.' a été ajouté.');
 
-        return $app->redirect($app['url_generator']->generate('personnage.admin.update.connaissance', ['personnage' => $personnage->getId(), 303]));
+        return $this->redirectToRoute('personnage.admin.update.connaissance', ['personnage' => $personnage->getId(), 303]);
     }
 
     /**
@@ -1510,9 +1510,9 @@ class PersonnageController
 
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', $nomConnaissance.' '.$niveauConnaissance.' a été retiré.');
+       $this->addFlash('success', $nomConnaissance.' '.$niveauConnaissance.' a été retiré.');
 
-        return $app->redirect($app['url_generator']->generate('personnage.admin.update.connaissance', ['personnage' => $personnage->getId(), 303]));
+        return $this->redirectToRoute('personnage.admin.update.connaissance', ['personnage' => $personnage->getId(), 303]);
     }
 
     /**
@@ -1588,9 +1588,9 @@ class PersonnageController
 
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', $nomSort.' '.$niveauSort.' a été ajouté.');
+       $this->addFlash('success', $nomSort.' '.$niveauSort.' a été ajouté.');
 
-        return $app->redirect($app['url_generator']->generate('personnage.admin.update.sort', ['personnage' => $personnage->getId(), 303]));
+        return $this->redirectToRoute('personnage.admin.update.sort', ['personnage' => $personnage->getId(), 303]);
     }
 
     /**
@@ -1613,9 +1613,9 @@ class PersonnageController
 
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', $nomSort.' '.$niveauSort.' a été retiré.');
+       $this->addFlash('success', $nomSort.' '.$niveauSort.' a été retiré.');
 
-        return $app->redirect($app['url_generator']->generate('personnage.admin.update.sort', ['personnage' => $personnage->getId(), 303]));
+        return $this->redirectToRoute('personnage.admin.update.sort', ['personnage' => $personnage->getId(), 303]);
     }
 
     /**
@@ -1690,9 +1690,9 @@ class PersonnageController
 
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', $nomPotion.' a été ajoutée.');
+       $this->addFlash('success', $nomPotion.' a été ajoutée.');
 
-        return $app->redirect($app['url_generator']->generate('personnage.admin.update.potion', ['personnage' => $personnage->getId(), 303]));
+        return $this->redirectToRoute('personnage.admin.update.potion', ['personnage' => $personnage->getId(), 303]);
     }
 
     /**
@@ -1714,9 +1714,9 @@ class PersonnageController
 
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', $nomPotion.' a été retirée.');
+       $this->addFlash('success', $nomPotion.' a été retirée.');
 
-        return $app->redirect($app['url_generator']->generate('personnage.admin.update.potion', ['personnage' => $personnage->getId(), 303]));
+        return $this->redirectToRoute('personnage.admin.update.potion', ['personnage' => $personnage->getId(), 303]);
     }
 
     /**
@@ -1778,9 +1778,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/ingredients.twig', [
@@ -1867,9 +1867,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/ressources.twig', [
@@ -1893,9 +1893,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/richesse.twig', [
@@ -1920,9 +1920,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le document a été ajouté au personnage.');
+           $this->addFlash('success', 'Le document a été ajouté au personnage.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/documents.twig', [
@@ -1947,9 +1947,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'objet a été ajouté au personnage.');
+           $this->addFlash('success', 'L\'objet a été ajouté au personnage.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/items.twig', [
@@ -1967,9 +1967,9 @@ class PersonnageController
 
         // refUser la demande si le personnage est Fanatique
         if ($personnage->isFanatique()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, le personnage êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. (supprimer la religion fanatique qu\'il possède avant)');
+           $this->addFlash('error', 'Désolé, le personnage êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. (supprimer la religion fanatique qu\'il possède avant)');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         $personnageReligion = new \App\Entity\PersonnagesReligions();
@@ -1979,9 +1979,9 @@ class PersonnageController
         $availableReligions = $app['personnage.manager']->getAdminAvailableReligions($personnage);
 
         if (0 == $availableReligions->count()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, il n\'y a plus de religion disponibles');
+           $this->addFlash('error', 'Désolé, il n\'y a plus de religion disponibles');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         // construit le tableau de choix
@@ -2015,18 +2015,18 @@ class PersonnageController
                 }
             } elseif (2 == $personnageReligion->getReligionLevel()->getIndex()) {
                 if ($personnage->isFervent()) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.');
+                   $this->addFlash('error', 'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.');
 
-                    return $app->redirect($app['url_generator']->generate('homepage'), 303);
+                    return $this->redirectToRoute('homepage', [], 303);
                 }
             }
 
             $app['orm.em']->persist($personnageReligion);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/addReligion.twig', [
@@ -2054,9 +2054,9 @@ class PersonnageController
             $app['orm.em']->remove($personnageReligion);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/removeReligion.twig', [
@@ -2086,9 +2086,9 @@ class PersonnageController
             $app['orm.em']->remove($personnageLangue);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/removeLangue.twig', [
@@ -2139,9 +2139,9 @@ class PersonnageController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/updateOrigine.twig', [
@@ -2159,9 +2159,9 @@ class PersonnageController
         $lastCompetence = $app['personnage.manager']->getLastCompetence($personnage);
 
         if (!$lastCompetence) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, le personnage n\'a pas encore acquis de compétences');
+           $this->addFlash('error', 'Désolé, le personnage n\'a pas encore acquis de compétences');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         $form = $app['form.factory']->createBuilder()
@@ -2230,9 +2230,9 @@ class PersonnageController
             $app['orm.em']->persist($historiqueXP);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La compétence a été retirée');
+           $this->addFlash('success', 'La compétence a été retirée');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/removeCompetence.twig', [
@@ -2249,9 +2249,9 @@ class PersonnageController
         $availableCompetences = $app['personnage.manager']->getAvailableCompetences($personnage);
 
         if (0 === $availableCompetences->count()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, il n\'y a plus de compétence disponible.');
+           $this->addFlash('error', 'Désolé, il n\'y a plus de compétence disponible.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         // construit le tableau de choix
@@ -2280,9 +2280,9 @@ class PersonnageController
             $xp = $personnage->getXp();
 
             if ($xp - $cout < 0) {
-                $app['session']->getFlashBag()->add('error', 'Vos n\'avez pas suffisement de points d\'expérience pour acquérir cette compétence.');
+               $this->addFlash('error', 'Vos n\'avez pas suffisement de points d\'expérience pour acquérir cette compétence.');
 
-                return $app->redirect($app['url_generator']->generate('homepage'), 303);
+                return $this->redirectToRoute('homepage', [], 303);
             }
 
             $personnage->setXp($xp - $cout);
@@ -2340,9 +2340,9 @@ class PersonnageController
             $app['orm.em']->persist($historiqueXP);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre personnage a été sauvegardé.');
+           $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/competence.twig', [
@@ -2400,9 +2400,9 @@ class PersonnageController
             $app['orm.em']->persist($personnageChronologie);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'évènement a été ajouté à la chronologie.');
+           $this->addFlash('success', 'L\'évènement a été ajouté à la chronologie.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/updateChronologie.twig', [
@@ -2432,9 +2432,9 @@ class PersonnageController
             $app['orm.em']->remove($personnageChronologie);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'évènement a été supprimé de la chronologie.');
+           $this->addFlash('success', 'L\'évènement a été supprimé de la chronologie.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/removeChronologie.twig', [
@@ -2471,9 +2471,9 @@ class PersonnageController
             $app['orm.em']->persist($personnageLignee);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La lignée a été ajoutée.');
+           $this->addFlash('success', 'La lignée a été ajoutée.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/updateLignee.twig', [
@@ -2503,9 +2503,9 @@ class PersonnageController
             $app['orm.em']->remove($personnageLignee);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La lignée a été retirée.');
+           $this->addFlash('success', 'La lignée a été retirée.');
 
-            return $app->redirect($app['url_generator']->generate('personnage.admin.detail', ['personnage' => $personnage->getId()]), 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/personnage/removeLignee.twig', [

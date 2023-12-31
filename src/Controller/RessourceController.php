@@ -31,7 +31,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class RessourceController
+class RessourceController extends AbstractController
 {
     /**
      * API: fourni la liste des ressources
@@ -81,12 +81,12 @@ class RessourceController
             $app['orm.em']->persist($ressource);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La ressource a été ajoutée.');
+           $this->addFlash('success', 'La ressource a été ajoutée.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('ressource'), 303);
+                return $this->redirectToRoute('ressource', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('ressource.add'), 303);
+                return $this->redirectToRoute('ressource.add', [], 303);
             }
         }
 
@@ -117,14 +117,14 @@ class RessourceController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($ressource);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La ressource a été mise à jour.');
+               $this->addFlash('success', 'La ressource a été mise à jour.');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($ressource);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La ressource a été supprimée.');
+               $this->addFlash('success', 'La ressource a été supprimée.');
             }
 
-            return $app->redirect($app['url_generator']->generate('ressource'));
+            return $this->redirectToRoute('ressource');
         }
 
         return $app['twig']->render('ressource/update.twig', [
@@ -145,9 +145,9 @@ class RessourceController
         if ($ressource) {
             return $app['twig']->render('ressource/detail.twig', ['ressource' => $ressource]);
         } else {
-            $app['session']->getFlashBag()->add('error', 'La ressource n\'a pas été trouvée.');
+           $this->addFlash('error', 'La ressource n\'a pas été trouvée.');
 
-            return $app->redirect($app['url_generator']->generate('ressource'));
+            return $this->redirectToRoute('ressource');
         }
     }
 

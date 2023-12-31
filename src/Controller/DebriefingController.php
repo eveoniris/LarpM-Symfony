@@ -36,7 +36,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class DebriefingController
+class DebriefingController extends AbstractController
 {
     final public const DOC_PATH = __DIR__.'/../../../private/doc/';
 
@@ -126,10 +126,10 @@ class DebriefingController
                 $app['orm.em']->persist($debriefing);
                 $app['orm.em']->flush();
 
-                $app['session']->getFlashBag()->add('success', 'Le debriefing a été ajouté.');
+               $this->addFlash('success', 'Le debriefing a été ajouté.');
             }
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $debriefing->getGroupe()->getId()]), 303);
+            return $this->redirectToRoute('groupe.detail', ['index' => $debriefing->getGroupe()->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/debriefing/add.twig', [
@@ -153,9 +153,9 @@ class DebriefingController
             $app['orm.em']->remove($debriefing);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le debriefing a été supprimé.');
+           $this->addFlash('success', 'Le debriefing a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $debriefing->getGroupe()->getId()]), 303);
+            return $this->redirectToRoute('groupe.detail', ['index' => $debriefing->getGroupe()->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/debriefing/delete.twig', [
@@ -187,9 +187,9 @@ class DebriefingController
                 $app['orm.em']->persist($debriefing);
                 $app['orm.em']->flush();
 
-                $app['session']->getFlashBag()->add('success', 'Le debriefing a été modifié.');
+               $this->addFlash('success', 'Le debriefing a été modifié.');
 
-                return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $debriefing->getGroupe()->getId()]), 303);
+                return $this->redirectToRoute('groupe.detail', ['index' => $debriefing->getGroupe()->getId()], [], 303);
             }
         }
 
@@ -222,7 +222,7 @@ class DebriefingController
             $extension = pathinfo((string) $filename, PATHINFO_EXTENSION);
 
             if ('pdf' !== $extension) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, votre document n\'est pas valide. Vérifiez le format de votre document ('.$extension.'), seuls les .pdf sont acceptés.');
+               $this->addFlash('error', 'Désolé, votre document n\'est pas valide. Vérifiez le format de votre document ('.$extension.'), seuls les .pdf sont acceptés.');
 
                 return false;
             }

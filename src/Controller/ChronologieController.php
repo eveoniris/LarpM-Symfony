@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * LarpManager\Controllers\ChronologieController.
  */
-class ChronologieController
+class ChronologieController extends AbstractController
 {
     /**
      * API : mettre à jour un événement
@@ -125,9 +125,9 @@ class ChronologieController
             $app['orm.em']->persist($chronologie);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'événement a été ajouté.');
+           $this->addFlash('success', 'L\'événement a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('chronologie'));
+            return $this->redirectToRoute('chronologie');
         }
 
         return $app['twig']->render('admin/chronologie/add.twig', [
@@ -141,7 +141,7 @@ class ChronologieController
 
         $chronologie = $app['orm.em']->find('\\'.\App\Entity\Chronologie::class, $id);
         if (!$chronologie) {
-            return $app->redirect($app['url_generator']->generate('chronologie'));
+            return $this->redirectToRoute('chronologie');
         }
 
         $form = $app['form.factory']->createBuilder(new ChronologieForm(), $chronologie)
@@ -161,9 +161,9 @@ class ChronologieController
             $app['orm.em']->persist($chronologie);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'événement a été mis à jour.');
+           $this->addFlash('success', 'L\'événement a été mis à jour.');
 
-            return $app->redirect($app['url_generator']->generate('chronologie'));
+            return $this->redirectToRoute('chronologie');
         }
 
         return $app['twig']->render('admin/chronologie/update.twig', [
@@ -178,7 +178,7 @@ class ChronologieController
 
         $chronologie = $app['orm.em']->find('\\'.\App\Entity\Chronologie::class, $id);
         if (!$chronologie) {
-            return $app->redirect($app['url_generator']->generate('chronologie'));
+            return $this->redirectToRoute('chronologie');
         }
 
         $form = $app['form.factory']->createBuilder(new ChronologieRemoveForm(), $chronologie)
@@ -193,9 +193,9 @@ class ChronologieController
             $app['orm.em']->remove($chronologie);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'événement a été supprimé.');
+           $this->addFlash('success', 'L\'événement a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('chronologie'));
+            return $this->redirectToRoute('chronologie');
         }
 
         return $app['twig']->render('admin/chronologie/remove.twig', [

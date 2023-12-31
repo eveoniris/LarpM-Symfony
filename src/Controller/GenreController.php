@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class GenreController
+class GenreController extends AbstractController
 {
     /**
      * Présentation des genres.
@@ -61,12 +61,12 @@ class GenreController
             $app['orm.em']->persist($genre);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le genre a été ajouté.');
+           $this->addFlash('success', 'Le genre a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('genre'), 303);
+                return $this->redirectToRoute('genre', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('genre.add'), 303);
+                return $this->redirectToRoute('genre.add', [], 303);
             }
         }
 
@@ -87,9 +87,9 @@ class GenreController
         if ($genre) {
             return $app['twig']->render('admin/genre/detail.twig', ['genre' => $genre]);
         } else {
-            $app['session']->getFlashBag()->add('error', 'Le genre n\'a pas été trouvé.');
+           $this->addFlash('error', 'Le genre n\'a pas été trouvé.');
 
-            return $app->redirect($app['url_generator']->generate('genre'));
+            return $this->redirectToRoute('genre');
         }
     }
 
@@ -115,14 +115,14 @@ class GenreController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($genre);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le genre a été mis à jour.');
+               $this->addFlash('success', 'Le genre a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($genre);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le genre a été supprimé.');
+               $this->addFlash('success', 'Le genre a été supprimé.');
             }
 
-            return $app->redirect($app['url_generator']->generate('genre'));
+            return $this->redirectToRoute('genre');
         }
 
         return $app['twig']->render('admin/genre/update.twig', [

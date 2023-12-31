@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class StrategieController
+class StrategieController extends AbstractController
 {
     /**
      * Présentation des constructions.

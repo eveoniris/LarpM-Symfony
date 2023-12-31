@@ -30,7 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class AgeController
+class AgeController extends AbstractController
 {
     /**
      * Liste des ages.
@@ -110,17 +110,17 @@ class AgeController
         $app['orm.em']->persist($age);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', 'L\'age a été ajouté.');
+       $this->addFlash('success', 'L\'age a été ajouté.');
 
         /*
          * Si l'utilisateur a cliquer sur "Sauvegarder", on le redirige vers la liste des age
          */
         if ($form->get('save')->isClicked()) {
-            return $app->redirect($app['url_generator']->generate('age'), 303);
+            return $this->redirectToRoute('age', [], 303);
         }
 
         // renvoi vers le formulaire d'ajout d'un age
-        return $app->redirect($app['url_generator']->generate('age.add.view'), 303);
+        return $this->redirectToRoute('age.add.view', [], 303);
     }
 
     /**
@@ -192,13 +192,13 @@ class AgeController
         if ($form->get('update')->isClicked()) {
             $app['orm.em']->persist($age);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'L\'age a été mis à jour.');
+           $this->addFlash('success', 'L\'age a été mis à jour.');
         } else {
             $app['orm.em']->remove($age);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'L\'age a été supprimé.');
+           $this->addFlash('success', 'L\'age a été supprimé.');
         }
 
-        return $app->redirect($app['url_generator']->generate('age'));
+        return $this->redirectToRoute('age');
     }
 }

@@ -64,7 +64,7 @@ class BilletController extends AbstractController
             $entityManager->persist($billet);
             $entityManager->flush();
 
-            $request->getSession()->getFlashBag()->add('success', 'Le billet a été ajouté.');
+            $this->addFlash('success', 'Le billet a été ajouté.');
 
             return $this->redirectToRoute('billet.list', [], 303);
         }
@@ -105,7 +105,7 @@ class BilletController extends AbstractController
             $entityManager->persist($billet);
             $entityManager->flush();
 
-            $request->getSession()->getFlashBag()->add('success', 'Le billet a été mis à jour.');
+            $this->addFlash('success', 'Le billet a été mis à jour.');
 
             return $this->redirectToRoute('billet.list', [], 303);
         }
@@ -134,7 +134,7 @@ class BilletController extends AbstractController
             $entityManager->remove($billet); // TODO constraint on Participants
             $entityManager->flush();
 
-            $request->getSession()->getFlashBag()->add('success', 'Le billet a été supprimé.');
+            $this->addFlash('success', 'Le billet a été supprimé.');
 
             return $this->redirectToRoute('billet.list', [], 303);
         }

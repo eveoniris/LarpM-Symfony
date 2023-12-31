@@ -80,9 +80,9 @@ class ClasseController extends AbstractController
             $this->addFlash('success', 'La classe a été ajoutée.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('classe'), 303);
+                return $this->redirectToRoute('classe', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('classe.add'), 303);
+                return $this->redirectToRoute('classe.add', [], 303);
             }
         }
 
@@ -119,7 +119,7 @@ class ClasseController extends AbstractController
                 $this->addFlash('success', 'La classe a été supprimée.');
             }
 
-            //return $app->redirect($app['url_generator']->generate('classe'));
+            //return $this->redirectToRoute('classe'));
             return $this->redirectToRoute('TODO', [], 303);
         }
 

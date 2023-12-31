@@ -45,9 +45,9 @@ class GnController extends AbstractController
 
         if (null != $participant && $participant->getBesoinValidationCi()) {
             // L'utilisateur n'a pas validé les CG.
-            /*return $app->redirect($app['url_generator']->generate('User.gn.validationci', [
+            /*return $this->redirectToRoute('User.gn.validationci', [
                 'gn' => $gn->getId(),
-            ]), 303);*/
+            ], [], 303);*/
             return $this->redirectToRoute('User.gn.validationci', ['gn' => $gn->getId()], 303);
         }
 
@@ -69,11 +69,11 @@ class GnController extends AbstractController
         $participant = $this->getUser()->getParticipant($gn);
         $personnage = $participant->getPersonnage();
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', "Vous n'avez pas encore de personnage.");
+           $this->addFlash('error', "Vous n'avez pas encore de personnage.");
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', [
+            return $this->redirectToRoute('gn.detail', [
                 'gn' => $gn->getId(),
-            ]), 303);
+            ], [], 303);
         }
 
         $lois = $app['orm.em']->getRepository(Loi::class)->findAll();
@@ -234,9 +234,9 @@ class GnController extends AbstractController
             $topic->setObjectId($gn->getId());
             $app['orm.em']->persist($gn);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'Le gn a été ajouté.');
+           $this->addFlash('success', 'Le gn a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('gn.list'), 303);
+            return $this->redirectToRoute('gn.list', [], 303);
         }
 
         return $app['twig']->render('gn/add.twig', [
@@ -525,9 +525,9 @@ class GnController extends AbstractController
             $gn = $form->getData();
             $app['orm.em']->remove($gn);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'Le gn a été supprimé.');
+           $this->addFlash('success', 'Le gn a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('gn.list'));
+            return $this->redirectToRoute('gn.list');
         }
 
         return $app['twig']->render('gn/delete.twig', [
@@ -549,9 +549,9 @@ class GnController extends AbstractController
             $gn = $form->getData();
             $app['orm.em']->persist($gn);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'Le gn a été mis à jour.');
+           $this->addFlash('success', 'Le gn a été mis à jour.');
 
-            return $app->redirect($app['url_generator']->generate('gn.list'));
+            return $this->redirectToRoute('gn.list');
         }
 
         return $app['twig']->render('gn/update.twig', [

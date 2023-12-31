@@ -35,7 +35,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class StockObjetController
+class StockObjetController extends AbstractController
 {
     /**
      * Affiche la liste des objets.
@@ -259,14 +259,14 @@ class StockObjetController
             $app['orm.em']->persist($objet);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'objet a été ajouté dans le stock');
+           $this->addFlash('success', 'L\'objet a été ajouté dans le stock');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('stock_homepage'), 303);
+                return $this->redirectToRoute('stock_homepage', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('stock_objet_add'), 303);
+                return $this->redirectToRoute('stock_objet_add', [], 303);
             } elseif ($form->get('save_clone')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('stock_objet_clone', ['objet' => $objet->getId()]), 303);
+                return $this->redirectToRoute('stock_objet_clone', ['objet' => $objet->getId()], [], 303);
             }
         }
 
@@ -307,12 +307,12 @@ class StockObjetController
             $app['orm.em']->persist($objet);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'objet a été ajouté dans le stock');
+           $this->addFlash('success', 'L\'objet a été ajouté dans le stock');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('stock_homepage'), 303);
+                return $this->redirectToRoute('stock_homepage', [], 303);
             } else {
-                return $app->redirect($app['url_generator']->generate('stock_objet_clone', ['objet' => $newObjet->getId()]), 303);
+                return $this->redirectToRoute('stock_objet_clone', ['objet' => $newObjet->getId()], [], 303);
             }
         }
 
@@ -344,14 +344,14 @@ class StockObjetController
                 }
                 $app['orm.em']->persist($objet);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'L\'objet a été mis à jour');
+               $this->addFlash('success', 'L\'objet a été mis à jour');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($objet);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'L\'objet a été supprimé');
+               $this->addFlash('success', 'L\'objet a été supprimé');
             }
 
-            return $app->redirect($app['url_generator']->generate('stock_homepage'));
+            return $this->redirectToRoute('stock_homepage');
         }
 
         return $app['twig']->render('admin/stock/objet/update.twig', ['objet' => $objet, 'form' => $form->createView()]);
@@ -371,9 +371,9 @@ class StockObjetController
             $app['orm.em']->remove($objet);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'objet a été supprimé');
+           $this->addFlash('success', 'L\'objet a été supprimé');
 
-            return $app->redirect($app['url_generator']->generate('stock_objet_index'));
+            return $this->redirectToRoute('stock_objet_index');
         }
 
         return $app['twig']->render('admin/stock/objet/delete.twig', ['objet' => $objet, 'form' => $form->createView()]);
@@ -399,9 +399,9 @@ class StockObjetController
             $app['orm.em']->persist($objet);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'les tags ont été mis à jour');
+           $this->addFlash('success', 'les tags ont été mis à jour');
 
-            return $app->redirect($app['url_generator']->generate('stock_objet_index'));
+            return $this->redirectToRoute('stock_objet_index');
         }
 
         return $app['twig']->render('admin/stock/objet/tag.twig', ['objet' => $objet, 'form' => $form->createView()]);

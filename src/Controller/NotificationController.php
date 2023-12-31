@@ -30,7 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class NotificationController
+class NotificationController extends AbstractController
 {
     /**
      * Supprime une notification.

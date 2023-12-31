@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class StockTagController
+class StockTagController extends AbstractController
 {
     /**
      * Liste des tags.
@@ -57,9 +57,9 @@ class StockTagController
             $app['orm.em']->persist($tag);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le tag a été ajouté.');
+           $this->addFlash('success', 'Le tag a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('stock_tag_index'));
+            return $this->redirectToRoute('stock_tag_index');
         }
 
         return $app['twig']->render('stock/tag/add.twig', ['form' => $form->createView()]);
@@ -85,14 +85,14 @@ class StockTagController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($tag);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le tag a été modifié.');
+               $this->addFlash('success', 'Le tag a été modifié.');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($tag);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le tag a été supprimé.');
+               $this->addFlash('success', 'Le tag a été supprimé.');
             }
 
-            return $app->redirect($app['url_generator']->generate('stock_tag_index'));
+            return $this->redirectToRoute('stock_tag_index');
         }
 
         return $app['twig']->render('stock/tag/update.twig', [

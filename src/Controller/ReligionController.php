@@ -160,10 +160,10 @@ class ReligionController extends AbstractController
             // l'utilisateur est redirigé soit vers la liste des religions, soit vers de nouveau
             // vers le formulaire d'ajout d'une religion
             if ($form->get('save')->isClicked()) {
-                //return $app->redirect($app['url_generator']->generate('religion'), 303);
+                //return $this->redirectToRoute('religion', [], 303);
                 return $this->redirectToRoute('religion', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                //return $app->redirect($app['url_generator']->generate('religion.add'), 303);
+                //return $this->redirectToRoute('religion.add', [], 303);
                 return $this->redirectToRoute('religion.add', [], 303);
             }
         }
@@ -216,13 +216,13 @@ class ReligionController extends AbstractController
                 $entityManager->flush();
                 $this->addFlash('success', 'La religion a été mise à jour.');
 
-                //return $app->redirect($app['url_generator']->generate('religion.detail', ['index' => $id]), 303);
+                //return $this->redirectToRoute('religion.detail', ['index' => $id], [], 303);
                 return $this->redirectToRoute('religion.detail', [], 303);
             } elseif ($form->get('delete')->isClicked()) {
                 /*$app['orm.em']->remove($religion);
                 $app['orm.em']->flush();
                 $this->addFlash('success', 'La religion a été supprimée.');*/
-                //return $app->redirect($app['url_generator']->generate('religion'), 303);
+                //return $this->redirectToRoute('religion', [], 303);
                 return $this->redirectToRoute('religion', [], 303);
             }
         }
@@ -259,7 +259,7 @@ class ReligionController extends AbstractController
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
                 $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
 
-                return $app->redirect($app['url_generator']->generate('religion.detail', ['index' => $religion->getId()]), 303);
+                return $this->redirectToRoute('religion.detail', ['index' => $religion->getId()], [], 303);
             }
 
             $blasonFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
@@ -274,7 +274,7 @@ class ReligionController extends AbstractController
 
             $this->addFlash('success', 'Le blason a été enregistré');
 
-            return $app->redirect($app['url_generator']->generate('religion.detail', ['index' => $religion->getId()]), 303);
+            return $this->redirectToRoute('religion.detail', ['index' => $religion->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/religion/blason.twig', [
@@ -332,9 +332,9 @@ class ReligionController extends AbstractController
             // l'utilisateur est redirigé soit vers la liste des niveaux de religions, soit vers de nouveau
             // vers le formulaire d'ajout d'un niveau de religion
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('religion.level'), 303);
+                return $this->redirectToRoute('religion.level', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('religion.level.add'), 303);
+                return $this->redirectToRoute('religion.level.add', [], 303);
             }
         }
 
@@ -370,13 +370,13 @@ class ReligionController extends AbstractController
                 $app['orm.em']->flush();
                 $this->addFlash('success', 'Le niveau de religion a été mise à jour.');
 
-                return $app->redirect($app['url_generator']->generate('religion.level.detail', ['index' => $id]), 303);
+                return $this->redirectToRoute('religion.level.detail', ['index' => $id], [], 303);
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($religionLevel);
                 $app['orm.em']->flush();
                 $this->addFlash('success', 'Le niveau de religion a été supprimée.');
 
-                return $app->redirect($app['url_generator']->generate('religion.level'), 303);
+                return $this->redirectToRoute('religion.level', [], 303);
             }
         }
 

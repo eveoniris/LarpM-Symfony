@@ -93,9 +93,9 @@ class UserController extends AbstractController
 
             $app['notify']->newUser($User, $plainPassword);
 
-            $app['session']->getFlashBag()->add('success', 'L\'utilisateur a été ajouté.');
+           $this->addFlash('success', 'L\'utilisateur a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('admin/User/new.twig', [
@@ -109,9 +109,9 @@ class UserController extends AbstractController
     public function personnageDefaultAction(Application $app, Request $request, User $User)
     {
         if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN') && !$User == $this->getUser()) {
-            $app['session']->getFlashBag()->add('error', 'Vous n\'avez pas les droits necessaires pour cette opération.');
+           $this->addFlash('error', 'Vous n\'avez pas les droits necessaires pour cette opération.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         $form = $app['form.factory']->createBuilder(new UserPersonnageDefaultForm(), $this->getUser(), ['User_id' => $User->getId()])
@@ -126,9 +126,9 @@ class UserController extends AbstractController
             $app['orm.em']->persist($User);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos informations ont été enregistrées.');
+           $this->addFlash('success', 'Vos informations ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('public/User/personnageDefault.twig', [
@@ -164,9 +164,9 @@ class UserController extends AbstractController
             $app['orm.em']->persist($User);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos informations ont été enregistrées.');
+           $this->addFlash('success', 'Vos informations ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('public/User/restriction.twig', [
@@ -196,9 +196,9 @@ class UserController extends AbstractController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vous participez maintenant à '.$gn->getLabel().' !');
+           $this->addFlash('success', 'Vous participez maintenant à '.$gn->getLabel().' !');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('public/gn/participe.twig', [
@@ -224,9 +224,9 @@ class UserController extends AbstractController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vous avez validé les condition d\'inscription pour '.$gn->getLabel().' !');
+           $this->addFlash('success', 'Vous avez validé les condition d\'inscription pour '.$gn->getLabel().' !');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('public/gn/validation_ci.twig', [
@@ -241,9 +241,9 @@ class UserController extends AbstractController
     public function UserHasBilletDetailAction(Application $app, Request $request, UserHasBillet $UserHasBillet)
     {
         if ($UserHasBillet->getUser() != $this->getUser()) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne pouvez pas acceder à cette information');
+           $this->addFlash('error', 'Vous ne pouvez pas acceder à cette information');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('public/UserHasBillet/detail.twig', [
@@ -300,9 +300,9 @@ class UserController extends AbstractController
             $app['orm.em']->persist($etatCivil);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos informations ont été enregistrées.');
+           $this->addFlash('success', 'Vos informations ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('public/User/etatCivil.twig', [
@@ -390,16 +390,16 @@ class UserController extends AbstractController
     public function likeAction(Application $app, Request $request, User $User)
     {
         if ($User == $this->getUser()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !');
+           $this->addFlash('error', 'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !');
         } else {
             $User->addCoeur();
             $app['orm.em']->persist($User);
             $app['orm.em']->flush();
             $app['notify']->coeur($this->getUser(), $User);
-            $app['session']->getFlashBag()->add('success', 'Votre coeur a été envoyé !');
+           $this->addFlash('success', 'Votre coeur a été envoyé !');
         }
 
-        return $app->redirect($app['url_generator']->generate('User.view', ['id' => $User->getId()]));
+        return $this->redirectToRoute('User.view', ['id' => $User->getId()]);
     }
 
     /**
@@ -595,7 +595,7 @@ class UserController extends AbstractController
 
                     $this->addFlash('success', 'Votre compte a été créé ! vous pouvez maintenant rejoindre un groupe et créer votre personnage');
 
-                    return $app->redirect($app['url_generator']->generate('homepage'));
+                    return $this->redirectToRoute('homepage');
                 }
             } catch (\InvalidArgumentException $e) {
                 $error = $e->getMessage();
@@ -627,7 +627,7 @@ class UserController extends AbstractController
         if (!$User) {
             $this->addFlash('alert', 'Désolé, votre lien de confirmation a expiré.');
 
-            return $app->redirect($app['url_generator']->generate('User.login'));
+            return $this->redirectToRoute('User.login');
         }
 
         $User->setConfirmationToken(null);
@@ -638,7 +638,7 @@ class UserController extends AbstractController
         $app['User.manager']->loginAsUser($User);
         $this->addFlash('alert', 'Merci ! Votre compte a été activé.');
 
-        return $app->redirect($app['url_generator']->generate('newUser.step1', ['id' => $User->getId()]));
+        return $this->redirectToRoute('newUser.step1', ['id' => $User->getId()]);
     }
 
     /**
@@ -698,7 +698,7 @@ class UserController extends AbstractController
                 $this->addFlash('alert', 'Les instructions pour enregistrer votre mot de passe ont été envoyé par mail.');
                 $app['session']->set('_security.last_Username', $email);
 
-                return $app->redirect($app['url_generator']->generate('User.login'));
+                return $this->redirectToRoute('User.login');
             }
 
             $error = 'No User account was found with that email address.';
@@ -743,7 +743,7 @@ class UserController extends AbstractController
         if ($tokenExpired) {
             $this->addFlash('alert', 'Sorry, your password reset link has expired.');
 
-            return $app->redirect($app['url_generator']->generate('User.login'));
+            return $this->redirectToRoute('User.login');
         }
 
         $error = '';
@@ -763,7 +763,7 @@ class UserController extends AbstractController
                 $app['User.manager']->loginAsUser($User);
                 $this->addFlash('alert', 'Your password has been reset and you are now signed in.');
 
-                return $app->redirect($app['url_generator']->generate('User.view', ['id' => $User->getId()]));
+                return $this->redirectToRoute('User.view', ['id' => $User->getId()]);
             }
         }
 

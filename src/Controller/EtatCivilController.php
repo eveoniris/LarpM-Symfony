@@ -30,7 +30,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author kevin
  */
-class EtatCivilController
+class EtatCivilController extends AbstractController
 {
     /**
      * Affiche l'état civil de l'utilisateur.

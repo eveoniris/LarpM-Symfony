@@ -30,7 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class TitreController
+class TitreController extends AbstractController
 {
     /**
      * Liste des titres.
@@ -74,9 +74,9 @@ class TitreController
             $app['orm.em']->persist($titre);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le titre a été ajouté');
+           $this->addFlash('success', 'Le titre a été ajouté');
 
-            return $app->redirect($app['url_generator']->generate('titre.admin.detail', ['titre' => $titre->getId()]), 303);
+            return $this->redirectToRoute('titre.admin.detail', ['titre' => $titre->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/titre/add.twig', [
@@ -104,9 +104,9 @@ class TitreController
             $app['orm.em']->persist($titre);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le titre a été sauvegardé');
+           $this->addFlash('success', 'Le titre a été sauvegardé');
 
-            return $app->redirect($app['url_generator']->generate('titre.admin.detail', ['titre' => $titre->getId()]), 303);
+            return $this->redirectToRoute('titre.admin.detail', ['titre' => $titre->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/titre/update.twig', [
@@ -134,9 +134,9 @@ class TitreController
             $app['orm.em']->remove($titre);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le titre a été suprimé');
+           $this->addFlash('success', 'Le titre a été suprimé');
 
-            return $app->redirect($app['url_generator']->generate('titre.admin.list'), 303);
+            return $this->redirectToRoute('titre.admin.list', [], 303);
         }
 
         return $app['twig']->render('admin/titre/delete.twig', [

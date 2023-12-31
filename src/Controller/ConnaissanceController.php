@@ -31,7 +31,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author Kevin F.
  */
-class ConnaissanceController
+class ConnaissanceController extends AbstractController
 {
     // liste des colonnes à afficher par défaut sur les vues 'personnages' (l'ordre est pris en compte)
     private array $defaultPersonnageListColumnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser'];
@@ -84,9 +84,9 @@ class ConnaissanceController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('connaissance.list'), 303);
+                    return $this->redirectToRoute('connaissance.list', [], 303);
                 }
 
                 $documentFilename = hash('md5', $connaissance->getLabel().$filename.time()).'.'.$extension;
@@ -99,9 +99,9 @@ class ConnaissanceController
             $app['orm.em']->persist($connaissance);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La connaissance a été ajoutée');
+           $this->addFlash('success', 'La connaissance a été ajoutée');
 
-            return $app->redirect($app['url_generator']->generate('connaissance.detail', ['connaissance' => $connaissance->getId()]), 303);
+            return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/connaissance/add.twig', [
@@ -135,9 +135,9 @@ class ConnaissanceController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('connaissance.list'), 303);
+                    return $this->redirectToRoute('connaissance.list', [], 303);
                 }
 
                 $documentFilename = hash('md5', $connaissance->getLabel().$filename.time()).'.'.$extension;
@@ -150,9 +150,9 @@ class ConnaissanceController
             $app['orm.em']->persist($connaissance);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La connaissance a été sauvegardée');
+           $this->addFlash('success', 'La connaissance a été sauvegardée');
 
-            return $app->redirect($app['url_generator']->generate('connaissance.detail', ['connaissance' => $connaissance->getId()]), 303);
+            return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/connaissance/update.twig', [
@@ -180,9 +180,9 @@ class ConnaissanceController
             $app['orm.em']->remove($connaissance);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La connaissance a été supprimée');
+           $this->addFlash('success', 'La connaissance a été supprimée');
 
-            return $app->redirect($app['url_generator']->generate('connaissance.list'), 303);
+            return $this->redirectToRoute('connaissance.list', [], 303);
         }
 
         return $app['twig']->render('admin/connaissance/delete.twig', [

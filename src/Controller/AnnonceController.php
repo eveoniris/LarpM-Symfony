@@ -32,7 +32,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class AnnonceController
+class AnnonceController extends AbstractController
 {
     /**
      * Présentation des annonces.
@@ -84,12 +84,12 @@ class AnnonceController
             $app['orm.em']->persist($annonce);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'annonce a été ajoutée.');
+           $this->addFlash('success', 'L\'annonce a été ajoutée.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('annonce.list'), 303);
+                return $this->redirectToRoute('annonce.list', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('annonce.add'), 303);
+                return $this->redirectToRoute('annonce.add', [], 303);
             }
         }
 
@@ -116,9 +116,9 @@ class AnnonceController
 
             $app['orm.em']->persist($annonce);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'L\'annonce a été mise à jour.');
+           $this->addFlash('success', 'L\'annonce a été mise à jour.');
 
-            return $app->redirect($app['url_generator']->generate('annonce.list'));
+            return $this->redirectToRoute('annonce.list');
         }
 
         return $app['twig']->render('admin/annonce/update.twig', [
@@ -152,9 +152,9 @@ class AnnonceController
             $app['orm.em']->remove($annonce);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'annonce a été supprimée.');
+           $this->addFlash('success', 'L\'annonce a été supprimée.');
 
-            return $app->redirect($app['url_generator']->generate('annonce.list'));
+            return $this->redirectToRoute('annonce.list');
         }
 
         return $app['twig']->render('admin/annonce/delete.twig', [

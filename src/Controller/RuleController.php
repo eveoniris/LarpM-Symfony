@@ -85,9 +85,9 @@ class RuleController extends AbstractController
             $extension = $files['rule']->guessExtension();
 
             if (!$extension || 'pdf' != $extension) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, votre fichier ne semble pas valide (vérifiez le format de votre fichier)');
+               $this->addFlash('error', 'Désolé, votre fichier ne semble pas valide (vérifiez le format de votre fichier)');
 
-                return $app->redirect($app['url_generator']->generate('rules'), 303);
+                return $this->redirectToRoute('rules', [], 303);
             }
 
             $ruleFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
@@ -102,7 +102,7 @@ class RuleController extends AbstractController
             $app['orm.em']->persist($rule);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre fichier a été enregistrée');
+           $this->addFlash('success', 'Votre fichier a été enregistrée');
         }
 
         return $app['twig']->render('rule/add.twig', [
@@ -136,7 +136,7 @@ class RuleController extends AbstractController
             $app['orm.em']->persist($rule);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications été enregistrées');
+           $this->addFlash('success', 'Vos modifications été enregistrées');
         }
 
         return $app['twig']->render('rule/update.twig', [
@@ -164,12 +164,12 @@ class RuleController extends AbstractController
 
             if (file_exists($filename)) {
                 unlink($filename);
-                $app['session']->getFlashBag()->add('success', 'suppresion du fichier '.$filename);
+               $this->addFlash('success', 'suppresion du fichier '.$filename);
             } else {
-                $app['session']->getFlashBag()->add('error', 'impossible de supprimer le fichier '.$filename);
+               $this->addFlash('error', 'impossible de supprimer le fichier '.$filename);
             }
 
-            return $app->redirect($app['url_generator']->generate('rules'), 303);
+            return $this->redirectToRoute('rules', [], 303);
         }
 
         return $app['twig']->render('rule/delete.twig', [

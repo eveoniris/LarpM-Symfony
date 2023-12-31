@@ -33,7 +33,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class DocumentController
+class DocumentController extends AbstractController
 {
     /**
      * Liste des documents.
@@ -205,9 +205,9 @@ class DocumentController
             $extension = $files['document']->guessExtension();
 
             if (!$extension || 'pdf' != $extension) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, votre fichier ne semble pas valide (vérifiez le format de votre fichier)');
+               $this->addFlash('error', 'Désolé, votre fichier ne semble pas valide (vérifiez le format de votre fichier)');
 
-                return $app->redirect($app['url_generator']->generate('document.add'), 303);
+                return $this->redirectToRoute('document.add', [], 303);
             }
 
             $documentFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
@@ -219,12 +219,12 @@ class DocumentController
             $app['orm.em']->persist($document);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le document a été ajouté.');
+           $this->addFlash('success', 'Le document a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('document'), 303);
+                return $this->redirectToRoute('document', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('document.add'), 303);
+                return $this->redirectToRoute('document.add', [], 303);
             }
         }
 
@@ -263,9 +263,9 @@ class DocumentController
                 $extension = $files['document']->guessExtension();
 
                 if (!$extension || 'pdf' != $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre fichier ne semble pas valide (vérifiez le format de votre fichier)');
+                   $this->addFlash('error', 'Désolé, votre fichier ne semble pas valide (vérifiez le format de votre fichier)');
 
-                    return $app->redirect($app['url_generator']->generate('document.add'), 303);
+                    return $this->redirectToRoute('document.add', [], 303);
                 }
 
                 $documentFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
@@ -278,9 +278,9 @@ class DocumentController
             $app['orm.em']->persist($document);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le document a été modifié.');
+           $this->addFlash('success', 'Le document a été modifié.');
 
-            return $app->redirect($app['url_generator']->generate('document'), 303);
+            return $this->redirectToRoute('document', [], 303);
         }
 
         return $app['twig']->render('admin/document/update.twig', [
@@ -306,9 +306,9 @@ class DocumentController
             $app['orm.em']->remove($document);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le document a été supprimé.');
+           $this->addFlash('success', 'Le document a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('document'), 303);
+            return $this->redirectToRoute('document', [], 303);
         }
 
         return $app['twig']->render('admin/document/delete.twig', [

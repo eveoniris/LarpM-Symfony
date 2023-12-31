@@ -32,7 +32,7 @@ use Symfony\Component\Yaml\Dumper;
  *
  * @author kevin
  */
-class InstallController
+class InstallController extends AbstractController
 {
     private function loadUserTables($connection, string $dir): void
     {
@@ -60,7 +60,7 @@ class InstallController
         // $app['security.access_rules'] dans le bootstrap definit deja ce comportement, ce check n'est la que
         // comme double securite
         if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN')) {
-            return $app->redirect($app['url_generator']->generate('User.login'));
+            return $this->redirectToRoute('User.login');
         }
 
         if ('POST' === $request->getMethod()) {
@@ -69,7 +69,7 @@ class InstallController
             return $app['twig']->render('install/installdone.twig');
         }
 
-        return $app->redirect($app['url_generator']->generate('homepage'));
+        return $this->redirectToRoute('homepage');
     }
 
     /**
@@ -118,9 +118,9 @@ class InstallController
             unlink(__DIR__.'/../../../cache/maintenance.tag');
 
             $app->mount('/', new \LarpManager\HomepageControllerProvider());
-            $app['session']->getFlashBag()->add('success', 'L\'installation c\'est déroulée avec succès.');
+           $this->addFlash('success', 'L\'installation c\'est déroulée avec succès.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('install/installfirstUser.twig', ['form' => $form->createView()]);
@@ -339,7 +339,7 @@ class InstallController
             $app['orm.em']->flush();
 
             // création de l'utilisateur admin
-            return $app->redirect($app['url_generator']->generate('install_create_User'));
+            return $this->redirectToRoute('install_create_User');
         }
 
         return $app['twig']->render('install/index.twig', ['form' => $form->createView()]);

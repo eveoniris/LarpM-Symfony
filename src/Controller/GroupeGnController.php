@@ -37,7 +37,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author kevin
  */
-class GroupeGnController
+class GroupeGnController extends AbstractController
 {
     /**
      * Liste des sessions de jeu pour un groupe.
@@ -77,9 +77,9 @@ class GroupeGnController
             $app['orm.em']->persist($groupeGn);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La participation au jeu a été enregistré.');
+           $this->addFlash('success', 'La participation au jeu a été enregistré.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupeGn/add.twig', [
@@ -104,9 +104,9 @@ class GroupeGnController
             $app['orm.em']->persist($groupeGn);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La participation au jeu a été enregistré.');
+           $this->addFlash('success', 'La participation au jeu a été enregistré.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupeGn/update.twig', [
@@ -156,9 +156,9 @@ class GroupeGnController
 
             $app['notify']->newResponsable($groupeGn->getResponsable()->getUser(), $groupeGn);
 
-            $app['session']->getFlashBag()->add('success', 'Le responsable du groupe a été enregistré.');
+           $this->addFlash('success', 'Le responsable du groupe a été enregistré.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]));
+            return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
         return $app['twig']->render('admin/groupeGn/responsable.twig', [
@@ -210,9 +210,9 @@ class GroupeGnController
 
             $app['notify']->newMembre($data['participant']->getUser(), $groupeGn);
 
-            $app['session']->getFlashBag()->add('success', 'Le joueur a été ajouté à cette session.');
+           $this->addFlash('success', 'Le joueur a été ajouté à cette session.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]));
+            return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
         return $app['twig']->render('admin/groupeGn/participantAdd.twig', [
@@ -266,10 +266,10 @@ class GroupeGnController
 
                 $app['notify']->newMembre($data['participant']->getUser(), $groupeGn);
 
-                $app['session']->getFlashBag()->add('success', 'Le joueur a été ajouté à votre groupe.');
+               $this->addFlash('success', 'Le joueur a été ajouté à votre groupe.');
             }
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         return $app['twig']->render('public/groupeGn/add.twig', [
@@ -300,9 +300,9 @@ class GroupeGnController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le joueur a été retiré de cette session.');
+           $this->addFlash('success', 'Le joueur a été retiré de cette session.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]));
+            return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
         return $app['twig']->render('admin/groupeGn/participantRemove.twig', [
@@ -330,9 +330,9 @@ class GroupeGnController
             $app['orm.em']->persist($groupeGn);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistré.');
+           $this->addFlash('success', 'Vos modifications ont été enregistré.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         return $app['twig']->render('public/groupeGn/placeAvailable.twig', [
@@ -374,9 +374,9 @@ class GroupeGnController
             $app['orm.em']->persist($groupeGn);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le jeu de domaine a été enregistré.');
+           $this->addFlash('success', 'Le jeu de domaine a été enregistré.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupeGn/jeudedomaine.twig', [

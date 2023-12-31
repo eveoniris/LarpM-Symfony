@@ -101,9 +101,9 @@ class MessageController extends AbstractController
             $destinataire = $message->getUserRelatedByDestinataire();
             $app['notify']->newMessage($destinataire, $message);
 
-            $app['session']->getFlashBag()->add('success', 'Votre message a été envoyé.');
+           $this->addFlash('success', 'Votre message a été envoyé.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('public/message/new.twig', [
@@ -169,9 +169,9 @@ class MessageController extends AbstractController
             $destinataire = $message->getUserRelatedByDestinataire();
             $app['notify']->newMessage($destinataire, $message);
 
-            $app['session']->getFlashBag()->add('success', 'Votre message a été envoyé.');
+           $this->addFlash('success', 'Votre message a été envoyé.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('public/message/response.twig', [

@@ -31,8 +31,6 @@ class RestaurationRepository extends BaseRepository
 {
     /**
      * Fourni la liste des restrictions alimentaires.
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
     public function findAllOrderedByLabel()
     {

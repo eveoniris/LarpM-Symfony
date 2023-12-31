@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class LevelController
+class LevelController extends AbstractController
 {
     /**
      * Liste les niveaux.
@@ -62,12 +62,12 @@ class LevelController
             $app['orm.em']->persist($level);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le niveau a été ajouté.');
+           $this->addFlash('success', 'Le niveau a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('level'), 303);
+                return $this->redirectToRoute('level', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('level.add'), 303);
+                return $this->redirectToRoute('level.add', [], 303);
             }
         }
 
@@ -98,14 +98,14 @@ class LevelController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($level);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le niveau a été mis à jour.');
+               $this->addFlash('success', 'Le niveau a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($level);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le niveau a été supprimé.');
+               $this->addFlash('success', 'Le niveau a été supprimé.');
             }
 
-            return $app->redirect($app['url_generator']->generate('level'));
+            return $this->redirectToRoute('level');
         }
 
         return $app['twig']->render('level/update.twig', [
@@ -126,9 +126,9 @@ class LevelController
         if ($level) {
             return $app['twig']->render('level/detail.twig', ['level' => $level]);
         } else {
-            $app['session']->getFlashBag()->add('error', 'La niveau n\'a pas été trouvé.');
+           $this->addFlash('error', 'La niveau n\'a pas été trouvé.');
 
-            return $app->redirect($app['url_generator']->generate('level'));
+            return $this->redirectToRoute('level');
         }
     }
 }

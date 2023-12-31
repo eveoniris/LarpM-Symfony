@@ -26,7 +26,7 @@ use LarpManager\Form\Culture\CultureForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 
-class CultureController
+class CultureController extends AbstractController
 {
     /**
      * Liste des culture.
@@ -53,9 +53,9 @@ class CultureController
             $app['orm.em']->persist($culture);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La culture a été ajoutée.');
+           $this->addFlash('success', 'La culture a été ajoutée.');
 
-            return $app->redirect($app['url_generator']->generate('culture'), 303);
+            return $this->redirectToRoute('culture', [], 303);
         }
 
         return $app['twig']->render('admin\culture\add.twig', [
@@ -88,9 +88,9 @@ class CultureController
             $app['orm.em']->persist($culture);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La culture a été mise à jour.');
+           $this->addFlash('success', 'La culture a été mise à jour.');
 
-            return $app->redirect($app['url_generator']->generate('culture'), 303);
+            return $this->redirectToRoute('culture', [], 303);
         }
 
         return $app['twig']->render('admin\culture\update.twig', [
@@ -115,9 +115,9 @@ class CultureController
             $app['orm.em']->remove($culture);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La culture a été supprimée.');
+           $this->addFlash('success', 'La culture a été supprimée.');
 
-            return $app->redirect($app['url_generator']->generate('culture'), 303);
+            return $this->redirectToRoute('culture', [], 303);
         }
 
         return $app['twig']->render('admin\culture\delete.twig', [

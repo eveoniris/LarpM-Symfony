@@ -6,7 +6,7 @@ use LarpManager\Form\RegionForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 
-class RegionController
+class RegionController extends AbstractController
 {
     public function indexAction(Request $request, Application $app)
     {
@@ -34,12 +34,12 @@ class RegionController
             $app['orm.em']->persist($region);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La région a été ajouté.');
+           $this->addFlash('success', 'La région a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('region'), 303);
+                return $this->redirectToRoute('region', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('region.add'), 303);
+                return $this->redirectToRoute('region.add', [], 303);
             }
         }
 
@@ -68,15 +68,15 @@ class RegionController
                 $region->setUpdateDate(new \DateTime('NOW'));
                 $app['orm.em']->persist($region);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La région a été mise à jour.');
+               $this->addFlash('success', 'La région a été mise à jour.');
 
-                return $app->redirect($app['url_generator']->generate('region.detail', ['index' => $id]));
+                return $this->redirectToRoute('region.detail', ['index' => $id]);
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($region);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La région a été supprimée.');
+               $this->addFlash('success', 'La région a été supprimée.');
 
-                return $app->redirect($app['url_generator']->generate('region'));
+                return $this->redirectToRoute('region');
             }
         }
 
@@ -95,9 +95,9 @@ class RegionController
         if ($region) {
             return $app['twig']->render('region/detail.twig', ['region' => $region]);
         } else {
-            $app['session']->getFlashBag()->add('error', 'La région n\'a pas été trouvée.');
+           $this->addFlash('error', 'La région n\'a pas été trouvée.');
 
-            return $app->redirect($app['url_generator']->generate('region'));
+            return $this->redirectToRoute('region');
         }
     }
 

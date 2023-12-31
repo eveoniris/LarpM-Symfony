@@ -37,7 +37,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class IntrigueController
+class IntrigueController extends AbstractController
 {
     /**
      * Liste de toutes les intrigues.
@@ -114,9 +114,9 @@ class IntrigueController
             $intrigue = $form->getData();
 
             if (!$intrigue->getDescription()) {
-                $app['session']->getFlashBag()->add('error', 'la description de votre intrigue est obligatoire.');
+               $this->addFlash('error', 'la description de votre intrigue est obligatoire.');
             } elseif (!$intrigue->getText()) {
-                $app['session']->getFlashBag()->add('error', 'le texte de votre intrigue est obligatoire.');
+               $this->addFlash('error', 'le texte de votre intrigue est obligatoire.');
             } else {
                 $intrigue->setUser($this->getUser());
 
@@ -174,9 +174,9 @@ class IntrigueController
                     }
                 }
 
-                $app['session']->getFlashBag()->add('success', 'Votre intrigue a été ajouté.');
+               $this->addFlash('success', 'Votre intrigue a été ajouté.');
 
-                return $app->redirect($app['url_generator']->generate('intrigue.list'), 303);
+                return $this->redirectToRoute('intrigue.list', [], 303);
             }
         }
 
@@ -386,9 +386,9 @@ class IntrigueController
                 }
             }
 
-            $app['session']->getFlashBag()->add('success', 'Votre intrigue a été modifiée.');
+           $this->addFlash('success', 'Votre intrigue a été modifiée.');
 
-            return $app->redirect($app['url_generator']->generate('intrigue.detail', ['intrigue' => $intrigue->getId()]), 303);
+            return $this->redirectToRoute('intrigue.detail', ['intrigue' => $intrigue->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/intrigue/update.twig', [
@@ -412,9 +412,9 @@ class IntrigueController
             $app['orm.em']->remove($intrigue);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'intrigue a été supprimée.');
+           $this->addFlash('success', 'L\'intrigue a été supprimée.');
 
-            return $app->redirect($app['url_generator']->generate('intrigue.list'), 303);
+            return $this->redirectToRoute('intrigue.list', [], 303);
         }
 
         return $app['twig']->render('admin/intrigue/delete.twig', [
@@ -451,9 +451,9 @@ class IntrigueController
                 }
             }
 
-            $app['session']->getFlashBag()->add('success', 'Votre relecture a été enregistrée.');
+           $this->addFlash('success', 'Votre relecture a été enregistrée.');
 
-            return $app->redirect($app['url_generator']->generate('intrigue.detail', ['intrigue' => $intrigue->getId()]), 303);
+            return $this->redirectToRoute('intrigue.detail', ['intrigue' => $intrigue->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/intrigue/relecture.twig', [

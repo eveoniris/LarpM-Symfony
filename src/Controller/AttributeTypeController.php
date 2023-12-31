@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class AttributeTypeController
+class AttributeTypeController extends AbstractController
 {
     /**
      * Liste des types d'attribut.
@@ -62,12 +62,12 @@ class AttributeTypeController
             $app['orm.em']->persist($attributeType);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le type d\'attribut a été ajoutée.');
+           $this->addFlash('success', 'Le type d\'attribut a été ajoutée.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('attribute.type'), 303);
+                return $this->redirectToRoute('attribute.type', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('attribute.type.add'), 303);
+                return $this->redirectToRoute('attribute.type.add', [], 303);
             }
         }
 
@@ -98,14 +98,14 @@ class AttributeTypeController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($attributeType);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La type d\'attribut a été mis à jour.');
+               $this->addFlash('success', 'La type d\'attribut a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($attributeType);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le type d\'attribut a été supprimé.');
+               $this->addFlash('success', 'Le type d\'attribut a été supprimé.');
             }
 
-            return $app->redirect($app['url_generator']->generate('attribute.type'));
+            return $this->redirectToRoute('attribute.type');
         }
 
         return $app['twig']->render('admin/attributeType/update.twig', [
@@ -126,9 +126,9 @@ class AttributeTypeController
         if ($attributeType) {
             return $app['twig']->render('admin/attributeType/detail.twig', ['attributeType' => $attributeType]);
         } else {
-            $app['session']->getFlashBag()->add('error', 'La attribute type n\'a pas été trouvé.');
+           $this->addFlash('error', 'La attribute type n\'a pas été trouvé.');
 
-            return $app->redirect($app['url_generator']->generate('attribute.type'));
+            return $this->redirectToRoute('attribute.type');
         }
     }
 }

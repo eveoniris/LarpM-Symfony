@@ -107,7 +107,7 @@ class RestrictionController extends AbstractController
             $entityManager->persist($restriction);
             $entityManager->flush();
 
-            $request->getSession()->getFlashBag()->add('success', 'La restriction a été ajouté.');
+            $this->addFlash('success', 'La restriction a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('restriction.list', [], 303);
@@ -147,7 +147,7 @@ class RestrictionController extends AbstractController
             $entityManager->persist($restriction);
             $entityManager->flush();
 
-            $request->getSession()->getFlashBag()->add('success', 'La restriction alimentaire a été modifié.');
+            $this->addFlash('success', 'La restriction alimentaire a été modifié.');
 
             return $this->redirectToRoute('restriction.list', [], 303);
         }
@@ -175,7 +175,7 @@ class RestrictionController extends AbstractController
             $entityManager->remove($restriction);
             $entityManager->flush();
 
-            $request->getSession()->getFlashBag()->add('success', 'La restriction alimentaire a été supprimé.');
+            $this->addFlash('success', 'La restriction alimentaire a été supprimé.');
 
             return $this->redirectToRoute('restriction.list', [], 303);
         }
