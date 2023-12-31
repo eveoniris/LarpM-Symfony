@@ -41,7 +41,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class MagieController
+class MagieController extends AbstractController
 {
     // liste des colonnes à afficher par défaut sur les vues 'personnages' (l'ordre est pris en compte)
     private array $defaultPersonnageListColumnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser'];
@@ -89,9 +89,9 @@ class MagieController
             $app['orm.em']->persist($sphere);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La sphere a été ajouté');
+           $this->addFlash('success', 'La sphere a été ajouté');
 
-            return $app->redirect($app['url_generator']->generate('magie.sphere.detail', ['sphere' => $sphere->getId()]), 303);
+            return $this->redirectToRoute('magie.sphere.detail', ['sphere' => $sphere->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/sphere/add.twig', [
@@ -119,9 +119,9 @@ class MagieController
             $app['orm.em']->persist($sphere);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La sphere a été sauvegardé');
+           $this->addFlash('success', 'La sphere a été sauvegardé');
 
-            return $app->redirect($app['url_generator']->generate('magie.sphere.detail', ['sphere' => $sphere->getId()]), 303);
+            return $this->redirectToRoute('magie.sphere.detail', ['sphere' => $sphere->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/sphere/update.twig', [
@@ -149,9 +149,9 @@ class MagieController
             $app['orm.em']->remove($sphere);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La sphere a été suprimé');
+           $this->addFlash('success', 'La sphere a été suprimé');
 
-            return $app->redirect($app['url_generator']->generate('magie.sphere.list'), 303);
+            return $this->redirectToRoute('magie.sphere.list', [], 303);
         }
 
         return $app['twig']->render('admin/sphere/delete.twig', [
@@ -207,9 +207,9 @@ class MagieController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('magie.priere.list'), 303);
+                    return $this->redirectToRoute('magie.priere.list', [], 303);
                 }
 
                 $documentFilename = hash('md5', $priere->getLabel().$filename.time()).'.'.$extension;
@@ -222,9 +222,9 @@ class MagieController
             $app['orm.em']->persist($priere);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La priere a été ajouté');
+           $this->addFlash('success', 'La priere a été ajouté');
 
-            return $app->redirect($app['url_generator']->generate('magie.priere.detail', ['priere' => $priere->getId()]), 303);
+            return $this->redirectToRoute('magie.priere.detail', ['priere' => $priere->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/priere/add.twig', [
@@ -258,9 +258,9 @@ class MagieController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('magie.priere.list'), 303);
+                    return $this->redirectToRoute('magie.priere.list', [], 303);
                 }
 
                 $documentFilename = hash('md5', $priere->getLabel().$filename.time()).'.'.$extension;
@@ -273,9 +273,9 @@ class MagieController
             $app['orm.em']->persist($priere);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La priere a été sauvegardé');
+           $this->addFlash('success', 'La priere a été sauvegardé');
 
-            return $app->redirect($app['url_generator']->generate('magie.priere.detail', ['priere' => $priere->getId()]), 303);
+            return $this->redirectToRoute('magie.priere.detail', ['priere' => $priere->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/priere/update.twig', [
@@ -303,9 +303,9 @@ class MagieController
             $app['orm.em']->remove($priere);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La priere a été suprimé');
+           $this->addFlash('success', 'La priere a été suprimé');
 
-            return $app->redirect($app['url_generator']->generate('magie.priere.list'), 303);
+            return $this->redirectToRoute('magie.priere.list', [], 303);
         }
 
         return $app['twig']->render('admin/priere/delete.twig', [
@@ -329,7 +329,7 @@ class MagieController
         {
         if ( ! $this->getUser()->getPersonnage()->getCompetences()->contains($competence) )
         {
-        $app['session']->getFlashBag()->add('error', 'Vous n\'avez pas les droits necessaires');
+       $this->addFlash('error', 'Vous n\'avez pas les droits necessaires');
         }
         }
         }*/
@@ -462,9 +462,9 @@ class MagieController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('magie.potion.list'), 303);
+                    return $this->redirectToRoute('magie.potion.list', [], 303);
                 }
 
                 $documentFilename = hash('md5', $potion->getLabel().$filename.time()).'.'.$extension;
@@ -477,9 +477,9 @@ class MagieController
             $app['orm.em']->persist($potion);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La potion a été ajouté');
+           $this->addFlash('success', 'La potion a été ajouté');
 
-            return $app->redirect($app['url_generator']->generate('magie.potion.detail', ['potion' => $potion->getId()]), 303);
+            return $this->redirectToRoute('magie.potion.detail', ['potion' => $potion->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/potion/add.twig', [
@@ -513,9 +513,9 @@ class MagieController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('magie.potion.list'), 303);
+                    return $this->redirectToRoute('magie.potion.list', [], 303);
                 }
 
                 $documentFilename = hash('md5', $potion->getLabel().$filename.time()).'.'.$extension;
@@ -528,9 +528,9 @@ class MagieController
             $app['orm.em']->persist($potion);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La potion a été sauvegardé');
+           $this->addFlash('success', 'La potion a été sauvegardé');
 
-            return $app->redirect($app['url_generator']->generate('magie.potion.detail', ['potion' => $potion->getId()]), 303);
+            return $this->redirectToRoute('magie.potion.detail', ['potion' => $potion->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/potion/update.twig', [
@@ -558,9 +558,9 @@ class MagieController
             $app['orm.em']->remove($potion);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La potion a été suprimé');
+           $this->addFlash('success', 'La potion a été suprimé');
 
-            return $app->redirect($app['url_generator']->generate('magie.potion.list'), 303);
+            return $this->redirectToRoute('magie.potion.list', [], 303);
         }
 
         return $app['twig']->render('admin/potion/delete.twig', [
@@ -633,9 +633,9 @@ class MagieController
             $app['orm.em']->persist($domaine);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le domaine de magie a été ajouté');
+           $this->addFlash('success', 'Le domaine de magie a été ajouté');
 
-            return $app->redirect($app['url_generator']->generate('magie.domaine.detail', ['domaine' => $domaine->getId()]), 303);
+            return $this->redirectToRoute('magie.domaine.detail', ['domaine' => $domaine->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/domaine/add.twig', [
@@ -663,9 +663,9 @@ class MagieController
             $app['orm.em']->persist($domaine);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le domaine de magie a été sauvegardé');
+           $this->addFlash('success', 'Le domaine de magie a été sauvegardé');
 
-            return $app->redirect($app['url_generator']->generate('magie.domaine.detail', ['domaine' => $domaine->getId()]), 303);
+            return $this->redirectToRoute('magie.domaine.detail', ['domaine' => $domaine->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/domaine/update.twig', [
@@ -693,9 +693,9 @@ class MagieController
             $app['orm.em']->remove($domaine);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le domaine de magie a été suprimé');
+           $this->addFlash('success', 'Le domaine de magie a été suprimé');
 
-            return $app->redirect($app['url_generator']->generate('magie.domaine.list'), 303);
+            return $this->redirectToRoute('magie.domaine.list', [], 303);
         }
 
         return $app['twig']->render('admin/domaine/delete.twig', [
@@ -751,9 +751,9 @@ class MagieController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('magie.sort.list'), 303);
+                    return $this->redirectToRoute('magie.sort.list', [], 303);
                 }
 
                 $documentFilename = hash('md5', $sort->getLabel().$filename.time()).'.'.$extension;
@@ -766,9 +766,9 @@ class MagieController
             $app['orm.em']->persist($sort);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le sort a été ajouté');
+           $this->addFlash('success', 'Le sort a été ajouté');
 
-            return $app->redirect($app['url_generator']->generate('magie.sort.detail', ['sort' => $sort->getId()]), 303);
+            return $this->redirectToRoute('magie.sort.detail', ['sort' => $sort->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/sort/add.twig', [
@@ -802,9 +802,9 @@ class MagieController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('magie.sort.list'), 303);
+                    return $this->redirectToRoute('magie.sort.list', [], 303);
                 }
 
                 $documentFilename = hash('md5', $sort->getLabel().$filename.time()).'.'.$extension;
@@ -817,9 +817,9 @@ class MagieController
             $app['orm.em']->persist($sort);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le sort a été sauvegardé');
+           $this->addFlash('success', 'Le sort a été sauvegardé');
 
-            return $app->redirect($app['url_generator']->generate('magie.sort.detail', ['sort' => $sort->getId()]), 303);
+            return $this->redirectToRoute('magie.sort.detail', ['sort' => $sort->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/sort/update.twig', [
@@ -847,9 +847,9 @@ class MagieController
             $app['orm.em']->remove($sort);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le sort a été supprimé');
+           $this->addFlash('success', 'Le sort a été supprimé');
 
-            return $app->redirect($app['url_generator']->generate('magie.sort.list'), 303);
+            return $this->redirectToRoute('magie.sort.list', [], 303);
         }
 
         return $app['twig']->render('admin/sort/delete.twig', [
@@ -873,7 +873,7 @@ class MagieController
             {
                 if ( ! $this->getUser()->getPersonnage()->getCompetences()->contains($competence) )
                 {
-                    $app['session']->getFlashBag()->add('error', 'Vous n\'avez pas les droits necessaires');
+                   $this->addFlash('error', 'Vous n\'avez pas les droits necessaires');
                 }
             }
         }*/

@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class CompetenceFamilyController
+class CompetenceFamilyController extends AbstractController
 {
     /**
      * Liste les famille de competence.
@@ -62,12 +62,12 @@ class CompetenceFamilyController
             $app['orm.em']->persist($competenceFamily);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La famille de compétence a été ajoutée.');
+           $this->addFlash('success', 'La famille de compétence a été ajoutée.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('competence.family'), 303);
+                return $this->redirectToRoute('competence.family', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('competence.family.add'), 303);
+                return $this->redirectToRoute('competence.family.add', [], 303);
             }
         }
 
@@ -98,14 +98,14 @@ class CompetenceFamilyController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($competenceFamily);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La famille de compétence a été mis à jour.');
+               $this->addFlash('success', 'La famille de compétence a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($competenceFamily);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La famille de compétence a été supprimé.');
+               $this->addFlash('success', 'La famille de compétence a été supprimé.');
             }
 
-            return $app->redirect($app['url_generator']->generate('competence.family'));
+            return $this->redirectToRoute('competence.family');
         }
 
         return $app['twig']->render('admin/competenceFamily/update.twig', [
@@ -126,9 +126,9 @@ class CompetenceFamilyController
         if ($competenceFamily) {
             return $app['twig']->render('admin/competenceFamily/detail.twig', ['competenceFamily' => $competenceFamily]);
         } else {
-            $app['session']->getFlashBag()->add('error', 'La famille de compétence n\'a pas été trouvé.');
+           $this->addFlash('error', 'La famille de compétence n\'a pas été trouvé.');
 
-            return $app->redirect($app['url_generator']->generate('competence.family'));
+            return $this->redirectToRoute('competence.family');
         }
     }
 }

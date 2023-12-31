@@ -112,9 +112,9 @@ class ParticipantController extends AbstractController
         $app['orm.em']->persist($rep);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('Success', 'Votre réponse a été prise en compte !');
+       $this->addFlash('Success', 'Votre réponse a été prise en compte !');
 
-        return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+        return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
     }
 
     /**
@@ -125,9 +125,9 @@ class ParticipantController extends AbstractController
         $app['orm.em']->remove($reponse);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('Success', 'Votre réponse a été supprimée, veuillez répondre de nouveau à la question !');
+       $this->addFlash('Success', 'Votre réponse a été supprimée, veuillez répondre de nouveau à la question !');
 
-        return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+        return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
     }
 
     /**
@@ -151,9 +151,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('User.admin.list', []), 303);
+            return $this->redirectToRoute('User.admin.list', [], [], 303);
         }
 
         return $app['twig']->render('admin/participant/new.twig', [
@@ -172,8 +172,8 @@ class ParticipantController extends AbstractController
         /* Commenté parce que ça gène la manière de faire d'Edaelle.
         if ( ! $participant->getBillet() )
         {
-            $app['session']->getFlashBag()->add('error','Désolé, le joueur doit obtenir un billet avant de pouvoir rejoindre un groupe');
-            return $app->redirect($app['url_generator']->generate('gn.detail', array('gn' => $participant->getGn()->getId())),303);
+           $this->addFlash('error','Désolé, le joueur doit obtenir un billet avant de pouvoir rejoindre un groupe');
+            return $this->redirectToRoute('gn.detail', array('gn' => $participant->getGn()->getId())),303);
         }
         */
         $form = $app['form.factory']->createBuilder(new ParticipantGroupeForm(), $participant, ['gnId' => $participant->getGn()->getId()])
@@ -187,9 +187,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('gn.participants', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/participant/groupe.twig', [
@@ -239,9 +239,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->remove($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('gn.participants', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/participant/remove.twig', [
@@ -269,9 +269,9 @@ class ParticipantController extends AbstractController
 
             $app['notify']->newBillet($participant->getUser(), $participant->getBillet());
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('gn.participants', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/participant/billet.twig', [
@@ -322,9 +322,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('gn.participants', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/participant/restauration.twig', [
@@ -342,8 +342,8 @@ class ParticipantController extends AbstractController
 
         if ( ! $personnage )
         {
-            $app['session']->getFlashBag()->add('error','Vous n\'avez pas encore de personnage.');
-            return $app->redirect($app['url_generator']->generate('participant.index', array('participant' => $participant->getId())),303);
+           $this->addFlash('error','Vous n\'avez pas encore de personnage.');
+            return $this->redirectToRoute('participant.index', array('participant' => $participant->getId())),303);
         }
 
         $lois = $app['orm.em']->getRepository('App\Entity\Loi')->findAll();
@@ -362,15 +362,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', "Vous n'avez pas encore de personnage.");
+           $this->addFlash('error', "Vous n'avez pas encore de personnage.");
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->hasCompetence('Politique')) {
-            $app['session']->getFlashBag()->add('error', 'Votre personnage ne dispose pas de la compétence Politique');
+           $this->addFlash('error', 'Votre personnage ne dispose pas de la compétence Politique');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         // recherche de tous les groupes participant au prochain GN
@@ -400,9 +400,9 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', "Vous n'avez pas encore de personnage.");
+           $this->addFlash('error', "Vous n'avez pas encore de personnage.");
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $form = $app['form.factory']->createBuilder(new PersonnageEditForm(), $personnage)
@@ -416,9 +416,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été prises en compte.');
+           $this->addFlash('success', 'Vos modifications ont été prises en compte.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/personnage/edit.twig', [
@@ -447,9 +447,9 @@ class ParticipantController extends AbstractController
             $extension = $files['trombine']->guessExtension();
 
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
+               $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
 
-                return $app->redirect($app['url_generator']->generate('participant.personnage.trombine', ['participant' => $participant->getId(), 'personnage' => $personnage->getId()]), 303);
+                return $this->redirectToRoute('participant.personnage.trombine', ['participant' => $participant->getId(), 'personnage' => $personnage->getId()], [], 303);
             }
 
             $trombineFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
@@ -462,9 +462,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre photo a été enregistrée');
+           $this->addFlash('success', 'Votre photo a été enregistrée');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/personnage/trombine.twig', [
@@ -493,9 +493,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre modification a été enregistrée');
+           $this->addFlash('success', 'Votre modification a été enregistrée');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/participant/personnage_remove.twig', [
@@ -514,27 +514,27 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
 
         if (!$groupeGn) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous devez rejoindre un groupe avant de pouvoir créer votre personnage.');
+           $this->addFlash('error', 'Désolé, vous devez rejoindre un groupe avant de pouvoir créer votre personnage.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$participant->getBillet()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous devez avoir un billet avant de pouvoir créer votre personnage.');
+           $this->addFlash('error', 'Désolé, vous devez avoir un billet avant de pouvoir créer votre personnage.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $groupeGn->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
         }
 
         if (true == $groupeGn->getGroupe()->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.');
+           $this->addFlash('error', 'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $groupeGn->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
         }
 
         if ($participant->getPersonnage()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous disposez déjà d\'un personnage.');
+           $this->addFlash('error', 'Désolé, vous disposez déjà d\'un personnage.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $groupeGn->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
         }
 
         $groupe = $groupeGn->getGroupe();
@@ -649,9 +649,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre personnage a été sauvegardé.');
+           $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $groupeGn->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/participant/personnage_old.twig', [
@@ -710,9 +710,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage a été sauvegardé.');
+           $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('gn.participants.withoutperso', ['gn' => $gn->getId()]), 303);
+            return $this->redirectToRoute('gn.participants.withoutperso', ['gn' => $gn->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/participant/personnage_old.twig', [
@@ -730,35 +730,35 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
 
         if (!$groupeGn) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous devez rejoindre un groupe avant de pouvoir créer votre personnage.');
+           $this->addFlash('error', 'Désolé, vous devez rejoindre un groupe avant de pouvoir créer votre personnage.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$participant->getBillet()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous devez avoir un billet avant de pouvoir créer votre personnage.');
+           $this->addFlash('error', 'Désolé, vous devez avoir un billet avant de pouvoir créer votre personnage.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $groupeGn->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
         }
 
         if (true == $groupeGn->getGroupe()->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.');
+           $this->addFlash('error', 'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $groupeGn->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
         }
 
         if ($participant->getPersonnage()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous disposez déjà d\'un personnage.');
+           $this->addFlash('error', 'Désolé, vous disposez déjà d\'un personnage.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $groupeGn->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
         }
 
         $groupe = $groupeGn->getGroupe();
 
         /*if (  ! $groupe->hasEnoughClasse($groupeGn->getGn()) )
         {
-            $app['session']->getFlashBag()->add('error','Désolé, ce groupe ne contient plus de classes disponibles');
-            return $app->redirect($app['url_generator']->generate('participant.index', array('participant' => $participant->getId())),303);
+           $this->addFlash('error','Désolé, ce groupe ne contient plus de classes disponibles');
+            return $this->redirectToRoute('participant.index', array('participant' => $participant->getId())),303);
         }*/
 
         $personnage = new \App\Entity\Personnage();
@@ -898,9 +898,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre personnage a été sauvegardé.');
+           $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $groupeGn->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
         }
 
         $ages = $app['orm.em']->getRepository(\App\Entity\Age::class)->findAllOnCreation();
@@ -1031,9 +1031,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre personnage a été sauvegardé.');
+           $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('gn.participants.withoutperso', ['gn' => $groupeGn->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.participants.withoutperso', ['gn' => $groupeGn->getGn()->getId()], [], 303);
         }
 
         $ages = $app['orm.em']->getRepository(\App\Entity\Age::class)->findAllOnCreation();
@@ -1093,9 +1093,9 @@ class ParticipantController extends AbstractController
     {
         // il faut un billet pour rejoindre un groupe
         if (!$participant->getBillet()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous devez obtenir un billet avant de pouvoir rejoindre un groupe');
+           $this->addFlash('error', 'Désolé, vous devez obtenir un billet avant de pouvoir rejoindre un groupe');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $form = $app['form.factory']->createBuilder(new GroupeInscriptionForm(), [])
@@ -1109,31 +1109,31 @@ class ParticipantController extends AbstractController
             $code = $data['code'];
             $groupeGn = $app['orm.em']->getRepository('\\'.\App\Entity\GroupeGn::class)->findOneByCode($code);
             if (!$groupeGn) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, le code que vous utilisez ne correspond à aucun groupe');
+               $this->addFlash('error', 'Désolé, le code que vous utilisez ne correspond à aucun groupe');
 
-                return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
             }
 
             $groupe = $groupeGn->getGroupe();
             if (!$groupe) {
                 // Il est possible que ce cas ne puisse pas arriver.
-                $app['session']->getFlashBag()->add('error', 'Désolé, le code que vous utilisez correspond à un groupe mal paramétré');
+               $this->addFlash('error', 'Désolé, le code que vous utilisez correspond à un groupe mal paramétré');
 
-                return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
             }
 
             $groupeGn = $groupe->getGroupeGn($participant->getGn());
             if (!$groupeGn) {
-                $app['session']->getFlashBag()->add('error', 'Le code correspond à un groupe qui ne participe pas à cette session de jeu.');
+               $this->addFlash('error', 'Le code correspond à un groupe qui ne participe pas à cette session de jeu.');
 
-                return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
             }
 
             // il faut que le groupe ai un responsable pour le rejoindre
             if (!$groupeGn->getResponsable()) {
-                $app['session']->getFlashBag()->add('error', "Le groupe n'a pas encore de responsable, vous ne pouvez pas le rejoindre pour le moment.");
+               $this->addFlash('error', "Le groupe n'a pas encore de responsable, vous ne pouvez pas le rejoindre pour le moment.");
 
-                return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
             }
 
             $participant->setGroupeGn($groupeGn);
@@ -1143,9 +1143,9 @@ class ParticipantController extends AbstractController
             // envoyer une notification au chef de groupe et au scénariste
             $app['notify']->joinGroupe($participant, $groupeGn);
 
-            $app['session']->getFlashBag()->add('success', 'Vous avez rejoint le groupe.');
+           $this->addFlash('success', 'Vous avez rejoint le groupe.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/groupe/join.twig', [
@@ -1173,9 +1173,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le personnage secondaire a été enregistré.');
+           $this->addFlash('success', 'Le personnage secondaire a été enregistré.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGroupeGn()->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGroupeGn()->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/participant/personnageSecondaire.twig', [
@@ -1193,9 +1193,9 @@ class ParticipantController extends AbstractController
         // l'utilisateur doit avoir un personnage
         $personnage = $participant->getPersonnage();
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, Vous devez faire votre personnage pour pouvoir consulter votre background.');
+           $this->addFlash('error', 'Désolé, Vous devez faire votre personnage pour pouvoir consulter votre background.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $backsGroupe = new ArrayCollection();
@@ -1241,21 +1241,21 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous devez créer un personnage avant de choisir son origine.');
+           $this->addFlash('error', 'Désolé, vous devez créer un personnage avant de choisir son origine.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (true == $personnage->getGroupe()->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contacter votre scénariste si vous pensez que cela est une erreur');
+           $this->addFlash('error', 'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contacter votre scénariste si vous pensez que cela est une erreur');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if ($personnage->getTerritoire()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, il n\'est pas possible de modifier votre origine. Veuillez contacter votre orga pour exposer votre problème.');
+           $this->addFlash('error', 'Désolé, il n\'est pas possible de modifier votre origine. Veuillez contacter votre orga pour exposer votre problème.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $form = $app['form.factory']->createBuilder(new PersonnageOriginForm(), $personnage)
@@ -1269,9 +1269,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($personnage);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre personnage a été sauvegardé.');
+           $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/participant/origine.twig', [
@@ -1303,22 +1303,22 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage avant de choisir une religion !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage avant de choisir une religion !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (true == $participant->getGroupeGn()->getGroupe()->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur');
+           $this->addFlash('error', 'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         // refUser la demande si le personnage est Fanatique
         if ($personnage->isFanatique()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. Veuillez contacter votre orga en cas de problème.');
+           $this->addFlash('error', 'Désolé, vous êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. Veuillez contacter votre orga en cas de problème.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $personnageReligion = new \App\Entity\PersonnagesReligions();
@@ -1328,9 +1328,9 @@ class ParticipantController extends AbstractController
         $availableReligions = $app['personnage.manager']->getAvailableReligions($personnage);
 
         if (0 == $availableReligions->count()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, il n\'y a plus de religion disponibles ( Sérieusement ? vous êtes éclectique, c\'est bien, mais ... faudrait savoir ce que vous voulez non ? L\'heure n\'est-il pas venu de faire un choix parmi tous ces dieux ?)');
+           $this->addFlash('error', 'Désolé, il n\'y a plus de religion disponibles ( Sérieusement ? vous êtes éclectique, c\'est bien, mais ... faudrait savoir ce que vous voulez non ? L\'heure n\'est-il pas venu de faire un choix parmi tous ces dieux ?)');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         // construit le tableau de choix
@@ -1364,18 +1364,18 @@ class ParticipantController extends AbstractController
                 }
             } elseif (2 == $personnageReligion->getReligionLevel()->getIndex()) {
                 if ($personnage->isFervent()) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.');
+                   $this->addFlash('error', 'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.');
 
-                    return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+                    return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
                 }
             }
 
             $app['orm.em']->persist($personnageReligion);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre personnage a été sauvegardé.');
+           $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/personnage/religion_add.twig', [
@@ -1394,15 +1394,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownPriere($priere)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas cette prière !');
+           $this->addFlash('error', 'Vous ne connaissez pas cette prière !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/priere/detail.twig', [
@@ -1420,15 +1420,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownPriere($priere)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas cette prière !');
+           $this->addFlash('error', 'Vous ne connaissez pas cette prière !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$priere->getDocumentUrl();
@@ -1445,15 +1445,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownTechnologie($technologie)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas cette technologie !');
+           $this->addFlash('error', 'Vous ne connaissez pas cette technologie !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$technologie->getDocumentUrl();
@@ -1470,15 +1470,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownPotion($potion)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas cette potion !');
+           $this->addFlash('error', 'Vous ne connaissez pas cette potion !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/potion/detail.twig', [
@@ -1496,15 +1496,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownPotion($potion)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas cette potion !');
+           $this->addFlash('error', 'Vous ne connaissez pas cette potion !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$potion->getDocumentUrl();
@@ -1521,9 +1521,9 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $niveau = $request->get('niveau');
@@ -1532,9 +1532,9 @@ class ParticipantController extends AbstractController
             && !$personnage->hasTrigger('ALCHIMIE INITIE')
             && !$personnage->hasTrigger('ALCHIMIE EXPERT')
             && !$personnage->hasTrigger('ALCHIMIE MAITRE')) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous ne pouvez pas choisir de potions supplémentaires.');
+           $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de potions supplémentaires.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Potion::class);
@@ -1585,9 +1585,9 @@ class ParticipantController extends AbstractController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('personnage/potion.twig', [
@@ -1607,17 +1607,17 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $niveau = $request->get('niveau');
 
         if ($participant->hasPotionsDepartByLevel($niveau)) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous ne pouvez pas choisir de potions de départ supplémentaires.');
+           $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de potions de départ supplémentaires.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $potions = $personnage->getPotionsNiveau($niveau);
@@ -1647,9 +1647,9 @@ class ParticipantController extends AbstractController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('personnage/potiondepart.twig', [
@@ -1669,15 +1669,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->hasTrigger('PRETRISE INITIE')) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous ne pouvez pas choisir de descriptif de religion supplémentaire.');
+           $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de descriptif de religion supplémentaire.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $availableDescriptionReligion = $app['personnage.manager']->getAvailableDescriptionReligion($personnage);
@@ -1708,9 +1708,9 @@ class ParticipantController extends AbstractController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/personnage/descriptionReligion.twig', [
@@ -1728,15 +1728,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->hasTrigger('LANGUE COMMUNE')) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous ne pouvez pas choisir de langue commune supplémentaire.');
+           $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue commune supplémentaire.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $availableLangues = $app['personnage.manager']->getAvailableLangues($personnage, 2);
@@ -1771,9 +1771,9 @@ class ParticipantController extends AbstractController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/personnage/langueCommune.twig', [
@@ -1791,15 +1791,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->hasTrigger('LANGUE COURANTE')) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous ne pouvez pas choisir de langue courante supplémentaire.');
+           $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue courante supplémentaire.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $availableLangues = $app['personnage.manager']->getAvailableLangues($personnage, 1);
@@ -1834,9 +1834,9 @@ class ParticipantController extends AbstractController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/personnage/langueCourante.twig', [
@@ -1854,15 +1854,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->hasTrigger('LANGUE ANCIENNE')) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous ne pouvez pas choisir de langue ancienne supplémentaire.');
+           $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue ancienne supplémentaire.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $availableLangues = $app['personnage.manager']->getAvailableLangues($personnage, 0);
@@ -1897,9 +1897,9 @@ class ParticipantController extends AbstractController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/personnage/langueAncienne.twig', [
@@ -1917,15 +1917,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownLanguage($langue)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas cette langue !');
+           $this->addFlash('error', 'Vous ne connaissez pas cette langue !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$langue->getDocumentUrl();
@@ -1942,15 +1942,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->hasTrigger('DOMAINE MAGIE')) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous ne pouvez pas choisir de domaine de magie supplémentaire.');
+           $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de domaine de magie supplémentaire.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $availableDomaines = $app['personnage.manager']->getAvailableDomaines($personnage);
@@ -1984,9 +1984,9 @@ class ParticipantController extends AbstractController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('personnage/domaineMagie.twig', [
@@ -2005,9 +2005,9 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $niveau = $request->get('niveau');
@@ -2016,9 +2016,9 @@ class ParticipantController extends AbstractController
             && !$personnage->hasTrigger('SORT INITIE')
             && !$personnage->hasTrigger('SORT EXPERT')
             && !$personnage->hasTrigger('SORT MAITRE')) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous ne pouvez pas choisir de sorts supplémentaires.');
+           $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de sorts supplémentaires.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $sorts = $app['personnage.manager']->getAvailableSorts($personnage, $niveau);
@@ -2068,9 +2068,9 @@ class ParticipantController extends AbstractController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('personnage/sort.twig', [
@@ -2090,15 +2090,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownSort($sort)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas ce sort !');
+           $this->addFlash('error', 'Vous ne connaissez pas ce sort !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/sort/detail.twig', [
@@ -2116,15 +2116,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownSort($sort)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas ce sort !');
+           $this->addFlash('error', 'Vous ne connaissez pas ce sort !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$sort->getDocumentUrl();
@@ -2141,15 +2141,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownConnaissance($connaissance)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas cette connaissance !');
+           $this->addFlash('error', 'Vous ne connaissez pas cette connaissance !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/connaissance/detail.twig', [
@@ -2167,15 +2167,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownConnaissance($connaissance)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas cette connaissance !');
+           $this->addFlash('error', 'Vous ne connaissez pas cette connaissance !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$connaissance->getDocumentUrl();
@@ -2192,9 +2192,9 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $domaines = $app['orm.em']->getRepository('\\'.\App\Entity\Domaine::class)->findAll();
@@ -2226,15 +2226,15 @@ class ParticipantController extends AbstractController
     {
         $personnage = $participant->getPersonnage();
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownCompetence($competence)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas cette compétence !');
+           $this->addFlash('error', 'Vous ne connaissez pas cette compétence !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/competence/detail.twig', [
@@ -2251,15 +2251,15 @@ class ParticipantController extends AbstractController
     {
         $personnage = $participant->getPersonnage();
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownDocument($document)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas ce document !');
+           $this->addFlash('error', 'Vous ne connaissez pas ce document !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/document/detail.twig', [
@@ -2291,15 +2291,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownCompetence($competence)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas cette compétence !');
+           $this->addFlash('error', 'Vous ne connaissez pas cette compétence !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$competence->getDocumentUrl();
@@ -2316,15 +2316,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->isKnownDocument($document)) {
-            $app['session']->getFlashBag()->add('error', 'Vous ne connaissez pas ce document !');
+           $this->addFlash('error', 'Vous ne connaissez pas ce document !');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $file = __DIR__.'/../../../private/documents/'.$document->getDocumentUrl();
@@ -2360,27 +2360,27 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage avant de postuler à un groupe secondaire!');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage avant de postuler à un groupe secondaire!');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         /*
          * Si le joueur est déjà postulant dans ce groupe, refUser la demande
          */
         if ($groupeSecondaire->isPostulant($personnage)) {
-            $app['session']->getFlashBag()->add('error', 'Vous avez déjà postulé dans ce groupe. Inutile d\'en refaire la demande.');
+           $this->addFlash('error', 'Vous avez déjà postulé dans ce groupe. Inutile d\'en refaire la demande.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         /*
          * Si le joueur est déjà membre de ce groupe, refUser la demande
          */
         if ($groupeSecondaire->isMembre($personnage)) {
-            $app['session']->getFlashBag()->add('error', 'Votre êtes déjà membre de ce groupe. Inutile d\'en refaire la demande.');
+           $this->addFlash('error', 'Votre êtes déjà membre de ce groupe. Inutile d\'en refaire la demande.');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         /**
@@ -2398,7 +2398,7 @@ class ParticipantController extends AbstractController
             $data = $form->getData();
 
             if (empty($data['explanation'])) {
-                $app['session']->getFlashBag()->add('error', 'Vos devez remplir le champ Explication.');
+               $this->addFlash('error', 'Vos devez remplir le champ Explication.');
             } else {
                 $postulant = new \App\Entity\Postulant();
                 $postulant->setPersonnage($personnage);
@@ -2415,9 +2415,9 @@ class ParticipantController extends AbstractController
                     $app['notify']->joinGroupeSecondaire($groupeSecondaire->getResponsable(), $groupeSecondaire);
                 }
 
-                $app['session']->getFlashBag()->add('success', 'Votre candidature a été enregistrée, et transmise au chef de groupe.');
+               $this->addFlash('success', 'Votre candidature a été enregistrée, et transmise au chef de groupe.');
 
-                return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
             }
         }
 
@@ -2437,15 +2437,15 @@ class ParticipantController extends AbstractController
         $membre = $personnage->getMembre($groupeSecondaire);
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$membre) {
-            $app['session']->getFlashBag()->add('error', 'Votre n\'êtes pas membre de ce groupe.');
+           $this->addFlash('error', 'Votre n\'êtes pas membre de ce groupe.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/groupeSecondaire/detail.twig', [
@@ -2481,9 +2481,9 @@ class ParticipantController extends AbstractController
             // envoyer une notification au nouveau membre
             $app['notify']->acceptGroupeSecondaire($personnage->getUser(), $groupeSecondaire);
 
-            $app['session']->getFlashBag()->add('success', 'Vous avez accepté la candidature. Un message a été envoyé au joueur concerné.');
+           $this->addFlash('success', 'Vous avez accepté la candidature. Un message a été envoyé au joueur concerné.');
 
-            return $app->redirect($app['url_generator']->generate('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()]), 303);
+            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], [], 303);
         }
 
         return $app['twig']->render('public/groupeSecondaire/gestion_accept.twig', [
@@ -2512,9 +2512,9 @@ class ParticipantController extends AbstractController
 
             $app['notify']->rejectGroupeSecondaire($personnage->getUser(), $groupeSecondaire);
 
-            $app['session']->getFlashBag()->add('success', 'Vous avez refusé la candidature. Un message a été envoyé au joueur concerné.');
+           $this->addFlash('success', 'Vous avez refusé la candidature. Un message a été envoyé au joueur concerné.');
 
-            return $app->redirect($app['url_generator']->generate('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()]), 303);
+            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], [], 303);
         }
 
         return $app['twig']->render('public/groupeSecondaire/gestion_reject.twig', [
@@ -2544,9 +2544,9 @@ class ParticipantController extends AbstractController
 
             $app['notify']->waitGroupeSecondaire($personnage->getUser(), $groupeSecondaire);
 
-            $app['session']->getFlashBag()->add('success', 'La candidature reste en attente. Un message a été envoyé au joueur concerné.');
+           $this->addFlash('success', 'La candidature reste en attente. Un message a été envoyé au joueur concerné.');
 
-            return $app->redirect($app['url_generator']->generate('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()]), 303);
+            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], [], 303);
         }
 
         return $app['twig']->render('public/groupeSecondaire/gestion_wait.twig', [
@@ -2583,9 +2583,9 @@ class ParticipantController extends AbstractController
 
             $app['notify']->newMessage($postulant->getPersonnage()->getUser(), $message);
 
-            $app['session']->getFlashBag()->add('success', 'Votre message a été envoyé au joueur concerné.');
+           $this->addFlash('success', 'Votre message a été envoyé au joueur concerné.');
 
-            return $app->redirect($app['url_generator']->generate('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()]), 303);
+            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], [], 303);
         }
 
         return $app['twig']->render('public/groupeSecondaire/gestion_response.twig', [
@@ -2604,23 +2604,23 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (true == $participant->getGroupeGn()->getGroupe()->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur');
+           $this->addFlash('error', 'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $availableCompetences = $app['personnage.manager']->getAvailableCompetences($personnage);
 
         if (0 == $availableCompetences->count()) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, il n\'y a plus de compétence disponible (Bravo !).');
+           $this->addFlash('error', 'Désolé, il n\'y a plus de compétence disponible (Bravo !).');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         // construit le tableau de choix
@@ -2649,9 +2649,9 @@ class ParticipantController extends AbstractController
             $xp = $personnage->getXp();
 
             if ($xp - $cout < 0) {
-                $app['session']->getFlashBag()->add('error', 'Vos n\'avez pas suffisement de points d\'expérience pour acquérir cette compétence.');
+               $this->addFlash('error', 'Vos n\'avez pas suffisement de points d\'expérience pour acquérir cette compétence.');
 
-                return $app->redirect($app['url_generator']->generate('homepage'), 303);
+                return $this->redirectToRoute('homepage', [], 303);
             }
 
             $personnage->setXp($xp - $cout);
@@ -2728,9 +2728,9 @@ class ParticipantController extends AbstractController
                         }
                     }
                 } else {
-                    $app['session']->getFlashBag()->add('error', 'Pour obtenir la compétence Prêtrise, vous devez être FERVENT ou FANATIQUE');
+                   $this->addFlash('error', 'Pour obtenir la compétence Prêtrise, vous devez être FERVENT ou FANATIQUE');
 
-                    return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+                    return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
                 }
             }
 
@@ -3022,9 +3022,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($historique);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre personnage a été sauvegardé.');
+           $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('public/personnage/competence.twig', [
@@ -3056,9 +3056,9 @@ class ParticipantController extends AbstractController
             $app['orm.em']->persist($joueur);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos informations ont été enregistrés.');
+           $this->addFlash('success', 'Vos informations ont été enregistrés.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('joueur/add.twig', [
@@ -3101,15 +3101,15 @@ class ParticipantController extends AbstractController
 
             if (null != $joueurs) {
                 if (0 == $joueurs->count()) {
-                    $app['session']->getFlashBag()->add('error', 'Le joueur n\'a pas été trouvé.');
+                   $this->addFlash('error', 'Le joueur n\'a pas été trouvé.');
 
-                    return $app->redirect($app['url_generator']->generate('homepage'), 303);
+                    return $this->redirectToRoute('homepage', [], 303);
                 } elseif (1 == $joueurs->count()) {
-                    $app['session']->getFlashBag()->add('success', 'Le joueur a été trouvé.');
+                   $this->addFlash('success', 'Le joueur a été trouvé.');
 
-                    return $app->redirect($app['url_generator']->generate('joueur.detail.orga', ['index' => $joueurs->first()->getId()]), 303);
+                    return $this->redirectToRoute('joueur.detail.orga', ['index' => $joueurs->first()->getId()], [], 303);
                 } else {
-                    $app['session']->getFlashBag()->add('success', 'Il y a plusieurs résultats à votre recherche.');
+                   $this->addFlash('success', 'Il y a plusieurs résultats à votre recherche.');
 
                     return $app['twig']->render('joueur/search_result.twig', [
                         'joueurs' => $joueurs,
@@ -3117,7 +3117,7 @@ class ParticipantController extends AbstractController
                 }
             }
 
-            $app['session']->getFlashBag()->add('error', 'Désolé, le joueur n\'a pas été trouvé.');
+           $this->addFlash('error', 'Désolé, le joueur n\'a pas été trouvé.');
         }
 
         return $app['twig']->render('joueur/search.twig', [
@@ -3137,9 +3137,9 @@ class ParticipantController extends AbstractController
         if ($joueur) {
             return $app['twig']->render('joueur/admin/detail.twig', ['joueur' => $joueur]);
         } else {
-            $app['session']->getFlashBag()->add('error', 'Le joueur n\'a pas été trouvé.');
+           $this->addFlash('error', 'Le joueur n\'a pas été trouvé.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'));
+            return $this->redirectToRoute('homepage');
         }
     }
 
@@ -3179,7 +3179,7 @@ class ParticipantController extends AbstractController
                 $app['orm.em']->persist($historique);
                 $app['orm.em']->flush();
 
-                $app['session']->getFlashBag()->add('success', 'Les points d\'expérience ont été sauvegardés');
+               $this->addFlash('success', 'Les points d\'expérience ont été sauvegardés');
             }
         }
 
@@ -3200,9 +3200,9 @@ class ParticipantController extends AbstractController
         if ($joueur) {
             return $app['twig']->render('joueur/admin/detail.twig', ['joueur' => $joueur]);
         } else {
-            $app['session']->getFlashBag()->add('error', 'Le joueur n\'a pas été trouvé.');
+           $this->addFlash('error', 'Le joueur n\'a pas été trouvé.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'));
+            return $this->redirectToRoute('homepage');
         }
     }
 
@@ -3226,9 +3226,9 @@ class ParticipantController extends AbstractController
 
             $app['orm.em']->persist($joueur);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'Le joueur a été mis à jour.');
+           $this->addFlash('success', 'Le joueur a été mis à jour.');
 
-            return $app->redirect($app['url_generator']->generate('joueur.detail', ['index' => $id]));
+            return $this->redirectToRoute('joueur.detail', ['index' => $id]);
         }
 
         return $app['twig']->render('joueur/update.twig', [
@@ -3247,23 +3247,23 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+           $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         // un groupe ne peux pas avoir plus de 3 alliances
         if ($groupe->getAlliances()->count() >= 3) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous avez déjà 3 alliances, ce qui est le maximum possible.');
+           $this->addFlash('error', 'Désolé, vous avez déjà 3 alliances, ce qui est le maximum possible.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         // un groupe ne peux pas avoir plus d'alliances que d'ennemis
         if ($groupe->getEnnemies()->count() - $groupe->getAlliances()->count() <= 0) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous n\'avez pas suffisement d\'ennemis pour pouvoir vous choisir un allié.');
+           $this->addFlash('error', 'Désolé, vous n\'avez pas suffisement d\'ennemis pour pouvoir vous choisir un allié.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         $alliance = new \App\Entity\GroupeAllie();
@@ -3283,33 +3283,33 @@ class ParticipantController extends AbstractController
             // vérification des conditions pour le groupe choisi
             $requestedGroupe = $alliance->getRequestedGroupe();
             if ($requestedGroupe == $groupe) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, vous ne pouvez pas choisir votre propre groupe pour faire une alliance ...');
+               $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir votre propre groupe pour faire une alliance ...');
 
-                return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
 
             if ($groupe->isAllyTo($requestedGroupe)) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, vous êtes déjà allié avec ce groupe');
+               $this->addFlash('error', 'Désolé, vous êtes déjà allié avec ce groupe');
 
-                return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
 
             if ($groupe->isEnemyTo($requestedGroupe)) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, vous êtes ennemi avec ce groupe. Impossible de faire une alliance, faites d\'abord la paix !');
+               $this->addFlash('error', 'Désolé, vous êtes ennemi avec ce groupe. Impossible de faire une alliance, faites d\'abord la paix !');
 
-                return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
 
             if ($requestedGroupe->getAlliances()->count() >= 3) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, le groupe demandé dispose déjà de 3 alliances, ce qui est le maximum possible.');
+               $this->addFlash('error', 'Désolé, le groupe demandé dispose déjà de 3 alliances, ce qui est le maximum possible.');
 
-                return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
 
             if ($requestedGroupe->getEnnemies()->count() - $requestedGroupe->getAlliances()->count() <= 0) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, le groupe demandé n\'a pas suffisement d\'ennemis pour pouvoir obtenir un allié supplémentaire.');
+               $this->addFlash('error', 'Désolé, le groupe demandé n\'a pas suffisement d\'ennemis pour pouvoir obtenir un allié supplémentaire.');
 
-                return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
 
             $app['orm.em']->persist($alliance);
@@ -3317,9 +3317,9 @@ class ParticipantController extends AbstractController
 
             $app['User.mailer']->sendRequestAlliance($alliance);
 
-            $app['session']->getFlashBag()->add('success', 'Votre demande a été envoyée.');
+           $this->addFlash('success', 'Votre demande a été envoyée.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         return $app['twig']->render('public/groupe/requestAlliance.twig', [
@@ -3341,9 +3341,9 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+           $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         $form = $app['form.factory']->createBuilder(new CancelRequestedAllianceForm(), $alliance)
@@ -3360,9 +3360,9 @@ class ParticipantController extends AbstractController
 
             $app['User.mailer']->sendCancelAlliance($alliance);
 
-            $app['session']->getFlashBag()->add('success', 'Votre demande d\'alliance a été annulée.');
+           $this->addFlash('success', 'Votre demande d\'alliance a été annulée.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         return $app['twig']->render('public/groupe/cancelAlliance.twig', [
@@ -3385,9 +3385,9 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+           $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         $form = $app['form.factory']->createBuilder(new AcceptAllianceForm(), $alliance)
@@ -3405,9 +3405,9 @@ class ParticipantController extends AbstractController
 
             $app['User.mailer']->sendAcceptAlliance($alliance);
 
-            $app['session']->getFlashBag()->add('success', 'Vous avez accepté la proposition d\'alliance.');
+           $this->addFlash('success', 'Vous avez accepté la proposition d\'alliance.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         return $app['twig']->render('public/groupe/acceptAlliance.twig', [
@@ -3430,9 +3430,9 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+           $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         $form = $app['form.factory']->createBuilder(new RefuseAllianceForm(), $alliance)
@@ -3449,9 +3449,9 @@ class ParticipantController extends AbstractController
 
             $app['User.mailer']->sendRefuseAlliance($alliance);
 
-            $app['session']->getFlashBag()->add('success', 'Vous avez refusé la proposition d\'alliance.');
+           $this->addFlash('success', 'Vous avez refusé la proposition d\'alliance.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         return $app['twig']->render('public/groupe/refuseAlliance.twig', [
@@ -3474,9 +3474,9 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+           $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         $form = $app['form.factory']->createBuilder(new BreakAllianceForm(), $alliance)
@@ -3497,9 +3497,9 @@ class ParticipantController extends AbstractController
                 $app['User.mailer']->sendBreakAlliance($alliance, $groupe);
             }
 
-            $app['session']->getFlashBag()->add('success', 'Vous avez brisé une alliance.');
+           $this->addFlash('success', 'Vous avez brisé une alliance.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         return $app['twig']->render('public/groupe/breakAlliance.twig', [
@@ -3521,16 +3521,16 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+           $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         // un groupe ne peux pas faire de déclaration de guerre si il a 3 ou plus ennemis
         if ($groupe->getEnnemies()->count() >= 3) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous avez déjà 3 ennemis ou plus, impossible de faire une nouvelle déclaration de guerre .');
+           $this->addFlash('error', 'Désolé, vous avez déjà 3 ennemis ou plus, impossible de faire une nouvelle déclaration de guerre .');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         $war = new \App\Entity\GroupeEnemy();
@@ -3552,27 +3552,27 @@ class ParticipantController extends AbstractController
             // vérification des conditions pour le groupe choisi
             $requestedGroupe = $war->getRequestedGroupe();
             if ($requestedGroupe == $groupe) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, vous ne pouvez pas choisir votre propre groupe comme ennemi ...');
+               $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir votre propre groupe comme ennemi ...');
 
-                return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
 
             if ($groupe->isEnemyTo($requestedGroupe)) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, vous êtes déjà en guerre avec ce groupe');
+               $this->addFlash('error', 'Désolé, vous êtes déjà en guerre avec ce groupe');
 
-                return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
 
             if ($requestedGroupe->getEnnemies()->count() >= 5) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, le groupe demandé dispose déjà de 5 ennemis, ce qui est le maximum possible.');
+               $this->addFlash('error', 'Désolé, le groupe demandé dispose déjà de 5 ennemis, ce qui est le maximum possible.');
 
-                return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
 
             if ($groupe->isEnemyTo($requestedGroupe)) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, vous êtes déjà allié avec ce groupe');
+               $this->addFlash('error', 'Désolé, vous êtes déjà allié avec ce groupe');
 
-                return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
 
             $app['orm.em']->persist($war);
@@ -3580,9 +3580,9 @@ class ParticipantController extends AbstractController
 
             $app['User.mailer']->sendDeclareWar($war);
 
-            $app['session']->getFlashBag()->add('success', 'Votre déclaration de guerre vient d\'être envoyée.');
+           $this->addFlash('success', 'Votre déclaration de guerre vient d\'être envoyée.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         return $app['twig']->render('public/groupe/declareWar.twig', [
@@ -3604,9 +3604,9 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+           $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         $form = $app['form.factory']->createBuilder(new RequestPeaceForm(), $war)
@@ -3628,9 +3628,9 @@ class ParticipantController extends AbstractController
 
             $app['User.mailer']->sendRequestPeace($war, $groupe);
 
-            $app['session']->getFlashBag()->add('success', 'Votre demande de paix vient d\'être envoyée.');
+           $this->addFlash('success', 'Votre demande de paix vient d\'être envoyée.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         return $app['twig']->render('public/groupe/requestPeace.twig', [
@@ -3653,9 +3653,9 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+           $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         $form = $app['form.factory']->createBuilder(new AcceptPeaceForm(), $war)
@@ -3677,9 +3677,9 @@ class ParticipantController extends AbstractController
 
             $app['User.mailer']->sendAcceptPeace($war, $groupe);
 
-            $app['session']->getFlashBag()->add('success', 'Vous avez fait la paix !');
+           $this->addFlash('success', 'Vous avez fait la paix !');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         return $app['twig']->render('public/groupe/acceptPeace.twig', [
@@ -3702,9 +3702,9 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+           $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         $form = $app['form.factory']->createBuilder(new RefusePeaceForm(), $war)
@@ -3723,9 +3723,9 @@ class ParticipantController extends AbstractController
 
             $app['User.mailer']->sendRefusePeace($war, $groupe);
 
-            $app['session']->getFlashBag()->add('success', 'Vous avez refusé la proposition de paix.');
+           $this->addFlash('success', 'Vous avez refusé la proposition de paix.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         return $app['twig']->render('public/groupe/refusePeace.twig', [
@@ -3749,9 +3749,9 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $app['session']->getFlashBag()->add('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+           $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         $form = $app['form.factory']->createBuilder(new CancelRequestedPeaceForm(), $war)
@@ -3773,9 +3773,9 @@ class ParticipantController extends AbstractController
 
             $app['User.mailer']->sendRefusePeace($war, $groupe);
 
-            $app['session']->getFlashBag()->add('success', 'Vous avez annulé votre proposition de paix.');
+           $this->addFlash('success', 'Vous avez annulé votre proposition de paix.');
 
-            return $app->redirect($app['url_generator']->generate('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]));
+            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         return $app['twig']->render('public/groupe/cancelPeace.twig', [
@@ -3795,15 +3795,15 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $app['session']->getFlashBag()->add('error', 'Vous devez avoir créé un personnage !');
+           $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $app->redirect($app['url_generator']->generate('gn.detail', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         if (!$personnage->hasTrigger('TECHNOLOGIE')) {
-            $app['session']->getFlashBag()->add('error', 'Désolé, vous ne pouvez pas choisir de technologie supplémentaire.');
+           $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de technologie supplémentaire.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         $technologies = $app['personnage.manager']->getAvailableTechnologies($personnage);
@@ -3837,9 +3837,9 @@ class ParticipantController extends AbstractController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos modifications ont été enregistrées.');
+           $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $app->redirect($app['url_generator']->generate('gn.personnage', ['gn' => $participant->getGn()->getId()]), 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
         return $app['twig']->render('personnage/technologie.twig', [

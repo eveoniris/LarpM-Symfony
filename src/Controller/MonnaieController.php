@@ -31,7 +31,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class MonnaieController
+class MonnaieController extends AbstractController
 {
     /**
      * Liste les monnaies.
@@ -61,9 +61,9 @@ class MonnaieController
             $app['orm.em']->persist($monnaie);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La monnaie a été enregistrée.');
+           $this->addFlash('success', 'La monnaie a été enregistrée.');
 
-            return $app->redirect($app['url_generator']->generate('monnaie'), 303);
+            return $this->redirectToRoute('monnaie', [], 303);
         }
 
         return $app['twig']->render('admin/monnaie/add.twig', [
@@ -87,9 +87,9 @@ class MonnaieController
             $app['orm.em']->persist($monnaie);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La monnaie a été enregistrée.');
+           $this->addFlash('success', 'La monnaie a été enregistrée.');
 
-            return $app->redirect($app['url_generator']->generate('monnaie'), 303);
+            return $this->redirectToRoute('monnaie', [], 303);
         }
 
         return $app['twig']->render('admin/monnaie/update.twig', [
@@ -114,9 +114,9 @@ class MonnaieController
             $app['orm.em']->remove($monnaie);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La monnaie a été supprimée.');
+           $this->addFlash('success', 'La monnaie a été supprimée.');
 
-            return $app->redirect($app['url_generator']->generate('monnaie'), 303);
+            return $this->redirectToRoute('monnaie', [], 303);
         }
 
         return $app['twig']->render('admin/monnaie/delete.twig', [

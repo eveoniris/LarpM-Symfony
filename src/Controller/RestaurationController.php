@@ -1,76 +1,82 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 namespace App\Controller;
 
 use App\Entity\Restauration;
-use LarpManager\Form\RestaurationDeleteForm;
-use LarpManager\Form\RestaurationForm;
-use Silex\Application;
+use App\Form\RestaurationDeleteForm;
+use App\Form\RestaurationForm;
+use App\Repository\RestaurationRepository;
+use Doctrine\ORM\EntityManager;
+use JetBrains\PhpStorm\NoReturn;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\RestaurationsController.
- *
- * @author kevin
- */
-class RestaurationController
+class RestaurationController extends AbstractController
 {
     /**
      * Liste des restaurations.
      */
     #[Route('/restauration/list', name: 'restauration.list')]
-    public function listAction(Request $request, Application $app)
+    public function listAction(Request $request, RestaurationRepository $repository): Response
     {
-        $restaurations = $app['orm.em']->getRepository('\\'.\App\Entity\Restauration::class)->findAllOrderedByLabel();
+        $alias = 'r';
 
-        return $app['twig']->render('admin/restauration/list.twig', ['restaurations' => $restaurations]);
+        $orderBy = $this->getRequestOrder(
+            defOrderBy: 'label',
+            alias: $alias,
+            allowedFields: $repository->getFieldNames()
+        );
+
+        $paginator = $repository->getPaginator(
+            limit: $this->getRequestLimit(25),
+            page: $this->getRequestPage(),
+            orderBy: $orderBy,
+            alias: $alias,
+        );
+
+        return $this->render(
+            'restauration/list.twig',
+            ['paginator' => $paginator]
+        );
     }
 
     /**
      * Imprimer la liste des restaurations.
      */
-    public function printAction(Request $request, Application $app)
+    #[Route('/restauration/print', name: 'restauration.print')]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this page.')]
+    public function printAction(Request $request, RestaurationRepository $repository): Response
     {
-        $restaurations = $app['orm.em']->getRepository('\\'.\App\Entity\Restauration::class)->findAllOrderedByLabel();
+        $restaurations = $repository->findAllOrderedByLabel();
 
-        return $app['twig']->render('admin/restauration/print.twig', ['restaurations' => $restaurations]);
+        return $this->render('restauration/print.twig', ['restaurations' => $restaurations]);
     }
 
     /**
      * Télécharger la liste des restaurations alimentaires.
      */
-    public function downloadAction(Request $request, Application $app): void
+    #[NoReturn]
+    #[Route('/restauration/download', name: 'restauration.download')]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this page.')]
+    public function downloadAction(Request $request, RestaurationRepository $repository): void
     {
-        $restaurations = $app['orm.em']->getRepository('\\'.\App\Entity\Restauration::class)->findAllOrderedByLabel();
+        $restaurations = $repository->findAllOrderedByLabel();
 
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename=eveoniris_restaurations_'.date('Ymd').'.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
 
-        $output = fopen('php://output', 'w');
+        $output = fopen('php://output', 'wb');
 
         // header
-        fputcsv($output,
+        fputcsv(
+            $output,
             [
                 'nom',
                 'nombre'], ';');
@@ -89,31 +95,33 @@ class RestaurationController
     /**
      * Ajouter une restauration.
      */
-    public function addAction(Request $request, Application $app)
+    #[Route('/restauration/add', name: 'restauration.add')]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this page.')]
+    public function addAction(Request $request, EntityManager $entityManager): RedirectResponse|Response
     {
-        $form = $app['form.factory']->createBuilder(new RestaurationForm(), new Restauration())
+        $form = $this->createForm(RestaurationForm::class, new Restauration())
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $restauration = $form->getData();
 
-            $app['orm.em']->persist($restauration);
-            $app['orm.em']->flush();
+            $entityManager->persist($restauration);
+            $entityManager->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La restauration a été ajouté.');
+            $this->addFlash('success', 'La restauration a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('restauration.list'), 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('restauration.add'), 303);
+                return $this->redirectToRoute('restauration.list', [], 303);
+            }
+            if ($form->get('save_continue')->isClicked()) {
+                return $this->redirectToRoute('restauration.add', [], 303);
             }
         }
 
-        return $app['twig']->render('admin/restauration/add.twig', [
+        return $this->render('restauration/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -121,30 +129,33 @@ class RestaurationController
     /**
      * Détail d'un lieu de restauration.
      */
-    public function detailAction(Request $request, Application $app, Restauration $restauration)
+    #[Route('/restauration/detail/{id}', name: 'restauration.detail')]
+    public function detailAction(Request $request, #[MapEntity] Restauration $restauration): Response
     {
-        return $app['twig']->render('admin/restauration/detail.twig', ['restauration' => $restauration]);
+        return $this->render('restauration/detail.twig', ['restauration' => $restauration]);
     }
 
     /**
      * Liste des utilisateurs ayant ce lieu de restauration.
      */
-    public function UsersAction(Request $request, Application $app, Restauration $restauration)
+    #[Route('/restauration/{id}/users', name: 'restauration.users')]
+    public function usersAction(Request $request, #[MapEntity] Restauration $restauration): Response
     {
-        return $app['twig']->render('admin/restauration/Users.twig', ['restauration' => $restauration]);
+        return $this->render('restauration/users.twig', ['restauration' => $restauration]);
     }
 
     /**
      * Liste des utilisateurs ayant ce lieu de restauration.
      */
-    public function UsersExportAction(Request $request, Application $app, Restauration $restauration): void
+    #[Route('/restauration/{id}/users-export', name: 'restauration.users.export')]
+    public function usersExportAction(Request $request, #[MapEntity] Restauration $restauration): void
     {
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename=eveoniris_restaurations_'.$restauration->getId().'_'.date('Ymd').'.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
 
-        $output = fopen('php://output', 'w');
+        $output = fopen('php://output', 'wb');
 
         // header
         fputcsv($output,
@@ -154,7 +165,7 @@ class RestaurationController
                 'restriction'], ';');
 
         foreach ($restauration->getUserByGn() as $UserByGn) {
-            foreach ($UserByGn['Users'] as $User) {
+            foreach ($UserByGn['users'] as $User) {
                 $restriction = '';
                 foreach ($User->getRestrictions() as $r) {
                     $restriction .= $r->getLabel().' - ';
@@ -175,63 +186,70 @@ class RestaurationController
     /**
      * Liste des restrictions alimentaires.
      */
-    public function restrictionsAction(Request $request, Application $app, Restauration $restauration)
+    #[Route('/restauration/{id}/restrictions', name: 'restauration.restrictions')]
+    public function restrictionsAction(Request $request, #[MapEntity] Restauration $restauration): Response
     {
-        return $app['twig']->render('admin/restauration/restrictions.twig', [
-            'restauration' => $restauration,
-        ]);
+        return $this->render(
+            'restauration/restrictions.twig', [
+                'restauration' => $restauration,
+            ]
+        );
     }
 
     /**
      * Mise à jour d'un lieu de restauration.
      */
-    public function updateAction(Request $request, Application $app, Restauration $restauration)
+    #[Route('/restauration/{id}/update', name: 'restauration.update')]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this page.')]
+    public function updateAction(Request $request, #[MapEntity] Restauration $restauration, EntityManager $entityManager): Response
     {
-        $form = $app['form.factory']->createBuilder(new RestaurationForm(), $restauration)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(RestaurationForm::class, $restauration)
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $restauration = $form->getData();
-            $app['orm.em']->persist($restauration);
-            $app['orm.em']->flush();
+            $entityManager->persist($restauration);
+            $entityManager->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La restauration alimentaire a été modifié.');
+            $this->addFlash('success', 'La restauration alimentaire a été modifié.');
 
-            return $app->redirect($app['url_generator']->generate('restauration.list'), 303);
+            return $this->redirectToRoute('restauration.list', [], 303);
         }
 
-        return $app['twig']->render('admin/restauration/update.twig', [
-            'restauration' => $restauration,
-            'form' => $form->createView(),
-        ]);
+        return $this->render(
+            'restauration/update.twig', [
+                'restauration' => $restauration,
+                'form' => $form->createView(),
+            ]
+        );
     }
 
     /**
      * Suppression d'un lieu de restauration.
      */
-    public function deleteAction(Request $request, Application $app, Restauration $restauration)
+    #[Route('/restauration/{id}/delete', name: 'restauration.delete')]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this page.')]
+    public function deleteAction(Request $request, #[MapEntity] Restauration $restauration, EntityManager $entityManager): RedirectResponse|Response
     {
-        $form = $app['form.factory']->createBuilder(new RestaurationDeleteForm(), $restauration)
-            ->add('save', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+        $form = $this->createForm(RestaurationDeleteForm::class, $restauration)
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $restauration = $form->getData();
 
-            $app['orm.em']->remove($restauration);
-            $app['orm.em']->flush();
+            $entityManager->remove($restauration);
+            $entityManager->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le lieu de restauration a été supprimé.');
+            $this->addFlash('success', 'Le lieu de restauration a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('restauration.list'), 303);
+            return $this->redirectToRoute('restauration.list', [], 303);
         }
 
-        return $app['twig']->render('admin/restauration/delete.twig', [
+        return $this->render('restauration/delete.twig', [
             'restauration' => $restauration,
             'form' => $form->createView(),
         ]);

@@ -31,7 +31,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class TokenController
+class TokenController extends AbstractController
 {
     /**
      * Liste des tokens.
@@ -103,12 +103,12 @@ class TokenController
             $app['orm.em']->persist($token);
             $app['orm.em']->flush($token);
 
-            $app['session']->getFlashBag()->add('success', 'Le jeton a été ajouté.');
+           $this->addFlash('success', 'Le jeton a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('token.list'), 303);
+                return $this->redirectToRoute('token.list', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('token.add'), 303);
+                return $this->redirectToRoute('token.add', [], 303);
             }
         }
 
@@ -143,9 +143,9 @@ class TokenController
             $app['orm.em']->persist($token);
             $app['orm.em']->flush($token);
 
-            $app['session']->getFlashBag()->add('success', 'Le jeton a été modifié.');
+           $this->addFlash('success', 'Le jeton a été modifié.');
 
-            return $app->redirect($app['url_generator']->generate('token.list'), 303);
+            return $this->redirectToRoute('token.list', [], 303);
         }
 
         return $app['twig']->render('admin/token/update.twig', [
@@ -169,9 +169,9 @@ class TokenController
             $app['orm.em']->remove($token);
             $app['orm.em']->flush($token);
 
-            $app['session']->getFlashBag()->add('success', 'Le jeton a été supprimé.');
+           $this->addFlash('success', 'Le jeton a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('token.list'), 303);
+            return $this->redirectToRoute('token.list', [], 303);
         }
 
         return $app['twig']->render('admin/token/delete.twig', [

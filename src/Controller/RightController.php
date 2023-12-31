@@ -29,7 +29,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author kevin
  */
-class RightController
+class RightController extends AbstractController
 {
     /**
      * Liste des droits.

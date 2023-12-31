@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class StockProprietaireController
+class StockProprietaireController extends AbstractController
 {
     public function indexAction(Request $request, Application $app)
     {
@@ -54,9 +54,9 @@ class StockProprietaireController
             $app['orm.em']->persist($proprietaire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le propriétaire a été ajouté');
+           $this->addFlash('success', 'Le propriétaire a été ajouté');
 
-            return $app->redirect($app['url_generator']->generate('stock_proprietaire_index'));
+            return $this->redirectToRoute('stock_proprietaire_index');
         }
 
         return $app['twig']->render('stock/proprietaire/add.twig', ['form' => $form->createView()]);
@@ -83,14 +83,14 @@ class StockProprietaireController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($proprietaire);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le propriétaire a été mis à jour');
+               $this->addFlash('success', 'Le propriétaire a été mis à jour');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($proprietaire);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le proprietaire a été supprimé');
+               $this->addFlash('success', 'Le proprietaire a été supprimé');
             }
 
-            return $app->redirect($app['url_generator']->generate('stock_proprietaire_index'));
+            return $this->redirectToRoute('stock_proprietaire_index');
         }
 
         return $app['twig']->render('stock/proprietaire/update.twig', ['proprietaire' => $proprietaire, 'form' => $form->createView()]);

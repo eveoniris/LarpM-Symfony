@@ -30,7 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class AppelationController
+class AppelationController extends AbstractController
 {
     /**
      * affiche le tableau de bord de gestion des appelations.
@@ -68,12 +68,12 @@ class AppelationController
             $app['orm.em']->persist($appelation);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'appelation a été ajoutée.');
+           $this->addFlash('success', 'L\'appelation a été ajoutée.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('appelation'), 303);
+                return $this->redirectToRoute('appelation', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('appelation.add'), 303);
+                return $this->redirectToRoute('appelation.add', [], 303);
             }
         }
 
@@ -100,15 +100,15 @@ class AppelationController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($appelation);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'L\'appelation a été mise à jour.');
+               $this->addFlash('success', 'L\'appelation a été mise à jour.');
 
-                return $app->redirect($app['url_generator']->generate('appelation.detail', ['appelation' => $id]), 303);
+                return $this->redirectToRoute('appelation.detail', ['appelation' => $id], [], 303);
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($appelation);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'L\'appelation a été supprimée.');
+               $this->addFlash('success', 'L\'appelation a été supprimée.');
 
-                return $app->redirect($app['url_generator']->generate('appelation'), 303);
+                return $this->redirectToRoute('appelation', [], 303);
             }
         }
 

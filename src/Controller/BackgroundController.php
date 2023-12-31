@@ -33,7 +33,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class BackgroundController
+class BackgroundController extends AbstractController
 {
     /**
      * Présentation des backgrounds.
@@ -162,9 +162,9 @@ class BackgroundController
             $app['orm.em']->persist($background);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le background a été ajouté.');
+           $this->addFlash('success', 'Le background a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $background->getGroupe()->getId()]), 303);
+            return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/background/add.twig', [
@@ -188,9 +188,9 @@ class BackgroundController
             $app['orm.em']->remove($background);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le background a été supprimé.');
+           $this->addFlash('success', 'Le background a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $background->getGroupe()->getId()]), 303);
+            return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/background/delete.twig', [
@@ -222,9 +222,9 @@ class BackgroundController
             $app['orm.em']->persist($background);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le background a été ajouté.');
+           $this->addFlash('success', 'Le background a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $background->getGroupe()->getId()]), 303);
+            return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/background/update.twig', [

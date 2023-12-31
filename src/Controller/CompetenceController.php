@@ -125,9 +125,9 @@ class CompetenceController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('competence.family'), 303);
+                    return $this->redirectToRoute('competence.family', [], 303);
                 }
 
                 $documentFilename = hash('md5', $competence->getLabel().$filename.time()).'.'.$extension;
@@ -140,12 +140,12 @@ class CompetenceController extends AbstractController
             $app['orm.em']->persist($competence);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La compétence a été ajoutée.');
+           $this->addFlash('success', 'La compétence a été ajoutée.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('competence.detail', ['competence' => $competence->getId()]));
+                return $this->redirectToRoute('competence.detail', ['competence' => $competence->getId()]);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('competence.add'), 303);
+                return $this->redirectToRoute('competence.add', [], 303);
             }
         }
 
@@ -190,9 +190,9 @@ class CompetenceController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('competence.family'), 303);
+                    return $this->redirectToRoute('competence.family', [], 303);
                 }
 
                 $documentFilename = hash('md5', $competence->getLabel().$filename.time()).'.'.$extension;
@@ -206,15 +206,15 @@ class CompetenceController extends AbstractController
                 $competence->setCompetenceAttributesAsString($request->get('competenceAttributesAsString'), $app['orm.em'], $attributeRepos);
                 $app['orm.em']->persist($competence);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La compétence a été mise à jour.');
+               $this->addFlash('success', 'La compétence a été mise à jour.');
 
-                return $app->redirect($app['url_generator']->generate('competence.detail', ['competence' => $competence->getId()]));
+                return $this->redirectToRoute('competence.detail', ['competence' => $competence->getId()]);
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($competence);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La compétence a été supprimée.');
+               $this->addFlash('success', 'La compétence a été supprimée.');
 
-                return $app->redirect($app['url_generator']->generate('competence'));
+                return $this->redirectToRoute('competence');
             }
         }
 
@@ -234,9 +234,9 @@ class CompetenceController extends AbstractController
 
         $app['orm.em']->persist($competence);
         $app['orm.em']->flush();
-        $app['session']->getFlashBag()->add('success', 'La compétence a été mise à jour.');
+       $this->addFlash('success', 'La compétence a été mise à jour.');
 
-        return $app->redirect($app['url_generator']->generate('competence'));
+        return $this->redirectToRoute('competence');
     }
 
     /**
@@ -250,7 +250,7 @@ class CompetenceController extends AbstractController
         // on ne peux télécharger que les documents des compétences que l'on connait
         if (!$app['security.authorization_checker']->isGranted('ROLE_REGLE') && $this->getUser()->getPersonnage()) {
             if (!$this->getUser()->getPersonnage()->getCompetences()->contains($competence)) {
-                $app['session']->getFlashBag()->add('error', "Vous n'avez pas les droits necessaires");
+               $this->addFlash('error', "Vous n'avez pas les droits necessaires");
             }
         }
 

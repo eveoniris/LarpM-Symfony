@@ -7,7 +7,7 @@ use LarpManager\Form\PaysMinimalForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 
-class PaysController
+class PaysController extends AbstractController
 {
     public function indexAction(Request $request, Application $app)
     {
@@ -35,12 +35,12 @@ class PaysController
             $app['orm.em']->persist($pays);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le pays a été ajouté.');
+           $this->addFlash('success', 'Le pays a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('pays'), 303);
+                return $this->redirectToRoute('pays', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('pays.add'), 303);
+                return $this->redirectToRoute('pays.add', [], 303);
             }
         }
 
@@ -69,14 +69,14 @@ class PaysController
                 $pays->setUpdateDate(new \DateTime('NOW'));
                 $app['orm.em']->persist($pays);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le pays a été mis à jour.');
+               $this->addFlash('success', 'Le pays a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($pays);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le pays a été supprimé.');
+               $this->addFlash('success', 'Le pays a été supprimé.');
             }
 
-            return $app->redirect($app['url_generator']->generate('pays'));
+            return $this->redirectToRoute('pays');
         }
 
         return $app['twig']->render('pays/update.twig', [
@@ -94,9 +94,9 @@ class PaysController
         if ($pays) {
             return $app['twig']->render('pays/detail.twig', ['pays' => $pays]);
         } else {
-            $app['session']->getFlashBag()->add('error', 'Le pays n\'a pas été trouvé.');
+           $this->addFlash('error', 'Le pays n\'a pas été trouvé.');
 
-            return $app->redirect($app['url_generator']->generate('pays'));
+            return $this->redirectToRoute('pays');
         }
     }
 

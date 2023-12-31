@@ -31,7 +31,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  *
  * @author kevin
  */
-class StatistiqueController
+class StatistiqueController extends AbstractController
 {
     // TODO : move to admin dashboard
     #[Route('/statistique', name: 'statistique')]

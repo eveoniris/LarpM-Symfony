@@ -32,7 +32,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class QualityController
+class QualityController extends AbstractController
 {
     /**
      * Liste les qualitys.
@@ -70,9 +70,9 @@ class QualityController
             $app['orm.em']->persist($quality);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La quality a été enregistrée.');
+           $this->addFlash('success', 'La quality a été enregistrée.');
 
-            return $app->redirect($app['url_generator']->generate('quality'), 303);
+            return $this->redirectToRoute('quality', [], 303);
         }
 
         return $app['twig']->render('admin/quality/add.twig', [
@@ -122,9 +122,9 @@ class QualityController
             $app['orm.em']->persist($quality);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La quality a été enregistrée.');
+           $this->addFlash('success', 'La quality a été enregistrée.');
 
-            return $app->redirect($app['url_generator']->generate('quality'), 303);
+            return $this->redirectToRoute('quality', [], 303);
         }
 
         return $app['twig']->render('admin/quality/update.twig', [
@@ -149,9 +149,9 @@ class QualityController
             $app['orm.em']->remove($quality);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La quality a été supprimée.');
+           $this->addFlash('success', 'La quality a été supprimée.');
 
-            return $app->redirect($app['url_generator']->generate('quality'), 303);
+            return $this->redirectToRoute('quality', [], 303);
         }
 
         return $app['twig']->render('admin/quality/delete.twig', [

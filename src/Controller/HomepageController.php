@@ -98,7 +98,7 @@ class HomepageController extends AbstractController
             $app['orm.em']->persist($this->getUser());
             $app['orm.em']->flush();
 
-            return $app->redirect($app['url_generator']->generate('newUser.step3'), 303);
+            return $this->redirectToRoute('newUser.step3', [], 303);
         }
 
         return $app['twig']->render('public/newUser/step2.twig', [
@@ -131,7 +131,7 @@ class HomepageController extends AbstractController
             $app['orm.em']->persist($User);
             $app['orm.em']->flush();
 
-            return $app->redirect($app['url_generator']->generate('newUser.step4'), 303);
+            return $this->redirectToRoute('newUser.step4', [], 303);
         }
 
         return $app['twig']->render('public/newUser/step3.twig', [

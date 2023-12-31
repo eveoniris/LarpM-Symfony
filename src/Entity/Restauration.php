@@ -20,13 +20,13 @@ class Restauration extends BaseRestauration
             if ($result->containsKey($participantHasRestauration->getParticipant()->getGn()->getId())) {
                 $gn = $result->get($participantHasRestauration->getParticipant()->getGn()->getId());
                 ++$gn['count'];
-                $gn['Users'][] = $participantHasRestauration->getParticipant()->getUser();
+                $gn['users'][] = $participantHasRestauration->getParticipant()->getUser();
                 $result[$participantHasRestauration->getParticipant()->getGn()->getId()] = $gn;
             } else {
                 $result[$participantHasRestauration->getParticipant()->getGn()->getId()] = [
                     'gn' => $participantHasRestauration->getParticipant()->getGn(),
                     'count' => 1,
-                    'Users' => [$participantHasRestauration->getParticipant()->getUser()],
+                    'users' => [$participantHasRestauration->getParticipant()->getUser()],
                 ];
             }
         }

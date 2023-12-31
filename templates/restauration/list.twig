@@ -9,25 +9,21 @@
 		<li class="active">Liste des lieux de restauration</li>
 	</ol>
 
+<div class="well well-sm bs-component">
 
-	<nav class="navbar navbar-default" style="padding-right: 5px;">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2" aria-expanded="false">
-		        <span class="sr-only">Toggle navigation</span>
-		        <span class="icon-bar"></span>
-		        <span class="icon-bar"></span>
-		        <span class="icon-bar"></span>
-			</button>
-			<span class="navbar-brand">
-			</span>
+	<div class="header">
+		<h5>Liste des lieux de restauration</h5>
+	</div>
+
+	<div class="btn-toolbar" role="toolbar" aria-label="...">
+		<div class="btn-group" role="group" aria-label="...">
+			<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter un lieu de restauration" href="{{ path('restauration.add') }}"><i class="fa fa-plus"></i></a>
 		</div>
-		<div id="bs-example-navbar-collapse-2" class="collapse navbar-collapse">
-			<ul class="nav navbar-nav navbar-right">
-				<a class="btn btn-primary navbar-btn" href="{{ path('restauration.add') }}">Ajouter un lieu de restauration</a>
-			</ul>
-		</div>
-	</nav>
-	
+	</div>
+</div>
+
+	{% include '_partials/pagination.html.twig' %}
+
 		<table class="table table-condensed table-striped table-bordered">
 			<thead>
 				<tr>
@@ -38,7 +34,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{% for restauration in restaurations %}
+				{% for restauration in paginator %}
 					<tr>
 						<td>{{ restauration.label }}</td>
 						<td>{{ restauration.description|markdown_to_html }}</td>
@@ -54,12 +50,12 @@
 		      						<span class="caret"></span>
 		    					</button>
 		    					<ul class="dropdown-menu">
-		    						<li><a href="{{ path('restauration.users',{'restauration':restauration.id}) }}">Utilisateurs</a></li>
-		    						<li><a href="{{ path('restauration.users.export',{'restauration':restauration.id}) }}">Exporter les utilisateurs</a></li>
-		    						<li><a href="{{ path('restauration.restrictions',{'restauration':restauration.id}) }}">Restrictions</a></li>
-		    						<li><a href="{{ path('restauration.update',{'restauration':restauration.id}) }}">Modifier</a></li>
-		    						<li><a href="{{ path('restauration.detail',{'restauration':restauration.id}) }}">Détail</a></li>
-		    						<li><a href="{{ path('restauration.delete',{'restauration':restauration.id}) }}">Supprimer</a></li>
+		    						<li><a href="{{ path('restauration.users',{'id':restauration.id}) }}">Utilisateurs</a></li>
+		    						<li><a href="{{ path('restauration.users.export',{'id':restauration.id}) }}">Exporter les utilisateurs</a></li>
+		    						<li><a href="{{ path('restauration.restrictions',{'id':restauration.id}) }}">Restrictions</a></li>
+		    						<li><a href="{{ path('restauration.update',{'id':restauration.id}) }}">Modifier</a></li>
+		    						<li><a href="{{ path('restauration.detail',{'id':restauration.id}) }}">Détail</a></li>
+		    						<li><a href="{{ path('restauration.delete',{'id':restauration.id}) }}">Supprimer</a></li>
 					  			</ul>
 					  		</div>
 						</td>
@@ -68,5 +64,6 @@
 			</tbody>
 		</table>
 
-	
+	{% include '_partials/pagination.html.twig' %}
+
 {% endblock %}

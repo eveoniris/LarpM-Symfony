@@ -34,7 +34,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class GroupeSecondaireController
+class GroupeSecondaireController extends AbstractController
 {
     /**
      * Liste des groupes secondaires (pour les orgas).
@@ -156,12 +156,12 @@ class GroupeSecondaireController
             $app['orm.em']->persist($groupeSecondaire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le groupe secondaire a été ajouté.');
+           $this->addFlash('success', 'Le groupe secondaire a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('groupeSecondaire.admin.list'), 303);
+                return $this->redirectToRoute('groupeSecondaire.admin.list', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('groupeSecondaire.admin.add'), 303);
+                return $this->redirectToRoute('groupeSecondaire.admin.add', [], 303);
             }
         }
 
@@ -182,9 +182,9 @@ class GroupeSecondaireController
             $groupeSecondaire = $form->getData();
             $app['orm.em']->persist($groupeSecondaire);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'Le groupe secondaire a été mis à jour.');
+           $this->addFlash('success', 'Le groupe secondaire a été mis à jour.');
 
-            return $app->redirect($app['url_generator']->generate('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()]), 303);
+            return $this->redirectToRoute('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/groupeSecondaire/materiel.twig', [
@@ -258,14 +258,14 @@ class GroupeSecondaireController
                 }
                 $app['orm.em']->persist($groupeSecondaire);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le groupe secondaire a été mis à jour.');
+               $this->addFlash('success', 'Le groupe secondaire a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($groupeSecondaire);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le groupe secondaire a été supprimé.');
+               $this->addFlash('success', 'Le groupe secondaire a été supprimé.');
             }
 
-            return $app->redirect($app['url_generator']->generate('groupeSecondaire.admin.list'));
+            return $this->redirectToRoute('groupeSecondaire.admin.list');
         }
 
         return $app['twig']->render('admin/groupeSecondaire/update.twig', [
@@ -322,9 +322,9 @@ class GroupeSecondaireController
             $membre = new \App\Entity\Membre();
 
             if ($groupeSecondaire->isMembre($personnage)) {
-                $app['session']->getFlashBag()->add('warning', 'le personnage est déjà membre du groupe secondaire.');
+               $this->addFlash('warning', 'le personnage est déjà membre du groupe secondaire.');
 
-                return $app->redirect($app['url_generator']->generate('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()]), 303);
+                return $this->redirectToRoute('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()], [], 303);
             }
 
             $membre->setPersonnage($personnage);
@@ -334,9 +334,9 @@ class GroupeSecondaireController
             $app['orm.em']->persist($membre);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'le personnage a été ajouté au groupe secondaire.');
+           $this->addFlash('success', 'le personnage a été ajouté au groupe secondaire.');
 
-            return $app->redirect($app['url_generator']->generate('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()]), 303);
+            return $this->redirectToRoute('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/groupeSecondaire/newMembre.twig',
@@ -355,7 +355,7 @@ class GroupeSecondaireController
         $app['orm.em']->remove($postulant);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', 'la candidature a été supprimée.');
+       $this->addFlash('success', 'la candidature a été supprimée.');
 
         return $app['twig']->render('admin/groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)
@@ -378,7 +378,7 @@ class GroupeSecondaireController
         $membre->setSecret(false);
 
         if ($groupeSecondaire->isMembre($personnage)) {
-            $app['session']->getFlashBag()->add('warning', 'le personnage est déjà membre du groupe secondaire.');
+           $this->addFlash('warning', 'le personnage est déjà membre du groupe secondaire.');
         } else {
             $app['orm.em']->persist($membre);
             $app['orm.em']->remove($postulant);
@@ -386,7 +386,7 @@ class GroupeSecondaireController
 
             $app['User.mailer']->sendGroupeSecondaireAcceptMessage($personnage->getUser(), $groupeSecondaire);
 
-            $app['session']->getFlashBag()->add('success', 'la candidature a été accepté.');
+           $this->addFlash('success', 'la candidature a été accepté.');
         }
 
         return $app['twig']->render('admin/groupeSecondaire/detail.twig',
@@ -405,7 +405,7 @@ class GroupeSecondaireController
         $app['orm.em']->remove($membre);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', 'le membre a été retiré.');
+       $this->addFlash('success', 'le membre a été retiré.');
 
         return $app['twig']->render('admin/groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)

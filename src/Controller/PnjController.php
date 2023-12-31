@@ -30,7 +30,7 @@ use LarpManager\Form\PnjInscriptionForm;
  * @author kevin
  *
  */
-class PnjController
+class PnjController extends AbstractController
 {
 	/**
 	 * 

@@ -43,7 +43,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class TerritoireController
+class TerritoireController extends AbstractController
 {
     /**
      * Modifier les listes de cibles pour les quêtes commerciales.
@@ -62,9 +62,9 @@ class TerritoireController
             $app['orm.em']->persist($territoire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le territoire a été mis à jour');
+           $this->addFlash('success', 'Le territoire a été mis à jour');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+            return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/territoire/cibles.twig', [
@@ -249,9 +249,9 @@ class TerritoireController
             $app['orm.em']->persist($territoire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le territoire a été mis à jour');
+           $this->addFlash('success', 'Le territoire a été mis à jour');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+            return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/territoire/loi.twig', [
@@ -290,9 +290,9 @@ class TerritoireController
             $app['orm.em']->persist($territoire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La construction a été ajoutée.');
+           $this->addFlash('success', 'La construction a été ajoutée.');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+            return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/territoire/addConstruction.twig', [
@@ -322,9 +322,9 @@ class TerritoireController
             $app['orm.em']->persist($territoire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La construction a été retiré.');
+           $this->addFlash('success', 'La construction a été retiré.');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+            return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/territoire/removeConstruction.twig', [
@@ -372,12 +372,12 @@ class TerritoireController
             $app['orm.em']->persist($territoire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le territoire a été ajouté.');
+           $this->addFlash('success', 'Le territoire a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('territoire.admin.list'), 303);
+                return $this->redirectToRoute('territoire.admin.list', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('territoire.admin.add'), 303);
+                return $this->redirectToRoute('territoire.admin.add', [], 303);
             }
         }
 
@@ -405,9 +405,9 @@ class TerritoireController
             $app['orm.em']->persist($territoire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le territoire a été mis à jour.');
+           $this->addFlash('success', 'Le territoire a été mis à jour.');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+            return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/territoire/updateIngredients.twig', [
@@ -434,9 +434,9 @@ class TerritoireController
 
             $app['orm.em']->persist($territoire);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'Le territoire a été mis à jour.');
+           $this->addFlash('success', 'Le territoire a été mis à jour.');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+            return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/territoire/update.twig', [
@@ -460,9 +460,9 @@ class TerritoireController
             $app['orm.em']->persist($territoire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le territoire a été mis à jour');
+           $this->addFlash('success', 'Le territoire a été mis à jour');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+            return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/territoire/culture.twig', [
@@ -486,9 +486,9 @@ class TerritoireController
             $app['orm.em']->persist($territoire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le territoire a été mis à jour');
+           $this->addFlash('success', 'Le territoire a été mis à jour');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+            return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/territoire/updateStatut.twig', [
@@ -518,9 +518,9 @@ class TerritoireController
             $extension = $files['blason']->guessExtension();
 
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
-                $app['session']->getFlashBag()->add('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
+               $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
 
-                return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+                return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
             }
 
             $blasonFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
@@ -533,9 +533,9 @@ class TerritoireController
             $app['orm.em']->persist($territoire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le blason a été enregistré');
+           $this->addFlash('success', 'Le blason a été enregistré');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+            return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/territoire/blason.twig', [
@@ -562,9 +562,9 @@ class TerritoireController
 
             $app['orm.em']->persist($territoire);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'Le territoire a été mis à jour.');
+           $this->addFlash('success', 'Le territoire a été mis à jour.');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+            return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/territoire/updateStrategie.twig', [
@@ -607,9 +607,9 @@ class TerritoireController
 
             $app['orm.em']->remove($territoire);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'Le territoire a été supprimé.');
+           $this->addFlash('success', 'Le territoire a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.list'), 303);
+            return $this->redirectToRoute('territoire.admin.list', [], 303);
         }
 
         return $app['twig']->render('admin/territoire/delete.twig', [
@@ -640,9 +640,9 @@ class TerritoireController
         $app['orm.em']->persist($territoire);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', 'Le topic a été ajouté.');
+       $this->addFlash('success', 'Le topic a été ajouté.');
 
-        return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+        return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
     }
 
     /**
@@ -662,9 +662,9 @@ class TerritoireController
             $app['orm.em']->flush();
         }
 
-        $app['session']->getFlashBag()->add('success', 'Le topic a été supprimé.');
+       $this->addFlash('success', 'Le topic a été supprimé.');
 
-        return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+        return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
     }
 
     /**
@@ -688,9 +688,9 @@ class TerritoireController
 
             $app['orm.em']->persist($event);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'L\'evenement a été ajouté.');
+           $this->addFlash('success', 'L\'evenement a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+            return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/territoire/addEvent.twig', [
@@ -719,9 +719,9 @@ class TerritoireController
 
             $app['orm.em']->persist($event);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'L\'evenement a été modifié.');
+           $this->addFlash('success', 'L\'evenement a été modifié.');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+            return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/territoire/updateEvent.twig', [
@@ -750,9 +750,9 @@ class TerritoireController
 
             $app['orm.em']->remove($event);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'L\'evenement a été supprimé.');
+           $this->addFlash('success', 'L\'evenement a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('territoire.admin.detail', ['territoire' => $territoire->getId()]), 303);
+            return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/territoire/deleteEvent.twig', [

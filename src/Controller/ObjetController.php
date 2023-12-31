@@ -32,7 +32,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class ObjetController
+class ObjetController extends AbstractController
 {
     /**
      * Présentation des objets de jeu.
@@ -198,9 +198,9 @@ class ObjetController
             $app['orm.em']->persist($item);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'objet de jeu a été créé');
+           $this->addFlash('success', 'L\'objet de jeu a été créé');
 
-            return $app->redirect($app['url_generator']->generate('items'), 303);
+            return $this->redirectToRoute('items', [], 303);
         }
 
         return $app['twig']->render('admin/objet/new.twig', [
@@ -250,9 +250,9 @@ class ObjetController
                     break;
             }
 
-            $app['session']->getFlashBag()->add('success', 'L\'objet de jeu a été sauvegardé');
+           $this->addFlash('success', 'L\'objet de jeu a été sauvegardé');
 
-            return $app->redirect($app['url_generator']->generate('items'), 303);
+            return $this->redirectToRoute('items', [], 303);
         }
 
         return $app['twig']->render('admin/objet/update.twig', [
@@ -274,9 +274,9 @@ class ObjetController
             $app['orm.em']->remove($item);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'objet de jeu a été supprimé');
+           $this->addFlash('success', 'L\'objet de jeu a été supprimé');
 
-            return $app->redirect($app['url_generator']->generate('items'), 303);
+            return $this->redirectToRoute('items', [], 303);
         }
 
         return $app['twig']->render('admin/objet/delete.twig', [
@@ -298,9 +298,9 @@ class ObjetController
             $app['orm.em']->persist($item);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'objet de jeu a été créé');
+           $this->addFlash('success', 'L\'objet de jeu a été créé');
 
-            return $app->redirect($app['url_generator']->generate('objet'), 303);
+            return $this->redirectToRoute('objet', [], 303);
         }
 
         return $app['twig']->render('admin/objet/link.twig', [

@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class StockController
+class StockController extends AbstractController
 {
     public function indexAction(Request $request, Application $app)
     {

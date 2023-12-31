@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * LarpManager\Controllers\GuildeController.
  */
-class GuildeController
+class GuildeController extends AbstractController
 {
     public function indexAction(Request $request, Application $app)
     {
@@ -32,7 +32,7 @@ class GuildeController
             $app['orm.em']->persist($guilde);
             $app['orm.em']->flush();
 
-            return $app->redirect($app['url_generator']->generate('guilde_list'));
+            return $this->redirectToRoute('guilde_list');
         }
 
         return $app['twig']->render('guilde/add.twig');
@@ -43,7 +43,7 @@ class GuildeController
         $id = $request->get('index');
         $guilde = $app['orm.em']->find('\App\Entity\Guilde', $id);
         if (!$guilde) {
-            return $app->redirect($app['url_generator']->generate('guilde_list'));
+            return $this->redirectToRoute('guilde_list');
         }
 
         if ('POST' === $request->getMethod()) {
@@ -55,7 +55,7 @@ class GuildeController
 
             $app['orm.em']->flush();
 
-            return $app->redirect($app['url_generator']->generate('guilde_list'));
+            return $this->redirectToRoute('guilde_list');
         }
 
         $repo = $app['orm.em']->getRepository('\App\Entity\Guilde');
@@ -74,12 +74,12 @@ class GuildeController
                 $app['orm.em']->remove($guilde);
                 $app['orm.em']->flush();
 
-                return $app->redirect($app['url_generator']->generate('guilde_list'));
+                return $this->redirectToRoute('guilde_list');
             }
 
             return $app['twig']->render('chronologie/remove.twig', ['guilde' => $guilde]);
         } else {
-            return $app->redirect($app['url_generator']->generate('guilde_list'));
+            return $this->redirectToRoute('guilde_list');
         }
     }
 
@@ -92,7 +92,7 @@ class GuildeController
         if ($guilde) {
             return $app['twig']->render('guilde/detail.twig', ['guilde', $guilde]);
         } else {
-            return $app->redirect($app['url_generator']->generate('guilde_list'));
+            return $this->redirectToRoute('guilde_list');
         }
     }
 }

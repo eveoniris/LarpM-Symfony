@@ -47,7 +47,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class GroupeController
+class GroupeController extends AbstractController
 {
     /**
      * Modifier la composition du groupe.
@@ -91,9 +91,9 @@ class GroupeController
             $app['orm.em']->persist($groupe);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La composition du groupe a été sauvegardé.');
+           $this->addFlash('success', 'La composition du groupe a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/composition.twig', [
@@ -118,9 +118,9 @@ class GroupeController
             $app['orm.em']->persist($groupe);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La description du groupe a été sauvegardé.');
+           $this->addFlash('success', 'La description du groupe a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/description.twig', [
@@ -145,9 +145,9 @@ class GroupeController
             $app['orm.em']->persist($groupe);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le groupe a été sauvegardé.');
+           $this->addFlash('success', 'Le groupe a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/scenariste.twig', [
@@ -322,9 +322,9 @@ class GroupeController
             $app['orm.em']->persist($groupe);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre groupe a été sauvegardé.');
+           $this->addFlash('success', 'Votre groupe a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/ingredient.twig', [
@@ -413,9 +413,9 @@ class GroupeController
             $app['orm.em']->persist($groupe);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre groupe a été sauvegardé.');
+           $this->addFlash('success', 'Votre groupe a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/ressource.twig', [
@@ -440,9 +440,9 @@ class GroupeController
             $app['orm.em']->persist($groupe);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre groupe a été sauvegardé.');
+           $this->addFlash('success', 'Votre groupe a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/richesse.twig', [
@@ -467,9 +467,9 @@ class GroupeController
             $app['orm.em']->persist($groupe);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le document a été ajouté au groupe.');
+           $this->addFlash('success', 'Le document a été ajouté au groupe.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/documents.twig', [
@@ -494,9 +494,9 @@ class GroupeController
             $app['orm.em']->persist($groupe);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'objet a été ajouté au groupe.');
+           $this->addFlash('success', 'L\'objet a été ajouté au groupe.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/items.twig', [
@@ -521,9 +521,9 @@ class GroupeController
             $app['orm.em']->persist($groupe);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le groupe a été sauvegardé.');
+           $this->addFlash('success', 'Le groupe a été sauvegardé.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/envelope.twig', [
@@ -551,9 +551,9 @@ class GroupeController
         $app['orm.em']->persist($groupe);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', 'Le groupe est verrouillé. Cela bloque la création et la modification des personnages membres de ce groupe');
+       $this->addFlash('success', 'Le groupe est verrouillé. Cela bloque la création et la modification des personnages membres de ce groupe');
 
-        return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+        return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
     }
 
     /**
@@ -565,9 +565,9 @@ class GroupeController
         $app['orm.em']->persist($groupe);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', 'Le groupe est dévérouillé');
+       $this->addFlash('success', 'Le groupe est dévérouillé');
 
-        return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+        return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
     }
 
     /**
@@ -579,9 +579,9 @@ class GroupeController
         $app['orm.em']->persist($groupe);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', 'Le groupe est maintenant disponible. Il pourra être réservé par un joueur');
+       $this->addFlash('success', 'Le groupe est maintenant disponible. Il pourra être réservé par un joueur');
 
-        return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+        return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
     }
 
     /**
@@ -593,9 +593,9 @@ class GroupeController
         $app['orm.em']->persist($groupe);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', 'Le groupe est maintenant réservé. Il ne pourra plus être réservé par un joueur');
+       $this->addFlash('success', 'Le groupe est maintenant réservé. Il ne pourra plus être réservé par un joueur');
 
-        return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+        return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
     }
 
     /**
@@ -633,9 +633,9 @@ class GroupeController
             $app['orm.em']->persist($groupe);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le groupe est lié au pays');
+           $this->addFlash('success', 'Le groupe est lié au pays');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/pays.twig', [
@@ -678,9 +678,9 @@ class GroupeController
             $app['orm.em']->persist($territoire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le territoire est contrôlé par le groupe');
+           $this->addFlash('success', 'Le territoire est contrôlé par le groupe');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/addTerritoire.twig', [
@@ -708,9 +708,9 @@ class GroupeController
             $app['orm.em']->persist($territoire);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le territoire n\'est plus controlé par le groupe');
+           $this->addFlash('success', 'Le territoire n\'est plus controlé par le groupe');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/removeTerritoire.twig', [
@@ -768,9 +768,9 @@ class GroupeController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Les options de restauration sont enregistrés.');
+           $this->addFlash('success', 'Les options de restauration sont enregistrés.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/restauration.twig', [
@@ -1016,9 +1016,9 @@ class GroupeController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le participant a été ajouté au groupe.');
+           $this->addFlash('success', 'Le participant a été ajouté au groupe.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/addParticipant.twig', [
@@ -1053,9 +1053,9 @@ class GroupeController
             $app['orm.em']->persist($groupe);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le participant a été retiré du groupe.');
+           $this->addFlash('success', 'Le participant a été retiré du groupe.');
 
-            return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $groupe->getId()]));
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
         return $app['twig']->render('admin/groupe/removeParticipant.twig', [
@@ -1096,11 +1096,11 @@ class GroupeController
 
             if (null != $joueurs) {
                 if (1 == count($joueurs)) {
-                    $app['session']->getFlashBag()->add('success', 'Le joueur a été trouvé.');
+                   $this->addFlash('success', 'Le joueur a été trouvé.');
 
-                    return $app->redirect($app['url_generator']->generate('joueur.detail', ['index' => $joueurs[0]]));
+                    return $this->redirectToRoute('joueur.detail', ['index' => $joueurs[0]]);
                 } else {
-                    $app['session']->getFlashBag()->add('success', 'Il y a plusieurs résultats à votre recherche.');
+                   $this->addFlash('success', 'Il y a plusieurs résultats à votre recherche.');
 
                     return $app['twig']->render('joueur/search_result.twig', [
                         'joueurs' => $joueurs,
@@ -1108,7 +1108,7 @@ class GroupeController
                 }
             }
 
-            $app['session']->getFlashBag()->add('error', 'Désolé, le joueur n\'a pas été trouvé.');
+           $this->addFlash('error', 'Désolé, le joueur n\'a pas été trouvé.');
         }
 
         return $app['twig']->render('joueur/search.twig', [
@@ -1137,9 +1137,9 @@ class GroupeController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le nombre de place disponible a été mis à jour');
+           $this->addFlash('success', 'Le nombre de place disponible a été mis à jour');
 
-            return $app->redirect($app['url_generator']->generate('groupe.admin.list'), 303);
+            return $this->redirectToRoute('groupe.admin.list', [], 303);
         }
 
         return $app['twig']->render('admin/groupe/place.twig', [
@@ -1164,9 +1164,9 @@ class GroupeController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $app['session']->getFlashBag()->add('success', 'Le background du groupe a été créé');
+           $this->addFlash('success', 'Le background du groupe a été créé');
 
-            return $app->redirect($app['url_generator']->generate('groupe.admin.detail', ['index' => $groupe->getId()]), 303);
+            return $this->redirectToRoute('groupe.admin.detail', ['index' => $groupe->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/groupe/background/add.twig', [
@@ -1195,9 +1195,9 @@ class GroupeController
             $app['orm.em']->persist($background);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le background du groupe a été mis à jour');
+           $this->addFlash('success', 'Le background du groupe a été mis à jour');
 
-            return $app->redirect($app['url_generator']->generate('groupe.admin.detail', ['index' => $groupe->getId()]), 303);
+            return $this->redirectToRoute('groupe.admin.detail', ['index' => $groupe->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/groupe/background/update.twig', [
@@ -1248,16 +1248,16 @@ class GroupeController
             $app['orm.em']->persist($topic);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le groupe été sauvegardé');
+           $this->addFlash('success', 'Le groupe été sauvegardé');
 
             /*
              * Si l'utilisateur a cliqué sur "save", renvoi vers la liste des groupes
              * Si l'utilisateur a cliqué sur "save_continue", renvoi vers un nouveau formulaire d'ajout
              */
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('groupe.admin.list'), 303);
+                return $this->redirectToRoute('groupe.admin.list', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('groupe.add'), 303);
+                return $this->redirectToRoute('groupe.add', [], 303);
             }
         }
 
@@ -1337,9 +1337,9 @@ class GroupeController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($groupe);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le groupe a été mis à jour.');
+               $this->addFlash('success', 'Le groupe a été mis à jour.');
 
-                return $app->redirect($app['url_generator']->generate('groupe.detail', ['index' => $id]));
+                return $this->redirectToRoute('groupe.detail', ['index' => $id]);
             } elseif ($form->get('delete')->isClicked()) {
                 // supprime le lien entre les personnages et le groupe
                 foreach ($groupe->getPersonnages() as $personnage) {
@@ -1366,9 +1366,9 @@ class GroupeController
                 }
                 $app['orm.em']->remove($groupe);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le groupe a été supprimé.');
+               $this->addFlash('success', 'Le groupe a été supprimé.');
 
-                return $app->redirect($app['url_generator']->generate('groupe.admin.list'));
+                return $this->redirectToRoute('groupe.admin.list');
             }
         }
 
@@ -1394,9 +1394,9 @@ class GroupeController
         if ($groupe) {
             return $app['twig']->render('admin/groupe/detail.twig', ['groupe' => $groupe]);
         } else {
-            $app['session']->getFlashBag()->add('error', 'Le groupe n\'a pas été trouvé.');
+           $this->addFlash('error', 'Le groupe n\'a pas été trouvé.');
 
-            return $app->redirect($app['url_generator']->generate('groupe'));
+            return $this->redirectToRoute('groupe');
         }
     }
 

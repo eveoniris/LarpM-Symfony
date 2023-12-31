@@ -30,7 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class TrombinoscopeController
+class TrombinoscopeController extends AbstractController
 {
     /**
      * Le trombinoscope général.

@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class StockRangementController
+class StockRangementController extends AbstractController
 {
     public function indexAction(Request $request, Application $app)
     {
@@ -57,9 +57,9 @@ class StockRangementController
             $app['orm.em']->persist($rangement);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le rangement a été ajoutée.');
+           $this->addFlash('success', 'Le rangement a été ajoutée.');
 
-            return $app->redirect($app['url_generator']->generate('stock_rangement_index'));
+            return $this->redirectToRoute('stock_rangement_index');
         }
 
         return $app['twig']->render('stock/rangement/add.twig', ['form' => $form->createView()]);
@@ -85,14 +85,14 @@ class StockRangementController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($rangement);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le rangement a été mise à jour');
+               $this->addFlash('success', 'Le rangement a été mise à jour');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($rangement);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le rangement a été suprimé');
+               $this->addFlash('success', 'Le rangement a été suprimé');
             }
 
-            return $app->redirect($app['url_generator']->generate('stock_rangement_index'));
+            return $this->redirectToRoute('stock_rangement_index');
         }
 
         return $app['twig']->render('stock/rangement/update.twig', [

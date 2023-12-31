@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class StockLocalisationController
+class StockLocalisationController extends AbstractController
 {
     public function indexAction(Request $request, Application $app)
     {
@@ -57,9 +57,9 @@ class StockLocalisationController
             $app['orm.em']->persist($localisation);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La localisation a été ajoutée.');
+           $this->addFlash('success', 'La localisation a été ajoutée.');
 
-            return $app->redirect($app['url_generator']->generate('stock_localisation_index'));
+            return $this->redirectToRoute('stock_localisation_index');
         }
 
         return $app['twig']->render('stock/localisation/add.twig', ['form' => $form->createView()]);
@@ -85,14 +85,14 @@ class StockLocalisationController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($localisation);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La localisation a été mise à jour');
+               $this->addFlash('success', 'La localisation a été mise à jour');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($localisation);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La localisation a été suprimée');
+               $this->addFlash('success', 'La localisation a été suprimée');
             }
 
-            return $app->redirect($app['url_generator']->generate('stock_localisation_index'));
+            return $this->redirectToRoute('stock_localisation_index');
         }
 
         return $app['twig']->render('stock/localisation/update.twig', [

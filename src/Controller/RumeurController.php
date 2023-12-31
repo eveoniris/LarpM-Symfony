@@ -33,7 +33,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class RumeurController
+class RumeurController extends AbstractController
 {
     /**
      * Liste de toutes les rumeurs.
@@ -108,9 +108,9 @@ class RumeurController
             $app['orm.em']->persist($rumeur);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre rumeur a été ajoutée.');
+           $this->addFlash('success', 'Votre rumeur a été ajoutée.');
 
-            return $app->redirect($app['url_generator']->generate('rumeur.list'), 303);
+            return $this->redirectToRoute('rumeur.list', [], 303);
         }
 
         return $app['twig']->render('admin/rumeur/add.twig', [
@@ -135,9 +135,9 @@ class RumeurController
             $app['orm.em']->persist($rumeur);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Votre rumeur a été modifiée.');
+           $this->addFlash('success', 'Votre rumeur a été modifiée.');
 
-            return $app->redirect($app['url_generator']->generate('rumeur.detail', ['rumeur' => $rumeur->getId()]), 303);
+            return $this->redirectToRoute('rumeur.detail', ['rumeur' => $rumeur->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/rumeur/update.twig', [
@@ -161,9 +161,9 @@ class RumeurController
             $app['orm.em']->remove($rumeur);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La rumeur a été supprimée.');
+           $this->addFlash('success', 'La rumeur a été supprimée.');
 
-            return $app->redirect($app['url_generator']->generate('rumeur.list'), 303);
+            return $this->redirectToRoute('rumeur.list', [], 303);
         }
 
         return $app['twig']->render('admin/rumeur/delete.twig', [

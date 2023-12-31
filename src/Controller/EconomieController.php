@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class EconomieController
+class EconomieController extends AbstractController
 {
     /**
      * Présentation des constructions.

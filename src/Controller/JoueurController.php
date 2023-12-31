@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class JoueurController
+class JoueurController extends AbstractController
 {
     /**
      * Affiche la vue index.twig.
@@ -45,9 +45,9 @@ class JoueurController
             $app['orm.em']->persist($joueur);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Vos informations ont été enregistrés.');
+           $this->addFlash('success', 'Vos informations ont été enregistrés.');
 
-            return $app->redirect($app['url_generator']->generate('homepage'), 303);
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $app['twig']->render('joueur/add.twig', [
@@ -67,9 +67,9 @@ class JoueurController
         if ($joueur) {
             return $app['twig']->render('joueur/detail.twig', ['joueur' => $joueur]);
         } else {
-            $app['session']->getFlashBag()->add('error', 'Le joueur n\'a pas été trouvé.');
+           $this->addFlash('error', 'Le joueur n\'a pas été trouvé.');
 
-            return $app->redirect($app['url_generator']->generate('joueur'));
+            return $this->redirectToRoute('joueur');
         }
     }
 
@@ -93,9 +93,9 @@ class JoueurController
 
             $app['orm.em']->persist($joueur);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'Le joueur a été mis à jour.');
+           $this->addFlash('success', 'Le joueur a été mis à jour.');
 
-            return $app->redirect($app['url_generator']->generate('joueur.detail', ['index' => $id]));
+            return $this->redirectToRoute('joueur.detail', ['index' => $id]);
         }
 
         return $app['twig']->render('joueur/update.twig', [
@@ -137,7 +137,7 @@ class JoueurController
 
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Les points d\'expérience ont été sauvegardés');
+           $this->addFlash('success', 'Les points d\'expérience ont été sauvegardés');
         }
 
         return $app['twig']->render('joueur/xp.twig', [

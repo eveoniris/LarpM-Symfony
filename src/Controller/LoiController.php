@@ -26,7 +26,7 @@ use LarpManager\Form\Loi\LoiForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 
-class LoiController
+class LoiController extends AbstractController
 {
     /**
      * Liste des loi.
@@ -60,9 +60,9 @@ class LoiController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('loi'), 303);
+                    return $this->redirectToRoute('loi', [], 303);
                 }
 
                 $documentFilename = hash('md5', $loi->getLabel().$filename.time()).'.'.$extension;
@@ -75,9 +75,9 @@ class LoiController
             $app['orm.em']->persist($loi);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La loi a été ajoutée.');
+           $this->addFlash('success', 'La loi a été ajoutée.');
 
-            return $app->redirect($app['url_generator']->generate('loi'), 303);
+            return $this->redirectToRoute('loi', [], 303);
         }
 
         return $app['twig']->render('admin\loi\add.twig', [
@@ -117,9 +117,9 @@ class LoiController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('loi'), 303);
+                    return $this->redirectToRoute('loi', [], 303);
                 }
 
                 $documentFilename = hash('md5', $loi->getLabel().$filename.time()).'.'.$extension;
@@ -132,9 +132,9 @@ class LoiController
             $app['orm.em']->persist($loi);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La loi a été mise à jour.');
+           $this->addFlash('success', 'La loi a été mise à jour.');
 
-            return $app->redirect($app['url_generator']->generate('loi'), 303);
+            return $this->redirectToRoute('loi', [], 303);
         }
 
         return $app['twig']->render('admin\loi\update.twig', [
@@ -160,9 +160,9 @@ class LoiController
             $app['orm.em']->remove($loi);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La loi a été supprimée.');
+           $this->addFlash('success', 'La loi a été supprimée.');
 
-            return $app->redirect($app['url_generator']->generate('loi'), 303);
+            return $this->redirectToRoute('loi', [], 303);
         }
 
         return $app['twig']->render('admin\loi\delete.twig', [
@@ -180,9 +180,9 @@ class LoiController
 
         $app['orm.em']->persist($loi);
         $app['orm.em']->flush();
-        $app['session']->getFlashBag()->add('success', 'La loi a été mise à jour.');
+       $this->addFlash('success', 'La loi a été mise à jour.');
 
-        return $app->redirect($app['url_generator']->generate('loi'));
+        return $this->redirectToRoute('loi');
     }
 
     /**

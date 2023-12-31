@@ -30,7 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class IngredientController
+class IngredientController extends AbstractController
 {
     /**
      * Liste des ingrédients.
@@ -74,9 +74,9 @@ class IngredientController
             $app['orm.em']->persist($titre);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'ingredient a été ajouté');
+           $this->addFlash('success', 'L\'ingredient a été ajouté');
 
-            return $app->redirect($app['url_generator']->generate('ingredient.admin.detail', ['ingredient' => $ingredient->getId()]), 303);
+            return $this->redirectToRoute('ingredient.admin.detail', ['ingredient' => $ingredient->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/ingredient/add.twig', [
@@ -104,9 +104,9 @@ class IngredientController
             $app['orm.em']->persist($ingredient);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'ingredient a été sauvegardé');
+           $this->addFlash('success', 'L\'ingredient a été sauvegardé');
 
-            return $app->redirect($app['url_generator']->generate('ingredient.admin.detail', ['ingredient' => $ingredient->getId()]), 303);
+            return $this->redirectToRoute('ingredient.admin.detail', ['ingredient' => $ingredient->getId()], [], 303);
         }
 
         return $app['twig']->render('admin/ingredient/update.twig', [
@@ -134,9 +134,9 @@ class IngredientController
             $app['orm.em']->remove($ingredient);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'L\'ingredient a été suprimé');
+           $this->addFlash('success', 'L\'ingredient a été suprimé');
 
-            return $app->redirect($app['url_generator']->generate('ingredient.admin.list'), 303);
+            return $this->redirectToRoute('ingredient.admin.list', [], 303);
         }
 
         return $app['twig']->render('admin/ingredient/delete.twig', [

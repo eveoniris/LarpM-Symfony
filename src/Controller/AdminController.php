@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * App\Controllers\AdminController.
  */
-class AdminController
+class AdminController extends AbstractController
 {
     // Returns a file size limit in bytes based on the PHP upload_max_filesize
     // and post_max_size
@@ -198,9 +198,9 @@ class AdminController
         $app['twig']->clearTemplateCache();
         $app['twig']->clearCacheFiles();
 
-        $app['session']->getFlashBag()->add('success', 'Le cache a été vidé.');
+       $this->addFlash('success', 'Le cache a été vidé.');
 
-        return $app->redirect($app['url_generator']->generate('admin'), 303);
+        return $this->redirectToRoute('admin', [], 303);
     }
 
     /**
@@ -220,9 +220,9 @@ class AdminController
         @ftruncate($myTextFileHandler, 0);
         @fclose($myTextFileHandle);
 
-        $app['session']->getFlashBag()->add('success', 'Les logs ont été vidés.');
+       $this->addFlash('success', 'Les logs ont été vidés.');
 
-        return $app->redirect($app['url_generator']->generate('admin'), 303);
+        return $this->redirectToRoute('admin', [], 303);
     }
 
     /**

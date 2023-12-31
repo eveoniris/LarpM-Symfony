@@ -33,7 +33,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author kevin
  */
-class ForumController
+class ForumController extends AbstractController
 {
     /**
      * Liste des forums de premier niveau.
@@ -42,7 +42,7 @@ class ForumController
     public function forumAction(Request $request, Application $app)
     {
         if (null == $this->getUser()) {
-            return $app->redirect($app['url_generator']->generate('User.login', 303));
+            return $this->redirectToRoute('user.login', [], 303);
         }
 
         $topics = $app['orm.em']->getRepository('\\'.\App\Entity\Topic::class)
@@ -105,9 +105,9 @@ class ForumController
             $app['orm.em']->persist($topic);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le forum a été ajouté.');
+           $this->addFlash('success', 'Le forum a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('forum'), 303);
+            return $this->redirectToRoute('forum', [], 303);
         }
 
         return $app['twig']->render('forum/forum_add.twig', [
@@ -123,7 +123,7 @@ class ForumController
     public function topicAction(Request $request, Application $app)
     {
         if (null == $this->getUser()) {
-            return $app->redirect($app['url_generator']->generate('User.login', 303));
+            return $this->redirectToRoute('user.login', [], 303);
         }
 
         $id = $request->get('index');
@@ -171,9 +171,9 @@ class ForumController
             $app['orm.em']->persist($post);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le message a été ajouté.');
+           $this->addFlash('success', 'Le message a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('forum.topic', ['index' => $topic->getId()]), 303);
+            return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], [], 303);
         }
 
         return $app['twig']->render('forum/post_add.twig', [
@@ -188,7 +188,7 @@ class ForumController
     public function postAction(Request $request, Application $app)
     {
         if (null == $this->getUser()) {
-            return $app->redirect($app['url_generator']->generate('User.login', 303));
+            return $this->redirectToRoute('user.login', [],303);
         }
 
         $postId = $request->get('index');
@@ -274,9 +274,9 @@ class ForumController
                 $app['User.mailer']->sendNotificationMessage($User, $post);
             }
 
-            $app['session']->getFlashBag()->add('success', 'Le message a été ajouté.');
+           $this->addFlash('success', 'Le message a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('forum.post', ['index' => $postToResponse->getId()]), 303);
+            return $this->redirectToRoute('forum.post', ['index' => $postToResponse->getId()], [], 303);
         }
 
         return $app['twig']->render('forum/post_response.twig', [
@@ -308,9 +308,9 @@ class ForumController
             $app['orm.em']->persist($post);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le message a été modifié.');
+           $this->addFlash('success', 'Le message a été modifié.');
 
-            return $app->redirect($app['url_generator']->generate('forum.post', ['index' => $post->getId()]), 303);
+            return $this->redirectToRoute('forum.post', ['index' => $post->getId()], [], 303);
         }
 
         return $app['twig']->render('forum/post_update.twig', [
@@ -334,9 +334,9 @@ class ForumController
         $app['orm.em']->persist($post);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', 'Les notifications sont maintenant activées.');
+       $this->addFlash('success', 'Les notifications sont maintenant activées.');
 
-        return $app->redirect($app['url_generator']->generate('forum.post', ['index' => $post->getId()]), 303);
+        return $this->redirectToRoute('forum.post', ['index' => $post->getId()], [], 303);
     }
 
     /**
@@ -354,9 +354,9 @@ class ForumController
         $app['orm.em']->persist($post);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', 'Les notifications sont maintenant desactivées.');
+       $this->addFlash('success', 'Les notifications sont maintenant desactivées.');
 
-        return $app->redirect($app['url_generator']->generate('forum.post', ['index' => $post->getId()]), 303);
+        return $this->redirectToRoute('forum.post', ['index' => $post->getId()], [], 303);
     }
 
     /**
@@ -402,7 +402,7 @@ class ForumController
             $app['orm.em']->remove($post);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le message a été supprimé.');
+           $this->addFlash('success', 'Le message a été supprimé.');
 
             return $app->redirect($url, 303);
         }
@@ -441,9 +441,9 @@ class ForumController
             $app['orm.em']->persist($topic);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le forum a été ajouté.');
+           $this->addFlash('success', 'Le forum a été ajouté.');
 
-            return $app->redirect($app['url_generator']->generate('forum.topic', ['index' => $topic->getId()]), 303);
+            return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], [], 303);
         }
 
         return $app['twig']->render('forum/topic_add.twig', [
@@ -483,9 +483,9 @@ class ForumController
             $app['orm.em']->persist($topic);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le forum a été modifié.');
+           $this->addFlash('success', 'Le forum a été modifié.');
 
-            return $app->redirect($app['url_generator']->generate('forum.topic', ['index' => $topic->getId()]), 303);
+            return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], [], 303);
         }
 
         return $app['twig']->render('forum/topic_update.twig', [

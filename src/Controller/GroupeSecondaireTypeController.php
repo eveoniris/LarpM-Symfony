@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class GroupeSecondaireTypeController
+class GroupeSecondaireTypeController extends AbstractController
 {
     /**
      * Liste les types de groupe secondaire.
@@ -62,12 +62,12 @@ class GroupeSecondaireTypeController
             $app['orm.em']->persist($groupeSecondaireType);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le type de groupe secondaire a été ajouté.');
+           $this->addFlash('success', 'Le type de groupe secondaire a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('groupeSecondaire.admin.list'), 303);
+                return $this->redirectToRoute('groupeSecondaire.admin.list', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('groupeSecondaire.admin.type.add'), 303);
+                return $this->redirectToRoute('groupeSecondaire.admin.type.add', [], 303);
             }
         }
 
@@ -98,14 +98,14 @@ class GroupeSecondaireTypeController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($groupeSecondaireType);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le type de groupe secondaire a été mis à jour.');
+               $this->addFlash('success', 'Le type de groupe secondaire a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
                 $app['orm.em']->remove($groupeSecondaireType);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'Le type de groupe secondaire a été supprimé.');
+               $this->addFlash('success', 'Le type de groupe secondaire a été supprimé.');
             }
 
-            return $app->redirect($app['url_generator']->generate('groupeSecondaire.admin.type.list'));
+            return $this->redirectToRoute('groupeSecondaire.admin.type.list');
         }
 
         return $app['twig']->render('admin/groupeSecondaireType/update.twig', [
@@ -126,9 +126,9 @@ class GroupeSecondaireTypeController
         if ($groupeSecondaireType) {
             return $app['twig']->render('admin/groupeSecondaireType/detail.twig', ['groupeSecondaireType' => $groupeSecondaireType]);
         } else {
-            $app['session']->getFlashBag()->add('error', 'Le type de groupe secondaire n\'a pas été trouvé.');
+           $this->addFlash('error', 'Le type de groupe secondaire n\'a pas été trouvé.');
 
-            return $app->redirect($app['url_generator']->generate('groupeSecondaire.admin.type.list'));
+            return $this->redirectToRoute('groupeSecondaire.admin.type.list');
         }
     }
 }

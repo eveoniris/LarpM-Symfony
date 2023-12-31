@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author gerald
  */
-class LigneeController
+class LigneeController extends AbstractController
 {
     /**
      * Liste des lignées.
@@ -79,9 +79,9 @@ class LigneeController
         if ($lignee) {
             return $app['twig']->render('admin/lignee/details.twig', ['lignee' => $lignee]);
         } else {
-            $app['session']->getFlashBag()->add('error', 'La lignee n\'a pas été trouvée.');
+           $this->addFlash('error', 'La lignee n\'a pas été trouvée.');
 
-            return $app->redirect($app['url_generator']->generate('lignee'));
+            return $this->redirectToRoute('lignee');
         }
     }
 
@@ -104,16 +104,16 @@ class LigneeController
 
             $app['orm.em']->persist($lignee);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'La lignée a été enregistrée.');
+           $this->addFlash('success', 'La lignée a été enregistrée.');
 
             /*
              * Si l'utilisateur a cliqué sur "save", renvoi vers la liste des lignee
              * Si l'utilisateur a cliqué sur "save_continue", renvoi vers un nouveau formulaire d'ajout
              */
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('lignee.list'), 303);
+                return $this->redirectToRoute('lignee.list', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('lignee.add'), 303);
+                return $this->redirectToRoute('lignee.add', [], 303);
             }
         }
 
@@ -148,9 +148,9 @@ class LigneeController
             if ($form->get('update')->isClicked()) {
                 $app['orm.em']->persist($lignee);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La lignée a été mise à jour.');
+               $this->addFlash('success', 'La lignée a été mise à jour.');
 
-                return $app->redirect($app['url_generator']->generate('lignee.details', ['lignee' => $id]));
+                return $this->redirectToRoute('lignee.details', ['lignee' => $id]);
             } elseif ($form->get('delete')->isClicked()) {
                 // supprime le lien entre les personnages et le groupe
                 foreach ($lignee->getPersonnageLignees() as $personnage) {
@@ -158,9 +158,9 @@ class LigneeController
                 }
                 $app['orm.em']->remove($lignee);
                 $app['orm.em']->flush();
-                $app['session']->getFlashBag()->add('success', 'La lignée a été supprimée.');
+               $this->addFlash('success', 'La lignée a été supprimée.');
 
-                return $app->redirect($app['url_generator']->generate('lignee.list'));
+                return $this->redirectToRoute('lignee.list');
             }
         }
 
@@ -196,9 +196,9 @@ class LigneeController
             $app['orm.em']->persist($membre);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'le personnage a été ajouté à la lignée.');
+           $this->addFlash('success', 'le personnage a été ajouté à la lignée.');
 
-            return $app->redirect($app['url_generator']->generate('lignee.details', ['lignee' => $lignee->getId()], 303));
+            return $this->redirectToRoute('lignee.details', ['lignee' => $lignee->getId()], 303);
         }
 
         return $app['twig']->render('admin/lignee/addMembre.twig', [
@@ -221,8 +221,8 @@ class LigneeController
         $app['orm.em']->remove($personnageLignee);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', $membreNom.' a été retiré de la lignée.');
+       $this->addFlash('success', $membreNom.' a été retiré de la lignée.');
 
-        return $app->redirect($app['url_generator']->generate('lignee.details', ['lignee' => $lignee, 303]));
+        return $this->redirectToRoute('lignee.details', ['lignee' => $lignee, 303]);
     }
 }

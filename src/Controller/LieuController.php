@@ -32,7 +32,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author kevin
  */
-class LieuController
+class LieuController extends AbstractController
 {
     /**
      * Liste des lieux.
@@ -112,12 +112,12 @@ class LieuController
             $app['orm.em']->persist($lieu);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le lieu a été ajouté.');
+           $this->addFlash('success', 'Le lieu a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('lieu'), 303);
+                return $this->redirectToRoute('lieu', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $app->redirect($app['url_generator']->generate('lieu.add'), 303);
+                return $this->redirectToRoute('lieu.add', [], 303);
             }
         }
 
@@ -150,9 +150,9 @@ class LieuController
             $app['orm.em']->persist($lieu);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le lieu a été modifié.');
+           $this->addFlash('success', 'Le lieu a été modifié.');
 
-            return $app->redirect($app['url_generator']->generate('lieu'), 303);
+            return $this->redirectToRoute('lieu', [], 303);
         }
 
         return $app['twig']->render('admin/lieu/update.twig', [
@@ -178,9 +178,9 @@ class LieuController
             $app['orm.em']->remove($lieu);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le lieu a été supprimé.');
+           $this->addFlash('success', 'Le lieu a été supprimé.');
 
-            return $app->redirect($app['url_generator']->generate('lieu'), 303);
+            return $this->redirectToRoute('lieu', [], 303);
         }
 
         return $app['twig']->render('admin/lieu/delete.twig', [
@@ -205,9 +205,9 @@ class LieuController
             $app['orm.em']->persist($lieu);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'Le document a été ajouté au lieu.');
+           $this->addFlash('success', 'Le document a été ajouté au lieu.');
 
-            return $app->redirect($app['url_generator']->generate('lieu.detail', ['lieu' => $lieu->getId()]));
+            return $this->redirectToRoute('lieu.detail', ['lieu' => $lieu->getId()]);
         }
 
         return $app['twig']->render('admin/lieu/documents.twig', [

@@ -28,7 +28,7 @@ use LarpManager\Form\Technologie\TechnologiesRessourcesForm;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 
-class TechnologieController
+class TechnologieController extends AbstractController
 {
     /**
      * Liste des technologie.
@@ -62,9 +62,9 @@ class TechnologieController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('technologie'), 303);
+                    return $this->redirectToRoute('technologie', [], 303);
                 }
 
                 $documentFilename = hash('md5', $technologie->getLabel().$filename.time()).'.'.$extension;
@@ -76,9 +76,9 @@ class TechnologieController
 
             $app['orm.em']->persist($technologie);
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', 'La technologie a été ajoutée.');
+           $this->addFlash('success', 'La technologie a été ajoutée.');
 
-            return $app->redirect($app['url_generator']->generate('technologie'), 303);
+            return $this->redirectToRoute('technologie', [], 303);
         }
 
         return $app['twig']->render('admin\technologie\add.twig', [
@@ -117,9 +117,9 @@ class TechnologieController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                    $app['session']->getFlashBag()->add('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $app->redirect($app['url_generator']->generate('technologie'), 303);
+                    return $this->redirectToRoute('technologie', [], 303);
                 }
 
                 $documentFilename = hash('md5', $technologie->getLabel().$filename.time()).'.'.$extension;
@@ -132,9 +132,9 @@ class TechnologieController
             $app['orm.em']->persist($technologie);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La technologie a été mise à jour.');
+           $this->addFlash('success', 'La technologie a été mise à jour.');
 
-            return $app->redirect($app['url_generator']->generate('technologie'), 303);
+            return $this->redirectToRoute('technologie', [], 303);
         }
 
         return $app['twig']->render('admin\technologie\update.twig', [
@@ -160,9 +160,9 @@ class TechnologieController
             $app['orm.em']->remove($technologie);
             $app['orm.em']->flush();
 
-            $app['session']->getFlashBag()->add('success', 'La technologie a été supprimée.');
+           $this->addFlash('success', 'La technologie a été supprimée.');
 
-            return $app->redirect($app['url_generator']->generate('technologie'), 303);
+            return $this->redirectToRoute('technologie', [], 303);
         }
 
         return $app['twig']->render('admin\technologie\delete.twig', [
@@ -239,9 +239,9 @@ class TechnologieController
             }
 
             $app['orm.em']->flush();
-            $app['session']->getFlashBag()->add('success', $technologieNom.' requiert désormais '.$newQuantite.' '.$ressourceNom);
+           $this->addFlash('success', $technologieNom.' requiert désormais '.$newQuantite.' '.$ressourceNom);
 
-            return $app->redirect($app['url_generator']->generate('technologie'), 303);
+            return $this->redirectToRoute('technologie', [], 303);
         }
 
         return $app['twig']->render('admin\technologie\addRessource.twig', [
@@ -267,9 +267,9 @@ class TechnologieController
         $app['orm.em']->remove($technologieRessource);
         $app['orm.em']->flush();
 
-        $app['session']->getFlashBag()->add('success', $technologieNom.' ne requiert plus de '.$ressourceNom.'.');
+       $this->addFlash('success', $technologieNom.' ne requiert plus de '.$ressourceNom.'.');
 
-        return $app->redirect($app['url_generator']->generate('technologie'), 303);
+        return $this->redirectToRoute('technologie', [], 303);
     }
 
     /**
