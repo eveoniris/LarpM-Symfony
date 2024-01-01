@@ -137,17 +137,26 @@ class RestaurationController extends AbstractController
 
     /**
      * Liste des utilisateurs ayant ce lieu de restauration.
+     * TODO: optimize query by pagination
      */
     #[Route('/restauration/{id}/users', name: 'restauration.users')]
-    public function usersAction(Request $request, #[MapEntity] Restauration $restauration): Response
+    public function usersAction(Request $request, #[MapEntity] Restauration $restauration, RestaurationRepository $repository): Response
     {
-        return $this->render('restauration/users.twig', ['restauration' => $restauration]);
+        return $this->render(
+            'restauration/users.twig',
+            [
+                'restauration' => $restauration,
+                'restaurations' => $repository->getUsersByGn($restauration),
+            ]
+        );
     }
 
     /**
      * Liste des utilisateurs ayant ce lieu de restauration.
+     * TODO optimize
      */
     #[Route('/restauration/{id}/users-export', name: 'restauration.users.export')]
+    #[NoReturn]
     public function usersExportAction(Request $request, #[MapEntity] Restauration $restauration): void
     {
         header('Content-Type: text/csv');
