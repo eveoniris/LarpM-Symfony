@@ -8,17 +8,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use App\Form\Quality\QualityDeleteForm;
 use App\Form\Quality\QualityForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\QualityController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class QualityController extends AbstractController
 {
     /**
      * Liste les qualitys.
      */
+    #[Route('/quality', name: 'quality.list')]
     public function listAction( EntityManagerInterface $entityManager, Request $request)
     {
         $qualities = $entityManager->getRepository('\\'.\App\Entity\Quality::class)->findAll();

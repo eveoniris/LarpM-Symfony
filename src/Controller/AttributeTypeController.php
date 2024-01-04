@@ -5,17 +5,16 @@ namespace App\Controller;
 
 use App\Form\AttributeTypeForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\AttributeTypeController.
- *
- * @author kevin
- */
-class AttributeTypeController extends AbstractController
+#[isGranted('ROLE_REGLE')]class AttributeTypeController extends AbstractController
 {
     /**
      * Liste des types d'attribut.
      */
+    #[Route('/attributeType', name: 'attributeType.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\AttributeType::class);

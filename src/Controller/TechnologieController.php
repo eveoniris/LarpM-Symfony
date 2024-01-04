@@ -9,12 +9,17 @@ use App\Form\Technologie\TechnologieDeleteForm;
 use App\Form\Technologie\TechnologieForm;
 use App\Form\Technologie\TechnologiesRessourcesForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[isGranted('ROLE_REGLE')]
 class TechnologieController extends AbstractController
 {
     /**
      * Liste des technologie.
      */
+    #[Route('/technologie', name: 'technologie.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $technologies = $entityManager->getRepository(Technologie::class)->findAllOrderedByLabel();

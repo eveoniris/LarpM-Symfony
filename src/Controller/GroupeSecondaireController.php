@@ -10,17 +10,17 @@ use App\Form\GroupeSecondaire\GroupeSecondaireMaterielForm;
 use App\Form\GroupeSecondaire\GroupeSecondaireNewMembreForm;
 use App\Form\GroupeSecondaire\SecondaryGroupFindForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\GroupeSecondaireController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class GroupeSecondaireController extends AbstractController
 {
     /**
      * Liste des groupes secondaires (pour les orgas).
      */
+    #[Route('/groupeSecondaire', name: 'groupeSecondaire.list')]
     public function adminListAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'id';

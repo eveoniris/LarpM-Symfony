@@ -8,17 +8,16 @@ use App\Entity\Objet;
 use App\Form\Item\ItemDeleteForm;
 use App\Form\Item\ItemForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\ObjetController.
- *
- * @author kevin
- */
 class ObjetController extends AbstractController
 {
     /**
      * Présentation des objets de jeu.
      */
+    #[Route('/objet', name: 'objet.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);

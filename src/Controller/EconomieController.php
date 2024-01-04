@@ -5,17 +5,17 @@ namespace App\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\EconomieController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class EconomieController extends AbstractController
 {
     /**
      * Présentation des constructions.
      */
+    #[Route('/economie', name: 'economie.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         /* calcul de la masse monétaire :

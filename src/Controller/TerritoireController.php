@@ -19,12 +19,11 @@ use App\Form\Territoire\TerritoireStrategieForm;
 use LarpManager\Repository\ConstructionRepository;
 use LarpManager\Repository\TerritoireRepository;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\TerritoireController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_CARTOGRAPHE')]
 class TerritoireController extends AbstractController
 {
     /**
@@ -57,6 +56,7 @@ class TerritoireController extends AbstractController
     /**
      * Liste des territoires.
      */
+    #[Route('/territoire', name: 'territoire.list')]
     public function listAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $territoires = $entityManager->getRepository('\\'.\App\Entity\Territoire::class)->findRoot();
@@ -67,6 +67,7 @@ class TerritoireController extends AbstractController
     /**
      * Liste des fiefs.
      */
+    #[Route('/territoire/fief', name: 'territoire.fief')]
     public function fiefAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'id';

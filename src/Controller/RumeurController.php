@@ -9,17 +9,17 @@ use App\Form\Rumeur\RumeurDeleteForm;
 use App\Form\Rumeur\RumeurFindForm;
 use App\Form\Rumeur\RumeurForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\RumeurController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class RumeurController extends AbstractController
 {
     /**
      * Liste de toutes les rumeurs.
      */
+    #[Route('/rumeur', name: 'rumeur.list')]
     public function listAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'id';

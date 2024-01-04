@@ -7,17 +7,17 @@ use App\Entity\Construction;
 use App\Form\ConstructionDeleteForm;
 use App\Form\ConstructionForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\ConstructionController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_REGLE')]
 class ConstructionController extends AbstractController
 {
     /**
      * Présentation des constructions.
      */
+    #[Route('/construction', name: 'construction.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\Construction::class);

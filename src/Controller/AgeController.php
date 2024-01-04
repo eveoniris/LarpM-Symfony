@@ -6,12 +6,11 @@ namespace App\Controller;
 use App\Entity\Age;
 use App\Form\AgeForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\AgeController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_REGLE')]
 class AgeController extends AbstractController
 {
     /**
@@ -19,6 +18,7 @@ class AgeController extends AbstractController
      *
      * @return View $view
      */
+    #[Route('/age', name: 'age.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $ages = $entityManager->getRepository('\\'.\App\Entity\Age::class)

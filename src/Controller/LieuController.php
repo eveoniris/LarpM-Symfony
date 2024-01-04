@@ -8,17 +8,17 @@ use App\Form\LieuDeleteForm;
 use App\Form\LieuDocumentForm;
 use App\Form\LieuForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\LieuController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class LieuController extends AbstractController
 {
     /**
      * Liste des lieux.
      */
+    #[Route('/lieu', name: 'lieu.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $lieux = $entityManager->getRepository('\\'.\App\Entity\Lieu::class)->findAllOrderedByNom();

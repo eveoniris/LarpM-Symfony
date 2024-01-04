@@ -9,12 +9,11 @@ use App\Form\LangueForm;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\LangueController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class LangueController extends AbstractController
 {
     final public const DOC_PATH = __DIR__.'/../../../private/doc/';
@@ -22,6 +21,7 @@ class LangueController extends AbstractController
     /**
      * affiche la liste des langues.
      */
+    #[Route('/langue', name: 'langue.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $langues = $entityManager->getRepository('\\'.\App\Entity\Langue::class)->findAllOrderedByLabel();

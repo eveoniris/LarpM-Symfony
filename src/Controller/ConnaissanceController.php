@@ -7,12 +7,11 @@ use App\Entity\Connaissance;
 use App\Form\ConnaissanceDeleteForm;
 use App\Form\ConnaissanceForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\ConnaissanceController.
- *
- * @author Kevin F.
- */
+#[isGranted('ROLE_REGLE')]
 class ConnaissanceController extends AbstractController
 {
     // liste des colonnes à afficher par défaut sur les vues 'personnages' (l'ordre est pris en compte)
@@ -21,6 +20,7 @@ class ConnaissanceController extends AbstractController
     /**
      * Liste des connaissances.
      */
+    #[Route('/connaissance', name: 'connaissance.list')]
     public function listAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $connaissances = $entityManager->getRepository('\\'.\App\Entity\Connaissance::class)->findAllOrderedByLabel();

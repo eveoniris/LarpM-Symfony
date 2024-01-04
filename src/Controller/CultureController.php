@@ -7,12 +7,17 @@ use App\Entity\Culture;
 use App\Form\Culture\CultureDeleteForm;
 use App\Form\Culture\CultureForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[isGranted('ROLE_CARTOGRAPHE')]
 class CultureController extends AbstractController
 {
     /**
      * Liste des culture.
      */
+    #[Route('/culture', name: 'culture.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $cultures = $entityManager->getRepository(\App\Entity\Culture::class)->findAll();

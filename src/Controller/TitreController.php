@@ -6,17 +6,17 @@ namespace App\Controller;
 use App\Form\TitreDeleteForm;
 use App\Form\TitreForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\TitreController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class TitreController extends AbstractController
 {
     /**
      * Liste des titres.
      */
+    #[Route('/titre', name: 'titre.list')]
     public function adminListAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\Titre::class);

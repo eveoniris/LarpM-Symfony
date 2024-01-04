@@ -8,17 +8,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use App\Form\PersonnageSecondaireDeleteForm;
 use App\Form\PersonnageSecondaireForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\PersonnageSecondaireController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_REGLE')]
 class PersonnageSecondaireController extends AbstractController
 {
     /**
      * affiche la liste des personnages secondaires.
      */
+    #[Route('/personnageSecondaire', name: 'personnageSecondaire.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\PersonnageSecondaire::class);

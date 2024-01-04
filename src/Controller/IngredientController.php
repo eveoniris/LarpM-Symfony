@@ -6,17 +6,17 @@ namespace App\Controller;
 use App\Form\IngredientDeleteForm;
 use App\Form\IngredientForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\IngredientController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class IngredientController extends AbstractController
 {
     /**
      * Liste des ingrédients.
      */
+    #[Route('/ingredient', name: 'ingredient.list')]
     public function adminListAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\Ingredient::class);

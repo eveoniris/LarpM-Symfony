@@ -23,12 +23,11 @@ use App\Form\Groupe\GroupeRichesseForm;
 use App\Form\Groupe\GroupeScenaristeForm;
 use App\Form\Groupe\GroupFindForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\GroupeController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class GroupeController extends AbstractController
 {
     /**
@@ -138,6 +137,7 @@ class GroupeController extends AbstractController
     /**
      * fourni le tableau de quête pour tous les groupes.
      */
+    #[Route('/groupe/quetes', name: 'groupe.quetes')]
     public function quetesAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\Groupe::class);
@@ -868,6 +868,7 @@ class GroupeController extends AbstractController
     /**
      * Visualisation des liens entre groupes.
      */
+    #[Route('/groupe/diplomatie', name: 'groupe.diplomatie')]
     public function diplomatieAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\Groupe::class);
@@ -902,6 +903,7 @@ class GroupeController extends AbstractController
     /**
      * Liste des groupes.
      */
+    #[Route('/groupe', name: 'groupe.list')]
     public function adminListAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'numero';
