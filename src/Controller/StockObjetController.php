@@ -1,23 +1,5 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 namespace App\Controller;
 
 use App\Entity\Objet;
@@ -29,17 +11,16 @@ use LarpManager\Form\Stock\ObjetTagForm;
 use LarpManager\Repository\ObjetRepository;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\StockObjetController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_STOCK')]
 class StockObjetController extends AbstractController
 {
     /**
      * Affiche la liste des objets.
      */
+    #[Route('/stock/objet', name: 'stockObjet.index')]
     public function indexAction(Request $request, Application $app)
     {
         $repoRangement = $app['orm.em']->getRepository('\\'.\App\Entity\Rangement::class);
@@ -410,6 +391,7 @@ class StockObjetController extends AbstractController
     /**
      * Exporte la liste des objets au format CSV.
      */
+    #[Route('/stock/objet/export', name: 'stockObjet.export')]
     public function exportAction(Request $request, Application $app): void
     {
         $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Objet::class);

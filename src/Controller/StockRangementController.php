@@ -1,51 +1,34 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 namespace App\Controller;
 
-use LarpManager\Form\Type\RangementType;
+use App\Form\Type\RangementType;
+use Doctrine\ORM\EntityManagerInterface;
 use Silex\Application;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\StockRangementController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_STOCK')]
 class StockRangementController extends AbstractController
 {
-    public function indexAction(Request $request, Application $app)
+    #[Route('/stock/rangement', name: 'stockRangement.index')]
+    public function indexAction(Request $request, EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Rangement::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Rangement::class);
         $rangements = $repo->findAll();
 
-        return $app['twig']->render('stock/rangement/index.twig', ['rangements' => $rangements]);
+        return $this->render('stock/rangement/index.twig', ['rangements' => $rangements]);
     }
 
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request, Application $app): RedirectResponse|Response
     {
         $rangement = new \App\Entity\Rangement();
 
-        $form = $app['form.factory']->createBuilder(new RangementType(), $rangement)
-            ->add('save', 'submit')
-            ->getForm();
+        $form = $this->createForm(RangementType::class, $rangement)
+            ->add('save', SubmitType::class);
 
         // on passe la requête de l'utilisateur au formulaire
         $form->handleRequest($request);
@@ -62,7 +45,7 @@ class StockRangementController extends AbstractController
             return $this->redirectToRoute('stock_rangement_index');
         }
 
-        return $app['twig']->render('stock/rangement/add.twig', ['form' => $form->createView()]);
+        return $this->render('stock/rangement/add.twig', ['form' => $form->createView()]);
     }
 
     public function updateAction(Request $request, Application $app)

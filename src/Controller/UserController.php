@@ -10,7 +10,7 @@ use App\Form\Entity\UserSearch;
 use App\Form\UserFindForm;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -93,7 +93,7 @@ class UserController extends AbstractController
 
             $app['notify']->newUser($User, $plainPassword);
 
-           $this->addFlash('success', 'L\'utilisateur a été ajouté.');
+            $this->addFlash('success', 'L\'utilisateur a été ajouté.');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -109,7 +109,7 @@ class UserController extends AbstractController
     public function personnageDefaultAction(Application $app, Request $request, User $User)
     {
         if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN') && !$User == $this->getUser()) {
-           $this->addFlash('error', 'Vous n\'avez pas les droits necessaires pour cette opération.');
+            $this->addFlash('error', 'Vous n\'avez pas les droits necessaires pour cette opération.');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -126,7 +126,7 @@ class UserController extends AbstractController
             $app['orm.em']->persist($User);
             $app['orm.em']->flush();
 
-           $this->addFlash('success', 'Vos informations ont été enregistrées.');
+            $this->addFlash('success', 'Vos informations ont été enregistrées.');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -164,7 +164,7 @@ class UserController extends AbstractController
             $app['orm.em']->persist($User);
             $app['orm.em']->flush();
 
-           $this->addFlash('success', 'Vos informations ont été enregistrées.');
+            $this->addFlash('success', 'Vos informations ont été enregistrées.');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -196,7 +196,7 @@ class UserController extends AbstractController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-           $this->addFlash('success', 'Vous participez maintenant à '.$gn->getLabel().' !');
+            $this->addFlash('success', 'Vous participez maintenant à '.$gn->getLabel().' !');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -224,7 +224,7 @@ class UserController extends AbstractController
             $app['orm.em']->persist($participant);
             $app['orm.em']->flush();
 
-           $this->addFlash('success', 'Vous avez validé les condition d\'inscription pour '.$gn->getLabel().' !');
+            $this->addFlash('success', 'Vous avez validé les condition d\'inscription pour '.$gn->getLabel().' !');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -241,7 +241,7 @@ class UserController extends AbstractController
     public function UserHasBilletDetailAction(Application $app, Request $request, UserHasBillet $UserHasBillet)
     {
         if ($UserHasBillet->getUser() != $this->getUser()) {
-           $this->addFlash('error', 'Vous ne pouvez pas acceder à cette information');
+            $this->addFlash('error', 'Vous ne pouvez pas acceder à cette information');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -300,7 +300,7 @@ class UserController extends AbstractController
             $app['orm.em']->persist($etatCivil);
             $app['orm.em']->flush();
 
-           $this->addFlash('success', 'Vos informations ont été enregistrées.');
+            $this->addFlash('success', 'Vos informations ont été enregistrées.');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -370,11 +370,9 @@ class UserController extends AbstractController
      *
      * @throws NotFoundHttpException if no User is found with that ID
      */
-    #[Route('/user/{id}', name: 'user.view')]
-    public function viewAction(Request $request, ManagerRegistry $managerRegistry, int $id)
+    #[Route('/user/{user}', name: 'user.view')]
+    public function viewAction(Request $request, #[MapEntity] User $user = null): Response
     {
-        $user = $managerRegistry->getRepository(User::class)->find($id);
-
         if (!$user) {
             throw new NotFoundHttpException('No user was found with that ID.');
         }
@@ -390,13 +388,13 @@ class UserController extends AbstractController
     public function likeAction(Application $app, Request $request, User $User)
     {
         if ($User == $this->getUser()) {
-           $this->addFlash('error', 'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !');
+            $this->addFlash('error', 'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !');
         } else {
             $User->addCoeur();
             $app['orm.em']->persist($User);
             $app['orm.em']->flush();
             $app['notify']->coeur($this->getUser(), $User);
-           $this->addFlash('success', 'Votre coeur a été envoyé !');
+            $this->addFlash('success', 'Votre coeur a été envoyé !');
         }
 
         return $this->redirectToRoute('User.view', ['id' => $User->getId()]);
@@ -531,7 +529,11 @@ class UserController extends AbstractController
                         Criteria::expr()?->contains($alias.'.email', $value)
                     )->orWhere(
                         Criteria::expr()?->contains($alias.'.roles', $value)
-                    );
+                    )/*->orWhere(
+                        Criteria::expr()?->contains('ec'.'.nom', $value)
+                    )->orWhere(
+                        Criteria::expr()?->contains('ec'.'.prenom', $value)
+                    )*/;
                 }
             } else {
                 $criterias[] = Criteria::create()->andWhere(

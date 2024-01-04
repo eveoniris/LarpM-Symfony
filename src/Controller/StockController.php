@@ -22,14 +22,18 @@ namespace App\Controller;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * LarpManager\Controllers\StockController.
  *
  * @author kevin
  */
+#[isGranted('ROLE_STOCK')]
 class StockController extends AbstractController
 {
+    #[Route('/stock', name: 'stock.index')]
     public function indexAction(Request $request, Application $app)
     {
         $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Objet::class);
