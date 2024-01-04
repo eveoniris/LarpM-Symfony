@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use LarpManager\Form\Type\ProprietaireType;
-use Silex\Application;
+use App\Form\Type\ProprietaireType;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -12,68 +12,66 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class StockProprietaireController extends AbstractController
 {
     #[Route('/stock/proprietaire', name: 'stockProprietaire.index')]
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Proprietaire::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Proprietaire::class);
         $proprietaires = $repo->findAll();
 
-        return $app['twig']->render('stock/proprietaire/index.twig', ['proprietaires' => $proprietaires]);
+        return $this->render('stock/proprietaire/index.twig', ['proprietaires' => $proprietaires]);
     }
 
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request, EntityManagerInterface $entityManager)
     {
         $proprietaire = new \App\Entity\Proprietaire();
 
-        $form = $app['form.factory']->createBuilder(new ProprietaireType(), $proprietaire)
-            ->add('save', 'submit')
-            ->getForm();
+        $form = $this->createForm(ProprietaireType::class, $proprietaire)
+            ->add('save', 'submit');
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $proprietaire = $form->getData();
-            $app['orm.em']->persist($proprietaire);
-            $app['orm.em']->flush();
+            $entityManager->persist($proprietaire);
+            $entityManager->flush();
 
-           $this->addFlash('success', 'Le propriétaire a été ajouté');
+            $this->addFlash('success', 'Le propriétaire a été ajouté');
 
             return $this->redirectToRoute('stock_proprietaire_index');
         }
 
-        return $app['twig']->render('stock/proprietaire/add.twig', ['form' => $form->createView()]);
+        return $this->render('stock/proprietaire/add.twig', ['form' => $form->createView()]);
     }
 
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request, EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Proprietaire::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Proprietaire::class);
         $proprietaire = $repo->find($id);
 
-        $form = $app['form.factory']->createBuilder(new ProprietaireType(), $proprietaire)
+        $form = $this->createForm(ProprietaireType::class(), $proprietaire)
             ->add('update', 'submit')
-            ->add('delete', 'submit')
-            ->getForm();
+            ->add('delete', 'submit');
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             // on récupére les data de l'utilisateur
             $proprietaire = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                $app['orm.em']->persist($proprietaire);
-                $app['orm.em']->flush();
-               $this->addFlash('success', 'Le propriétaire a été mis à jour');
+                $entityManager->persist($proprietaire);
+                $entityManager->flush();
+                $this->addFlash('success', 'Le propriétaire a été mis à jour');
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($proprietaire);
-                $app['orm.em']->flush();
-               $this->addFlash('success', 'Le proprietaire a été supprimé');
+                $entityManager->remove($proprietaire);
+                $entityManager->flush();
+                $this->addFlash('success', 'Le proprietaire a été supprimé');
             }
 
             return $this->redirectToRoute('stock_proprietaire_index');
         }
 
-        return $app['twig']->render('stock/proprietaire/update.twig', ['proprietaire' => $proprietaire, 'form' => $form->createView()]);
+        return $this->render('stock/proprietaire/update.twig', ['proprietaire' => $proprietaire, 'form' => $form->createView()]);
     }
 }

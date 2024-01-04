@@ -1,30 +1,12 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use LarpManager\Form\PostDeleteForm;
-use LarpManager\Form\PostForm;
-use LarpManager\Form\TopicForm;
-use Silex\Application;
+use App\Form\PostDeleteForm;
+use App\Form\PostForm;
+use App\Form\TopicForm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -39,20 +21,20 @@ class ForumController extends AbstractController
      * Liste des forums de premier niveau.
      */
     #[Route('/forum', name: 'forum')]
-    public function forumAction(Request $request, Application $app)
+    public function forumAction(Request $request,  EntityManagerInterface $entityManager)
     {
         if (null == $this->getUser()) {
             return $this->redirectToRoute('user.login', [], 303);
         }
 
-        $topics = $app['orm.em']->getRepository('\\'.\App\Entity\Topic::class)
+        $topics = $entityManager->getRepository('\\'.\App\Entity\Topic::class)
             ->findAllRoot();
 
         // rechercher tous les nouveaux posts concernant l'utilisateur
         $newPosts = new ArrayCollection();
 
         // pour chacun des topics :
-        $allTopics = $app['orm.em']->getRepository('\\'.\App\Entity\Topic::class)->findAll();
+        $allTopics = $entityManager->getRepository('\\'.\App\Entity\Topic::class)->findAll();
         foreach ($allTopics as $topic) {
             if ($app['security.authorization_checker']->isGranted('TOPIC_RIGHT', $topic)) {
                 $newPosts = new ArrayCollection(array_merge($newPosts->toArray(), $this->getUser()->newPosts($topic)->toArray()));
@@ -66,7 +48,7 @@ class ForumController extends AbstractController
         });
         $newPosts = new ArrayCollection(iterator_to_array($iterator));
 
-        return $app['twig']->render('forum/root.twig', [
+        return $this->render('forum/root.twig', [
             'topics' => $topics,
             'newPosts' => $newPosts,
         ]);
@@ -76,11 +58,11 @@ class ForumController extends AbstractController
      * Ajout d'un forum de premier niveau
      * (admin uniquement).
      */
-    public function forumAddAction(Request $request, Application $app)
+    public function forumAddAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $topic = new \App\Entity\Topic();
 
-        $form = $app['form.factory']->createBuilder(new TopicForm(), $topic)
+        $form = $this->createForm(TopicForm::class(), $topic)
             ->add('right', 'choice', [
                 'label' => 'Droits',
                 'choices' => $app['larp.manager']->getAvailableTopicRight(),
@@ -93,24 +75,23 @@ class ForumController extends AbstractController
                 'required' => false,
                 'label' => 'Clé',
             ])
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $topic = $form->getData();
             $topic->setUser($this->getUser());
 
-            $app['orm.em']->persist($topic);
-            $app['orm.em']->flush();
+            $entityManager->persist($topic);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le forum a été ajouté.');
 
             return $this->redirectToRoute('forum', [], 303);
         }
 
-        return $app['twig']->render('forum/forum_add.twig', [
+        return $this->render('forum/forum_add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -120,7 +101,7 @@ class ForumController extends AbstractController
      *
      * @return View $view
      */
-    public function topicAction(Request $request, Application $app)
+    public function topicAction(Request $request,  EntityManagerInterface $entityManager)
     {
         if (null == $this->getUser()) {
             return $this->redirectToRoute('user.login', [], 303);
@@ -128,9 +109,9 @@ class ForumController extends AbstractController
 
         $id = $request->get('index');
 
-        $topic = $app['orm.em']->getRepository('\\'.\App\Entity\Topic::class)->find($id);
+        $topic = $entityManager->getRepository('\\'.\App\Entity\Topic::class)->find($id);
 
-        return $app['twig']->render('forum/topic.twig', [
+        return $this->render('forum/topic.twig', [
             'topic' => $topic,
         ]);
     }
@@ -138,23 +119,22 @@ class ForumController extends AbstractController
     /**
      * Ajout d'un post dans un topic.
      */
-    public function postAddAction(Request $request, Application $app)
+    public function postAddAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $topicId = $request->get('index');
 
-        $topic = $app['orm.em']->getRepository('\\'.\App\Entity\Topic::class)
+        $topic = $entityManager->getRepository('\\'.\App\Entity\Topic::class)
             ->find($topicId);
 
         $post = new \App\Entity\Post();
         $post->setTopic($topic);
 
-        $form = $app['form.factory']->createBuilder(new PostForm(), $post)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(PostForm::class(), $post)
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $post = $form->getData();
             $post->setTopic($topic);
             $post->setUser($this->getUser());
@@ -168,15 +148,15 @@ class ForumController extends AbstractController
                 $post->setText($text);
             }
 
-            $app['orm.em']->persist($post);
-            $app['orm.em']->flush();
+            $entityManager->persist($post);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le message a été ajouté.');
 
             return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], [], 303);
         }
 
-        return $app['twig']->render('forum/post_add.twig', [
+        return $this->render('forum/post_add.twig', [
             'form' => $form->createView(),
             'topic' => $topic,
         ]);
@@ -185,7 +165,7 @@ class ForumController extends AbstractController
     /**
      * Lire un post.
      */
-    public function postAction(Request $request, Application $app)
+    public function postAction(Request $request,  EntityManagerInterface $entityManager)
     {
         if (null == $this->getUser()) {
             return $this->redirectToRoute('user.login', [],303);
@@ -193,7 +173,7 @@ class ForumController extends AbstractController
 
         $postId = $request->get('index');
 
-        $post = $app['orm.em']->getRepository('\\'.\App\Entity\Post::class)
+        $post = $entityManager->getRepository('\\'.\App\Entity\Post::class)
             ->find($postId);
 
         // Mettre à jour les vues de ce post (et de toutes ces réponses)
@@ -202,7 +182,7 @@ class ForumController extends AbstractController
             $postView->setDate(new \DateTime('NOW'));
             $postView->setUser($this->getUser());
             $postView->setPost($post);
-            $app['orm.em']->persist($postView);
+            $entityManager->persist($postView);
         }
 
         foreach ($post->getPosts() as $p) {
@@ -212,13 +192,13 @@ class ForumController extends AbstractController
                 $postView->setUser($this->getUser());
                 $postView->setPost($p);
 
-                $app['orm.em']->persist($postView);
+                $entityManager->persist($postView);
             }
         }
 
-        $app['orm.em']->flush();
+        $entityManager->flush();
 
-        return $app['twig']->render('forum/post.twig', [
+        return $this->render('forum/post.twig', [
             'post' => $post,
         ]);
     }
@@ -226,23 +206,22 @@ class ForumController extends AbstractController
     /**
      * Répondre à un post.
      */
-    public function postResponseAction(Request $request, Application $app)
+    public function postResponseAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $postId = $request->get('index');
 
-        $postToResponse = $app['orm.em']->getRepository('\\'.\App\Entity\Post::class)
+        $postToResponse = $entityManager->getRepository('\\'.\App\Entity\Post::class)
             ->find($postId);
 
         $post = new \App\Entity\Post();
         $post->setTitle($postToResponse->getTitle());
 
-        $form = $app['form.factory']->createBuilder(new PostForm(), $post)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(PostForm::class(), $post)
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $post = $form->getData();
             $post->setPost($postToResponse);
             $post->setUser($this->getUser());
@@ -256,9 +235,9 @@ class ForumController extends AbstractController
             }
 
             $postToResponse->addWatchingUser($this->getUser());
-            $app['orm.em']->persist($postToResponse);
-            $app['orm.em']->persist($post);
-            $app['orm.em']->flush();
+            $entityManager->persist($postToResponse);
+            $entityManager->persist($post);
+            $entityManager->flush();
 
             // envoie des notifications mails
             $watchingUsers = $postToResponse->getWatchingUsers();
@@ -279,7 +258,7 @@ class ForumController extends AbstractController
             return $this->redirectToRoute('forum.post', ['index' => $postToResponse->getId()], [], 303);
         }
 
-        return $app['twig']->render('forum/post_response.twig', [
+        return $this->render('forum/post_response.twig', [
             'form' => $form->createView(),
             'postToResponse' => $postToResponse,
         ]);
@@ -288,32 +267,31 @@ class ForumController extends AbstractController
     /**
      * Modifier un post.
      */
-    public function postUpdateAction(Request $request, Application $app)
+    public function postUpdateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $postId = $request->get('index');
 
-        $post = $app['orm.em']->getRepository('\\'.\App\Entity\Post::class)
+        $post = $entityManager->getRepository('\\'.\App\Entity\Post::class)
             ->find($postId);
 
-        $form = $app['form.factory']->createBuilder(new PostForm(), $post)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(PostForm::class(), $post)
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $post = $form->getData();
             $post->setUpdateDate(new \DateTime('NOW'));
 
-            $app['orm.em']->persist($post);
-            $app['orm.em']->flush();
+            $entityManager->persist($post);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le message a été modifié.');
 
             return $this->redirectToRoute('forum.post', ['index' => $post->getId()], [], 303);
         }
 
-        return $app['twig']->render('forum/post_update.twig', [
+        return $this->render('forum/post_update.twig', [
             'form' => $form->createView(),
             'post' => $post,
         ]);
@@ -322,17 +300,17 @@ class ForumController extends AbstractController
     /**
      * Active les notifications sur un post.
      */
-    public function postNotificationOnAction(Request $request, Application $app)
+    public function postNotificationOnAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $postId = $request->get('index');
 
-        $post = $app['orm.em']->getRepository('\\'.\App\Entity\Post::class)
+        $post = $entityManager->getRepository('\\'.\App\Entity\Post::class)
             ->find($postId);
 
         $post->addWatchingUser($this->getUser());
 
-        $app['orm.em']->persist($post);
-        $app['orm.em']->flush();
+        $entityManager->persist($post);
+        $entityManager->flush();
 
        $this->addFlash('success', 'Les notifications sont maintenant activées.');
 
@@ -342,17 +320,17 @@ class ForumController extends AbstractController
     /**
      * Desactive les notifications sur un post.
      */
-    public function postNotificationOffAction(Request $request, Application $app)
+    public function postNotificationOffAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $postId = $request->get('index');
 
-        $post = $app['orm.em']->getRepository('\\'.\App\Entity\Post::class)
+        $post = $entityManager->getRepository('\\'.\App\Entity\Post::class)
             ->find($postId);
 
         $post->removeWatchingUser($this->getUser());
 
-        $app['orm.em']->persist($post);
-        $app['orm.em']->flush();
+        $entityManager->persist($post);
+        $entityManager->flush();
 
        $this->addFlash('success', 'Les notifications sont maintenant desactivées.');
 
@@ -362,20 +340,19 @@ class ForumController extends AbstractController
     /**
      * Supprimer un post.
      */
-    public function postDeleteAction(Request $request, Application $app)
+    public function postDeleteAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $postId = $request->get('index');
 
-        $post = $app['orm.em']->getRepository('\\'.\App\Entity\Post::class)
+        $post = $entityManager->getRepository('\\'.\App\Entity\Post::class)
             ->find($postId);
 
-        $form = $app['form.factory']->createBuilder(new PostDeleteForm(), $post)
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+        $form = $this->createForm(PostDeleteForm::class(), $post)
+            ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $post = $form->getData();
 
             if ($post->isRoot()) {
@@ -387,27 +364,27 @@ class ForumController extends AbstractController
 
             // supprimer toutes les vues
             foreach ($post->getPostViews() as $view) {
-                $app['orm.em']->remove($view);
+                $entityManager->remove($view);
             }
 
             // supprimer tous les posts qui en dépendent
             foreach ($post->getPosts() as $child) {
                 foreach ($child->getPostViews() as $view) {
-                    $app['orm.em']->remove($view);
+                    $entityManager->remove($view);
                 }
 
-                $app['orm.em']->remove($child);
+                $entityManager->remove($child);
             }
 
-            $app['orm.em']->remove($post);
-            $app['orm.em']->flush();
+            $entityManager->remove($post);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le message a été supprimé.');
 
             return $app->redirect($url, 303);
         }
 
-        return $app['twig']->render('forum/post_delete.twig', [
+        return $this->render('forum/post_delete.twig', [
             'form' => $form->createView(),
             'post' => $post,
         ]);
@@ -416,37 +393,36 @@ class ForumController extends AbstractController
     /**
      * Ajouter un sous-forum.
      */
-    public function topicAddAction(Request $request, Application $app)
+    public function topicAddAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $topicId = $request->get('index');
 
-        $topicRelated = $app['orm.em']->getRepository('\\'.\App\Entity\Topic::class)
+        $topicRelated = $entityManager->getRepository('\\'.\App\Entity\Topic::class)
             ->find($topicId);
 
         $topic = new \App\Entity\Topic();
 
-        $form = $app['form.factory']->createBuilder(new TopicForm(), $topic)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(TopicForm::class(), $topic)
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $topic = $form->getData();
             $topic->setTopic($topicRelated);
             $topic->setUser($this->getUser());
             $topic->setRight($topicRelated->getRight());
             $topic->setObjectId($topicRelated->getObjectId());
 
-            $app['orm.em']->persist($topic);
-            $app['orm.em']->flush();
+            $entityManager->persist($topic);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le forum a été ajouté.');
 
             return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], [], 303);
         }
 
-        return $app['twig']->render('forum/topic_add.twig', [
+        return $this->render('forum/topic_add.twig', [
             'form' => $form->createView(),
             'topic' => $topicRelated,
         ]);
@@ -455,14 +431,14 @@ class ForumController extends AbstractController
     /**
      * Modfifier un topic.
      */
-    public function topicUpdateAction(Request $request, Application $app)
+    public function topicUpdateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $topicId = $request->get('index');
 
-        $topic = $app['orm.em']->getRepository('\\'.\App\Entity\Topic::class)
+        $topic = $entityManager->getRepository('\\'.\App\Entity\Topic::class)
             ->find($topicId);
 
-        $formBuilder = $app['form.factory']->createBuilder(new TopicForm(), $topic);
+        $formBuilder = $this->createForm(TopicForm::class(), $topic);
 
         if ($app['security.authorization_checker']->isGranted('ROLE_MODERATOR')) {
             $formBuilder->add('topic', 'entity', [
@@ -473,22 +449,21 @@ class ForumController extends AbstractController
             ]);
         }
 
-        $form = $formBuilder->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $formBuilder->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $topic = $form->getData();
-            $app['orm.em']->persist($topic);
-            $app['orm.em']->flush();
+            $entityManager->persist($topic);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le forum a été modifié.');
 
             return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], [], 303);
         }
 
-        return $app['twig']->render('forum/topic_update.twig', [
+        return $this->render('forum/topic_update.twig', [
             'form' => $form->createView(),
             'topic' => $topic,
         ]);

@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use LarpManager\Form\Type\EtatType;
-use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -12,71 +10,69 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class StockEtatController extends AbstractController
 {
     #[Route('/stock/etat', name: 'stockEtat.index')]
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Etat::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Etat::class);
         $etats = $repo->findAll();
 
-        return $app['twig']->render('stock/etat/index.twig', ['etats' => $etats]);
+        return $this->render('stock/etat/index.twig', ['etats' => $etats]);
     }
 
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $etat = new \App\Entity\Etat();
 
-        $form = $app['form.factory']->createBuilder(new EtatType(), $etat)
-            ->add('save', 'submit')
-            ->getForm();
+        $form = $this->createForm(EtatType::class(), $etat)
+            ->add('save', 'submit');
 
         // on passe la requête de l'utilisateur au formulaire
         $form->handleRequest($request);
 
         // si la requête est valide
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             // on récupére les data de l'utilisateur
             $etat = $form->getData();
-            $app['orm.em']->persist($etat);
-            $app['orm.em']->flush();
+            $entityManager->persist($etat);
+            $entityManager->flush();
 
             $this->addFlash('success', 'L\'état a été ajouté.');
 
             return $this->redirectToRoute('stock_etat_index');
         }
 
-        return $app['twig']->render('stock/etat/add.twig', ['form' => $form->createView()]);
+        return $this->render('stock/etat/add.twig', ['form' => $form->createView()]);
     }
 
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Etat::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Etat::class);
         $etat = $repo->find($id);
 
-        $form = $app['form.factory']->createBuilder(new EtatType(), $etat)
+        $form = $this->createForm(EtatType::class(), $etat)
             ->add('update', 'submit')
-            ->add('delete', 'submit')
-            ->getForm();
+            ->add('delete', 'submit');
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $etat = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                $app['orm.em']->persist($etat);
-                $app['orm.em']->flush();
+                $entityManager->persist($etat);
+                $entityManager->flush();
                 $this->addFlash('success', 'L\'état a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($etat);
-                $app['orm.em']->flush();
+                $entityManager->remove($etat);
+                $entityManager->flush();
                 $this->addFlash('success', 'L\'état a été supprimé.');
             }
 
             return $this->redirectToRoute('stock_etat_index');
         }
 
-        return $app['twig']->render('stock/etat/update.twig', [
+        return $this->render('stock/etat/update.twig', [
             'etat' => $etat,
             'form' => $form->createView()]);
     }

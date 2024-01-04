@@ -2,37 +2,35 @@
 
 namespace App\Controller;
 
-use LarpManager\Form\RegionForm;
-use Silex\Application;
+use App\Form\RegionForm;
 use Symfony\Component\HttpFoundation\Request;
 
 class RegionController extends AbstractController
 {
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\App\Entity\Region');
+        $repo = $entityManager->getRepository('\App\Entity\Region');
         $regions = $repo->findAll();
 
-        return $app['twig']->render('region/index.twig', ['regions' => $regions]);
+        return $this->render('region/index.twig', ['regions' => $regions]);
     }
 
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $region = new \App\Entity\Region();
 
-        $form = $app['form.factory']->createBuilder(new RegionForm(), $region)
+        $form = $this->createForm(RegionForm::class(), $region)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $region = $form->getData();
             $region->setCreator($this->getUser());
 
-            $app['orm.em']->persist($region);
-            $app['orm.em']->flush();
+            $entityManager->persist($region);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La région a été ajouté.');
 
@@ -43,57 +41,56 @@ class RegionController extends AbstractController
             }
         }
 
-        return $app['twig']->render('region/add.twig', [
+        return $this->render('region/add.twig', [
             'form' => $form->createView(),
         ]);
     }
 
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $region = $app['orm.em']->find('\App\Entity\Region', $id);
+        $region = $entityManager->find('\App\Entity\Region', $id);
 
-        $form = $app['form.factory']->createBuilder(new RegionForm(), $region)
+        $form = $this->createForm(RegionForm::class(), $region)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+            ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $region = $form->getData();
 
             if ($form->get('update')->isClicked()) {
                 $region->setUpdateDate(new \DateTime('NOW'));
-                $app['orm.em']->persist($region);
-                $app['orm.em']->flush();
+                $entityManager->persist($region);
+                $entityManager->flush();
                $this->addFlash('success', 'La région a été mise à jour.');
 
                 return $this->redirectToRoute('region.detail', ['index' => $id]);
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($region);
-                $app['orm.em']->flush();
+                $entityManager->remove($region);
+                $entityManager->flush();
                $this->addFlash('success', 'La région a été supprimée.');
 
                 return $this->redirectToRoute('region');
             }
         }
 
-        return $app['twig']->render('region/update.twig', [
+        return $this->render('region/update.twig', [
             'region' => $region,
             'form' => $form->createView(),
         ]);
     }
 
-    public function detailAction(Request $request, Application $app)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $region = $app['orm.em']->find('\App\Entity\Region', $id);
+        $region = $entityManager->find('\App\Entity\Region', $id);
 
         if ($region) {
-            return $app['twig']->render('region/detail.twig', ['region' => $region]);
+            return $this->render('region/detail.twig', ['region' => $region]);
         } else {
            $this->addFlash('error', 'La région n\'a pas été trouvée.');
 
@@ -101,12 +98,12 @@ class RegionController extends AbstractController
         }
     }
 
-    public function detailExportAction(Request $request, Application $app): void
+    public function detailExportAction(Request $request,  EntityManagerInterface $entityManager): void
     {
         $id = $request->get('index');
     }
 
-    public function exportAction(Request $request, Application $app): void
+    public function exportAction(Request $request,  EntityManagerInterface $entityManager): void
     {
     }
 }

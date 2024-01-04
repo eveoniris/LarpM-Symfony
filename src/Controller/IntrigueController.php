@@ -1,22 +1,5 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
@@ -25,11 +8,10 @@ use App\Entity\IntrigueHasModification;
 use App\Entity\Relecture;
 use Doctrine\Common\Collections\ArrayCollection;
 use JasonGrimes\Paginator;
-use LarpManager\Form\Intrigue\IntrigueDeleteForm;
-use LarpManager\Form\Intrigue\IntrigueFindForm;
-use LarpManager\Form\Intrigue\IntrigueForm;
-use LarpManager\Form\Intrigue\IntrigueRelectureForm;
-use Silex\Application;
+use App\Form\Intrigue\IntrigueDeleteForm;
+use App\Form\Intrigue\IntrigueFindForm;
+use App\Form\Intrigue\IntrigueForm;
+use App\Form\Intrigue\IntrigueRelectureForm;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -42,7 +24,7 @@ class IntrigueController extends AbstractController
     /**
      * Liste de toutes les intrigues.
      */
-    public function listAction(Request $request, Application $app)
+    public function listAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'titre';
         $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -52,17 +34,17 @@ class IntrigueController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $app['form.factory']->createBuilder(new IntrigueFindForm())->getForm();
+        $form = $this->createForm(new IntrigueFindForm())->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $type = $data['type'];
             $value = $data['search'];
         }
 
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Intrigue::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Intrigue::class);
 
         $intrigues = $repo->findList(
             $type,
@@ -77,7 +59,7 @@ class IntrigueController extends AbstractController
             $app['url_generator']->generate('intrigue.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $app['twig']->render('admin/intrigue/list.twig', [
+        return $this->render('admin/intrigue/list.twig', [
             'form' => $form->createView(),
             'intrigues' => $intrigues,
             'paginator' => $paginator,
@@ -87,9 +69,9 @@ class IntrigueController extends AbstractController
     /**
      * Lire une intrigue.
      */
-    public function detailAction(Request $request, Application $app, Intrigue $intrigue)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
     {
-        return $app['twig']->render('admin/intrigue/detail.twig', [
+        return $this->render('admin/intrigue/detail.twig', [
             'intrigue' => $intrigue,
         ]);
     }
@@ -97,10 +79,10 @@ class IntrigueController extends AbstractController
     /**
      * Ajouter une intrigue.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $intrigue = new Intrigue();
-        $form = $app['form.factory']->createBuilder(new IntrigueForm(), $intrigue)
+        $form = $this->createForm(IntrigueForm::class(), $intrigue)
             ->add('state', 'choice', [
                 'required' => true,
                 'label' => 'Etat',
@@ -110,7 +92,7 @@ class IntrigueController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $intrigue = $form->getData();
 
             if (!$intrigue->getDescription()) {
@@ -162,8 +144,8 @@ class IntrigueController extends AbstractController
                     $intrigueHasObjectif->setIntrigue($intrigue);
                 }
 
-                $app['orm.em']->persist($intrigue);
-                $app['orm.em']->flush();
+                $entityManager->persist($intrigue);
+                $entityManager->flush();
 
                 /*
                  * Envoyer une notification à tous les scénaristes des groupes concernés (hors utilisateur courant)
@@ -180,7 +162,7 @@ class IntrigueController extends AbstractController
             }
         }
 
-        return $app['twig']->render('admin/intrigue/add.twig', [
+        return $this->render('admin/intrigue/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -188,7 +170,7 @@ class IntrigueController extends AbstractController
     /**
      * Mettre à jour une intrigue.
      */
-    public function updateAction(Request $request, Application $app, Intrigue $intrigue)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
     {
         $originalIntrigueHasGroupes = new ArrayCollection();
         $originalIntrigueHasGroupeSecondaires = new ArrayCollection();
@@ -239,7 +221,7 @@ class IntrigueController extends AbstractController
             $originalIntrigueHasLieus->add($intrigueHasLieu);
         }
 
-        $form = $app['form.factory']->createBuilder(new IntrigueForm(), $intrigue)
+        $form = $this->createForm(IntrigueForm::class(), $intrigue)
             ->add('state', 'choice', [
                 'required' => true,
                 'label' => 'Etat',
@@ -249,7 +231,7 @@ class IntrigueController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $intrigue = $form->getData();
             $intrigue->setDateUpdate(new \DateTime('NOW'));
 
@@ -300,7 +282,7 @@ class IntrigueController extends AbstractController
              */
             foreach ($originalIntrigueHasGroupes as $intrigueHasGroupe) {
                 if (false == $intrigue->getIntrigueHasGroupes()->contains($intrigueHasGroupe)) {
-                    $app['orm.em']->remove($intrigueHasGroupe);
+                    $entityManager->remove($intrigueHasGroupe);
                 }
             }
 
@@ -309,7 +291,7 @@ class IntrigueController extends AbstractController
              */
             foreach ($originalIntrigueHasGroupeSecondaires as $intrigueHasGroupeSecondaire) {
                 if (false == $intrigue->getIntrigueHasGroupes()->contains($intrigueHasGroupeSecondaire)) {
-                    $app['orm.em']->remove($intrigueHasGroupeSecondaire);
+                    $entityManager->remove($intrigueHasGroupeSecondaire);
                 }
             }
 
@@ -318,7 +300,7 @@ class IntrigueController extends AbstractController
              */
             foreach ($originalIntrigueHasEvenements as $intrigueHasEvenement) {
                 if (false == $intrigue->getIntrigueHasEvenements()->contains($intrigueHasEvenement)) {
-                    $app['orm.em']->remove($intrigueHasEvenement);
+                    $entityManager->remove($intrigueHasEvenement);
                 }
             }
 
@@ -327,7 +309,7 @@ class IntrigueController extends AbstractController
              */
             foreach ($originalIntrigueHasObjectifs as $intrigueHasObjectif) {
                 if (false == $intrigue->getIntrigueHasObjectifs()->contains($intrigueHasObjectif)) {
-                    $app['orm.em']->remove($intrigueHasObjectif);
+                    $entityManager->remove($intrigueHasObjectif);
                 }
             }
 
@@ -336,7 +318,7 @@ class IntrigueController extends AbstractController
              */
             foreach ($originalIntrigueHasDocuments as $intrigueHasDocument) {
                 if (false == $intrigue->getIntrigueHasDocuments()->contains($intrigueHasDocument)) {
-                    $app['orm.em']->remove($intrigueHasDocument);
+                    $entityManager->remove($intrigueHasDocument);
                 }
             }
 
@@ -345,7 +327,7 @@ class IntrigueController extends AbstractController
              */
             foreach ($originalIntrigueHasLieus as $intrigueHasLieu) {
                 if (false == $intrigue->getIntrigueHasLieus()->contains($intrigueHasLieu)) {
-                    $app['orm.em']->remove($intrigueHasLieu);
+                    $entityManager->remove($intrigueHasLieu);
                 }
             }
 
@@ -355,9 +337,9 @@ class IntrigueController extends AbstractController
             $modification = new IntrigueHasModification();
             $modification->setUser($this->getUser());
             $modification->setIntrigue($intrigue);
-            $app['orm.em']->persist($modification);
-            $app['orm.em']->persist($intrigue);
-            $app['orm.em']->flush();
+            $entityManager->persist($modification);
+            $entityManager->persist($intrigue);
+            $entityManager->flush();
 
             /*
              * Envoyer une notification à tous les scénaristes des groupes concernés (hors utilisateur courant)
@@ -391,7 +373,7 @@ class IntrigueController extends AbstractController
             return $this->redirectToRoute('intrigue.detail', ['intrigue' => $intrigue->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/intrigue/update.twig', [
+        return $this->render('admin/intrigue/update.twig', [
             'form' => $form->createView(),
             'intrigue' => $intrigue,
         ]);
@@ -400,24 +382,24 @@ class IntrigueController extends AbstractController
     /**
      * Supression d'une intrigue.
      */
-    public function deleteAction(Request $request, Application $app, Intrigue $intrigue)
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
     {
-        $form = $app['form.factory']->createBuilder(new IntrigueDeleteForm(), $intrigue)
+        $form = $this->createForm(IntrigueDeleteForm::class(), $intrigue)
             ->add('supprimer', 'submit', ['label' => 'Supprimer'])->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $intrigue = $form->getData();
-            $app['orm.em']->remove($intrigue);
-            $app['orm.em']->flush();
+            $entityManager->remove($intrigue);
+            $entityManager->flush();
 
            $this->addFlash('success', 'L\'intrigue a été supprimée.');
 
             return $this->redirectToRoute('intrigue.list', [], 303);
         }
 
-        return $app['twig']->render('admin/intrigue/delete.twig', [
+        return $this->render('admin/intrigue/delete.twig', [
             'form' => $form->createView(),
             'intrigue' => $intrigue,
         ]);
@@ -426,21 +408,21 @@ class IntrigueController extends AbstractController
     /**
      * Ajout d'une relecture.
      */
-    public function relectureAddAction(Request $request, Application $app, Intrigue $intrigue)
+    public function relectureAddAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
     {
         $relecture = new Relecture();
-        $form = $app['form.factory']->createBuilder(new IntrigueRelectureForm(), $relecture)
+        $form = $this->createForm(IntrigueRelectureForm::class(), $relecture)
             ->add('enregistrer', 'submit', ['label' => 'Enregistrer'])->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $relecture = $form->getData();
             $relecture->setUser($this->getUser());
             $relecture->setIntrigue($intrigue);
 
-            $app['orm.em']->persist($relecture);
-            $app['orm.em']->flush();
+            $entityManager->persist($relecture);
+            $entityManager->flush();
 
             /*
              * Envoyer une notification à tous les scénaristes des groupes concernés (hors utilisateur courant)
@@ -456,7 +438,7 @@ class IntrigueController extends AbstractController
             return $this->redirectToRoute('intrigue.detail', ['intrigue' => $intrigue->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/intrigue/relecture.twig', [
+        return $this->render('admin/intrigue/relecture.twig', [
             'form' => $form->createView(),
             'intrigue' => $intrigue,
         ]);

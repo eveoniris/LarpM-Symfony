@@ -1,27 +1,9 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -34,15 +16,15 @@ class StrategieController extends AbstractController
     /**
      * Présentation des constructions.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $territoires = new ArrayCollection();
 
         // recherche le prochain GN
-        $gnRepo = $app['orm.em']->getRepository('\\'.\App\Entity\Gn::class);
+        $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
         $gn = $gnRepo->findNext();
 
-        $groupeRepo = $app['orm.em']->getRepository('\\'.\App\Entity\Groupe::class);
+        $groupeRepo = $entityManager->getRepository('\\'.\App\Entity\Groupe::class);
         $groupes = $groupeRepo->findAll();
 
         foreach ($groupes as $groupe) {
@@ -61,7 +43,7 @@ class StrategieController extends AbstractController
         });
         $territoires = new ArrayCollection(iterator_to_array($iterator));
 
-        return $app['twig']->render('admin/strategie/index.twig', [
+        return $this->render('admin/strategie/index.twig', [
             'gn' => $gn,
             'territoires' => $territoires,
         ]);
@@ -80,9 +62,9 @@ class StrategieController extends AbstractController
      *  case vide (pour gérer les changements)
      *  case vide (pour mettre les horaires d'attaque ou de défense)
      */
-    public function csvAction(Request $request, Application $app): void
+    public function csvAction(Request $request,  EntityManagerInterface $entityManager): void
     {
-        $territoires = $app['orm.em']->getRepository('\\'.\App\Entity\Territoire::class)->findFiefs();
+        $territoires = $entityManager->getRepository('\\'.\App\Entity\Territoire::class)->findFiefs();
 
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename=eveoniris_economie_'.date('Ymd').'.csv');

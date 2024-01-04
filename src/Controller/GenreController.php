@@ -1,27 +1,9 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
-use LarpManager\Form\GenreForm;
-use Silex\Application;
+use App\Form\GenreForm;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -34,32 +16,31 @@ class GenreController extends AbstractController
     /**
      * Présentation des genres.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $genres = $app['orm.em']->getRepository('\\'.\App\Entity\Genre::class)->findAll();
+        $genres = $entityManager->getRepository('\\'.\App\Entity\Genre::class)->findAll();
 
-        return $app['twig']->render('admin/genre/index.twig', ['genres' => $genres]);
+        return $this->render('admin/genre/index.twig', ['genres' => $genres]);
     }
 
     /**
      * Ajout d'un genre.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $genre = new \App\Entity\Genre();
 
-        $form = $app['form.factory']->createBuilder(new GenreForm(), $genre)
+        $form = $this->createForm(GenreForm::class(), $genre)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $genre = $form->getData();
 
-            $app['orm.em']->persist($genre);
-            $app['orm.em']->flush();
+            $entityManager->persist($genre);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le genre a été ajouté.');
 
@@ -70,7 +51,7 @@ class GenreController extends AbstractController
             }
         }
 
-        return $app['twig']->render('admin/genre/add.twig', [
+        return $this->render('admin/genre/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -78,14 +59,14 @@ class GenreController extends AbstractController
     /**
      * Detail d'un genre.
      */
-    public function detailAction(Request $request, Application $app)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $genre = $app['orm.em']->find('\\'.\App\Entity\Genre::class, $id);
+        $genre = $entityManager->find('\\'.\App\Entity\Genre::class, $id);
 
         if ($genre) {
-            return $app['twig']->render('admin/genre/detail.twig', ['genre' => $genre]);
+            return $this->render('admin/genre/detail.twig', ['genre' => $genre]);
         } else {
            $this->addFlash('error', 'Le genre n\'a pas été trouvé.');
 
@@ -96,36 +77,35 @@ class GenreController extends AbstractController
     /**
      * Met à jour un genre.
      */
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $genre = $app['orm.em']->find('\\'.\App\Entity\Genre::class, $id);
+        $genre = $entityManager->find('\\'.\App\Entity\Genre::class, $id);
 
-        $form = $app['form.factory']->createBuilder(new GenreForm(), $genre)
+        $form = $this->createForm(GenreForm::class(), $genre)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+            ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $genre = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                $app['orm.em']->persist($genre);
-                $app['orm.em']->flush();
+                $entityManager->persist($genre);
+                $entityManager->flush();
                $this->addFlash('success', 'Le genre a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($genre);
-                $app['orm.em']->flush();
+                $entityManager->remove($genre);
+                $entityManager->flush();
                $this->addFlash('success', 'Le genre a été supprimé.');
             }
 
             return $this->redirectToRoute('genre');
         }
 
-        return $app['twig']->render('admin/genre/update.twig', [
+        return $this->render('admin/genre/update.twig', [
             'genre' => $genre,
             'form' => $form->createView(),
         ]);

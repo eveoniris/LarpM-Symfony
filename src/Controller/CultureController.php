@@ -1,29 +1,11 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Culture;
-use LarpManager\Form\Culture\CultureDeleteForm;
-use LarpManager\Form\Culture\CultureForm;
-use Silex\Application;
+use App\Form\Culture\CultureDeleteForm;
+use App\Form\Culture\CultureForm;
 use Symfony\Component\HttpFoundation\Request;
 
 class CultureController extends AbstractController
@@ -31,11 +13,11 @@ class CultureController extends AbstractController
     /**
      * Liste des culture.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $cultures = $app['orm.em']->getRepository(\App\Entity\Culture::class)->findAll();
+        $cultures = $entityManager->getRepository(\App\Entity\Culture::class)->findAll();
 
-        return $app['twig']->render('admin\culture\index.twig', [
+        return $this->render('admin\culture\index.twig', [
             'cultures' => $cultures,
         ]);
     }
@@ -43,22 +25,22 @@ class CultureController extends AbstractController
     /**
      * Ajout d'une culture.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $app['form.factory']->createBuilder(new CultureForm(), new Culture())->getForm();
+        $form = $this->createForm(CultureForm::class(), new Culture())->getForm();
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $culture = $form->getData();
-            $app['orm.em']->persist($culture);
-            $app['orm.em']->flush();
+            $entityManager->persist($culture);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La culture a été ajoutée.');
 
             return $this->redirectToRoute('culture', [], 303);
         }
 
-        return $app['twig']->render('admin\culture\add.twig', [
+        return $this->render('admin\culture\add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -66,9 +48,9 @@ class CultureController extends AbstractController
     /**
      * Détail d'une culture.
      */
-    public function detailAction(Request $request, Application $app, Culture $culture)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Culture $culture)
     {
-        return $app['twig']->render('admin\culture\detail.twig', [
+        return $this->render('admin\culture\detail.twig', [
             'culture' => $culture,
         ]);
     }
@@ -76,24 +58,23 @@ class CultureController extends AbstractController
     /**
      * Mise à jour d'une culture.
      */
-    public function updateAction(Request $request, Application $app, Culture $culture)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Culture $culture)
     {
-        $form = $app['form.factory']->createBuilder(new CultureForm(), $culture)
-            ->getForm();
+        $form = $this->createForm(CultureForm::class(), $culture);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $culture = $form->getData();
-            $app['orm.em']->persist($culture);
-            $app['orm.em']->flush();
+            $entityManager->persist($culture);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La culture a été mise à jour.');
 
             return $this->redirectToRoute('culture', [], 303);
         }
 
-        return $app['twig']->render('admin\culture\update.twig', [
+        return $this->render('admin\culture\update.twig', [
             'form' => $form->createView(),
             'culture' => $culture,
         ]);
@@ -102,25 +83,24 @@ class CultureController extends AbstractController
     /**
      * Suppression d'une culture.
      */
-    public function deleteAction(Request $request, Application $app, Culture $culture)
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Culture $culture)
     {
-        $form = $app['form.factory']->createBuilder(new CultureDeleteForm(), $culture)
-            ->add('submit', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+        $form = $this->createForm(CultureDeleteForm::class(), $culture)
+            ->add('submit', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $culture = $form->getData();
-            $app['orm.em']->remove($culture);
-            $app['orm.em']->flush();
+            $entityManager->remove($culture);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La culture a été supprimée.');
 
             return $this->redirectToRoute('culture', [], 303);
         }
 
-        return $app['twig']->render('admin\culture\delete.twig', [
+        return $this->render('admin\culture\delete.twig', [
             'form' => $form->createView(),
             'culture' => $culture,
         ]);

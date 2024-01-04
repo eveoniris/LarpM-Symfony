@@ -2,36 +2,34 @@
 
 namespace App\Controller;
 
-use LarpManager\Form\NiveauForm;
-use Silex\Application;
+use App\Form\NiveauForm;
 use Symfony\Component\HttpFoundation\Request;
 
 class NiveauController extends AbstractController
 {
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\App\Entity\Niveau');
+        $repo = $entityManager->getRepository('\App\Entity\Niveau');
         $niveaux = $repo->findAll();
 
-        return $app['twig']->render('niveau/index.twig', ['niveaux' => $niveaux]);
+        return $this->render('niveau/index.twig', ['niveaux' => $niveaux]);
     }
 
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $niveau = new \App\Entity\Niveau();
 
-        $form = $app['form.factory']->createBuilder(new NiveauForm(), $niveau)
+        $form = $this->createForm(NiveauForm::class(), $niveau)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $niveau = $form->getData();
 
-            $app['orm.em']->persist($niveau);
-            $app['orm.em']->flush();
+            $entityManager->persist($niveau);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le niveau a été ajouté.');
 
@@ -42,54 +40,53 @@ class NiveauController extends AbstractController
             }
         }
 
-        return $app['twig']->render('niveau/add.twig', [
+        return $this->render('niveau/add.twig', [
             'form' => $form->createView(),
         ]);
     }
 
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $niveau = $app['orm.em']->find('\App\Entity\Niveau', $id);
+        $niveau = $entityManager->find('\App\Entity\Niveau', $id);
 
-        $form = $app['form.factory']->createBuilder(new NiveauForm(), $niveau)
+        $form = $this->createForm(NiveauForm::class(), $niveau)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+            ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $niveau = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                $app['orm.em']->persist($niveau);
-                $app['orm.em']->flush();
+                $entityManager->persist($niveau);
+                $entityManager->flush();
                $this->addFlash('success', 'Le niveau a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($niveau);
-                $app['orm.em']->flush();
+                $entityManager->remove($niveau);
+                $entityManager->flush();
                $this->addFlash('success', 'Le niveau a été supprimé.');
             }
 
             return $this->redirectToRoute('niveau');
         }
 
-        return $app['twig']->render('niveau/update.twig', [
+        return $this->render('niveau/update.twig', [
             'niveau' => $niveau,
             'form' => $form->createView(),
         ]);
     }
 
-    public function detailAction(Request $request, Application $app)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $niveau = $app['orm.em']->find('\App\Entity\Niveau', $id);
+        $niveau = $entityManager->find('\App\Entity\Niveau', $id);
 
         if ($niveau) {
-            return $app['twig']->render('niveau/detail.twig', ['niveau' => $niveau]);
+            return $this->render('niveau/detail.twig', ['niveau' => $niveau]);
         } else {
            $this->addFlash('error', 'La niveau n\'a pas été trouvé.');
 
@@ -97,11 +94,11 @@ class NiveauController extends AbstractController
         }
     }
 
-    public function detailExportAction(Request $request, Application $app): void
+    public function detailExportAction(Request $request,  EntityManagerInterface $entityManager): void
     {
     }
 
-    public function exportAction(Request $request, Application $app): void
+    public function exportAction(Request $request,  EntityManagerInterface $entityManager): void
     {
     }
 }

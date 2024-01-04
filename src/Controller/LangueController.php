@@ -1,29 +1,11 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Langue;
 use App\Form\Groupe\GroupeLangueForm;
-use LarpManager\Form\LangueForm;
-use Silex\Application;
+use App\Form\LangueForm;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,46 +22,45 @@ class LangueController extends AbstractController
     /**
      * affiche la liste des langues.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $langues = $app['orm.em']->getRepository('\\'.\App\Entity\Langue::class)->findAllOrderedByLabel();
-        $groupeLangues = $app['orm.em']->getRepository('\\'.\App\Entity\GroupeLangue::class)->findAllOrderedByLabel();
+        $langues = $entityManager->getRepository('\\'.\App\Entity\Langue::class)->findAllOrderedByLabel();
+        $groupeLangues = $entityManager->getRepository('\\'.\App\Entity\GroupeLangue::class)->findAllOrderedByLabel();
 
-        return $app['twig']->render('langue/index.twig', ['langues' => $langues, 'groupeLangues' => $groupeLangues]);
+        return $this->render('langue/index.twig', ['langues' => $langues, 'groupeLangues' => $groupeLangues]);
     }
 
     /**
      * Detail d'une langue.
      */
-    public function detailAction(Request $request, Application $app)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $langue = $app['orm.em']->find('\\'.\App\Entity\Langue::class, $id);
+        $langue = $entityManager->find('\\'.\App\Entity\Langue::class, $id);
 
-        return $app['twig']->render('langue/detail.twig', ['langue' => $langue]);
+        return $this->render('langue/detail.twig', ['langue' => $langue]);
     }
 
     /**
      * Ajoute une langue.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $langue = new \App\Entity\Langue();
 
-        $form = $app['form.factory']->createBuilder(new LangueForm(), $langue)
+        $form = $this->createForm(LangueForm::class(), $langue)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
         // si l'utilisateur soumet une nouvelle langue
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $langue = $form->getData();
             if (self::handleDocument($request, $app, $form, $langue)) {
-                $app['orm.em']->persist($langue);
-                $app['orm.em']->flush();
+                $entityManager->persist($langue);
+                $entityManager->flush();
 
                $this->addFlash('success', 'La langue a été ajoutée.');
 
@@ -93,7 +74,7 @@ class LangueController extends AbstractController
             }
         }
 
-        return $app['twig']->render('langue/add.twig', [
+        return $this->render('langue/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -104,11 +85,11 @@ class LangueController extends AbstractController
      * Si l'utilisateur clique sur "supprimer", la langue est supprimée et l'utilisateur est
      * redirigé vers la liste des langues.
      */
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $langue = $app['orm.em']->find('\\'.\App\Entity\Langue::class, $id);
+        $langue = $entityManager->find('\\'.\App\Entity\Langue::class, $id);
         $hasDocumentUrl = !empty($langue->getDocumentUrl());
         $canBeDeleted = $langue->getPersonnageLangues()->isEmpty()
             && $langue->getTerritoires()->isEmpty()
@@ -116,7 +97,7 @@ class LangueController extends AbstractController
 
         $deleteTooltip = $canBeDeleted ? '' : 'Cette langue est référencée par '.$langue->getPersonnageLangues()->count().' personnages, '.$langue->getTerritoires()->count().' territoires et '.$langue->getDocuments()->count().' documents et ne peut pas être supprimée';
 
-        $formBuilder = $app['form.factory']->createBuilder(new LangueForm(), $langue, ['hasDocumentUrl' => $hasDocumentUrl])
+        $formBuilder = $this->createForm(LangueForm::class(), $langue, ['hasDocumentUrl' => $hasDocumentUrl])
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer', 'disabled' => !$canBeDeleted, 'attr' => ['title' => $deleteTooltip]]);
 
@@ -124,20 +105,20 @@ class LangueController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $langue = $form->getData();
 
             if ($form->get('update')->isClicked()) {
                 if (self::handleDocument($request, $app, $form, $langue)) {
-                    $app['orm.em']->persist($langue);
-                    $app['orm.em']->flush();
+                    $entityManager->persist($langue);
+                    $entityManager->flush();
                    $this->addFlash('success', 'La langue a été mise à jour.');
 
                     return $this->redirectToRoute('langue.detail', ['index' => $id], [], 303);
                 }
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($langue);
-                $app['orm.em']->flush();
+                $entityManager->remove($langue);
+                $entityManager->flush();
                 // delete language document if it exists
                 self::tryDeleteDocument($langue);
                $this->addFlash('success', 'La langue a été supprimée.');
@@ -146,7 +127,7 @@ class LangueController extends AbstractController
             }
         }
 
-        return $app['twig']->render('langue/update.twig', [
+        return $this->render('langue/update.twig', [
             'langue' => $langue,
             'form' => $form->createView(),
         ]);
@@ -155,7 +136,7 @@ class LangueController extends AbstractController
     /**
      * Gère le document uploadé et renvoie true si il est valide, false sinon.
      */
-    private function handleDocument(Request $request, Application $app, Form $form, Langue $langue): bool
+    private function handleDocument(Request $request,  EntityManagerInterface $entityManager, Form $form, Langue $langue): bool
     {
         $files = $request->files->get($form->getName());
         $documentFile = $files['document'];
@@ -203,34 +184,33 @@ class LangueController extends AbstractController
     /**
      * Detail d'un groupe de langue.
      */
-    public function detailGroupAction(Request $request, Application $app)
+    public function detailGroupAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $groupeLangue = $app['orm.em']->find('\\'.\App\Entity\GroupeLangue::class, $id);
+        $groupeLangue = $entityManager->find('\\'.\App\Entity\GroupeLangue::class, $id);
 
-        return $app['twig']->render('langue/detailGroup.twig', ['groupeLangue' => $groupeLangue]);
+        return $this->render('langue/detailGroup.twig', ['groupeLangue' => $groupeLangue]);
     }
 
     /**
      * Ajoute un groupe de langue.
      */
-    public function addGroupAction(Request $request, Application $app)
+    public function addGroupAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $groupeLangue = new \App\Entity\GroupeLangue();
 
-        $form = $app['form.factory']->createBuilder(new GroupeLangueForm(), $groupeLangue)
+        $form = $this->createForm(GroupeLangueForm::class(), $groupeLangue)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
         // si l'utilisateur soumet une nouvelle langue
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $groupeLangue = $form->getData();
-            $app['orm.em']->persist($groupeLangue);
-            $app['orm.em']->flush();
+            $entityManager->persist($groupeLangue);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le groupe de langue a été ajouté.');
 
@@ -243,7 +223,7 @@ class LangueController extends AbstractController
             }
         }
 
-        return $app['twig']->render('langue/addGroup.twig', [
+        return $this->render('langue/addGroup.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -253,16 +233,16 @@ class LangueController extends AbstractController
      * Si l'utilisateur clique sur "supprimer", le groupe de langue est supprimé et l'utilisateur est
      * redirigé vers la liste des langues.
      */
-    public function updateGroupAction(Request $request, Application $app)
+    public function updateGroupAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $groupeLangue = $app['orm.em']->find('\\'.\App\Entity\GroupeLangue::class, $id);
+        $groupeLangue = $entityManager->find('\\'.\App\Entity\GroupeLangue::class, $id);
 
         $canBeDeleted = $groupeLangue->getLangues()->isEmpty();
         $deleteTooltip = $canBeDeleted ? '' : 'Ce groupe est référencé par '.$groupeLangue->getLangues()->count().' langues et ne peut pas être supprimé';
 
-        $formBuilder = $app['form.factory']->createBuilder(new GroupeLangueForm(), $groupeLangue)
+        $formBuilder = $this->createForm(GroupeLangueForm::class(), $groupeLangue)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer', 'disabled' => !$canBeDeleted, 'attr' => ['title' => $deleteTooltip]]);
 
@@ -270,25 +250,25 @@ class LangueController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $groupeLangue = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                $app['orm.em']->persist($groupeLangue);
-                $app['orm.em']->flush();
+                $entityManager->persist($groupeLangue);
+                $entityManager->flush();
                $this->addFlash('success', 'Le groupe de langue a été mis à jour.');
 
                 return $this->redirectToRoute('langue.detailGroup', ['index' => $id], [], 303);
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($groupeLangue);
-                $app['orm.em']->flush();
+                $entityManager->remove($groupeLangue);
+                $entityManager->flush();
                $this->addFlash('success', 'Le groupe de langue a été supprimé.');
 
                 return $this->redirectToRoute('langue', [], 303);
             }
         }
 
-        return $app['twig']->render('langue/updateGroup.twig', [
+        return $this->render('langue/updateGroup.twig', [
             'groupeLangue' => $groupeLangue,
             'form' => $form->createView(),
         ]);
@@ -297,7 +277,7 @@ class LangueController extends AbstractController
     /**
      * Obtenir le document lié a une langue.
      */
-    public function adminDocumentAction(Request $request, Application $app)
+    public function adminDocumentAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $langue = $request->get('langue');
         $document = $langue->getDocumentUrl();

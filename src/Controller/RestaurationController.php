@@ -247,7 +247,7 @@ class RestaurationController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $restauration = $form->getData();
 
             $entityManager->remove($restauration);

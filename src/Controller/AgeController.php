@@ -1,28 +1,10 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Age;
-use LarpManager\Form\AgeForm;
-use Silex\Application;
+use App\Form\AgeForm;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -37,20 +19,20 @@ class AgeController extends AbstractController
      *
      * @return View $view
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $ages = $app['orm.em']->getRepository('\\'.\App\Entity\Age::class)
+        $ages = $entityManager->getRepository('\\'.\App\Entity\Age::class)
             ->findAllOrderedByLabel();
 
-        return $app['twig']->render('admin/age/index.twig', ['ages' => $ages]);
+        return $this->render('admin/age/index.twig', ['ages' => $ages]);
     }
 
     /**
      * Liste des perso ayant cet age.
      */
-    public function persoAction(Request $request, Application $app, Age $age)
+    public function persoAction(Request $request,  EntityManagerInterface $entityManager, Age $age)
     {
-        return $app['twig']->render('admin/age/perso.twig', ['age' => $age]);
+        return $this->render('admin/age/perso.twig', ['age' => $age]);
     }
 
     /**
@@ -60,9 +42,9 @@ class AgeController extends AbstractController
      *
      * @throws LarpManager\Exception\ObjectNotFoundException
      */
-    public function detailAction(Request $request, Application $app, Age $age)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Age $age)
     {
-        return $app['twig']->render('admin/age/detail.twig', ['age' => $age]);
+        return $this->render('admin/age/detail.twig', ['age' => $age]);
     }
 
     /**
@@ -70,14 +52,13 @@ class AgeController extends AbstractController
      *
      * @return View $view
      */
-    public function addViewAction(Request $request, Application $app)
+    public function addViewAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $app['form.factory']->createBuilder(new AgeForm(), new Age())
+        $form = $this->createForm(AgeForm::class(), new Age())
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
-        return $app['twig']->render('admin/age/add.twig', [
+        return $this->render('admin/age/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -89,12 +70,11 @@ class AgeController extends AbstractController
      *
      * @throws LarpManager\Exception\RequestInvalid
      */
-    public function addPostAction(Request $request, Application $app)
+    public function addPostAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $app['form.factory']->createBuilder(new AgeForm(), new Age())
+        $form = $this->createForm(AgeForm::class(), new Age())
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -107,8 +87,8 @@ class AgeController extends AbstractController
 
         $age = $form->getData();
 
-        $app['orm.em']->persist($age);
-        $app['orm.em']->flush();
+        $entityManager->persist($age);
+        $entityManager->flush();
 
        $this->addFlash('success', 'L\'age a été ajouté.');
 
@@ -130,9 +110,9 @@ class AgeController extends AbstractController
      *
      * @throws LarpManager\Exception\ObjectNotFoundException
      */
-    public function updateViewAction(Request $request, Application $app, Age $age)
+    public function updateViewAction(Request $request,  EntityManagerInterface $entityManager, Age $age)
     {
-        $form = $app['form.factory']->createBuilder(new AgeForm(), $age)
+        $form = $this->createForm(AgeForm::class(), $age)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'button', [
                 'label' => 'Supprimer',
@@ -142,10 +122,9 @@ class AgeController extends AbstractController
                     'data-target' => '#confirm-submit',
                     'class' => 'btn btn-default',
                 ],
-            ])
-            ->getForm();
+            ]);
 
-        return $app['twig']->render('admin/age/update.twig', [
+        return $this->render('admin/age/update.twig', [
             'age' => $age,
             'form' => $form->createView(),
         ]);
@@ -159,9 +138,9 @@ class AgeController extends AbstractController
      * @throws LarpManager\Exception\RequestInvalid
      * @throws LarpManager\Exception\ObjectNotFoundException
      */
-    public function updatePostAction(Request $request, Application $app, Age $age)
+    public function updatePostAction(Request $request,  EntityManagerInterface $entityManager, Age $age)
     {
-        $form = $app['form.factory']->createBuilder(new AgeForm(), $age)
+        $form = $this->createForm(AgeForm::class(), $age)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'button', [
                 'label' => 'Supprimer',
@@ -171,8 +150,7 @@ class AgeController extends AbstractController
                     'data-target' => '#confirm-submit',
                     'class' => 'btn btn-default',
                 ],
-            ])
-            ->getForm();
+            ]);
 
         $form->handleRequest($request);
 
@@ -190,12 +168,12 @@ class AgeController extends AbstractController
          * Sinon si l'utilisateur a cliqué sur "Supprimer", l'age sera supprimer dans la base de données.
          */
         if ($form->get('update')->isClicked()) {
-            $app['orm.em']->persist($age);
-            $app['orm.em']->flush();
+            $entityManager->persist($age);
+            $entityManager->flush();
            $this->addFlash('success', 'L\'age a été mis à jour.');
         } else {
-            $app['orm.em']->remove($age);
-            $app['orm.em']->flush();
+            $entityManager->remove($age);
+            $entityManager->flush();
            $this->addFlash('success', 'L\'age a été supprimé.');
         }
 

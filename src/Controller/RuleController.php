@@ -1,30 +1,14 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Rule;
 use App\Repository\RuleRepository;
-use LarpManager\Form\Rule\RuleDeleteForm;
-use LarpManager\Form\Rule\RuleForm;
-use LarpManager\Form\Rule\RuleUpdateForm;
+use App\Form\Rule\RuleDeleteForm;
+use App\Form\Rule\RuleForm;
+use App\Form\Rule\RuleUpdateForm;
+
 //use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,9 +42,9 @@ class RuleController extends AbstractController
         );
 
 
-        //$regles = $app['orm.em']->getRepository(\App\Entity\Rule::class)->findAll();
+        //$regles = $entityManager->getRepository(\App\Entity\Rule::class)->findAll();
 
-        //return $app['twig']->render('rule/list.twig', [
+        //return $this->render('rule/list.twig', [
         //    'regles' => $regles,
         //]);
     }
@@ -68,15 +52,14 @@ class RuleController extends AbstractController
     /**
      * Ajout d'une règle.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $app['form.factory']->createBuilder(new RuleForm(), [])
-            ->add('envoyer', 'submit', ['label' => 'Envoyer'])
-            ->getForm();
+        $form = $this->createForm(RuleForm::class(), [])
+            ->add('envoyer', 'submit', ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $files = $request->files->get($form->getName());
 
@@ -99,13 +82,13 @@ class RuleController extends AbstractController
             $rule->setDescription($data['description']);
             $rule->setUrl($filename);
 
-            $app['orm.em']->persist($rule);
-            $app['orm.em']->flush();
+            $entityManager->persist($rule);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Votre fichier a été enregistrée');
         }
 
-        return $app['twig']->render('rule/add.twig', [
+        return $this->render('rule/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -113,9 +96,9 @@ class RuleController extends AbstractController
     /**
      * Détail d'une règle.
      */
-    public function detailAction(Request $request, Application $app, Rule $rule)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Rule $rule)
     {
-        return $app['twig']->render('rule/detail.twig', [
+        return $this->render('rule/detail.twig', [
             'rule' => $rule,
         ]);
     }
@@ -123,23 +106,22 @@ class RuleController extends AbstractController
     /**
      * Mise à jour d'une règle.
      */
-    public function updateAction(Request $request, Application $app, Rule $rule)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Rule $rule)
     {
-        $form = $app['form.factory']->createBuilder(new RuleUpdateForm(), $rule)
-            ->add('envoyer', 'submit', ['label' => 'Envoyer'])
-            ->getForm();
+        $form = $this->createForm(RuleUpdateForm::class(), $rule)
+            ->add('envoyer', 'submit', ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $rule = $form->getData();
-            $app['orm.em']->persist($rule);
-            $app['orm.em']->flush();
+            $entityManager->persist($rule);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Vos modifications été enregistrées');
         }
 
-        return $app['twig']->render('rule/update.twig', [
+        return $this->render('rule/update.twig', [
             'form' => $form->createView(),
             'rule' => $rule,
         ]);
@@ -148,17 +130,16 @@ class RuleController extends AbstractController
     /**
      * Supression d'un fichier de règle.
      */
-    public function deleteAction(Request $request, Application $app, Rule $rule)
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Rule $rule)
     {
-        $form = $app['form.factory']->createBuilder(new RuleDeleteForm(), $rule)
-            ->add('supprimer', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+        $form = $this->createForm(RuleDeleteForm::class(), $rule)
+            ->add('supprimer', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
-            $app['orm.em']->remove($rule);
-            $app['orm.em']->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->remove($rule);
+            $entityManager->flush();
 
             $filename = __DIR__.'/../../../private/rules/'.$rule->getUrl();
 
@@ -172,7 +153,7 @@ class RuleController extends AbstractController
             return $this->redirectToRoute('rules', [], 303);
         }
 
-        return $app['twig']->render('rule/delete.twig', [
+        return $this->render('rule/delete.twig', [
             'form' => $form->createView(),
             'rule' => $rule,
         ]);
@@ -181,7 +162,7 @@ class RuleController extends AbstractController
     /**
      * Télécharger une règle.
      */
-    public function documentAction(Request $request, Application $app, Rule $rule)
+    public function documentAction(Request $request,  EntityManagerInterface $entityManager, Rule $rule)
     {
         $filename = __DIR__.'/../../../private/rules/'.$rule->getUrl();
 

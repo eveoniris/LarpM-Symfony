@@ -1,29 +1,11 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Question;
-use LarpManager\Form\Question\QuestionDeleteForm;
-use LarpManager\Form\Question\QuestionForm;
-use Silex\Application;
+use App\Form\Question\QuestionDeleteForm;
+use App\Form\Question\QuestionForm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -33,11 +15,11 @@ class QuestionController extends AbstractController
      * Liste des question.
      */
     #[Route('/question', name: 'question')]
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $questions = $app['orm.em']->getRepository(\App\Entity\Question::class)->findAll();
+        $questions = $entityManager->getRepository(\App\Entity\Question::class)->findAll();
 
-        return $app['twig']->render('admin\question\index.twig', [
+        return $this->render('admin\question\index.twig', [
             'questions' => $questions,
         ]);
     }
@@ -45,25 +27,25 @@ class QuestionController extends AbstractController
     /**
      * Ajout d'une question.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $app['form.factory']->createBuilder(new QuestionForm(), new Question())->getForm();
+        $form = $this->createForm(QuestionForm::class(), new Question())->getForm();
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $question = $form->getData();
             $question->setUser($this->getUser());
             $question->setDate(new \DateTime('NOW'));
 
-            $app['orm.em']->persist($question);
-            $app['orm.em']->flush();
+            $entityManager->persist($question);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La question a été ajoutée.');
 
             return $this->redirectToRoute('question', [], 303);
         }
 
-        return $app['twig']->render('admin\question\add.twig', [
+        return $this->render('admin\question\add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -71,9 +53,9 @@ class QuestionController extends AbstractController
     /**
      * Détail d'une question.
      */
-    public function detailAction(Request $request, Application $app, Question $question)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Question $question)
     {
-        return $app['twig']->render('admin\question\detail.twig', [
+        return $this->render('admin\question\detail.twig', [
             'question' => $question,
         ]);
     }
@@ -81,25 +63,24 @@ class QuestionController extends AbstractController
     /**
      * Mise à jour d'une question.
      */
-    public function updateAction(Request $request, Application $app, Question $question)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Question $question)
     {
-        $form = $app['form.factory']->createBuilder(new QuestionForm(), $question)
-            ->getForm();
+        $form = $this->createForm(QuestionForm::class(), $question);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $question = $form->getData();
 
-            $app['orm.em']->persist($question);
-            $app['orm.em']->flush();
+            $entityManager->persist($question);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La question a été mise à jour.');
 
             return $this->redirectToRoute('question', [], 303);
         }
 
-        return $app['twig']->render('admin\question\update.twig', [
+        return $this->render('admin\question\update.twig', [
             'form' => $form->createView(),
             'question' => $question,
         ]);
@@ -108,30 +89,29 @@ class QuestionController extends AbstractController
     /**
      * Suppression d'une question.
      */
-    public function deleteAction(Request $request, Application $app, Question $question)
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Question $question)
     {
-        $form = $app['form.factory']->createBuilder(new QuestionDeleteForm(), $question)
-            ->add('submit', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+        $form = $this->createForm(QuestionDeleteForm::class(), $question)
+            ->add('submit', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $question = $form->getData();
 
             foreach ($question->getReponses() as $reponse) {
-                $app['orm.em']->remove($reponse);
+                $entityManager->remove($reponse);
             }
 
-            $app['orm.em']->remove($question);
-            $app['orm.em']->flush();
+            $entityManager->remove($question);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La question a été supprimée.');
 
             return $this->redirectToRoute('question', [], 303);
         }
 
-        return $app['twig']->render('admin\question\delete.twig', [
+        return $this->render('admin\question\delete.twig', [
             'form' => $form->createView(),
             'question' => $question,
         ]);

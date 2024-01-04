@@ -1,28 +1,10 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use Doctrine\ORM\Query;
-use LarpManager\Form\RessourceForm;
-use Silex\Application;
+use App\Form\RessourceForm;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -37,9 +19,9 @@ class RessourceController extends AbstractController
      * API: fourni la liste des ressources
      * GET /api/ressource.
      */
-    public function apiListAction(Request $request, Application $app): JsonResponse
+    public function apiListAction(Request $request,  EntityManagerInterface $entityManager): JsonResponse
     {
-        $qb = $app['orm.em']->createQueryBuilder();
+        $qb = $entityManager->createQueryBuilder();
         $qb->select('Ressource')
             ->from('\\'.\App\Entity\Ressource::class, 'Ressource');
 
@@ -53,33 +35,32 @@ class RessourceController extends AbstractController
     /**
      * Liste des ressources.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Ressource::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Ressource::class);
         $ressources = $repo->findAll();
 
-        return $app['twig']->render('ressource/index.twig', ['ressources' => $ressources]);
+        return $this->render('ressource/index.twig', ['ressources' => $ressources]);
     }
 
     /**
      * Ajout d'une ressource.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $ressource = new \App\Entity\Ressource();
 
-        $form = $app['form.factory']->createBuilder(new RessourceForm(), $ressource)
+        $form = $this->createForm(RessourceForm::class(), $ressource)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $ressource = $form->getData();
 
-            $app['orm.em']->persist($ressource);
-            $app['orm.em']->flush();
+            $entityManager->persist($ressource);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La ressource a été ajoutée.');
 
@@ -90,7 +71,7 @@ class RessourceController extends AbstractController
             }
         }
 
-        return $app['twig']->render('ressource/add.twig', [
+        return $this->render('ressource/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -98,36 +79,35 @@ class RessourceController extends AbstractController
     /**
      * Mise à jour d'une ressource.
      */
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $ressource = $app['orm.em']->find('\\'.\App\Entity\Ressource::class, $id);
+        $ressource = $entityManager->find('\\'.\App\Entity\Ressource::class, $id);
 
-        $form = $app['form.factory']->createBuilder(new RessourceForm(), $ressource)
+        $form = $this->createForm(RessourceForm::class(), $ressource)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+            ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $ressource = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                $app['orm.em']->persist($ressource);
-                $app['orm.em']->flush();
+                $entityManager->persist($ressource);
+                $entityManager->flush();
                $this->addFlash('success', 'La ressource a été mise à jour.');
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($ressource);
-                $app['orm.em']->flush();
+                $entityManager->remove($ressource);
+                $entityManager->flush();
                $this->addFlash('success', 'La ressource a été supprimée.');
             }
 
             return $this->redirectToRoute('ressource');
         }
 
-        return $app['twig']->render('ressource/update.twig', [
+        return $this->render('ressource/update.twig', [
             'ressource' => $ressource,
             'form' => $form->createView(),
         ]);
@@ -136,14 +116,14 @@ class RessourceController extends AbstractController
     /**
      * Affiche de détail d'une ressource.
      */
-    public function detailAction(Request $request, Application $app)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $ressource = $app['orm.em']->find('\\'.\App\Entity\Ressource::class, $id);
+        $ressource = $entityManager->find('\\'.\App\Entity\Ressource::class, $id);
 
         if ($ressource) {
-            return $app['twig']->render('ressource/detail.twig', ['ressource' => $ressource]);
+            return $this->render('ressource/detail.twig', ['ressource' => $ressource]);
         } else {
            $this->addFlash('error', 'La ressource n\'a pas été trouvée.');
 
@@ -151,11 +131,11 @@ class RessourceController extends AbstractController
         }
     }
 
-    public function detailExportAction(Request $request, Application $app): void
+    public function detailExportAction(Request $request,  EntityManagerInterface $entityManager): void
     {
     }
 
-    public function exportAction(Request $request, Application $app): void
+    public function exportAction(Request $request,  EntityManagerInterface $entityManager): void
     {
     }
 }

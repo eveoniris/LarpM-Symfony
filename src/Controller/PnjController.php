@@ -21,8 +21,8 @@
 namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Silex\Application;
-use LarpManager\Form\PnjInscriptionForm;
+use App\Form\PnjInscriptionForm;
+
 
 /**
  * LarpManager\Controllers\PnjController
@@ -35,13 +35,13 @@ class PnjController extends AbstractController
 	/**
 	 * 
 	 */
-	public function listAction(Request $request, Application $app)
+	public function listAction(Request $request,  EntityManagerInterface $entityManager)
 	{
 		$gn = $app['larp.manager']->getGnActif();
 		
 		$pnjs = $gn->getParticipantsPnj();
 
-		return $app['twig']->render('admin/pnj/list.twig', array(
+		return $this->render('admin/pnj/list.twig', array(
 			'pnjs' => $pnjs,	
 		));
 	}

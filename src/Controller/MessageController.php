@@ -1,29 +1,11 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Message;
 use App\Repository\BaseRepository;
-use LarpManager\Form\NewMessageForm;
-use Silex\Application;
+use App\Form\NewMessageForm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -77,13 +59,12 @@ class MessageController extends AbstractController
             $message->setUserRelatedByDestinataire($to);
         }
 
-        $form = $app['form.factory']->createBuilder(new NewMessageForm(), $message)
-            ->add('envoyer', 'submit', ['label' => 'Envoyer votre message'])
-            ->getForm();
+        $form = $this->createForm(NewMessageForm::class(), $message)
+            ->add('envoyer', 'submit', ['label' => 'Envoyer votre message']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $message = $form->getData();
 
             // ajout de la signature
@@ -94,8 +75,8 @@ class MessageController extends AbstractController
                 $message->setText($text);
             }
 
-            $app['orm.em']->persist($message);
-            $app['orm.em']->flush();
+            $entityManager->persist($message);
+            $entityManager->flush();
 
             // création de la notification
             $destinataire = $message->getUserRelatedByDestinataire();
@@ -106,7 +87,7 @@ class MessageController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $app['twig']->render('public/message/new.twig', [
+        return $this->render('public/message/new.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -118,15 +99,15 @@ class MessageController extends AbstractController
      * @throws AccessDeniedException
      */
     #[Route('/messagerie/message-archive', name: 'message.archive')]
-    public function messageArchiveAction(Application $app, Request $request, Message $message): bool
+    public function messageArchiveAction( EntityManagerInterface $entityManager, Request $request, Message $message): bool
     {
         if ($message->getUserRelatedByDestinataire() != $this->getUser()) {
             return false;
         }
 
         $message->setLu(true);
-        $app['orm.em']->persist($message);
-        $app['orm.em']->flush();
+        $entityManager->persist($message);
+        $entityManager->flush();
 
         return true;
     }
@@ -135,7 +116,7 @@ class MessageController extends AbstractController
      * Répondre à un message.
      */
     #[Route('/messagerie/response', name: 'message.response')]
-    public function messageResponseAction(Application $app, Request $request, Message $message)
+    public function messageResponseAction( EntityManagerInterface $entityManager, Request $request, Message $message)
     {
         $reponse = new \App\Entity\Message();
 
@@ -145,13 +126,12 @@ class MessageController extends AbstractController
         $reponse->setCreationDate(new \DateTime('NOW'));
         $reponse->setUpdateDate(new \DateTime('NOW'));
 
-        $form = $app['form.factory']->createBuilder(new NewMessageForm(), $reponse)
-            ->add('envoyer', 'submit', ['label' => 'Envoyer votre message'])
-            ->getForm();
+        $form = $this->createForm(NewMessageForm::class(), $reponse)
+            ->add('envoyer', 'submit', ['label' => 'Envoyer votre message']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $message = $form->getData();
 
             // ajout de la signature
@@ -162,8 +142,8 @@ class MessageController extends AbstractController
                 $message->setText($text);
             }
 
-            $app['orm.em']->persist($message);
-            $app['orm.em']->flush();
+            $entityManager->persist($message);
+            $entityManager->flush();
 
             // création de la notification
             $destinataire = $message->getUserRelatedByDestinataire();
@@ -174,7 +154,7 @@ class MessageController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $app['twig']->render('public/message/response.twig', [
+        return $this->render('public/message/response.twig', [
             'message' => $message,
             'User' => $this->getUser(),
             'form' => $form->createView(),
