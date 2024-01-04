@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -10,15 +9,15 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class GuildeController extends AbstractController
 {
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\App\Entity\Guilde');
+        $repo = $entityManager->getRepository('\App\Entity\Guilde');
         $guildes = $repo->findAll();
 
-        return $app['twig']->render('guilde/index.twig', ['guildes' => $guildes]);
+        return $this->render('guilde/index.twig', ['guildes' => $guildes]);
     }
 
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         if ('POST' === $request->getMethod()) {
             $label = $request->get('label');
@@ -29,19 +28,19 @@ class GuildeController extends AbstractController
             $guilde->setLabel($label);
             $guilde->setDescription($description);
 
-            $app['orm.em']->persist($guilde);
-            $app['orm.em']->flush();
+            $entityManager->persist($guilde);
+            $entityManager->flush();
 
             return $this->redirectToRoute('guilde_list');
         }
 
-        return $app['twig']->render('guilde/add.twig');
+        return $this->render('guilde/add.twig');
     }
 
-    public function modifyAction(Request $request, Application $app)
+    public function modifyAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
-        $guilde = $app['orm.em']->find('\App\Entity\Guilde', $id);
+        $guilde = $entityManager->find('\App\Entity\Guilde', $id);
         if (!$guilde) {
             return $this->redirectToRoute('guilde_list');
         }
@@ -53,44 +52,44 @@ class GuildeController extends AbstractController
             $guilde->setLabel($label);
             $guilde->setDescription($description);
 
-            $app['orm.em']->flush();
+            $entityManager->flush();
 
             return $this->redirectToRoute('guilde_list');
         }
 
-        $repo = $app['orm.em']->getRepository('\App\Entity\Guilde');
+        $repo = $entityManager->getRepository('\App\Entity\Guilde');
 
-        return $app['twig']->render('guilde/modify.twig', ['guilde' => $guilde]);
+        return $this->render('guilde/modify.twig', ['guilde' => $guilde]);
     }
 
-    public function removeAction(Request $request, Application $app)
+    public function removeAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $guilde = $app['orm.em']->find('\App\Entity\Guilde', $id);
+        $guilde = $entityManager->find('\App\Entity\Guilde', $id);
 
         if ($guilde) {
             if ('POST' === $request->getMethod()) {
-                $app['orm.em']->remove($guilde);
-                $app['orm.em']->flush();
+                $entityManager->remove($guilde);
+                $entityManager->flush();
 
                 return $this->redirectToRoute('guilde_list');
             }
 
-            return $app['twig']->render('chronologie/remove.twig', ['guilde' => $guilde]);
+            return $this->render('chronologie/remove.twig', ['guilde' => $guilde]);
         } else {
             return $this->redirectToRoute('guilde_list');
         }
     }
 
-    public function detailAction(Request $request, Application $app)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $guilde = $app['orm.em']->find('\App\Entity\Guilde', $id);
+        $guilde = $entityManager->find('\App\Entity\Guilde', $id);
 
         if ($guilde) {
-            return $app['twig']->render('guilde/detail.twig', ['guilde', $guilde]);
+            return $this->render('guilde/detail.twig', ['guilde', $guilde]);
         } else {
             return $this->redirectToRoute('guilde_list');
         }

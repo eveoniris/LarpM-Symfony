@@ -57,13 +57,12 @@ class UserController extends AbstractController
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     public function adminNewAction(Request $request)
     {
-        $form = $app['form.factory']->createBuilder(new UserNewForm(), [])
-            ->add('save', 'submit', ['label' => "Créer l'utilisateur"])
-            ->getForm();
+        $form = $this->createForm(UserNewForm::class(), [])
+            ->add('save', 'submit', ['label' => "Créer l'utilisateur"]);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
             $plainPassword = $this->generatePassword();
@@ -75,7 +74,7 @@ class UserController extends AbstractController
                 ['ROLE_USER']);
 
             $User->setIsEnabled(true);
-            $app['orm.em']->persist($User);
+            $entityManager->persist($User);
 
             if ($data['gn']) {
                 $participant = new Participant();
@@ -86,10 +85,10 @@ class UserController extends AbstractController
                     $participant->setBillet($data['billet']);
                 }
 
-                $app['orm.em']->persist($participant);
+                $entityManager->persist($participant);
             }
 
-            $app['orm.em']->flush();
+            $entityManager->flush();
 
             $app['notify']->newUser($User, $plainPassword);
 
@@ -98,7 +97,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $app['twig']->render('admin/User/new.twig', [
+        return $this->render('admin/User/new.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -106,7 +105,7 @@ class UserController extends AbstractController
     /**
      * Choix du personnage par défaut de l'utilisateur.
      */
-    public function personnageDefaultAction(Application $app, Request $request, User $User)
+    public function personnageDefaultAction( EntityManagerInterface $entityManager, Request $request, User $User)
     {
         if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN') && !$User == $this->getUser()) {
             $this->addFlash('error', 'Vous n\'avez pas les droits necessaires pour cette opération.');
@@ -114,24 +113,23 @@ class UserController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        $form = $app['form.factory']->createBuilder(new UserPersonnageDefaultForm(), $this->getUser(), ['User_id' => $User->getId()])
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(UserPersonnageDefaultForm::class(), $this->getUser(), ['User_id' => $User->getId()])
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $User = $form->getData();
 
-            $app['orm.em']->persist($User);
-            $app['orm.em']->flush();
+            $entityManager->persist($User);
+            $entityManager->flush();
 
             $this->addFlash('success', 'Vos informations ont été enregistrées.');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $app['twig']->render('public/User/personnageDefault.twig', [
+        return $this->render('public/User/personnageDefault.twig', [
             'form' => $form->createView(),
             'User' => $User,
         ]);
@@ -141,15 +139,14 @@ class UserController extends AbstractController
      * Choix des restrictions alimentaires par l'utilisateur.
      */
     #[Route('/user/restriction', name: 'user.restriction')]
-    public function restrictionAction(Application $app, Request $request)
+    public function restrictionAction( EntityManagerInterface $entityManager, Request $request)
     {
-        $form = $app['form.factory']->createBuilder(new UserRestrictionForm(), $this->getUser())
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(UserRestrictionForm::class(), $this->getUser())
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $User = $form->getData();
             $newRestriction = $form->get('new_restriction')->getData();
             if ($newRestriction) {
@@ -157,19 +154,19 @@ class UserController extends AbstractController
                 $restriction->setUserRelatedByAuteurId($this->getUser());
                 $restriction->setLabel($newRestriction);
 
-                $app['orm.em']->persist($restriction);
+                $entityManager->persist($restriction);
                 $User->addRestriction($restriction);
             }
 
-            $app['orm.em']->persist($User);
-            $app['orm.em']->flush();
+            $entityManager->persist($User);
+            $entityManager->flush();
 
             $this->addFlash('success', 'Vos informations ont été enregistrées.');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $app['twig']->render('public/User/restriction.twig', [
+        return $this->render('public/User/restriction.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -177,10 +174,9 @@ class UserController extends AbstractController
     /**
      * Formulaire de participation à un jeu.
      */
-    public function gnParticipeAction(Application $app, Request $request, Gn $gn)
+    public function gnParticipeAction( EntityManagerInterface $entityManager, Request $request, Gn $gn)
     {
-        $form = $app['form.factory']->createBuilder()
-            ->getForm();
+        $form = $this->createForm();
 
         $form->handleRequest($request);
 
@@ -193,15 +189,15 @@ class UserController extends AbstractController
                 $participant->setValideCiLe(new \DateTime('NOW'));
             }
 
-            $app['orm.em']->persist($participant);
-            $app['orm.em']->flush();
+            $entityManager->persist($participant);
+            $entityManager->flush();
 
             $this->addFlash('success', 'Vous participez maintenant à '.$gn->getLabel().' !');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $app['twig']->render('public/gn/participe.twig', [
+        return $this->render('public/gn/participe.twig', [
             'gn' => $gn,
             'form' => $form->createView(),
         ]);
@@ -210,10 +206,9 @@ class UserController extends AbstractController
     /**
      * Formulaire de validation des cg , si cette validation n'a pas été réalisé à la participation.
      */
-    public function gnValidCiAction(Application $app, Request $request, Gn $gn)
+    public function gnValidCiAction( EntityManagerInterface $entityManager, Request $request, Gn $gn)
     {
-        $form = $app['form.factory']->createBuilder()
-            ->getForm();
+        $form = $this->createForm();
 
         $form->handleRequest($request);
 
@@ -221,15 +216,15 @@ class UserController extends AbstractController
             $participant = $this->getUser()->getParticipant($gn);
             $participant->setValideCiLe(new \DateTime('NOW'));
 
-            $app['orm.em']->persist($participant);
-            $app['orm.em']->flush();
+            $entityManager->persist($participant);
+            $entityManager->flush();
 
             $this->addFlash('success', 'Vous avez validé les condition d\'inscription pour '.$gn->getLabel().' !');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $app['twig']->render('public/gn/validation_ci.twig', [
+        return $this->render('public/gn/validation_ci.twig', [
             'gn' => $gn,
             'form' => $form->createView(),
         ]);
@@ -238,7 +233,7 @@ class UserController extends AbstractController
     /**
      * Affiche le détail d'un billet d'un utilisateur.
      */
-    public function UserHasBilletDetailAction(Application $app, Request $request, UserHasBillet $UserHasBillet)
+    public function UserHasBilletDetailAction( EntityManagerInterface $entityManager, Request $request, UserHasBillet $UserHasBillet)
     {
         if ($UserHasBillet->getUser() != $this->getUser()) {
             $this->addFlash('error', 'Vous ne pouvez pas acceder à cette information');
@@ -246,7 +241,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $app['twig']->render('public/UserHasBillet/detail.twig', [
+        return $this->render('public/UserHasBillet/detail.twig', [
             'UserHasBillet' => $UserHasBillet,
         ]);
     }
@@ -254,11 +249,11 @@ class UserController extends AbstractController
     /**
      * Affiche la liste des billets de l'utilisateur.
      */
-    public function UserHasBilletListAction(Application $app, Request $request)
+    public function UserHasBilletListAction( EntityManagerInterface $entityManager, Request $request)
     {
         $UserHasBillets = $this->getUser()->getUserHasBillets();
 
-        return $app['twig']->render('public/UserHasBillet/list.twig', [
+        return $this->render('public/UserHasBillet/list.twig', [
             'UserHasBillets' => $UserHasBillets,
         ]);
     }
@@ -267,9 +262,9 @@ class UserController extends AbstractController
      * Affiche les informations de la fédéGN.
      */
     #[Route('/user/fedegn', name: 'user.fedegn')]
-    public function fedegnAction(Application $app, Request $request)
+    public function fedegnAction( EntityManagerInterface $entityManager, Request $request)
     {
-        return $app['twig']->render('public/User/fedegn.twig', [
+        return $this->render('public/User/fedegn.twig', [
             'etatCivil' => $this->getUser()->getEtatCivil(),
         ]);
     }
@@ -278,7 +273,7 @@ class UserController extends AbstractController
      * Enregistrement de l'état-civil.
      */
     #[Route('/user/etatCivil', name: 'user.etatCivil')]
-    public function etatCivilAction(Application $app, Request $request)
+    public function etatCivilAction( EntityManagerInterface $entityManager, Request $request)
     {
         $etatCivil = $this->getUser()->getEtatCivil();
 
@@ -286,26 +281,25 @@ class UserController extends AbstractController
             $etatCivil = new \App\Entity\EtatCivil();
         }
 
-        $form = $app['form.factory']->createBuilder(new EtatCivilForm(), $etatCivil)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(EtatCivilForm::class(), $etatCivil)
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $etatCivil = $form->getData();
             $this->getUser()->setEtatCivil($etatCivil);
 
-            $app['orm.em']->persist($this->getUser());
-            $app['orm.em']->persist($etatCivil);
-            $app['orm.em']->flush();
+            $entityManager->persist($this->getUser());
+            $entityManager->persist($etatCivil);
+            $entityManager->flush();
 
             $this->addFlash('success', 'Vos informations ont été enregistrées.');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $app['twig']->render('public/User/etatCivil.twig', [
+        return $this->render('public/User/etatCivil.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -317,7 +311,7 @@ class UserController extends AbstractController
      *
      * @throws \InvalidArgumentException
      */
-    protected function createUserFromRequest(Application $app, Request $request)
+    protected function createUserFromRequest( EntityManagerInterface $entityManager, Request $request)
     {
         if ($request->request->get('password') != $request->request->get('confirm_password')) {
             throw new \InvalidArgumentException("Passwords don't match.");
@@ -385,14 +379,14 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/like', name: 'user.like')]
-    public function likeAction(Application $app, Request $request, User $User)
+    public function likeAction( EntityManagerInterface $entityManager, Request $request, User $User)
     {
         if ($User == $this->getUser()) {
             $this->addFlash('error', 'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !');
         } else {
             $User->addCoeur();
-            $app['orm.em']->persist($User);
-            $app['orm.em']->flush();
+            $entityManager->persist($User);
+            $entityManager->flush();
             $app['notify']->coeur($this->getUser(), $User);
             $this->addFlash('success', 'Votre coeur a été envoyé !');
         }
@@ -457,7 +451,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user', name: 'user.login')]
-    public function loginAction(Application $app, Request $request)
+    public function loginAction( EntityManagerInterface $entityManager, Request $request)
     {
         $authException = $app['User.last_auth_exception']($request);
 
@@ -467,14 +461,14 @@ class UserController extends AbstractController
             // The Security system throws this exception before actually checking if the password was valid.
             $User = $app['User.manager']->refreshUser($authException->getUser());
 
-            return $app['twig']->render('User/login-confirmation-needed.twig', [
+            return $this->render('User/login-confirmation-needed.twig', [
                 'email' => $User->getEmail(),
                 'fromAddress' => $app['User.mailer']->getFromAddress(),
                 'resendUrl' => $app['url_generator']->generate('User.resend-confirmation'),
             ]);
         }
 
-        return $app['twig']->render('User/login.twig', [
+        return $this->render('User/login.twig', [
             'error' => $authException ? $authException->getMessageKey() : null,
             'last_Username' => $app['session']->get('_security.last_Username'),
             'allowRememberMe' => isset($app['security.remember_me.response_listener']),
@@ -566,7 +560,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user', name: 'user.register')]
-    public function registerAction(Application $app, Request $request)
+    public function registerAction( EntityManagerInterface $entityManager, Request $request)
     {
         if ($request->isMethod('POST')) {
             try {
@@ -588,7 +582,7 @@ class UserController extends AbstractController
                     $app['User.mailer']->sendConfirmationMessage($User);
 
                     // Render the "go check your email" page.
-                    return $app['twig']->render('User/register-confirmation-sent.twig', [
+                    return $this->render('User/register-confirmation-sent.twig', [
                         'email' => $User->getEmail(),
                     ]);
                 } else {
@@ -604,7 +598,7 @@ class UserController extends AbstractController
             }
         }
 
-        return $app['twig']->render('User/register.twig', [
+        return $this->render('User/register.twig', [
             'error' => isset($error) ? $error : null,
             'name' => $request->request->get('name'),
             'email' => $request->request->get('email'),
@@ -621,9 +615,9 @@ class UserController extends AbstractController
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function confirmEmailAction(Application $app, Request $request, $token)
+    public function confirmEmailAction( EntityManagerInterface $entityManager, Request $request, $token)
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\User::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
         $User = $repo->findOneByConfirmationToken($token);
 
         if (!$User) {
@@ -634,8 +628,8 @@ class UserController extends AbstractController
 
         $User->setConfirmationToken(null);
         $User->setEnabled(true);
-        $app['orm.em']->persist($User);
-        $app['orm.em']->flush();
+        $entityManager->persist($User);
+        $entityManager->flush();
 
         $app['User.manager']->loginAsUser($User);
         $this->addFlash('alert', 'Merci ! Votre compte a été activé.');
@@ -648,11 +642,11 @@ class UserController extends AbstractController
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function resendConfirmationAction(Application $app, Request $request)
+    public function resendConfirmationAction( EntityManagerInterface $entityManager, Request $request)
     {
         $email = $request->request->get('email');
 
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\User::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
         $User = $repo->findOneByEmail($email);
 
         if (!$User) {
@@ -661,19 +655,19 @@ class UserController extends AbstractController
 
         if (!$User->getConfirmationToken()) {
             $User->setConfirmationToken($app['User.tokenGenerator']->generateToken());
-            $app['orm.em']->persist($User);
-            $app['orm.em']->flush();
+            $entityManager->persist($User);
+            $entityManager->flush();
         }
 
         $app['User.mailer']->sendConfirmationMessage($User);
 
-        return $app['twig']->render('User/register-confirmation-sent.twig', [
+        return $this->render('User/register-confirmation-sent.twig', [
             'email' => $User->getEmail(),
         ]);
     }
 
     #[Route('/user', name: 'user.forgot-password')]
-    public function forgotPasswordAction(Application $app, Request $request)
+    public function forgotPasswordAction( EntityManagerInterface $entityManager, Request $request)
     {
         if (!$this->isPasswordResetEnabled) {
             throw new NotFoundHttpException('Password resetting is not enabled.');
@@ -683,7 +677,7 @@ class UserController extends AbstractController
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');
 
-            $repo = $app['orm.em']->getRepository('\\'.\App\Entity\User::class);
+            $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
             $User = $repo->findOneByEmail($email);
 
             if ($User) {
@@ -693,8 +687,8 @@ class UserController extends AbstractController
                     $User->setConfirmationToken($app['User.tokenGenerator']->generateToken());
                 }
 
-                $app['orm.em']->persist($User);
-                $app['orm.em']->flush();
+                $entityManager->persist($User);
+                $entityManager->flush();
 
                 $app['User.mailer']->sendResetMessage($User);
                 $this->addFlash('alert', 'Les instructions pour enregistrer votre mot de passe ont été envoyé par mail.');
@@ -711,7 +705,7 @@ class UserController extends AbstractController
             }
         }
 
-        return $app['twig']->render('User/forgot-password.twig', [
+        return $this->render('User/forgot-password.twig', [
             'email' => $email,
             'fromAddress' => $app['User.mailer']->getFromAddress(),
             'error' => $error,
@@ -725,7 +719,7 @@ class UserController extends AbstractController
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function resetPasswordAction(Application $app, Request $request, $token)
+    public function resetPasswordAction( EntityManagerInterface $entityManager, Request $request, $token)
     {
         if (!$this->isPasswordResetEnabled) {
             throw new NotFoundHttpException('Password resetting is not enabled.');
@@ -733,7 +727,7 @@ class UserController extends AbstractController
 
         $tokenExpired = false;
 
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\User::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
         $User = $repo->findOneByConfirmationToken($token);
 
         if (!$User) {
@@ -760,8 +754,8 @@ class UserController extends AbstractController
                 $app['User.manager']->setUserPassword($User, $password);
                 $User->setConfirmationToken(null);
                 $User->setEnabled(true);
-                $app['orm.em']->persist($User);
-                $app['orm.em']->flush();
+                $entityManager->persist($User);
+                $entityManager->flush();
                 $app['User.manager']->loginAsUser($User);
                 $this->addFlash('alert', 'Your password has been reset and you are now signed in.');
 
@@ -769,7 +763,7 @@ class UserController extends AbstractController
             }
         }
 
-        return $app['twig']->render('User/reset-password.twig', [
+        return $this->render('User/reset-password.twig', [
             'User' => $User,
             'token' => $token,
             'error' => $error,
@@ -779,7 +773,7 @@ class UserController extends AbstractController
     /**
      * Met a jours les droits des utilisateurs.
      */
-    public function rightAction(Application $app, Request $request)
+    public function rightAction( EntityManagerInterface $entityManager, Request $request)
     {
         $Users = $app['User.manager']->findAll();
 
@@ -788,14 +782,14 @@ class UserController extends AbstractController
 
             foreach ($Users as $User) {
                 $User->setRoles(array_keys($newRoles[$User->getId()]));
-                $app['orm.em']->persist($User);
+                $entityManager->persist($User);
             }
 
-            $app['orm.em']->flush();
+            $entityManager->flush();
         }
 
         // trouve tous les rôles
-        return $app['twig']->render('User/right.twig', [
+        return $this->render('User/right.twig', [
                 'Users' => $Users,
                 'roles' => $app['larp.manager']->getAvailableRoles()]
         );

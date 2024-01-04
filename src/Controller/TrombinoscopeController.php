@@ -1,28 +1,10 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use LarpManager\Form\Trombinoscope\TrombinoscopeForm;
-use Silex\Application;
+use App\Form\Trombinoscope\TrombinoscopeForm;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -35,12 +17,12 @@ class TrombinoscopeController extends AbstractController
     /**
      * Le trombinoscope général.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $gnRepo = $app['orm.em']->getRepository('\\'.\App\Entity\Gn::class);
+        $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
         $gn = $gnRepo->findNext();
 
-        $form = $app['form.factory']->createBuilder(new TrombinoscopeForm())->getForm();
+        $form = $this->createForm(new TrombinoscopeForm())->getForm();
 
         $form->handleRequest($request);
 
@@ -52,7 +34,7 @@ class TrombinoscopeController extends AbstractController
         $language = null;
         $groupe = null;
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
             if ($data['renomme']) {
@@ -98,7 +80,7 @@ class TrombinoscopeController extends AbstractController
             }
         }
 
-        return $app['twig']->render('admin/trombinoscope.twig', [
+        return $this->render('admin/trombinoscope.twig', [
             'gn' => $gn,
             'participants' => $participants,
             'form' => $form->createView(),
@@ -115,12 +97,12 @@ class TrombinoscopeController extends AbstractController
     /**
      * Permet de selectionner des personnages pour faire un trombinoscope.
      */
-    public function persoAction(Request $request, Application $app)
+    public function persoAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnages = null;
         $titre = null;
 
-        $form = $app['form.factory']->createBuilder()
+        $form = $this->createForm()
             ->add('titre', 'text', [
                 'label' => 'Le titre de votre sélection',
             ])
@@ -128,28 +110,27 @@ class TrombinoscopeController extends AbstractController
                 'label' => 'Indiquez les numéros des personnages séparé d\'un espace',
             ])
             ->add('send', 'submit', ['label' => 'Envoyer'])
-            ->add('print', 'submit', ['label' => 'Imprimer'])
-            ->getForm();
+            ->add('print', 'submit', ['label' => 'Imprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $titre = $data['titre'];
             $ids = $data['ids'];
             $ids = explode(' ', (string) $ids);
-            $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Personnage::class);
+            $repo = $entityManager->getRepository('\\'.\App\Entity\Personnage::class);
             $personnages = $repo->findByIds($ids);
 
             if ($form->get('print')->isClicked()) {
-                return $app['twig']->render('admin/trombinoscopePersoPrint.twig', [
+                return $this->render('admin/trombinoscopePersoPrint.twig', [
                     'titre' => $titre,
                     'personnages' => $personnages,
                 ]);
             }
         }
 
-        return $app['twig']->render('admin/trombinoscopePerso.twig', [
+        return $this->render('admin/trombinoscopePerso.twig', [
             'titre' => $titre,
             'personnages' => $personnages,
             'form' => $form->createView(),

@@ -1,27 +1,9 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
-use LarpManager\Form\CompetenceFamilyForm;
-use Silex\Application;
+use App\Form\CompetenceFamilyForm;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -34,33 +16,32 @@ class CompetenceFamilyController extends AbstractController
     /**
      * Liste les famille de competence.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\CompetenceFamily::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\CompetenceFamily::class);
         $competenceFamilies = $repo->findAllOrderedByLabel();
 
-        return $app['twig']->render('admin/competenceFamily/index.twig', ['competenceFamilies' => $competenceFamilies]);
+        return $this->render('admin/competenceFamily/index.twig', ['competenceFamilies' => $competenceFamilies]);
     }
 
     /**
      * Ajoute une famille de competence.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $competenceFamily = new \App\Entity\CompetenceFamily();
 
-        $form = $app['form.factory']->createBuilder(new CompetenceFamilyForm(), $competenceFamily)
+        $form = $this->createForm(CompetenceFamilyForm::class(), $competenceFamily)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $competenceFamily = $form->getData();
 
-            $app['orm.em']->persist($competenceFamily);
-            $app['orm.em']->flush();
+            $entityManager->persist($competenceFamily);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La famille de compétence a été ajoutée.');
 
@@ -71,7 +52,7 @@ class CompetenceFamilyController extends AbstractController
             }
         }
 
-        return $app['twig']->render('admin/competenceFamily/add.twig', [
+        return $this->render('admin/competenceFamily/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -79,36 +60,35 @@ class CompetenceFamilyController extends AbstractController
     /**
      * Met à jour une famille de compétence.
      */
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $competenceFamily = $app['orm.em']->find('\\'.\App\Entity\CompetenceFamily::class, $id);
+        $competenceFamily = $entityManager->find('\\'.\App\Entity\CompetenceFamily::class, $id);
 
-        $form = $app['form.factory']->createBuilder(new CompetenceFamilyForm(), $competenceFamily)
+        $form = $this->createForm(CompetenceFamilyForm::class(), $competenceFamily)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+            ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $competenceFamily = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                $app['orm.em']->persist($competenceFamily);
-                $app['orm.em']->flush();
+                $entityManager->persist($competenceFamily);
+                $entityManager->flush();
                $this->addFlash('success', 'La famille de compétence a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($competenceFamily);
-                $app['orm.em']->flush();
+                $entityManager->remove($competenceFamily);
+                $entityManager->flush();
                $this->addFlash('success', 'La famille de compétence a été supprimé.');
             }
 
             return $this->redirectToRoute('competence.family');
         }
 
-        return $app['twig']->render('admin/competenceFamily/update.twig', [
+        return $this->render('admin/competenceFamily/update.twig', [
             'competenceFamily' => $competenceFamily,
             'form' => $form->createView(),
         ]);
@@ -117,14 +97,14 @@ class CompetenceFamilyController extends AbstractController
     /**
      * Detail d'une famille de compétence.
      */
-    public function detailAction(Request $request, Application $app)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $competenceFamily = $app['orm.em']->find('\\'.\App\Entity\CompetenceFamily::class, $id);
+        $competenceFamily = $entityManager->find('\\'.\App\Entity\CompetenceFamily::class, $id);
 
         if ($competenceFamily) {
-            return $app['twig']->render('admin/competenceFamily/detail.twig', ['competenceFamily' => $competenceFamily]);
+            return $this->render('admin/competenceFamily/detail.twig', ['competenceFamily' => $competenceFamily]);
         } else {
            $this->addFlash('error', 'La famille de compétence n\'a pas été trouvé.');
 

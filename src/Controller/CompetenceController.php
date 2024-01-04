@@ -1,22 +1,5 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
@@ -58,28 +41,28 @@ class CompetenceController extends AbstractController
     /**
      * Liste des perso ayant cette compétence.
      */
-    public function persoAction(Request $request, Application $app)
+    public function persoAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $competence = $request->get('competence');
 
-        return $app['twig']->render('admin/competence/perso.twig', ['competence' => $competence]);
+        return $this->render('admin/competence/perso.twig', ['competence' => $competence]);
     }
 
     /**
      * Liste du matériel necessaire par compétence.
      */
-    public function materielAction(Request $request, Application $app)
+    public function materielAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Competence::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Competence::class);
         $competences = $repo->findAllOrderedByLabel();
 
-        return $app['twig']->render('admin/competence/materiel.twig', ['competences' => $competences]);
+        return $this->render('admin/competence/materiel.twig', ['competences' => $competences]);
     }
 
     /**
      * Ajout d'une compétence.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $competence = new \App\Entity\Competence();
 
@@ -92,28 +75,27 @@ class CompetenceController extends AbstractController
         $levelIndex = $request->get('level');
 
         if ($competenceFamilyId) {
-            $competenceFamily = $app['orm.em']->find('\\'.\App\Entity\CompetenceFamily::class, $competenceFamilyId);
+            $competenceFamily = $entityManager->find('\\'.\App\Entity\CompetenceFamily::class, $competenceFamilyId);
             if ($competenceFamily) {
                 $competence->setCompetenceFamily($competenceFamily);
             }
         }
 
         if ($levelIndex) {
-            $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Level::class);
+            $repo = $entityManager->getRepository('\\'.\App\Entity\Level::class);
             $level = $repo->findOneByIndex($levelIndex + 1);
             if ($level) {
                 $competence->setLevel($level);
             }
         }
 
-        $form = $app['form.factory']->createBuilder(new CompetenceForm(), $competence)
+        $form = $this->createForm(CompetenceForm::class(), $competence)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $competence = $form->getData();
 
             $files = $request->files->get($form->getName());
@@ -137,8 +119,8 @@ class CompetenceController extends AbstractController
                 $competence->setDocumentUrl($documentFilename);
             }
 
-            $app['orm.em']->persist($competence);
-            $app['orm.em']->flush();
+            $entityManager->persist($competence);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La compétence a été ajoutée.');
 
@@ -149,7 +131,7 @@ class CompetenceController extends AbstractController
             }
         }
 
-        return $app['twig']->render('admin/competence/add.twig', [
+        return $this->render('admin/competence/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -157,28 +139,27 @@ class CompetenceController extends AbstractController
     /**
      * Detail d'une compétence.
      */
-    public function detailAction(Request $request, Application $app)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $competence = $request->get('competence');
 
-        return $app['twig']->render('admin/competence/detail.twig', ['competence' => $competence]);
+        return $this->render('admin/competence/detail.twig', ['competence' => $competence]);
     }
 
     /**
      * Met à jour une compétence.
      */
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $competence = $request->get('competence');
-        $attributeRepos = $app['orm.em']->getRepository('\\'.\App\Entity\AttributeType::class);
-        $form = $app['form.factory']->createBuilder(new CompetenceForm(), $competence)
+        $attributeRepos = $entityManager->getRepository('\\'.\App\Entity\AttributeType::class);
+        $form = $this->createForm(CompetenceForm::class(), $competence)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+            ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $competence = $form->getData();
 
             $files = $request->files->get($form->getName());
@@ -204,21 +185,21 @@ class CompetenceController extends AbstractController
 
             if ($form->get('update')->isClicked()) {
                 $competence->setCompetenceAttributesAsString($request->get('competenceAttributesAsString'), $app['orm.em'], $attributeRepos);
-                $app['orm.em']->persist($competence);
-                $app['orm.em']->flush();
+                $entityManager->persist($competence);
+                $entityManager->flush();
                $this->addFlash('success', 'La compétence a été mise à jour.');
 
                 return $this->redirectToRoute('competence.detail', ['competence' => $competence->getId()]);
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($competence);
-                $app['orm.em']->flush();
+                $entityManager->remove($competence);
+                $entityManager->flush();
                $this->addFlash('success', 'La compétence a été supprimée.');
 
                 return $this->redirectToRoute('competence');
             }
         }
 
-        return $app['twig']->render('admin/competence/update.twig', [
+        return $this->render('admin/competence/update.twig', [
             'competence' => $competence,
             'form' => $form->createView(),
             'available_attributes' => $attributeRepos->findAllOrderedByLabel(),
@@ -228,12 +209,12 @@ class CompetenceController extends AbstractController
     /**
      * Retire le document d'une competence.
      */
-    public function removeDocumentAction(Request $request, Application $app, Competence $competence)
+    public function removeDocumentAction(Request $request,  EntityManagerInterface $entityManager, Competence $competence)
     {
         $competence->setDocumentUrl(null);
 
-        $app['orm.em']->persist($competence);
-        $app['orm.em']->flush();
+        $entityManager->persist($competence);
+        $entityManager->flush();
        $this->addFlash('success', 'La compétence a été mise à jour.');
 
         return $this->redirectToRoute('competence');
@@ -242,7 +223,7 @@ class CompetenceController extends AbstractController
     /**
      * Téléchargement du document lié à une compétence.
      */
-    public function getDocumentAction(Request $request, Application $app)
+    public function getDocumentAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $document = $request->get('document');
         $competence = $request->get('competence');

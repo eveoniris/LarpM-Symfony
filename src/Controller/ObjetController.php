@@ -1,30 +1,12 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Item;
 use App\Entity\Objet;
-use LarpManager\Form\Item\ItemDeleteForm;
-use LarpManager\Form\Item\ItemForm;
-use Silex\Application;
+use App\Form\Item\ItemDeleteForm;
+use App\Form\Item\ItemForm;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -37,12 +19,12 @@ class ObjetController extends AbstractController
     /**
      * Présentation des objets de jeu.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Item::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);
         $items = $repo->findAll();
 
-        return $app['twig']->render('admin/objet/index.twig', [
+        return $this->render('admin/objet/index.twig', [
             'items' => $items,
         ]);
     }
@@ -50,9 +32,9 @@ class ObjetController extends AbstractController
     /**
      * Impression d'une etiquette.
      */
-    public function printAction(Request $request, Application $app, Item $item)
+    public function printAction(Request $request,  EntityManagerInterface $entityManager, Item $item)
     {
-        return $app['twig']->render('admin/objet/print.twig', [
+        return $this->render('admin/objet/print.twig', [
             'item' => $item,
         ]);
     }
@@ -60,12 +42,12 @@ class ObjetController extends AbstractController
     /**
      * Impression de toutes les etiquettes.
      */
-    public function printAllAction(Request $request, Application $app)
+    public function printAllAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Item::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);
         $items = $repo->findAll();
 
-        return $app['twig']->render('admin/objet/printAll.twig', [
+        return $this->render('admin/objet/printAll.twig', [
             'items' => $items,
         ]);
     }
@@ -73,12 +55,12 @@ class ObjetController extends AbstractController
     /**
      * Impression de tous les objets avec photo.
      */
-    public function printPhotoAction(Request $request, Application $app)
+    public function printPhotoAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Item::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);
         $items = $repo->findAll();
 
-        return $app['twig']->render('admin/objet/printPhoto.twig', [
+        return $this->render('admin/objet/printPhoto.twig', [
             'items' => $items,
         ]);
     }
@@ -86,9 +68,9 @@ class ObjetController extends AbstractController
     /**
      * Sortie CSV.
      */
-    public function printCsvAction(Request $request, Application $app): void
+    public function printCsvAction(Request $request,  EntityManagerInterface $entityManager): void
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Item::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);
         $items = $repo->findAll();
 
         header('Content-Type: text/csv');
@@ -154,22 +136,22 @@ class ObjetController extends AbstractController
     /**
      * Création d'un nouvel objet de jeu.
      */
-    public function newAction(Request $request, Application $app, Objet $objet)
+    public function newAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
     {
         $item = new Item();
         $item->setObjet($objet);
 
-        $form = $app['form.factory']->createBuilder(new ItemForm(), $item)->getForm();
+        $form = $this->createForm(ItemForm::class(), $item)->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $item = $form->getData();
 
             // si le numéro est vide, générer un numéro en suivant l'ordre
             $numero = $item->getNumero();
             if (!$numero) {
-                $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Item::class);
+                $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);
                 $numero = $repo->findNextNumero();
                 if (!$numero) {
                     $numero = 0;
@@ -195,15 +177,15 @@ class ObjetController extends AbstractController
                     break;
             }
 
-            $app['orm.em']->persist($item);
-            $app['orm.em']->flush();
+            $entityManager->persist($item);
+            $entityManager->flush();
 
            $this->addFlash('success', 'L\'objet de jeu a été créé');
 
             return $this->redirectToRoute('items', [], 303);
         }
 
-        return $app['twig']->render('admin/objet/new.twig', [
+        return $this->render('admin/objet/new.twig', [
             'objet' => $objet,
             'item' => $item,
             'form' => $form->createView(),
@@ -213,9 +195,9 @@ class ObjetController extends AbstractController
     /**
      * Détail d'un objet de jeu.
      */
-    public function detailAction(Request $request, Application $app, Item $item)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Item $item)
     {
-        return $app['twig']->render('admin/objet/detail.twig', [
+        return $this->render('admin/objet/detail.twig', [
             'item' => $item,
         ]);
     }
@@ -223,15 +205,15 @@ class ObjetController extends AbstractController
     /**
      * Mise à jour d'un objet de jeu.
      */
-    public function updateAction(Request $request, Application $app, Item $item)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Item $item)
     {
-        $form = $app['form.factory']->createBuilder(new ItemForm(), $item)->getForm();
+        $form = $this->createForm(ItemForm::class(), $item)->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
-            $app['orm.em']->persist($item);
-            $app['orm.em']->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($item);
+            $entityManager->flush();
 
             // en fonction de l'identification choisie, choisir un numéro d'identification
             $identification = $item->getIdentification();
@@ -255,7 +237,7 @@ class ObjetController extends AbstractController
             return $this->redirectToRoute('items', [], 303);
         }
 
-        return $app['twig']->render('admin/objet/update.twig', [
+        return $this->render('admin/objet/update.twig', [
             'item' => $item,
             'form' => $form->createView(),
         ]);
@@ -264,22 +246,22 @@ class ObjetController extends AbstractController
     /**
      * Suppression d'un objet de jeu.
      */
-    public function deleteAction(Request $request, Application $app, Item $item)
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Item $item)
     {
-        $form = $app['form.factory']->createBuilder(new ItemDeleteForm(), $item)->getForm();
+        $form = $this->createForm(ItemDeleteForm::class(), $item)->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
-            $app['orm.em']->remove($item);
-            $app['orm.em']->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->remove($item);
+            $entityManager->flush();
 
            $this->addFlash('success', 'L\'objet de jeu a été supprimé');
 
             return $this->redirectToRoute('items', [], 303);
         }
 
-        return $app['twig']->render('admin/objet/delete.twig', [
+        return $this->render('admin/objet/delete.twig', [
             'item' => $item,
             'form' => $form->createView(),
         ]);
@@ -288,22 +270,22 @@ class ObjetController extends AbstractController
     /**
      * Lier un objet de jeu à un groupe/personnage/lieu.
      */
-    public function linkAction(Request $request, Application $app, Item $item)
+    public function linkAction(Request $request,  EntityManagerInterface $entityManager, Item $item)
     {
-        $form = $app['form.factory']->createBuilder(new ItemLinkForm(), $item)->getForm();
+        $form = $this->createForm(ItemLinkForm::class(), $item)->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
-            $app['orm.em']->persist($item);
-            $app['orm.em']->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($item);
+            $entityManager->flush();
 
            $this->addFlash('success', 'L\'objet de jeu a été créé');
 
             return $this->redirectToRoute('objet', [], 303);
         }
 
-        return $app['twig']->render('admin/objet/link.twig', [
+        return $this->render('admin/objet/link.twig', [
             'item' => $item,
             'form' => $form->createView(),
         ]);

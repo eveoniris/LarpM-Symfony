@@ -1,28 +1,10 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Appelation;
-use LarpManager\Form\AppelationForm;
-use Silex\Application;
+use App\Form\AppelationForm;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -35,38 +17,37 @@ class AppelationController extends AbstractController
     /**
      * affiche le tableau de bord de gestion des appelations.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $appelations = $app['orm.em']->getRepository('\\'.\App\Entity\Appelation::class)->findAll();
+        $appelations = $entityManager->getRepository('\\'.\App\Entity\Appelation::class)->findAll();
         $appelations = $app['larp.manager']->sortAppelation($appelations);
 
-        return $app['twig']->render('admin/appelation/index.twig', ['appelations' => $appelations]);
+        return $this->render('admin/appelation/index.twig', ['appelations' => $appelations]);
     }
 
     /**
      * Detail d'une appelation.
      */
-    public function detailAction(Request $request, Application $app, Appelation $appelation)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Appelation $appelation)
     {
-        return $app['twig']->render('admin/appelation/detail.twig', ['appelation' => $appelation]);
+        return $this->render('admin/appelation/detail.twig', ['appelation' => $appelation]);
     }
 
     /**
      * Ajoute une appelation.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $app['form.factory']->createBuilder(new AppelationForm(), new Appelation())
+        $form = $this->createForm(AppelationForm::class(), new Appelation())
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $appelation = $form->getData();
-            $app['orm.em']->persist($appelation);
-            $app['orm.em']->flush();
+            $entityManager->persist($appelation);
+            $entityManager->flush();
 
            $this->addFlash('success', 'L\'appelation a été ajoutée.');
 
@@ -77,7 +58,7 @@ class AppelationController extends AbstractController
             }
         }
 
-        return $app['twig']->render('admin/appelation/add.twig', [
+        return $this->render('admin/appelation/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -85,34 +66,33 @@ class AppelationController extends AbstractController
     /**
      * Modifie une appelation.
      */
-    public function updateAction(Request $request, Application $app, Appelation $appelation)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Appelation $appelation)
     {
-        $form = $app['form.factory']->createBuilder(new AppelationForm(), $appelation)
+        $form = $this->createForm(AppelationForm::class(), $appelation)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+            ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $appelation = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                $app['orm.em']->persist($appelation);
-                $app['orm.em']->flush();
+                $entityManager->persist($appelation);
+                $entityManager->flush();
                $this->addFlash('success', 'L\'appelation a été mise à jour.');
 
                 return $this->redirectToRoute('appelation.detail', ['appelation' => $id], [], 303);
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($appelation);
-                $app['orm.em']->flush();
+                $entityManager->remove($appelation);
+                $entityManager->flush();
                $this->addFlash('success', 'L\'appelation a été supprimée.');
 
                 return $this->redirectToRoute('appelation', [], 303);
             }
         }
 
-        return $app['twig']->render('admin/appelation/update.twig', [
+        return $this->render('admin/appelation/update.twig', [
             'appelation' => $appelation,
             'form' => $form->createView(),
         ]);

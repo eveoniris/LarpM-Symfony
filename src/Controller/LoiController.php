@@ -1,29 +1,11 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Loi;
-use LarpManager\Form\Loi\LoiDeleteForm;
-use LarpManager\Form\Loi\LoiForm;
-use Silex\Application;
+use App\Form\Loi\LoiDeleteForm;
+use App\Form\Loi\LoiForm;
 use Symfony\Component\HttpFoundation\Request;
 
 class LoiController extends AbstractController
@@ -31,11 +13,11 @@ class LoiController extends AbstractController
     /**
      * Liste des loi.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $lois = $app['orm.em']->getRepository(\App\Entity\Loi::class)->findAll();
+        $lois = $entityManager->getRepository(\App\Entity\Loi::class)->findAll();
 
-        return $app['twig']->render('admin\loi\index.twig', [
+        return $this->render('admin\loi\index.twig', [
             'lois' => $lois,
         ]);
     }
@@ -43,12 +25,12 @@ class LoiController extends AbstractController
     /**
      * Ajout d'une loi.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $app['form.factory']->createBuilder(new LoiForm(), new Loi())->getForm();
+        $form = $this->createForm(LoiForm::class(), new Loi())->getForm();
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $loi = $form->getData();
 
             $files = $request->files->get($form->getName());
@@ -72,15 +54,15 @@ class LoiController extends AbstractController
                 $loi->setDocumentUrl($documentFilename);
             }
 
-            $app['orm.em']->persist($loi);
-            $app['orm.em']->flush();
+            $entityManager->persist($loi);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La loi a été ajoutée.');
 
             return $this->redirectToRoute('loi', [], 303);
         }
 
-        return $app['twig']->render('admin\loi\add.twig', [
+        return $this->render('admin\loi\add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -88,9 +70,9 @@ class LoiController extends AbstractController
     /**
      * Détail d'une loi.
      */
-    public function detailAction(Request $request, Application $app, Loi $loi)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Loi $loi)
     {
-        return $app['twig']->render('admin\loi\detail.twig', [
+        return $this->render('admin\loi\detail.twig', [
             'loi' => $loi,
         ]);
     }
@@ -98,14 +80,13 @@ class LoiController extends AbstractController
     /**
      * Mise à jour d'une loi.
      */
-    public function updateAction(Request $request, Application $app, Loi $loi)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Loi $loi)
     {
-        $form = $app['form.factory']->createBuilder(new LoiForm(), $loi)
-            ->getForm();
+        $form = $this->createForm(LoiForm::class(), $loi);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $loi = $form->getData();
 
             $files = $request->files->get($form->getName());
@@ -129,15 +110,15 @@ class LoiController extends AbstractController
                 $loi->setDocumentUrl($documentFilename);
             }
 
-            $app['orm.em']->persist($loi);
-            $app['orm.em']->flush();
+            $entityManager->persist($loi);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La loi a été mise à jour.');
 
             return $this->redirectToRoute('loi', [], 303);
         }
 
-        return $app['twig']->render('admin\loi\update.twig', [
+        return $this->render('admin\loi\update.twig', [
             'form' => $form->createView(),
             'loi' => $loi,
         ]);
@@ -146,26 +127,25 @@ class LoiController extends AbstractController
     /**
      * Suppression d'une loi.
      */
-    public function deleteAction(Request $request, Application $app, Loi $loi)
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Loi $loi)
     {
-        $form = $app['form.factory']->createBuilder(new LoiDeleteForm(), $loi)
-            ->add('submit', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+        $form = $this->createForm(LoiDeleteForm::class(), $loi)
+            ->add('submit', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $loi = $form->getData();
 
-            $app['orm.em']->remove($loi);
-            $app['orm.em']->flush();
+            $entityManager->remove($loi);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La loi a été supprimée.');
 
             return $this->redirectToRoute('loi', [], 303);
         }
 
-        return $app['twig']->render('admin\loi\delete.twig', [
+        return $this->render('admin\loi\delete.twig', [
             'form' => $form->createView(),
             'loi' => $loi,
         ]);
@@ -174,12 +154,12 @@ class LoiController extends AbstractController
     /**
      * Retire le document d'une competence.
      */
-    public function removeDocumentAction(Request $request, Application $app, Loi $loi)
+    public function removeDocumentAction(Request $request,  EntityManagerInterface $entityManager, Loi $loi)
     {
         $loi->setDocumentUrl(null);
 
-        $app['orm.em']->persist($loi);
-        $app['orm.em']->flush();
+        $entityManager->persist($loi);
+        $entityManager->flush();
        $this->addFlash('success', 'La loi a été mise à jour.');
 
         return $this->redirectToRoute('loi');
@@ -188,7 +168,7 @@ class LoiController extends AbstractController
     /**
      * Téléchargement du document lié à une compétence.
      */
-    public function getDocumentAction(Request $request, Application $app)
+    public function getDocumentAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $loi = $request->get('loi');
         $document = $loi->getDocumentUrl();

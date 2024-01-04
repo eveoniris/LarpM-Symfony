@@ -1,22 +1,5 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
@@ -35,51 +18,44 @@ use App\Entity\Priere;
 use App\Entity\RenommeHistory;
 use App\Entity\Sort;
 use App\Entity\Technologie;
+use App\Form\Personnage\PersonnageChronologieForm;
 use Doctrine\Common\Collections\ArrayCollection;
 use JasonGrimes\Paginator;
-use LarpManager\Form\Personnage\PersonnageChronologieForm;
-use LarpManager\Form\Personnage\PersonnageDocumentForm;
-use LarpManager\Form\Personnage\PersonnageIngredientForm;
-use LarpManager\Form\Personnage\PersonnageItemForm;
-use LarpManager\Form\Personnage\PersonnageLigneeForm;
-use LarpManager\Form\Personnage\PersonnageOriginForm;
-use LarpManager\Form\Personnage\PersonnageReligionForm;
-use LarpManager\Form\Personnage\PersonnageRessourceForm;
-use LarpManager\Form\Personnage\PersonnageRichesseForm;
-use LarpManager\Form\Personnage\PersonnageTechnologieForm;
-use LarpManager\Form\Personnage\PersonnageUpdateHeroismeForm;
-use LarpManager\Form\Personnage\PersonnageUpdatePugilatForm;
-use LarpManager\Form\Personnage\PersonnageUpdateRenommeForm;
-use LarpManager\Form\PersonnageBackgroundForm;
-use LarpManager\Form\PersonnageDeleteForm;
-use LarpManager\Form\PersonnageForm;
-use LarpManager\Form\PersonnageStatutForm;
-use LarpManager\Form\PersonnageUpdateAgeForm;
-use LarpManager\Form\PersonnageUpdateDomaineForm;
-use LarpManager\Form\PersonnageUpdateForm;
-use LarpManager\Form\PersonnageXpForm;
-use LarpManager\Form\PotionFindForm;
-use LarpManager\Form\PriereFindForm;
-use LarpManager\Form\SortFindForm;
-use LarpManager\Form\TriggerDeleteForm;
-use LarpManager\Form\TriggerForm;
-use LarpManager\Form\TrombineForm;
-use Silex\Application;
+use App\Form\Personnage\PersonnageDocumentForm;
+use App\Form\Personnage\PersonnageIngredientForm;
+use App\Form\Personnage\PersonnageItemForm;
+use App\Form\Personnage\PersonnageLigneeForm;
+use App\Form\Personnage\PersonnageOriginForm;
+use App\Form\Personnage\PersonnageReligionForm;
+use App\Form\Personnage\PersonnageRessourceForm;
+use App\Form\Personnage\PersonnageRichesseForm;
+use App\Form\Personnage\PersonnageTechnologieForm;
+use App\Form\Personnage\PersonnageUpdateHeroismeForm;
+use App\Form\Personnage\PersonnageUpdatePugilatForm;
+use App\Form\Personnage\PersonnageUpdateRenommeForm;
+use App\Form\PersonnageBackgroundForm;
+use App\Form\PersonnageDeleteForm;
+use App\Form\PersonnageForm;
+use App\Form\PersonnageStatutForm;
+use App\Form\PersonnageUpdateAgeForm;
+use App\Form\PersonnageUpdateDomaineForm;
+use App\Form\PersonnageUpdateForm;
+use App\Form\PersonnageXpForm;
+use App\Form\PotionFindForm;
+use App\Form\PriereFindForm;
+use App\Form\SortFindForm;
+use App\Form\TriggerDeleteForm;
+use App\Form\TriggerForm;
+use App\Form\TrombineForm;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
-/**
- * LarpManager\Controllers\PersonnageController.
- *
- * @author kevin
- */
 class PersonnageController extends AbstractController
 {
     /**
      * Selection du personnage courant.
      */
-    public function selectAction(Request $request, Application $app, Personnage $personnage)
+    public function selectAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
         $app['personnage.manager']->setCurrentPersonnage($personnage->getId());
 
@@ -89,7 +65,7 @@ class PersonnageController extends AbstractController
     /**
      * Dé-Selection du personnage courant.
      */
-    public function unselectAction(Request $request, Application $app)
+    public function unselectAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $app['personnage.manager']->resetCurrentPersonnage();
 
@@ -99,7 +75,7 @@ class PersonnageController extends AbstractController
     /**
      * Obtenir une image protégée.
      */
-    public function getTrombineAction(Request $request, Application $app, Personnage $personnage)
+    public function getTrombineAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
         $trombine = $personnage->getTrombineUrl();
         $filename = __DIR__.'/../../../private/img/'.$trombine;
@@ -117,15 +93,14 @@ class PersonnageController extends AbstractController
     /**
      * Mise à jour de la photo.
      */
-    public function updateTrombineAction(Request $request, Application $app, Personnage $personnage)
+    public function updateTrombineAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
-        $form = $app['form.factory']->createBuilder(new TrombineForm(), [])
-            ->add('envoyer', 'submit', ['label' => 'Envoyer'])
-            ->getForm();
+        $form = $this->createForm(TrombineForm::class(), [])
+            ->add('envoyer', 'submit', ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $files = $request->files->get($form->getName());
 
             $path = __DIR__.'/../../../private/img/';
@@ -145,15 +120,15 @@ class PersonnageController extends AbstractController
             $image->save($path.$trombineFilename);
 
             $personnage->setTrombineUrl($trombineFilename);
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La photo a été enregistrée');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/trombine.twig', [
+        return $this->render('admin/personnage/trombine.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -162,22 +137,21 @@ class PersonnageController extends AbstractController
     /**
      * Création d'un nouveau personnage.
      */
-    public function newAction(Request $request, Application $app)
+    public function newAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = new Personnage();
 
-        $form = $app['form.factory']->createBuilder(new PersonnageForm(), $personnage)
-            ->add('valider', 'submit', ['label' => 'Enregistrer'])
-            ->getForm();
+        $form = $this->createForm(PersonnageForm::class(), $personnage)
+            ->add('valider', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
             $this->getUser()->addPersonnage($personnage);
-            $app['orm.em']->persist($this->getUser());
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($this->getUser());
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
             $app['personnage.manager']->setCurrentPersonnage($personnage);
            $this->addFlash('success', 'Votre personnage a été créé');
@@ -185,7 +159,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $app['twig']->render('public/personnage/new.twig', [
+        return $this->render('public/personnage/new.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -194,27 +168,26 @@ class PersonnageController extends AbstractController
     /**
      * Page d'accueil de gestion des personnage.
      */
-    public function accueilAction(Request $request, Application $app)
+    public function accueilAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $app['twig']->render('public/personnage/accueil.twig', []);
+        return $this->render('public/personnage/accueil.twig', []);
     }
 
     /**
      * Permet de faire vieillir les personnages
      * Cela va donner un Jeton Vieillesse à tous les personnages et changer la catégorie d'age des personnages cumulants deux jetons vieillesse.
      */
-    public function vieillirAction(Request $request, Application $app)
+    public function vieillirAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $app['form.factory']->createBuilder()
-            ->add('valider', 'submit', ['label' => 'Faire vieillir tous les personnages', 'attr' => ['class' => 'btn-danger']])
-            ->getForm();
+        $form = $this->createForm()
+            ->add('valider', 'submit', ['label' => 'Faire vieillir tous les personnages', 'attr' => ['class' => 'btn-danger']]);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
-            $personnages = $app['orm.em']->getRepository('\\'.\App\Entity\Personnage::class)->findAll();
-            $token = $app['orm.em']->getRepository('\\'.\App\Entity\Token::class)->findOneByTag('VIEILLESSE');
-            $ages = $app['orm.em']->getRepository('\\'.\App\Entity\Age::class)->findAll();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $personnages = $entityManager->getRepository('\\'.\App\Entity\Personnage::class)->findAll();
+            $token = $entityManager->getRepository('\\'.\App\Entity\Token::class)->findOneByTag('VIEILLESSE');
+            $ages = $entityManager->getRepository('\\'.\App\Entity\Age::class)->findAll();
 
             if (!$token) {
                $this->addFlash('error', "Le jeton VIEILLESSE n'existe pas !");
@@ -228,7 +201,7 @@ class PersonnageController extends AbstractController
                 $personnageHasToken->setToken($token);
                 $personnageHasToken->setPersonnage($personnage);
                 $personnage->addPersonnageHasToken($personnageHasToken);
-                $app['orm.em']->persist($personnageHasToken);
+                $entityManager->persist($personnageHasToken);
 
                 if (true == $personnage->getVivant()) {
                     $personnage->setAgeReel($personnage->getAgeReel() + 5); // ajoute 5 ans à l'age réél
@@ -250,21 +223,21 @@ class PersonnageController extends AbstractController
                         $personnageChronologie->setAnnee($anneeGN);
                         $personnageChronologie->setEvenement($evenement);
                         $personnageChronologie->setPersonnage($personnage);
-                        $app['orm.em']->persist($personnageChronologie);
+                        $entityManager->persist($personnageChronologie);
                     }
                 }
 
-                $app['orm.em']->persist($personnage);
+                $entityManager->persist($personnage);
             }
 
-            $app['orm.em']->flush();
+            $entityManager->flush();
 
            $this->addFlash('success', 'Tous les personnages ont reçu un jeton vieillesse.');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/vieillir.twig', [
+        return $this->render('admin/personnage/vieillir.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -272,26 +245,25 @@ class PersonnageController extends AbstractController
     /**
      * Modifier l'age d'un personnage.
      */
-    public function adminUpdateAgeAction(Request $request, Application $app, Personnage $personnage)
+    public function adminUpdateAgeAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
-        $form = $app['form.factory']->createBuilder(new PersonnageUpdateAgeForm(), $personnage)
-            ->add('valider', 'submit', ['label' => 'Valider'])
-            ->getForm();
+        $form = $this->createForm(PersonnageUpdateAgeForm::class(), $personnage)
+            ->add('valider', 'submit', ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
 
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/age.twig', [
+        return $this->render('admin/personnage/age.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -300,9 +272,9 @@ class PersonnageController extends AbstractController
     /**
      * Modification des technologies d'un personnage.
      */
-    public function adminUpdateTechnologieAction(Request $request, Application $app, Personnage $personnage)
+    public function adminUpdateTechnologieAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
-        $technologies = $app['orm.em']->getRepository(Technologie::class)->findAllOrderedByLabel();
+        $technologies = $entityManager->getRepository(Technologie::class)->findAllOrderedByLabel();
         $competences = $personnage->getCompetences();
 
         /*
@@ -341,24 +313,23 @@ class PersonnageController extends AbstractController
             $message = $personnage->getNom().' connait déjà au moins '.$limit.' Technologie(s).';
         }
 
-        $form = $app['form.factory']->createBuilder(new PersonnageTechnologieForm(), $personnage)
-            ->add('valider', 'submit', ['label' => 'Valider'])
-            ->getForm();
+        $form = $this->createForm(PersonnageTechnologieForm::class(), $personnage)
+            ->add('valider', 'submit', ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()) {
             $personnage = $form->getData();
 
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/updateTechnologie.twig', [
+        return $this->render('admin/personnage/updateTechnologie.twig', [
             'personnage' => $personnage,
             'technologies' => $technologies,
             'message' => $message,
@@ -371,19 +342,19 @@ class PersonnageController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function adminAddTechnologieAction(Request $request, Application $app)
+    public function adminAddTechnologieAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $technologieId = $request->get('technologie');
         $personnage = $request->get('personnage');
 
-        $technologie = $app['orm.em']->getRepository(Technologie::class)
+        $technologie = $entityManager->getRepository(Technologie::class)
             ->find($technologieId);
 
         $nomTechnologie = $technologie->getLabel();
 
         $personnage->addTechnologie($technologie);
 
-        $app['orm.em']->flush();
+        $entityManager->flush();
 
        $this->addFlash('success', $nomTechnologie.' a été ajoutée.');
 
@@ -395,19 +366,19 @@ class PersonnageController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function adminRemoveTechnologieAction(Request $request, Application $app)
+    public function adminRemoveTechnologieAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $technologieId = $request->get('technologie');
         $personnage = $request->get('personnage');
 
-        $technologie = $app['orm.em']->getRepository(Technologie::class)
+        $technologie = $entityManager->getRepository(Technologie::class)
             ->find($technologieId);
 
         $nomTechnologie = $technologie->getLabel();
 
         $personnage->removeTechnologie($technologie);
 
-        $app['orm.em']->flush();
+        $entityManager->flush();
 
        $this->addFlash('success', $nomTechnologie.' a été retirée.');
 
@@ -435,9 +406,9 @@ class PersonnageController extends AbstractController
         return $langueMateriel;
     }
 
-    public function enveloppePrintAction(Request $request, Application $app, Personnage $personnage)
+    public function enveloppePrintAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
-        return $app['twig']->render('admin/personnage/enveloppe.twig', [
+        return $this->render('admin/personnage/enveloppe.twig', [
             'personnage' => $personnage,
             'langueMateriel' => $this->getLangueMateriel($personnage),
         ]);
@@ -446,30 +417,29 @@ class PersonnageController extends AbstractController
     /**
      * Modifie le matériel lié à un personnage.
      */
-    public function adminMaterielAction(Request $request, Application $app, Personnage $personnage)
+    public function adminMaterielAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
-        $form = $app['form.factory']->createBuilder()
+        $form = $this->createForm()
             ->add('materiel', 'textarea', [
                 'required' => false,
                 'data' => $personnage->getMateriel(),
             ])
-            ->add('valider', 'submit', ['label' => 'Valider'])
-            ->getForm();
+            ->add('valider', 'submit', ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $personnage->setMateriel($data['materiel']);
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/materiel.twig', [
+        return $this->render('admin/personnage/materiel.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -478,17 +448,16 @@ class PersonnageController extends AbstractController
     /**
      * Modification du statut d'un personnage.
      */
-    public function adminStatutAction(Request $request, Application $app)
+    public function adminStatutAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
 
-        $form = $app['form.factory']->createBuilder(new PersonnageStatutForm(), $personnage)
-            ->add('submit', 'submit', ['label' => 'Valider'])
-            ->getForm();
+        $form = $this->createForm(PersonnageStatutForm::class(), $personnage)
+            ->add('submit', 'submit', ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
             $evenement = false == $personnage->getVivant() ? 'Mort violente' : 'Résurrection';
 
@@ -498,18 +467,18 @@ class PersonnageController extends AbstractController
             $personnageChronologie->setAnnee($anneeGN);
             $personnageChronologie->setEvenement($evenement);
             $personnageChronologie->setPersonnage($personnage);
-            $app['orm.em']->persist($personnageChronologie);
+            $entityManager->persist($personnageChronologie);
             */
 
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le statut du personnage a été modifié');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/statut.twig', [
+        return $this->render('admin/personnage/statut.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -518,11 +487,11 @@ class PersonnageController extends AbstractController
     /**
      * Transfert d'un personnage à un autre utilisateur.
      */
-    public function adminTransfertAction(Request $request, Application $app)
+    public function adminTransfertAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
 
-        $form = $app['form.factory']->createBuilder()
+        $form = $this->createForm()
             ->add('participant', 'entity', [
                 'required' => true,
                 'expanded' => true,
@@ -530,12 +499,11 @@ class PersonnageController extends AbstractController
                 'class' => \App\Entity\Participant::class,
                 'property' => 'UserIdentity',
             ])
-            ->add('transfert', 'submit', ['label' => 'Transferer'])
-            ->getForm();
+            ->add('transfert', 'submit', ['label' => 'Transferer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $newParticipant = $data['participant'];
             $oldParticipant = $personnage->getLastParticipant();
@@ -560,17 +528,17 @@ class PersonnageController extends AbstractController
             $newParticipant->getUser()->setPersonnage($personnage);
             $personnage->addParticipant($newParticipant);
 
-            $app['orm.em']->persist($oldParticipant);
-            $app['orm.em']->persist($newParticipant);
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($oldParticipant);
+            $entityManager->persist($newParticipant);
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été transféré');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/transfert.twig', [
+        return $this->render('admin/personnage/transfert.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -613,13 +581,13 @@ class PersonnageController extends AbstractController
         $personnageSearchHandler = $app['personnage.manager']->getSearchHandler();
         $viewParams = $personnageSearchHandler->getSearchViewParameters($request, $routeName);
 
-        return $app['twig']->render($twigFilePath, $viewParams);
+        return $this->render($twigFilePath, $viewParams);
     }
 
     /**
      * Imprimer la liste des personnages.
      */
-    public function adminPrintAction(Request $request, Application $app): void
+    public function adminPrintAction(Request $request,  EntityManagerInterface $entityManager): void
     {
         // TODO
     }
@@ -627,7 +595,7 @@ class PersonnageController extends AbstractController
     /**
      * Télécharger la liste des personnages au format CSV.
      */
-    public function adminDownloadAction(Request $request, Application $app): void
+    public function adminDownloadAction(Request $request,  EntityManagerInterface $entityManager): void
     {
         // TODO
     }
@@ -635,28 +603,27 @@ class PersonnageController extends AbstractController
     /**
      * Affiche le détail d'un personnage (pour les orgas).
      */
-    public function adminDetailAction(Request $request, Application $app)
+    public function adminDetailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
         // $personnageLangues = $personnage->getPersonnageLangues();
-        $descendants = $app['orm.em']->getRepository(Personnage::class)->findDescendants($personnage);
+        $descendants = $entityManager->getRepository(Personnage::class)->findDescendants($personnage);
 
-        return $app['twig']->render('admin/personnage/detail.twig', ['personnage' => $personnage, 'descendants' => $descendants, 'langueMateriel' => $this->getLangueMateriel($personnage)]);
+        return $this->render('admin/personnage/detail.twig', ['personnage' => $personnage, 'descendants' => $descendants, 'langueMateriel' => $this->getLangueMateriel($personnage)]);
     }
 
     /**
      * Gestion des points d'expérience d'un personnage (pour les orgas).
      */
-    public function adminXpAction(Request $request, Application $app)
+    public function adminXpAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
-        $form = $app['form.factory']->createBuilder(new PersonnageXpForm(), [])
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(PersonnageXpForm::class(), [])
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
             $xp = $personnage->getXp();
@@ -670,16 +637,16 @@ class PersonnageController extends AbstractController
             $historique->setExplanation($data['explanation']);
             $historique->setPersonnage($personnage);
 
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->persist($historique);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->persist($historique);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Les points d\'expériences ont été ajoutés');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/xp.twig', [
+        return $this->render('admin/personnage/xp.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -688,7 +655,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajout d'un personnage (orga seulement).
      */
-    public function adminAddAction(Request $request, Application $app)
+    public function adminAddAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = new \App\Entity\Personnage();
 
@@ -705,21 +672,20 @@ class PersonnageController extends AbstractController
                 $participant = $this->getUser()->getLastParticipant();
             }
         } else {
-            $participant = $app['orm.em']->getRepository('\\'.\App\Entity\Participant::class)->find($participant);
+            $participant = $entityManager->getRepository('\\'.\App\Entity\Participant::class)->find($participant);
         }
 
-        $form = $app['form.factory']->createBuilder(new PersonnageForm(), $personnage)
+        $form = $this->createForm(PersonnageForm::class(), $personnage)
             ->add('classe', 'entity', [
                 'label' => 'Classes disponibles',
                 'property' => 'label',
                 'class' => \App\Entity\Classe::class,
             ])
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
             if ($participant) {
                 $participant->setPersonnage($personnage);
@@ -737,7 +703,7 @@ class PersonnageController extends AbstractController
             $historique->setOperationDate(new \DateTime('NOW'));
             $historique->setPersonnage($personnage);
             $historique->setXpGain($app['larp.manager']->getGnActif()->getXpCreation());
-            $app['orm.em']->persist($historique);
+            $entityManager->persist($historique);
 
             // ajout des compétences acquises à la création
             foreach ($personnage->getClasse()->getCompetenceFamilyCreations() as $competenceFamily) {
@@ -745,7 +711,7 @@ class PersonnageController extends AbstractController
                 if ($firstCompetence) {
                     $personnage->addCompetence($firstCompetence);
                     $firstCompetence->addPersonnage($personnage);
-                    $app['orm.em']->persist($firstCompetence);
+                    $entityManager->persist($firstCompetence);
                 }
             }
 
@@ -758,15 +724,15 @@ class PersonnageController extends AbstractController
                 $historique->setOperationDate(new \DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($xpAgeBonus);
-                $app['orm.em']->persist($historique);
+                $entityManager->persist($historique);
             }
 
-            $app['orm.em']->persist($personnage);
+            $entityManager->persist($personnage);
             if ($participant) {
-                $app['orm.em']->persist($participant);
+                $entityManager->persist($participant);
             }
 
-            $app['orm.em']->flush();
+            $entityManager->flush();
 
            $this->addFlash('success', 'Votre personnage a été sauvegardé.');
             if ($participant && $participant->getGroupe()) {
@@ -776,7 +742,7 @@ class PersonnageController extends AbstractController
             }
         }
 
-        return $app['twig']->render('admin/personnage/add.twig', [
+        return $this->render('admin/personnage/add.twig', [
             'form' => $form->createView(),
             'participant' => $participant,
         ]);
@@ -785,78 +751,77 @@ class PersonnageController extends AbstractController
     /**
      * Supression d'un personnage (orga seulement).
      */
-    public function adminDeleteAction(Request $request, Application $app)
+    public function adminDeleteAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
 
-        $form = $app['form.factory']->createBuilder(new PersonnageDeleteForm(), $personnage)
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+        $form = $this->createForm(PersonnageDeleteForm::class(), $personnage)
+            ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
 
             foreach ($personnage->getExperienceGains() as $xp) {
                 $personnage->removeExperienceGain($xp);
-                $app['orm.em']->remove($xp);
+                $entityManager->remove($xp);
             }
 
             foreach ($personnage->getExperienceUsages() as $xp) {
                 $personnage->removeExperienceUsage($xp);
-                $app['orm.em']->remove($xp);
+                $entityManager->remove($xp);
             }
 
             foreach ($personnage->getMembres() as $membre) {
                 $personnage->removeMembre($membre);
-                $app['orm.em']->remove($membre);
+                $entityManager->remove($membre);
             }
 
             foreach ($personnage->getPersonnagesReligions() as $personnagesReligions) {
                 $personnage->removePersonnagesReligions($personnagesReligions);
-                $app['orm.em']->remove($personnagesReligions);
+                $entityManager->remove($personnagesReligions);
             }
 
             foreach ($personnage->getPostulants() as $postulant) {
                 $personnage->removePostulant($postulant);
-                $app['orm.em']->remove($postulant);
+                $entityManager->remove($postulant);
             }
 
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 $personnage->removePersonnageLangues($personnageLangue);
-                $app['orm.em']->remove($personnageLangue);
+                $entityManager->remove($personnageLangue);
             }
 
             foreach ($personnage->getPersonnageTriggers() as $trigger) {
                 $personnage->removePersonnageTrigger($trigger);
-                $app['orm.em']->remove($trigger);
+                $entityManager->remove($trigger);
             }
 
             foreach ($personnage->getPersonnageBackgrounds() as $background) {
                 $personnage->removePersonnageBackground($background);
-                $app['orm.em']->remove($background);
+                $entityManager->remove($background);
             }
 
             foreach ($personnage->getPersonnageHasTokens() as $token) {
                 $personnage->removePersonnageHasToken($token);
-                $app['orm.em']->remove($token);
+                $entityManager->remove($token);
             }
 
             foreach ($personnage->getParticipants() as $participant) {
                 $participant->setPersonnage();
-                $app['orm.em']->persist($participant);
+                $entityManager->persist($participant);
             }
 
-            $app['orm.em']->remove($personnage);
-            $app['orm.em']->flush();
+            $entityManager->remove($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été supprimé.');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/delete.twig', [
+        return $this->render('admin/personnage/delete.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -865,28 +830,27 @@ class PersonnageController extends AbstractController
     /**
      * Modification du personnage.
      */
-    public function adminUpdateAction(Request $request, Application $app)
+    public function adminUpdateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
 
-        $form = $app['form.factory']->createBuilder(new PersonnageUpdateForm(), $personnage)
-            ->add('save', 'submit', ['label' => 'Valider les modifications'])
-            ->getForm();
+        $form = $this->createForm(PersonnageUpdateForm::class(), $personnage)
+            ->add('save', 'submit', ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
 
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/update.twig', [
+        return $this->render('admin/personnage/update.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage]);
     }
@@ -894,7 +858,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute un background au personnage.
      */
-    public function adminAddBackgroundAction(Request $request, Application $app)
+    public function adminAddBackgroundAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
         $background = new \App\Entity\PersonnageBackground();
@@ -902,29 +866,28 @@ class PersonnageController extends AbstractController
         $background->setPersonnage($personnage);
         $background->setUser($this->getUser());
 
-        $form = $app['form.factory']->createBuilder(new PersonnageBackgroundForm(), $background)
+        $form = $this->createForm(PersonnageBackgroundForm::class(), $background)
             ->add('visibility', 'choice', [
                 'required' => true,
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getPersonnageBackgroundVisibility(),
             ])
-            ->add('save', 'submit', ['label' => 'Valider les modifications'])
-            ->getForm();
+            ->add('save', 'submit', ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $background = $form->getData();
 
-            $app['orm.em']->persist($background);
-            $app['orm.em']->flush();
+            $entityManager->persist($background);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le background a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/addBackground.twig', [
+        return $this->render('admin/personnage/addBackground.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'background' => $background,
@@ -934,34 +897,33 @@ class PersonnageController extends AbstractController
     /**
      * Modifie le background d'un personnage.
      */
-    public function adminUpdateBackgroundAction(Request $request, Application $app)
+    public function adminUpdateBackgroundAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
         $background = $request->get('background');
 
-        $form = $app['form.factory']->createBuilder(new PersonnageBackgroundForm(), $background)
+        $form = $this->createForm(PersonnageBackgroundForm::class(), $background)
             ->add('visibility', 'choice', [
                 'required' => true,
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getPersonnageBackgroundVisibility(),
             ])
-            ->add('save', 'submit', ['label' => 'Valider les modifications'])
-            ->getForm();
+            ->add('save', 'submit', ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $background = $form->getData();
 
-            $app['orm.em']->persist($background);
-            $app['orm.em']->flush();
+            $entityManager->persist($background);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le background a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/updateBackground.twig', [
+        return $this->render('admin/personnage/updateBackground.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'background' => $background,
@@ -971,15 +933,14 @@ class PersonnageController extends AbstractController
     /**
      * Modification de la renommee du personnage.
      */
-    public function adminUpdateRenommeAction(Request $request, Application $app, Personnage $personnage)
+    public function adminUpdateRenommeAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
-        $form = $app['form.factory']->createBuilder(new PersonnageUpdateRenommeForm())
-            ->add('save', 'submit', ['label' => 'Valider les modifications'])
-            ->getForm();
+        $form = $this->createForm(new PersonnageUpdateRenommeForm())
+            ->add('save', 'submit', ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $renomme = $form->get('renomme')->getData();
             $explication = $form->get('explication')->getData();
 
@@ -990,16 +951,16 @@ class PersonnageController extends AbstractController
             $renomme_history->setPersonnage($personnage);
             $personnage->addRenomme($renomme);
 
-            $app['orm.em']->persist($renomme_history);
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($renomme_history);
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/updateRenomme.twig', [
+        return $this->render('admin/personnage/updateRenomme.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage]);
     }
@@ -1007,15 +968,14 @@ class PersonnageController extends AbstractController
     /**
      * Modification de l'héroisme d'un personnage.
      */
-    public function adminUpdateHeroismeAction(Request $request, Application $app, Personnage $personnage)
+    public function adminUpdateHeroismeAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
-        $form = $app['form.factory']->createBuilder(new PersonnageUpdateHeroismeForm())
-            ->add('save', 'submit', ['label' => 'Valider les modifications'])
-            ->getForm();
+        $form = $this->createForm(new PersonnageUpdateHeroismeForm())
+            ->add('save', 'submit', ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $heroisme = $form->get('heroisme')->getData();
             $explication = $form->get('explication')->getData();
 
@@ -1026,16 +986,16 @@ class PersonnageController extends AbstractController
             $heroisme_history->setPersonnage($personnage);
             $personnage->addHeroisme($heroisme);
 
-            $app['orm.em']->persist($heroisme_history);
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($heroisme_history);
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/updateHeroisme.twig', [
+        return $this->render('admin/personnage/updateHeroisme.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage]);
     }
@@ -1043,15 +1003,14 @@ class PersonnageController extends AbstractController
     /**
      * Modification du pugilat d'un personnage.
      */
-    public function adminUpdatePugilatAction(Request $request, Application $app, Personnage $personnage)
+    public function adminUpdatePugilatAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
-        $form = $app['form.factory']->createBuilder(new PersonnageUpdatePugilatForm())
-            ->add('save', 'submit', ['label' => 'Valider les modifications'])
-            ->getForm();
+        $form = $this->createForm(new PersonnageUpdatePugilatForm())
+            ->add('save', 'submit', ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $pugilat = $form->get('pugilat')->getData();
             $explication = $form->get('explication')->getData();
 
@@ -1062,16 +1021,16 @@ class PersonnageController extends AbstractController
             $pugilat_history->setPersonnage($personnage);
             $personnage->addPugilat($pugilat);
 
-            $app['orm.em']->persist($pugilat_history);
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($pugilat_history);
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/updatePugilat.twig', [
+        return $this->render('admin/personnage/updatePugilat.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage]);
     }
@@ -1079,10 +1038,10 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute un jeton vieillesse au personnage.
      */
-    public function adminTokenAddAction(Request $request, Application $app, Personnage $personnage)
+    public function adminTokenAddAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
         $token = $request->get('token');
-        $token = $app['orm.em']->getRepository('\\'.\App\Entity\Token::class)->findOneByTag($token);
+        $token = $entityManager->getRepository('\\'.\App\Entity\Token::class)->findOneByTag($token);
 
         // donne un jeton vieillesse
         $personnageHasToken = new PersonnageHasToken();
@@ -1090,13 +1049,13 @@ class PersonnageController extends AbstractController
         $personnageHasToken->setPersonnage($personnage);
 
         $personnage->addPersonnageHasToken($personnageHasToken);
-        $app['orm.em']->persist($personnageHasToken);
+        $entityManager->persist($personnageHasToken);
 
         $personnage->setAgeReel($personnage->getAgeReel() + 5); // ajoute 5 ans à l'age réél
 
         if (0 == $personnage->getPersonnageHasTokens()->count() % 2) {
             if (5 != $personnage->getAge()->getId()) {
-                $age = $app['orm.em']->getRepository('\\'.\App\Entity\Age::class)->findOneById($personnage->getAge()->getId() + 1);
+                $age = $entityManager->getRepository('\\'.\App\Entity\Age::class)->findOneById($personnage->getAge()->getId() + 1);
                 $personnage->setAge($age);
             } else {
                 $personnage->setVivant(false);
@@ -1111,12 +1070,12 @@ class PersonnageController extends AbstractController
                 $personnageChronologie->setAnnee($anneeGN);
                 $personnageChronologie->setEvenement($evenement);
                 $personnageChronologie->setPersonnage($personnage);
-                $app['orm.em']->persist($personnageChronologie);
+                $entityManager->persist($personnageChronologie);
             }
         }
 
-        $app['orm.em']->persist($personnage);
-        $app['orm.em']->flush();
+        $entityManager->persist($personnage);
+        $entityManager->flush();
        $this->addFlash('success', 'Le jeton '.$token->getTag().' a été ajouté.');
 
         return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
@@ -1125,17 +1084,17 @@ class PersonnageController extends AbstractController
     /**
      * Retire un jeton d'un personnage.
      */
-    public function adminTokenDeleteAction(Request $request, Application $app, Personnage $personnage, PersonnageHasToken $personnageHasToken)
+    public function adminTokenDeleteAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage, PersonnageHasToken $personnageHasToken)
     {
         $personnage->removePersonnageHasToken($personnageHasToken);
         // $personnage->setAgeReel($personnage->getAgeReel() - 5);
         if (0 != $personnage->getPersonnageHasTokens()->count() % 2 && 5 != $personnage->getAge()->getId()) {
-            $age = $app['orm.em']->getRepository('\\'.\App\Entity\Age::class)->findOneById($personnage->getAge()->getId() - 1);
+            $age = $entityManager->getRepository('\\'.\App\Entity\Age::class)->findOneById($personnage->getAge()->getId() - 1);
             $personnage->setAge($age);
         }
 
-        $app['orm.em']->remove($personnageHasToken);
-        $app['orm.em']->persist($personnage);
+        $entityManager->remove($personnageHasToken);
+        $entityManager->persist($personnage);
 
         // Chronologie : Fruits & Légumes
         foreach ($personnage->getParticipants() as $participant) {
@@ -1149,9 +1108,9 @@ class PersonnageController extends AbstractController
         $personnageChronologie->setAnnee($anneeGN);
         $personnageChronologie->setEvenement($evenement);
         $personnageChronologie->setPersonnage($personnage);
-        $app['orm.em']->persist($personnageChronologie);
+        $entityManager->persist($personnageChronologie);
 
-        $app['orm.em']->flush();
+        $entityManager->flush();
 
        $this->addFlash('success', 'Le jeton a été retiré.');
 
@@ -1161,30 +1120,29 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute un trigger.
      */
-    public function adminTriggerAddAction(Request $request, Application $app, Personnage $personnage)
+    public function adminTriggerAddAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
         $trigger = new \App\Entity\PersonnageTrigger();
         $trigger->setPersonnage($personnage);
         $trigger->setDone(false);
 
-        $form = $app['form.factory']->createBuilder(new TriggerForm(), $trigger)
-            ->add('save', 'submit', ['label' => 'Valider les modifications'])
-            ->getForm();
+        $form = $this->createForm(TriggerForm::class(), $trigger)
+            ->add('save', 'submit', ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $trigger = $form->getData();
 
-            $app['orm.em']->persist($trigger);
-            $app['orm.em']->flush();
+            $entityManager->persist($trigger);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le déclencheur a été ajouté.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/addTrigger.twig', [
+        return $this->render('admin/personnage/addTrigger.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage]);
     }
@@ -1192,29 +1150,28 @@ class PersonnageController extends AbstractController
     /**
      * Supprime un trigger.
      */
-    public function adminTriggerDeleteAction(Request $request, Application $app)
+    public function adminTriggerDeleteAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
         $trigger = $request->get('trigger');
 
-        $form = $app['form.factory']->createBuilder(new TriggerDeleteForm(), $trigger)
-            ->add('save', 'submit', ['label' => 'Valider les modifications'])
-            ->getForm();
+        $form = $this->createForm(TriggerDeleteForm::class(), $trigger)
+            ->add('save', 'submit', ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $trigger = $form->getData();
 
-            $app['orm.em']->remove($trigger);
-            $app['orm.em']->flush();
+            $entityManager->remove($trigger);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le déclencheur a été supprimé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/deleteTrigger.twig', [
+        return $this->render('admin/personnage/deleteTrigger.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'trigger' => $trigger,
@@ -1224,24 +1181,23 @@ class PersonnageController extends AbstractController
     /**
      * Modifie la liste des domaines de magie.
      */
-    public function adminUpdateDomaineAction(Request $request, Application $app)
+    public function adminUpdateDomaineAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
 
-        $domaines = $app['orm.em']->getRepository(\App\Entity\Domaine::class)->findAll();
+        $domaines = $entityManager->getRepository(\App\Entity\Domaine::class)->findAll();
 
         $originalDomaines = new ArrayCollection();
         foreach ($personnage->getDomaines() as $domaine) {
             $originalDomaines[] = $domaine;
         }
 
-        $form = $app['form.factory']->createBuilder(new PersonnageUpdateDomaineForm(), $personnage)
-            ->add('save', 'submit', ['label' => 'Valider les modifications'])
-            ->getForm();
+        $form = $this->createForm(PersonnageUpdateDomaineForm::class(), $personnage)
+            ->add('save', 'submit', ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
 
             foreach ($personnage->getDomaines() as $domaine) {
@@ -1256,15 +1212,15 @@ class PersonnageController extends AbstractController
                 }
             }
 
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/updateDomaine.twig', [
+        return $this->render('admin/personnage/updateDomaine.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1273,18 +1229,18 @@ class PersonnageController extends AbstractController
     /**
      * Modifie la liste des langues.
      */
-    public function adminUpdateLangueAction(Request $request, Application $app)
+    public function adminUpdateLangueAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
 
-        $langues = $app['orm.em']->getRepository(\App\Entity\Langue::class)->findBy([], ['secret' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC']);
+        $langues = $entityManager->getRepository(\App\Entity\Langue::class)->findBy([], ['secret' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC']);
 
         $originalLanguages = [];
         foreach ($personnage->getLanguages() as $languages) {
             $originalLanguages[] = $languages;
         }
 
-        $form = $app['form.factory']->createBuilder()
+        $form = $this->createForm()
             ->add('langues', 'entity', [
                 'required' => true,
                 'label' => 'Choisissez les langues du personnage',
@@ -1295,12 +1251,11 @@ class PersonnageController extends AbstractController
                 'choice_label' => 'label',
                 'data' => $originalLanguages,
             ])
-            ->add('save', 'submit', ['label' => 'Valider vos modifications'])
-            ->getForm();
+            ->add('save', 'submit', ['label' => 'Valider vos modifications']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $langues = $data['langues'];
 
@@ -1311,14 +1266,14 @@ class PersonnageController extends AbstractController
                     $personnageLangue->setPersonnage($personnage);
                     $personnageLangue->setLangue($langue);
                     $personnageLangue->setSource('ADMIN');
-                    $app['orm.em']->persist($personnageLangue);
+                    $entityManager->persist($personnageLangue);
                 }
             }
 
             if (0 == count($langues)) {
                 foreach ($personnage->getLanguages() as $langue) {
                     $personnageLangue = $personnage->getPersonnageLangue($langue);
-                    $app['orm.em']->remove($personnageLangue);
+                    $entityManager->remove($personnageLangue);
                 }
             } else {
                 foreach ($personnage->getLanguages() as $langue) {
@@ -1331,20 +1286,20 @@ class PersonnageController extends AbstractController
 
                     if (!$found) {
                         $personnageLangue = $personnage->getPersonnageLangue($langue);
-                        $app['orm.em']->remove($personnageLangue);
+                        $entityManager->remove($personnageLangue);
                     }
                 }
             }
 
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/updateLangue.twig', [
+        return $this->render('admin/personnage/updateLangue.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1353,7 +1308,7 @@ class PersonnageController extends AbstractController
     /**
      * Affiche la liste des prières pour modifications.
      */
-    public function adminUpdatePriereAction(Request $request, Application $app)
+    public function adminUpdatePriereAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by', 'label');
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -1363,17 +1318,17 @@ class PersonnageController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $app['form.factory']->createBuilder(new PriereFindForm())->getForm();
+        $form = $this->createForm(new PriereFindForm())->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $type = $data['type'];
             $value = $data['value'];
         }
 
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Priere::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Priere::class);
         $prieres = $repo->findList(
             $type,
             $value,
@@ -1393,7 +1348,7 @@ class PersonnageController extends AbstractController
             $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $app['twig']->render('admin/personnage/updatePriere.twig',
+        return $this->render('admin/personnage/updatePriere.twig',
             [
                 'prieres' => $prieres,
                 'personnage' => $personnage,
@@ -1408,19 +1363,19 @@ class PersonnageController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function adminAddPriereAction(Request $request, Application $app)
+    public function adminAddPriereAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $priereID = $request->get('priere');
         $personnage = $request->get('personnage');
 
-        $priere = $app['orm.em']->getRepository(Priere::class)
+        $priere = $entityManager->getRepository(Priere::class)
             ->find($priereID);
 
         $nomPriere = $priere->getLabel();
 
         $priere->addPersonnage($personnage);
 
-        $app['orm.em']->flush();
+        $entityManager->flush();
 
        $this->addFlash('success', $nomPriere.' a été ajoutée.');
 
@@ -1432,19 +1387,19 @@ class PersonnageController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function adminRemovePriereAction(Request $request, Application $app)
+    public function adminRemovePriereAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $priereID = $request->get('priere');
         $personnage = $request->get('personnage');
 
-        $priere = $app['orm.em']->getRepository(Priere::class)
+        $priere = $entityManager->getRepository(Priere::class)
             ->find($priereID);
 
         $nomPriere = $priere->getLabel();
 
         $priere->removePersonnage($personnage);
 
-        $app['orm.em']->flush();
+        $entityManager->flush();
 
        $this->addFlash('success', $nomPriere.' a été retirée.');
 
@@ -1454,12 +1409,12 @@ class PersonnageController extends AbstractController
     /**
      * Affiche la liste des connaissances pour modification.
      */
-    public function adminUpdateConnaissanceAction(Request $request, Application $app)
+    public function adminUpdateConnaissanceAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
-        $connaissances = $app['orm.em']->getRepository(Connaissance::class)->findAllOrderedByLabel();
+        $connaissances = $entityManager->getRepository(Connaissance::class)->findAllOrderedByLabel();
 
-        return $app['twig']->render('admin/personnage/updateConnaissance.twig', [
+        return $this->render('admin/personnage/updateConnaissance.twig', [
             'personnage' => $personnage,
             'connaissances' => $connaissances,
         ]);
@@ -1470,12 +1425,12 @@ class PersonnageController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function adminAddConnaissanceAction(Request $request, Application $app)
+    public function adminAddConnaissanceAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $connaissanceID = $request->get('connaissance');
         $personnage = $request->get('personnage');
 
-        $connaissance = $app['orm.em']->getRepository(Connaissance::class)
+        $connaissance = $entityManager->getRepository(Connaissance::class)
             ->find($connaissanceID);
 
         $nomConnaissance = $connaissance->getLabel();
@@ -1483,7 +1438,7 @@ class PersonnageController extends AbstractController
 
         $personnage->addConnaissance($connaissance);
 
-        $app['orm.em']->flush();
+        $entityManager->flush();
 
        $this->addFlash('success', $nomConnaissance.' '.$niveauConnaissance.' a été ajouté.');
 
@@ -1495,12 +1450,12 @@ class PersonnageController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function adminRemoveConnaissanceAction(Request $request, Application $app)
+    public function adminRemoveConnaissanceAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $connaissanceID = $request->get('connaissance');
         $personnage = $request->get('personnage');
 
-        $connaissance = $app['orm.em']->getRepository(Connaissance::class)
+        $connaissance = $entityManager->getRepository(Connaissance::class)
             ->find($connaissanceID);
 
         $nomConnaissance = $connaissance->getLabel();
@@ -1508,7 +1463,7 @@ class PersonnageController extends AbstractController
 
         $personnage->removeConnaissance($connaissance);
 
-        $app['orm.em']->flush();
+        $entityManager->flush();
 
        $this->addFlash('success', $nomConnaissance.' '.$niveauConnaissance.' a été retiré.');
 
@@ -1518,7 +1473,7 @@ class PersonnageController extends AbstractController
     /**
      * Affiche la liste des sorts pour modification.
      */
-    public function adminUpdateSortAction(Request $request, Application $app)
+    public function adminUpdateSortAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by', 'label');
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -1528,17 +1483,17 @@ class PersonnageController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $app['form.factory']->createBuilder(new SortFindForm())->getForm();
+        $form = $this->createForm(new SortFindForm())->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $type = $data['type'];
             $value = $data['value'];
         }
 
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Sort::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Sort::class);
         $sorts = $repo->findList(
             $type,
             $value,
@@ -1558,7 +1513,7 @@ class PersonnageController extends AbstractController
             $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $app['twig']->render('admin/personnage/updateSort.twig',
+        return $this->render('admin/personnage/updateSort.twig',
             [
                 'sorts' => $sorts,
                 'personnage' => $personnage,
@@ -1573,12 +1528,12 @@ class PersonnageController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function adminAddSortAction(Request $request, Application $app)
+    public function adminAddSortAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $sortID = $request->get('sort');
         $personnage = $request->get('personnage');
 
-        $sort = $app['orm.em']->getRepository(Sort::class)
+        $sort = $entityManager->getRepository(Sort::class)
             ->find($sortID);
 
         $nomSort = $sort->getLabel();
@@ -1586,7 +1541,7 @@ class PersonnageController extends AbstractController
 
         $personnage->addSort($sort);
 
-        $app['orm.em']->flush();
+        $entityManager->flush();
 
        $this->addFlash('success', $nomSort.' '.$niveauSort.' a été ajouté.');
 
@@ -1598,12 +1553,12 @@ class PersonnageController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function adminRemoveSortAction(Request $request, Application $app)
+    public function adminRemoveSortAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $sortID = $request->get('sort');
         $personnage = $request->get('personnage');
 
-        $sort = $app['orm.em']->getRepository(Sort::class)
+        $sort = $entityManager->getRepository(Sort::class)
             ->find($sortID);
 
         $nomSort = $sort->getLabel();
@@ -1611,7 +1566,7 @@ class PersonnageController extends AbstractController
 
         $personnage->removeSort($sort);
 
-        $app['orm.em']->flush();
+        $entityManager->flush();
 
        $this->addFlash('success', $nomSort.' '.$niveauSort.' a été retiré.');
 
@@ -1621,7 +1576,7 @@ class PersonnageController extends AbstractController
     /**
      * Affiche la liste des potions pour modification.
      */
-    public function adminUpdatePotionAction(Request $request, Application $app)
+    public function adminUpdatePotionAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by', 'label');
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -1631,17 +1586,17 @@ class PersonnageController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $app['form.factory']->createBuilder(new PotionFindForm())->getForm();
+        $form = $this->createForm(new PotionFindForm())->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $type = $data['type'];
             $value = $data['value'];
         }
 
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Potion::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Potion::class);
         $potions = $repo->findList(
             $type,
             $value,
@@ -1661,7 +1616,7 @@ class PersonnageController extends AbstractController
             $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $app['twig']->render('admin/personnage/updatePotion.twig',
+        return $this->render('admin/personnage/updatePotion.twig',
             [
                 'potions' => $potions,
                 'personnage' => $personnage,
@@ -1676,19 +1631,19 @@ class PersonnageController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function adminAddPotionAction(Request $request, Application $app)
+    public function adminAddPotionAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $potionID = $request->get('potion');
         $personnage = $request->get('personnage');
 
-        $potion = $app['orm.em']->getRepository(Potion::class)
+        $potion = $entityManager->getRepository(Potion::class)
             ->find($potionID);
 
         $nomPotion = $potion->getLabel();
 
         $personnage->addPotion($potion);
 
-        $app['orm.em']->flush();
+        $entityManager->flush();
 
        $this->addFlash('success', $nomPotion.' a été ajoutée.');
 
@@ -1700,19 +1655,19 @@ class PersonnageController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function adminRemovePotionAction(Request $request, Application $app)
+    public function adminRemovePotionAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $potionID = $request->get('potion');
         $personnage = $request->get('personnage');
 
-        $potion = $app['orm.em']->getRepository(Potion::class)
+        $potion = $entityManager->getRepository(Potion::class)
             ->find($potionID);
 
         $nomPotion = $potion->getLabel();
 
         $personnage->removePotion($potion);
 
-        $app['orm.em']->flush();
+        $entityManager->flush();
 
        $this->addFlash('success', $nomPotion.' a été retirée.');
 
@@ -1722,7 +1677,7 @@ class PersonnageController extends AbstractController
     /**
      * Modifie la liste des ingrédients.
      */
-    public function adminUpdateIngredientAction(Request $request, Application $app, Personnage $personnage)
+    public function adminUpdateIngredientAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
         $originalPersonnageIngredients = new ArrayCollection();
 
@@ -1733,11 +1688,11 @@ class PersonnageController extends AbstractController
             $originalPersonnageIngredients->add($personnageIngredient);
         }
 
-        $form = $app['form.factory']->createBuilder(new PersonnageIngredientForm(), $personnage)->getForm();
+        $form = $this->createForm(PersonnageIngredientForm::class(), $personnage)->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
 
             /*
@@ -1752,7 +1707,7 @@ class PersonnageController extends AbstractController
              */
             foreach ($originalPersonnageIngredients as $personnageIngredient) {
                 if (false == $personnage->getPersonnageIngredients()->contains($personnageIngredient)) {
-                    $app['orm.em']->remove($personnageIngredient);
+                    $entityManager->remove($personnageIngredient);
                 }
             }
 
@@ -1762,7 +1717,7 @@ class PersonnageController extends AbstractController
              *  Gestion des ingrédients alloués au hasard
              */
             if ($random && $random > 0) {
-                $ingredients = $app['orm.em']->getRepository(\App\Entity\Ingredient::class)->findAllOrderedByLabel();
+                $ingredients = $entityManager->getRepository(\App\Entity\Ingredient::class)->findAllOrderedByLabel();
                 shuffle($ingredients);
                 $needs = new ArrayCollection(array_slice($ingredients, 0, $random));
 
@@ -1771,19 +1726,19 @@ class PersonnageController extends AbstractController
                     $pi->setIngredient($ingredient);
                     $pi->setNombre(1);
                     $pi->setPersonnage($personnage);
-                    $app['orm.em']->persist($pi);
+                    $entityManager->persist($pi);
                 }
             }
 
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/ingredients.twig', [
+        return $this->render('admin/personnage/ingredients.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1792,7 +1747,7 @@ class PersonnageController extends AbstractController
     /**
      * Modifie la liste des ressources.
      */
-    public function adminUpdateRessourceAction(Request $request, Application $app, Personnage $personnage)
+    public function adminUpdateRessourceAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
         $originalPersonnageRessources = new ArrayCollection();
 
@@ -1803,11 +1758,11 @@ class PersonnageController extends AbstractController
             $originalPersonnageRessources->add($personnageRessource);
         }
 
-        $form = $app['form.factory']->createBuilder(new PersonnageRessourceForm(), $personnage)->getForm();
+        $form = $this->createForm(PersonnageRessourceForm::class(), $personnage)->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
 
             /*
@@ -1822,7 +1777,7 @@ class PersonnageController extends AbstractController
              */
             foreach ($originalPersonnageRessources as $personnageRessource) {
                 if (false == $personnage->getPersonnageRessources()->contains($personnageRessource)) {
-                    $app['orm.em']->remove($personnageRessource);
+                    $entityManager->remove($personnageRessource);
                 }
             }
 
@@ -1832,7 +1787,7 @@ class PersonnageController extends AbstractController
              *  Gestion des ressources communes alloués au hasard
              */
             if ($randomCommun && $randomCommun > 0) {
-                $ressourceCommune = $app['orm.em']->getRepository(\App\Entity\Ressource::class)->findCommun();
+                $ressourceCommune = $entityManager->getRepository(\App\Entity\Ressource::class)->findCommun();
                 shuffle($ressourceCommune);
                 $needs = new ArrayCollection(array_slice($ressourceCommune, 0, $randomCommun));
 
@@ -1841,7 +1796,7 @@ class PersonnageController extends AbstractController
                     $pr->setRessource($ressource);
                     $pr->setNombre(1);
                     $pr->setPersonnage($personnage);
-                    $app['orm.em']->persist($pr);
+                    $entityManager->persist($pr);
                 }
             }
 
@@ -1851,7 +1806,7 @@ class PersonnageController extends AbstractController
              *  Gestion des ressources rares alloués au hasard
              */
             if ($randomRare && $randomRare > 0) {
-                $ressourceRare = $app['orm.em']->getRepository(\App\Entity\Ressource::class)->findRare();
+                $ressourceRare = $entityManager->getRepository(\App\Entity\Ressource::class)->findRare();
                 shuffle($ressourceRare);
                 $needs = new ArrayCollection(array_slice($ressourceRare, 0, $randomRare));
 
@@ -1860,19 +1815,19 @@ class PersonnageController extends AbstractController
                     $pr->setRessource($ressource);
                     $pr->setNombre(1);
                     $pr->setPersonnage($personnage);
-                    $app['orm.em']->persist($pr);
+                    $entityManager->persist($pr);
                 }
             }
 
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/ressources.twig', [
+        return $this->render('admin/personnage/ressources.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1881,24 +1836,24 @@ class PersonnageController extends AbstractController
     /**
      * Modifie la richesse.
      */
-    public function adminUpdateRichesseAction(Request $request, Application $app, Personnage $personnage)
+    public function adminUpdateRichesseAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
-        $form = $app['form.factory']->createBuilder(new PersonnageRichesseForm(), $personnage)->getForm();
+        $form = $this->createForm(PersonnageRichesseForm::class(), $personnage)->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
 
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/richesse.twig', [
+        return $this->render('admin/personnage/richesse.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1907,25 +1862,24 @@ class PersonnageController extends AbstractController
     /**
      * Gestion des documents lié à un personnage.
      */
-    public function documentAction(Request $request, Application $app, Personnage $personnage)
+    public function documentAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
-        $form = $app['form.factory']->createBuilder(new PersonnageDocumentForm(), $personnage)
-            ->add('submit', 'submit', ['label' => 'Enregistrer'])
-            ->getForm();
+        $form = $this->createForm(PersonnageDocumentForm::class(), $personnage)
+            ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le document a été ajouté au personnage.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/documents.twig', [
+        return $this->render('admin/personnage/documents.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -1934,25 +1888,24 @@ class PersonnageController extends AbstractController
     /**
      * Gestion des objets lié à un personnage.
      */
-    public function itemAction(Request $request, Application $app, Personnage $personnage)
+    public function itemAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
-        $form = $app['form.factory']->createBuilder(new PersonnageItemForm(), $personnage)
-            ->add('submit', 'submit', ['label' => 'Enregistrer'])
-            ->getForm();
+        $form = $this->createForm(PersonnageItemForm::class(), $personnage)
+            ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'L\'objet a été ajouté au personnage.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/items.twig', [
+        return $this->render('admin/personnage/items.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -1961,7 +1914,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute une religion à un personnage.
      */
-    public function adminAddReligionAction(Request $request, Application $app)
+    public function adminAddReligionAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
 
@@ -1990,7 +1943,7 @@ class PersonnageController extends AbstractController
             $choices[] = $religion;
         }
 
-        $form = $app['form.factory']->createBuilder(new PersonnageReligionForm(), $personnageReligion)
+        $form = $this->createForm(PersonnageReligionForm::class(), $personnageReligion)
             ->add('religion', 'entity', [
                 'required' => true,
                 'label' => 'Votre religion',
@@ -1998,12 +1951,11 @@ class PersonnageController extends AbstractController
                 'choices' => $availableReligions,
                 'property' => 'label',
             ])
-            ->add('save', 'submit', ['label' => 'Valider votre religion'])
-            ->getForm();
+            ->add('save', 'submit', ['label' => 'Valider votre religion']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnageReligion = $form->getData();
 
             // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
@@ -2011,7 +1963,7 @@ class PersonnageController extends AbstractController
             if (3 == $personnageReligion->getReligionLevel()->getIndex()) {
                 $personnagesReligions = $personnage->getPersonnagesReligions();
                 foreach ($personnagesReligions as $oldReligion) {
-                    $app['orm.em']->remove($oldReligion);
+                    $entityManager->remove($oldReligion);
                 }
             } elseif (2 == $personnageReligion->getReligionLevel()->getIndex()) {
                 if ($personnage->isFervent()) {
@@ -2021,15 +1973,15 @@ class PersonnageController extends AbstractController
                 }
             }
 
-            $app['orm.em']->persist($personnageReligion);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnageReligion);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/addReligion.twig', [
+        return $this->render('admin/personnage/addReligion.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage]);
     }
@@ -2037,29 +1989,28 @@ class PersonnageController extends AbstractController
     /**
      * Retire une religion d'un personnage.
      */
-    public function adminRemoveReligionAction(Request $request, Application $app)
+    public function adminRemoveReligionAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
         $personnageReligion = $request->get('personnageReligion');
 
-        $form = $app['form.factory']->createBuilder()
-            ->add('save', 'submit', ['label' => 'Retirer la religion'])
-            ->getForm();
+        $form = $this->createForm()
+            ->add('save', 'submit', ['label' => 'Retirer la religion']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
-            $app['orm.em']->remove($personnageReligion);
-            $app['orm.em']->flush();
+            $entityManager->remove($personnageReligion);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/removeReligion.twig', [
+        return $this->render('admin/personnage/removeReligion.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'personnageReligion' => $personnageReligion,
@@ -2069,29 +2020,28 @@ class PersonnageController extends AbstractController
     /**
      * Retire une langue d'un personnage.
      */
-    public function adminRemoveLangueAction(Request $request, Application $app)
+    public function adminRemoveLangueAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
         $personnageLangue = $request->get('personnageLangue');
 
-        $form = $app['form.factory']->createBuilder()
-            ->add('save', 'submit', ['label' => 'Retirer la langue'])
-            ->getForm();
+        $form = $this->createForm()
+            ->add('save', 'submit', ['label' => 'Retirer la langue']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
-            $app['orm.em']->remove($personnageLangue);
-            $app['orm.em']->flush();
+            $entityManager->remove($personnageLangue);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/removeLangue.twig', [
+        return $this->render('admin/personnage/removeLangue.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'personnageLangue' => $personnageLangue,
@@ -2101,19 +2051,18 @@ class PersonnageController extends AbstractController
     /**
      * Modifie l'origine d'un personnage.
      */
-    public function adminUpdateOriginAction(Request $request, Application $app)
+    public function adminUpdateOriginAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
 
         $oldOrigine = $personnage->getTerritoire();
 
-        $form = $app['form.factory']->createBuilder(new PersonnageOriginForm(), $personnage)
-            ->add('save', 'submit', ['label' => "Valider l'origine du personnage"])
-            ->getForm();
+        $form = $this->createForm(PersonnageOriginForm::class(), $personnage)
+            ->add('save', 'submit', ['label' => "Valider l'origine du personnage"]);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
 
             // le personnage doit perdre les langues de son ancienne origine
@@ -2121,7 +2070,7 @@ class PersonnageController extends AbstractController
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 if ('ORIGINE' == $personnageLangue->getSource() || 'ORIGINE SECONDAIRE' == $personnageLangue->getSource()) {
                     $personnage->removePersonnageLangues($personnageLangue);
-                    $app['orm.em']->remove($personnageLangue);
+                    $entityManager->remove($personnageLangue);
                 }
             }
 
@@ -2132,19 +2081,19 @@ class PersonnageController extends AbstractController
                 $personnageLangue->setSource('ORIGINE SECONDAIRE');
                 $personnageLangue->setLangue($langue);
 
-                $app['orm.em']->persist($personnageLangue);
+                $entityManager->persist($personnageLangue);
                 $personnage->addPersonnageLangues($personnageLangue);
             }
 
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnage);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/updateOrigine.twig', [
+        return $this->render('admin/personnage/updateOrigine.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -2153,7 +2102,7 @@ class PersonnageController extends AbstractController
     /**
      * Retire la dernière compétence acquise par un personnage.
      */
-    public function removeCompetenceAction(Request $request, Application $app)
+    public function removeCompetenceAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
         $lastCompetence = $app['personnage.manager']->getLastCompetence($personnage);
@@ -2164,9 +2113,8 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        $form = $app['form.factory']->createBuilder()
-            ->add('save', 'submit', ['label' => 'Retirer la compétence'])
-            ->getForm();
+        $form = $this->createForm()
+            ->add('save', 'submit', ['label' => 'Retirer la compétence']);
 
         $form->handleRequest($request);
 
@@ -2222,27 +2170,27 @@ class PersonnageController extends AbstractController
                 $renommeHistory->setExplication('[Retrait] '.$competenceNom.' '.$competenceNiveau);
                 $renommeHistory->setRenomme($renomme);
 
-                $app['orm.em']->persist($renommeHistory);
+                $entityManager->persist($renommeHistory);
             }
 
-            $app['orm.em']->persist($lastCompetence);
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->persist($historiqueXP);
-            $app['orm.em']->flush();
+            $entityManager->persist($lastCompetence);
+            $entityManager->persist($personnage);
+            $entityManager->persist($historiqueXP);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La compétence a été retirée');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/removeCompetence.twig', [
+        return $this->render('admin/personnage/removeCompetence.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'competence' => $lastCompetence,
         ]);
     }
 
-    public function adminAddCompetenceAction(Request $request, Application $app)
+    public function adminAddCompetenceAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
 
@@ -2260,13 +2208,12 @@ class PersonnageController extends AbstractController
             $choices[$competence->getId()] = $competence->getLabel().' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
         }
 
-        $form = $app['form.factory']->createBuilder()
+        $form = $this->createForm()
             ->add('competenceId', 'choice', [
                 'label' => 'Choisissez une nouvelle compétence',
                 'choices' => $choices,
             ])
-            ->add('save', 'submit', ['label' => 'Valider la compétence'])
-            ->getForm();
+            ->add('save', 'submit', ['label' => 'Valider la compétence']);
 
         $form->handleRequest($request);
 
@@ -2274,7 +2221,7 @@ class PersonnageController extends AbstractController
             $data = $form->getData();
 
             $competenceId = $data['competenceId'];
-            $competence = $app['orm.em']->find(Competence::class, $competenceId);
+            $competence = $entityManager->find(Competence::class, $competenceId);
 
             $cout = $app['personnage.manager']->getCompetenceCout($personnage, $competence);
             $xp = $personnage->getXp();
@@ -2332,20 +2279,20 @@ class PersonnageController extends AbstractController
                 $renommeHistory->setExplication('[Acquisition] '.$competenceNom.' '.$competenceNiveau);
                 $renommeHistory->setRenomme($renomme);
 
-                $app['orm.em']->persist($renommeHistory);
+                $entityManager->persist($renommeHistory);
             }
 
-            $app['orm.em']->persist($competence);
-            $app['orm.em']->persist($personnage);
-            $app['orm.em']->persist($historiqueXP);
-            $app['orm.em']->flush();
+            $entityManager->persist($competence);
+            $entityManager->persist($personnage);
+            $entityManager->persist($historiqueXP);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/competence.twig', [
+        return $this->render('admin/personnage/competence.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'competences' => $availableCompetences,
@@ -2355,7 +2302,7 @@ class PersonnageController extends AbstractController
     /**
      * Exporte la fiche d'un personnage.
      */
-    public function exportAction(Request $request, Application $app, Personnage $personnage)
+    public function exportAction(Request $request,  EntityManagerInterface $entityManager, Personnage $personnage)
     {
         $participant = $personnage->getParticipants()->last();
         $groupe = null;
@@ -2364,7 +2311,7 @@ class PersonnageController extends AbstractController
             $groupe = $participant->getGroupeGn()->getGroupe();
         }
 
-        return $app['twig']->render('admin/personnage/print.twig', [
+        return $this->render('admin/personnage/print.twig', [
             'personnage' => $personnage,
             'participant' => $participant,
             'langueMateriel' => $this->getLangueMateriel($personnage),
@@ -2375,19 +2322,18 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute un evenement de chronologie au personnage.
      */
-    public function adminAddChronologieAction(Request $request, Application $app)
+    public function adminAddChronologieAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
         $personnageChronologie = new PersonnageChronologie();
         $personnageChronologie->setPersonnage($personnage);
 
-        $form = $app['form.factory']->createBuilder(new PersonnageChronologieForm(), $personnageChronologie)
-            ->add('save', 'submit', ['label' => 'Valider l\'évènement'])
-            ->getForm();
+        $form = $this->createForm(PersonnageChronologieForm::class(), $personnageChronologie)
+            ->add('save', 'submit', ['label' => 'Valider l\'évènement']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $anneeGN = $form->get('annee')->getData();
             $evenement = $form->get('evenement')->getData();
 
@@ -2397,15 +2343,15 @@ class PersonnageController extends AbstractController
             $personnageChronologie->setEvenement($evenement);
             $personnageChronologie->setPersonnage($personnage);
 
-            $app['orm.em']->persist($personnageChronologie);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnageChronologie);
+            $entityManager->flush();
 
            $this->addFlash('success', 'L\'évènement a été ajouté à la chronologie.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/updateChronologie.twig', [
+        return $this->render('admin/personnage/updateChronologie.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'personnageChronologie' => $personnageChronologie,
@@ -2415,29 +2361,28 @@ class PersonnageController extends AbstractController
     /**
      * Retire un évènement d'un personnage.
      */
-    public function adminDeleteChronologieAction(Request $request, Application $app)
+    public function adminDeleteChronologieAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
         $personnageChronologie = $request->get('personnageChronologie');
 
-        $form = $app['form.factory']->createBuilder()
-            ->add('save', 'submit', ['label' => 'Retirer l\'évènement'])
-            ->getForm();
+        $form = $this->createForm()
+            ->add('save', 'submit', ['label' => 'Retirer l\'évènement']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
-            $app['orm.em']->remove($personnageChronologie);
-            $app['orm.em']->flush();
+            $entityManager->remove($personnageChronologie);
+            $entityManager->flush();
 
            $this->addFlash('success', 'L\'évènement a été supprimé de la chronologie.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/removeChronologie.twig', [
+        return $this->render('admin/personnage/removeChronologie.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'personnageChronologie' => $personnageChronologie,
@@ -2447,19 +2392,18 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute une lignée au personnage.
      */
-    public function adminAddLigneeAction(Request $request, Application $app)
+    public function adminAddLigneeAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
         $personnageLignee = new PersonnageLignee();
         $personnageLignee->setPersonnage($personnage);
 
-        $form = $app['form.factory']->createBuilder(new PersonnageLigneeForm(), $personnageLignee)
-            ->add('save', 'submit', ['label' => 'Valider les modifications'])
-            ->getForm();
+        $form = $this->createForm(PersonnageLigneeForm::class(), $personnageLignee)
+            ->add('save', 'submit', ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $parent1 = $form->get('parent1')->getData();
             $parent2 = $form->get('parent2')->getData();
             $lignee = $form->get('lignee')->getData();
@@ -2468,15 +2412,15 @@ class PersonnageController extends AbstractController
             $personnageLignee->setParent2($parent2);
             $personnageLignee->setLignee($lignee);
 
-            $app['orm.em']->persist($personnageLignee);
-            $app['orm.em']->flush();
+            $entityManager->persist($personnageLignee);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La lignée a été ajoutée.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/updateLignee.twig', [
+        return $this->render('admin/personnage/updateLignee.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'lignee' => $personnageLignee,
@@ -2486,29 +2430,28 @@ class PersonnageController extends AbstractController
     /**
      * Retire une lignée d'un personnage.
      */
-    public function adminDeleteLigneeAction(Request $request, Application $app)
+    public function adminDeleteLigneeAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = $request->get('personnage');
         $personnageLignee = $request->get('personnageLignee');
 
-        $form = $app['form.factory']->createBuilder()
-            ->add('save', 'submit', ['label' => 'Retirer la lignée'])
-            ->getForm();
+        $form = $this->createForm()
+            ->add('save', 'submit', ['label' => 'Retirer la lignée']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
-            $app['orm.em']->remove($personnageLignee);
-            $app['orm.em']->flush();
+            $entityManager->remove($personnageLignee);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La lignée a été retirée.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/personnage/removeLignee.twig', [
+        return $this->render('admin/personnage/removeLignee.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'personnageLignee' => $personnageLignee,

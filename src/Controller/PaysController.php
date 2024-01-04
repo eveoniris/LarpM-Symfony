@@ -2,38 +2,36 @@
 
 namespace App\Controller;
 
-use LarpManager\Form\PaysForm;
-use LarpManager\Form\PaysMinimalForm;
-use Silex\Application;
+use App\Form\PaysForm;
+use App\Form\PaysMinimalForm;
 use Symfony\Component\HttpFoundation\Request;
 
 class PaysController extends AbstractController
 {
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\App\Entity\Pays');
+        $repo = $entityManager->getRepository('\App\Entity\Pays');
         $pays = $repo->findAll();
 
-        return $app['twig']->render('pays/index.twig', ['listPays' => $pays]);
+        return $this->render('pays/index.twig', ['listPays' => $pays]);
     }
 
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $pays = new \App\Entity\Pays();
 
-        $form = $app['form.factory']->createBuilder(new PaysMinimalForm(), $pays)
+        $form = $this->createForm(PaysMinimalForm::class(), $pays)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $pays = $form->getData();
             $pays->setCreator($this->getUser());
 
-            $app['orm.em']->persist($pays);
-            $app['orm.em']->flush();
+            $entityManager->persist($pays);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le pays a été ajouté.');
 
@@ -44,55 +42,54 @@ class PaysController extends AbstractController
             }
         }
 
-        return $app['twig']->render('pays/add.twig', [
+        return $this->render('pays/add.twig', [
             'form' => $form->createView(),
         ]);
     }
 
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $pays = $app['orm.em']->find('\App\Entity\Pays', $id);
+        $pays = $entityManager->find('\App\Entity\Pays', $id);
 
-        $form = $app['form.factory']->createBuilder(new PaysForm(), $pays)
+        $form = $this->createForm(PaysForm::class(), $pays)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+            ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $pays = $form->getData();
 
             if ($form->get('update')->isClicked()) {
                 $pays->setUpdateDate(new \DateTime('NOW'));
-                $app['orm.em']->persist($pays);
-                $app['orm.em']->flush();
+                $entityManager->persist($pays);
+                $entityManager->flush();
                $this->addFlash('success', 'Le pays a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($pays);
-                $app['orm.em']->flush();
+                $entityManager->remove($pays);
+                $entityManager->flush();
                $this->addFlash('success', 'Le pays a été supprimé.');
             }
 
             return $this->redirectToRoute('pays');
         }
 
-        return $app['twig']->render('pays/update.twig', [
+        return $this->render('pays/update.twig', [
             'pays' => $pays,
             'form' => $form->createView(),
         ]);
     }
 
-    public function detailAction(Request $request, Application $app)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $pays = $app['orm.em']->find('\App\Entity\Pays', $id);
+        $pays = $entityManager->find('\App\Entity\Pays', $id);
 
         if ($pays) {
-            return $app['twig']->render('pays/detail.twig', ['pays' => $pays]);
+            return $this->render('pays/detail.twig', ['pays' => $pays]);
         } else {
            $this->addFlash('error', 'Le pays n\'a pas été trouvé.');
 
@@ -100,12 +97,12 @@ class PaysController extends AbstractController
         }
     }
 
-    public function detailExportAction(Request $request, Application $app): void
+    public function detailExportAction(Request $request,  EntityManagerInterface $entityManager): void
     {
         $id = $request->get('index');
     }
 
-    public function exportAction(Request $request, Application $app): void
+    public function exportAction(Request $request,  EntityManagerInterface $entityManager): void
     {
     }
 }

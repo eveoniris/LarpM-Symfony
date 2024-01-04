@@ -1,32 +1,14 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\SecondaryGroup;
 use JasonGrimes\Paginator;
-use LarpManager\Form\GroupeSecondaire\GroupeSecondaireForm;
-use LarpManager\Form\GroupeSecondaire\GroupeSecondaireMaterielForm;
-use LarpManager\Form\GroupeSecondaire\GroupeSecondaireNewMembreForm;
-use LarpManager\Form\GroupeSecondaire\SecondaryGroupFindForm;
-use Silex\Application;
+use App\Form\GroupeSecondaire\GroupeSecondaireForm;
+use App\Form\GroupeSecondaire\GroupeSecondaireMaterielForm;
+use App\Form\GroupeSecondaire\GroupeSecondaireNewMembreForm;
+use App\Form\GroupeSecondaire\SecondaryGroupFindForm;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -39,7 +21,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Liste des groupes secondaires (pour les orgas).
      */
-    public function adminListAction(Request $request, Application $app)
+    public function adminListAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -48,7 +30,7 @@ class GroupeSecondaireController extends AbstractController
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
-        $form = $app['form.factory']->createBuilder(
+        $form = $this->createForm(
             new SecondaryGroupFindForm(),
             null,
             [
@@ -56,12 +38,11 @@ class GroupeSecondaireController extends AbstractController
                 'csrf_protection' => false,
             ]
         )
-            ->add('find', 'submit', ['label' => 'Rechercher'])
-            ->getForm();
+            ->add('find', 'submit', ['label' => 'Rechercher']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $type = $data['type'];
             $value = $data['value'];
@@ -78,7 +59,7 @@ class GroupeSecondaireController extends AbstractController
         }
 
         /* @var SecondaryGroupRepository $repo */
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\SecondaryGroup::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\SecondaryGroup::class);
         $groupeSecondaires = $repo->findList(
             $criteria,
             ['by' => $order_by, 'dir' => $order_dir],
@@ -92,7 +73,7 @@ class GroupeSecondaireController extends AbstractController
             $app['url_generator']->generate('groupeSecondaire.admin.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $app['twig']->render('admin/groupeSecondaire/list.twig', [
+        return $this->render('admin/groupeSecondaire/list.twig', [
             'groupeSecondaires' => $groupeSecondaires,
             'paginator' => $paginator,
             'form' => $form->createView(),
@@ -102,18 +83,17 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Ajoute un groupe secondaire.
      */
-    public function adminAddAction(Request $request, Application $app)
+    public function adminAddAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $groupeSecondaire = new \App\Entity\SecondaryGroup();
 
-        $form = $app['form.factory']->createBuilder(new GroupeSecondaireForm(), $groupeSecondaire)
+        $form = $this->createForm(GroupeSecondaireForm::class(), $groupeSecondaire)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $groupeSecondaire = $form->getData();
 
             /**
@@ -127,11 +107,11 @@ class GroupeSecondaireController extends AbstractController
             $topic->setDescription($groupeSecondaire->getDescription());
             $topic->setUser($this->getUser());
             $topic->setTopic($app['larp.manager']->findTopic('TOPIC_GROUPE_SECONDAIRE'));
-            $app['orm.em']->persist($topic);
+            $entityManager->persist($topic);
 
             $groupeSecondaire->setTopic($topic);
-            $app['orm.em']->persist($groupeSecondaire);
-            $app['orm.em']->flush();
+            $entityManager->persist($groupeSecondaire);
+            $entityManager->flush();
 
             // défini les droits d'accés à ce forum
             // (les membres du groupe ont le droit d'accéder à ce forum)
@@ -147,14 +127,14 @@ class GroupeSecondaireController extends AbstractController
                 $membre->setPersonnage($personnage);
                 $membre->setSecondaryGroup($groupeSecondaire);
                 $membre->setSecret(false);
-                $app['orm.em']->persist($membre);
-                $app['orm.em']->flush();
+                $entityManager->persist($membre);
+                $entityManager->flush();
                 $groupeSecondaire->addMembre($membre);
             }
 
-            $app['orm.em']->persist($topic);
-            $app['orm.em']->persist($groupeSecondaire);
-            $app['orm.em']->flush();
+            $entityManager->persist($topic);
+            $entityManager->persist($groupeSecondaire);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le groupe secondaire a été ajouté.');
 
@@ -165,7 +145,7 @@ class GroupeSecondaireController extends AbstractController
             }
         }
 
-        return $app['twig']->render('admin/groupeSecondaire/add.twig', [
+        return $this->render('admin/groupeSecondaire/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -173,21 +153,21 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Mise à jour du matériel necessaire à un groupe secondaire.
      */
-    public function materielUpdateAction(Request $request, Application $app, SecondaryGroup $groupeSecondaire)
+    public function materielUpdateAction(Request $request,  EntityManagerInterface $entityManager, SecondaryGroup $groupeSecondaire)
     {
-        $form = $app['form.factory']->createBuilder(new GroupeSecondaireMaterielForm(), $groupeSecondaire)->getForm();
+        $form = $this->createForm(GroupeSecondaireMaterielForm::class(), $groupeSecondaire)->getForm();
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $groupeSecondaire = $form->getData();
-            $app['orm.em']->persist($groupeSecondaire);
-            $app['orm.em']->flush();
+            $entityManager->persist($groupeSecondaire);
+            $entityManager->flush();
            $this->addFlash('success', 'Le groupe secondaire a été mis à jour.');
 
             return $this->redirectToRoute('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/groupeSecondaire/materiel.twig', [
+        return $this->render('admin/groupeSecondaire/materiel.twig', [
             'groupeSecondaire' => $groupeSecondaire,
             'form' => $form->createView(),
         ]);
@@ -196,9 +176,9 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Impression de l'enveloppe du groupe secondaire.
      */
-    public function materielPrintAction(Request $request, Application $app, SecondaryGroup $groupeSecondaire)
+    public function materielPrintAction(Request $request,  EntityManagerInterface $entityManager, SecondaryGroup $groupeSecondaire)
     {
-        return $app['twig']->render('admin/groupeSecondaire/print.twig', [
+        return $this->render('admin/groupeSecondaire/print.twig', [
             'groupeSecondaire' => $groupeSecondaire,
         ]);
     }
@@ -206,11 +186,11 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Impression de toutes les enveloppes groupe secondaire.
      */
-    public function materielPrintAllAction(Request $request, Application $app)
+    public function materielPrintAllAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $groupeSecondaires = $app['orm.em']->getRepository('\\'.\App\Entity\SecondaryGroup::class)->findAll();
+        $groupeSecondaires = $entityManager->getRepository('\\'.\App\Entity\SecondaryGroup::class)->findAll();
 
-        return $app['twig']->render('admin/groupeSecondaire/printAll.twig', [
+        return $this->render('admin/groupeSecondaire/printAll.twig', [
             'groupeSecondaires' => $groupeSecondaires,
         ]);
     }
@@ -218,18 +198,17 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Met à jour un de groupe secondaire.
      */
-    public function adminUpdateAction(Request $request, Application $app)
+    public function adminUpdateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $groupeSecondaire = $request->get('groupe');
 
-        $form = $app['form.factory']->createBuilder(new GroupeSecondaireForm(), $groupeSecondaire)
+        $form = $this->createForm(GroupeSecondaireForm::class(), $groupeSecondaire)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+            ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $groupeSecondaire = $form->getData();
 
             if ($form->get('update')->isClicked()) {
@@ -243,8 +222,8 @@ class GroupeSecondaireController extends AbstractController
                     $membre->setSecondaryGroup($groupeSecondaire);
                     $membre->setSecret(false);
 
-                    $app['orm.em']->persist($membre);
-                    $app['orm.em']->flush();
+                    $entityManager->persist($membre);
+                    $entityManager->flush();
 
                     $groupeSecondaire->addMembre($membre);
                 }
@@ -253,22 +232,22 @@ class GroupeSecondaireController extends AbstractController
                  */
                 foreach ($groupeSecondaire->getPostulants() as $postulant) {
                     if ($postulant->getPersonnage() == $personnage) {
-                        $app['orm.em']->remove($postulant);
+                        $entityManager->remove($postulant);
                     }
                 }
-                $app['orm.em']->persist($groupeSecondaire);
-                $app['orm.em']->flush();
+                $entityManager->persist($groupeSecondaire);
+                $entityManager->flush();
                $this->addFlash('success', 'Le groupe secondaire a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($groupeSecondaire);
-                $app['orm.em']->flush();
+                $entityManager->remove($groupeSecondaire);
+                $entityManager->flush();
                $this->addFlash('success', 'Le groupe secondaire a été supprimé.');
             }
 
             return $this->redirectToRoute('groupeSecondaire.admin.list');
         }
 
-        return $app['twig']->render('admin/groupeSecondaire/update.twig', [
+        return $this->render('admin/groupeSecondaire/update.twig', [
             'groupeSecondaire' => $groupeSecondaire,
             'form' => $form->createView(),
         ]);
@@ -279,7 +258,7 @@ class GroupeSecondaireController extends AbstractController
      *
      * @return array of
      */
-    public function buildContextDetailTwig(Application $app, SecondaryGroup $groupeSecondaire, array $extraParameters = null): array
+    public function buildContextDetailTwig( EntityManagerInterface $entityManager, SecondaryGroup $groupeSecondaire, array $extraParameters = null): array
     {
         $gnActif = $app['larp.manager']->getGnActif();
         $result = [
@@ -297,11 +276,11 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Détail d'un groupe secondaire (pour les orgas).
      */
-    public function adminDetailAction(Request $request, Application $app)
+    public function adminDetailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $groupeSecondaire = $request->get('groupe');
 
-        return $app['twig']->render('admin/groupeSecondaire/detail.twig',
+        return $this->render('admin/groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)
         );
     }
@@ -309,13 +288,13 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Ajoute un nouveau membre au groupe secondaire.
      */
-    public function adminNewMembreAction(Request $request, Application $app, SecondaryGroup $groupeSecondaire)
+    public function adminNewMembreAction(Request $request,  EntityManagerInterface $entityManager, SecondaryGroup $groupeSecondaire)
     {
-        $form = $app['form.factory']->createBuilder(new GroupeSecondaireNewMembreForm())->getForm();
+        $form = $this->createForm(new GroupeSecondaireNewMembreForm())->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form['personnage']->getData();
             // $personnage = $data['personnage'];
 
@@ -331,15 +310,15 @@ class GroupeSecondaireController extends AbstractController
             $membre->setSecondaryGroup($groupeSecondaire);
             $membre->setSecret(false);
 
-            $app['orm.em']->persist($membre);
-            $app['orm.em']->flush();
+            $entityManager->persist($membre);
+            $entityManager->flush();
 
            $this->addFlash('success', 'le personnage a été ajouté au groupe secondaire.');
 
             return $this->redirectToRoute('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/groupeSecondaire/newMembre.twig',
+        return $this->render('admin/groupeSecondaire/newMembre.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire, ['form' => $form->createView()])
         );
     }
@@ -347,17 +326,17 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Retire un postulant du groupe.
      */
-    public function adminRemovePostulantAction(Request $request, Application $app)
+    public function adminRemovePostulantAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $groupeSecondaire = $request->get('groupe');
         $postulant = $request->get('postulant');
 
-        $app['orm.em']->remove($postulant);
-        $app['orm.em']->flush();
+        $entityManager->remove($postulant);
+        $entityManager->flush();
 
        $this->addFlash('success', 'la candidature a été supprimée.');
 
-        return $app['twig']->render('admin/groupeSecondaire/detail.twig',
+        return $this->render('admin/groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)
         );
     }
@@ -365,7 +344,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Accepte un postulant dans le groupe.
      */
-    public function adminAcceptPostulantAction(Request $request, Application $app)
+    public function adminAcceptPostulantAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $groupeSecondaire = $request->get('groupe');
         $postulant = $request->get('postulant');
@@ -380,16 +359,16 @@ class GroupeSecondaireController extends AbstractController
         if ($groupeSecondaire->isMembre($personnage)) {
            $this->addFlash('warning', 'le personnage est déjà membre du groupe secondaire.');
         } else {
-            $app['orm.em']->persist($membre);
-            $app['orm.em']->remove($postulant);
-            $app['orm.em']->flush();
+            $entityManager->persist($membre);
+            $entityManager->remove($postulant);
+            $entityManager->flush();
 
             $app['User.mailer']->sendGroupeSecondaireAcceptMessage($personnage->getUser(), $groupeSecondaire);
 
            $this->addFlash('success', 'la candidature a été accepté.');
         }
 
-        return $app['twig']->render('admin/groupeSecondaire/detail.twig',
+        return $this->render('admin/groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)
         );
     }
@@ -397,17 +376,17 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Retire un membre du groupe.
      */
-    public function adminRemoveMembreAction(Request $request, Application $app)
+    public function adminRemoveMembreAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $groupeSecondaire = $request->get('groupe');
         $membre = $request->get('membre');
 
-        $app['orm.em']->remove($membre);
-        $app['orm.em']->flush();
+        $entityManager->remove($membre);
+        $entityManager->flush();
 
        $this->addFlash('success', 'le membre a été retiré.');
 
-        return $app['twig']->render('admin/groupeSecondaire/detail.twig',
+        return $this->render('admin/groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)
         );
     }
@@ -417,16 +396,16 @@ class GroupeSecondaireController extends AbstractController
      *
      * @param Applicetion $app
      */
-    public function adminSecretOffAction(Request $request, Application $app)
+    public function adminSecretOffAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $groupeSecondaire = $request->get('groupe');
         $membre = $request->get('membre');
 
         $membre->setSecret(false);
-        $app['orm.em']->persist($membre);
-        $app['orm.em']->flush();
+        $entityManager->persist($membre);
+        $entityManager->flush();
 
-        return $app['twig']->render('admin/groupeSecondaire/detail.twig',
+        return $this->render('admin/groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)
         );
     }
@@ -436,16 +415,16 @@ class GroupeSecondaireController extends AbstractController
      *
      * @param Applicetion $app
      */
-    public function adminSecretOnAction(Request $request, Application $app)
+    public function adminSecretOnAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $groupeSecondaire = $request->get('groupe');
         $membre = $request->get('membre');
 
         $membre->setSecret(true);
-        $app['orm.em']->persist($membre);
-        $app['orm.em']->flush();
+        $entityManager->persist($membre);
+        $entityManager->flush();
 
-        return $app['twig']->render('admin/groupeSecondaire/detail.twig',
+        return $this->render('admin/groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)
         );
     }

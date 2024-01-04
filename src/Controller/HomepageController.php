@@ -1,31 +1,13 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\EtatCivil;
 use App\Entity\Restriction;
 use Doctrine\ORM\EntityManagerInterface;
-use LarpManager\Form\EtatCivilForm;
-use LarpManager\Form\UserRestrictionForm;
-use Silex\Application;
+use App\Form\EtatCivilForm;
+use App\Form\UserRestrictionForm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -86,22 +68,21 @@ class HomepageController extends AbstractController
             $etatCivil = new EtatCivil();
         }
 
-        $form = $app['form.factory']->createBuilder(new EtatCivilForm(), $etatCivil)
-            ->getForm();
+        $form = $this->createForm(EtatCivilForm::class(), $etatCivil);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $etatCivil = $form->getData();
             $this->getUser()->setEtatCivil($etatCivil);
 
-            $app['orm.em']->persist($this->getUser());
-            $app['orm.em']->flush();
+            $entityManager->persist($this->getUser());
+            $entityManager->flush();
 
             return $this->redirectToRoute('newUser.step3', [], 303);
         }
 
-        return $app['twig']->render('public/newUser/step2.twig', [
+        return $this->render('public/newUser/step2.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -109,14 +90,13 @@ class HomepageController extends AbstractController
     /**
      * Troisième étape pour un nouvel utilisateur : les restrictions alimentaires.
      */
-    public function newUserStep3Action(Request $request, Application $app)
+    public function newUserStep3Action(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $app['form.factory']->createBuilder(new UserRestrictionForm(), $this->getUser())
-            ->getForm();
+        $form = $this->createForm(UserRestrictionForm::class(), $this->getUser());
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $User = $form->getData();
             $newRestriction = $form->get('new_restriction')->getData();
             if ($newRestriction) {
@@ -124,17 +104,17 @@ class HomepageController extends AbstractController
                 $restriction->setUserRelatedByAuteurId($this->getUser());
                 $restriction->setLabel($newRestriction);
 
-                $app['orm.em']->persist($restriction);
+                $entityManager->persist($restriction);
                 $User->addRestriction($restriction);
             }
 
-            $app['orm.em']->persist($User);
-            $app['orm.em']->flush();
+            $entityManager->persist($User);
+            $entityManager->flush();
 
             return $this->redirectToRoute('newUser.step4', [], 303);
         }
 
-        return $app['twig']->render('public/newUser/step3.twig', [
+        return $this->render('public/newUser/step3.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -142,15 +122,15 @@ class HomepageController extends AbstractController
     /**
      * Quatrième étape pour un nouvel utilisateur : choisir un GN.
      */
-    public function newUserStep4Action(Request $request, Application $app)
+    public function newUserStep4Action(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $app['twig']->render('public/newUser/step4.twig');
+        return $this->render('public/newUser/step4.twig');
     }
 
     /**
      * Fourni le blason pour affichage.
      */
-    public function getBlasonAction(Request $request, Application $app)
+    public function getBlasonAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $blason = $request->get('blason');
         $filename = __DIR__.'/../../../private/img/blasons/'.$blason;
@@ -161,26 +141,26 @@ class HomepageController extends AbstractController
     /**
      * Page d'acceuil pour les utilisateurs non connecté.
      */
-    public function notConnectedIndexAction(Request $request, Application $app)
+    public function notConnectedIndexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $app['twig']->render('homepage/not_connected.twig');
+        return $this->render('homepage/not_connected.twig');
     }
 
     /**
      * Affiche une carte du monde.
      */
     #[Route('/world', name: 'world')]
-    public function worldAction(Request $request, Application $app)
+    public function worldAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $app['twig']->render('public/world.twig');
+        return $this->render('public/world.twig');
     }
 
     /**
      * Fourni la liste des pays, leur geographie et leur description.
      */
-    public function countriesAction(Request $request, Application $app)
+    public function countriesAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repoTerritoire = $app['orm.em']->getRepository(\App\Entity\Territoire::class);
+        $repoTerritoire = $entityManager->getRepository(\App\Entity\Territoire::class);
         $territoires = $repoTerritoire->findRoot();
 
         $countries = [];
@@ -203,9 +183,9 @@ class HomepageController extends AbstractController
     /**
      * Fourni la liste des régions.
      */
-    public function regionsAction(Request $request, Application $app)
+    public function regionsAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repoTerritoire = $app['orm.em']->getRepository(\App\Entity\Territoire::class);
+        $repoTerritoire = $entityManager->getRepository(\App\Entity\Territoire::class);
         $territoires = $repoTerritoire->findRegions();
 
         $regions = [];
@@ -228,9 +208,9 @@ class HomepageController extends AbstractController
     /**
      * Fourni la liste des fiefs.
      */
-    public function fiefsAction(Request $request, Application $app)
+    public function fiefsAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repoTerritoire = $app['orm.em']->getRepository(\App\Entity\Territoire::class);
+        $repoTerritoire = $entityManager->getRepository(\App\Entity\Territoire::class);
         $territoires = $repoTerritoire->findFiefs();
 
         $fiefs = [];
@@ -253,9 +233,9 @@ class HomepageController extends AbstractController
     /**
      * Fourni la liste des langues.
      */
-    public function languesAction(Request $request, Application $app)
+    public function languesAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $langueList = $app['orm.em']->getRepository('\\'.\App\Entity\Langue::class)->findAll();
+        $langueList = $entityManager->getRepository('\\'.\App\Entity\Langue::class)->findAll();
 
         $langues = [];
         foreach ($langueList as $langue) {
@@ -324,10 +304,10 @@ class HomepageController extends AbstractController
     /**
      * Fourni la liste des groupes.
      */
-    public function groupesAction(Request $request, Application $app)
+    public function groupesAction(Request $request,  EntityManagerInterface $entityManager)
     {
         // recherche le prochain GN
-        $gnRepo = $app['orm.em']->getRepository('\\'.\App\Entity\Gn::class);
+        $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
         $gn = $gnRepo->findNext();
 
         $groupeGnList = $gn->getGroupeGns();
@@ -370,7 +350,7 @@ class HomepageController extends AbstractController
     /**
      * Met à jour la geographie d'un pays.
      */
-    public function updateCountryGeomAction(Request $request, Application $app)
+    public function updateCountryGeomAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $territoire = $request->get('territoire');
         $geom = $request->get('geom');
@@ -379,8 +359,8 @@ class HomepageController extends AbstractController
         $territoire->setGeojson($geom);
         $territoire->setColor($color);
 
-        $app['orm.em']->persist($territoire);
-        $app['orm.em']->flush();
+        $entityManager->persist($territoire);
+        $entityManager->flush();
 
         $country = [
             'id' => $territoire->getId(),
@@ -396,42 +376,42 @@ class HomepageController extends AbstractController
     /**
      * Affiche une page récapitulatif des liens pour discuter.
      */
-    public function discuterAction(Request $request, Application $app)
+    public function discuterAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $app['twig']->render('public/discuter.twig');
+        return $this->render('public/discuter.twig');
     }
 
     /**
      * Affiche une page récapitulatif des événements.
      */
-    public function evenementAction(Request $request, Application $app)
+    public function evenementAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $app['twig']->render('public/evenement.twig');
+        return $this->render('public/evenement.twig');
     }
 
     /**
      * Affiche les mentions légales.
      */
     #[Route('/legal', name: 'legal')]
-    public function legalAction(Request $request, Application $app)
+    public function legalAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $app['twig']->render('homepage/legal.twig');
+        return $this->render('homepage/legal.twig');
     }
 
     /**
      * Affiche les informations de dev.
      */
     #[Route('/dev', name: 'dev')]
-    public function devAction(Request $request, Application $app)
+    public function devAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $app['twig']->render('homepage/dev.twig');
+        return $this->render('homepage/dev.twig');
     }
 
     /**
      * Statistiques du projet.
      */
-    public function metricsAction(Request $request, Application $app)
+    public function metricsAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $app['twig']->render('homepage/metrics/report.html');
+        return $this->render('homepage/metrics/report.html');
     }
 }

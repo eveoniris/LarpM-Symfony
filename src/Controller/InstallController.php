@@ -1,26 +1,8 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
-use Silex\Application;
 use Silex\Provider\DoctrineServiceProvider;
 use Silex\Provider\SecurityServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,7 +37,7 @@ class InstallController extends AbstractController
         return 0 == $UsersCount;
     }
 
-    public function createOrUpdateAction(Request $request, Application $app)
+    public function createOrUpdateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         // $app['security.access_rules'] dans le bootstrap definit deja ce comportement, ce check n'est la que
         // comme double securite
@@ -64,9 +46,9 @@ class InstallController extends AbstractController
         }
 
         if ('POST' === $request->getMethod()) {
-            $this->loadLarpManagerTables($app['orm.em']->getConnection(), $app['db_install_path']);
+            $this->loadLarpManagerTables($entityManager->getConnection(), $app['db_install_path']);
 
-            return $app['twig']->render('install/installdone.twig');
+            return $this->render('install/installdone.twig');
         }
 
         return $this->redirectToRoute('homepage');
@@ -75,25 +57,24 @@ class InstallController extends AbstractController
     /**
      * Fin de l'installation.
      */
-    public function doneAction(Request $request, Application $app)
+    public function doneAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $app['twig']->render('install/installdone.twig');
+        return $this->render('install/installdone.twig');
     }
 
     /**
      * Création de l'utilisateur admin.
      */
-    public function createUserAction(Request $request, Application $app)
+    public function createUserAction(Request $request,  EntityManagerInterface $entityManager)
     {
         // preparation du formulaire
-        $form = $app['form.factory']->createBuilder(new \LarpManager\Form\InstallUserAdminForm())
-            ->add('create', 'submit')
-            ->getForm();
+        $form = $this->createForm(new \LarpManager\Form\InstallUserAdminForm())
+            ->add('create', 'submit');
 
         $form->handleRequest($request);
 
         // si la requête est valide
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             // on récupére les data de l'utilisateur
             $data = $form->getData();
 
@@ -111,8 +92,8 @@ class InstallController extends AbstractController
             $User->setCreationDate(new \DateTime('NOW'));
             $User->setIsEnabled(true);
 
-            $app['orm.em']->persist($User);
-            $app['orm.em']->flush();
+            $entityManager->persist($User);
+            $entityManager->flush();
 
             // supprimer le fichier de cache pour lancer larpmanager en mode normal
             unlink(__DIR__.'/../../../cache/maintenance.tag');
@@ -123,13 +104,13 @@ class InstallController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $app['twig']->render('install/installfirstUser.twig', ['form' => $form->createView()]);
+        return $this->render('install/installfirstUser.twig', ['form' => $form->createView()]);
     }
 
     /**
      * Mise à jour de la base de données.
      */
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $default = [
             'database_host' => $app['config']['database']['host'],
@@ -138,14 +119,13 @@ class InstallController extends AbstractController
         ];
 
         // preparation du formulaire
-        $form = $app['form.factory']->createBuilder(new \LarpManager\Form\InstallDatabaseForm(), $default)
-            ->add('create', 'submit')
-            ->getForm();
+        $form = $this->createForm(\LarpManager\Form\InstallDatabaseForm::class(), $default)
+            ->add('create', 'submit');
 
         $form->handleRequest($request);
 
         // si la requête est valide
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $databaseConfig = $form->getData();
 
             $newConfig = $app['config'];
@@ -174,22 +154,22 @@ class InstallController extends AbstractController
             set_time_limit(240);
 
             // on récupére les méta-data de toutes les tables
-            $classes = $app['orm.em']->getMetadataFactory()->getAllMetadata();
+            $classes = $entityManager->getMetadataFactory()->getAllMetadata();
 
             // on met a jour la base de donnée
             $tool->updateSchema($classes);
 
-            return $app['twig']->render('install/installdone.twig');
+            return $this->render('install/installdone.twig');
         }
 
-        return $app['twig']->render('install/update.twig', ['form' => $form->createView()]);
+        return $this->render('install/update.twig', ['form' => $form->createView()]);
     }
 
     /**
      * Affiche la page d'installation de LarpManager.
      */
     #[Route('/install', name: 'install')]
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         // valeur par défaut
         $default = [
@@ -199,14 +179,13 @@ class InstallController extends AbstractController
         ];
 
         // preparation du formulaire
-        $form = $app['form.factory']->createBuilder(new \LarpManager\Form\InstallDatabaseForm(), $default)
-            ->add('create', 'submit')
-            ->getForm();
+        $form = $this->createForm(\LarpManager\Form\InstallDatabaseForm::class(), $default)
+            ->add('create', 'submit');
 
         $form->handleRequest($request);
 
         // si la requête est valide
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $databaseConfig = $form->getData();
 
             $newConfig = $app['config'];
@@ -235,7 +214,7 @@ class InstallController extends AbstractController
             set_time_limit(240);
 
             // on récupére les méta-data de toutes les tables
-            $classes = $app['orm.em']->getMetadataFactory()->getAllMetadata();
+            $classes = $entityManager->getMetadataFactory()->getAllMetadata();
 
             // on créé la base de donnée
             $tool->createSchema($classes);
@@ -243,105 +222,105 @@ class InstallController extends AbstractController
             // on ajoute des éléments de base
             $etat = new \App\Entity\Etat();
             $etat->setLabel('En stock');
-            $app['orm.em']->persist($etat);
-            $app['orm.em']->flush();
+            $entityManager->persist($etat);
+            $entityManager->flush();
 
             $etat = new \App\Entity\Etat();
             $etat->setLabel('Hors stock');
-            $app['orm.em']->persist($etat);
-            $app['orm.em']->flush();
+            $entityManager->persist($etat);
+            $entityManager->flush();
 
             $etat = new \App\Entity\Etat();
             $etat->setLabel('A fabriquer');
-            $app['orm.em']->persist($etat);
-            $app['orm.em']->flush();
+            $entityManager->persist($etat);
+            $entityManager->flush();
 
             $etat = new \App\Entity\Etat();
             $etat->setLabel('A acheter');
-            $app['orm.em']->persist($etat);
+            $entityManager->persist($etat);
 
             // Création des niveaux de compétence
             $niveau = new \App\Entity\Level();
             $niveau->setLabel('Apprenti');
             $niveau->setIndex('1');
-            $app['orm.em']->persist($niveau);
+            $entityManager->persist($niveau);
 
             $niveau = new \App\Entity\Level();
             $niveau->setLabel('Initié');
             $niveau->setIndex('2');
-            $app['orm.em']->persist($niveau);
+            $entityManager->persist($niveau);
 
             $niveau = new \App\Entity\Level();
             $niveau->setLabel('Expert');
             $niveau->setIndex('3');
-            $app['orm.em']->persist($niveau);
+            $entityManager->persist($niveau);
 
             $niveau = new \App\Entity\Level();
             $niveau->setLabel('Maître');
             $niveau->setIndex('4');
-            $app['orm.em']->persist($niveau);
+            $entityManager->persist($niveau);
 
             $niveau = new \App\Entity\Level();
             $niveau->setLabel('Secret');
             $niveau->setIndex('5');
-            $app['orm.em']->persist($niveau);
+            $entityManager->persist($niveau);
 
             $rarete = new \App\Entity\Rarete();
             $rarete->setLabel('Commun');
             $rarete->setValue('1');
-            $app['orm.em']->persist($rarete);
+            $entityManager->persist($rarete);
 
             $rarete = new \App\Entity\Rarete();
             $rarete->setLabel('Rare');
             $rarete->setValue('2');
-            $app['orm.em']->persist($rarete);
+            $entityManager->persist($rarete);
 
             $genre = new \App\Entity\Genre();
             $genre->setLabel('Masculin');
-            $app['orm.em']->persist($genre);
+            $entityManager->persist($genre);
 
             $genre = new \App\Entity\Genre();
             $genre->setLabel('Feminin');
-            $app['orm.em']->persist($genre);
+            $entityManager->persist($genre);
 
             $age = new \App\Entity\Age();
             $age->setLabel('Jeune adulte');
             $age->setEnableCreation(true);
-            $app['orm.em']->persist($age);
+            $entityManager->persist($age);
 
             $age = new \App\Entity\Age();
             $age->setLabel('Adulte');
             $age->setEnableCreation(true);
-            $app['orm.em']->persist($age);
+            $entityManager->persist($age);
 
             $age = new \App\Entity\Age();
             $age->setLabel('Mur');
             $age->setEnableCreation(false);
-            $app['orm.em']->persist($age);
+            $entityManager->persist($age);
 
             $age = new \App\Entity\Age();
             $age->setLabel('Vieux');
             $age->setEnableCreation(false);
-            $app['orm.em']->persist($age);
+            $entityManager->persist($age);
 
             $age = new \App\Entity\Age();
             $age->setLabel('Ancien');
             $age->setEnableCreation(false);
-            $app['orm.em']->persist($age);
+            $entityManager->persist($age);
 
             // Création du topic culte
             $topic = new \App\Entity\Topic();
             $topic->setKey('TOPIC_CULTE');
             $topic->setTitle('Cultes');
             $topic->setDescription('Discussion à propos des cultes');
-            $app['orm.em']->persist($topic);
+            $entityManager->persist($topic);
 
-            $app['orm.em']->flush();
+            $entityManager->flush();
 
             // création de l'utilisateur admin
             return $this->redirectToRoute('install_create_User');
         }
 
-        return $app['twig']->render('install/index.twig', ['form' => $form->createView()]);
+        return $this->render('install/index.twig', ['form' => $form->createView()]);
     }
 }

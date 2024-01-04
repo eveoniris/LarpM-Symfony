@@ -1,27 +1,9 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use LarpManager\Services\RandomColor\RandomColor;
-use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -36,9 +18,9 @@ class StatistiqueController extends AbstractController
     // TODO : move to admin dashboard
     #[Route('/statistique', name: 'statistique')]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access the admin dashboard.')]
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository(\App\Entity\Langue::class);
+        $repo = $entityManager->getRepository(\App\Entity\Langue::class);
         $langues = $repo->findAll();
         $stats = [];
         foreach ($langues as $langue) {
@@ -55,7 +37,7 @@ class StatistiqueController extends AbstractController
             ];
         }
 
-        $repo = $app['orm.em']->getRepository(\App\Entity\Classe::class);
+        $repo = $entityManager->getRepository(\App\Entity\Classe::class);
         $classes = $repo->findAll();
         $statClasses = [];
         foreach ($classes as $classe) {
@@ -71,7 +53,7 @@ class StatistiqueController extends AbstractController
             ];
         }
 
-        $repo = $app['orm.em']->getRepository(\App\Entity\Construction::class);
+        $repo = $entityManager->getRepository(\App\Entity\Construction::class);
         $constructions = $repo->findAll();
         $statConstructions = [];
         foreach ($constructions as $construction) {
@@ -87,7 +69,7 @@ class StatistiqueController extends AbstractController
             ];
         }
 
-        $repo = $app['orm.em']->getRepository(\App\Entity\Competence::class);
+        $repo = $entityManager->getRepository(\App\Entity\Competence::class);
         $competences = $repo->findAllOrderedByLabel();
         $statCompetences = [];
         $statCompetencesFamily = [];
@@ -119,23 +101,23 @@ class StatistiqueController extends AbstractController
             }
         }
 
-        $repo = $app['orm.em']->getRepository(\App\Entity\Personnage::class);
+        $repo = $entityManager->getRepository(\App\Entity\Personnage::class);
         $personnages = $repo->findAll();
 
-        $repo = $app['orm.em']->getRepository(\App\Entity\User::class);
+        $repo = $entityManager->getRepository(\App\Entity\User::class);
         $Users = $repo->findAll();
 
-        $repo = $app['orm.em']->getRepository(\App\Entity\Participant::class);
+        $repo = $entityManager->getRepository(\App\Entity\Participant::class);
         $participants = $repo->findAll();
 
-        $repo = $app['orm.em']->getRepository(\App\Entity\Groupe::class);
+        $repo = $entityManager->getRepository(\App\Entity\Groupe::class);
         $groupes = $repo->findAll();
         $places = 0;
         foreach ($groupes as $groupe) {
             $places += $groupe->getClasseOpen();
         }
 
-        $repo = $app['orm.em']->getRepository(\App\Entity\Genre::class);
+        $repo = $entityManager->getRepository(\App\Entity\Genre::class);
         $genres = $repo->findAll();
         $statGenres = [];
         foreach ($genres as $genre) {
@@ -151,7 +133,7 @@ class StatistiqueController extends AbstractController
             ];
         }
 
-        return $app['twig']->render('admin/statistique/index.twig', [
+        return $this->render('admin/statistique/index.twig', [
             'langues' => json_encode($stats),
             'classes' => json_encode($statClasses),
             'genres' => json_encode($statGenres),

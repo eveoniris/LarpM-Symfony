@@ -1,27 +1,9 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
-use LarpManager\Form\AttributeTypeForm;
-use Silex\Application;
+use App\Form\AttributeTypeForm;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -34,33 +16,32 @@ class AttributeTypeController extends AbstractController
     /**
      * Liste des types d'attribut.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\AttributeType::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\AttributeType::class);
         $attributes = $repo->findAllOrderedByLabel();
 
-        return $app['twig']->render('admin/attributeType/index.twig', ['attributes' => $attributes]);
+        return $this->render('admin/attributeType/index.twig', ['attributes' => $attributes]);
     }
 
     /**
      * Ajoute d'un attribut.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $attributeType = new \App\Entity\AttributeType();
 
-        $form = $app['form.factory']->createBuilder(new AttributeTypeForm(), $attributeType)
+        $form = $this->createForm(AttributeTypeForm::class(), $attributeType)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $attributeType = $form->getData();
 
-            $app['orm.em']->persist($attributeType);
-            $app['orm.em']->flush();
+            $entityManager->persist($attributeType);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le type d\'attribut a été ajoutée.');
 
@@ -71,7 +52,7 @@ class AttributeTypeController extends AbstractController
             }
         }
 
-        return $app['twig']->render('admin/attributeType/add.twig', [
+        return $this->render('admin/attributeType/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -79,36 +60,35 @@ class AttributeTypeController extends AbstractController
     /**
      * Met à jour un attribut.
      */
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $attributeType = $app['orm.em']->find('\\'.\App\Entity\AttributeType::class, $id);
+        $attributeType = $entityManager->find('\\'.\App\Entity\AttributeType::class, $id);
 
-        $form = $app['form.factory']->createBuilder(new AttributeTypeForm(), $attributeType)
+        $form = $this->createForm(AttributeTypeForm::class(), $attributeType)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+            ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $attributeType = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                $app['orm.em']->persist($attributeType);
-                $app['orm.em']->flush();
+                $entityManager->persist($attributeType);
+                $entityManager->flush();
                $this->addFlash('success', 'La type d\'attribut a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($attributeType);
-                $app['orm.em']->flush();
+                $entityManager->remove($attributeType);
+                $entityManager->flush();
                $this->addFlash('success', 'Le type d\'attribut a été supprimé.');
             }
 
             return $this->redirectToRoute('attribute.type');
         }
 
-        return $app['twig']->render('admin/attributeType/update.twig', [
+        return $this->render('admin/attributeType/update.twig', [
             'attributeType' => $attributeType,
             'form' => $form->createView(),
         ]);
@@ -117,14 +97,14 @@ class AttributeTypeController extends AbstractController
     /**
      * Detail d'un attribut.
      */
-    public function detailAction(Request $request, Application $app)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $attributeType = $app['orm.em']->find('\\'.\App\Entity\AttributeType::class, $id);
+        $attributeType = $entityManager->find('\\'.\App\Entity\AttributeType::class, $id);
 
         if ($attributeType) {
-            return $app['twig']->render('admin/attributeType/detail.twig', ['attributeType' => $attributeType]);
+            return $this->render('admin/attributeType/detail.twig', ['attributeType' => $attributeType]);
         } else {
            $this->addFlash('error', 'La attribute type n\'a pas été trouvé.');
 

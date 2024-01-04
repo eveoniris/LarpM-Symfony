@@ -1,34 +1,16 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Groupe;
 use App\Entity\GroupeGn;
 use App\Entity\Participant;
-use LarpManager\Form\GroupeGn\GroupeGnForm;
-use LarpManager\Form\GroupeGn\GroupeGnOrdreForm;
-use LarpManager\Form\GroupeGn\GroupeGnPlaceAvailableForm;
-use LarpManager\Form\GroupeGn\GroupeGnResponsableForm;
+use App\Form\GroupeGn\GroupeGnForm;
+use App\Form\GroupeGn\GroupeGnOrdreForm;
+use App\Form\GroupeGn\GroupeGnPlaceAvailableForm;
+use App\Form\GroupeGn\GroupeGnResponsableForm;
 use LarpManager\Repository\ParticipantRepository;
-use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -42,9 +24,9 @@ class GroupeGnController extends AbstractController
     /**
      * Liste des sessions de jeu pour un groupe.
      */
-    public function listAction(Request $request, Application $app, Groupe $groupe)
+    public function listAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
-        return $app['twig']->render('admin/groupeGn/list.twig', [
+        return $this->render('admin/groupeGn/list.twig', [
             'groupe' => $groupe,
         ]);
     }
@@ -52,7 +34,7 @@ class GroupeGnController extends AbstractController
     /**
      * Ajout d'un groupe à un jeu.
      */
-    public function addAction(Request $request, Application $app, Groupe $groupe)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
         $groupeGn = new GroupeGn();
         $groupeGn->setGroupe($groupe);
@@ -66,23 +48,22 @@ class GroupeGnController extends AbstractController
             $groupeGn->setJeuMaritime($jeu->getJeuMaritime());
         }
 
-        $form = $app['form.factory']->createBuilder(new GroupeGnForm(), $groupeGn)
-            ->add('submit', 'submit', ['label' => 'Enregistrer'])
-            ->getForm();
+        $form = $this->createForm(GroupeGnForm::class(), $groupeGn)
+            ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $groupeGn = $form->getData();
-            $app['orm.em']->persist($groupeGn);
-            $app['orm.em']->flush();
+            $entityManager->persist($groupeGn);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La participation au jeu a été enregistré.');
 
             return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
-        return $app['twig']->render('admin/groupeGn/add.twig', [
+        return $this->render('admin/groupeGn/add.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -91,25 +72,24 @@ class GroupeGnController extends AbstractController
     /**
      * Modification de la participation à un jeu du groupe.
      */
-    public function updateAction(Request $request, Application $app, Groupe $groupe, GroupeGn $groupeGn)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe, GroupeGn $groupeGn)
     {
-        $form = $app['form.factory']->createBuilder(new GroupeGnForm(), $groupeGn)
-            ->add('submit', 'submit', ['label' => 'Enregistrer'])
-            ->getForm();
+        $form = $this->createForm(GroupeGnForm::class(), $groupeGn)
+            ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $groupeGn = $form->getData();
-            $app['orm.em']->persist($groupeGn);
-            $app['orm.em']->flush();
+            $entityManager->persist($groupeGn);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La participation au jeu a été enregistré.');
 
             return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
-        return $app['twig']->render('admin/groupeGn/update.twig', [
+        return $this->render('admin/groupeGn/update.twig', [
             'groupe' => $groupe,
             'groupeGn' => $groupeGn,
             'form' => $form->createView(),
@@ -119,9 +99,9 @@ class GroupeGnController extends AbstractController
     /**
      * Choisir le responsable.
      */
-    public function responsableAction(Request $request, Application $app, Groupe $groupe, GroupeGn $groupeGn)
+    public function responsableAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe, GroupeGn $groupeGn)
     {
-        $form = $app['form.factory']->createBuilder(new GroupeGnResponsableForm(), $groupeGn)
+        $form = $this->createForm(GroupeGnResponsableForm::class(), $groupeGn)
             ->add('responsable', 'entity', [
                 'label' => 'Responsable',
                 'required' => false,
@@ -144,15 +124,14 @@ class GroupeGnController extends AbstractController
                     'placeholder' => 'Responsable',
                 ],
             ])
-            ->add('submit', 'submit', ['label' => 'Enregistrer'])
-            ->getForm();
+            ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $groupeGn = $form->getData();
-            $app['orm.em']->persist($groupeGn);
-            $app['orm.em']->flush();
+            $entityManager->persist($groupeGn);
+            $entityManager->flush();
 
             $app['notify']->newResponsable($groupeGn->getResponsable()->getUser(), $groupeGn);
 
@@ -161,7 +140,7 @@ class GroupeGnController extends AbstractController
             return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
-        return $app['twig']->render('admin/groupeGn/responsable.twig', [
+        return $this->render('admin/groupeGn/responsable.twig', [
             'groupe' => $groupe,
             'groupeGn' => $groupeGn,
             'form' => $form->createView(),
@@ -171,9 +150,9 @@ class GroupeGnController extends AbstractController
     /**
      * Ajoute un participant à un groupe.
      */
-    public function participantAddAction(Request $request, Application $app, GroupeGn $groupeGn)
+    public function participantAddAction(Request $request,  EntityManagerInterface $entityManager, GroupeGn $groupeGn)
     {
-        $form = $app['form.factory']->createBuilder()
+        $form = $this->createForm()
             ->add('participant', 'entity', [
                 'label' => 'Nouveau participant',
                 'required' => true,
@@ -197,16 +176,15 @@ class GroupeGnController extends AbstractController
                     'placeholder' => 'Participant',
                 ],
             ])
-            ->add('submit', 'submit', ['label' => 'Enregistrer'])
-            ->getForm();
+            ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $data['participant']->setGroupeGn($groupeGn);
-            $app['orm.em']->persist($data['participant']);
-            $app['orm.em']->flush();
+            $entityManager->persist($data['participant']);
+            $entityManager->flush();
 
             $app['notify']->newMembre($data['participant']->getUser(), $groupeGn);
 
@@ -215,7 +193,7 @@ class GroupeGnController extends AbstractController
             return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
-        return $app['twig']->render('admin/groupeGn/participantAdd.twig', [
+        return $this->render('admin/groupeGn/participantAdd.twig', [
             'groupeGn' => $groupeGn,
             'form' => $form->createView(),
         ]);
@@ -224,11 +202,11 @@ class GroupeGnController extends AbstractController
     /**
      * Ajoute un participant à un groupe (pour les chefs de groupe).
      */
-    public function joueurAddAction(Request $request, Application $app, GroupeGn $groupeGn)
+    public function joueurAddAction(Request $request,  EntityManagerInterface $entityManager, GroupeGn $groupeGn)
     {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
-        $form = $app['form.factory']->createBuilder()
+        $form = $this->createForm()
             ->add('participant', 'entity', [
                 'label' => 'Choisissez le nouveau membre de votre groupe',
                 'required' => false,
@@ -252,17 +230,16 @@ class GroupeGnController extends AbstractController
                     'placeholder' => 'Participant',
                 ],
             ])
-            ->add('submit', 'submit', ['label' => 'Ajouter le joueur choisi'])
-            ->getForm();
+            ->add('submit', 'submit', ['label' => 'Ajouter le joueur choisi']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             if ($data['participant']) {
                 $data['participant']->setGroupeGn($groupeGn);
-                $app['orm.em']->persist($data['participant']);
-                $app['orm.em']->flush();
+                $entityManager->persist($data['participant']);
+                $entityManager->flush();
 
                 $app['notify']->newMembre($data['participant']->getUser(), $groupeGn);
 
@@ -272,7 +249,7 @@ class GroupeGnController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $app['twig']->render('public/groupeGn/add.twig', [
+        return $this->render('public/groupeGn/add.twig', [
             'groupeGn' => $groupeGn,
             'participant' => $participant,
             'form' => $form->createView(),
@@ -282,30 +259,29 @@ class GroupeGnController extends AbstractController
     /**
      * Retire un participant d'un groupe.
      */
-    public function participantRemoveAction(Request $request, Application $app, GroupeGn $groupeGn, Participant $participant)
+    public function participantRemoveAction(Request $request,  EntityManagerInterface $entityManager, GroupeGn $groupeGn, Participant $participant)
     {
-        $form = $app['form.factory']->createBuilder()
-            ->add('submit', 'submit', ['label' => 'Retirer'])
-            ->getForm();
+        $form = $this->createForm()
+            ->add('submit', 'submit', ['label' => 'Retirer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             // si le participant est le chef de groupe
             if ($groupeGn->getResponsable() == $participant) {
                 $groupeGn->setResponsableNull();
             }
 
             $participant->setGroupeGnNull();
-            $app['orm.em']->persist($participant);
-            $app['orm.em']->flush();
+            $entityManager->persist($participant);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le joueur a été retiré de cette session.');
 
             return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
-        return $app['twig']->render('admin/groupeGn/participantRemove.twig', [
+        return $this->render('admin/groupeGn/participantRemove.twig', [
             'groupeGn' => $groupeGn,
             'participant' => $participant,
             'form' => $form->createView(),
@@ -315,27 +291,26 @@ class GroupeGnController extends AbstractController
     /**
      * Permet au chef de groupe de modifier le nombre de place disponible.
      */
-    public function placeAvailableAction(Request $request, Application $app, GroupeGn $groupeGn)
+    public function placeAvailableAction(Request $request,  EntityManagerInterface $entityManager, GroupeGn $groupeGn)
     {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
-        $form = $app['form.factory']->createBuilder(new GroupeGnPlaceAvailableForm(), $groupeGn)
-            ->add('submit', 'submit', ['label' => 'Enregistrer'])
-            ->getForm();
+        $form = $this->createForm(GroupeGnPlaceAvailableForm::class(), $groupeGn)
+            ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $groupeGn = $form->getData();
-            $app['orm.em']->persist($groupeGn);
-            $app['orm.em']->flush();
+            $entityManager->persist($groupeGn);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Vos modifications ont été enregistré.');
 
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $app['twig']->render('public/groupeGn/placeAvailable.twig', [
+        return $this->render('public/groupeGn/placeAvailable.twig', [
             'form' => $form->createView(),
             'groupe' => $groupeGn->getGroupe(),
             'participant' => $participant,
@@ -347,11 +322,11 @@ class GroupeGnController extends AbstractController
      * Détail d'un groupe.
      */
     #[Route('/groupeGn/groupe', name: 'groupeGn.groupe')]
-    public function groupeAction(Request $request, Application $app, GroupeGn $groupeGn)
+    public function groupeAction(Request $request,  EntityManagerInterface $entityManager, GroupeGn $groupeGn)
     {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
-        return $app['twig']->render('public/groupe/detail.twig', [
+        return $this->render('public/groupe/detail.twig', [
             'groupe' => $groupeGn->getGroupe(),
             'participant' => $participant,
             'groupeGn' => $groupeGn,
@@ -361,25 +336,24 @@ class GroupeGnController extends AbstractController
     /**
      * Modification du jeu de domaine du groupe.
      */
-    public function jeudedomaineAction(Request $request, Application $app, Groupe $groupe, GroupeGn $groupeGn)
+    public function jeudedomaineAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe, GroupeGn $groupeGn)
     {
-        $form = $app['form.factory']->createBuilder(new GroupeGnOrdreForm(), $groupeGn, ['groupeGnId' => $groupeGn->getId()])
-            ->add('submit', 'submit', ['label' => 'Enregistrer'])
-            ->getForm();
+        $form = $this->createForm(GroupeGnOrdreForm::class(), $groupeGn, ['groupeGnId' => $groupeGn->getId()])
+            ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $groupeGn = $form->getData();
-            $app['orm.em']->persist($groupeGn);
-            $app['orm.em']->flush();
+            $entityManager->persist($groupeGn);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le jeu de domaine a été enregistré.');
 
             return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
-        return $app['twig']->render('admin/groupeGn/jeudedomaine.twig', [
+        return $this->render('admin/groupeGn/jeudedomaine.twig', [
             'groupe' => $groupe,
             'groupeGn' => $groupeGn,
             'form' => $form->createView(),

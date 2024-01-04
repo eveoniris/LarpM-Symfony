@@ -1,22 +1,5 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
@@ -64,14 +47,13 @@ class ClasseController extends AbstractController
     {
         $classe = new \App\Entity\Classe();
 
-        $form = $app['form.factory']->createBuilder(new ClasseForm(), $classe)
+        $form = $this->createForm(ClasseForm::class(), $classe)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $classe = $form->getData();
 
             $entityManager->persist($classe);
@@ -86,7 +68,7 @@ class ClasseController extends AbstractController
             }
         }
 
-        return $app['twig']->render('classe/add.twig', [
+        return $this->render('classe/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -106,7 +88,7 @@ class ClasseController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $classe = $form->getData();
 
             if ($form->get('update')->isClicked()) {

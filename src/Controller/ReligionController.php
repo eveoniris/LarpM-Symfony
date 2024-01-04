@@ -1,22 +1,5 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
@@ -198,7 +181,7 @@ class ReligionController extends AbstractController
         }
 
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $religion = $form->getData();
 
             if ($form->get('update')->isClicked()) {
@@ -219,8 +202,8 @@ class ReligionController extends AbstractController
                 //return $this->redirectToRoute('religion.detail', ['index' => $id], [], 303);
                 return $this->redirectToRoute('religion.detail', [], 303);
             } elseif ($form->get('delete')->isClicked()) {
-                /*$app['orm.em']->remove($religion);
-                $app['orm.em']->flush();
+                /*$entityManager->remove($religion);
+                $entityManager->flush();
                 $this->addFlash('success', 'La religion a été supprimée.');*/
                 //return $this->redirectToRoute('religion', [], 303);
                 return $this->redirectToRoute('religion', [], 303);
@@ -239,17 +222,16 @@ class ReligionController extends AbstractController
     /**
      * Met à jour le blason d'une religion.
      */
-    public function updateBlasonAction(Request $request, Application $app)
+    public function updateBlasonAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $religion = $request->get('religion');
 
-        $form = $app['form.factory']->createBuilder(new ReligionBlasonForm(), $religion)
-            ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(ReligionBlasonForm::class(), $religion)
+            ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $files = $request->files->get($form->getName());
 
             $path = __DIR__.'/../../../private/img/blasons/';
@@ -269,15 +251,15 @@ class ReligionController extends AbstractController
             $image->save($path.$blasonFilename);
 
             $religion->setBlason($blasonFilename);
-            $app['orm.em']->persist($religion);
-            $app['orm.em']->flush();
+            $entityManager->persist($religion);
+            $entityManager->flush();
 
             $this->addFlash('success', 'Le blason a été enregistré');
 
             return $this->redirectToRoute('religion.detail', ['index' => $religion->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/religion/blason.twig', [
+        return $this->render('admin/religion/blason.twig', [
             'religion' => $religion,
             'form' => $form->createView(),
         ]);
@@ -286,46 +268,45 @@ class ReligionController extends AbstractController
     /**
      * affiche la liste des niveau de fanatisme.
      */
-    public function levelIndexAction(Request $request, Application $app)
+    public function levelIndexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\ReligionLevel::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\ReligionLevel::class);
         $religionLevels = $repo->findAllOrderedByIndex();
 
-        return $app['twig']->render('admin/religion/level/index.twig', ['religionLevels' => $religionLevels]);
+        return $this->render('admin/religion/level/index.twig', ['religionLevels' => $religionLevels]);
     }
 
     /**
      * Detail d'un niveau de fanatisme.
      */
-    public function levelDetailAction(Request $request, Application $app)
+    public function levelDetailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $religionLevel = $app['orm.em']->find('\\'.\App\Entity\ReligionLevel::class, $id);
+        $religionLevel = $entityManager->find('\\'.\App\Entity\ReligionLevel::class, $id);
 
-        return $app['twig']->render('admin/religion/level/detail.twig', ['religionLevel' => $religionLevel]);
+        return $this->render('admin/religion/level/detail.twig', ['religionLevel' => $religionLevel]);
     }
 
     /**
      * Ajoute un niveau de fanatisme.
      */
-    public function levelAddAction(Request $request, Application $app)
+    public function levelAddAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $religionLevel = new \App\Entity\ReligionLevel();
 
-        $form = $app['form.factory']->createBuilder(new ReligionLevelForm(), $religionLevel)
+        $form = $this->createForm(ReligionLevelForm::class(), $religionLevel)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
         // si l'utilisateur soumet une nouvelle religion
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $religionLevel = $form->getData();
 
-            $app['orm.em']->persist($religionLevel);
-            $app['orm.em']->flush();
+            $entityManager->persist($religionLevel);
+            $entityManager->flush();
 
             $this->addFlash('success', 'Le niveau de religion a été ajoutée.');
 
@@ -338,7 +319,7 @@ class ReligionController extends AbstractController
             }
         }
 
-        return $app['twig']->render('admin/religion/level/add.twig', [
+        return $this->render('admin/religion/level/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -349,38 +330,37 @@ class ReligionController extends AbstractController
      * Si l'utilisateur clique sur "supprimer", le niveau religion est supprimée et l'utilisateur est
      * redirigé vers la liste de niveaux de religions.
      */
-    public function levelUpdateAction(Request $request, Application $app)
+    public function levelUpdateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $religionLevel = $app['orm.em']->find('\\'.\App\Entity\ReligionLevel::class, $id);
+        $religionLevel = $entityManager->find('\\'.\App\Entity\ReligionLevel::class, $id);
 
-        $form = $app['form.factory']->createBuilder(new ReligionLevelForm(), $religionLevel)
+        $form = $this->createForm(ReligionLevelForm::class(), $religionLevel)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+            ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $religionLevel = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                $app['orm.em']->persist($religionLevel);
-                $app['orm.em']->flush();
+                $entityManager->persist($religionLevel);
+                $entityManager->flush();
                 $this->addFlash('success', 'Le niveau de religion a été mise à jour.');
 
                 return $this->redirectToRoute('religion.level.detail', ['index' => $id], [], 303);
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($religionLevel);
-                $app['orm.em']->flush();
+                $entityManager->remove($religionLevel);
+                $entityManager->flush();
                 $this->addFlash('success', 'Le niveau de religion a été supprimée.');
 
                 return $this->redirectToRoute('religion.level', [], 303);
             }
         }
 
-        return $app['twig']->render('admin/religion/level/update.twig', [
+        return $this->render('admin/religion/level/update.twig', [
             'religionLevel' => $religionLevel,
             'form' => $form->createView(),
         ]);

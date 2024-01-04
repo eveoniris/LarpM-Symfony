@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Form\Type\RangementType;
 use Doctrine\ORM\EntityManagerInterface;
-use Silex\Application;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +22,7 @@ class StockRangementController extends AbstractController
         return $this->render('stock/rangement/index.twig', ['rangements' => $rangements]);
     }
 
-    public function addAction(Request $request, Application $app): RedirectResponse|Response
+    public function addAction(Request $request,  EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $rangement = new \App\Entity\Rangement();
 
@@ -34,11 +33,11 @@ class StockRangementController extends AbstractController
         $form->handleRequest($request);
 
         // si la requête est valide
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             // on récupére les data de l'utilisateur
             $rangement = $form->getData();
-            $app['orm.em']->persist($rangement);
-            $app['orm.em']->flush();
+            $entityManager->persist($rangement);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le rangement a été ajoutée.');
 
@@ -48,37 +47,36 @@ class StockRangementController extends AbstractController
         return $this->render('stock/rangement/add.twig', ['form' => $form->createView()]);
     }
 
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Rangement::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Rangement::class);
         $rangement = $repo->find($id);
 
-        $form = $app['form.factory']->createBuilder(new RangementType(), $rangement)
+        $form = $this->createForm(RangementType::class(), $rangement)
             ->add('update', 'submit')
-            ->add('delete', 'submit')
-            ->getForm();
+            ->add('delete', 'submit');
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $rangement = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                $app['orm.em']->persist($rangement);
-                $app['orm.em']->flush();
+                $entityManager->persist($rangement);
+                $entityManager->flush();
                $this->addFlash('success', 'Le rangement a été mise à jour');
             } elseif ($form->get('delete')->isClicked()) {
-                $app['orm.em']->remove($rangement);
-                $app['orm.em']->flush();
+                $entityManager->remove($rangement);
+                $entityManager->flush();
                $this->addFlash('success', 'Le rangement a été suprimé');
             }
 
             return $this->redirectToRoute('stock_rangement_index');
         }
 
-        return $app['twig']->render('stock/rangement/update.twig', [
+        return $this->render('stock/rangement/update.twig', [
             'rangement' => $rangement,
             'form' => $form->createView()]);
     }

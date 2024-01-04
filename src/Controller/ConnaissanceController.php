@@ -1,29 +1,11 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Connaissance;
-use LarpManager\Form\ConnaissanceDeleteForm;
-use LarpManager\Form\ConnaissanceForm;
-use Silex\Application;
+use App\Form\ConnaissanceDeleteForm;
+use App\Form\ConnaissanceForm;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -39,11 +21,11 @@ class ConnaissanceController extends AbstractController
     /**
      * Liste des connaissances.
      */
-    public function listAction(Request $request, Application $app)
+    public function listAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $connaissances = $app['orm.em']->getRepository('\\'.\App\Entity\Connaissance::class)->findAllOrderedByLabel();
+        $connaissances = $entityManager->getRepository('\\'.\App\Entity\Connaissance::class)->findAllOrderedByLabel();
 
-        return $app['twig']->render('admin/connaissance/list.twig', [
+        return $this->render('admin/connaissance/list.twig', [
             'connaissances' => $connaissances,
         ]);
     }
@@ -51,11 +33,11 @@ class ConnaissanceController extends AbstractController
     /**
      * Detail d'une connaissance.
      */
-    public function detailAction(Request $request, Application $app)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $connaissance = $request->get('connaissance');
 
-        return $app['twig']->render('admin/connaissance/detail.twig', [
+        return $this->render('admin/connaissance/detail.twig', [
             'connaissance' => $connaissance,
         ]);
     }
@@ -63,17 +45,16 @@ class ConnaissanceController extends AbstractController
     /**
      * Ajoute une connaissance.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $connaissance = new Connaissance();
 
-        $form = $app['form.factory']->createBuilder(new ConnaissanceForm(), $connaissance)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(ConnaissanceForm::class(), $connaissance)
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $connaissance = $form->getData();
             $connaissance->setNiveau(1);
 
@@ -96,15 +77,15 @@ class ConnaissanceController extends AbstractController
                 $connaissance->setDocumentUrl($documentFilename);
             }
 
-            $app['orm.em']->persist($connaissance);
-            $app['orm.em']->flush();
+            $entityManager->persist($connaissance);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La connaissance a été ajoutée');
 
             return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/connaissance/add.twig', [
+        return $this->render('admin/connaissance/add.twig', [
             'connaissance' => $connaissance,
             'form' => $form->createView(),
         ]);
@@ -113,17 +94,16 @@ class ConnaissanceController extends AbstractController
     /**
      * Met à jour une connaissance.
      */
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $connaissance = $request->get('connaissance');
 
-        $form = $app['form.factory']->createBuilder(new ConnaissanceForm(), $connaissance)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(ConnaissanceForm::class(), $connaissance)
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $connaissance = $form->getData();
 
             $files = $request->files->get($form->getName());
@@ -147,15 +127,15 @@ class ConnaissanceController extends AbstractController
                 $connaissance->setDocumentUrl($documentFilename);
             }
 
-            $app['orm.em']->persist($connaissance);
-            $app['orm.em']->flush();
+            $entityManager->persist($connaissance);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La connaissance a été sauvegardée');
 
             return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/connaissance/update.twig', [
+        return $this->render('admin/connaissance/update.twig', [
             'connaissance' => $connaissance,
             'form' => $form->createView(),
         ]);
@@ -164,28 +144,27 @@ class ConnaissanceController extends AbstractController
     /**
      * Supprime une connaissance.
      */
-    public function deleteAction(Request $request, Application $app)
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $connaissance = $request->get('connaissance');
 
-        $form = $app['form.factory']->createBuilder(new ConnaissanceDeleteForm(), $connaissance)
-            ->add('save', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+        $form = $this->createForm(ConnaissanceDeleteForm::class(), $connaissance)
+            ->add('save', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $connaissance = $form->getData();
 
-            $app['orm.em']->remove($connaissance);
-            $app['orm.em']->flush();
+            $entityManager->remove($connaissance);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La connaissance a été supprimée');
 
             return $this->redirectToRoute('connaissance.list', [], 303);
         }
 
-        return $app['twig']->render('admin/connaissance/delete.twig', [
+        return $this->render('admin/connaissance/delete.twig', [
             'connaissance' => $connaissance,
             'form' => $form->createView(),
         ]);
@@ -194,7 +173,7 @@ class ConnaissanceController extends AbstractController
     /**
      * Obtenir le document lié a une connaissance.
      */
-    public function getDocumentAction(Request $request, Application $app)
+    public function getDocumentAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $document = $request->get('document');
         $connaissance = $request->get('connaissance');
@@ -217,7 +196,7 @@ class ConnaissanceController extends AbstractController
      *
      * @param Connaissance
      */
-    public function personnagesAction(Request $request, Application $app, Connaissance $connaissance)
+    public function personnagesAction(Request $request,  EntityManagerInterface $entityManager, Connaissance $connaissance)
     {
         $routeName = 'connaissance.personnages';
         $routeParams = ['connaissance' => $connaissance->getId()];
@@ -240,7 +219,7 @@ class ConnaissanceController extends AbstractController
             $personnages
         );
 
-        return $app['twig']->render(
+        return $this->render(
             $twigFilePath,
             $viewParams
         );

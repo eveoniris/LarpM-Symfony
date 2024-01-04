@@ -1,31 +1,13 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Technologie;
 use App\Entity\TechnologiesRessources;
-use LarpManager\Form\Technologie\TechnologieDeleteForm;
-use LarpManager\Form\Technologie\TechnologieForm;
-use LarpManager\Form\Technologie\TechnologiesRessourcesForm;
-use Silex\Application;
+use App\Form\Technologie\TechnologieDeleteForm;
+use App\Form\Technologie\TechnologieForm;
+use App\Form\Technologie\TechnologiesRessourcesForm;
 use Symfony\Component\HttpFoundation\Request;
 
 class TechnologieController extends AbstractController
@@ -33,11 +15,11 @@ class TechnologieController extends AbstractController
     /**
      * Liste des technologie.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $technologies = $app['orm.em']->getRepository(Technologie::class)->findAllOrderedByLabel();
+        $technologies = $entityManager->getRepository(Technologie::class)->findAllOrderedByLabel();
 
-        return $app['twig']->render('admin\technologie\index.twig', [
+        return $this->render('admin\technologie\index.twig', [
             'technologies' => $technologies,
         ]);
     }
@@ -45,9 +27,9 @@ class TechnologieController extends AbstractController
     /**
      * Ajout d'une technologie.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $app['form.factory']->createBuilder(new TechnologieForm(), new Technologie())->getForm();
+        $form = $this->createForm(TechnologieForm::class(), new Technologie())->getForm();
 
         $form->handleRequest($request);
 
@@ -74,14 +56,14 @@ class TechnologieController extends AbstractController
                 $technologie->setDocumentUrl($documentFilename);
             }
 
-            $app['orm.em']->persist($technologie);
-            $app['orm.em']->flush();
+            $entityManager->persist($technologie);
+            $entityManager->flush();
            $this->addFlash('success', 'La technologie a été ajoutée.');
 
             return $this->redirectToRoute('technologie', [], 303);
         }
 
-        return $app['twig']->render('admin\technologie\add.twig', [
+        return $this->render('admin\technologie\add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -89,9 +71,9 @@ class TechnologieController extends AbstractController
     /**
      * Détail d'une technologie.
      */
-    public function detailAction(Request $request, Application $app, Technologie $technologie)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Technologie $technologie)
     {
-        return $app['twig']->render('admin\technologie\detail.twig', [
+        return $this->render('admin\technologie\detail.twig', [
             'technologie' => $technologie,
         ]);
     }
@@ -99,14 +81,13 @@ class TechnologieController extends AbstractController
     /**
      * Mise à jour d'une technologie.
      */
-    public function updateAction(Request $request, Application $app, Technologie $technologie)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Technologie $technologie)
     {
-        $form = $app['form.factory']->createBuilder(new TechnologieForm(), $technologie)
-            ->getForm();
+        $form = $this->createForm(TechnologieForm::class(), $technologie);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $technologie = $form->getData();
 
             $files = $request->files->get($form->getName());
@@ -129,15 +110,15 @@ class TechnologieController extends AbstractController
                 $technologie->setDocumentUrl($documentFilename);
             }
 
-            $app['orm.em']->persist($technologie);
-            $app['orm.em']->flush();
+            $entityManager->persist($technologie);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La technologie a été mise à jour.');
 
             return $this->redirectToRoute('technologie', [], 303);
         }
 
-        return $app['twig']->render('admin\technologie\update.twig', [
+        return $this->render('admin\technologie\update.twig', [
             'form' => $form->createView(),
             'technologie' => $technologie,
         ]);
@@ -146,26 +127,25 @@ class TechnologieController extends AbstractController
     /**
      * Suppression d'une technologie.
      */
-    public function deleteAction(Request $request, Application $app, Technologie $technologie)
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Technologie $technologie)
     {
-        $form = $app['form.factory']->createBuilder(new TechnologieDeleteForm(), $technologie)
-            ->add('submit', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+        $form = $this->createForm(TechnologieDeleteForm::class(), $technologie)
+            ->add('submit', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $technologie = $form->getData();
 
-            $app['orm.em']->remove($technologie);
-            $app['orm.em']->flush();
+            $entityManager->remove($technologie);
+            $entityManager->flush();
 
            $this->addFlash('success', 'La technologie a été supprimée.');
 
             return $this->redirectToRoute('technologie', [], 303);
         }
 
-        return $app['twig']->render('admin\technologie\delete.twig', [
+        return $this->render('admin\technologie\delete.twig', [
             'form' => $form->createView(),
             'technologie' => $technologie,
         ]);
@@ -176,7 +156,7 @@ class TechnologieController extends AbstractController
      *
      * @param Technologie
      */
-    public function personnagesAction(Request $request, Application $app, Technologie $technologie)
+    public function personnagesAction(Request $request,  EntityManagerInterface $entityManager, Technologie $technologie)
     {
         $routeName = 'technologie.personnages';
         $routeParams = ['technologie' => $technologie->getId()];
@@ -199,7 +179,7 @@ class TechnologieController extends AbstractController
             $personnages
         );
 
-        return $app['twig']->render(
+        return $this->render(
             $twigFilePath,
             $viewParams
         );
@@ -208,13 +188,13 @@ class TechnologieController extends AbstractController
     /**
      * Ajout d'une ressource à une technologie.
      */
-    public function addRessourceAction(Request $request, Application $app)
+    public function addRessourceAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $technologieId = $request->get('technologie');
-        $technologie = $app['orm.em']->find(Technologie::class, $technologieId);
+        $technologie = $entityManager->find(Technologie::class, $technologieId);
         $technologieNom = $technologie->getLabel();
 
-        $form = $app['form.factory']->createBuilder(new TechnologiesRessourcesForm())->getForm();
+        $form = $this->createForm(new TechnologiesRessourcesForm())->getForm();
 
         $form->handleRequest($request);
 
@@ -224,7 +204,7 @@ class TechnologieController extends AbstractController
             $ressourceNom = $technologieRessource->getRessource()->getLabel();
 
             // recherche une instance de TechnologiesRessources correspondant à la technologie et la ressource sélectionnées
-            $oldRessource = $app['orm.em']->getRepository(TechnologiesRessources::class)
+            $oldRessource = $entityManager->getRepository(TechnologiesRessources::class)
                 ->findOneBy(['technologie' => $technologieId, 'ressource' => $ressourceId]);
             $newQuantite = $technologieRessource->getQuantite();
 
@@ -235,16 +215,16 @@ class TechnologieController extends AbstractController
             } else {
                 // création d'une nouvelle entrée TechnologiesRessources
                 $technologieRessource->setTechnologie($technologie);
-                $app['orm.em']->persist($technologieRessource);
+                $entityManager->persist($technologieRessource);
             }
 
-            $app['orm.em']->flush();
+            $entityManager->flush();
            $this->addFlash('success', $technologieNom.' requiert désormais '.$newQuantite.' '.$ressourceNom);
 
             return $this->redirectToRoute('technologie', [], 303);
         }
 
-        return $app['twig']->render('admin\technologie\addRessource.twig', [
+        return $this->render('admin\technologie\addRessource.twig', [
             'technologie' => $technologieId,
             'form' => $form->createView(),
         ]);
@@ -253,19 +233,19 @@ class TechnologieController extends AbstractController
     /**
      * Retrait d'une ressource à une technologie.
      */
-    public function removeRessourceAction(Request $request, Application $app)
+    public function removeRessourceAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $technologieId = $request->get('technologie');
-        $technologie = $app['orm.em']->find(Technologie::class, $technologieId);
+        $technologie = $entityManager->find(Technologie::class, $technologieId);
         $technologieNom = $technologie->getLabel();
         $ressourceNom = $request->get('ressourceNom');
         $ressource = $request->get('ressource');
 
-        $technologieRessource = $app['orm.em']->getRepository(TechnologiesRessources::class)
+        $technologieRessource = $entityManager->getRepository(TechnologiesRessources::class)
             ->findOneBy(['technologie' => $technologieId, 'ressource' => $ressource]);
 
-        $app['orm.em']->remove($technologieRessource);
-        $app['orm.em']->flush();
+        $entityManager->remove($technologieRessource);
+        $entityManager->flush();
 
        $this->addFlash('success', $technologieNom.' ne requiert plus de '.$ressourceNom.'.');
 
@@ -275,7 +255,7 @@ class TechnologieController extends AbstractController
     /**
      * Obtenir le document lié a une technologie.
      */
-    public function getTechnologieDocumentAction(Request $request, Application $app)
+    public function getTechnologieDocumentAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $technologie = $request->get('technologie');
         $document = $technologie->getDocumentUrl();

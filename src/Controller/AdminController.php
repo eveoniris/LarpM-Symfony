@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -92,7 +91,7 @@ class AdminController extends AbstractController
     /**
      * Page d'accueil de l'interface d'administration.
      */
-    public function indexAction(Request $request, Application $app)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $extensions = get_loaded_extensions();
         $phpVersion = phpversion();
@@ -111,7 +110,7 @@ class AdminController extends AbstractController
         // taille des documents
         $docTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../../private/doc'));
 
-        return $app['twig']->render('admin/index.twig', [
+        return $this->render('admin/index.twig', [
             'phpVersion' => $phpVersion,
             'zendVersion' => $zendVersion,
             'uploadMaxSize' => $uploadMaxSize,
@@ -125,7 +124,7 @@ class AdminController extends AbstractController
     /**
      * Consulter les logs de larpManager.
      */
-    public function logAction(Request $request, Application $app)
+    public function logAction(Request $request,  EntityManagerInterface $entityManager)
     {
         if ('prod' == $app['config']['env']['env']) {
             $filename = __DIR__.'/../../../logs/production.log';
@@ -168,7 +167,7 @@ class AdminController extends AbstractController
         $lines = array_reverse($lines);
         $linesFatal = array_reverse($linesFatal);
 
-        return $app['twig']->render('admin/log.twig', [
+        return $this->render('admin/log.twig', [
             'lines' => $lines,
             'linesFatal' => $linesFatal,
         ]);
@@ -177,23 +176,23 @@ class AdminController extends AbstractController
     /**
      * Exporter la base de données.
      */
-    public function databaseExportAction(Request $request, Application $app)
+    public function databaseExportAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $app['twig']->render('admin/databaseExport.twig');
+        return $this->render('admin/databaseExport.twig');
     }
 
     /**
      * Mettre à jour la base de données.
      */
-    public function databaseUpdateAction(Request $request, Application $app)
+    public function databaseUpdateAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $app['twig']->render('admin/databaseUpdate.twig');
+        return $this->render('admin/databaseUpdate.twig');
     }
 
     /**
      * Vider le cache.
      */
-    public function cacheEmptyAction(Request $request, Application $app)
+    public function cacheEmptyAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $app['twig']->clearTemplateCache();
         $app['twig']->clearCacheFiles();
@@ -206,7 +205,7 @@ class AdminController extends AbstractController
     /**
      * Vider les logs.
      */
-    public function logEmptyAction(Request $request, Application $app)
+    public function logEmptyAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $filename = __DIR__.'/../../../logs/production.log';
 
@@ -229,13 +228,13 @@ class AdminController extends AbstractController
      * Fourni les listes des utilisateurs n'ayants pas remplis certaines conditions.
      */
     #[Route('/admin/rappels', name: 'admin.rappels')]
-    public function rappelsAction(Request $request, Application $app)
+    public function rappelsAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\User::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
 
         $UsersWithoutEtatCivil = $repo->findWithoutEtatCivil();
 
-        return $app['twig']->render('admin/rappels.twig', [
+        return $this->render('admin/rappels.twig', [
             'UsersWithoutEtatCivil' => $UsersWithoutEtatCivil,
         ]);
     }

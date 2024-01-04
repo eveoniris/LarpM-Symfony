@@ -1,29 +1,11 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Token;
-use LarpManager\Form\TokenDeleteForm;
-use LarpManager\Form\TokenForm;
-use Silex\Application;
+use App\Form\TokenDeleteForm;
+use App\Form\TokenForm;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -36,29 +18,29 @@ class TokenController extends AbstractController
     /**
      * Liste des tokens.
      */
-    public function listAction(Request $request, Application $app)
+    public function listAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $tokens = $app['orm.em']->getRepository('\\'.\App\Entity\Token::class)->findAllOrderedByLabel();
+        $tokens = $entityManager->getRepository('\\'.\App\Entity\Token::class)->findAllOrderedByLabel();
 
-        return $app['twig']->render('admin/token/list.twig', ['tokens' => $tokens]);
+        return $this->render('admin/token/list.twig', ['tokens' => $tokens]);
     }
 
     /**
      * Impression des tokens.
      */
-    public function printAction(Request $request, Application $app)
+    public function printAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $tokens = $app['orm.em']->getRepository('\\'.\App\Entity\Token::class)->findAllOrderedByLabel();
+        $tokens = $entityManager->getRepository('\\'.\App\Entity\Token::class)->findAllOrderedByLabel();
 
-        return $app['twig']->render('admin/token/print.twig', ['tokens' => $tokens]);
+        return $this->render('admin/token/print.twig', ['tokens' => $tokens]);
     }
 
     /**
      * Téléchargement des tokens.
      */
-    public function downloadAction(Request $request, Application $app): void
+    public function downloadAction(Request $request,  EntityManagerInterface $entityManager): void
     {
-        $tokens = $app['orm.em']->getRepository('\\'.\App\Entity\Token::class)->findAllOrderedByLabel();
+        $tokens = $entityManager->getRepository('\\'.\App\Entity\Token::class)->findAllOrderedByLabel();
 
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename=eveoniris_tokens_'.date('Ymd').'.csv');
@@ -86,22 +68,21 @@ class TokenController extends AbstractController
     /**
      * Ajouter un token.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $token = new Token();
 
-        $form = $app['form.factory']->createBuilder(new TokenForm(), $token)
+        $form = $this->createForm(TokenForm::class(), $token)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $token = $form->getData();
 
-            $app['orm.em']->persist($token);
-            $app['orm.em']->flush($token);
+            $entityManager->persist($token);
+            $entityManager->flush($token);
 
            $this->addFlash('success', 'Le jeton a été ajouté.');
 
@@ -112,7 +93,7 @@ class TokenController extends AbstractController
             }
         }
 
-        return $app['twig']->render('admin/token/add.twig', [
+        return $this->render('admin/token/add.twig', [
             'token' => $token,
             'form' => $form->createView(),
         ]);
@@ -121,34 +102,33 @@ class TokenController extends AbstractController
     /**
      * Détail d'un token.
      */
-    public function detailAction(Request $request, Application $app, Token $token)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Token $token)
     {
-        return $app['twig']->render('admin/token/detail.twig', ['token' => $token]);
+        return $this->render('admin/token/detail.twig', ['token' => $token]);
     }
 
     /**
      * Mise à jour d'un token.
      */
-    public function updateAction(Request $request, Application $app, Token $token)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Token $token)
     {
-        $form = $app['form.factory']->createBuilder(new TokenForm(), $token)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+        $form = $this->createForm(TokenForm::class(), $token)
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $token = $form->getData();
 
-            $app['orm.em']->persist($token);
-            $app['orm.em']->flush($token);
+            $entityManager->persist($token);
+            $entityManager->flush($token);
 
            $this->addFlash('success', 'Le jeton a été modifié.');
 
             return $this->redirectToRoute('token.list', [], 303);
         }
 
-        return $app['twig']->render('admin/token/update.twig', [
+        return $this->render('admin/token/update.twig', [
             'token' => $token,
             'form' => $form->createView(),
         ]);
@@ -157,24 +137,23 @@ class TokenController extends AbstractController
     /**
      * Suppression d'un token.
      */
-    public function deleteAction(Request $request, Application $app, Token $token)
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Token $token)
     {
-        $form = $app['form.factory']->createBuilder(new TokenDeleteForm(), $token)
-            ->add('save', 'submit', ['label' => 'Supprimer', 'attr' => ['class' => 'btn-danger']])
-            ->getForm();
+        $form = $this->createForm(TokenDeleteForm::class(), $token)
+            ->add('save', 'submit', ['label' => 'Supprimer', 'attr' => ['class' => 'btn-danger']]);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
-            $app['orm.em']->remove($token);
-            $app['orm.em']->flush($token);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->remove($token);
+            $entityManager->flush($token);
 
            $this->addFlash('success', 'Le jeton a été supprimé.');
 
             return $this->redirectToRoute('token.list', [], 303);
         }
 
-        return $app['twig']->render('admin/token/delete.twig', [
+        return $this->render('admin/token/delete.twig', [
             'token' => $token,
             'form' => $form->createView(),
         ]);

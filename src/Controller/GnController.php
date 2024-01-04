@@ -9,10 +9,10 @@ use App\Repository\GnRepository;
 use App\Repository\QuestionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use LarpManager\Form\Gn\GnDeleteForm;
-use LarpManager\Form\Gn\GnForm;
-use LarpManager\Form\ParticipantFindForm;
-use LarpManager\Form\PersonnageFindForm;
+use App\Form\Gn\GnDeleteForm;
+use App\Form\Gn\GnForm;
+use App\Form\ParticipantFindForm;
+use App\Form\PersonnageFindForm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -64,7 +64,7 @@ class GnController extends AbstractController
      * Fiche de personnage d'un participant au GN.
      */
     #[Route('/gn/personnage', name: 'gn.personnage')]
-    public function personnageAction(Request $request, Application $app, Gn $gn)
+    public function personnageAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $participant = $this->getUser()->getParticipant($gn);
         $personnage = $participant->getPersonnage();
@@ -76,10 +76,10 @@ class GnController extends AbstractController
             ], [], 303);
         }
 
-        $lois = $app['orm.em']->getRepository(Loi::class)->findAll();
-        $descendants = $app['orm.em']->getRepository(Personnage::class)->findDescendants($personnage);
+        $lois = $entityManager->getRepository(Loi::class)->findAll();
+        $descendants = $entityManager->getRepository(Personnage::class)->findDescendants($personnage);
 
-        return $app['twig']->render('public/personnage/detail.twig', [
+        return $this->render('public/personnage/detail.twig', [
             'personnage' => $personnage,
             'participant' => $participant,
             'lois' => $lois,
@@ -90,7 +90,7 @@ class GnController extends AbstractController
     /**
      * Les personnages present pendant le jeu.
      */
-    public function personnagesAction(Request $request, Application $app, Gn $gn)
+    public function personnagesAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -99,9 +99,9 @@ class GnController extends AbstractController
         $offset = ($page - 1) * $limit;
         $criteria = [];
         $criteria[] = 'gn.id = '.$gn->getId();
-        $form = $app['form.factory']->createBuilder(new PersonnageFindForm())->getForm();
+        $form = $this->createForm(new PersonnageFindForm())->getForm();
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $type = $data['type'];
             $value = $data['value'];
@@ -117,7 +117,7 @@ class GnController extends AbstractController
             }
         }
 
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Personnage::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Personnage::class);
         $personnages = $repo->findList($criteria, [
             'by' => $order_by,
             'dir' => $order_dir,
@@ -127,7 +127,7 @@ class GnController extends AbstractController
                 'gn' => $gn->getId(),
             ]).'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir);
 
-        return $app['twig']->render('gn/personnages.twig', [
+        return $this->render('gn/personnages.twig', [
             'gn' => $gn,
             'personnages' => $personnages,
             'paginator' => $paginator,
@@ -139,7 +139,7 @@ class GnController extends AbstractController
     /**
      * Impression des backgrounds des chefs de groupe.
      */
-    public function backgroundsChefAction(Request $request, Application $app, Gn $gn)
+    public function backgroundsChefAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $groupes = $gn->getGroupes();
         $iterator = $groupes->getIterator();
@@ -148,7 +148,7 @@ class GnController extends AbstractController
         });
         $groupes = new ArrayCollection(iterator_to_array($iterator));
 
-        return $app['twig']->render('gn/backgroundsChef.twig', [
+        return $this->render('gn/backgroundsChef.twig', [
             'gn' => $gn,
             'groupes' => $groupes,
         ]);
@@ -157,7 +157,7 @@ class GnController extends AbstractController
     /**
      * Impression des backgrounds des groupes.
      */
-    public function backgroundsGroupeAction(Request $request, Application $app, Gn $gn)
+    public function backgroundsGroupeAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $groupes = $gn->getGroupes();
         $iterator = $groupes->getIterator();
@@ -166,7 +166,7 @@ class GnController extends AbstractController
         });
         $groupes = new ArrayCollection(iterator_to_array($iterator));
 
-        return $app['twig']->render('gn/backgroundsGroupe.twig', [
+        return $this->render('gn/backgroundsGroupe.twig', [
             'gn' => $gn,
             'groupes' => $groupes,
         ]);
@@ -175,7 +175,7 @@ class GnController extends AbstractController
     /**
      * Impression des backgrounds des chefs de groupe.
      */
-    public function backgroundsMembresAction(Request $request, Application $app, Gn $gn)
+    public function backgroundsMembresAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $groupes = $gn->getGroupes();
         $iterator = $groupes->getIterator();
@@ -184,7 +184,7 @@ class GnController extends AbstractController
         });
         $groupes = new ArrayCollection(iterator_to_array($iterator));
 
-        return $app['twig']->render('gn/backgroundsMembres.twig', [
+        return $this->render('gn/backgroundsMembres.twig', [
             'gn' => $gn,
             'groupes' => $groupes,
         ]);
@@ -193,11 +193,11 @@ class GnController extends AbstractController
     /**
      * Gestion des billets d'un GN.
      */
-    public function billetAction(Request $request, Application $app, Gn $gn)
+    public function billetAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $participant = null;
 
-        return $app['twig']->render('gn/billet.twig', [
+        return $this->render('gn/billet.twig', [
             'gn' => $gn,
             'participant' => $participant,
         ]);
@@ -207,15 +207,14 @@ class GnController extends AbstractController
      * affiche le formulaire d'ajout d'un gn
      * Lorsqu'un GN est créé, son forum associé doit lui aussi être créé.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $app['form.factory']->createBuilder(new GnForm(), new Gn())
+        $form = $this->createForm(GnForm::class(), new Gn())
             ->add('save', 'submit', [
                 'label' => 'Sauvegarder',
-            ])
-            ->getForm();
+            ]);
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $gn = $form->getData();
             /**
              * Création du topic associé à ce gn.
@@ -228,18 +227,18 @@ class GnController extends AbstractController
             $topic->setUser($this->getUser()); // défini les droits d'accés à ce forum // (les participants au GN ont le droits d'accéder à ce forum)
             $topic->setRight('GN_PARTICIPANT');
             $gn->setTopic($topic);
-            $app['orm.em']->persist($gn);
-            $app['orm.em']->flush();
-            $app['orm.em']->persist($topic);
+            $entityManager->persist($gn);
+            $entityManager->flush();
+            $entityManager->persist($topic);
             $topic->setObjectId($gn->getId());
-            $app['orm.em']->persist($gn);
-            $app['orm.em']->flush();
+            $entityManager->persist($gn);
+            $entityManager->flush();
            $this->addFlash('success', 'Le gn a été ajouté.');
 
             return $this->redirectToRoute('gn.list', [], 303);
         }
 
-        return $app['twig']->render('gn/add.twig', [
+        return $this->render('gn/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -247,11 +246,11 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu n'ayant pas encore de billets.
      */
-    public function participantsWithoutBilletAction(Request $request, Application $app, Gn $gn)
+    public function participantsWithoutBilletAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $participants = $gn->getParticipantsWithoutBillet();
 
-        return $app['twig']->render('gn/participantswithoutbillet.twig', [
+        return $this->render('gn/participantswithoutbillet.twig', [
             'gn' => $gn,
             'participants' => $participants,
         ]);
@@ -260,11 +259,11 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu ayant un billet mais pas encore de groupe.
      */
-    public function participantsWithoutGroupAction(Request $request, Application $app, Gn $gn)
+    public function participantsWithoutGroupAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $participants = $gn->getParticipantsWithoutGroup();
 
-        return $app['twig']->render('gn/participantswithoutgroup.twig', [
+        return $this->render('gn/participantswithoutgroup.twig', [
             'gn' => $gn,
             'participants' => $participants,
         ]);
@@ -273,11 +272,11 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu ayant un billet mais pas encore de personnage.
      */
-    public function participantsWithoutPersoAction(Request $request, Application $app, Gn $gn)
+    public function participantsWithoutPersoAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $participants = $gn->getParticipantsWithoutPerso();
 
-        return $app['twig']->render('gn/participantswithoutperso.twig', [
+        return $this->render('gn/participantswithoutperso.twig', [
             'gn' => $gn,
             'participants' => $participants,
         ]);
@@ -286,7 +285,7 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu ayant un billet mais pas encore de groupe au format CSV.
      */
-    public function participantsWithoutGroupCSVAction(Request $request, Application $app, Gn $gn): void
+    public function participantsWithoutGroupCSVAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn): void
     {
         $participants = $gn->getParticipantsWithoutGroup();
         header('Content-Type: text/csv');
@@ -319,7 +318,7 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu n'ayant pas encore de billets au format CSV.
      */
-    public function participantsWithoutBilletCSVAction(Request $request, Application $app, Gn $gn): void
+    public function participantsWithoutBilletCSVAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn): void
     {
         $participants = $gn->getParticipantsWithoutBillet();
         header('Content-Type: text/csv');
@@ -352,7 +351,7 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu n'ayant pas encore de personnage au format CSV.
      */
-    public function participantsWithoutPersoCSVAction(Request $request, Application $app, Gn $gn): void
+    public function participantsWithoutPersoCSVAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn): void
     {
         $participants = $gn->getParticipantsWithoutPerso();
 
@@ -389,7 +388,7 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu.
      */
-    public function participantsAction(Request $request, Application $app, Gn $gn)
+    public function participantsAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $order_by = $request->get('order_by') ?: 'ec.nom';
         $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -398,7 +397,7 @@ class GnController extends AbstractController
         $offset = ($page - 1) * $limit;
 
         // nombre de participant au total
-        $qbTotal = $app['orm.em']->createQueryBuilder();
+        $qbTotal = $entityManager->createQueryBuilder();
         $qbTotal->select('COUNT(p.id)')
             ->from('\\'.\App\Entity\Participant::class, 'p')
             ->join('p.gn', 'gn')
@@ -408,7 +407,7 @@ class GnController extends AbstractController
             ->setParameter('gnId', $gn->getId());
 
         // liste des participants à afficher
-        $qb = $app['orm.em']->createQueryBuilder();
+        $qb = $entityManager->createQueryBuilder();
         $qb->select('p')
             ->from('\\'.\App\Entity\Participant::class, 'p')
             ->join('p.gn', 'gn')
@@ -420,10 +419,10 @@ class GnController extends AbstractController
             ->setMaxResults($limit)
             ->setFirstResult($offset);
 
-        $form = $app['form.factory']->createBuilder(new ParticipantFindForm())->getForm();
+        $form = $this->createForm(new ParticipantFindForm())->getForm();
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
             switch ($data['type']) {
@@ -448,7 +447,7 @@ class GnController extends AbstractController
                 'gn' => $gn->getId(),
             ]).'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir);
 
-        return $app['twig']->render('gn/participants.twig', [
+        return $this->render('gn/participants.twig', [
             'gn' => $gn,
             'participants' => $participants,
             'paginator' => $paginator,
@@ -459,7 +458,7 @@ class GnController extends AbstractController
     /**
      * Génére le fichier à envoyer à la FédéGN.
      */
-    public function fedegnAction(Request $request, Application $app, Gn $gn): void
+    public function fedegnAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn): void
     {
         $participants = $gn->getParticipantsFedeGn();
         header('Content-Type: text/csv');
@@ -513,48 +512,46 @@ class GnController extends AbstractController
     }
 
     #[Route('/gn/delete', name: 'gn.delete')]
-    public function deleteAction(Request $request, Application $app, Gn $gn)
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
-        $form = $app['form.factory']->createBuilder(new GnDeleteForm(), $gn)
+        $form = $this->createForm(GnDeleteForm::class(), $gn)
             ->add('delete', 'submit', [
                 'label' => 'Supprimer',
-            ])
-            ->getForm();
+            ]);
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $gn = $form->getData();
-            $app['orm.em']->remove($gn);
-            $app['orm.em']->flush();
+            $entityManager->remove($gn);
+            $entityManager->flush();
            $this->addFlash('success', 'Le gn a été supprimé.');
 
             return $this->redirectToRoute('gn.list');
         }
 
-        return $app['twig']->render('gn/delete.twig', [
+        return $this->render('gn/delete.twig', [
             'gn' => $gn,
             'form' => $form->createView(),
         ]);
     }
 
     #[Route('/gn/update', name: 'gn.update')]
-    public function updateAction(Request $request, Application $app, Gn $gn)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
-        $form = $app['form.factory']->createBuilder(new GnForm(), $gn)
+        $form = $this->createForm(GnForm::class(), $gn)
             ->add('update', 'submit', [
                 'label' => 'Sauvegarder',
-            ])
-            ->getForm();
+            ]);
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $gn = $form->getData();
-            $app['orm.em']->persist($gn);
-            $app['orm.em']->flush();
+            $entityManager->persist($gn);
+            $entityManager->flush();
            $this->addFlash('success', 'Le gn a été mis à jour.');
 
             return $this->redirectToRoute('gn.list');
         }
 
-        return $app['twig']->render('gn/update.twig', [
+        return $this->render('gn/update.twig', [
             'gn' => $gn,
             'form' => $form->createView(),
         ]);
@@ -563,7 +560,7 @@ class GnController extends AbstractController
     /**
      * Affiche la billetterie d'un GN.
      */
-    public function billetterieAction(Application $app, Request $request, Gn $gn)
+    public function billetterieAction( EntityManagerInterface $entityManager, Request $request, Gn $gn)
     {
         $groupeGns = $gn->getGroupeGnsPj();
         $iterator = $groupeGns->getIterator();
@@ -574,7 +571,7 @@ class GnController extends AbstractController
         });
         $groupeGns = new ArrayCollection(iterator_to_array($iterator));
 
-        return $app['twig']->render('gn/billetterie.twig', [
+        return $this->render('gn/billetterie.twig', [
             'gn' => $gn,
             'groupeGns' => $groupeGns,
         ]);
@@ -583,11 +580,11 @@ class GnController extends AbstractController
     /**
      * Liste des personnages renommé prévu sur le jeu.
      */
-    public function renomAction(Request $request, Application $app, Gn $gn)
+    public function renomAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     { // trouver tous les personnages participants au prochain GN et ayant une renommé supérieur à 10
         $personnages = $gn->getPersonnagesRenom(10);
 
-        return $app['twig']->render('gn/renom.twig', [
+        return $this->render('gn/renom.twig', [
             'personnages' => $personnages,
             'gn' => $gn,
         ]);
@@ -596,11 +593,11 @@ class GnController extends AbstractController
     /**
      * Liste des pnjs prévu sur le jeu.
      */
-    public function pnjsAction(Request $request, Application $app, Gn $gn)
+    public function pnjsAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $pnjs = $gn->getParticipantsPnj();
 
-        return $app['twig']->render('gn/pnjs.twig', [
+        return $this->render('gn/pnjs.twig', [
             'pnjs' => $pnjs,
             'gn' => $gn,
         ]);
@@ -609,7 +606,7 @@ class GnController extends AbstractController
     /**
      * Liste des groupes prévu sur le jeu.
      */
-    public function groupesAction(Request $request, Application $app, Gn $gn)
+    public function groupesAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $groupes = $gn->getGroupes();
         $iterator = $groupes->getIterator();
@@ -618,7 +615,7 @@ class GnController extends AbstractController
         });
         $groupes = new ArrayCollection(iterator_to_array($iterator));
 
-        return $app['twig']->render('gn/groupes.twig', [
+        return $this->render('gn/groupes.twig', [
             'groupes' => $groupes,
             'gn' => $gn,
         ]);
@@ -627,7 +624,7 @@ class GnController extends AbstractController
     /**
      * Liste des groupes réservés.
      */
-    public function groupesReservesAction(Request $request, Application $app, Gn $gn)
+    public function groupesReservesAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $groupes = $gn->getGroupesReserves();
         $iterator = $groupes->getIterator();
@@ -636,7 +633,7 @@ class GnController extends AbstractController
         });
         $groupes = new ArrayCollection(iterator_to_array($iterator));
 
-        return $app['twig']->render('admin/gn/groupes.twig', [
+        return $this->render('admin/gn/groupes.twig', [
             'groupes' => $groupes,
             'gn' => $gn,
         ]);
@@ -645,7 +642,7 @@ class GnController extends AbstractController
     /**
      * Liste des groupes recherchant des joueurs.
      */
-    public function groupesPlacesAction(Request $request, Application $app, Gn $gn)
+    public function groupesPlacesAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $groupesPlaces = new ArrayCollection();
         $groupes = $gn->getGroupes();
@@ -662,7 +659,7 @@ class GnController extends AbstractController
         });
         $groupesPlaces = new ArrayCollection(iterator_to_array($iterator));
 
-        return $app['twig']->render('gn/groupesPlaces.twig', [
+        return $this->render('gn/groupesPlaces.twig', [
             'groupes' => $groupesPlaces,
             'gn' => $gn,
         ]);
@@ -671,12 +668,12 @@ class GnController extends AbstractController
     /**
      * Impression fiche de perso pour le gn.
      */
-    public function printPersoAction(Request $request, Application $app, Gn $gn)
+    public function printPersoAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $participants = $gn->getParticipantsWithBillet();
         $quetes = new ArrayCollection();
 
-        return $app['twig']->render('admin/gn/printPerso.twig', [
+        return $this->render('admin/gn/printPerso.twig', [
             'gn' => $gn,
             'participants' => $participants,
             'quetes' => $quetes,
@@ -686,12 +683,12 @@ class GnController extends AbstractController
     /**
      * Impression fiche de perso pour le gn.
      */
-    public function printInterAction(Request $request, Application $app, Gn $gn)
+    public function printInterAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $participants = $gn->getParticipantsInterGN();
         $quetes = new ArrayCollection();
 
-        return $app['twig']->render('admin/gn/printInter.twig', [
+        return $this->render('admin/gn/printInter.twig', [
             'participants' => $participants,
             'quetes' => $quetes,
         ]);

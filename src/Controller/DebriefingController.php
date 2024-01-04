@@ -1,32 +1,14 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 namespace App\Controller;
 
 use App\Entity\Debriefing;
 use App\Entity\Groupe;
 use JasonGrimes\Paginator;
-use LarpManager\Form\Debriefing\DebriefingDeleteForm;
-use LarpManager\Form\Debriefing\DebriefingFindForm;
-use LarpManager\Form\Debriefing\DebriefingForm;
-use Silex\Application;
+use App\Form\Debriefing\DebriefingDeleteForm;
+use App\Form\Debriefing\DebriefingFindForm;
+use App\Form\Debriefing\DebriefingForm;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,7 +25,7 @@ class DebriefingController extends AbstractController
     /**
      * Présentation des debriefings.
      */
-    public function listAction(Request $request, Application $app)
+    public function listAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -52,12 +34,11 @@ class DebriefingController extends AbstractController
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
-        $form = $app['form.factory']->createBuilder(new DebriefingFindForm())
-            ->getForm();
+        $form = $this->createForm(new DebriefingFindForm());
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             // TODO
             /*$data = $form->getData();
             $type = $data['type'];
@@ -72,7 +53,7 @@ class DebriefingController extends AbstractController
             }*/
         }
 
-        $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Debriefing::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Debriefing::class);
         $debriefings = $repo->findBy(
             $criteria,
             [$order_by => $order_dir],
@@ -85,7 +66,7 @@ class DebriefingController extends AbstractController
             $app['url_generator']->generate('debriefing.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $app['twig']->render('admin/debriefing/list.twig', [
+        return $this->render('admin/debriefing/list.twig', [
             'debriefings' => $debriefings,
             'paginator' => $paginator,
             'form' => $form->createView(),
@@ -95,26 +76,25 @@ class DebriefingController extends AbstractController
     /**
      * Ajout d'un debriefing.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $debriefing = new Debriefing();
         $groupeId = $request->get('groupe');
 
         if ($groupeId) {
-            $groupe = $app['orm.em']->find(Groupe::class, $groupeId);
+            $groupe = $entityManager->find(Groupe::class, $groupeId);
             if ($groupe) {
                 $debriefing->setGroupe($groupe);
             }
         }
 
-        $form = $app['form.factory']->createBuilder(new DebriefingForm(), $debriefing)
+        $form = $this->createForm(DebriefingForm::class(), $debriefing)
             ->add('visibility', 'choice', [
                 'required' => true,
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getVisibility(),
             ])
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -123,8 +103,8 @@ class DebriefingController extends AbstractController
             $debriefing->setUser($this->getUser());
 
             if ($this->handleDocument($request, $app, $form, $debriefing)) {
-                $app['orm.em']->persist($debriefing);
-                $app['orm.em']->flush();
+                $entityManager->persist($debriefing);
+                $entityManager->flush();
 
                $this->addFlash('success', 'Le debriefing a été ajouté.');
             }
@@ -132,7 +112,7 @@ class DebriefingController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $debriefing->getGroupe()->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/debriefing/add.twig', [
+        return $this->render('admin/debriefing/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -140,25 +120,24 @@ class DebriefingController extends AbstractController
     /**
      * Suppression d'un debriefing.
      */
-    public function deleteAction(Request $request, Application $app, Debriefing $debriefing)
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
-        $form = $app['form.factory']->createBuilder(new DebriefingDeleteForm(), $debriefing)
-            ->add('save', 'submit', ['label' => 'Supprimer'])
-            ->getForm();
+        $form = $this->createForm(DebriefingDeleteForm::class(), $debriefing)
+            ->add('save', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $debriefing = $form->getData();
-            $app['orm.em']->remove($debriefing);
-            $app['orm.em']->flush();
+            $entityManager->remove($debriefing);
+            $entityManager->flush();
 
            $this->addFlash('success', 'Le debriefing a été supprimé.');
 
             return $this->redirectToRoute('groupe.detail', ['index' => $debriefing->getGroupe()->getId()], [], 303);
         }
 
-        return $app['twig']->render('admin/debriefing/delete.twig', [
+        return $this->render('admin/debriefing/delete.twig', [
             'form' => $form->createView(),
             'debriefing' => $debriefing,
         ]);
@@ -167,16 +146,15 @@ class DebriefingController extends AbstractController
     /**
      * Mise à jour d'un debriefing.
      */
-    public function updateAction(Request $request, Application $app, Debriefing $debriefing)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
-        $form = $app['form.factory']->createBuilder(new DebriefingForm(), $debriefing)
+        $form = $this->createForm(DebriefingForm::class(), $debriefing)
             ->add('visibility', 'choice', [
                 'required' => true,
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getVisibility(),
             ])
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->getForm();
+            ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -184,8 +162,8 @@ class DebriefingController extends AbstractController
             $debriefing = $form->getData();
 
             if ($this->handleDocument($request, $app, $form, $debriefing)) {
-                $app['orm.em']->persist($debriefing);
-                $app['orm.em']->flush();
+                $entityManager->persist($debriefing);
+                $entityManager->flush();
 
                $this->addFlash('success', 'Le debriefing a été modifié.');
 
@@ -193,7 +171,7 @@ class DebriefingController extends AbstractController
             }
         }
 
-        return $app['twig']->render('admin/debriefing/update.twig', [
+        return $this->render('admin/debriefing/update.twig', [
             'form' => $form->createView(),
             'debriefing' => $debriefing,
         ]);
@@ -202,9 +180,9 @@ class DebriefingController extends AbstractController
     /**
      * Détail d'un debriefing.
      */
-    public function detailAction(Request $request, Application $app, Debriefing $debriefing)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
-        return $app['twig']->render('admin/debriefing/detail.twig', [
+        return $this->render('admin/debriefing/detail.twig', [
             'debriefing' => $debriefing,
         ]);
     }
@@ -212,7 +190,7 @@ class DebriefingController extends AbstractController
     /**
      * Gère le document uploadé et renvoie true si il est valide, false sinon.
      */
-    private function handleDocument(Request $request, Application $app, Form $form, Debriefing $debriefing): bool
+    private function handleDocument(Request $request,  EntityManagerInterface $entityManager, Form $form, Debriefing $debriefing): bool
     {
         $files = $request->files->get($form->getName());
         $documentFile = $files['document'];
@@ -258,7 +236,7 @@ class DebriefingController extends AbstractController
     /**
      * Afficher le document lié a un debriefing.
      */
-    public function documentAction(Request $request, Application $app)
+    public function documentAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $debriefing = $request->get('debriefing');
         $document = $debriefing->getDocumentUrl();

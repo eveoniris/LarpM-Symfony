@@ -5,10 +5,9 @@ namespace App\Controller;
 use App\Entity\Lignee;
 use App\Entity\PersonnageLignee;
 use JasonGrimes\Paginator;
-use LarpManager\Form\Lignee\LigneeAddMembreForm;
-use LarpManager\Form\Lignee\LigneeFindForm;
-use LarpManager\Form\Lignee\LigneeForm;
-use Silex\Application;
+use App\Form\Lignee\LigneeAddMembreForm;
+use App\Form\Lignee\LigneeFindForm;
+use App\Form\Lignee\LigneeForm;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -21,7 +20,7 @@ class LigneeController extends AbstractController
     /**
      * Liste des lignées.
      */
-    public function listAction(Request $request, Application $app)
+    public function listAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -31,7 +30,7 @@ class LigneeController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $app['form.factory']->createBuilder(new LigneeFindForm())->getForm();
+        $form = $this->createForm(new LigneeFindForm())->getForm();
 
         $form->handleRequest($request);
 
@@ -41,7 +40,7 @@ class LigneeController extends AbstractController
             $value = $data['search'];
         }
 
-        $repo = $app['orm.em']->getRepository(Lignee::class);
+        $repo = $entityManager->getRepository(Lignee::class);
 
         $lignees = $repo->findList(
             $type,
@@ -56,7 +55,7 @@ class LigneeController extends AbstractController
             $app['url_generator']->generate('lignee.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $app['twig']->render('admin/lignee/list.twig', [
+        return $this->render('admin/lignee/list.twig', [
             'form' => $form->createView(),
             'lignees' => $lignees,
             'paginator' => $paginator,
@@ -66,18 +65,18 @@ class LigneeController extends AbstractController
     /**
      * Affiche le détail d'une lignée.
      */
-    public function detailAction(Request $request, Application $app)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('lignee');
 
-        $lignee = $app['orm.em']->find(Lignee::class, $id);
+        $lignee = $entityManager->find(Lignee::class, $id);
 
         /*
          * Si la lignee existe, on affiche ses détails
          * Sinon on envoie une erreur
          */
         if ($lignee) {
-            return $app['twig']->render('admin/lignee/details.twig', ['lignee' => $lignee]);
+            return $this->render('admin/lignee/details.twig', ['lignee' => $lignee]);
         } else {
            $this->addFlash('error', 'La lignee n\'a pas été trouvée.');
 
@@ -88,22 +87,21 @@ class LigneeController extends AbstractController
     /**
      * Ajout d'une lignée.
      */
-    public function addAction(Request $request, Application $app)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $lignee = new Lignee();
 
-        $form = $app['form.factory']->createBuilder(new LigneeForm(), $lignee)
+        $form = $this->createForm(LigneeForm::class(), $lignee)
             ->add('save', 'submit', ['label' => 'Sauvegarder et retour à la liste'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder et nouvelle lignée'])
-            ->getForm();
+            ->add('save_continue', 'submit', ['label' => 'Sauvegarder et nouvelle lignée']);
 
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()) {
             $lignee = $form->getData();
 
-            $app['orm.em']->persist($lignee);
-            $app['orm.em']->flush();
+            $entityManager->persist($lignee);
+            $entityManager->flush();
            $this->addFlash('success', 'La lignée a été enregistrée.');
 
             /*
@@ -117,24 +115,23 @@ class LigneeController extends AbstractController
             }
         }
 
-        return $app['twig']->render('admin/lignee/add.twig', ['form' => $form->createView()]);
+        return $this->render('admin/lignee/add.twig', ['form' => $form->createView()]);
     }
 
     /**
      * Modification d'une lignée.
      */
-    public function updateAction(Request $request, Application $app)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('lignee');
 
-        $lignee = $app['orm.em']->find(Lignee::class, $id);
+        $lignee = $entityManager->find(Lignee::class, $id);
 
-        $form = $app['form.factory']->createBuilder(new LigneeForm(), $lignee)
+        $form = $this->createForm(LigneeForm::class(), $lignee)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', [
                 'label' => 'Supprimer',
-                'attr' => ['onclick' => 'return confirm("Vous vous apprêtez à supprimer cette lignée. Confirmer ?")']])
-            ->getForm();
+                'attr' => ['onclick' => 'return confirm("Vous vous apprêtez à supprimer cette lignée. Confirmer ?")']]);
 
         $form->handleRequest($request);
 
@@ -146,25 +143,25 @@ class LigneeController extends AbstractController
              * Si l'utilisateur a cliqué sur "delete", on supprime la lignée
              */
             if ($form->get('update')->isClicked()) {
-                $app['orm.em']->persist($lignee);
-                $app['orm.em']->flush();
+                $entityManager->persist($lignee);
+                $entityManager->flush();
                $this->addFlash('success', 'La lignée a été mise à jour.');
 
                 return $this->redirectToRoute('lignee.details', ['lignee' => $id]);
             } elseif ($form->get('delete')->isClicked()) {
                 // supprime le lien entre les personnages et le groupe
                 foreach ($lignee->getPersonnageLignees() as $personnage) {
-                    $app['orm.em']->remove($personnage);
+                    $entityManager->remove($personnage);
                 }
-                $app['orm.em']->remove($lignee);
-                $app['orm.em']->flush();
+                $entityManager->remove($lignee);
+                $entityManager->flush();
                $this->addFlash('success', 'La lignée a été supprimée.');
 
                 return $this->redirectToRoute('lignee.list');
             }
         }
 
-        return $app['twig']->render('admin/lignee/update.twig', [
+        return $this->render('admin/lignee/update.twig', [
             'lignee' => $lignee,
             'form' => $form->createView(),
         ]);
@@ -173,12 +170,12 @@ class LigneeController extends AbstractController
     /**
      * Ajoute un nouveau membre à la lignée.
      */
-    public function addMembreAction(Request $request, Application $app)
+    public function addMembreAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $id = $request->get('lignee');
-        $lignee = $app['orm.em']->find(Lignee::class, $id);
+        $lignee = $entityManager->find(Lignee::class, $id);
 
-        $form = $app['form.factory']->createBuilder(new LigneeAddMembreForm())->getForm();
+        $form = $this->createForm(new LigneeAddMembreForm())->getForm();
 
         $form->handleRequest($request);
 
@@ -193,15 +190,15 @@ class LigneeController extends AbstractController
             $membre->setParent2($parent2);
             $membre->setLignee($lignee);
 
-            $app['orm.em']->persist($membre);
-            $app['orm.em']->flush();
+            $entityManager->persist($membre);
+            $entityManager->flush();
 
            $this->addFlash('success', 'le personnage a été ajouté à la lignée.');
 
             return $this->redirectToRoute('lignee.details', ['lignee' => $lignee->getId()], 303);
         }
 
-        return $app['twig']->render('admin/lignee/addMembre.twig', [
+        return $this->render('admin/lignee/addMembre.twig', [
             'lignee' => $lignee,
             'form' => $form->createView(),
         ]);
@@ -210,16 +207,16 @@ class LigneeController extends AbstractController
     /**
      * Retire un membre à la lignée.
      */
-    public function removeMembreAction(Request $request, Application $app)
+    public function removeMembreAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $lignee = $request->get('lignee');
         $membreNom = $request->get('membreNom');
         $membre = $request->get('membre');
 
-        $personnageLignee = $app['orm.em']->find(PersonnageLignee::class, $membre);
+        $personnageLignee = $entityManager->find(PersonnageLignee::class, $membre);
 
-        $app['orm.em']->remove($personnageLignee);
-        $app['orm.em']->flush();
+        $entityManager->remove($personnageLignee);
+        $entityManager->flush();
 
        $this->addFlash('success', $membreNom.' a été retiré de la lignée.');
 
