@@ -7,17 +7,17 @@ use App\Entity\Monnaie;
 use App\Form\Monnaie\MonnaieDeleteForm;
 use App\Form\Monnaie\MonnaieForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\MonnaieController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class MonnaieController extends AbstractController
 {
     /**
      * Liste les monnaies.
      */
+    #[Route('/monnaie', name: 'monnaie.list')]
     public function listAction( EntityManagerInterface $entityManager, Request $request)
     {
         $monnaies = $entityManager->getRepository('\\'.\App\Entity\Monnaie::class)->findAll();

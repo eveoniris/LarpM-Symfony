@@ -6,17 +6,17 @@ namespace App\Controller;
 use App\Entity\Appelation;
 use App\Form\AppelationForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\AppelationController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class AppelationController extends AbstractController
 {
     /**
      * affiche le tableau de bord de gestion des appelations.
      */
+    #[Route('/appelation', name: 'appelation.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $appelations = $entityManager->getRepository('\\'.\App\Entity\Appelation::class)->findAll();

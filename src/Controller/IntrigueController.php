@@ -13,17 +13,17 @@ use App\Form\Intrigue\IntrigueFindForm;
 use App\Form\Intrigue\IntrigueForm;
 use App\Form\Intrigue\IntrigueRelectureForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\IntrigueController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class IntrigueController extends AbstractController
 {
     /**
      * Liste de toutes les intrigues.
      */
+    #[Route('/intrigue', name: 'intrigue.list')]
     public function listAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'titre';

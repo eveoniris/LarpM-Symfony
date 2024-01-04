@@ -7,12 +7,17 @@ use App\Entity\Loi;
 use App\Form\Loi\LoiDeleteForm;
 use App\Form\Loi\LoiForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[isGranted('ROLE_SCENARISTE')]
 class LoiController extends AbstractController
 {
     /**
      * Liste des loi.
      */
+    #[Route('/loi', name: 'loi.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $lois = $entityManager->getRepository(\App\Entity\Loi::class)->findAll();

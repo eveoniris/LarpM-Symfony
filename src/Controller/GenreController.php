@@ -5,17 +5,17 @@ namespace App\Controller;
 
 use App\Form\GenreForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\GenreController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_REGLE')]
 class GenreController extends AbstractController
 {
     /**
      * Présentation des genres.
      */
+    #[Route('/genre', name: 'genre.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $genres = $entityManager->getRepository('\\'.\App\Entity\Genre::class)->findAll();

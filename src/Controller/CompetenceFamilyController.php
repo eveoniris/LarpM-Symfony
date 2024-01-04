@@ -5,17 +5,17 @@ namespace App\Controller;
 
 use App\Form\CompetenceFamilyForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\CompetenceFamilyController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_REGLE')]
 class CompetenceFamilyController extends AbstractController
 {
     /**
      * Liste les famille de competence.
      */
+    #[Route('/competenceFamily', name: 'competenceFamily.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\CompetenceFamily::class);

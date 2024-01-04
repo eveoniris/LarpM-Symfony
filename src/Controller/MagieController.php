@@ -17,12 +17,11 @@ use App\Form\SortForm;
 use App\Form\SphereDeleteForm;
 use App\Form\SphereForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\MagieController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_REGLE')]
 class MagieController extends AbstractController
 {
     // liste des colonnes à afficher par défaut sur les vues 'personnages' (l'ordre est pris en compte)
@@ -31,6 +30,7 @@ class MagieController extends AbstractController
     /**
      * Liste des sphere.
      */
+    #[Route('/magie/sphere', name: 'magieSphere.list')]
     public function sphereListAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $spheres = $entityManager->getRepository('\\'.\App\Entity\Sphere::class)->findAll();
@@ -142,6 +142,7 @@ class MagieController extends AbstractController
     /**
      * Liste des prieres.
      */
+    #[Route('/magie/priere', name: 'magiePriere.list')]
     public function priereListAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $prieres = $entityManager->getRepository('\\'.\App\Entity\Priere::class)->findAll();
@@ -360,6 +361,7 @@ class MagieController extends AbstractController
     /**
      * Liste des potions.
      */
+    #[Route('/magie/potion', name: 'magiePotion.list')]
     public function potionListAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $potions = $entityManager->getRepository('\\'.\App\Entity\Potion::class)->findAll();
@@ -566,6 +568,7 @@ class MagieController extends AbstractController
     /**
      * Liste des domaines de magie.
      */
+    #[Route('/magie/domaine', name: 'magieDomaine.list')]
     public function domaineListAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $domaines = $entityManager->getRepository('\\'.\App\Entity\Domaine::class)->findAll();
@@ -677,6 +680,7 @@ class MagieController extends AbstractController
     /**
      * Liste des sorts.
      */
+    #[Route('/magie/sort', name: 'magieSort.list')]
     public function sortListAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $sorts = $entityManager->getRepository('\\'.\App\Entity\Sort::class)->findAll();

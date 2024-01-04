@@ -12,12 +12,11 @@ use App\Form\Debriefing\DebriefingForm;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\DebriefingController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class DebriefingController extends AbstractController
 {
     final public const DOC_PATH = __DIR__.'/../../../private/doc/';
@@ -25,6 +24,7 @@ class DebriefingController extends AbstractController
     /**
      * Présentation des debriefings.
      */
+    #[Route('/debriefing', name: 'debriefing.list')]
     public function listAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'id';

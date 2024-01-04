@@ -41,7 +41,7 @@ class ReligionController extends AbstractController
     /**
      * affiche la liste des religions.
      */
-    #[Route('/religion', name: 'religion')]
+    #[Route('/religion', name: 'religion.index')]
     public function indexAction(Request $request, ReligionRepository $religionRepository): Response
     {
         $page = $request->query->getInt('page', 1);
@@ -268,6 +268,7 @@ class ReligionController extends AbstractController
     /**
      * affiche la liste des niveau de fanatisme.
      */
+    #[Route('/religion/level', name: 'religion.level')]
     public function levelIndexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\ReligionLevel::class);

@@ -8,17 +8,18 @@ use JasonGrimes\Paginator;
 use App\Form\AnnonceDeleteForm;
 use App\Form\AnnonceForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 
-/**
- * LarpManager\Controllers\AnnonceController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_REDACTEUR')]
 class AnnonceController extends AbstractController
 {
     /**
      * Présentation des annonces.
      */
+    #[Route('/annonce', name: 'annonce.list')]
     public function listAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'creation_date';
@@ -51,6 +52,7 @@ class AnnonceController extends AbstractController
     /**
      * Ajout d'une annonce.
      */
+    #[Route('/annonce', name: 'annonce.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(AnnonceForm::class(), new Annonce())
@@ -82,7 +84,8 @@ class AnnonceController extends AbstractController
     /**
      * Mise à jour d'une annnonce.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Annonce $annonce)
+    #[Route('/annonce/update/{id}', name: 'annonce.update')]
+    public function updateAction(Request $request, #[MapEntity] Annonce $annonce, EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(AnnonceForm::class(), $annonce)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);

@@ -7,12 +7,11 @@ use Doctrine\ORM\Query;
 use App\Form\RessourceForm;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\RessourceController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class RessourceController extends AbstractController
 {
     /**
@@ -35,6 +34,7 @@ class RessourceController extends AbstractController
     /**
      * Liste des ressources.
      */
+    #[Route('/ressource', name: 'ressource.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\Ressource::class);

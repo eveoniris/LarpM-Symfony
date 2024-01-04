@@ -9,17 +9,17 @@ use App\Form\Lignee\LigneeAddMembreForm;
 use App\Form\Lignee\LigneeFindForm;
 use App\Form\Lignee\LigneeForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\LigneeController.
- *
- * @author gerald
- */
+#[isGranted('ROLE_SCENARISTE')]
 class LigneeController extends AbstractController
 {
     /**
      * Liste des lignées.
      */
+    #[Route('/lignee', name: 'lignee.list')]
     public function listAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'id';

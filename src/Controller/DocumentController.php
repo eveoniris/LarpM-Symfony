@@ -9,17 +9,17 @@ use App\Form\DocumentDeleteForm;
 use App\Form\DocumentFindForm;
 use App\Form\DocumentForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\DocumentController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_SCENARISTE')]
 class DocumentController extends AbstractController
 {
     /**
      * Liste des documents.
      */
+    #[Route('/document', name: 'document.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by', 'titre');
