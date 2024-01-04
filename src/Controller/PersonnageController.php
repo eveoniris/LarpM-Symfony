@@ -20,6 +20,7 @@ use App\Entity\Sort;
 use App\Entity\Technologie;
 use App\Form\Personnage\PersonnageChronologieForm;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use JasonGrimes\Paginator;
 use App\Form\Personnage\PersonnageDocumentForm;
 use App\Form\Personnage\PersonnageIngredientForm;
@@ -49,6 +50,7 @@ use App\Form\TriggerForm;
 use App\Form\TrombineForm;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 class PersonnageController extends AbstractController
 {
@@ -603,13 +605,23 @@ class PersonnageController extends AbstractController
     /**
      * Affiche le détail d'un personnage (pour les orgas).
      */
-    public function adminDetailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/personnage/admin/{personnage}', name: 'personnage.admin.detail')]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    public function adminDetailAction(EntityManagerInterface $entityManager, int $personnage)
     {
-        $personnage = $request->get('personnage');
+        $personnage = $entityManager->getRepository(Personnage::class)->find($personnage);
+        //$personnage = $request->get('personnage');
         // $personnageLangues = $personnage->getPersonnageLangues();
         $descendants = $entityManager->getRepository(Personnage::class)->findDescendants($personnage);
 
-        return $this->render('admin/personnage/detail.twig', ['personnage' => $personnage, 'descendants' => $descendants, 'langueMateriel' => $this->getLangueMateriel($personnage)]);
+        return $this->render(
+            'personnage/detail.twig', 
+            [
+                'personnage' => $personnage, 
+                'descendants' => $descendants, 
+                'langueMateriel' => $this->getLangueMateriel($personnage)
+            ]
+        );
     }
 
     /**

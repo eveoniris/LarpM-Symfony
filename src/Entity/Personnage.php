@@ -843,11 +843,15 @@ class Personnage extends BasePersonnage implements \Stringable
         $groupeLabel = null;
         $nomGn = '???';
         if ($this->getUser()) {
+            dump("User = ".$this->getUser()->getUsername());
             foreach ($this->getUser()->getParticipants() as $participant) {
                 if ($participant->getPersonnage() == $this) {
                     $nomGn = $participant->getGn()->getLabel();
+                    dump("NomGn = ".$nomGn);
                     $groupeGn = $participant->getGroupeGn();
                     if (null != $groupeGn) {
+                        dump("groupeGnId = ".$groupeGn->getId());
+                        dump("groupeGnCode = ".$groupeGn->getCode());
                         $groupeLabel = $groupeGn->getGroupe()->getNom();
                     }
                 }

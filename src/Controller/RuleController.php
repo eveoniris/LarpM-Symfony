@@ -27,17 +27,22 @@ class RuleController extends AbstractController
     #[Route('/rule', name: 'rules')]
     public function listAction(Request $request, RuleRepository $ruleRepository): Response
     {
-        $page = $request->query->getInt('page', 1);
-        $limit = 10;
+        $orderBy = $this->getRequestOrder(
+            alias: 'r',
+            allowedFields: $ruleRepository->getFieldNames()
+        );
 
-        $regles = $ruleRepository->findPaginated($page, $limit);
+        $query = $ruleRepository->createQueryBuilder('r')
+            ->orderBy(key($orderBy), current($orderBy));
+
+        $regles = $ruleRepository->findPaginatedQuery(
+            $query->getQuery(), $this->getRequestLimit(), $this->getRequestPage()
+        );
 
         return $this->render(
             'rule\list.twig',
             [
                 'regles' => $regles,
-                'limit' => $limit,
-                'page' => $page,
             ]
         );
 
