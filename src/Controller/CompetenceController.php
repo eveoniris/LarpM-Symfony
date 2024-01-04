@@ -6,10 +6,15 @@ namespace App\Controller;
 use App\Entity\Competence;
 use App\Repository\CompetenceRepository;
 use App\Form\CompetenceForm;
+use App\Form\CompetenceFindForm;
+use App\Form\Entity\BaseSearch;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * LarpManager\Controllers\CompetenceController.
@@ -21,19 +26,43 @@ class CompetenceController extends AbstractController
     /**
      * Liste des compétences.
      */
-    #[Route('/competence', name: 'competence')]
-    public function indexAction(CompetenceRepository $competenceRepository, EntityManagerInterface $entityManager): Response
+    #[Route('/competence', name: 'competence.list')]
+    public function indexAction(Request $request, CompetenceRepository $competenceRepository): Response
     {
-        if ($this->isGranted('ROLE_REGLE')) {
-           $competences = $competenceRepository->findAllOrderedByLabel();
-        } else {
-            $competences = $competenceRepository->getRootCompetences($entityManager);
+        $form = $this->createForm(CompetenceFindForm::class, new BaseSearch());
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $value = $data->getValue();
         }
+
+        $query = $competenceRepository->createQueryBuilder('c')
+            ->join('c.competenceFamily', 'cf')
+            ->join('c.level', 'l')
+            ->addOrderBy('cf.label')
+            ->addOrderBy('l.index')
+        ;
+        
+        if (!$this->isGranted('ROLE_REGLE')) {
+            $query->andWhere('c.level = 1');
+        }
+
+        if (!empty($value)) {
+            $query->andWhere($query->expr()->like('cf.label', ':label'));
+            $query->setParameter('label', '%'.$value.'%');
+        }
+
+        $paginator = $competenceRepository->findPaginatedQuery(
+            $query->getQuery(),
+            $limit = 100,
+        );
 
         return $this->render(
             'competence/list.twig', 
             [
-                'competences' => $competences
+                'paginator' => $paginator,
+                'form' => $form->createView(),
             ]
         );
     }

@@ -5,12 +5,41 @@
 {% block body %}
 
 	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage')  }}">Accueil</a></li>
-		<li class="active">Les compétences</li>
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Liste des compétences</li>
 	</ol>
+
+	<div class="well well-sm">
+
+		<div class="header">
+			<h5>Liste des compétences</h5>
+		</div>
+
+		<ul class="list-group">
+			<li class="list-group-item">	
+				<div class="btn-toolbar" role="toolbar" aria-label="...">
+
+					{{ form_start(form, {"action": path('competence.list')}) }}
+						<div class="form-group">
+							<div class="input-group">
+								 {{ form_widget(form.value) }}
+
+								<div class="input-group-btn">
+									<button type="submit" class="btn btn-default" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
+									<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('competence.list') }}"><i class="fa fa-refresh"></i></a>
+								</div>
+							</div>
+						</div>
+						{{ form_rest(form) }}
+					{{ form_end(form) }}
+			   		
+				</div>
+			</li>
+	    </ul>
+	</div>
 		
 	<div class="row">
-		{% for competence in competences %}
+		{% for competence in paginator %}
 			<div class="col-sm-4 col-md-4">
 				<div class="panel panel-default fixed-height">
 					<div class="header">
