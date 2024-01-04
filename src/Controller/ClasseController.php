@@ -24,11 +24,12 @@ class ClasseController extends AbstractController
     /**
      * Présentation des classes.
      */
-    #[Route('/classe', name: 'classe')]
+    #[Route('/classe', name: 'classe.index')]
     public function indexAction(Request $request, ClasseRepository $classeRepository): Response
     {
         $orderBy = $this->getRequestOrder(
             alias: 'c',
+            defOrderBy: 'label_masculin',
             allowedFields: $classeRepository->getFieldNames()
         );
 
@@ -36,7 +37,7 @@ class ClasseController extends AbstractController
             ->orderBy(key($orderBy), current($orderBy));
 
         $classes = $classeRepository->findPaginatedQuery(
-            $query->getQuery(), $this->getRequestLimit(), $this->getRequestPage()
+            $query->getQuery(), $this->getRequestLimit(100), $this->getRequestPage()
         );
 
         return $this->render(
