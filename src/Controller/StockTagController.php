@@ -23,17 +23,16 @@ namespace App\Controller;
 use LarpManager\Form\Type\TagType;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\StockTagController.
- *
- * @author kevin
- */
+#[isGranted('ROLE_STOCK')]
 class StockTagController extends AbstractController
 {
     /**
      * Liste des tags.
      */
+    #[Route('/stock/tag', name: 'stockTag.index')]
     public function indexAction(Request $request, Application $app)
     {
         $repo = $app['orm.em']->getRepository('\\'.\App\Entity\Tag::class);
