@@ -4,13 +4,18 @@
 namespace App\Form\Classe;
 
 use App\Entity\Classe;
-use LarpManager\Repository\CompetenceFamilyRepository;
+use App\Repository\CompetenceFamilyRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+
 
 /**
  * LarpManager\Form\Classe\ClasseForm.
@@ -24,41 +29,40 @@ class ClasseForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label_masculin', 'text', [
-            'required' => true,
-            'attr' => ['maxlength' => 45],
-            'constraints' => [new Length(['max' => 45])],
-        ])
-            ->add('image_m', 'text', [
-                'label' => 'Adresse de l\'image utilisé pour représenté cette classe',
-                'required' => true,
-                'attr' => ['maxlength' => 90],
-                'constraints' => [new Length(['max' => 90])],
-            ])
-            ->add('label_feminin', 'text', [
+        $builder
+            ->add('label_masculin', TextType::class, [
                 'required' => true,
                 'attr' => ['maxlength' => 45],
                 'constraints' => [new Length(['max' => 45])],
             ])
-            ->add('image_f', 'text', [
-                'label' => 'Adresse de l\'image utilisé pour représenté cette classe',
+            ->add('image_m', TextType::class, [
+                'label' => 'Adresse de l\'image utilisée pour représenter cette classe',
                 'required' => true,
                 'attr' => ['maxlength' => 90],
                 'constraints' => [new Length(['max' => 90])],
             ])
-            ->add('creation', 'choice', [
+            ->add('label_feminin', TextType::class, [
+                'required' => true,
+                'attr' => ['maxlength' => 45],
+                'constraints' => [new Length(['max' => 45])],
+            ])
+            ->add('image_f', TextType::class, [
+                'label' => 'Adresse de l\'image utilisée pour représenter cette classe',
+                'required' => true,
+                'attr' => ['maxlength' => 90],
+                'constraints' => [new Length(['max' => 90])],
+            ])
+            ->add('creation', ChoiceType::class, [
                 'required' => true,
                 'expanded' => true,
                 'choices' => [
-                    true => 'Oui',
-                    false => 'Non',
+                    'Oui' => true,
+                    'Non' => false,
                 ],
                 'label' => 'Disponible lors de la création d\'un nouveau personnage',
-                'attr' => [
-                    'help' => 'Choisissez si cette classe sera disponible ou pas lors de la création d\'un nouveau personnage',
-                ],
+                'help' => 'Choisissez si cette classe sera disponible ou pas lors de la création d\'un nouveau personnage',
             ])
-            ->add('description', 'textarea', [
+            ->add('description', TextareaType::class, [
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
@@ -66,10 +70,10 @@ class ClasseForm extends AbstractType
                 ],
                 'constraints' => [new Length(['max' => 450])],
             ])
-            ->add('competenceFamilyFavorites', 'entity', [
+            ->add('competenceFamilyFavorites', EntityType::class, [
                     'label' => "Famille de compétences favorites (n'oubliez pas de cocher aussi la/les compétences acquises à la création)",
                     'required' => false,
-                    'property' => 'label',
+                    'choice_label' => 'label',
                     'multiple' => true,
                     'expanded' => true,
                     'mapped' => true,
@@ -79,10 +83,10 @@ class ClasseForm extends AbstractType
                     },
                 ]
             )
-            ->add('competenceFamilyNormales', 'entity', [
+            ->add('competenceFamilyNormales', EntityType::class, [
                     'label' => 'Famille de compétences normales',
                     'required' => false,
-                    'property' => 'label',
+                    'choice_label' => 'label',
                     'multiple' => true,
                     'expanded' => true,
                     'mapped' => true,
@@ -92,10 +96,10 @@ class ClasseForm extends AbstractType
                     },
                 ]
             )
-            ->add('competenceFamilyCreations', 'entity', [
+            ->add('competenceFamilyCreations', EntityType::class, [
                     'label' => 'Famille de compétences acquises à la création',
                     'required' => false,
-                    'property' => 'label',
+                    'choice_label' => 'label',
                     'multiple' => true,
                     'expanded' => true,
                     'mapped' => true,

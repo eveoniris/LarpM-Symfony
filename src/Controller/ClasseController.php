@@ -6,10 +6,13 @@ namespace App\Controller;
 use App\Entity\Classe;
 use App\Repository\ClasseRepository;
 use App\Form\Classe\ClasseForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
 
 /**
  * LarpManager\Controllers\ClasseController.
@@ -24,17 +27,22 @@ class ClasseController extends AbstractController
     #[Route('/classe', name: 'classe')]
     public function indexAction(Request $request, ClasseRepository $classeRepository): Response
     {
-        $page = $request->query->getInt('page', 1);
-        $limit = 10;
+        $orderBy = $this->getRequestOrder(
+            alias: 'c',
+            allowedFields: $classeRepository->getFieldNames()
+        );
 
-        $classes = $classeRepository->findPaginated($page, $limit);
+        $query = $classeRepository->createQueryBuilder('c')
+            ->orderBy(key($orderBy), current($orderBy));
+
+        $classes = $classeRepository->findPaginatedQuery(
+            $query->getQuery(), $this->getRequestLimit(), $this->getRequestPage()
+        );
 
         return $this->render(
             'classe\list.twig',
             [
                 'classes' => $classes,
-                'limit' => $limit,
-                'page' => $page,
             ]
         );
     }
@@ -82,8 +90,8 @@ class ClasseController extends AbstractController
         $classe = $entityManager->getRepository(Classe::class)->find($id);
         
         $form = $this->createForm(ClasseForm::class, $classe)
-            ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer'])
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer'])
         ;
 
         $form->handleRequest($request);
@@ -102,7 +110,7 @@ class ClasseController extends AbstractController
             }
 
             //return $this->redirectToRoute('classe'));
-            return $this->redirectToRoute('TODO', [], 303);
+            return $this->redirectToRoute('classe', [], 303);
         }
 
         return $this->render('classe/update.twig', [
@@ -115,21 +123,23 @@ class ClasseController extends AbstractController
      * Détail d'une classe.
      */
     #[Route('/classe/{id}', name: 'classe.detail')]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     public function detailAction(EntityManagerInterface $entityManager, int $id)
     {
         $classe = $entityManager->getRepository(Classe::class)->find($id);
         
-        return $this->render('admin/classe/detail.twig', ['classe' => $classe]);
+        return $this->render('classe/detail.twig', ['classe' => $classe]);
     }
 
     /**
-     * Persos d'une classe.
+     * Liste des persos d'une classe.
      */
     #[Route('/classe/{id}/perso', name: 'classe.perso')]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     public function persoAction(EntityManagerInterface $entityManager, int $id)
     {
         $classe = $entityManager->getRepository(Classe::class)->find($id);
 
-        return $this->render('admin/classe/perso.twig', ['classe' => $classe]);
+        return $this->render('classe/perso.twig', ['classe' => $classe]);
     }
 }

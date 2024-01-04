@@ -24,19 +24,19 @@ abstract class BaseGroupeGn
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
-    protected bool $free = false;
+    protected ?bool $free = false;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 10, nullable: true)]
     protected ?string $code = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
-    protected bool $jeu_maritime = false;
+    protected ?bool $jeu_maritime = false;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
-    protected bool $jeu_strategique = false;
+    protected ?bool $jeu_strategique = false;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
-    protected int $place_available = 0;
+    protected ?int $place_available = 0;
 
     protected int $agents = 0;
 
@@ -110,7 +110,7 @@ abstract class BaseGroupeGn
     /**
      * Get the value of free.
      */
-    public function getFree(): bool
+    public function getFree(): ?bool
     {
         return $this->free;
     }
@@ -128,7 +128,7 @@ abstract class BaseGroupeGn
     /**
      * Get the value of code.
      */
-    public function getCode(): string
+    public function getCode(): ?string
     {
         return $this->code;
     }
@@ -146,7 +146,7 @@ abstract class BaseGroupeGn
     /**
      * Get the value of jeu_maritime.
      */
-    public function getJeuMaritime(): bool
+    public function getJeuMaritime(): ?bool
     {
         return $this->jeu_maritime;
     }
@@ -164,7 +164,7 @@ abstract class BaseGroupeGn
     /**
      * Get the value of jeu_strategique.
      */
-    public function getJeuStrategique(): bool
+    public function getJeuStrategique(): ?bool
     {
         return $this->jeu_strategique;
     }
@@ -182,7 +182,7 @@ abstract class BaseGroupeGn
     /**
      * Get the value of place_available.
      */
-    public function getPlaceAvailable(): int
+    public function getPlaceAvailable(): ?int
     {
         return $this->place_available;
     }

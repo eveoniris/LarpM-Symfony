@@ -53,11 +53,11 @@ class BaseParticipant
 
     #[ORM\ManyToOne(targetEntity: PersonnageSecondaire::class, inversedBy: 'participants')]
     #[ORM\JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id', nullable: 'false')]
-    protected PersonnageSecondaire $personnageSecondaire;
+    protected ?PersonnageSecondaire $personnageSecondaire;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'participants')]
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
-    protected Personnage $personnage;
+    protected ?Personnage $personnage;
 
     #[ORM\ManyToOne(targetEntity: Billet::class, inversedBy: 'participants')]
     #[ORM\JoinColumn(name: 'billet_id', referencedColumnName: 'id')]
@@ -65,7 +65,7 @@ class BaseParticipant
 
     #[ORM\ManyToOne(targetEntity: GroupeGn::class, inversedBy: 'participants')]
     #[ORM\JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id')]
-    protected GroupeGn $groupeGn;
+    protected ?GroupeGn $groupeGn;
 
     #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'participants')]
     #[ORM\JoinTable(name: 'participant_potions_depart')]
@@ -293,7 +293,7 @@ class BaseParticipant
     /**
      * Get PersonnageSecondaire entity (many to one).
      */
-    public function getPersonnageSecondaire(): PersonnageSecondaire
+    public function getPersonnageSecondaire(): ?PersonnageSecondaire
     {
         return $this->personnageSecondaire;
     }
@@ -311,7 +311,7 @@ class BaseParticipant
     /**
      * Get Personnage entity (many to one).
      */
-    public function getPersonnage(): Personnage
+    public function getPersonnage(): ?Personnage
     {
         return $this->personnage;
     }
@@ -329,7 +329,7 @@ class BaseParticipant
     /**
      * Get Billet entity (many to one).
      */
-    public function getBillet(): Billet
+    public function getBillet(): ?Billet
     {
         return $this->billet;
     }
@@ -347,7 +347,7 @@ class BaseParticipant
     /**
      * Get GroupeGn entity (many to one).
      */
-    public function getGroupeGn(): GroupeGn
+    public function getGroupeGn(): ?GroupeGn
     {
         return $this->groupeGn;
     }
