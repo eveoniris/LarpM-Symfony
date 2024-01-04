@@ -3,26 +3,39 @@
 {% block title %}Règles{% endblock title %}
 
 {% block body  %}
+	{# display navigation #}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Page d'accueil</a></li>
-		<li class="active">Règles</li>
+		<li class="active">Liste des règles</li>
 	</ol>
 	
-	<div class="well bs-component">
-								
-		<div class="header"><h5>Liste des règles</h5></div>
-		
-		<blockquote>Les fichiers ci-dessous contiennent les règles spécifiques à certains aspect du jeu. Lisez-les avec attention.</blockquote>
-		
-		<div class="list-group">
-			{% for regle in regles %}
-				<a class="list-group-item" href="{{ regle.url }}">
-					<h5 class="list-group-item-heading">{{ regle.label }}</h5>
-					<p class="list-group-item-text">{{ regle.description|markdown_to_html }}</p>
-				</a>
-			{% endfor %}
+	<div class="well well-sm">
+
+		<div class="header">
+			<h5>Liste des règles</h5>
 		</div>
+		<blockquote>Les fichiers ci-dessous contiennent les règles spécifiques à certains aspect du jeu. Lisez-les avec attention.</blockquote>
+
 	</div>
+		{% include '_partials/pagination.html.twig' %}
+
+		<table class="table table-striped table-bordered table-condensed table-hover">
+
+		<tbody>
+				{% for regle in paginator %}
+					<tr>
+						<td>
+							<a class="list-group-item" href="{{ regle.url }}">
+								<h5 class="list-group-item-heading">{{ regle.label }}</h5>
+								<p class="list-group-item-text">{{ regle.description|markdown_to_html }}</p>
+							</a>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		{% include '_partials/pagination.html.twig' %}
 	
 {% endblock body %}

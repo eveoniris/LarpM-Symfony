@@ -42,7 +42,7 @@ class RuleController extends AbstractController
         return $this->render(
             'rule\list.twig',
             [
-                'regles' => $regles,
+                'paginator' => $regles,
             ]
         );
 
