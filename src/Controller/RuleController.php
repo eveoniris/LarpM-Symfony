@@ -24,7 +24,7 @@ class RuleController extends AbstractController
     /**
      * Page de gestion des règles.
      */
-    #[Route('/rule', name: 'rules')]
+    #[Route('/rule', name: 'rules.list')]
     public function listAction(Request $request, RuleRepository $ruleRepository): Response
     {
         $orderBy = $this->getRequestOrder(

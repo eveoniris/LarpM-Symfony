@@ -141,9 +141,9 @@
                                 Règles<span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="{{ path('rules') }}">Règles</a></li>
+                                <li><a href="{{ path('rules.list') }}">Règles</a></li>
                                 <li><a href="{{ path('competence.list') }}">Compétences</a></li>
-                                <li><a href="{{ path('classe') }}">Classes</a></li>
+                                <li><a href="{{ path('classe.index') }}">Classes</a></li>
 
                                 {% if is_granted('ROLE_REGLE', app.user) %}
                                     <hr/>
