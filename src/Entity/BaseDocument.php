@@ -32,7 +32,7 @@ abstract class BaseDocument
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[ORM\Column(name: 'documentUrl', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $documentUrl = '';
 
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]

@@ -51,11 +51,11 @@ abstract class BaseLangue
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: false, options: ['default' => 0])]
     protected bool $secret = false;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[ORM\Column(name: 'documentUrl', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'langues')]
-    protected ArrayCollection $territoireSecondaires;
+    protected Collection $territoireSecondaires;
 
     public function __construct()
     {

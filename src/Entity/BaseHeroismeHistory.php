@@ -32,6 +32,10 @@ abstract class BaseHeroismeHistory
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
     protected $personnage;
 
+    public function __construct()
+    {
+    }
+
     /**
      * Set the value of id.
      */

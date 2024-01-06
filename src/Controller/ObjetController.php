@@ -7,6 +7,8 @@ use App\Entity\Item;
 use App\Entity\Objet;
 use App\Form\Item\ItemDeleteForm;
 use App\Form\Item\ItemForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -194,7 +196,8 @@ class ObjetController extends AbstractController
     /**
      * Détail d'un objet de jeu.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Item $item)
+    #[Route('/item/{id}', name: 'item.detail')]
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Item $item)
     {
         return $this->render('admin/objet/detail.twig', [
             'item' => $item,
@@ -204,7 +207,8 @@ class ObjetController extends AbstractController
     /**
      * Mise à jour d'un objet de jeu.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Item $item)
+    #[Route('/item/{id}/update', name: 'item.update')]
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Item $item)
     {
         $form = $this->createForm(ItemForm::class(), $item)->getForm();
 

@@ -30,10 +30,10 @@ abstract class BaseAge
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
     protected ?int $bonus = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[Column(name: 'enableCreation', type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     protected bool $enableCreation = false;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(name: 'minimumValue', type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected int $minimumValue = 0;
 
     /**

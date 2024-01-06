@@ -515,7 +515,7 @@ class BasePersonnage
     /**
      * Get the value of richesse.
      */
-    public function getRichesse(): int
+    public function getRichesse(): ?int
     {
         return $this->richesse;
     }
@@ -1080,7 +1080,7 @@ class BasePersonnage
     /**
      * Get Age entity (many to one).
      */
-    public function getAge(): int
+    public function getAge(): Age
     {
         return $this->age;
     }
@@ -1088,7 +1088,7 @@ class BasePersonnage
     /**
      * Set Genre entity (many to one).
      */
-    public function setGenre(Genre $genre = null): int
+    public function setGenre(Genre $genre = null): static
     {
         $this->genre = $genre;
 
@@ -1285,7 +1285,7 @@ class BasePersonnage
     public function getCompetences(): Collection
     {
         $iterator = $this->competences->getIterator();
-        $iterator->uasort(static function (Competence $a, Competence $b): int {
+        $iterator->uasort(static function (Competence $a, Competence $b): string {
             return $a->getCompetenceFamily()?->getLabel() ?? '' <=> $b->getCompetenceFamily()?->getLabel() ?? '';
         });
 
@@ -1480,5 +1480,23 @@ class BasePersonnage
     public function getPersonnageHasQuestions(): Collection
     {
         return $this->personnageHasQuestions;
+    }
+
+    public function getLangueMateriel(): array
+    {
+        $langueMateriel = [];
+        foreach ($this->getPersonnageLangues() as $langue) {
+            if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel) && (0 != $langue->getLangue()->getGroupeLangue()->getId() && 6 != $langue->getLangue()->getGroupeLangue()->getId())) {
+                $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
+            }
+
+            if (0 === $langue->getLangue()->getDiffusion()) {
+                $langueMateriel[] = 'Alphabet '.$langue->getLangue()->getLabel();
+            }
+        }
+
+        sort($langueMateriel);
+
+        return $langueMateriel;
     }
 }

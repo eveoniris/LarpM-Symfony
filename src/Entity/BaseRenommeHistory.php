@@ -24,9 +24,9 @@ abstract class BaseRenommeHistory
     protected int $renomme = 0;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING)]
-    protected string $explication = '';
+    protected ?string $explication = '';
 
-    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $date;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'renommeHistories')]
@@ -87,7 +87,7 @@ abstract class BaseRenommeHistory
     /**
      * Get the value of explication.
      */
-    public function getExplication(): static
+    public function getExplication(): ?string
     {
         return $this->explication;
     }

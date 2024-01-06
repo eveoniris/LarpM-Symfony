@@ -92,7 +92,7 @@ class BaseTerritoire
     protected ?int $tresor = null;
 
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
-    protected int $resistance = 0;
+    protected ?int $resistance = 0;
 
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $blason = null;
@@ -596,7 +596,7 @@ class BaseTerritoire
     /**
      * Get the value of resistance.
      */
-    public function getResistance(): int
+    public function getResistance(): ?int
     {
         return $this->resistance;
     }

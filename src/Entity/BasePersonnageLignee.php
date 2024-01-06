@@ -29,11 +29,11 @@ abstract class BasePersonnageLignee
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'PersonnageLigneeParent1')]
     #[JoinColumn(name: 'parent1_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Personnage $parent1;
+    protected ?Personnage $parent1;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'PersonnageLigneeParent2')]
     #[JoinColumn(name: 'parent2_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Personnage $parent2;
+    protected ?Personnage $parent2;
 
     #[ManyToOne(targetEntity: Lignee::class, inversedBy: 'personnageLignees')]
     #[JoinColumn(name: 'lignee_id', referencedColumnName: 'id', nullable: 'false')]

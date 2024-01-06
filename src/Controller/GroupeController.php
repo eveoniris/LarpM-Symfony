@@ -22,6 +22,7 @@ use App\Form\Groupe\GroupeRessourceForm;
 use App\Form\Groupe\GroupeRichesseForm;
 use App\Form\Groupe\GroupeScenaristeForm;
 use App\Form\Groupe\GroupFindForm;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -1180,6 +1181,7 @@ class GroupeController extends AbstractController
     /**
      * Ajout d'un groupe.
      */
+    #[Route('/groupe/add', name: 'groupe.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $groupe = new \App\Entity\Groupe();
@@ -1237,7 +1239,8 @@ class GroupeController extends AbstractController
     /**
      * Modification d'un groupe.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupe/update/{id}', name: 'groupe.update')]
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $id = $request->get('index');
 
@@ -1350,7 +1353,8 @@ class GroupeController extends AbstractController
     /**
      * Affiche le détail d'un groupe.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupe/detail/{id}', name: 'groupe.detail')]
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $id = $request->get('index');
 
