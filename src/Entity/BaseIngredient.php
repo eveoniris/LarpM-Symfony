@@ -38,11 +38,11 @@ abstract class BaseIngredient
 
     #[OneToMany(mappedBy: 'ingredient', targetEntity: GroupeHasIngredient::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'ingredient_id', nullable: 'false')]
-    protected ?ArrayCollection $groupeHasIngredients;
+    protected ?Collection $groupeHasIngredients;
 
     #[OneToMany(mappedBy: 'ingredient', targetEntity: PersonnageIngredient::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'ingredient_id', nullable: 'false')]
-    protected ?ArrayCollection $personnageIngredients;
+    protected ?Collection $personnageIngredients;
 
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'ingredients')]
     protected Collection $territoires;

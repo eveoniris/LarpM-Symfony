@@ -40,19 +40,21 @@ abstract class BaseItem
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $couleur;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $date_creation;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $date_update;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected int $quantite = 0;
 
+    /*
     #[ORM\ManyToOne(targetEntity: Qualite::class, inversedBy: 'items')]
     #[ORM\JoinColumn(name: 'qualite_id', referencedColumnName: 'id')]
     protected Quality $qualite;
-    
+    */
+
     #[ORM\ManyToOne(targetEntity: Quality::class, inversedBy: 'items')]
     #[ORM\JoinColumn(name: 'quality_id', referencedColumnName: 'id')]
     protected Quality $quality;

@@ -4,9 +4,11 @@
 namespace App\Controller;
 
 use App\Entity\PersonnageSecondaire;
-use Doctrine\Common\Collections\ArrayCollection;
 use App\Form\PersonnageSecondaireDeleteForm;
 use App\Form\PersonnageSecondaireForm;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -30,7 +32,8 @@ class PersonnageSecondaireController extends AbstractController
     /**
      * Detail d'un personnage secondaire.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, PersonnageSecondaire $personnageSecondaire)
+    #[Route('/personnageSecondaire/detail/{id}', name: 'personnageSecondaire.detail')]
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] PersonnageSecondaire $personnageSecondaire)
     {
         return $this->render('admin/personnageSecondaire/detail.twig', ['personnageSecondaire' => $personnageSecondaire]);
     }
@@ -38,6 +41,7 @@ class PersonnageSecondaireController extends AbstractController
     /**
      * Ajout d'un personnage secondaire.
      */
+    #[Route('/personnageSecondaire/add', name: 'personnageSecondaire.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(PersonnageSecondaireForm::class(), new PersonnageSecondaire())
@@ -71,7 +75,8 @@ class PersonnageSecondaireController extends AbstractController
     /**
      * Mise à jour d'un personnage secondaire.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, PersonnageSecondaire $personnageSecondaire)
+    #[Route('/personnageSecondaire/update/{id}', name: 'personnageSecondaire.update')]
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] PersonnageSecondaire $personnageSecondaire)
     {
         /**
          *  Crée un tableau contenant les objets personnageSecondaireCompetences courants de la base de données.
@@ -121,7 +126,8 @@ class PersonnageSecondaireController extends AbstractController
     /**
      * Suppression d'un personnage secondaire.
      */
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, PersonnageSecondaire $personnageSecondaire)
+    #[Route('/personnageSecondaire/delete/{id}', name: 'personnageSecondaire.delete')]
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] PersonnageSecondaire $personnageSecondaire)
     {
         $form = $this->createForm(PersonnageSecondaireDeleteForm::class(), $personnageSecondaire)
             ->add('delete', 'submit', ['label' => 'Supprimer']);

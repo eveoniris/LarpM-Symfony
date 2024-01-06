@@ -28,7 +28,7 @@ abstract class BaseSort
     #[Column(nullable: true, type: \Doctrine\DBAL\Types\Types::STRING)]
     protected ?string $description = null;
 
-    #[Column(length: 45, type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(name: 'documentUrl', length: 45, type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
     protected ?string $documentUrl = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]

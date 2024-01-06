@@ -8,6 +8,8 @@ use JasonGrimes\Paginator;
 use App\Form\DocumentDeleteForm;
 use App\Form\DocumentFindForm;
 use App\Form\DocumentForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -217,7 +219,8 @@ class DocumentController extends AbstractController
     /**
      * Détail d'un document.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Document $document)
+    #[Route('/document/{id}', name: 'document.detail')]
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Document $document)
     {
         return $this->render('admin/document/detail.twig', ['document' => $document]);
     }

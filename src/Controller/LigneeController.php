@@ -8,6 +8,8 @@ use JasonGrimes\Paginator;
 use App\Form\Lignee\LigneeAddMembreForm;
 use App\Form\Lignee\LigneeFindForm;
 use App\Form\Lignee\LigneeForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -65,7 +67,8 @@ class LigneeController extends AbstractController
     /**
      * Affiche le détail d'une lignée.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/lignee/{id}', name: 'lignee.detail')]
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Lignee $lignee)
     {
         $id = $request->get('lignee');
 

@@ -33,6 +33,10 @@ abstract class BasePugilatHistory
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
     protected Personnage $personnage;
 
+    public function __construct()
+    {
+    }
+    
     /**
      * Set the value of id.
      */
