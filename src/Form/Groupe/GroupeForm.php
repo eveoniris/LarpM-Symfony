@@ -36,7 +36,7 @@ class GroupeForm extends AbstractType
             ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'row' => 9,
                 ],
             ])

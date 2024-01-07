@@ -32,7 +32,7 @@ class LieuForm extends AbstractType
             ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'rows' => 9],
             ]);
     }

@@ -36,7 +36,7 @@ class IngredientForm extends AbstractType
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'rows' => 9],
             ]);
     }

@@ -43,7 +43,7 @@ class DebriefingForm extends AbstractType
                 'required' => true,
                 'label' => 'Contenu',
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'rows' => 15,
                 ],
                 'constraints' => [

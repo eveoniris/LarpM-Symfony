@@ -27,7 +27,7 @@ class ConstructionForm extends AbstractType
                 'label' => 'La description de la construction',
                 'required' => true,
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'rows' => 9,
                 ],
             ])

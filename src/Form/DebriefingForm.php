@@ -33,7 +33,7 @@ class DebriefingForm extends AbstractType
             ->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'rows' => 9],
             ]);
     }

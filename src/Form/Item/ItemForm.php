@@ -28,7 +28,7 @@ class ItemForm extends AbstractType
                 'label' => 'Description',
                 'attr' => [
                     'rows' => 9,
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'help' => 'Quelques mots pour décrire votre objet, c\'est le texte décrivant ce que la personne voit, situé au centre de l\'étiquette',
                 ],
             ])
@@ -101,7 +101,7 @@ class ItemForm extends AbstractType
                 'label' => 'Description spéciale',
                 'attr' => [
                     'rows' => 9,
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'help' => 'Quelques mots pour un effet spécial. Ce texte est révélé au joueur si celui-ci réussi à identifier l\'objet',
                 ],
             ])

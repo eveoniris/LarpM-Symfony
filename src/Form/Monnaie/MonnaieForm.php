@@ -28,7 +28,7 @@ class MonnaieForm extends AbstractType
                 'label' => 'Description',
                 'attr' => [
                     'rows' => 9,
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'help' => 'Quelques mots pour décrire cette monnaie',
                 ],
             ]);

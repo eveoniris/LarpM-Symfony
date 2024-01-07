@@ -36,13 +36,13 @@ abstract class BaseTopic
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $update_date = null;
 
-    #[Column(name: 'right', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(name: '`right`', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $right = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
     protected ?int $object_id = null;
 
-    #[Column(name: 'key', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(name: '`key`', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $key = null;
 
     #[OneToMany(mappedBy: 'topic', targetEntity: Gn::class, cascade: ['persist'])]

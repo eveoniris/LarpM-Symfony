@@ -34,7 +34,7 @@ class CompetenceForm extends AbstractType
             ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                 ],
             ])
             ->add('document', 'file', [
@@ -46,7 +46,7 @@ class CompetenceForm extends AbstractType
                 'label' => 'Matériel necessaire',
                 'required' => false,
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                 ],
             ]);
     }

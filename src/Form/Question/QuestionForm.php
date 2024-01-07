@@ -24,7 +24,7 @@ class QuestionForm extends AbstractType
                 'required' => false,
                 'label' => 'Description succinte',
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'row' => 9,
                 ],
             ])
