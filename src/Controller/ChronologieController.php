@@ -98,7 +98,7 @@ class ChronologieController extends AbstractController
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getChronologieVisibility(),
             ])
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -133,7 +133,7 @@ class ChronologieController extends AbstractController
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getChronologieVisibility(),
             ])
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -164,7 +164,7 @@ class ChronologieController extends AbstractController
         }
 
         $form = $this->createForm(ChronologieRemoveForm::class, $chronologie)
-            ->add('save', 'submit', ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

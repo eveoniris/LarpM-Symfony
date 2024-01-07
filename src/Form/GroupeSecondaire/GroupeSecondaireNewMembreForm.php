@@ -38,7 +38,7 @@ class GroupeSecondaireNewMembreForm extends AbstractType
             'property' => 'nom',
             'mapped' => false,
         ])
-            ->add('submit', 'submit', ['label' => 'Ajouter']);
+            ->add('submit', SubmitType::class, ['label' => 'Ajouter']);
     }
 
     /**

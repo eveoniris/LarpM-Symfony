@@ -101,7 +101,7 @@ class PersonnageController extends AbstractController
     public function updateTrombineAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $form = $this->createForm(TrombineForm::class, [])
-            ->add('envoyer', 'submit', ['label' => 'Envoyer']);
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
@@ -148,7 +148,7 @@ class PersonnageController extends AbstractController
         $personnage = new Personnage();
 
         $form = $this->createForm(PersonnageForm::class, $personnage)
-            ->add('valider', 'submit', ['label' => 'Enregistrer']);
+            ->add('valider', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -186,7 +186,7 @@ class PersonnageController extends AbstractController
     public function vieillirAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm()
-            ->add('valider', 'submit', ['label' => 'Faire vieillir tous les personnages', 'attr' => ['class' => 'btn-danger']]);
+            ->add('valider', SubmitType::class, ['label' => 'Faire vieillir tous les personnages', 'attr' => ['class' => 'btn-danger']]);
 
         $form->handleRequest($request);
 
@@ -255,7 +255,7 @@ class PersonnageController extends AbstractController
     public function adminUpdateAgeAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $form = $this->createForm(PersonnageUpdateAgeForm::class, $personnage)
-            ->add('valider', 'submit', ['label' => 'Valider']);
+            ->add('valider', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -322,7 +322,7 @@ class PersonnageController extends AbstractController
         }
 
         $form = $this->createForm(PersonnageTechnologieForm::class, $personnage)
-            ->add('valider', 'submit', ['label' => 'Valider']);
+            ->add('valider', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -434,7 +434,7 @@ class PersonnageController extends AbstractController
                 'required' => false,
                 'data' => $personnage->getMateriel(),
             ])
-            ->add('valider', 'submit', ['label' => 'Valider']);
+            ->add('valider', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -462,7 +462,7 @@ class PersonnageController extends AbstractController
     public function adminStatutAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $form = $this->createForm(PersonnageStatutForm::class, $personnage)
-            ->add('submit', 'submit', ['label' => 'Valider']);
+            ->add('submit', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -507,7 +507,7 @@ class PersonnageController extends AbstractController
                 'class' => \App\Entity\Participant::class,
                 'property' => 'UserIdentity',
             ])
-            ->add('transfert', 'submit', ['label' => 'Transferer']);
+            ->add('transfert', SubmitType::class, ['label' => 'Transferer']);
 
         $form->handleRequest($request);
 
@@ -634,7 +634,7 @@ class PersonnageController extends AbstractController
     public function adminXpAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $form = $this->createForm(PersonnageXpForm::class, [])
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -697,7 +697,7 @@ class PersonnageController extends AbstractController
                 'property' => 'label',
                 'class' => \App\Entity\Classe::class,
             ])
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -771,7 +771,7 @@ class PersonnageController extends AbstractController
     public function adminDeleteAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $form = $this->createForm(PersonnageDeleteForm::class, $personnage)
-            ->add('delete', 'submit', ['label' => 'Supprimer']);
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -849,7 +849,7 @@ class PersonnageController extends AbstractController
     public function adminUpdateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $form = $this->createForm(PersonnageUpdateForm::class, $personnage)
-            ->add('save', 'submit', ['label' => 'Valider les modifications'])
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications'])
         ;
 
         $form->handleRequest($request);
@@ -887,7 +887,7 @@ class PersonnageController extends AbstractController
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getPersonnageBackgroundVisibility(),
             ])
-            ->add('save', 'submit', ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -924,7 +924,7 @@ class PersonnageController extends AbstractController
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getPersonnageBackgroundVisibility(),
             ])
-            ->add('save', 'submit', ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -953,7 +953,7 @@ class PersonnageController extends AbstractController
     public function adminUpdateRenommeAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $form = $this->createForm(new PersonnageUpdateRenommeForm())
-            ->add('save', 'submit', ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -989,7 +989,7 @@ class PersonnageController extends AbstractController
     public function adminUpdateHeroismeAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $form = $this->createForm(new PersonnageUpdateHeroismeForm())
-            ->add('save', 'submit', ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1025,7 +1025,7 @@ class PersonnageController extends AbstractController
     public function adminUpdatePugilatAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $form = $this->createForm(new PersonnageUpdatePugilatForm())
-            ->add('save', 'submit', ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1149,7 +1149,7 @@ class PersonnageController extends AbstractController
         $trigger->setDone(false);
 
         $form = $this->createForm(TriggerForm::class, $trigger)
-            ->add('save', 'submit', ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1178,7 +1178,7 @@ class PersonnageController extends AbstractController
         $trigger = $request->get('trigger');
 
         $form = $this->createForm(TriggerDeleteForm::class, $trigger)
-            ->add('save', 'submit', ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1212,7 +1212,7 @@ class PersonnageController extends AbstractController
         }
 
         $form = $this->createForm(PersonnageUpdateDomaineForm::class, $personnage)
-            ->add('save', 'submit', ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1269,7 +1269,7 @@ class PersonnageController extends AbstractController
                 'choice_label' => 'label',
                 'data' => $originalLanguages,
             ])
-            ->add('save', 'submit', ['label' => 'Valider vos modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider vos modifications']);
 
         $form->handleRequest($request);
 
@@ -1887,7 +1887,7 @@ class PersonnageController extends AbstractController
     public function documentAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $form = $this->createForm(PersonnageDocumentForm::class, $personnage)
-            ->add('submit', 'submit', ['label' => 'Enregistrer']);
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -1914,7 +1914,7 @@ class PersonnageController extends AbstractController
     public function itemAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $form = $this->createForm(PersonnageItemForm::class, $personnage)
-            ->add('submit', 'submit', ['label' => 'Enregistrer']);
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -1973,7 +1973,7 @@ class PersonnageController extends AbstractController
                 'choices' => $availableReligions,
                 'property' => 'label',
             ])
-            ->add('save', 'submit', ['label' => 'Valider votre religion']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre religion']);
 
         $form->handleRequest($request);
 
@@ -2017,7 +2017,7 @@ class PersonnageController extends AbstractController
         $personnageReligion = $request->get('personnageReligion');
 
         $form = $this->createForm()
-            ->add('save', 'submit', ['label' => 'Retirer la religion']);
+            ->add('save', SubmitType::class, ['label' => 'Retirer la religion']);
 
         $form->handleRequest($request);
 
@@ -2048,7 +2048,7 @@ class PersonnageController extends AbstractController
         $personnageLangue = $request->get('personnageLangue');
 
         $form = $this->createForm()
-            ->add('save', 'submit', ['label' => 'Retirer la langue']);
+            ->add('save', SubmitType::class, ['label' => 'Retirer la langue']);
 
         $form->handleRequest($request);
 
@@ -2077,7 +2077,7 @@ class PersonnageController extends AbstractController
     public function adminUpdateOriginAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $form = $this->createForm(PersonnageOriginForm::class, $personnage)
-            ->add('save', 'submit', ['label' => "Valider l'origine du personnage"]);
+            ->add('save', SubmitType::class, ['label' => "Valider l'origine du personnage"]);
 
         $form->handleRequest($request);
 
@@ -2133,7 +2133,7 @@ class PersonnageController extends AbstractController
         }
 
         $form = $this->createForm()
-            ->add('save', 'submit', ['label' => 'Retirer la compétence']);
+            ->add('save', SubmitType::class, ['label' => 'Retirer la compétence']);
 
         $form->handleRequest($request);
 
@@ -2231,7 +2231,7 @@ class PersonnageController extends AbstractController
                 'label' => 'Choisissez une nouvelle compétence',
                 'choices' => $choices,
             ])
-            ->add('save', 'submit', ['label' => 'Valider la compétence']);
+            ->add('save', SubmitType::class, ['label' => 'Valider la compétence']);
 
         $form->handleRequest($request);
 
@@ -2348,7 +2348,7 @@ class PersonnageController extends AbstractController
         $personnageChronologie->setPersonnage($personnage);
 
         $form = $this->createForm(PersonnageChronologieForm::class, $personnageChronologie)
-            ->add('save', 'submit', ['label' => 'Valider l\'évènement']);
+            ->add('save', SubmitType::class, ['label' => 'Valider l\'évènement']);
 
         $form->handleRequest($request);
 
@@ -2386,7 +2386,7 @@ class PersonnageController extends AbstractController
         $personnageChronologie = $request->get('personnageChronologie');
 
         $form = $this->createForm()
-            ->add('save', 'submit', ['label' => 'Retirer l\'évènement']);
+            ->add('save', SubmitType::class, ['label' => 'Retirer l\'évènement']);
 
         $form->handleRequest($request);
 
@@ -2418,7 +2418,7 @@ class PersonnageController extends AbstractController
         $personnageLignee->setPersonnage($personnage);
 
         $form = $this->createForm(PersonnageLigneeForm::class, $personnageLignee)
-            ->add('save', 'submit', ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -2455,7 +2455,7 @@ class PersonnageController extends AbstractController
         $personnageLignee = $request->get('personnageLignee');
 
         $form = $this->createForm()
-            ->add('save', 'submit', ['label' => 'Retirer la lignée']);
+            ->add('save', SubmitType::class, ['label' => 'Retirer la lignée']);
 
         $form->handleRequest($request);
 

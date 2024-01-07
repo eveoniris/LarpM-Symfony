@@ -19,7 +19,7 @@ class ItemDeleteForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('delete', 'submit', [
+        $builder->add('delete', SubmitType::class, [
             'label' => 'Supprimer',
             'attr' => [
                 'class' => 'btn btn-danger',

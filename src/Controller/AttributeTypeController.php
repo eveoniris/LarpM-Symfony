@@ -31,8 +31,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
         $attributeType = new \App\Entity\AttributeType();
 
         $form = $this->createForm(AttributeTypeForm::class, $attributeType)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -66,8 +66,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
         $attributeType = $entityManager->find('\\'.\App\Entity\AttributeType::class, $id);
 
         $form = $this->createForm(AttributeTypeForm::class, $attributeType)
-            ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer']);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

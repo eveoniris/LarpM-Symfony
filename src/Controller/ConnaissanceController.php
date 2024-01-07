@@ -50,7 +50,7 @@ class ConnaissanceController extends AbstractController
         $connaissance = new Connaissance();
 
         $form = $this->createForm(ConnaissanceForm::class, $connaissance)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -99,7 +99,7 @@ class ConnaissanceController extends AbstractController
         $connaissance = $request->get('connaissance');
 
         $form = $this->createForm(ConnaissanceForm::class, $connaissance)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -149,7 +149,7 @@ class ConnaissanceController extends AbstractController
         $connaissance = $request->get('connaissance');
 
         $form = $this->createForm(ConnaissanceDeleteForm::class, $connaissance)
-            ->add('save', 'submit', ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

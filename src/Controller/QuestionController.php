@@ -92,7 +92,7 @@ class QuestionController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Question $question)
     {
         $form = $this->createForm(QuestionDeleteForm::class, $question)
-            ->add('submit', 'submit', ['label' => 'Supprimer']);
+            ->add('submit', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

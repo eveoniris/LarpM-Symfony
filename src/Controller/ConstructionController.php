@@ -35,7 +35,7 @@ class ConstructionController extends AbstractController
         $construction = new \App\Entity\Construction();
 
         $form = $this->createForm(ConstructionForm::class, $construction)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -64,7 +64,7 @@ class ConstructionController extends AbstractController
         $construction = $request->get('construction');
 
         $form = $this->createForm(ConstructionForm::class, $construction)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -93,7 +93,7 @@ class ConstructionController extends AbstractController
         $construction = $request->get('construction');
 
         $form = $this->createForm(ConstructionDeleteForm::class, $construction)
-            ->add('delete', 'submit', ['label' => 'Supprimer']);
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

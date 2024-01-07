@@ -60,7 +60,7 @@ class MessageController extends AbstractController
         }
 
         $form = $this->createForm(NewMessageForm::class, $message)
-            ->add('envoyer', 'submit', ['label' => 'Envoyer votre message']);
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre message']);
 
         $form->handleRequest($request);
 
@@ -127,7 +127,7 @@ class MessageController extends AbstractController
         $reponse->setUpdateDate(new \DateTime('NOW'));
 
         $form = $this->createForm(NewMessageForm::class, $reponse)
-            ->add('envoyer', 'submit', ['label' => 'Envoyer votre message']);
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre message']);
 
         $form->handleRequest($request);
 

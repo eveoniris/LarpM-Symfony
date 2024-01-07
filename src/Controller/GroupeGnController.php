@@ -49,7 +49,7 @@ class GroupeGnController extends AbstractController
         }
 
         $form = $this->createForm(GroupeGnForm::class, $groupeGn)
-            ->add('submit', 'submit', ['label' => 'Enregistrer']);
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -75,7 +75,7 @@ class GroupeGnController extends AbstractController
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe, GroupeGn $groupeGn)
     {
         $form = $this->createForm(GroupeGnForm::class, $groupeGn)
-            ->add('submit', 'submit', ['label' => 'Enregistrer']);
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -124,7 +124,7 @@ class GroupeGnController extends AbstractController
                     'placeholder' => 'Responsable',
                 ],
             ])
-            ->add('submit', 'submit', ['label' => 'Enregistrer']);
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -176,7 +176,7 @@ class GroupeGnController extends AbstractController
                     'placeholder' => 'Participant',
                 ],
             ])
-            ->add('submit', 'submit', ['label' => 'Enregistrer']);
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -230,7 +230,7 @@ class GroupeGnController extends AbstractController
                     'placeholder' => 'Participant',
                 ],
             ])
-            ->add('submit', 'submit', ['label' => 'Ajouter le joueur choisi']);
+            ->add('submit', SubmitType::class, ['label' => 'Ajouter le joueur choisi']);
 
         $form->handleRequest($request);
 
@@ -262,7 +262,7 @@ class GroupeGnController extends AbstractController
     public function participantRemoveAction(Request $request,  EntityManagerInterface $entityManager, GroupeGn $groupeGn, Participant $participant)
     {
         $form = $this->createForm()
-            ->add('submit', 'submit', ['label' => 'Retirer']);
+            ->add('submit', SubmitType::class, ['label' => 'Retirer']);
 
         $form->handleRequest($request);
 
@@ -296,7 +296,7 @@ class GroupeGnController extends AbstractController
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
         $form = $this->createForm(GroupeGnPlaceAvailableForm::class, $groupeGn)
-            ->add('submit', 'submit', ['label' => 'Enregistrer']);
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -339,7 +339,7 @@ class GroupeGnController extends AbstractController
     public function jeudedomaineAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe, GroupeGn $groupeGn)
     {
         $form = $this->createForm(GroupeGnOrdreForm::class, $groupeGn, ['groupeGnId' => $groupeGn->getId()])
-            ->add('submit', 'submit', ['label' => 'Enregistrer']);
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 

@@ -91,7 +91,7 @@ class CultureController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Culture $culture)
     {
         $form = $this->createForm(CultureDeleteForm::class, $culture)
-            ->add('submit', 'submit', ['label' => 'Supprimer']);
+            ->add('submit', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

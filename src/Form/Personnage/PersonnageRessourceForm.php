@@ -45,7 +45,7 @@ class PersonnageRessourceForm extends AbstractType
                 'by_reference' => false,
                 'type' => new PersonnageRessourceType(),
             ])
-            ->add('valider', 'submit', ['label' => 'Valider']);
+            ->add('valider', SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

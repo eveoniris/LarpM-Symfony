@@ -39,8 +39,8 @@ class AppelationController extends AbstractController
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(AppelationForm::class, new Appelation())
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -69,8 +69,8 @@ class AppelationController extends AbstractController
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Appelation $appelation)
     {
         $form = $this->createForm(AppelationForm::class, $appelation)
-            ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer']);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

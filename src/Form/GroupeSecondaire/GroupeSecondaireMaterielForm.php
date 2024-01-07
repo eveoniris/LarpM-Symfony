@@ -26,7 +26,7 @@ class GroupeSecondaireMaterielForm extends AbstractType
                 'row' => 9,
             ],
         ])
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
     }
 
     /**

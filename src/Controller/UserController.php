@@ -58,7 +58,7 @@ class UserController extends AbstractController
     public function adminNewAction(Request $request)
     {
         $form = $this->createForm(UserNewForm::class, [])
-            ->add('save', 'submit', ['label' => "Créer l'utilisateur"]);
+            ->add('save', SubmitType::class, ['label' => "Créer l'utilisateur"]);
 
         $form->handleRequest($request);
 
@@ -114,7 +114,7 @@ class UserController extends AbstractController
         }
 
         $form = $this->createForm(UserPersonnageDefaultForm::class, $this->getUser(), ['User_id' => $User->getId()])
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -142,7 +142,7 @@ class UserController extends AbstractController
     public function restrictionAction( EntityManagerInterface $entityManager, Request $request)
     {
         $form = $this->createForm(UserRestrictionForm::class, $this->getUser())
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -282,7 +282,7 @@ class UserController extends AbstractController
         }
 
         $form = $this->createForm(EtatCivilForm::class, $etatCivil)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 

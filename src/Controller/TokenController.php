@@ -73,8 +73,8 @@ class TokenController extends AbstractController
         $token = new Token();
 
         $form = $this->createForm(TokenForm::class, $token)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -113,7 +113,7 @@ class TokenController extends AbstractController
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Token $token)
     {
         $form = $this->createForm(TokenForm::class, $token)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -140,7 +140,7 @@ class TokenController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Token $token)
     {
         $form = $this->createForm(TokenDeleteForm::class, $token)
-            ->add('save', 'submit', ['label' => 'Supprimer', 'attr' => ['class' => 'btn-danger']]);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer', 'attr' => ['class' => 'btn-danger']]);
 
         $form->handleRequest($request);
 

@@ -26,7 +26,7 @@ class PersonnageRichesseForm extends AbstractType
                 'help' => "Indiquez combien de pièces d'argent votre personnage doit recevoir",
             ],
         ])
-            ->add('valider', 'submit', ['label' => 'Valider']);
+            ->add('valider', SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

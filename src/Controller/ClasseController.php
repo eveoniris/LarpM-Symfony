@@ -58,8 +58,8 @@ class ClasseController extends AbstractController
         $classe = new \App\Entity\Classe();
 
         $form = $this->createForm(ClasseForm::class, $classe)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
