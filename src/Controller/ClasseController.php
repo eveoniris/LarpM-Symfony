@@ -7,6 +7,7 @@ use App\Entity\Classe;
 use App\Repository\ClasseRepository;
 use App\Form\Classe\ClasseForm;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,11 +53,11 @@ class ClasseController extends AbstractController
      * Ajout d'une classe.
      */
     #[Route('/classe/add', name: 'classe.add')]
-    public function addAction(Request $request, ClasseRepository $classeRepository): Response
+    public function addAction(EntityManagerInterface $entityManager, Request $request, ClasseRepository $classeRepository): Response
     {
         $classe = new \App\Entity\Classe();
 
-        $form = $this->createForm(ClasseForm::class(), $classe)
+        $form = $this->createForm(ClasseForm::class, $classe)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -71,7 +72,7 @@ class ClasseController extends AbstractController
             $this->addFlash('success', 'La classe a été ajoutée.');
 
             if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('classe', [], 303);
+                return $this->redirectToRoute('classe.index', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('classe.add', [], 303);
             }
@@ -86,10 +87,8 @@ class ClasseController extends AbstractController
      * Mise à jour d'une classe.
      */
     #[Route('/classe/{id}/update', name: 'classe.update')]
-    public function updateAction(EntityManagerInterface $entityManager, Request $request, int $id)
+    public function updateAction(EntityManagerInterface $entityManager, Request $request, #[MapEntity] Classe $classe)
     {
-        $classe = $entityManager->getRepository(Classe::class)->find($id);
-        
         $form = $this->createForm(ClasseForm::class, $classe)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
             ->add('delete', SubmitType::class, ['label' => 'Supprimer'])
@@ -111,7 +110,7 @@ class ClasseController extends AbstractController
             }
 
             //return $this->redirectToRoute('classe'));
-            return $this->redirectToRoute('classe', [], 303);
+            return $this->redirectToRoute('classe.index', [], 303);
         }
 
         return $this->render('classe/update.twig', [

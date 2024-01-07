@@ -119,7 +119,7 @@ class InstallController extends AbstractController
         ];
 
         // preparation du formulaire
-        $form = $this->createForm(\LarpManager\Form\InstallDatabaseForm::class(), $default)
+        $form = $this->createForm(\LarpManager\Form\InstallDatabaseForm::class, $default)
             ->add('create', 'submit');
 
         $form->handleRequest($request);
@@ -179,7 +179,7 @@ class InstallController extends AbstractController
         ];
 
         // preparation du formulaire
-        $form = $this->createForm(\LarpManager\Form\InstallDatabaseForm::class(), $default)
+        $form = $this->createForm(\LarpManager\Form\InstallDatabaseForm::class, $default)
             ->add('create', 'submit');
 
         $form->handleRequest($request);

@@ -111,7 +111,7 @@ class CompetenceController extends AbstractController
             }
         }
 
-        $form = $this->createForm(CompetenceForm::class(), $competence)
+        $form = $this->createForm(CompetenceForm::class, $competence)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -175,7 +175,7 @@ class CompetenceController extends AbstractController
     {
         $competence = $request->get('competence');
         $attributeRepos = $entityManager->getRepository('\\'.\App\Entity\AttributeType::class);
-        $form = $this->createForm(CompetenceForm::class(), $competence)
+        $form = $this->createForm(CompetenceForm::class, $competence)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 

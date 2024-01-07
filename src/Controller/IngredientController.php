@@ -44,7 +44,7 @@ class IngredientController extends AbstractController
     {
         $ingredient = new \App\Entity\Ingredient();
 
-        $form = $this->createForm(IngredientForm::class(), $ingredient)
+        $form = $this->createForm(IngredientForm::class, $ingredient)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -73,7 +73,7 @@ class IngredientController extends AbstractController
     {
         $ingredient = $request->get('ingredient');
 
-        $form = $this->createForm(IngredientForm::class(), $ingredient)
+        $form = $this->createForm(IngredientForm::class, $ingredient)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -102,7 +102,7 @@ class IngredientController extends AbstractController
     {
         $ingredient = $request->get('ingredient');
 
-        $form = $this->createForm(IngredientDeleteForm::class(), $ingredient)
+        $form = $this->createForm(IngredientDeleteForm::class, $ingredient)
             ->add('save', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);

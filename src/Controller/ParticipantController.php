@@ -121,7 +121,7 @@ class ParticipantController extends AbstractController
         $participant = new Participant();
         $participant->setUser($User);
 
-        $form = $this->createForm(ParticipantNewForm::class(), $participant)
+        $form = $this->createForm(ParticipantNewForm::class, $participant)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -157,7 +157,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', array('gn' => $participant->getGn()->getId())),303);
         }
         */
-        $form = $this->createForm(ParticipantGroupeForm::class(), $participant, ['gnId' => $participant->getGn()->getId()])
+        $form = $this->createForm(ParticipantGroupeForm::class, $participant, ['gnId' => $participant->getGn()->getId()])
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -183,7 +183,7 @@ class ParticipantController extends AbstractController
      */
     public function removeAction( EntityManagerInterface $entityManager, Request $request, Participant $participant)
     {
-        $form = $this->createForm(ParticipantRemoveForm::class(), $participant, ['gnId' => $participant->getGn()->getId()])
+        $form = $this->createForm(ParticipantRemoveForm::class, $participant, ['gnId' => $participant->getGn()->getId()])
             ->add('save', 'submit', ['label' => 'Oui, retirer la participation de cet utilisateur']);
 
         $form->handleRequest($request);
@@ -234,7 +234,7 @@ class ParticipantController extends AbstractController
      */
     public function billetAction( EntityManagerInterface $entityManager, Request $request, Participant $participant)
     {
-        $form = $this->createForm(ParticipantBilletForm::class(), $participant)
+        $form = $this->createForm(ParticipantBilletForm::class, $participant)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -272,7 +272,7 @@ class ParticipantController extends AbstractController
             $originalParticipantHasRestaurations->add($participantHasRestauration);
         }
 
-        $form = $this->createForm(ParticipantRestaurationForm::class(), $participant)
+        $form = $this->createForm(ParticipantRestaurationForm::class, $participant)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -382,7 +382,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
-        $form = $this->createForm(PersonnageEditForm::class(), $personnage)
+        $form = $this->createForm(PersonnageEditForm::class, $personnage)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -409,7 +409,7 @@ class ParticipantController extends AbstractController
      */
     public function personnageTrombineAction(Request $request,  EntityManagerInterface $entityManager, Participant $participant, Personnage $personnage)
     {
-        $form = $this->createForm(TrombineForm::class(), [])
+        $form = $this->createForm(TrombineForm::class, [])
             ->add('envoyer', 'submit', ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
@@ -738,7 +738,7 @@ class ParticipantController extends AbstractController
 
         // j'ajoute ici certains champs du formulaires (les classes)
         // car j'ai besoin des informations du groupe pour les alimenter
-        $form = $this->createForm(PersonnageForm::class(), $personnage)
+        $form = $this->createForm(PersonnageForm::class, $personnage)
             ->add('classe', 'entity', [
                 'label' => 'Classes disponibles',
                 'property' => 'label',
@@ -903,7 +903,7 @@ class ParticipantController extends AbstractController
 
         // j'ajoute içi certain champs du formulaires (les classes)
         // car j'ai besoin des informations du groupe pour les alimenter
-        $form = $this->createForm(PersonnageForm::class(), $personnage)
+        $form = $this->createForm(PersonnageForm::class, $personnage)
             ->add('classe', 'entity', [
                 'label' => 'Classes disponibles',
                 'property' => 'label',
@@ -1068,7 +1068,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
-        $form = $this->createForm(GroupeInscriptionForm::class(), [])
+        $form = $this->createForm(GroupeInscriptionForm::class, [])
             ->add('subscribe', 'submit', ['label' => "S'inscrire"]);
 
         $form->handleRequest($request);
@@ -1131,7 +1131,7 @@ class ParticipantController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\PersonnageSecondaire::class);
         $personnageSecondaires = $repo->findAll();
 
-        $form = $this->createForm(ParticipantPersonnageSecondaireForm::class(), $participant)
+        $form = $this->createForm(ParticipantPersonnageSecondaireForm::class, $participant)
             ->add('choice', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -1226,7 +1226,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
-        $form = $this->createForm(PersonnageOriginForm::class(), $personnage)
+        $form = $this->createForm(PersonnageOriginForm::class, $personnage)
             ->add('save', 'submit', ['label' => 'Valider votre origine']);
 
         $form->handleRequest($request);
@@ -1306,7 +1306,7 @@ class ParticipantController extends AbstractController
             $choices[] = $religion;
         }
 
-        $form = $this->createForm(PersonnageReligionForm::class(), $personnageReligion)
+        $form = $this->createForm(PersonnageReligionForm::class, $personnageReligion)
             ->add('religion', 'entity', [
                 'required' => true,
                 'label' => 'Votre religion',
@@ -2523,7 +2523,7 @@ class ParticipantController extends AbstractController
         $message->setCreationDate(new \DateTime('NOW'));
         $message->setUpdateDate(new \DateTime('NOW'));
 
-        $form = $this->createForm(MessageForm::class(), $message)
+        $form = $this->createForm(MessageForm::class, $message)
             ->add('envoyer', 'submit', ['label' => 'Envoyer votre réponse']);
 
         $form->handleRequest($request);
@@ -2994,7 +2994,7 @@ class ParticipantController extends AbstractController
     {
         $joueur = new \App\Entity\Joueur();
 
-        $form = $this->createForm(JoueurForm::class(), $joueur)
+        $form = $this->createForm(JoueurForm::class, $joueur)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -3022,7 +3022,7 @@ class ParticipantController extends AbstractController
      */
     public function searchAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(FindJoueurForm::class(), [])
+        $form = $this->createForm(FindJoueurForm::class, [])
             ->add('submit', 'submit', ['label' => 'Rechercher']);
 
         $form->handleRequest($request);
@@ -3102,7 +3102,7 @@ class ParticipantController extends AbstractController
 
         $joueur = $entityManager->find('\App\Entity\Joueur', $id);
 
-        $form = $this->createForm(JoueurXpForm::class(), $joueur)
+        $form = $this->createForm(JoueurXpForm::class, $joueur)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -3164,7 +3164,7 @@ class ParticipantController extends AbstractController
 
         $joueur = $entityManager->find('\App\Entity\Joueur', $id);
 
-        $form = $this->createForm(JoueurForm::class(), $joueur)
+        $form = $this->createForm(JoueurForm::class, $joueur)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -3217,7 +3217,7 @@ class ParticipantController extends AbstractController
         $alliance = new \App\Entity\GroupeAllie();
         $alliance->setGroupe($groupe);
 
-        $form = $this->createForm(RequestAllianceForm::class(), $alliance)
+        $form = $this->createForm(RequestAllianceForm::class, $alliance)
             ->add('send', 'submit', ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
@@ -3293,7 +3293,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        $form = $this->createForm(CancelRequestedAllianceForm::class(), $alliance)
+        $form = $this->createForm(CancelRequestedAllianceForm::class, $alliance)
             ->add('send', 'submit', ['label' => "Oui, j'annule ma demande"]);
 
         $form->handleRequest($request);
@@ -3336,7 +3336,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        $form = $this->createForm(AcceptAllianceForm::class(), $alliance)
+        $form = $this->createForm(AcceptAllianceForm::class, $alliance)
             ->add('send', 'submit', ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
@@ -3380,7 +3380,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        $form = $this->createForm(RefuseAllianceForm::class(), $alliance)
+        $form = $this->createForm(RefuseAllianceForm::class, $alliance)
             ->add('send', 'submit', ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
@@ -3423,7 +3423,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        $form = $this->createForm(BreakAllianceForm::class(), $alliance)
+        $form = $this->createForm(BreakAllianceForm::class, $alliance)
             ->add('send', 'submit', ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
@@ -3481,7 +3481,7 @@ class ParticipantController extends AbstractController
         $war->setGroupePeace(false);
         $war->setGroupeEnemyPeace(false);
 
-        $form = $this->createForm(DeclareWarForm::class(), $war)
+        $form = $this->createForm(DeclareWarForm::class, $war)
             ->add('send', 'submit', ['label' => 'Envoyer']);
 
         if ($request->isMethod('POST')) {
@@ -3551,7 +3551,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        $form = $this->createForm(RequestPeaceForm::class(), $war)
+        $form = $this->createForm(RequestPeaceForm::class, $war)
             ->add('send', 'submit', ['label' => 'Envoyer']);
 
         if ($request->isMethod('POST')) {
@@ -3599,7 +3599,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        $form = $this->createForm(AcceptPeaceForm::class(), $war)
+        $form = $this->createForm(AcceptPeaceForm::class, $war)
             ->add('send', 'submit', ['label' => 'Envoyer']);
 
         if ($request->isMethod('POST')) {
@@ -3647,7 +3647,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        $form = $this->createForm(RefusePeaceForm::class(), $war)
+        $form = $this->createForm(RefusePeaceForm::class, $war)
             ->add('send', 'submit', ['label' => 'Envoyer']);
 
         if ($request->isMethod('POST')) {
@@ -3693,7 +3693,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        $form = $this->createForm(CancelRequestedPeaceForm::class(), $war)
+        $form = $this->createForm(CancelRequestedPeaceForm::class, $war)
             ->add('send', 'submit', ['label' => 'Envoyer']);
 
         if ($request->isMethod('POST')) {

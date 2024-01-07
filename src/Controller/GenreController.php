@@ -30,7 +30,7 @@ class GenreController extends AbstractController
     {
         $genre = new \App\Entity\Genre();
 
-        $form = $this->createForm(GenreForm::class(), $genre)
+        $form = $this->createForm(GenreForm::class, $genre)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -83,7 +83,7 @@ class GenreController extends AbstractController
 
         $genre = $entityManager->find('\\'.\App\Entity\Genre::class, $id);
 
-        $form = $this->createForm(GenreForm::class(), $genre)
+        $form = $this->createForm(GenreForm::class, $genre)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 

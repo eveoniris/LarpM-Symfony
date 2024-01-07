@@ -19,7 +19,7 @@ class RegionController extends AbstractController
     {
         $region = new \App\Entity\Region();
 
-        $form = $this->createForm(RegionForm::class(), $region)
+        $form = $this->createForm(RegionForm::class, $region)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -52,7 +52,7 @@ class RegionController extends AbstractController
 
         $region = $entityManager->find('\App\Entity\Region', $id);
 
-        $form = $this->createForm(RegionForm::class(), $region)
+        $form = $this->createForm(RegionForm::class, $region)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 

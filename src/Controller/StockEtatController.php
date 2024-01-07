@@ -22,7 +22,7 @@ class StockEtatController extends AbstractController
     {
         $etat = new \App\Entity\Etat();
 
-        $form = $this->createForm(EtatType::class(), $etat)
+        $form = $this->createForm(EtatType::class, $etat)
             ->add('save', 'submit');
 
         // on passe la requête de l'utilisateur au formulaire
@@ -50,7 +50,7 @@ class StockEtatController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\Etat::class);
         $etat = $repo->find($id);
 
-        $form = $this->createForm(EtatType::class(), $etat)
+        $form = $this->createForm(EtatType::class, $etat)
             ->add('update', 'submit')
             ->add('delete', 'submit');
 

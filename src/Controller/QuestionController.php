@@ -29,7 +29,7 @@ class QuestionController extends AbstractController
      */
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(QuestionForm::class(), new Question())->getForm();
+        $form = $this->createForm(QuestionForm::class, new Question())->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -65,7 +65,7 @@ class QuestionController extends AbstractController
      */
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Question $question)
     {
-        $form = $this->createForm(QuestionForm::class(), $question);
+        $form = $this->createForm(QuestionForm::class, $question);
 
         $form->handleRequest($request);
 
@@ -91,7 +91,7 @@ class QuestionController extends AbstractController
      */
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Question $question)
     {
-        $form = $this->createForm(QuestionDeleteForm::class(), $question)
+        $form = $this->createForm(QuestionDeleteForm::class, $question)
             ->add('submit', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);

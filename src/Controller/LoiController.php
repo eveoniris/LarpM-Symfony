@@ -32,7 +32,7 @@ class LoiController extends AbstractController
      */
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(LoiForm::class(), new Loi())->getForm();
+        $form = $this->createForm(LoiForm::class, new Loi())->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -87,7 +87,7 @@ class LoiController extends AbstractController
      */
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Loi $loi)
     {
-        $form = $this->createForm(LoiForm::class(), $loi);
+        $form = $this->createForm(LoiForm::class, $loi);
 
         $form->handleRequest($request);
 
@@ -134,7 +134,7 @@ class LoiController extends AbstractController
      */
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Loi $loi)
     {
-        $form = $this->createForm(LoiDeleteForm::class(), $loi)
+        $form = $this->createForm(LoiDeleteForm::class, $loi)
             ->add('submit', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);

@@ -32,7 +32,7 @@ class MonnaieController extends AbstractController
      */
     public function addAction( EntityManagerInterface $entityManager, Request $request)
     {
-        $form = $this->createForm(MonnaieForm::class(), new Monnaie())
+        $form = $this->createForm(MonnaieForm::class, new Monnaie())
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -57,7 +57,7 @@ class MonnaieController extends AbstractController
      */
     public function updateAction( EntityManagerInterface $entityManager, Request $request, Monnaie $monnaie)
     {
-        $form = $this->createForm(MonnaieForm::class(), $monnaie)
+        $form = $this->createForm(MonnaieForm::class, $monnaie)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -83,7 +83,7 @@ class MonnaieController extends AbstractController
      */
     public function deleteAction( EntityManagerInterface $entityManager, Request $request, Monnaie $monnaie)
     {
-        $form = $this->createForm(MonnaieDeleteForm::class(), $monnaie)
+        $form = $this->createForm(MonnaieDeleteForm::class, $monnaie)
             ->add('submit', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);

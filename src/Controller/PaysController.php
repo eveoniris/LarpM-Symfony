@@ -20,7 +20,7 @@ class PaysController extends AbstractController
     {
         $pays = new \App\Entity\Pays();
 
-        $form = $this->createForm(PaysMinimalForm::class(), $pays)
+        $form = $this->createForm(PaysMinimalForm::class, $pays)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -53,7 +53,7 @@ class PaysController extends AbstractController
 
         $pays = $entityManager->find('\App\Entity\Pays', $id);
 
-        $form = $this->createForm(PaysForm::class(), $pays)
+        $form = $this->createForm(PaysForm::class, $pays)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 

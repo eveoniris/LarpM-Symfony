@@ -22,7 +22,7 @@ class StockLocalisationController extends AbstractController
     {
         $localisation = new \App\Entity\Localisation();
 
-        $form = $this->createForm(LocalisationType::class(), $localisation)
+        $form = $this->createForm(LocalisationType::class, $localisation)
             ->add('save', 'submit');
 
         // on passe la requête de l'utilisateur au formulaire
@@ -50,7 +50,7 @@ class StockLocalisationController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\Localisation::class);
         $localisation = $repo->find($id);
 
-        $form = $this->createForm(LocalisationType::class(), $localisation)
+        $form = $this->createForm(LocalisationType::class, $localisation)
             ->add('update', 'submit')
             ->add('delete', 'submit');
 

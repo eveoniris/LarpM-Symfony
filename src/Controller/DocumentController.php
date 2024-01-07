@@ -171,7 +171,7 @@ class DocumentController extends AbstractController
      */
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(DocumentForm::class(), new Document())
+        $form = $this->createForm(DocumentForm::class, new Document())
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -230,7 +230,7 @@ class DocumentController extends AbstractController
      */
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Document $document)
     {
-        $form = $this->createForm(DocumentForm::class(), $document)
+        $form = $this->createForm(DocumentForm::class, $document)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -277,7 +277,7 @@ class DocumentController extends AbstractController
      */
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Document $document)
     {
-        $form = $this->createForm(DocumentDeleteForm::class(), $document)
+        $form = $this->createForm(DocumentDeleteForm::class, $document)
             ->add('save', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);

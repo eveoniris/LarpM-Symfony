@@ -82,7 +82,7 @@ class IntrigueController extends AbstractController
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $intrigue = new Intrigue();
-        $form = $this->createForm(IntrigueForm::class(), $intrigue)
+        $form = $this->createForm(IntrigueForm::class, $intrigue)
             ->add('state', 'choice', [
                 'required' => true,
                 'label' => 'Etat',
@@ -221,7 +221,7 @@ class IntrigueController extends AbstractController
             $originalIntrigueHasLieus->add($intrigueHasLieu);
         }
 
-        $form = $this->createForm(IntrigueForm::class(), $intrigue)
+        $form = $this->createForm(IntrigueForm::class, $intrigue)
             ->add('state', 'choice', [
                 'required' => true,
                 'label' => 'Etat',
@@ -384,7 +384,7 @@ class IntrigueController extends AbstractController
      */
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
     {
-        $form = $this->createForm(IntrigueDeleteForm::class(), $intrigue)
+        $form = $this->createForm(IntrigueDeleteForm::class, $intrigue)
             ->add('supprimer', 'submit', ['label' => 'Supprimer'])->getForm();
 
         $form->handleRequest($request);
@@ -411,7 +411,7 @@ class IntrigueController extends AbstractController
     public function relectureAddAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
     {
         $relecture = new Relecture();
-        $form = $this->createForm(IntrigueRelectureForm::class(), $relecture)
+        $form = $this->createForm(IntrigueRelectureForm::class, $relecture)
             ->add('enregistrer', 'submit', ['label' => 'Enregistrer'])->getForm();
 
         $form->handleRequest($request);

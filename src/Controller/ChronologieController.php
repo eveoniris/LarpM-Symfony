@@ -92,7 +92,7 @@ class ChronologieController extends AbstractController
             }
         }
 
-        $form = $this->createForm(ChronologieForm::class(), $chronologie)
+        $form = $this->createForm(ChronologieForm::class, $chronologie)
             ->add('visibilite', 'choice', [
                 'required' => true,
                 'label' => 'Visibilité',
@@ -127,7 +127,7 @@ class ChronologieController extends AbstractController
             return $this->redirectToRoute('chronologie');
         }
 
-        $form = $this->createForm(ChronologieForm::class(), $chronologie)
+        $form = $this->createForm(ChronologieForm::class, $chronologie)
             ->add('visibilite', 'choice', [
                 'required' => true,
                 'label' => 'Visibilité',
@@ -163,7 +163,7 @@ class ChronologieController extends AbstractController
             return $this->redirectToRoute('chronologie');
         }
 
-        $form = $this->createForm(ChronologieRemoveForm::class(), $chronologie)
+        $form = $this->createForm(ChronologieRemoveForm::class, $chronologie)
             ->add('save', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);

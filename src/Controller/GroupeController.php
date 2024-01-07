@@ -45,7 +45,7 @@ class GroupeController extends AbstractController
             $originalGroupeClasses->add($groupeClasse);
         }
 
-        $form = $this->createForm(GroupeCompositionForm::class(), $groupe)
+        $form = $this->createForm(GroupeCompositionForm::class, $groupe)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -88,7 +88,7 @@ class GroupeController extends AbstractController
      */
     public function descriptionAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
-        $form = $this->createForm(GroupeDescriptionForm::class(), $groupe)
+        $form = $this->createForm(GroupeDescriptionForm::class, $groupe)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -114,7 +114,7 @@ class GroupeController extends AbstractController
      */
     public function scenaristeAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
-        $form = $this->createForm(GroupeScenaristeForm::class(), $groupe)
+        $form = $this->createForm(GroupeScenaristeForm::class, $groupe)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -255,7 +255,7 @@ class GroupeController extends AbstractController
             $originalGroupeHasIngredients->add($groupeHasIngredient);
         }
 
-        $form = $this->createForm(GroupeIngredientForm::class(), $groupe)
+        $form = $this->createForm(GroupeIngredientForm::class, $groupe)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -326,7 +326,7 @@ class GroupeController extends AbstractController
             $originalGroupeHasRessources->add($groupeHasRessource);
         }
 
-        $form = $this->createForm(GroupeRessourceForm::class(), $groupe)
+        $form = $this->createForm(GroupeRessourceForm::class, $groupe)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -407,7 +407,7 @@ class GroupeController extends AbstractController
      */
     public function adminRichesseAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
-        $form = $this->createForm(GroupeRichesseForm::class(), $groupe)
+        $form = $this->createForm(GroupeRichesseForm::class, $groupe)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -433,7 +433,7 @@ class GroupeController extends AbstractController
      */
     public function adminDocumentAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
-        $form = $this->createForm(GroupeDocumentForm::class(), $groupe)
+        $form = $this->createForm(GroupeDocumentForm::class, $groupe)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -459,7 +459,7 @@ class GroupeController extends AbstractController
      */
     public function adminItemAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
-        $form = $this->createForm(GroupeItemForm::class(), $groupe)
+        $form = $this->createForm(GroupeItemForm::class, $groupe)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -485,7 +485,7 @@ class GroupeController extends AbstractController
      */
     public function envelopeAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
-        $form = $this->createForm(GroupeEnvelopeForm::class(), $groupe)
+        $form = $this->createForm(GroupeEnvelopeForm::class, $groupe)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -1044,7 +1044,7 @@ class GroupeController extends AbstractController
      */
     public function searchAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(FindGroupeForm::class(), [])
+        $form = $this->createForm(FindGroupeForm::class, [])
             ->add('submit', 'submit', ['label' => 'Rechercher']);
 
         $form->handleRequest($request);
@@ -1131,7 +1131,7 @@ class GroupeController extends AbstractController
         $background = new \App\Entity\Background();
         $background->setGroupe($groupe);
 
-        $form = $this->createForm(BackgroundForm::class(), $background)
+        $form = $this->createForm(BackgroundForm::class, $background)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -1156,7 +1156,7 @@ class GroupeController extends AbstractController
         $id = $request->get('index');
         $groupe = $entityManager->find('\\'.\App\Entity\Groupe::class, $id);
 
-        $form = $this->createForm(BackgroundForm::class(), $groupe->getBackground())
+        $form = $this->createForm(BackgroundForm::class, $groupe->getBackground())
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -1186,7 +1186,7 @@ class GroupeController extends AbstractController
     {
         $groupe = new \App\Entity\Groupe();
 
-        $form = $this->createForm(GroupeForm::class(), $groupe)
+        $form = $this->createForm(GroupeForm::class, $groupe)
             ->add('save', 'submit', ['label' => 'Sauvegarder et fermer'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder et nouveau']);
 
@@ -1264,7 +1264,7 @@ class GroupeController extends AbstractController
             $originalTerritoires->add($territoire);
         }
 
-        $form = $this->createForm(GroupeForm::class(), $groupe)
+        $form = $this->createForm(GroupeForm::class, $groupe)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 

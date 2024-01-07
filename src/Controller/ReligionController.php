@@ -226,7 +226,7 @@ class ReligionController extends AbstractController
     {
         $religion = $request->get('religion');
 
-        $form = $this->createForm(ReligionBlasonForm::class(), $religion)
+        $form = $this->createForm(ReligionBlasonForm::class, $religion)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -296,7 +296,7 @@ class ReligionController extends AbstractController
     {
         $religionLevel = new \App\Entity\ReligionLevel();
 
-        $form = $this->createForm(ReligionLevelForm::class(), $religionLevel)
+        $form = $this->createForm(ReligionLevelForm::class, $religionLevel)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -337,7 +337,7 @@ class ReligionController extends AbstractController
 
         $religionLevel = $entityManager->find('\\'.\App\Entity\ReligionLevel::class, $id);
 
-        $form = $this->createForm(ReligionLevelForm::class(), $religionLevel)
+        $form = $this->createForm(ReligionLevelForm::class, $religionLevel)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 

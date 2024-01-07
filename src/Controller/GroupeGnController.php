@@ -48,7 +48,7 @@ class GroupeGnController extends AbstractController
             $groupeGn->setJeuMaritime($jeu->getJeuMaritime());
         }
 
-        $form = $this->createForm(GroupeGnForm::class(), $groupeGn)
+        $form = $this->createForm(GroupeGnForm::class, $groupeGn)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -74,7 +74,7 @@ class GroupeGnController extends AbstractController
      */
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe, GroupeGn $groupeGn)
     {
-        $form = $this->createForm(GroupeGnForm::class(), $groupeGn)
+        $form = $this->createForm(GroupeGnForm::class, $groupeGn)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -101,7 +101,7 @@ class GroupeGnController extends AbstractController
      */
     public function responsableAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe, GroupeGn $groupeGn)
     {
-        $form = $this->createForm(GroupeGnResponsableForm::class(), $groupeGn)
+        $form = $this->createForm(GroupeGnResponsableForm::class, $groupeGn)
             ->add('responsable', 'entity', [
                 'label' => 'Responsable',
                 'required' => false,
@@ -295,7 +295,7 @@ class GroupeGnController extends AbstractController
     {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
-        $form = $this->createForm(GroupeGnPlaceAvailableForm::class(), $groupeGn)
+        $form = $this->createForm(GroupeGnPlaceAvailableForm::class, $groupeGn)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -338,7 +338,7 @@ class GroupeGnController extends AbstractController
      */
     public function jeudedomaineAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe, GroupeGn $groupeGn)
     {
-        $form = $this->createForm(GroupeGnOrdreForm::class(), $groupeGn, ['groupeGnId' => $groupeGn->getId()])
+        $form = $this->createForm(GroupeGnOrdreForm::class, $groupeGn, ['groupeGnId' => $groupeGn->getId()])
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
