@@ -56,8 +56,8 @@ class AnnonceController extends AbstractController
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(AnnonceForm::class, new Annonce())
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -88,7 +88,7 @@ class AnnonceController extends AbstractController
     public function updateAction(Request $request, #[MapEntity] Annonce $annonce, EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(AnnonceForm::class, $annonce)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -124,7 +124,7 @@ class AnnonceController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Annonce $annonce)
     {
         $form = $this->createForm(AnnonceDeleteForm::class, $annonce)
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

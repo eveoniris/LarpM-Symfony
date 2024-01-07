@@ -16,7 +16,7 @@ class IntrigueHasGroupeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('groupe', 'entity', [
+        $builder->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Ajouter un groupe concerné par cette intrigue',
             'required' => true,
             'class' => \App\Entity\Groupe::class,

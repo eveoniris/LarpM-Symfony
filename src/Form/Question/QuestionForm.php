@@ -20,7 +20,7 @@ class QuestionForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('label', 'text')
-            ->add('text', 'textarea', [
+            ->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'label' => 'Description succinte',
                 'attr' => [
@@ -28,14 +28,14 @@ class QuestionForm extends AbstractType
                     'row' => 9,
                 ],
             ])
-            ->add('choix', 'textarea', [
+            ->add('choix', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'label' => 'les réponses possibles, séparée par un point-virgule',
                 'attr' => [
                     'row' => 9,
                 ],
             ])
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

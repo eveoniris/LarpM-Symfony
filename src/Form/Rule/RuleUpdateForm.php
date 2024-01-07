@@ -20,11 +20,11 @@ class RuleUpdateForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('label', 'text', [
+            ->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Choisissez un titre',
                 'required' => true,
             ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Ecrivez une petite description',
                 'required' => true,
                 'attr' => [

@@ -54,7 +54,7 @@ class BilletController extends AbstractController
         }
 
         $form = $this->createForm(BilletForm::class, $billet)
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -96,7 +96,7 @@ class BilletController extends AbstractController
     public function updateAction(Request $request, #[MapEntity] Billet $billet, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(BilletForm::class, $billet)
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -125,7 +125,7 @@ class BilletController extends AbstractController
     public function deleteAction(Request $request, Billet $billet, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(BilletDeleteForm::class, $billet)
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 

@@ -16,7 +16,7 @@ class RessourceType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('ressource', 'entity', [
+        $builder->add('ressource', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => false,
             'required' => true,
             'property' => 'label',

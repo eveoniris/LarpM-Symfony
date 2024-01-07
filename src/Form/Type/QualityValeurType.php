@@ -16,13 +16,13 @@ class QualityValeurType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('monnaie', 'entity', [
+        $builder->add('monnaie', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Choisissez la monnaie',
             'required' => true,
             'class' => \App\Entity\Monnaie::class,
             'property' => 'label',
         ])
-            ->add('nombre', 'integer', [
+            ->add('nombre', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'Quantité',
                 'required' => true,
             ]);

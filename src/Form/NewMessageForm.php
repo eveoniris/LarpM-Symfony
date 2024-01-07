@@ -19,14 +19,14 @@ class NewMessageForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('title', 'text', [
+        $builder->add('title', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'label' => 'Titre',
             'attr' => [
                 'placeholder' => 'Nouveau message',
             ],
         ])
-            ->add('UserRelatedByDestinataire', 'entity', [
+            ->add('UserRelatedByDestinataire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'label' => 'Destinataire',
                 'class' => \App\Entity\User::class,
@@ -43,7 +43,7 @@ class NewMessageForm extends AbstractType
                     return $qb;
                 },
             ])
-            ->add('text', 'textarea', [
+            ->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'label' => 'Message',
                 'attr' => [

@@ -16,7 +16,7 @@ class ParticipantHasRestaurationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('restauration', 'entity', [
+        $builder->add('restauration', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Choisissez le lieu de restauration',
             'required' => true,
             'class' => \App\Entity\Restauration::class,

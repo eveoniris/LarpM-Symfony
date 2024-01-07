@@ -19,16 +19,16 @@ class PersonnageEditForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('surnom', 'text', [
+        $builder->add('surnom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => false,
             'label' => '',
         ])
-            ->add('intrigue', 'choice', [
+            ->add('intrigue', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [true => 'Oui', false => 'Non'],
                 'label' => 'Participer aux intrigues',
             ])
-            ->add('sensible', 'choice', [
+            ->add('sensible', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [false => 'Non', true => 'Oui'],
                 'label' => 'Personnage sensible',

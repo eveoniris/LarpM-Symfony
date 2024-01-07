@@ -20,7 +20,7 @@ class PersonnageUpdateAgeForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('age', 'entity', [
+        $builder->add('age', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => true,
             'multiple' => false,
             'expanded' => true,

@@ -18,19 +18,19 @@ class DebriefingForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('gn', 'entity', [
+        $builder->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => true,
             'attr' => [
                 'help' => 'A quel GN correspond ce debriefing ?',
             ],
         ])
-            ->add('gn', 'entity', [
+            ->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'attr' => [
                     'help' => 'A quel GN correspond ce debriefing ?',
                 ],
             ])
-            ->add('text', 'textarea', [
+            ->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'attr' => [
                     'class' => 'tinymce',

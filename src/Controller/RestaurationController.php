@@ -100,8 +100,8 @@ class RestaurationController extends AbstractController
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(RestaurationForm::class, new Restauration())
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -213,7 +213,7 @@ class RestaurationController extends AbstractController
     public function updateAction(Request $request, #[MapEntity] Restauration $restauration, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(RestaurationForm::class, $restauration)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -243,7 +243,7 @@ class RestaurationController extends AbstractController
     public function deleteAction(Request $request, #[MapEntity] Restauration $restauration, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(RestaurationDeleteForm::class, $restauration)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

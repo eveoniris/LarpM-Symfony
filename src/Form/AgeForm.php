@@ -19,22 +19,22 @@ class AgeForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
         ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
             ])
-            ->add('enableCreation', 'choice', [
+            ->add('enableCreation', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [true => 'Oui', false => 'Non'],
                 'label' => 'Disponible lors de la création d\'un personnage',
             ])
-            ->add('bonus', 'integer', [
+            ->add('bonus', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'XP en bonus',
                 'required' => true,
             ])
-            ->add('minimumValue', 'integer', [
+            ->add('minimumValue', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'Age de départ',
                 'required' => true,
             ]);

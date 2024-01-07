@@ -26,16 +26,16 @@ class LangueForm extends AbstractType
             $documentLabel = 'Téléversez un nouveau document PDF (abécédaire) pour remplacer le document existant';
         }
 
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Label',
             'required' => true,
         ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description',
                 'required' => false,
                 'attr' => ['rows' => 10],
             ])
-            ->add('diffusion', 'choice', [
+            ->add('diffusion', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'label' => 'Degré de diffusion (de 0 à 2 : rare, courante, commune)',
                 'required' => false,
                 'placeholder' => 'Inconnue',
@@ -45,7 +45,7 @@ class LangueForm extends AbstractType
                     2 => '2 - Commune',
                 ],
             ])
-            ->add('groupeLangue', 'entity', [
+            ->add('groupeLangue', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Choisissez le groupe de langue associé',
                 'multiple' => false,
                 'expanded' => true,
@@ -56,7 +56,7 @@ class LangueForm extends AbstractType
                     return $er->createQueryBuilder('i')->orderBy('i.label', 'ASC');
                 },
             ])
-            ->add('secret', 'choice', [
+            ->add('secret', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'label' => 'Secret',
                 'required' => true,
                 'choices' => [

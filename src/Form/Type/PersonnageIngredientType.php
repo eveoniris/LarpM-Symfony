@@ -18,11 +18,11 @@ class PersonnageIngredientType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('nombre', 'integer', [
+            ->add('nombre', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'quantite',
                 'required' => true,
             ])
-            ->add('ingredient', 'entity', [
+            ->add('ingredient', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => "Choisissez l'ingredient",
                 'required' => true,
                 'class' => \App\Entity\Ingredient::class,

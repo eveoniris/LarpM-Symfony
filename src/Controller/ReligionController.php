@@ -105,8 +105,8 @@ class ReligionController extends AbstractController
         $religion = new Religion();
 
         $form = $this->createForm(ReligionForm::class, $religion)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer'])
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer'])
         ;
 
         $form->handleRequest($request);
@@ -171,8 +171,8 @@ class ReligionController extends AbstractController
         $religion = $entityManager->getRepository(Religion::class)->find($id);
 
         $form = $this->createForm(ReligionForm::class, $religion)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer'])
+            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer'])
         ;
 
         $originalSpheres = new ArrayCollection();
@@ -227,7 +227,7 @@ class ReligionController extends AbstractController
         $religion = $request->get('religion');
 
         $form = $this->createForm(ReligionBlasonForm::class, $religion)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -297,8 +297,8 @@ class ReligionController extends AbstractController
         $religionLevel = new \App\Entity\ReligionLevel();
 
         $form = $this->createForm(ReligionLevelForm::class, $religionLevel)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -338,8 +338,8 @@ class ReligionController extends AbstractController
         $religionLevel = $entityManager->find('\\'.\App\Entity\ReligionLevel::class, $id);
 
         $form = $this->createForm(ReligionLevelForm::class, $religionLevel)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

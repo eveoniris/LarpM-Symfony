@@ -16,7 +16,7 @@ class ObjectifType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('text', 'text', [
+        $builder->add('text', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => "Description de l'objectif",
             'required' => true,
         ]);

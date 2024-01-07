@@ -20,7 +20,7 @@ class PersonnageItemForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('items', 'entity', [
+        $builder->add('items', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Choisissez les objets possédés par le personnage en début de jeu',
             'multiple' => true,
             'expanded' => true,

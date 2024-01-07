@@ -9,36 +9,36 @@ class RegionForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', 'text', [
+        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => true, ]
         )
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                     'required' => false, ]
             )
-            ->add('pays', 'entity', [
+            ->add('pays', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                     'required' => true,
                     'class' => 'App\Entity\Pays',
                     'property' => 'nom', ]
             )
-            ->add('dirigeant', 'text', [
+            ->add('dirigeant', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                     'required' => false, ]
             )
-            ->add('capitale', 'text', [
+            ->add('capitale', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                     'required' => false, ]
             )
-            ->add('protection', 'integer', [
+            ->add('protection', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                     'label' => 'Valeur de protection',
                     'required' => false, ]
             )
-            ->add('puissance', 'integer', [
+            ->add('puissance', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                     'label' => 'Valeur de puissance actuelle',
                     'required' => false, ]
             )
-            ->add('puissanceMax', 'integer', [
+            ->add('puissanceMax', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'Valeur de puissance maximum',
                 'required' => false,
             ])
-            ->add('ressources', 'entity', [
+            ->add('ressources', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'multiple' => true,
                 'class' => \App\Entity\Ressource::class,

@@ -23,11 +23,11 @@ class RuleForm extends AbstractType
             'label' => 'Choisissez votre fichier',
             'required' => true,
         ])
-            ->add('label', 'text', [
+            ->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Choisissez un titre',
                 'required' => true,
             ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Ecrivez une petite description',
                 'required' => true,
                 'attr' => [

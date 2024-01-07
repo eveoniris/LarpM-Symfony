@@ -25,7 +25,7 @@ class IntrigueForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('titre', 'text', [
+        $builder->add('titre', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Le titre de votre intrigue',
             'required' => true,
         ])
@@ -77,7 +77,7 @@ class IntrigueForm extends AbstractType
                 'by_reference' => false,
                 'type' => new IntrigueHasObjectifType(),
             ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description de votre intrigue',
                 'required' => true,
                 'attr' => [
@@ -86,7 +86,7 @@ class IntrigueForm extends AbstractType
                     'help' => 'Une courte description de votre intrigue.',
                 ],
             ])
-            ->add('text', 'textarea', [
+            ->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Votre intrigue',
                 'required' => true,
                 'attr' => [
@@ -95,7 +95,7 @@ class IntrigueForm extends AbstractType
                     'help' => 'Développez votre intrigue içi. N\'oubliez pas d\'ajouter les groupes concernés et les événements si votre intrigue y fait référence',
                 ],
             ])
-            ->add('resolution', 'textarea', [
+            ->add('resolution', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Résolution de votre intrigue',
                 'required' => false,
                 'attr' => [

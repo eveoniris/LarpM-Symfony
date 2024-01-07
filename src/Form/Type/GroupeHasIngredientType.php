@@ -17,11 +17,11 @@ class GroupeHasIngredientType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('quantite', 'integer', [
+            ->add('quantite', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'quantite',
                 'required' => true,
             ])
-            ->add('ingredient', 'entity', [
+            ->add('ingredient', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => "Choisissez l'ingredient",
                 'required' => true,
                 'class' => \App\Entity\Ingredient::class,

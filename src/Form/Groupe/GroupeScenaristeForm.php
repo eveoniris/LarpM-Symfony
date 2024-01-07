@@ -20,7 +20,7 @@ class GroupeScenaristeForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('scenariste', 'entity', [
+        $builder->add('scenariste', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Scénariste',
             'required' => false,
             'class' => \App\Entity\User::class,

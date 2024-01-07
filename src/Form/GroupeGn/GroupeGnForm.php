@@ -19,13 +19,13 @@ class GroupeGnForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('gn', 'entity', [
+        $builder->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Jeu',
             'required' => true,
             'class' => \App\Entity\Gn::class,
             'property' => 'label',
         ])
-            ->add('free', 'choice', [
+            ->add('free', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'label' => 'Groupe disponible ou réservé ?',
                 'required' => false,
                 'choices' => [
@@ -33,7 +33,7 @@ class GroupeGnForm extends AbstractType
                     false => 'Groupe réservé',
                 ],
             ])
-            ->add('code', 'text', [
+            ->add('code', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => false,
             ])
             ->add('jeuStrategique', 'checkbox', [

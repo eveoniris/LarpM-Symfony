@@ -19,7 +19,7 @@ class ParticipantNewForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('gn', 'entity', [
+        $builder->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Choisissez le jeu a affecter à cet utilisateur',
             'multiple' => false,
             'expanded' => true,
@@ -27,7 +27,7 @@ class ParticipantNewForm extends AbstractType
             'class' => \App\Entity\Gn::class,
             'property' => 'label',
         ])
-            ->add('billet', 'entity', [
+            ->add('billet', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Choisissez le billet a donner à cet utilisateur',
                 'multiple' => false,
                 'expanded' => true,

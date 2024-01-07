@@ -21,7 +21,7 @@ class PersonnageLigneeForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('parent1', 'entity', [
+        $builder->add('parent1', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Choisissez le Parent 1 du personnage',
             'expanded' => false,
             'required' => false,
@@ -33,7 +33,7 @@ class PersonnageLigneeForm extends AbstractType
                 return $pr->createQueryBuilder('p')->orderBy('p.nom', 'ASC');
             },
         ])
-            ->add('parent2', 'entity', [
+            ->add('parent2', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Choisissez le Parent 2 du personnage',
                 'expanded' => false,
                 'required' => false,
@@ -46,7 +46,7 @@ class PersonnageLigneeForm extends AbstractType
                     return $pr->createQueryBuilder('p')->orderBy('p.nom', 'ASC');
                 },
             ])
-            ->add('lignee', 'entity', [
+            ->add('lignee', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Choisissez la lignée de votre personnage ',
                 'expanded' => false,
                 'required' => false,

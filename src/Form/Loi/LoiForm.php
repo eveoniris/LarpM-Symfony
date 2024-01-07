@@ -20,7 +20,7 @@ class LoiForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('label', 'text')
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'label' => 'Description succinte',
                 'attr' => [
@@ -33,7 +33,7 @@ class LoiForm extends AbstractType
                 'required' => true,
                 'mapped' => false,
             ])
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

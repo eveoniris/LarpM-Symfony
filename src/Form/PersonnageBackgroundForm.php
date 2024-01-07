@@ -19,14 +19,14 @@ class PersonnageBackgroundForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('text', 'textarea', [
+        $builder->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
             'required' => false,
             'label' => 'Background',
             'attr' => [
                 'class' => 'tinymce',
                 'rows' => 9],
         ])
-            ->add('gn', 'entity', [
+            ->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'label' => 'GN',
                 'class' => \App\Entity\Gn::class,

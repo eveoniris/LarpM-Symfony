@@ -16,9 +16,9 @@ class ObjetCaracType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('taille', 'integer', ['required' => false])
-            ->add('poid', 'integer', ['required' => false])
-            ->add('couleur', 'text', ['required' => false]);
+        $builder->add('taille', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, ['required' => false])
+            ->add('poid', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, ['required' => false])
+            ->add('couleur', \Symfony\Component\Form\Extension\Core\Type\TextType::class, ['required' => false]);
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver): void

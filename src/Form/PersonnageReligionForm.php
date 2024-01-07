@@ -18,7 +18,7 @@ class PersonnageReligionForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('religionLevel', 'entity', [
+        $builder->add('religionLevel', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => true,
             'label' => 'Votre degré de fanatisme',
             'class' => \App\Entity\ReligionLevel::class,

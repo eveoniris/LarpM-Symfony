@@ -18,12 +18,12 @@ class SearchObjetForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('type', 'choice', [
+        $builder->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
             'required' => true,
             'choices' => [
                 'nom' => 'Nom',
                 'numero' => 'Numero']])
-            ->add('value', 'text', ['required' => true]);
+            ->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, ['required' => true]);
     }
 
     /**

@@ -20,7 +20,7 @@ class TerritoireCiblesForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('territoireCibles', 'entity', [
+        $builder->add('territoireCibles', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => false,
             'label' => 'Territoire',
             'class' => \App\Entity\Territoire::class,

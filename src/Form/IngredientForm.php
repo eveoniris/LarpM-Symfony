@@ -19,20 +19,20 @@ class IngredientForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'label' => 'Label',
         ])
-            ->add('niveau', 'choice', [
+            ->add('niveau', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => ['1' => 1, '2' => 2, '3' => 3, '4' => 4],
                 'label' => 'Niveau',
             ])
-            ->add('dose', 'text', [
+            ->add('dose', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => true,
                 'label' => 'Dose',
             ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [

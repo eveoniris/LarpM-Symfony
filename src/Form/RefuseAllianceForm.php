@@ -19,7 +19,7 @@ class RefuseAllianceForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('messageAllie', 'textarea', [
+        $builder->add('messageAllie', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
             'label' => 'Un petit mot pour expliquer votre démarche',
             'required' => true,
             'attr' => [

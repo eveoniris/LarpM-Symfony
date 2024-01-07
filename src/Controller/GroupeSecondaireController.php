@@ -41,7 +41,7 @@ class GroupeSecondaireController extends AbstractController
                 'csrf_protection' => false,
             ]
         )
-            ->add('find', SubmitType::class, ['label' => 'Rechercher']);
+            ->add('find', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Rechercher']);
 
         $form->handleRequest($request);
 
@@ -92,8 +92,8 @@ class GroupeSecondaireController extends AbstractController
         $groupeSecondaire = new \App\Entity\SecondaryGroup();
 
         $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -209,8 +209,8 @@ class GroupeSecondaireController extends AbstractController
     public function adminUpdateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
         $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

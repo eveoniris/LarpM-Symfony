@@ -19,7 +19,7 @@ class GroupeDescriptionForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('description', 'textarea', [
+        $builder->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
             'label' => 'Description du groupe',
             'required' => false,
             'attr' => [

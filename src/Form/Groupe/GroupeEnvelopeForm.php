@@ -19,7 +19,7 @@ class GroupeEnvelopeForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('materiel', 'textarea', [
+        $builder->add('materiel', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
             'label' => "Contenu libre de l'enveloppe",
             'required' => false,
             'attr' => [

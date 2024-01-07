@@ -19,7 +19,7 @@ class PersonnageStatutForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('vivant', 'choice', [
+        $builder->add('vivant', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
             'required' => true,
             'label' => 'Statut du personnage',
             'choices' => [

@@ -19,11 +19,11 @@ class TerritoireStrategieForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('tresor', 'integer', [
+        $builder->add('tresor', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
             'label' => 'Richesse',
             'required' => true,
         ])
-            ->add('resistance', 'integer', [
+            ->add('resistance', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'Resistance',
                 'required' => true,
             ]);

@@ -19,20 +19,20 @@ class AppelationForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Label',
             'required' => true,
         ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description',
                 'required' => false,
                 'attr' => ['rows' => 10],
             ])
-            ->add('titre', 'text', [
+            ->add('titre', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Titre',
                 'required' => false,
             ])
-            ->add('appelation', 'entity', [
+            ->add('appelation', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Cette appelation dépend de',
                 'required' => false,
                 'class' => \App\Entity\Appelation::class,

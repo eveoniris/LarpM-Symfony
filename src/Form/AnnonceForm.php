@@ -19,16 +19,16 @@ class AnnonceForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('title', 'text', [
+        $builder->add('title', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Titre',
             'required' => true,
         ])
-            ->add('archive', 'choice', [
+            ->add('archive', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [false => 'Publique', true => 'Dans les archive'],
                 'label' => 'Choisissez la visibilité de votre annonce',
             ])
-            ->add('gn', 'entity', [
+            ->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Choisissez le jeu auquel cette annonce fait référence',
                 'required' => true,
                 'multiple' => false,
@@ -37,7 +37,7 @@ class AnnonceForm extends AbstractType
                 'empty_data' => null,
                 'placeholder' => 'Aucun',
             ])
-            ->add('text', 'textarea', [
+            ->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'attr' => [
                     'rows' => 9,

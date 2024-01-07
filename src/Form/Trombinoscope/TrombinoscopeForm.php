@@ -19,11 +19,11 @@ class TrombinoscopeForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('renomme', 'integer', [
+        $builder->add('renomme', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
             'label' => 'Renommé supérieur ou égale à',
             'required' => false,
         ])
-            ->add('territoire', 'entity', [
+            ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Territoire::class,
                 'property' => 'nomComplet',
@@ -42,7 +42,7 @@ class TrombinoscopeForm extends AbstractType
                     'placeholder' => 'Territoire',
                 ],
             ])
-            ->add('classe', 'entity', [
+            ->add('classe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Classe::class,
                 'property' => 'label',
@@ -60,7 +60,7 @@ class TrombinoscopeForm extends AbstractType
                     'placeholder' => 'Classe',
                 ],
             ])
-            ->add('competence', 'entity', [
+            ->add('competence', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Competence::class,
                 'property' => 'label',
@@ -78,7 +78,7 @@ class TrombinoscopeForm extends AbstractType
                     'placeholder' => 'Competence',
                 ],
             ])
-            ->add('religion', 'entity', [
+            ->add('religion', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Religion::class,
                 'property' => 'label',
@@ -96,7 +96,7 @@ class TrombinoscopeForm extends AbstractType
                     'placeholder' => 'Religion',
                 ],
             ])
-            ->add('language', 'entity', [
+            ->add('language', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Langue::class,
                 'property' => 'label',
@@ -114,7 +114,7 @@ class TrombinoscopeForm extends AbstractType
                     'placeholder' => 'Langue',
                 ],
             ])
-            ->add('groupe', 'entity', [
+            ->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Groupe::class,
                 'property' => 'nom',
@@ -132,7 +132,7 @@ class TrombinoscopeForm extends AbstractType
                     'placeholder' => 'Groupe',
                 ],
             ])
-            ->add('find', SubmitType::class, ['label' => 'Filtrer']);
+            ->add('find', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Filtrer']);
     }
 
     /**

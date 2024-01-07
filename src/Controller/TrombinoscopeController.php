@@ -109,8 +109,8 @@ class TrombinoscopeController extends AbstractController
             ->add('ids', 'textarea', [
                 'label' => 'Indiquez les numéros des personnages séparé d\'un espace',
             ])
-            ->add('send', SubmitType::class, ['label' => 'Envoyer'])
-            ->add('print', SubmitType::class, ['label' => 'Imprimer']);
+            ->add('send', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Envoyer'])
+            ->add('print', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Imprimer']);
 
         $form->handleRequest($request);
 

@@ -95,8 +95,8 @@ class RestrictionController extends AbstractController
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(RestrictionForm::class, new Restriction())
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -138,7 +138,7 @@ class RestrictionController extends AbstractController
     public function updateAction(Request $request, #[MapEntity] Restriction $restriction, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(RestrictionForm::class, $restriction)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -165,7 +165,7 @@ class RestrictionController extends AbstractController
     public function deleteAction(Request $request, #[MapEntity] Restriction $restriction, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(RestrictionDeleteForm::class, $restriction)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

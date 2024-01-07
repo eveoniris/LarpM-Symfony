@@ -18,7 +18,7 @@ class PersonnageSecondaireChoiceForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('personnageSecondaire', 'entity', [
+        $builder->add('personnageSecondaire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Archétype',
             'required' => true,
             'class' => \App\Entity\PersonnageSecondaire::class,

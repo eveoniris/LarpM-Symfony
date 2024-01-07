@@ -17,7 +17,7 @@ class LocalisationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('label', 'text')
-            ->add('precision', 'textarea', ['required' => false]);
+            ->add('precision', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, ['required' => false]);
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver): void

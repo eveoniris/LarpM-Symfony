@@ -20,7 +20,7 @@ class CultureForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('label', 'text')
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'label' => 'Description succinte',
                 'attr' => [
@@ -28,7 +28,7 @@ class CultureForm extends AbstractType
                     'row' => 9,
                 ],
             ])
-            ->add('descriptionComplete', 'textarea', [
+            ->add('descriptionComplete', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'label' => 'Description complète de la culture (accessible aux joueurs membres des territoires correspondant à cette culture)',
                 'attr' => [
@@ -36,7 +36,7 @@ class CultureForm extends AbstractType
                     'row' => 9,
                 ],
             ])
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

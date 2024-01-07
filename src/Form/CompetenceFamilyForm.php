@@ -26,12 +26,12 @@ class CompetenceFamilyForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'attr' => ['maxlength' => 45],
             'constraints' => [new Length(['max' => 45])],
         ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'constraints' => [new Length(['max' => 450])],
                 'attr' => [

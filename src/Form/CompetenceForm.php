@@ -19,19 +19,19 @@ class CompetenceForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('competenceFamily', 'entity', [
+        $builder->add('competenceFamily', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Famille',
             'required' => true,
             'class' => \App\Entity\CompetenceFamily::class,
             'property' => 'label',
         ])
-            ->add('level', 'entity', [
+            ->add('level', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Niveau',
                 'required' => true,
                 'class' => \App\Entity\Level::class,
                 'property' => 'label',
             ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
@@ -42,7 +42,7 @@ class CompetenceForm extends AbstractType
                 'required' => true,
                 'mapped' => false,
             ])
-            ->add('materiel', 'textarea', [
+            ->add('materiel', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Matériel necessaire',
                 'required' => false,
                 'attr' => [

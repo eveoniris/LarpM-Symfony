@@ -28,7 +28,7 @@ class GroupeIngredientForm extends AbstractType
             'by_reference' => false,
             'type' => new GroupeHasIngredientType(),
         ])
-            ->add('random', 'integer', [
+            ->add('random', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'mapped' => false,
                 'label' => 'X ingrédients choisis au hasard',
                 'required' => false,

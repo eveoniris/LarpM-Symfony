@@ -17,7 +17,7 @@ class CultureHasClasseType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('classe', 'entity', [
+            ->add('classe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Choisissez la classe',
                 'required' => true,
                 'class' => \App\Entity\Classe::class,

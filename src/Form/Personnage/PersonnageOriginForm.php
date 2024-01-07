@@ -19,7 +19,7 @@ class PersonnageOriginForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('territoire', 'entity', [
+        $builder->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => true,
             'label' => 'Votre origine',
             'class' => \App\Entity\Territoire::class,

@@ -73,8 +73,8 @@ class TokenController extends AbstractController
         $token = new Token();
 
         $form = $this->createForm(TokenForm::class, $token)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -113,7 +113,7 @@ class TokenController extends AbstractController
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Token $token)
     {
         $form = $this->createForm(TokenForm::class, $token)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -140,7 +140,7 @@ class TokenController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Token $token)
     {
         $form = $this->createForm(TokenDeleteForm::class, $token)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer', 'attr' => ['class' => 'btn-danger']]);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer', 'attr' => ['class' => 'btn-danger']]);
 
         $form->handleRequest($request);
 

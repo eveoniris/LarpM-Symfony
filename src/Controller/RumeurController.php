@@ -79,7 +79,7 @@ class RumeurController extends AbstractController
     {
         $rumeur = new Rumeur();
         $form = $this->createForm(RumeurForm::class, $rumeur)
-            ->add('add', SubmitType::class, ['label' => 'Ajouter la rumeur'])->getForm();
+            ->add('add', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter la rumeur'])->getForm();
 
         $form->handleRequest($request);
 
@@ -106,7 +106,7 @@ class RumeurController extends AbstractController
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Rumeur $rumeur)
     {
         $form = $this->createForm(RumeurForm::class, $rumeur)
-            ->add('enregistrer', SubmitType::class, ['label' => 'Enregistrer'])->getForm();
+            ->add('enregistrer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer'])->getForm();
 
         $form->handleRequest($request);
 
@@ -134,7 +134,7 @@ class RumeurController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Rumeur $rumeur)
     {
         $form = $this->createForm(RumeurDeleteForm::class, $rumeur)
-            ->add('supprimer', SubmitType::class, ['label' => 'Supprimer'])->getForm();
+            ->add('supprimer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer'])->getForm();
 
         $form->handleRequest($request);
 

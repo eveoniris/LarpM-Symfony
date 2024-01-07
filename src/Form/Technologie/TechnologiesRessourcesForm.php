@@ -40,7 +40,7 @@ class TechnologiesRessourcesForm extends AbstractType
                     '7' => 7],
                 'label' => 'Quantité',
             ])
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

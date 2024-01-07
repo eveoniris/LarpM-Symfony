@@ -21,14 +21,14 @@ class GroupeSecondaireForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('label', 'text')
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'label' => 'Description',
                 'attr' => [
                     'rows' => 9,
                     'class' => 'tinymce'],
             ])
-            ->add('description_secrete', 'textarea', [
+            ->add('description_secrete', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'label' => 'Description des secrets',
                 'attr' => [
@@ -36,7 +36,7 @@ class GroupeSecondaireForm extends AbstractType
                     'class' => 'tinymce',
                     'help' => 'les secrets ne sont accessibles qu\'aux membres selectionnés par le scénariste'],
             ])
-            ->add('scenariste', 'entity', [
+            ->add('scenariste', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Scénariste',
                 'required' => false,
                 'class' => \App\Entity\User::class,
@@ -52,7 +52,7 @@ class GroupeSecondaireForm extends AbstractType
                     return $qb;
                 },
             ])
-            ->add('responsable', 'entity', [
+            ->add('responsable', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Chef du groupe',
                 'class' => \App\Entity\Personnage::class,
@@ -65,7 +65,7 @@ class GroupeSecondaireForm extends AbstractType
                 },
                 'property' => 'identity',
             ])
-            ->add('secondaryGroupType', 'entity', [
+            ->add('secondaryGroupType', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Type',
                 'required' => true,
                 'class' => \App\Entity\SecondaryGroupType::class,

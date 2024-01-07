@@ -19,24 +19,24 @@ class ClasseForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label_masculin', 'text', [
+        $builder->add('label_masculin', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
         ])
-            ->add('image_m', 'text', [
+            ->add('image_m', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Adresse de l\'image utilisé pour représenté cette classe',
                 'required' => true,
             ])
-            ->add('label_feminin', 'text', [
+            ->add('label_feminin', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => true,
             ])
-            ->add('image_f', 'text', [
+            ->add('image_f', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Adresse de l\'image utilisé pour représenté cette classe',
                 'required' => true,
             ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                     'required' => false, ]
             )
-            ->add('competenceFamilyFavorites', 'entity', [
+            ->add('competenceFamilyFavorites', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                     'label' => "Famille de compétences favorites (n'oubliez pas de cochez aussi la/les compétences acquises à la création)",
                     'required' => false,
                     'property' => 'label',
@@ -45,7 +45,7 @@ class ClasseForm extends AbstractType
                     'mapped' => true,
                     'class' => \App\Entity\CompetenceFamily::class, ]
             )
-            ->add('competenceFamilyNormales', 'entity', [
+            ->add('competenceFamilyNormales', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                     'label' => 'Famille de compétences normales',
                     'required' => false,
                     'property' => 'label',
@@ -54,7 +54,7 @@ class ClasseForm extends AbstractType
                     'mapped' => true,
                     'class' => \App\Entity\CompetenceFamily::class, ]
             )
-            ->add('competenceFamilyCreations', 'entity', [
+            ->add('competenceFamilyCreations', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                     'label' => 'Famille de compétences acquises à la création',
                     'required' => false,
                     'property' => 'label',

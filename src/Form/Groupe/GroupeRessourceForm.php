@@ -21,7 +21,7 @@ class GroupeRessourceForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('randomCommun', 'integer', [
+            ->add('randomCommun', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'mapped' => false,
                 'label' => 'X ressources communes choisies au hasard',
                 'required' => false,
@@ -29,7 +29,7 @@ class GroupeRessourceForm extends AbstractType
                     'help' => 'Indiquez combien de ressources COMMUNES il faut ajouter à ce groupe.',
                 ],
             ])
-            ->add('randomRare', 'integer', [
+            ->add('randomRare', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'mapped' => false,
                 'label' => 'X ressources rares choisies au hasard',
                 'required' => false,

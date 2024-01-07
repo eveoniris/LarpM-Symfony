@@ -20,7 +20,7 @@ class RumeurForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('text', 'textarea', [
+        $builder->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
             'label' => 'Le contenu de votre rumeur',
             'required' => true,
             'attr' => [
@@ -29,7 +29,7 @@ class RumeurForm extends AbstractType
                 'help' => 'Votre rumeur. Ce texte sera disponibles aux joueurs membres du territoire dans lequel cours la rumeur.',
             ],
         ])
-            ->add('territoire', 'entity', [
+            ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Territoire dans lequel cours la rumeur',
                 'required' => false,
                 'class' => \App\Entity\Territoire::class,
@@ -44,7 +44,7 @@ class RumeurForm extends AbstractType
                     'help' => 'Le territoire choisi donnera accès à la rumeur à tous les personnages membre de ce territoire. Remarque, si vous choisissez un territoire de type pays (ex : Aquilonnie), les territoires qui en dépendent (ex : bossonie du nord) auront aussi accès à la rumeur. Si vous ne choisissez pas de territoire, la rumeur sera accessible à tous.',
                 ],
             ])
-            ->add('gn', 'entity', [
+            ->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'GN référant',
                 'required' => true,
                 'class' => \App\Entity\Gn::class,
@@ -59,7 +59,7 @@ class RumeurForm extends AbstractType
                     'help' => 'Choisissez le GN dans lequel sera utilisé votre rumeur',
                 ],
             ])
-            ->add('visibility', 'choice', [
+            ->add('visibility', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'label' => 'Visibilité',
                 'choices' => [

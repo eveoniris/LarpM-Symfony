@@ -19,11 +19,11 @@ class TitreForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'label' => 'Label',
         ])
-            ->add('renomme', 'integer', [
+            ->add('renomme', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'required' => true,
                 'label' => 'Renommé necessaire',
             ]);

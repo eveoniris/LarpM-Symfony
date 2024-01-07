@@ -20,12 +20,12 @@ class PersonnageUpdateRenommeForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('renomme', 'integer', [
+        $builder->add('renomme', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
             'required' => true,
             'label' => 'Combien de points de Renommée voulez-vous ajouter ? (indiquez une valeur négative pour retirer des points)',
             'mapped' => false,
         ])
-            ->add('explication', 'textarea', [
+            ->add('explication', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'mapped' => false,
                 'label' => 'Donnez une explication',

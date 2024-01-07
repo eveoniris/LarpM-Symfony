@@ -19,15 +19,15 @@ class PersonnageForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', 'text', [
+        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'label' => '',
         ])
-            ->add('surnom', 'text', [
+            ->add('surnom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => false,
                 'label' => '',
             ])
-            ->add('age', 'entity', [
+            ->add('age', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'label' => '',
                 'class' => \App\Entity\Age::class,
@@ -39,13 +39,13 @@ class PersonnageForm extends AbstractType
                     return $qb;
                 },
             ])
-            ->add('genre', 'entity', [
+            ->add('genre', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'label' => '',
                 'class' => \App\Entity\Genre::class,
                 'property' => 'label',
             ])
-            ->add('territoire', 'entity', [
+            ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'label' => 'Votre origine',
                 'class' => \App\Entity\Territoire::class,
@@ -57,12 +57,12 @@ class PersonnageForm extends AbstractType
                     return $qb;
                 },
             ])
-            ->add('intrigue', 'choice', [
+            ->add('intrigue', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [true => 'Oui', false => 'Non'],
                 'label' => 'Participer aux intrigues',
             ])
-            ->add('sensible', 'choice', [
+            ->add('sensible', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [false => 'Non', true => 'Oui'],
                 'label' => 'Personnage sensible',

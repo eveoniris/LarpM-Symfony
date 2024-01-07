@@ -88,7 +88,7 @@ class IntrigueController extends AbstractController
                 'label' => 'Etat',
                 'choices' => $app['larp.manager']->getState(),
             ])
-            ->add('add', SubmitType::class, ['label' => "Ajouter l'intrigue"])->getForm();
+            ->add('add', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => "Ajouter l'intrigue"])->getForm();
 
         $form->handleRequest($request);
 
@@ -227,7 +227,7 @@ class IntrigueController extends AbstractController
                 'label' => 'Etat',
                 'choices' => $app['larp.manager']->getState(),
             ])
-            ->add('enregistrer', SubmitType::class, ['label' => 'Enregistrer'])->getForm();
+            ->add('enregistrer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer'])->getForm();
 
         $form->handleRequest($request);
 
@@ -385,7 +385,7 @@ class IntrigueController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
     {
         $form = $this->createForm(IntrigueDeleteForm::class, $intrigue)
-            ->add('supprimer', SubmitType::class, ['label' => 'Supprimer'])->getForm();
+            ->add('supprimer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer'])->getForm();
 
         $form->handleRequest($request);
 
@@ -412,7 +412,7 @@ class IntrigueController extends AbstractController
     {
         $relecture = new Relecture();
         $form = $this->createForm(IntrigueRelectureForm::class, $relecture)
-            ->add('enregistrer', SubmitType::class, ['label' => 'Enregistrer'])->getForm();
+            ->add('enregistrer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer'])->getForm();
 
         $form->handleRequest($request);
 

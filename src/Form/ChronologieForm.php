@@ -20,26 +20,26 @@ class ChronologieForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('territoire', 'entity', [
+            ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'label' => 'Territoire',
                 'class' => \App\Entity\Territoire::class,
                 'property' => 'nom',
             ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'label' => 'Description',
                 'attr' => ['rows' => 9],
             ])
-            ->add('year', 'integer', [
+            ->add('year', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'required' => true,
                 'label' => 'Année',
             ])
-            ->add('month', 'integer', [
+            ->add('month', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'required' => false,
                 'label' => 'Mois (falcultatif)',
             ])
-            ->add('day', 'integer', [
+            ->add('day', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'required' => false,
                 'label' => 'Jour (falcultatif)',
             ]);

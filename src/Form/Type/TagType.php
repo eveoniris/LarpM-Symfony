@@ -16,7 +16,7 @@ class TagType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', 'text', [
+        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Nom',
             'required' => true]);
     }

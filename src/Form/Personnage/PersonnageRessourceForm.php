@@ -21,7 +21,7 @@ class PersonnageRessourceForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('randomCommun', 'integer', [
+            ->add('randomCommun', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'mapped' => false,
                 'label' => 'X ressources communes choisies au hasard',
                 'required' => false,
@@ -29,7 +29,7 @@ class PersonnageRessourceForm extends AbstractType
                     'help' => 'Indiquez combien de ressources COMMUNES il faut ajouter à ce personnage.',
                 ],
             ])
-            ->add('randomRare', 'integer', [
+            ->add('randomRare', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'mapped' => false,
                 'label' => 'X ressources rares choisies au hasard',
                 'required' => false,
@@ -45,7 +45,7 @@ class PersonnageRessourceForm extends AbstractType
                 'by_reference' => false,
                 'type' => new PersonnageRessourceType(),
             ])
-            ->add('valider', SubmitType::class, ['label' => 'Valider']);
+            ->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

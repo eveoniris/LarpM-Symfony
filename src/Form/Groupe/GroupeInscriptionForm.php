@@ -18,7 +18,7 @@ class GroupeInscriptionForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('code', 'text', [
+        $builder->add('code', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Entrez le code du groupe',
             'required' => true,
         ]);

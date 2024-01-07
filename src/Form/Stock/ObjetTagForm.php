@@ -17,7 +17,7 @@ class ObjetTagForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('tags', 'entity', [
+        $builder->add('tags', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Choisissez les tags appliqués à cet objet',
             'required' => false,
             'multiple' => true,
@@ -33,7 +33,7 @@ class ObjetTagForm extends AbstractType
                 'type' => new TagType(),
                 'mapped' => false,
             ])
-            ->add('valider', SubmitType::class, ['label' => 'valider']);
+            ->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'valider']);
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver): void

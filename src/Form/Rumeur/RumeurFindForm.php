@@ -19,13 +19,13 @@ class RumeurFindForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('search', 'text', [
+        $builder->add('search', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'attr' => [
                 'placeholder' => 'Votre recherche',
             ],
         ])
-            ->add('type', 'choice', [
+            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [
                     'text' => 'Texte',

@@ -19,7 +19,7 @@ class TerritoireCultureForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('culture', 'entity', [
+        $builder->add('culture', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => false,
             'label' => 'Culture',
             'class' => \App\Entity\Culture::class,

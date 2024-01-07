@@ -19,7 +19,7 @@ class TerritoireLoiForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('lois', 'entity', [
+        $builder->add('lois', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => false,
             'label' => 'Loi',
             'class' => \App\Entity\Loi::class,
