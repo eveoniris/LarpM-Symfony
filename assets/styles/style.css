@@ -381,3 +381,7 @@ ul.forum li {
     border-radius: 3px
 }
 /** EndPage content **/
+
+.pull-right {
+    float:right !important
+}
