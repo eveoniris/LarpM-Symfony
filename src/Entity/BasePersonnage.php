@@ -371,7 +371,7 @@ class BasePersonnage
     /**
      * Get the value of sensible.
      */
-    public function getSensible(): bool
+    public function getSensible(): ?bool
     {
         return $this->sensible;
     }

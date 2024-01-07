@@ -21,7 +21,7 @@ abstract class BasePostulant
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $date;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]

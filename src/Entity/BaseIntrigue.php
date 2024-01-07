@@ -35,10 +35,10 @@ abstract class BaseIntrigue
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
     protected ?string $resolution = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $date_creation;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $date_update;
 
     /**

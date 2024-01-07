@@ -31,10 +31,10 @@ use Doctrine\ORM\Mapping\OneToMany;
     #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::STRING)]
     protected string $text;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $update_date;
 
     #[OneToMany(mappedBy: 'post', targetEntity: Post::class)]
