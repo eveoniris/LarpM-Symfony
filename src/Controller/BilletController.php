@@ -6,6 +6,8 @@ use App\Entity\Billet;
 use App\Form\BilletDeleteForm;
 use App\Form\BilletForm;
 use App\Repository\BilletRepository;
+use App\Repository\ParticipantRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -152,11 +154,36 @@ class BilletController extends AbstractController
      * Liste des utilisateurs ayant ce billet.
      */
     #[Route('/billet/participants/{billet}', name: 'billet.participants')]
-    public function participantsAction(Request $request, #[MapEntity] Billet $billet): Response
+    public function participantsAction(Request $request, #[MapEntity] Billet $billet, EntityManagerInterface $entityManager): Response
     {
+        $participantRepository = $entityManager->getRepository('\\'.\App\Entity\Participant::class);
+        
+        $alias = ParticipantRepository::getEntityAlias();
+        
+        $orderBy = $this->getRequestOrder(
+            defOrderBy: 'id',
+            alias: $alias,
+            allowedFields: $participantRepository->getFieldNames()
+        );
+
+        $criterias[] = Criteria::create()->where(
+            Criteria::expr()?->eq($alias.'.billet', $billet->getId())
+        );
+
+        $paginator = $participantRepository->getPaginator(
+            limit: $this->getRequestLimit(),
+            page: $this->getRequestPage(),
+            orderBy: $orderBy,
+            alias: $alias,
+            criterias: $criterias
+        );
+
         return $this->render(
-            'billet\participants.twig',
-            ['billet' => $billet]
+            'billet\participants.twig', 
+            [
+                'billet' => $billet,
+                'paginator' => $paginator
+            ]
         );
     }
 }
