@@ -45,7 +45,7 @@ class PersonnageSecondaireController extends AbstractController
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(PersonnageSecondaireForm::class, new PersonnageSecondaire())
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -87,7 +87,7 @@ class PersonnageSecondaireController extends AbstractController
         }
 
         $form = $this->createForm(PersonnageSecondaireForm::class, $personnageSecondaire)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -130,7 +130,7 @@ class PersonnageSecondaireController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] PersonnageSecondaire $personnageSecondaire)
     {
         $form = $this->createForm(PersonnageSecondaireDeleteForm::class, $personnageSecondaire)
-            ->add('delete', 'submit', ['label' => 'Supprimer']);
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

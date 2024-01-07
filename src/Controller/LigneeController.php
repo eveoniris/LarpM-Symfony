@@ -95,8 +95,8 @@ class LigneeController extends AbstractController
         $lignee = new Lignee();
 
         $form = $this->createForm(LigneeForm::class, $lignee)
-            ->add('save', 'submit', ['label' => 'Sauvegarder et retour à la liste'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder et nouvelle lignée']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder et retour à la liste'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder et nouvelle lignée']);
 
         $form->handleRequest($request);
 
@@ -131,8 +131,8 @@ class LigneeController extends AbstractController
         $lignee = $entityManager->find(Lignee::class, $id);
 
         $form = $this->createForm(LigneeForm::class, $lignee)
-            ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', [
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', SubmitType::class, [
                 'label' => 'Supprimer',
                 'attr' => ['onclick' => 'return confirm("Vous vous apprêtez à supprimer cette lignée. Confirmer ?")']]);
 

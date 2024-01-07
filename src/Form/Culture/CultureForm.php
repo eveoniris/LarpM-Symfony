@@ -36,7 +36,7 @@ class CultureForm extends AbstractType
                     'row' => 9,
                 ],
             ])
-            ->add('submit', 'submit', ['label' => 'Valider']);
+            ->add('submit', SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

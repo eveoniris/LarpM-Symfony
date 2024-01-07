@@ -122,7 +122,7 @@ class ParticipantController extends AbstractController
         $participant->setUser($User);
 
         $form = $this->createForm(ParticipantNewForm::class, $participant)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -158,7 +158,7 @@ class ParticipantController extends AbstractController
         }
         */
         $form = $this->createForm(ParticipantGroupeForm::class, $participant, ['gnId' => $participant->getGn()->getId()])
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -184,7 +184,7 @@ class ParticipantController extends AbstractController
     public function removeAction( EntityManagerInterface $entityManager, Request $request, Participant $participant)
     {
         $form = $this->createForm(ParticipantRemoveForm::class, $participant, ['gnId' => $participant->getGn()->getId()])
-            ->add('save', 'submit', ['label' => 'Oui, retirer la participation de cet utilisateur']);
+            ->add('save', SubmitType::class, ['label' => 'Oui, retirer la participation de cet utilisateur']);
 
         $form->handleRequest($request);
 
@@ -235,7 +235,7 @@ class ParticipantController extends AbstractController
     public function billetAction( EntityManagerInterface $entityManager, Request $request, Participant $participant)
     {
         $form = $this->createForm(ParticipantBilletForm::class, $participant)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -273,7 +273,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(ParticipantRestaurationForm::class, $participant)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -383,7 +383,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(PersonnageEditForm::class, $personnage)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -410,7 +410,7 @@ class ParticipantController extends AbstractController
     public function personnageTrombineAction(Request $request,  EntityManagerInterface $entityManager, Participant $participant, Personnage $personnage)
     {
         $form = $this->createForm(TrombineForm::class, [])
-            ->add('envoyer', 'submit', ['label' => 'Envoyer']);
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
@@ -458,7 +458,7 @@ class ParticipantController extends AbstractController
         $groupe = $groupeGn->getGroupe();
 
         $form = $this->createForm()
-            ->add('save', 'submit', ['label' => 'Valider']);
+            ->add('save', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -530,7 +530,7 @@ class ParticipantController extends AbstractController
                 'choices' => array_unique($participant->getUser()->getPersonnagesVivants()),
                 'data' => $default,
             ])
-            ->add('save', 'submit', ['label' => 'Valider']);
+            ->add('save', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -650,7 +650,7 @@ class ParticipantController extends AbstractController
                 'class' => \App\Entity\Personnage::class,
                 'choices' => array_unique($participant->getUser()->getPersonnages()->toArray()),
             ])
-            ->add('save', 'submit', ['label' => 'Valider']);
+            ->add('save', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -745,7 +745,7 @@ class ParticipantController extends AbstractController
                 'class' => \App\Entity\Classe::class,
                 'choices' => array_unique($classes),
             ])
-            ->add('save', 'submit', ['label' => 'Valider mon personnage', 'attr' => ['onclick' => "return confirm('Confirmez vous le personnage ?')"]]);
+            ->add('save', SubmitType::class, ['label' => 'Valider mon personnage', 'attr' => ['onclick' => "return confirm('Confirmez vous le personnage ?')"]]);
 
         $form->handleRequest($request);
 
@@ -910,7 +910,7 @@ class ParticipantController extends AbstractController
                 'class' => \App\Entity\Classe::class,
                 'choices' => array_unique($classes),
             ])
-            ->add('save', 'submit', ['label' => 'Valider le personnage']);
+            ->add('save', SubmitType::class, ['label' => 'Valider le personnage']);
 
         $form->handleRequest($request);
 
@@ -1069,7 +1069,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(GroupeInscriptionForm::class, [])
-            ->add('subscribe', 'submit', ['label' => "S'inscrire"]);
+            ->add('subscribe', SubmitType::class, ['label' => "S'inscrire"]);
 
         $form->handleRequest($request);
 
@@ -1132,7 +1132,7 @@ class ParticipantController extends AbstractController
         $personnageSecondaires = $repo->findAll();
 
         $form = $this->createForm(ParticipantPersonnageSecondaireForm::class, $participant)
-            ->add('choice', 'submit', ['label' => 'Enregistrer']);
+            ->add('choice', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -1227,7 +1227,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(PersonnageOriginForm::class, $personnage)
-            ->add('save', 'submit', ['label' => 'Valider votre origine']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre origine']);
 
         $form->handleRequest($request);
 
@@ -1314,7 +1314,7 @@ class ParticipantController extends AbstractController
                 'choices' => $availableReligions,
                 'property' => 'label',
             ])
-            ->add('save', 'submit', ['label' => 'Valider votre religion']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre religion']);
 
         $form->handleRequest($request);
 
@@ -1516,7 +1516,7 @@ class ParticipantController extends AbstractController
                 'choices' => $potions,
                 'choice_label' => 'fullLabel',
             ])
-            ->add('save', 'submit', ['label' => 'Valider votre potion']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre potion']);
 
         $form->handleRequest($request);
 
@@ -1597,7 +1597,7 @@ class ParticipantController extends AbstractController
                 'choices' => $potions,
                 'choice_label' => 'fullLabel',
             ])
-            ->add('save', 'submit', ['label' => 'Valider votre potion de départ']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre potion de départ']);
 
         $form->handleRequest($request);
 
@@ -1656,7 +1656,7 @@ class ParticipantController extends AbstractController
                 'choices' => $availableDescriptionReligion,
                 'choice_label' => 'label',
             ])
-            ->add('save', 'submit', ['label' => 'Valider']);
+            ->add('save', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -1714,7 +1714,7 @@ class ParticipantController extends AbstractController
                 'choices' => $availableLangues,
                 'choice_label' => 'fullDescription',
             ])
-            ->add('save', 'submit', ['label' => 'Valider votre nouvelle langue']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue']);
 
         $form->handleRequest($request);
 
@@ -1776,7 +1776,7 @@ class ParticipantController extends AbstractController
                 'choices' => $availableLangues,
                 'choice_label' => 'fullDescription',
             ])
-            ->add('save', 'submit', ['label' => 'Valider votre nouvelle langue']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue']);
 
         $form->handleRequest($request);
 
@@ -1838,7 +1838,7 @@ class ParticipantController extends AbstractController
                 'choices' => $availableLangues,
                 'choice_label' => 'fullDescription',
             ])
-            ->add('save', 'submit', ['label' => 'Valider votre nouvelle langue']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue']);
 
         $form->handleRequest($request);
 
@@ -1925,7 +1925,7 @@ class ParticipantController extends AbstractController
                 'choices' => $availableDomaines,
                 'choice_label' => 'label',
             ])
-            ->add('save', 'submit', ['label' => 'Valider votre domaine de magie']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre domaine de magie']);
 
         $form->handleRequest($request);
 
@@ -1992,7 +1992,7 @@ class ParticipantController extends AbstractController
                 'choices' => $sorts,
                 'choice_label' => 'fullLabel',
             ])
-            ->add('save', 'submit', ['label' => 'Valider votre sort']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre sort']);
 
         $form->handleRequest($request);
 
@@ -2347,7 +2347,7 @@ class ParticipantController extends AbstractController
          * @var unknown $form
          */
         $form = $this->createForm(new GroupeSecondairePostulerForm())
-            ->add('postuler', 'submit', ['label' => 'Postuler']);
+            ->add('postuler', SubmitType::class, ['label' => 'Postuler']);
 
         $form->handleRequest($request);
 
@@ -2418,7 +2418,7 @@ class ParticipantController extends AbstractController
     public function groupeSecondaireAcceptAction(Request $request,  EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire, Postulant $postulant)
     {
         $form = $this->createForm()
-            ->add('envoyer', 'submit', ['label' => 'Accepter le postulant']);
+            ->add('envoyer', SubmitType::class, ['label' => 'Accepter le postulant']);
 
         $form->handleRequest($request);
 
@@ -2456,7 +2456,7 @@ class ParticipantController extends AbstractController
     public function groupeSecondaireRejectAction(Request $request,  EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire, Postulant $postulant)
     {
         $form = $this->createForm()
-            ->add('envoyer', 'submit', ['label' => 'RefUser le postulant']);
+            ->add('envoyer', SubmitType::class, ['label' => 'RefUser le postulant']);
 
         $form->handleRequest($request);
 
@@ -2486,7 +2486,7 @@ class ParticipantController extends AbstractController
     public function groupeSecondaireWaitAction(Request $request,  EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire, Postulant $postulant)
     {
         $form = $this->createForm()
-            ->add('envoyer', 'submit', ['label' => 'Laisser en attente']);
+            ->add('envoyer', SubmitType::class, ['label' => 'Laisser en attente']);
 
         $form->handleRequest($request);
 
@@ -2524,7 +2524,7 @@ class ParticipantController extends AbstractController
         $message->setUpdateDate(new \DateTime('NOW'));
 
         $form = $this->createForm(MessageForm::class, $message)
-            ->add('envoyer', 'submit', ['label' => 'Envoyer votre réponse']);
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre réponse']);
 
         $form->handleRequest($request);
 
@@ -2587,7 +2587,7 @@ class ParticipantController extends AbstractController
                 'label' => 'Choisissez une nouvelle compétence',
                 'choices' => $choices,
             ])
-            ->add('save', 'submit', ['label' => 'Valider la compétence']);
+            ->add('save', SubmitType::class, ['label' => 'Valider la compétence']);
 
         $form->handleRequest($request);
 
@@ -2995,7 +2995,7 @@ class ParticipantController extends AbstractController
         $joueur = new \App\Entity\Joueur();
 
         $form = $this->createForm(JoueurForm::class, $joueur)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -3023,7 +3023,7 @@ class ParticipantController extends AbstractController
     public function searchAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(FindJoueurForm::class, [])
-            ->add('submit', 'submit', ['label' => 'Rechercher']);
+            ->add('submit', SubmitType::class, ['label' => 'Rechercher']);
 
         $form->handleRequest($request);
 
@@ -3103,7 +3103,7 @@ class ParticipantController extends AbstractController
         $joueur = $entityManager->find('\App\Entity\Joueur', $id);
 
         $form = $this->createForm(JoueurXpForm::class, $joueur)
-            ->add('update', 'submit', ['label' => 'Sauvegarder']);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -3165,7 +3165,7 @@ class ParticipantController extends AbstractController
         $joueur = $entityManager->find('\App\Entity\Joueur', $id);
 
         $form = $this->createForm(JoueurForm::class, $joueur)
-            ->add('update', 'submit', ['label' => 'Sauvegarder']);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -3218,7 +3218,7 @@ class ParticipantController extends AbstractController
         $alliance->setGroupe($groupe);
 
         $form = $this->createForm(RequestAllianceForm::class, $alliance)
-            ->add('send', 'submit', ['label' => 'Envoyer']);
+            ->add('send', SubmitType::class, ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
@@ -3294,7 +3294,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(CancelRequestedAllianceForm::class, $alliance)
-            ->add('send', 'submit', ['label' => "Oui, j'annule ma demande"]);
+            ->add('send', SubmitType::class, ['label' => "Oui, j'annule ma demande"]);
 
         $form->handleRequest($request);
 
@@ -3337,7 +3337,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(AcceptAllianceForm::class, $alliance)
-            ->add('send', 'submit', ['label' => 'Envoyer']);
+            ->add('send', SubmitType::class, ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
@@ -3381,7 +3381,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(RefuseAllianceForm::class, $alliance)
-            ->add('send', 'submit', ['label' => 'Envoyer']);
+            ->add('send', SubmitType::class, ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
@@ -3424,7 +3424,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(BreakAllianceForm::class, $alliance)
-            ->add('send', 'submit', ['label' => 'Envoyer']);
+            ->add('send', SubmitType::class, ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
@@ -3482,7 +3482,7 @@ class ParticipantController extends AbstractController
         $war->setGroupeEnemyPeace(false);
 
         $form = $this->createForm(DeclareWarForm::class, $war)
-            ->add('send', 'submit', ['label' => 'Envoyer']);
+            ->add('send', SubmitType::class, ['label' => 'Envoyer']);
 
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
@@ -3552,7 +3552,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(RequestPeaceForm::class, $war)
-            ->add('send', 'submit', ['label' => 'Envoyer']);
+            ->add('send', SubmitType::class, ['label' => 'Envoyer']);
 
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
@@ -3600,7 +3600,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(AcceptPeaceForm::class, $war)
-            ->add('send', 'submit', ['label' => 'Envoyer']);
+            ->add('send', SubmitType::class, ['label' => 'Envoyer']);
 
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
@@ -3648,7 +3648,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(RefusePeaceForm::class, $war)
-            ->add('send', 'submit', ['label' => 'Envoyer']);
+            ->add('send', SubmitType::class, ['label' => 'Envoyer']);
 
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
@@ -3694,7 +3694,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(CancelRequestedPeaceForm::class, $war)
-            ->add('send', 'submit', ['label' => 'Envoyer']);
+            ->add('send', SubmitType::class, ['label' => 'Envoyer']);
 
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
@@ -3756,7 +3756,7 @@ class ParticipantController extends AbstractController
                 'choices' => $technologies,
                 'choice_label' => 'label',
             ])
-            ->add('save', 'submit', ['label' => 'Valider votre technologie']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre technologie']);
 
         $form->handleRequest($request);
 

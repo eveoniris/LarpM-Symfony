@@ -94,7 +94,7 @@ class DebriefingController extends AbstractController
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getVisibility(),
             ])
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -123,7 +123,7 @@ class DebriefingController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
         $form = $this->createForm(DebriefingDeleteForm::class, $debriefing)
-            ->add('save', 'submit', ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -154,7 +154,7 @@ class DebriefingController extends AbstractController
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getVisibility(),
             ])
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 

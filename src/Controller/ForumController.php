@@ -75,7 +75,7 @@ class ForumController extends AbstractController
                 'required' => false,
                 'label' => 'Clé',
             ])
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -130,7 +130,7 @@ class ForumController extends AbstractController
         $post->setTopic($topic);
 
         $form = $this->createForm(PostForm::class, $post)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -217,7 +217,7 @@ class ForumController extends AbstractController
         $post->setTitle($postToResponse->getTitle());
 
         $form = $this->createForm(PostForm::class, $post)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -275,7 +275,7 @@ class ForumController extends AbstractController
             ->find($postId);
 
         $form = $this->createForm(PostForm::class, $post)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -348,7 +348,7 @@ class ForumController extends AbstractController
             ->find($postId);
 
         $form = $this->createForm(PostDeleteForm::class, $post)
-            ->add('delete', 'submit', ['label' => 'Supprimer']);
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -403,7 +403,7 @@ class ForumController extends AbstractController
         $topic = new \App\Entity\Topic();
 
         $form = $this->createForm(TopicForm::class, $topic)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -449,7 +449,7 @@ class ForumController extends AbstractController
             ]);
         }
 
-        $form = $formBuilder->add('save', 'submit', ['label' => 'Sauvegarder']);
+        $form = $formBuilder->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 

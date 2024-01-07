@@ -49,7 +49,7 @@ class ItemLinkForm extends AbstractType
                     'help' => 'Lieu ou est entreposé cet objet',
                 ],
             ])
-            ->add('submit', 'submit', [
+            ->add('submit', SubmitType::class, [
                 'label' => 'Valider',
             ]);
     }

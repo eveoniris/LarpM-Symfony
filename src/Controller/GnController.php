@@ -213,7 +213,7 @@ class GnController extends AbstractController
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(GnForm::class, new Gn())
-            ->add('save', 'submit', [
+            ->add('save', SubmitType::class, [
                 'label' => 'Sauvegarder',
             ]);
         $form->handleRequest($request);
@@ -526,7 +526,7 @@ class GnController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $form = $this->createForm(GnDeleteForm::class, $gn)
-            ->add('delete', 'submit', [
+            ->add('delete', SubmitType::class, [
                 'label' => 'Supprimer',
             ]);
         $form->handleRequest($request);
@@ -549,7 +549,7 @@ class GnController extends AbstractController
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $form = $this->createForm(GnForm::class, $gn)
-            ->add('update', 'submit', [
+            ->add('update', SubmitType::class, [
                 'label' => 'Sauvegarder',
             ]);
         $form->handleRequest($request);

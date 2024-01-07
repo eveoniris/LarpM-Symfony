@@ -135,7 +135,7 @@ class LoiController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Loi $loi)
     {
         $form = $this->createForm(LoiDeleteForm::class, $loi)
-            ->add('submit', 'submit', ['label' => 'Supprimer']);
+            ->add('submit', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

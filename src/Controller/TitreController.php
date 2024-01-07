@@ -45,7 +45,7 @@ class TitreController extends AbstractController
         $titre = new \App\Entity\Titre();
 
         $form = $this->createForm(TitreForm::class, $titre)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -74,7 +74,7 @@ class TitreController extends AbstractController
         $titre = $request->get('titre');
 
         $form = $this->createForm(TitreForm::class, $titre)
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -103,7 +103,7 @@ class TitreController extends AbstractController
         $titre = $request->get('titre');
 
         $form = $this->createForm(TitreDeleteForm::class, $titre)
-            ->add('save', 'submit', ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

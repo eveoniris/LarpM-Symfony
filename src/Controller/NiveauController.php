@@ -20,8 +20,8 @@ class NiveauController extends AbstractController
         $niveau = new \App\Entity\Niveau();
 
         $form = $this->createForm(NiveauForm::class, $niveau)
-            ->add('save', 'submit', ['label' => 'Sauvegarder'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -52,8 +52,8 @@ class NiveauController extends AbstractController
         $niveau = $entityManager->find('\App\Entity\Niveau', $id);
 
         $form = $this->createForm(NiveauForm::class, $niveau)
-            ->add('update', 'submit', ['label' => 'Sauvegarder'])
-            ->add('delete', 'submit', ['label' => 'Supprimer']);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

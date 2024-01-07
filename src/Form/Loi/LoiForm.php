@@ -33,7 +33,7 @@ class LoiForm extends AbstractType
                 'required' => true,
                 'mapped' => false,
             ])
-            ->add('submit', 'submit', ['label' => 'Valider']);
+            ->add('submit', SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

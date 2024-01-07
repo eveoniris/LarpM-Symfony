@@ -36,7 +36,7 @@ class PersonnageIngredientForm extends AbstractType
                     'help' => 'Indiquez combien d\'ingrédient il faut ajouter à ce personnage.',
                 ],
             ])
-            ->add('valider', 'submit', ['label' => 'Valider']);
+            ->add('valider', SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

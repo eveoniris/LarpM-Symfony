@@ -115,7 +115,7 @@ class ItemForm extends AbstractType
                     'help' => 'La couleur de l\'étiquette indique si l\'on peux prendre l\'objet en lui-même ou seulement l\'étiquette',
                 ],
             ])
-            ->add('submit', 'submit', [
+            ->add('submit', SubmitType::class, [
                 'label' => 'Valider',
             ]);
     }

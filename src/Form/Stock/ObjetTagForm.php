@@ -33,7 +33,7 @@ class ObjetTagForm extends AbstractType
                 'type' => new TagType(),
                 'mapped' => false,
             ])
-            ->add('valider', 'submit', ['label' => 'valider']);
+            ->add('valider', SubmitType::class, ['label' => 'valider']);
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver): void

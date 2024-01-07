@@ -212,9 +212,9 @@ class StockObjetController extends AbstractController
         }
 
         $form = $this->createForm(ObjetForm::class, $objet)
-            ->add('save', 'submit', ['label' => 'Sauvegarder et fermer'])
-            ->add('save_continue', 'submit', ['label' => 'Sauvegarder et nouveau'])
-            ->add('save_clone', 'submit', ['label' => 'Sauvegarder et cloner']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder et nouveau'])
+            ->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
 
         $form->handleRequest($request);
 
@@ -265,8 +265,8 @@ class StockObjetController extends AbstractController
         }
 
         $form = $this->createForm(ObjetForm::class, $newObjet)
-            ->add('save', 'submit', ['label' => 'Sauvegarder et fermer'])
-            ->add('save_clone', 'submit', ['label' => 'Sauvegarder et cloner']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
+            ->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
 
         $form->handleRequest($request);
 
@@ -303,8 +303,8 @@ class StockObjetController extends AbstractController
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
     {
         $form = $this->createForm(ObjetForm::class, $objet)
-            ->add('update', 'submit', ['label' => 'Sauvegarder et fermer'])
-            ->add('delete', 'submit', ['label' => 'Supprimer']);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
         $form = $form;
         $form->handleRequest($request);
 

@@ -131,7 +131,7 @@ class BackgroundController extends AbstractController
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getVisibility(),
             ])
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -158,7 +158,7 @@ class BackgroundController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Background $background)
     {
         $form = $this->createForm(BackgroundDeleteForm::class, $background)
-            ->add('save', 'submit', ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -189,7 +189,7 @@ class BackgroundController extends AbstractController
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getVisibility(),
             ])
-            ->add('save', 'submit', ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 

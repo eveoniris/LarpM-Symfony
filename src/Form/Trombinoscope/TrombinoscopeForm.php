@@ -132,7 +132,7 @@ class TrombinoscopeForm extends AbstractType
                     'placeholder' => 'Groupe',
                 ],
             ])
-            ->add('find', 'submit', ['label' => 'Filtrer']);
+            ->add('find', SubmitType::class, ['label' => 'Filtrer']);
     }
 
     /**
