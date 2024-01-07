@@ -81,7 +81,7 @@ class LieuController extends AbstractController
      */
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(LieuForm::class(), new Lieu())
+        $form = $this->createForm(LieuForm::class, new Lieu())
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -120,7 +120,7 @@ class LieuController extends AbstractController
      */
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Lieu $lieu)
     {
-        $form = $this->createForm(LieuForm::class(), $lieu)
+        $form = $this->createForm(LieuForm::class, $lieu)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -146,7 +146,7 @@ class LieuController extends AbstractController
      */
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Lieu $lieu)
     {
-        $form = $this->createForm(LieuDeleteForm::class(), $lieu)
+        $form = $this->createForm(LieuDeleteForm::class, $lieu)
             ->add('save', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
@@ -173,7 +173,7 @@ class LieuController extends AbstractController
      */
     public function documentAction(Request $request,  EntityManagerInterface $entityManager, Lieu $lieu)
     {
-        $form = $this->createForm(LieuDocumentForm::class(), $lieu)
+        $form = $this->createForm(LieuDocumentForm::class, $lieu)
             ->add('submit', 'submit', ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);

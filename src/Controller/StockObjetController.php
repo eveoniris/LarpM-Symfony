@@ -211,7 +211,7 @@ class StockObjetController extends AbstractController
             $objet->setEtat($etat);
         }
 
-        $form = $this->createForm(ObjetForm::class(), $objet)
+        $form = $this->createForm(ObjetForm::class, $objet)
             ->add('save', 'submit', ['label' => 'Sauvegarder et fermer'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder et nouveau'])
             ->add('save_clone', 'submit', ['label' => 'Sauvegarder et cloner']);
@@ -264,7 +264,7 @@ class StockObjetController extends AbstractController
             $newObjet->setNumero($numero + 1);
         }
 
-        $form = $this->createForm(ObjetForm::class(), $newObjet)
+        $form = $this->createForm(ObjetForm::class, $newObjet)
             ->add('save', 'submit', ['label' => 'Sauvegarder et fermer'])
             ->add('save_clone', 'submit', ['label' => 'Sauvegarder et cloner']);
 
@@ -302,7 +302,7 @@ class StockObjetController extends AbstractController
      */
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
     {
-        $form = $this->createForm(ObjetForm::class(), $objet)
+        $form = $this->createForm(ObjetForm::class, $objet)
             ->add('update', 'submit', ['label' => 'Sauvegarder et fermer'])
             ->add('delete', 'submit', ['label' => 'Supprimer']);
         $form = $form;
@@ -339,7 +339,7 @@ class StockObjetController extends AbstractController
      */
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
     {
-        $form = $this->createForm(ObjetDeleteForm::class(), $objet)->getForm();
+        $form = $this->createForm(ObjetDeleteForm::class, $objet)->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -361,7 +361,7 @@ class StockObjetController extends AbstractController
      */
     public function tagAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
     {
-        $form = $this->createForm(ObjetTagForm::class(), $objet)->getForm();
+        $form = $this->createForm(ObjetTagForm::class, $objet)->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

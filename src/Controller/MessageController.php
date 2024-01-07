@@ -59,7 +59,7 @@ class MessageController extends AbstractController
             $message->setUserRelatedByDestinataire($to);
         }
 
-        $form = $this->createForm(NewMessageForm::class(), $message)
+        $form = $this->createForm(NewMessageForm::class, $message)
             ->add('envoyer', 'submit', ['label' => 'Envoyer votre message']);
 
         $form->handleRequest($request);
@@ -126,7 +126,7 @@ class MessageController extends AbstractController
         $reponse->setCreationDate(new \DateTime('NOW'));
         $reponse->setUpdateDate(new \DateTime('NOW'));
 
-        $form = $this->createForm(NewMessageForm::class(), $reponse)
+        $form = $this->createForm(NewMessageForm::class, $reponse)
             ->add('envoyer', 'submit', ['label' => 'Envoyer votre message']);
 
         $form->handleRequest($request);

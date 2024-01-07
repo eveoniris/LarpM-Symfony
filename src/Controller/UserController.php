@@ -57,7 +57,7 @@ class UserController extends AbstractController
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     public function adminNewAction(Request $request)
     {
-        $form = $this->createForm(UserNewForm::class(), [])
+        $form = $this->createForm(UserNewForm::class, [])
             ->add('save', 'submit', ['label' => "Créer l'utilisateur"]);
 
         $form->handleRequest($request);
@@ -113,7 +113,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        $form = $this->createForm(UserPersonnageDefaultForm::class(), $this->getUser(), ['User_id' => $User->getId()])
+        $form = $this->createForm(UserPersonnageDefaultForm::class, $this->getUser(), ['User_id' => $User->getId()])
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -141,7 +141,7 @@ class UserController extends AbstractController
     #[Route('/user/restriction', name: 'user.restriction')]
     public function restrictionAction( EntityManagerInterface $entityManager, Request $request)
     {
-        $form = $this->createForm(UserRestrictionForm::class(), $this->getUser())
+        $form = $this->createForm(UserRestrictionForm::class, $this->getUser())
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -281,7 +281,7 @@ class UserController extends AbstractController
             $etatCivil = new \App\Entity\EtatCivil();
         }
 
-        $form = $this->createForm(EtatCivilForm::class(), $etatCivil)
+        $form = $this->createForm(EtatCivilForm::class, $etatCivil)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);

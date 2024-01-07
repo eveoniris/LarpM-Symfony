@@ -31,7 +31,7 @@ class CompetenceFamilyController extends AbstractController
     {
         $competenceFamily = new \App\Entity\CompetenceFamily();
 
-        $form = $this->createForm(CompetenceFamilyForm::class(), $competenceFamily)
+        $form = $this->createForm(CompetenceFamilyForm::class, $competenceFamily)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -66,7 +66,7 @@ class CompetenceFamilyController extends AbstractController
 
         $competenceFamily = $entityManager->find('\\'.\App\Entity\CompetenceFamily::class, $id);
 
-        $form = $this->createForm(CompetenceFamilyForm::class(), $competenceFamily)
+        $form = $this->createForm(CompetenceFamilyForm::class, $competenceFamily)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 

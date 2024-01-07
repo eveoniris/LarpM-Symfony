@@ -31,7 +31,7 @@ class GroupeSecondaireTypeController extends AbstractController
     {
         $groupeSecondaireType = new \App\Entity\SecondaryGroupType();
 
-        $form = $this->createForm(GroupeSecondaireTypeForm::class(), $groupeSecondaireType)
+        $form = $this->createForm(GroupeSecondaireTypeForm::class, $groupeSecondaireType)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -66,7 +66,7 @@ class GroupeSecondaireTypeController extends AbstractController
 
         $groupeSecondaireType = $entityManager->find('\\'.\App\Entity\SecondaryGroupType::class, $id);
 
-        $form = $this->createForm(GroupeSecondaireTypeForm::class(), $groupeSecondaireType)
+        $form = $this->createForm(GroupeSecondaireTypeForm::class, $groupeSecondaireType)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 

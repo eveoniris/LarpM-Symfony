@@ -125,7 +125,7 @@ class BackgroundController extends AbstractController
             }
         }
 
-        $form = $this->createForm(BackgroundForm::class(), $background)
+        $form = $this->createForm(BackgroundForm::class, $background)
             ->add('visibility', 'choice', [
                 'required' => true,
                 'label' => 'Visibilité',
@@ -157,7 +157,7 @@ class BackgroundController extends AbstractController
      */
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Background $background)
     {
-        $form = $this->createForm(BackgroundDeleteForm::class(), $background)
+        $form = $this->createForm(BackgroundDeleteForm::class, $background)
             ->add('save', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
@@ -183,7 +183,7 @@ class BackgroundController extends AbstractController
      */
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Background $background)
     {
-        $form = $this->createForm(BackgroundForm::class(), $background)
+        $form = $this->createForm(BackgroundForm::class, $background)
             ->add('visibility', 'choice', [
                 'required' => true,
                 'label' => 'Visibilité',

@@ -68,7 +68,7 @@ class HomepageController extends AbstractController
             $etatCivil = new EtatCivil();
         }
 
-        $form = $this->createForm(EtatCivilForm::class(), $etatCivil);
+        $form = $this->createForm(EtatCivilForm::class, $etatCivil);
 
         $form->handleRequest($request);
 
@@ -92,7 +92,7 @@ class HomepageController extends AbstractController
      */
     public function newUserStep3Action(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(UserRestrictionForm::class(), $this->getUser());
+        $form = $this->createForm(UserRestrictionForm::class, $this->getUser());
 
         $form->handleRequest($request);
 

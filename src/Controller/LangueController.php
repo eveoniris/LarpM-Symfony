@@ -49,7 +49,7 @@ class LangueController extends AbstractController
     {
         $langue = new \App\Entity\Langue();
 
-        $form = $this->createForm(LangueForm::class(), $langue)
+        $form = $this->createForm(LangueForm::class, $langue)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -97,7 +97,7 @@ class LangueController extends AbstractController
 
         $deleteTooltip = $canBeDeleted ? '' : 'Cette langue est référencée par '.$langue->getPersonnageLangues()->count().' personnages, '.$langue->getTerritoires()->count().' territoires et '.$langue->getDocuments()->count().' documents et ne peut pas être supprimée';
 
-        $formBuilder = $this->createForm(LangueForm::class(), $langue, ['hasDocumentUrl' => $hasDocumentUrl])
+        $formBuilder = $this->createForm(LangueForm::class, $langue, ['hasDocumentUrl' => $hasDocumentUrl])
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer', 'disabled' => !$canBeDeleted, 'attr' => ['title' => $deleteTooltip]]);
 
@@ -200,7 +200,7 @@ class LangueController extends AbstractController
     {
         $groupeLangue = new \App\Entity\GroupeLangue();
 
-        $form = $this->createForm(GroupeLangueForm::class(), $groupeLangue)
+        $form = $this->createForm(GroupeLangueForm::class, $groupeLangue)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -242,7 +242,7 @@ class LangueController extends AbstractController
         $canBeDeleted = $groupeLangue->getLangues()->isEmpty();
         $deleteTooltip = $canBeDeleted ? '' : 'Ce groupe est référencé par '.$groupeLangue->getLangues()->count().' langues et ne peut pas être supprimé';
 
-        $formBuilder = $this->createForm(GroupeLangueForm::class(), $groupeLangue)
+        $formBuilder = $this->createForm(GroupeLangueForm::class, $groupeLangue)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer', 'disabled' => !$canBeDeleted, 'attr' => ['title' => $deleteTooltip]]);
 

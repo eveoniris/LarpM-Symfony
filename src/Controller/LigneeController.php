@@ -94,7 +94,7 @@ class LigneeController extends AbstractController
     {
         $lignee = new Lignee();
 
-        $form = $this->createForm(LigneeForm::class(), $lignee)
+        $form = $this->createForm(LigneeForm::class, $lignee)
             ->add('save', 'submit', ['label' => 'Sauvegarder et retour à la liste'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder et nouvelle lignée']);
 
@@ -130,7 +130,7 @@ class LigneeController extends AbstractController
 
         $lignee = $entityManager->find(Lignee::class, $id);
 
-        $form = $this->createForm(LigneeForm::class(), $lignee)
+        $form = $this->createForm(LigneeForm::class, $lignee)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', [
                 'label' => 'Supprimer',

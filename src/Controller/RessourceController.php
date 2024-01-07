@@ -50,7 +50,7 @@ class RessourceController extends AbstractController
     {
         $ressource = new \App\Entity\Ressource();
 
-        $form = $this->createForm(RessourceForm::class(), $ressource)
+        $form = $this->createForm(RessourceForm::class, $ressource)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -85,7 +85,7 @@ class RessourceController extends AbstractController
 
         $ressource = $entityManager->find('\\'.\App\Entity\Ressource::class, $id);
 
-        $form = $this->createForm(RessourceForm::class(), $ressource)
+        $form = $this->createForm(RessourceForm::class, $ressource)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 

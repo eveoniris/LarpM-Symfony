@@ -54,7 +54,7 @@ class AgeController extends AbstractController
      */
     public function addViewAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(AgeForm::class(), new Age())
+        $form = $this->createForm(AgeForm::class, new Age())
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -72,7 +72,7 @@ class AgeController extends AbstractController
      */
     public function addPostAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(AgeForm::class(), new Age())
+        $form = $this->createForm(AgeForm::class, new Age())
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -112,7 +112,7 @@ class AgeController extends AbstractController
      */
     public function updateViewAction(Request $request,  EntityManagerInterface $entityManager, Age $age)
     {
-        $form = $this->createForm(AgeForm::class(), $age)
+        $form = $this->createForm(AgeForm::class, $age)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'button', [
                 'label' => 'Supprimer',
@@ -140,7 +140,7 @@ class AgeController extends AbstractController
      */
     public function updatePostAction(Request $request,  EntityManagerInterface $entityManager, Age $age)
     {
-        $form = $this->createForm(AgeForm::class(), $age)
+        $form = $this->createForm(AgeForm::class, $age)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'button', [
                 'label' => 'Supprimer',

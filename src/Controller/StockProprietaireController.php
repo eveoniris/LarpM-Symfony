@@ -49,7 +49,7 @@ class StockProprietaireController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\Proprietaire::class);
         $proprietaire = $repo->find($id);
 
-        $form = $this->createForm(ProprietaireType::class(), $proprietaire)
+        $form = $this->createForm(ProprietaireType::class, $proprietaire)
             ->add('update', 'submit')
             ->add('delete', 'submit');
 

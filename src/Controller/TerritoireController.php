@@ -31,7 +31,7 @@ class TerritoireController extends AbstractController
      */
     public function updateCiblesAction(Request $request,  EntityManagerInterface $entityManager, Territoire $territoire)
     {
-        $form = $this->createForm(TerritoireCiblesForm::class(), $territoire)
+        $form = $this->createForm(TerritoireCiblesForm::class, $territoire)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -219,7 +219,7 @@ class TerritoireController extends AbstractController
      */
     public function updateLoiAction(Request $request,  EntityManagerInterface $entityManager, Territoire $territoire)
     {
-        $form = $this->createForm(TerritoireLoiForm::class(), $territoire)
+        $form = $this->createForm(TerritoireLoiForm::class, $territoire)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -320,7 +320,7 @@ class TerritoireController extends AbstractController
     {
         $territoire = new \App\Entity\Territoire();
 
-        $form = $this->createForm(TerritoireForm::class(), $territoire)
+        $form = $this->createForm(TerritoireForm::class, $territoire)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -371,7 +371,7 @@ class TerritoireController extends AbstractController
     {
         $territoire = $request->get('territoire');
 
-        $form = $this->createForm(TerritoireIngredientsForm::class(), $territoire)
+        $form = $this->createForm(TerritoireIngredientsForm::class, $territoire)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -400,7 +400,7 @@ class TerritoireController extends AbstractController
     {
         $territoire = $request->get('territoire');
 
-        $form = $this->createForm(TerritoireForm::class(), $territoire)
+        $form = $this->createForm(TerritoireForm::class, $territoire)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -426,7 +426,7 @@ class TerritoireController extends AbstractController
      */
     public function updateCultureAction(Request $request,  EntityManagerInterface $entityManager, Territoire $territoire)
     {
-        $form = $this->createForm(TerritoireCultureForm::class(), $territoire)
+        $form = $this->createForm(TerritoireCultureForm::class, $territoire)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -451,7 +451,7 @@ class TerritoireController extends AbstractController
      */
     public function updateStatutAction(Request $request,  EntityManagerInterface $entityManager, Territoire $territoire)
     {
-        $form = $this->createForm(TerritoireStatutForm::class(), $territoire)
+        $form = $this->createForm(TerritoireStatutForm::class, $territoire)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -478,7 +478,7 @@ class TerritoireController extends AbstractController
     {
         $territoire = $request->get('territoire');
 
-        $form = $this->createForm(TerritoireBlasonForm::class(), $territoire)
+        $form = $this->createForm(TerritoireBlasonForm::class, $territoire)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -524,7 +524,7 @@ class TerritoireController extends AbstractController
     {
         $territoire = $request->get('territoire');
 
-        $form = $this->createForm(TerritoireStrategieForm::class(), $territoire)
+        $form = $this->createForm(TerritoireStrategieForm::class, $territoire)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -552,7 +552,7 @@ class TerritoireController extends AbstractController
     {
         $territoire = $request->get('territoire');
 
-        $form = $this->createForm(TerritoireDeleteForm::class(), $territoire)
+        $form = $this->createForm(TerritoireDeleteForm::class, $territoire)
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
@@ -648,7 +648,7 @@ class TerritoireController extends AbstractController
 
         $event = new \App\Entity\Chronologie();
 
-        $form = $this->createForm(EventForm::class(), $event)
+        $form = $this->createForm(EventForm::class, $event)
             ->add('add', 'submit', ['label' => 'Ajouter']);
 
         $form->handleRequest($request);
@@ -678,7 +678,7 @@ class TerritoireController extends AbstractController
         $territoire = $request->get('territoire');
         $event = $request->get('event');
 
-        $form = $this->createForm(ChronologieForm::class(), $event)
+        $form = $this->createForm(ChronologieForm::class, $event)
             ->add('update', 'submit', ['label' => 'Mettre à jour']);
 
         $form->handleRequest($request);
@@ -708,7 +708,7 @@ class TerritoireController extends AbstractController
         $territoire = $request->get('territoire');
         $event = $request->get('event');
 
-        $form = $this->createForm(ChronologieDeleteForm::class(), $event)
+        $form = $this->createForm(ChronologieDeleteForm::class, $event)
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);

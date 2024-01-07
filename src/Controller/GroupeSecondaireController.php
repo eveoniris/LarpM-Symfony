@@ -91,7 +91,7 @@ class GroupeSecondaireController extends AbstractController
     {
         $groupeSecondaire = new \App\Entity\SecondaryGroup();
 
-        $form = $this->createForm(GroupeSecondaireForm::class(), $groupeSecondaire)
+        $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -160,7 +160,7 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/materielUpdate/{id}', name: 'groupeSecondaire.materielUpdate')]
     public function materielUpdateAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
-        $form = $this->createForm(GroupeSecondaireMaterielForm::class(), $groupeSecondaire)->getForm();
+        $form = $this->createForm(GroupeSecondaireMaterielForm::class, $groupeSecondaire)->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -208,7 +208,7 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/update/{id}', name: 'groupeSecondaire.update')]
     public function adminUpdateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
-        $form = $this->createForm(GroupeSecondaireForm::class(), $groupeSecondaire)
+        $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 

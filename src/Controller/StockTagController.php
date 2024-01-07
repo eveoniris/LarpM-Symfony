@@ -26,7 +26,7 @@ class StockTagController extends AbstractController
     {
         $tag = new \App\Entity\Tag();
 
-        $form = $this->createForm(TagType::class(), $tag)
+        $form = $this->createForm(TagType::class, $tag)
             ->add('save', 'submit');
 
         $form->handleRequest($request);
@@ -51,7 +51,7 @@ class StockTagController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\Tag::class);
         $tag = $repo->find($id);
 
-        $form = $this->createForm(TagType::class(), $tag)
+        $form = $this->createForm(TagType::class, $tag)
             ->add('update', 'submit')
             ->add('delete', 'submit');
 

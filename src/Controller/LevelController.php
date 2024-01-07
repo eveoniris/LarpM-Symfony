@@ -31,7 +31,7 @@ class LevelController extends AbstractController
     {
         $level = new \App\Entity\Level();
 
-        $form = $this->createForm(LevelForm::class(), $level)
+        $form = $this->createForm(LevelForm::class, $level)
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -66,7 +66,7 @@ class LevelController extends AbstractController
 
         $level = $entityManager->find('\\'.\App\Entity\Level::class, $id);
 
-        $form = $this->createForm(LevelForm::class(), $level)
+        $form = $this->createForm(LevelForm::class, $level)
             ->add('update', 'submit', ['label' => 'Sauvegarder'])
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 

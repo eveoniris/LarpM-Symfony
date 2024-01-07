@@ -55,7 +55,7 @@ class AnnonceController extends AbstractController
     #[Route('/annonce', name: 'annonce.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(AnnonceForm::class(), new Annonce())
+        $form = $this->createForm(AnnonceForm::class, new Annonce())
             ->add('save', 'submit', ['label' => 'Sauvegarder'])
             ->add('save_continue', 'submit', ['label' => 'Sauvegarder & continuer']);
 
@@ -87,7 +87,7 @@ class AnnonceController extends AbstractController
     #[Route('/annonce/update/{id}', name: 'annonce.update')]
     public function updateAction(Request $request, #[MapEntity] Annonce $annonce, EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(AnnonceForm::class(), $annonce)
+        $form = $this->createForm(AnnonceForm::class, $annonce)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -123,7 +123,7 @@ class AnnonceController extends AbstractController
      */
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Annonce $annonce)
     {
-        $form = $this->createForm(AnnonceDeleteForm::class(), $annonce)
+        $form = $this->createForm(AnnonceDeleteForm::class, $annonce)
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);

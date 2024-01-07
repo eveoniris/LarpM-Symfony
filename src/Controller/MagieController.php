@@ -59,7 +59,7 @@ class MagieController extends AbstractController
     {
         $sphere = new \App\Entity\Sphere();
 
-        $form = $this->createForm(SphereForm::class(), $sphere)
+        $form = $this->createForm(SphereForm::class, $sphere)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -88,7 +88,7 @@ class MagieController extends AbstractController
     {
         $sphere = $request->get('sphere');
 
-        $form = $this->createForm(SphereForm::class(), $sphere)
+        $form = $this->createForm(SphereForm::class, $sphere)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -117,7 +117,7 @@ class MagieController extends AbstractController
     {
         $sphere = $request->get('sphere');
 
-        $form = $this->createForm(SphereDeleteForm::class(), $sphere)
+        $form = $this->createForm(SphereDeleteForm::class, $sphere)
             ->add('save', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
@@ -171,7 +171,7 @@ class MagieController extends AbstractController
     {
         $priere = new \App\Entity\Priere();
 
-        $form = $this->createForm(PriereForm::class(), $priere)
+        $form = $this->createForm(PriereForm::class, $priere)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -219,7 +219,7 @@ class MagieController extends AbstractController
     {
         $priere = $request->get('priere');
 
-        $form = $this->createForm(PriereForm::class(), $priere)
+        $form = $this->createForm(PriereForm::class, $priere)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -269,7 +269,7 @@ class MagieController extends AbstractController
     {
         $priere = $request->get('priere');
 
-        $form = $this->createForm(PriereDeleteForm::class(), $priere)
+        $form = $this->createForm(PriereDeleteForm::class, $priere)
             ->add('save', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
@@ -424,7 +424,7 @@ class MagieController extends AbstractController
     {
         $potion = new \App\Entity\Potion();
 
-        $form = $this->createForm(PotionForm::class(), $potion)
+        $form = $this->createForm(PotionForm::class, $potion)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -472,7 +472,7 @@ class MagieController extends AbstractController
     {
         $potion = $request->get('potion');
 
-        $form = $this->createForm(PotionForm::class(), $potion)
+        $form = $this->createForm(PotionForm::class, $potion)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -522,7 +522,7 @@ class MagieController extends AbstractController
     {
         $potion = $request->get('potion');
 
-        $form = $this->createForm(PotionDeleteForm::class(), $potion)
+        $form = $this->createForm(PotionDeleteForm::class, $potion)
             ->add('save', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
@@ -597,7 +597,7 @@ class MagieController extends AbstractController
     {
         $domaine = new \App\Entity\Domaine();
 
-        $form = $this->createForm(DomaineForm::class(), $domaine)
+        $form = $this->createForm(DomaineForm::class, $domaine)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -626,7 +626,7 @@ class MagieController extends AbstractController
     {
         $domaine = $request->get('domaine');
 
-        $form = $this->createForm(DomaineForm::class(), $domaine)
+        $form = $this->createForm(DomaineForm::class, $domaine)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -655,7 +655,7 @@ class MagieController extends AbstractController
     {
         $domaine = $request->get('domaine');
 
-        $form = $this->createForm(DomaineDeleteForm::class(), $domaine)
+        $form = $this->createForm(DomaineDeleteForm::class, $domaine)
             ->add('save', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
@@ -709,7 +709,7 @@ class MagieController extends AbstractController
     {
         $sort = new \App\Entity\Sort();
 
-        $form = $this->createForm(SortForm::class(), $sort)
+        $form = $this->createForm(SortForm::class, $sort)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -757,7 +757,7 @@ class MagieController extends AbstractController
     {
         $sort = $request->get('sort');
 
-        $form = $this->createForm(SortForm::class(), $sort)
+        $form = $this->createForm(SortForm::class, $sort)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -807,7 +807,7 @@ class MagieController extends AbstractController
     {
         $sort = $request->get('sort');
 
-        $form = $this->createForm(SortDeleteForm::class(), $sort)
+        $form = $this->createForm(SortDeleteForm::class, $sort)
             ->add('save', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);

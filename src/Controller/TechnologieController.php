@@ -34,7 +34,7 @@ class TechnologieController extends AbstractController
      */
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(TechnologieForm::class(), new Technologie())->getForm();
+        $form = $this->createForm(TechnologieForm::class, new Technologie())->getForm();
 
         $form->handleRequest($request);
 
@@ -88,7 +88,7 @@ class TechnologieController extends AbstractController
      */
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Technologie $technologie)
     {
-        $form = $this->createForm(TechnologieForm::class(), $technologie);
+        $form = $this->createForm(TechnologieForm::class, $technologie);
 
         $form->handleRequest($request);
 
@@ -134,7 +134,7 @@ class TechnologieController extends AbstractController
      */
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Technologie $technologie)
     {
-        $form = $this->createForm(TechnologieDeleteForm::class(), $technologie)
+        $form = $this->createForm(TechnologieDeleteForm::class, $technologie)
             ->add('submit', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);

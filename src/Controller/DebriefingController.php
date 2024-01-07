@@ -88,7 +88,7 @@ class DebriefingController extends AbstractController
             }
         }
 
-        $form = $this->createForm(DebriefingForm::class(), $debriefing)
+        $form = $this->createForm(DebriefingForm::class, $debriefing)
             ->add('visibility', 'choice', [
                 'required' => true,
                 'label' => 'Visibilité',
@@ -122,7 +122,7 @@ class DebriefingController extends AbstractController
      */
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
-        $form = $this->createForm(DebriefingDeleteForm::class(), $debriefing)
+        $form = $this->createForm(DebriefingDeleteForm::class, $debriefing)
             ->add('save', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
@@ -148,7 +148,7 @@ class DebriefingController extends AbstractController
      */
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
-        $form = $this->createForm(DebriefingForm::class(), $debriefing)
+        $form = $this->createForm(DebriefingForm::class, $debriefing)
             ->add('visibility', 'choice', [
                 'required' => true,
                 'label' => 'Visibilité',

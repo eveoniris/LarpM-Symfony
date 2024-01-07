@@ -30,7 +30,7 @@ class JoueurController extends AbstractController
     {
         $joueur = new \App\Entity\Joueur();
 
-        $form = $this->createForm(JoueurForm::class(), $joueur)
+        $form = $this->createForm(JoueurForm::class, $joueur)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -80,7 +80,7 @@ class JoueurController extends AbstractController
 
         $joueur = $entityManager->find('\App\Entity\Joueur', $id);
 
-        $form = $this->createForm(JoueurForm::class(), $joueur)
+        $form = $this->createForm(JoueurForm::class, $joueur)
             ->add('update', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);

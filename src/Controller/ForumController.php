@@ -62,7 +62,7 @@ class ForumController extends AbstractController
     {
         $topic = new \App\Entity\Topic();
 
-        $form = $this->createForm(TopicForm::class(), $topic)
+        $form = $this->createForm(TopicForm::class, $topic)
             ->add('right', 'choice', [
                 'label' => 'Droits',
                 'choices' => $app['larp.manager']->getAvailableTopicRight(),
@@ -129,7 +129,7 @@ class ForumController extends AbstractController
         $post = new \App\Entity\Post();
         $post->setTopic($topic);
 
-        $form = $this->createForm(PostForm::class(), $post)
+        $form = $this->createForm(PostForm::class, $post)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -216,7 +216,7 @@ class ForumController extends AbstractController
         $post = new \App\Entity\Post();
         $post->setTitle($postToResponse->getTitle());
 
-        $form = $this->createForm(PostForm::class(), $post)
+        $form = $this->createForm(PostForm::class, $post)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -274,7 +274,7 @@ class ForumController extends AbstractController
         $post = $entityManager->getRepository('\\'.\App\Entity\Post::class)
             ->find($postId);
 
-        $form = $this->createForm(PostForm::class(), $post)
+        $form = $this->createForm(PostForm::class, $post)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -347,7 +347,7 @@ class ForumController extends AbstractController
         $post = $entityManager->getRepository('\\'.\App\Entity\Post::class)
             ->find($postId);
 
-        $form = $this->createForm(PostDeleteForm::class(), $post)
+        $form = $this->createForm(PostDeleteForm::class, $post)
             ->add('delete', 'submit', ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
@@ -402,7 +402,7 @@ class ForumController extends AbstractController
 
         $topic = new \App\Entity\Topic();
 
-        $form = $this->createForm(TopicForm::class(), $topic)
+        $form = $this->createForm(TopicForm::class, $topic)
             ->add('save', 'submit', ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -438,7 +438,7 @@ class ForumController extends AbstractController
         $topic = $entityManager->getRepository('\\'.\App\Entity\Topic::class)
             ->find($topicId);
 
-        $formBuilder = $this->createForm(TopicForm::class(), $topic);
+        $formBuilder = $this->createForm(TopicForm::class, $topic);
 
         if ($app['security.authorization_checker']->isGranted('ROLE_MODERATOR')) {
             $formBuilder->add('topic', 'entity', [
