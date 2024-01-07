@@ -48,7 +48,7 @@ class BilletForm extends AbstractType
                     'label' => 'Description',
                     'attr' => [
                         'rows' => 9,
-                  //'class' => 'tinymce',   // TODO
+                  // TODO 'class' => 'tinymce',
                     ],
                 ]);
     }

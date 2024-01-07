@@ -24,7 +24,7 @@ class CultureForm extends AbstractType
                 'required' => false,
                 'label' => 'Description succinte',
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'row' => 9,
                 ],
             ])
@@ -32,7 +32,7 @@ class CultureForm extends AbstractType
                 'required' => false,
                 'label' => 'Description complète de la culture (accessible aux joueurs membres des territoires correspondant à cette culture)',
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'row' => 9,
                 ],
             ])

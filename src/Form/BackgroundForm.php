@@ -27,7 +27,7 @@ class BackgroundForm extends AbstractType
                 'required' => true,
                 'label' => 'Contenu',
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'rows' => 15],
             ])
             ->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [

@@ -24,7 +24,7 @@ class RumeurForm extends AbstractType
             'label' => 'Le contenu de votre rumeur',
             'required' => true,
             'attr' => [
-                'class' => 'tinymce',
+                // TODO 'class' => 'tinymce',
                 'row' => 9,
                 'help' => 'Votre rumeur. Ce texte sera disponibles aux joueurs membres du territoire dans lequel cours la rumeur.',
             ],

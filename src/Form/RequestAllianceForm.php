@@ -34,7 +34,7 @@ class RequestAllianceForm extends AbstractType
                 'label' => 'Un petit mot pour expliquer votre démarche',
                 'required' => true,
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'rows' => 9,
                     'help' => 'Ce texte sera transmis au chef de groupe concerné.'],
             ]);

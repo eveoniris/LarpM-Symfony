@@ -65,7 +65,7 @@ class ClasseForm extends AbstractType
             ->add('description', TextareaType::class, [
                 'required' => false,
                 'attr' => [
-                    'class' => 'tinymce',
+                    // TODO 'class' => 'tinymce',
                     'maxlength' => 450,
                 ],
                 'constraints' => [new Length(['max' => 450])],
