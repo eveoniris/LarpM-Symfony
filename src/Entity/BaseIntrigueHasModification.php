@@ -25,7 +25,7 @@ abstract class BaseIntrigueHasModification
     /**
      * @Column(name="`date`", type="datetime")
      */
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $date;
 
     #[ORM\ManyToOne(targetEntity: Intrigue::class, cascade: ['persist', 'remove'], inversedBy: 'intrigueHasModifications')]

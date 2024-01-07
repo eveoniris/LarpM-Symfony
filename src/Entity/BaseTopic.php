@@ -30,10 +30,10 @@ abstract class BaseTopic
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
     protected ?string $description = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $update_date = null;
 
     #[Column(name: 'right', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]

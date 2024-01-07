@@ -46,7 +46,7 @@ abstract class BaseObjet
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
     protected ?bool $investissement = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date = null;
 
     #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'objet')]

@@ -22,7 +22,7 @@ abstract class BaseNotification
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
     protected string $text;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $date = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]

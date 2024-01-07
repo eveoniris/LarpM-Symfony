@@ -26,7 +26,7 @@ abstract class BaseQuestion
     #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::STRING)]
     protected string $text;
 
-    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $date;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]

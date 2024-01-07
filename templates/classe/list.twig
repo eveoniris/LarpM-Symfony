@@ -45,6 +45,14 @@
 				<p class="text-warning">Attention, cette classe n'a pas description</p>
 			{%  endif %}
 			
+			{% if classe.competenceFamilyCreations|length != 0 %}
+				<p>
+					<strong>Famille de compétence acquises à la création : </strong>{{ classe.competenceFamilyCreations|join(', ') }}
+				</p>
+			{% else %}
+				<p class="text-warning">Attention, cette classe n'a pas de famille de compétences acquises à la créations</p>
+			{% endif %}
+
 			{% if classe.competenceFamilyFavorites|length != 0 %}
 				<p>
 					<strong>Famille de compétence favorites : </strong>{{ classe.competenceFamilyFavorites|join(', ') }}
@@ -60,16 +68,13 @@
 			{% else %}
 				<p class="text-warning">Attention, cette classe n'a pas de famille de compétences normales</p>
 			{% endif %}
-		
-			{% if classe.competenceFamilyCreations|length != 0 %}
-				<p>
-					<strong>Famille de compétence acquises à la création : </strong>{{ classe.competenceFamilyCreations|join(', ') }}
-				</p>
-			{% else %}
-				<p class="text-warning">Attention, cette classe n'a pas de famille de compétences acquises à la créations</p>
-			{% endif %}
+			
 		</p>
-				
+
+		<img width="184" height="250" alt="{{ classe.labelFeminin }}" src="{{ asset("img/#{classe.imageF}") }}" />
+		<div class="pull-right">
+			<img width="184" height="250" alt="{{ classe.labelMasculin }}" src="{{ asset("img/#{classe.imageM}")  }}" />
+		</div>	
 	</div>
 	{%  endfor %}
 

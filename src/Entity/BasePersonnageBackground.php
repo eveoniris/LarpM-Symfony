@@ -38,10 +38,10 @@ abstract class BasePersonnageBackground
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $visibility = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $creation_date;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected $update_date;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageBackgrounds')]

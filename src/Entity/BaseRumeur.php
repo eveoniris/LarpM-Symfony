@@ -25,10 +25,10 @@ abstract class BaseRumeur
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, name: 'text')]
     protected string $text = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected ?\DateTime $creation_date = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected ?\DateTime $update_date = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]

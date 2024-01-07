@@ -20,7 +20,7 @@ abstract class BasePugilatHistory
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATE_MUTABLE)]
+    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $date;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
