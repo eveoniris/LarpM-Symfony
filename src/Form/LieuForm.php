@@ -21,7 +21,7 @@ class LieuForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', 'text', [
+        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'attr' => ['maxlength' => 45],
             'constraints' => [
@@ -29,7 +29,7 @@ class LieuForm extends AbstractType
                 new NotBlank(),
             ],
         ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'attr' => [
                     'class' => 'tinymce',

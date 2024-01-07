@@ -48,7 +48,7 @@ class TechnologieForm extends AbstractType
             ->add('secret', CheckboxType::class, [
                 'label' => 'Technologie secrète ?',
             ])
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

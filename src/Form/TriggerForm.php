@@ -19,7 +19,7 @@ class TriggerForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('tag', 'text', [
+        $builder->add('tag', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'label' => 'Tag',
         ]);

@@ -21,10 +21,10 @@ class GroupeForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('nom', 'text')
-            ->add('numero', 'integer', [
+            ->add('numero', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'required' => true,
             ])
-            ->add('pj', 'choice', [
+            ->add('pj', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'label' => 'Type de groupe',
                 'required' => true,
                 'choices' => [
@@ -33,14 +33,14 @@ class GroupeForm extends AbstractType
                 ],
                 'expanded' => true,
             ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
                     'row' => 9,
                 ],
             ])
-            ->add('scenariste', 'entity', [
+            ->add('scenariste', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Scénariste',
                 'required' => false,
                 'class' => \App\Entity\User::class,

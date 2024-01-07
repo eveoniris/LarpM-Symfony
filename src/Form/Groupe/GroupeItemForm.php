@@ -20,7 +20,7 @@ class GroupeItemForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('items', 'entity', [
+        $builder->add('items', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Choisissez les objets possédé par le groupe en début de jeu',
             'multiple' => true,
             'expanded' => true,

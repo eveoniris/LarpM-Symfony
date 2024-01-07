@@ -20,7 +20,7 @@ class GroupeSecondaireNewMembreForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('personnage', 'entity', [
+        $builder->add('personnage', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => false,
             'label' => 'Choississez le personnage',
             'class' => \App\Entity\Personnage::class,
@@ -38,7 +38,7 @@ class GroupeSecondaireNewMembreForm extends AbstractType
             'property' => 'nom',
             'mapped' => false,
         ])
-            ->add('submit', SubmitType::class, ['label' => 'Ajouter']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter']);
     }
 
     /**

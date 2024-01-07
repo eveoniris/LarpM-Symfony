@@ -19,10 +19,10 @@ class RessourceForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
         ])
-            ->add('rarete', 'entity', [
+            ->add('rarete', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Rareté',
                 'required' => true,
                 'property' => 'label',

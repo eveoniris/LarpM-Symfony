@@ -17,9 +17,9 @@ class ProprietaireType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('nom', 'text')
-            ->add('adresse', 'text', ['required' => false])
-            ->add('mail', 'text', ['required' => false])
-            ->add('tel', 'text', ['required' => false]);
+            ->add('adresse', \Symfony\Component\Form\Extension\Core\Type\TextType::class, ['required' => false])
+            ->add('mail', \Symfony\Component\Form\Extension\Core\Type\TextType::class, ['required' => false])
+            ->add('tel', \Symfony\Component\Form\Extension\Core\Type\TextType::class, ['required' => false]);
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver): void

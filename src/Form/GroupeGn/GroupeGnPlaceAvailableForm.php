@@ -19,7 +19,7 @@ class GroupeGnPlaceAvailableForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('placeAvailable', 'integer', [
+        $builder->add('placeAvailable', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
             'label' => 'Indiquez içi le nombre de personnes recherché pour compléter votre groupe',
             'required' => true,
         ]);

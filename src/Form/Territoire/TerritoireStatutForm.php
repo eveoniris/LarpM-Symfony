@@ -19,7 +19,7 @@ class TerritoireStatutForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('statut', 'choice', [
+        $builder->add('statut', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
             'label' => 'Statut',
             'required' => false,
             'choices' => ['Normal' => 'Normal', 'Instable' => 'Instable'],

@@ -16,10 +16,10 @@ class GnForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
         ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description du GN',
                 'required' => false,
                 'attr' => [
@@ -27,27 +27,27 @@ class GnForm extends AbstractType
                     'row' => 9,
                 ],
             ])
-            ->add('xpCreation', 'integer', [
+            ->add('xpCreation', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'Point d\'expérience à la création d\'un personnage',
                 'required' => false,
             ])
-            ->add('dateDebut', 'datetime', [
+            ->add('dateDebut', \Symfony\Component\Form\Extension\Core\Type\DateTimeType::class, [
                 'label' => 'Date et heure de début du jeu',
                 'required' => false,
             ])
-            ->add('dateFin', 'datetime', [
+            ->add('dateFin', \Symfony\Component\Form\Extension\Core\Type\DateTimeType::class, [
                 'label' => 'Date et heure de fin du jeu',
                 'required' => false,
             ])
-            ->add('dateInstallationJoueur', 'datetime', [
+            ->add('dateInstallationJoueur', \Symfony\Component\Form\Extension\Core\Type\DateTimeType::class, [
                 'label' => 'Date et heure du début de l\'accueil des joueurs',
                 'required' => false,
             ])
-            ->add('dateFinOrga', 'datetime', [
+            ->add('dateFinOrga', \Symfony\Component\Form\Extension\Core\Type\DateTimeType::class, [
                 'label' => 'Date limite pour libérer le site',
                 'required' => false,
             ])
-            ->add('adresse', 'textarea', [
+            ->add('adresse', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Adresse du site',
                 'required' => false,
                 'attr' => [
@@ -55,7 +55,7 @@ class GnForm extends AbstractType
                     'row' => 9,
                 ],
             ])
-            ->add('conditionsInscription', 'textarea', [
+            ->add('conditionsInscription', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => "Conditions d'inscription",
                 'required' => false,
                 'attr' => [
@@ -63,11 +63,11 @@ class GnForm extends AbstractType
                     'rows' => 18,
                 ],
             ])
-            ->add('billetterie', 'textarea', [
+            ->add('billetterie', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Code de la billetterie',
                 'required' => false,
             ])
-            ->add('actif', 'choice', [
+            ->add('actif', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'label' => 'GN actif ?',
                 'required' => true,
                 'choices' => [

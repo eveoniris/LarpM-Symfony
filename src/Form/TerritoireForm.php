@@ -19,11 +19,11 @@ class TerritoireForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', 'text', [
+        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Nom',
             'required' => true,
         ])
-            ->add('appelation', 'entity', [
+            ->add('appelation', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => "Choisissez l'appelation de ce territoire",
                 'required' => true,
                 'class' => \App\Entity\Appelation::class,
@@ -31,90 +31,90 @@ class TerritoireForm extends AbstractType
                 'mapped' => true,
                 'property' => 'label',
             ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description',
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
                     'rows' => 10],
             ])
-            ->add('description_secrete', 'textarea', [
+            ->add('description_secrete', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description connue des habitants',
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
                     'rows' => 10],
             ])
-            ->add('statut', 'choice', [
+            ->add('statut', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'label' => 'Statut',
                 'required' => false,
                 'choices' => ['Normal' => 'Normal', 'Instable' => 'Instable'],
             ])
-            ->add('geojson', 'textarea', [
+            ->add('geojson', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'GeoJSON',
                 'required' => false,
                 'attr' => ['rows' => 10],
             ])
-            ->add('capitale', 'text', [
+            ->add('capitale', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Capitale',
                 'required' => false,
             ])
-            ->add('politique', 'text', [
+            ->add('politique', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Système politique',
                 'required' => false,
             ])
-            ->add('dirigeant', 'text', [
+            ->add('dirigeant', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Dirigeant',
                 'required' => false,
             ])
-            ->add('population', 'text', [
+            ->add('population', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Population',
                 'required' => false,
             ])
-            ->add('symbole', 'text', [
+            ->add('symbole', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Symbole',
                 'required' => false,
             ])
-            ->add('tech_level', 'text', [
+            ->add('tech_level', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Niveau technologique',
                 'required' => false,
             ])
-            ->add('type_racial', 'textarea', [
+            ->add('type_racial', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Type racial',
                 'required' => false,
                 'attr' => ['rows' => 5],
             ])
-            ->add('inspiration', 'textarea', [
+            ->add('inspiration', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Inspiration',
                 'required' => false,
                 'attr' => ['rows' => 5],
             ])
-            ->add('armes_predilection', 'textarea', [
+            ->add('armes_predilection', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Armes de prédilection',
                 'required' => false,
                 'attr' => ['rows' => 5],
             ])
-            ->add('vetements', 'textarea', [
+            ->add('vetements', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Vetements',
                 'required' => false,
                 'attr' => ['rows' => 5],
             ])
-            ->add('noms_masculin', 'textarea', [
+            ->add('noms_masculin', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Noms masculins',
                 'required' => false,
                 'attr' => ['rows' => 5],
             ])
-            ->add('noms_feminin', 'textarea', [
+            ->add('noms_feminin', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Noms féminins',
                 'required' => false,
                 'attr' => ['rows' => 5],
             ])
-            ->add('frontieres', 'textarea', [
+            ->add('frontieres', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Frontières',
                 'required' => false,
                 'attr' => ['rows' => 5],
             ])
-            ->add('importations', 'entity', [
+            ->add('importations', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Importations',
                 'class' => \App\Entity\Ressource::class,
@@ -123,7 +123,7 @@ class TerritoireForm extends AbstractType
                 'mapped' => true,
                 'property' => 'label',
             ])
-            ->add('exportations', 'entity', [
+            ->add('exportations', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Exportations',
                 'class' => \App\Entity\Ressource::class,
@@ -132,7 +132,7 @@ class TerritoireForm extends AbstractType
                 'mapped' => true,
                 'property' => 'label',
             ])
-            ->add('languePrincipale', 'entity', [
+            ->add('languePrincipale', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Langue principale',
                 'class' => \App\Entity\Langue::class,
@@ -140,7 +140,7 @@ class TerritoireForm extends AbstractType
                 'mapped' => true,
                 'property' => 'label',
             ])
-            ->add('langues', 'entity', [
+            ->add('langues', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Langues parlées (selectionnez aussi la langue principale)',
                 'class' => \App\Entity\Langue::class,
@@ -149,7 +149,7 @@ class TerritoireForm extends AbstractType
                 'mapped' => true,
                 'property' => 'label',
             ])
-            ->add('religionPrincipale', 'entity', [
+            ->add('religionPrincipale', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Religion dominante',
                 'class' => \App\Entity\Religion::class,
@@ -157,7 +157,7 @@ class TerritoireForm extends AbstractType
                 'mapped' => true,
                 'property' => 'label',
             ])
-            ->add('religions', 'entity', [
+            ->add('religions', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Religions secondaires',
                 'class' => \App\Entity\Religion::class,
@@ -166,7 +166,7 @@ class TerritoireForm extends AbstractType
                 'mapped' => true,
                 'property' => 'label',
             ])
-            ->add('territoire', 'entity', [
+            ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Ce territoire dépend de ',
                 'class' => \App\Entity\Territoire::class,

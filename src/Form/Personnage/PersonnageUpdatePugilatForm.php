@@ -19,13 +19,13 @@ class PersonnageUpdatePugilatForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('pugilat', 'integer', [
+        $builder->add('pugilat', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
             'required' => true,
             'label' => 'Combien de points de Pugilat voulez-vous ajouter ? (indiquez une valeur négative pour retirer des points)',
             'mapped' => false,
             'attr' => ['max' => 6],
         ])
-            ->add('explication', 'textarea', [
+            ->add('explication', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'mapped' => false,
                 'label' => 'Donnez une explication',

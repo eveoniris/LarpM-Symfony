@@ -21,7 +21,7 @@ class PersonnageUpdateLangueForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('langues', 'entity', [
+        $builder->add('langues', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => true,
             'multiple' => true,
             'expanded' => true,

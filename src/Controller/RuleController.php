@@ -60,7 +60,7 @@ class RuleController extends AbstractController
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(RuleForm::class, [])
-            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
+            ->add('envoyer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
@@ -114,7 +114,7 @@ class RuleController extends AbstractController
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Rule $rule)
     {
         $form = $this->createForm(RuleUpdateForm::class, $rule)
-            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
+            ->add('envoyer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
@@ -138,7 +138,7 @@ class RuleController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Rule $rule)
     {
         $form = $this->createForm(RuleDeleteForm::class, $rule)
-            ->add('supprimer', SubmitType::class, ['label' => 'Supprimer']);
+            ->add('supprimer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

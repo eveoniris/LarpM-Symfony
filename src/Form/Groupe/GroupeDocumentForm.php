@@ -20,7 +20,7 @@ class GroupeDocumentForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('documents', 'entity', [
+        $builder->add('documents', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Choisissez les documents possédé par le groupe en début de jeu',
             'multiple' => true,
             'expanded' => true,

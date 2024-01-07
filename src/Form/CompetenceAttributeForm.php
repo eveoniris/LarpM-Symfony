@@ -20,13 +20,13 @@ class CompetenceAttributeForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('attributeType', 'entity', [
+            ->add('attributeType', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Type',
                 'required' => true,
                 'class' => \App\Entity\AttributeType::class,
                 'property' => 'label',
             ])
-            ->add('value', 'text', [
+            ->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => true,
                 'label' => 'Nombre',
             ]);

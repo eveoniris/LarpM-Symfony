@@ -135,7 +135,7 @@ class TechnologieController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Technologie $technologie)
     {
         $form = $this->createForm(TechnologieDeleteForm::class, $technologie)
-            ->add('submit', SubmitType::class, ['label' => 'Supprimer']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

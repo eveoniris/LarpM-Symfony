@@ -19,7 +19,7 @@ class GroupeSecondairePostulerForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('explanation', 'textarea', [
+        $builder->add('explanation', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
             'label' => 'Explication (obligatoire)',
             'required' => true,
             'attr' => [

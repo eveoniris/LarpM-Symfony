@@ -83,7 +83,7 @@ class LigneeAddMembreForm extends AbstractType
                 'property' => 'nom',
                 'mapped' => false,
             ])
-            ->add('submit', SubmitType::class, ['label' => 'Ajouter']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter']);
     }
 
     /**

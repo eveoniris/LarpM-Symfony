@@ -16,11 +16,11 @@ class EvenementType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('text', 'text', [
+        $builder->add('text', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Description de l\'événement',
             'required' => true,
         ])
-            ->add('date', 'text', [
+            ->add('date', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Date de l\'événement',
                 'required' => false,
             ]);

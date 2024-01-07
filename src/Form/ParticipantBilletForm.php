@@ -19,7 +19,7 @@ class ParticipantBilletForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('billet', 'entity', [
+        $builder->add('billet', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Choisissez le billet a donner à cet utilisateur',
             'multiple' => false,
             'expanded' => true,

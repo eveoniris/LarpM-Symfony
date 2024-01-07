@@ -18,15 +18,15 @@ class UserNewForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('email', 'text', [
+        $builder->add('email', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Adresse mail',
             'required' => true,
         ])
-            ->add('Username', 'text', [
+            ->add('Username', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => "Nom d'utilisateur",
                 'required' => true,
             ])
-            ->add('gn', 'entity', [
+            ->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Jeu auquel le nouvel utilisateur participe',
                 'required' => false,
                 'multiple' => false,
@@ -34,7 +34,7 @@ class UserNewForm extends AbstractType
                 'class' => \App\Entity\Gn::class,
                 'property' => 'label',
             ])
-            ->add('billet', 'entity', [
+            ->add('billet', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Choisissez le billet a donner à cet utilisateur',
                 'multiple' => false,
                 'expanded' => true,

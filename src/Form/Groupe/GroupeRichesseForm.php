@@ -19,7 +19,7 @@ class GroupeRichesseForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('richesse', 'integer', [
+        $builder->add('richesse', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
             'label' => 'PA',
             'required' => false,
             'attr' => [

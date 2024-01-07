@@ -34,7 +34,7 @@ class QualityController extends AbstractController
     public function addAction( EntityManagerInterface $entityManager, Request $request)
     {
         $form = $this->createForm(QualityForm::class, new Quality())
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -76,7 +76,7 @@ class QualityController extends AbstractController
         }
 
         $form = $this->createForm(QualityForm::class, $quality)
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -119,7 +119,7 @@ class QualityController extends AbstractController
     public function deleteAction( EntityManagerInterface $entityManager, Request $request, Quality $quality)
     {
         $form = $this->createForm(QualityDeleteForm::class, $quality)
-            ->add('submit', SubmitType::class, ['label' => 'Supprimer']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

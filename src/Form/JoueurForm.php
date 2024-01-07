@@ -18,35 +18,35 @@ class JoueurForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', 'text', [
+        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Nom civil',
             'required' => true,
         ])
-            ->add('prenom', 'text', [
+            ->add('prenom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Prénom civil',
                 'required' => true,
             ])
-            ->add('prenom_usage', 'text', [
+            ->add('prenom_usage', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => "Nom d'usage",
                 'required' => false,
             ])
-            ->add('telephone', 'text', [
+            ->add('telephone', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Numéro de téléphone',
                 'required' => true,
             ])
-            ->add('probleme_medicaux', 'textarea', [
+            ->add('probleme_medicaux', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Eventuel problèmes médicaux',
                 'required' => true,
             ])
-            ->add('personne_a_prevenir', 'text', [
+            ->add('personne_a_prevenir', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Personne à prévenir en cas de problème',
                 'required' => true,
             ])
-            ->add('tel_pap', 'text', [
+            ->add('tel_pap', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Numéro de téléphone de la personne à prévenir',
                 'required' => true,
             ])
-            ->add('fedegn', 'text', [
+            ->add('fedegn', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Numéro d’adhérent FédéGN',
                 'required' => true,
             ]);

@@ -16,7 +16,7 @@ class ObjetDeleteForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+        $builder->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver): void

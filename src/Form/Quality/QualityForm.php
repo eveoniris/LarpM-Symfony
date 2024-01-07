@@ -20,11 +20,11 @@ class QualityForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Label',
             'required' => true,
         ])
-            ->add('numero', 'integer', [
+            ->add('numero', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'required' => true,
                 'label' => 'Numéro',
             ])

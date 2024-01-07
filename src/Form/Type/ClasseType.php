@@ -16,7 +16,7 @@ class ClasseType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('classe', 'entity', [
+        $builder->add('classe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => false,
             'required' => true,
             'property' => 'label',

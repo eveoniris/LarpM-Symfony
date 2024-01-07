@@ -19,24 +19,24 @@ class BackgroundForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('titre', 'text', [
+        $builder->add('titre', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'label' => 'Titre',
         ])
-            ->add('text', 'textarea', [
+            ->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'label' => 'Contenu',
                 'attr' => [
                     'class' => 'tinymce',
                     'rows' => 15],
             ])
-            ->add('groupe', 'entity', [
+            ->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'label' => 'Groupe',
                 'class' => \App\Entity\Groupe::class,
                 'property' => 'nom',
             ])
-            ->add('gn', 'entity', [
+            ->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'label' => 'GN',
                 'class' => \App\Entity\Gn::class,

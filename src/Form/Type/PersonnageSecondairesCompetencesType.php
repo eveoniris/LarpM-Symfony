@@ -16,7 +16,7 @@ class PersonnageSecondairesCompetencesType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('competence', 'entity', [
+        $builder->add('competence', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => false,
             'required' => true,
             'property' => 'label',

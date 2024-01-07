@@ -20,7 +20,7 @@ class UserPersonnageDefaultForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('personnage', 'entity', [
+        $builder->add('personnage', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => false,
             'label' => 'Choisissez votre personnage par défaut. Ce personnage sera utilisé pour signer vos messages',
             'multiple' => false,

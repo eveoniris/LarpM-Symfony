@@ -21,7 +21,7 @@ class GroupeLangueForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Label',
             'required' => true,
             'attr' => ['maxlength' => 45],
@@ -30,7 +30,7 @@ class GroupeLangueForm extends AbstractType
                 new NotBlank(),
             ],
         ])
-            ->add('couleur', 'text', [
+            ->add('couleur', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Couleur',
                 'required' => true,
                 'attr' => ['maxlength' => 45],

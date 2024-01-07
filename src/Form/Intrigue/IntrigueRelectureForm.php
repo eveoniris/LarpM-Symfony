@@ -19,7 +19,7 @@ class IntrigueRelectureForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('statut', 'choice', [
+        $builder->add('statut', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
             'label' => 'Choisissez le statut',
             'required' => true,
             'choices' => [
@@ -27,7 +27,7 @@ class IntrigueRelectureForm extends AbstractType
                 'Non validé' => 'Non validé',
             ],
         ])
-            ->add('remarque', 'textarea', [
+            ->add('remarque', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Vos remarques éventuelles',
                 'required' => false,
                 'attr' => [

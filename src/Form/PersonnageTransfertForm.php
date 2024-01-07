@@ -19,7 +19,7 @@ class PersonnageTransfertForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('participant', 'entity', [
+        $builder->add('participant', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => true,
             'label' => 'Nouveau propriétaire',
             'class' => \App\Entity\User::class,

@@ -19,14 +19,14 @@ class PersonnageRichesseForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('richesse', 'integer', [
+        $builder->add('richesse', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
             'label' => 'PA',
             'required' => false,
             'attr' => [
                 'help' => "Indiquez combien de pièces d'argent votre personnage doit recevoir",
             ],
         ])
-            ->add('valider', SubmitType::class, ['label' => 'Valider']);
+            ->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

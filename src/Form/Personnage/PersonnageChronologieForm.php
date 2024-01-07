@@ -19,12 +19,12 @@ class PersonnageChronologieForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('annee', 'integer', [
+        $builder->add('annee', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
             'required' => true,
             'label' => 'Année de l\'évènement.',
             'mapped' => false,
         ])
-            ->add('evenement', 'text', [
+            ->add('evenement', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => true,
                 'trim' => true,
                 'mapped' => false,

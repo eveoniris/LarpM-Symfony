@@ -19,7 +19,7 @@ class TerritoireIngredientsForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('ingredients', 'entity', [
+        $builder->add('ingredients', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => false,
             'label' => 'Ingrédients',
             'class' => \App\Entity\Ingredient::class,

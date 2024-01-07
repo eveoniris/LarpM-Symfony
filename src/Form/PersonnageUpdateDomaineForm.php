@@ -20,7 +20,7 @@ class PersonnageUpdateDomaineForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('domaines', 'entity', [
+        $builder->add('domaines', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => true,
             'multiple' => true,
             'expanded' => true,

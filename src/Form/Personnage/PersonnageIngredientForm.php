@@ -28,7 +28,7 @@ class PersonnageIngredientForm extends AbstractType
             'by_reference' => false,
             'type' => new PersonnageIngredientType(),
         ])
-            ->add('random', 'integer', [
+            ->add('random', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'mapped' => false,
                 'label' => 'X ingrédients choisis au hasard',
                 'required' => false,
@@ -36,7 +36,7 @@ class PersonnageIngredientForm extends AbstractType
                     'help' => 'Indiquez combien d\'ingrédient il faut ajouter à ce personnage.',
                 ],
             ])
-            ->add('valider', SubmitType::class, ['label' => 'Valider']);
+            ->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

@@ -18,7 +18,7 @@ class ConnaissanceForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'label' => 'Label',
         ])
@@ -27,7 +27,7 @@ class ConnaissanceForm extends AbstractType
                 'required' => true,
                 'mapped' => false,
             ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
@@ -35,7 +35,7 @@ class ConnaissanceForm extends AbstractType
                     'rows' => 5,
                 ],
             ])
-            ->add('contraintes', 'textarea', [
+            ->add('contraintes', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'label' => 'Contraintes',
                 'attr' => [
@@ -43,7 +43,7 @@ class ConnaissanceForm extends AbstractType
                     'rows' => 5,
                 ],
             ])
-            ->add('secret', 'choice', [
+            ->add('secret', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [
                     false => 'Connaissance visible',

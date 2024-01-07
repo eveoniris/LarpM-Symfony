@@ -23,7 +23,7 @@ class PersonnageFindForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('value', 'text', [
+        $builder->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => false,
             'label' => 'Recherche',
             'attr' => [
@@ -31,7 +31,7 @@ class PersonnageFindForm extends AbstractType
                 'aria-label' => '...',
             ],
         ])
-            ->add('type', 'choice', [
+            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => false,
                 'choices' => [
                     'id' => 'ID',
@@ -42,7 +42,7 @@ class PersonnageFindForm extends AbstractType
                     'aria-label' => '...',
                 ],
             ])
-            ->add('religion', 'entity', [
+            ->add('religion', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => '	Par religion : ',
                 'class' => \App\Entity\Religion::class,
@@ -51,7 +51,7 @@ class PersonnageFindForm extends AbstractType
                     return $er->createQueryBuilder('r')->orderBy('r.label', 'ASC');
                 },
             ])
-            ->add('competence', 'entity', [
+            ->add('competence', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => '	Par compétence : ',
                 'class' => \App\Entity\Competence::class,
@@ -60,7 +60,7 @@ class PersonnageFindForm extends AbstractType
                     return $cr->getQueryBuilderFindAllOrderedByLabel();
                 },
             ])
-            ->add('classe', 'entity', [
+            ->add('classe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => '	Par classe : ',
                 'class' => \App\Entity\Classe::class,
@@ -69,7 +69,7 @@ class PersonnageFindForm extends AbstractType
                     return $er->getQueryBuilderFindAllOrderedByLabel();
                 },
             ])
-            ->add('groupe', 'entity', [
+            ->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => '	Par groupe : ',
                 'class' => \App\Entity\Groupe::class,

@@ -27,7 +27,7 @@ class StockRangementController extends AbstractController
         $rangement = new \App\Entity\Rangement();
 
         $form = $this->createForm(RangementType::class, $rangement)
-            ->add('save', SubmitType::class);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class);
 
         // on passe la requête de l'utilisateur au formulaire
         $form->handleRequest($request);

@@ -19,32 +19,32 @@ class FiefForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('value', 'text', [
+        $builder->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => false,
             'attr' => [
                 'placeholder' => 'Votre recherche',
             ],
         ])
-            ->add('type', 'choice', [
+            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => false,
                 'choices' => [
                     'idFief' => 'Id du fief',
                     'nomFief' => 'Nom du fief',
                 ],
             ])
-            ->add('pays', 'entity', [
+            ->add('pays', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Par pays',
                 'class' => \App\Entity\Territoire::class,
                 'choices' => $options['listePays'],
             ])
-            ->add('province', 'entity', [
+            ->add('province', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Par province',
                 'class' => \App\Entity\Territoire::class,
                 'choices' => $options['listeProvinces'],
             ])
-            ->add('groupe', 'entity', [
+            ->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Par groupe',
                 'class' => \App\Entity\Groupe::class,

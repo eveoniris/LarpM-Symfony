@@ -16,7 +16,7 @@ class IntrigueHasDocumentType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('document', 'entity', [
+        $builder->add('document', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Ajouter un document concernant cette intrigue',
             'required' => true,
             'class' => \App\Entity\Document::class,

@@ -19,14 +19,14 @@ class GroupeSecondaireMaterielForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('materiel', 'textarea', [
+        $builder->add('materiel', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
             'label' => "Contenu libre de l'enveloppe",
             'required' => false,
             'attr' => [
                 'row' => 9,
             ],
         ])
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
     }
 
     /**

@@ -19,11 +19,11 @@ class ConstructionForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Le nom de la construction',
             'required' => true,
         ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'La description de la construction',
                 'required' => true,
                 'attr' => [
@@ -31,7 +31,7 @@ class ConstructionForm extends AbstractType
                     'rows' => 9,
                 ],
             ])
-            ->add('defense', 'integer', [
+            ->add('defense', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'La valeur de défense de la construction',
                 'required' => true,
             ]);

@@ -19,7 +19,7 @@ class DeclareWarForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('requestedGroupe', 'entity', [
+        $builder->add('requestedGroupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => true,
             'label' => 'Groupe que vous choisissez comme ennemi',
             'class' => \App\Entity\Groupe::class,
@@ -30,7 +30,7 @@ class DeclareWarForm extends AbstractType
             },
             'property' => 'nom',
         ])
-            ->add('message', 'textarea', [
+            ->add('message', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Un petit mot pour expliquer votre démarche',
                 'required' => true,
                 'attr' => [

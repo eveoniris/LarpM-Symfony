@@ -19,7 +19,7 @@ class ItemLinkForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('personnage', 'entity', [
+        $builder->add('personnage', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => false,
             'mapped' => false,
             'label' => 'Personnage',
@@ -29,7 +29,7 @@ class ItemLinkForm extends AbstractType
                 'help' => 'Personnage qui possède cet objet',
             ],
         ])
-            ->add('groupe', 'entity', [
+            ->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'mapped' => false,
                 'label' => 'Groupe',
@@ -39,7 +39,7 @@ class ItemLinkForm extends AbstractType
                     'help' => 'Groupe qui possède cet objet',
                 ],
             ])
-            ->add('lieu', 'entity', [
+            ->add('lieu', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'mapped' => false,
                 'label' => 'Lieu',
@@ -49,7 +49,7 @@ class ItemLinkForm extends AbstractType
                     'help' => 'Lieu ou est entreposé cet objet',
                 ],
             ])
-            ->add('submit', SubmitType::class, [
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
                 'label' => 'Valider',
             ]);
     }

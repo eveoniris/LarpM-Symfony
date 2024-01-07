@@ -19,7 +19,7 @@ class UserRestrictionForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('restrictions', 'entity', [
+        $builder->add('restrictions', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => false,
             'label' => 'Choisissez vos restrictions alimentaires dans la liste ci-dessus',
             'multiple' => true,
@@ -29,7 +29,7 @@ class UserRestrictionForm extends AbstractType
             'placeholder' => 'Aucune',
             'empty_data' => null,
         ])
-            ->add('new_restriction', 'text', [
+            ->add('new_restriction', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => false,
                 'label' => 'Si votre restriction alimentaire n\'apparait pas dans la liste, indiquez la içi',
                 'mapped' => false,

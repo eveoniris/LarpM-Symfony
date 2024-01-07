@@ -210,10 +210,11 @@ class GnController extends AbstractController
      * affiche le formulaire d'ajout d'un gn
      * Lorsqu'un GN est créé, son forum associé doit lui aussi être créé.
      */
+    #[Route('/gn/add', name: 'gn.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(GnForm::class, new Gn())
-            ->add('save', SubmitType::class, [
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
                 'label' => 'Sauvegarder',
             ]);
         $form->handleRequest($request);
@@ -526,7 +527,7 @@ class GnController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $form = $this->createForm(GnDeleteForm::class, $gn)
-            ->add('delete', SubmitType::class, [
+            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
                 'label' => 'Supprimer',
             ]);
         $form->handleRequest($request);
@@ -549,7 +550,7 @@ class GnController extends AbstractController
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
     {
         $form = $this->createForm(GnForm::class, $gn)
-            ->add('update', SubmitType::class, [
+            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
                 'label' => 'Sauvegarder',
             ]);
         $form->handleRequest($request);

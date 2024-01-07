@@ -16,7 +16,7 @@ class IntrigueHasLieuType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('lieu', 'entity', [
+        $builder->add('lieu', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => 'Ajouter un lieu concerné par cette intrigue',
             'required' => true,
             'class' => \App\Entity\Lieu::class,

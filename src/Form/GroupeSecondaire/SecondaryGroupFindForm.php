@@ -19,11 +19,11 @@ class SecondaryGroupFindForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('value', 'text', [
+        $builder->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'label' => 'Valeur',
         ])
-            ->add('type', 'choice', [
+            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'label' => 'Type',
                 'choices' => [

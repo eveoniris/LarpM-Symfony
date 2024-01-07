@@ -20,23 +20,23 @@ class DocumentForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('code', 'text', [
+        $builder->add('code', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'attr' => [
                 'help' => 'Le code d\'un document permet de l\'identifier rapidement. Il se construit de la manière suivante : L3_DJ_TE_005. L3 correspond à l\'opus de création. DJ correspond à Document en Jeu. TE correspond à TExte. 005 correspond à son numéro (suivez la numérotation des documents déjà créé)',
             ],
         ])
-            ->add('titre', 'text', [
+            ->add('titre', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => true,
             ])
-            ->add('auteur', 'text', [
+            ->add('auteur', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => true,
                 'empty_data' => null,
                 'attr' => [
                     'help' => 'Indiquez l\'auteur (en jeu) du document. Cet auteur est soit un personnage fictif (p.e. le célébre poète Archibald) ou l\'un des personnage joué par un joueur',
                 ],
             ])
-            ->add('langues', 'entity', [
+            ->add('langues', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'multiple' => true,
                 'expanded' => true,
@@ -50,7 +50,7 @@ class DocumentForm extends AbstractType
                     'help' => 'Vous pouvez choisir une ou plusieurs langues',
                 ],
             ])
-            ->add('cryptage', 'choice', [
+            ->add('cryptage', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [false => 'Non crypté', true => 'Crypté'],
                 'label' => 'Indiquez si le document est crypté',
@@ -58,7 +58,7 @@ class DocumentForm extends AbstractType
                     'help' => 'Un document crypté est rédigé dans la langue indiqué, mais le joueur doit le décrypter de lui-même (p.e rédigé en aquilonien, mais utilisant un code type césar)',
                 ],
             ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'attr' => [
                     'class' => 'tinymce',
@@ -66,13 +66,13 @@ class DocumentForm extends AbstractType
                     'help' => 'Une courte description du document permet d\'éviter de télécharger et d\'ouvrir le document pour comprendre quel est son contenu.',
                 ],
             ])
-            ->add('statut', 'text', [
+            ->add('statut', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => false,
                 'attr' => [
                     'help' => 'Une courte description du document permet d\'éviter de télécharger et d\'ouvrir le document pour comprendre quel est son contenu.',
                 ],
             ])
-            ->add('impression', 'choice', [
+            ->add('impression', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => false,
                 'choices' => [false => 'Non imprimé', true => 'Imprimé'],
                 'label' => 'Indiquez si le document a été imprimé',

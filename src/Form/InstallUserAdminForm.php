@@ -18,7 +18,7 @@ class InstallUserAdminForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('name', 'text', ['required' => true])
+        $builder->add('name', \Symfony\Component\Form\Extension\Core\Type\TextType::class, ['required' => true])
             ->add('email', 'email', ['required' => true])
             ->add('password', 'password', ['required' => true]);
     }

@@ -19,7 +19,7 @@ class PersonnageTechnologieForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('technologies', 'entity', [
+        $builder->add('technologies', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => false,
             'label' => 'Technologie',
             'class' => \App\Entity\Technologie::class,

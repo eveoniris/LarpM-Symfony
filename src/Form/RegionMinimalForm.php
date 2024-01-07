@@ -9,13 +9,13 @@ class RegionMinimalForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', 'text', [
+        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => true, ]
         )
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                     'required' => false, ]
             )
-            ->add('pays', 'entity', [
+            ->add('pays', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                     'required' => true,
                     'class' => 'App\Entity\Pays',
                     'property' => 'nom', ]

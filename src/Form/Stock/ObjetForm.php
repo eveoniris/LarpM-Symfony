@@ -18,20 +18,20 @@ class ObjetForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', 'text', ['required' => true])
-            ->add('numero', 'text', ['required' => true])
-            ->add('description', 'textarea', ['required' => false])
+        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, ['required' => true])
+            ->add('numero', \Symfony\Component\Form\Extension\Core\Type\TextType::class, ['required' => true])
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, ['required' => false])
             ->add('photo', new PhotoType(), ['required' => false])
-            ->add('proprietaire', 'entity', ['required' => false, 'class' => \App\Entity\Proprietaire::class, 'property' => 'nom'])
-            ->add('responsable', 'entity', ['required' => false, 'class' => \App\Entity\User01::class, 'property' => 'name'])
-            ->add('rangement', 'entity', ['required' => false, 'class' => \App\Entity\Rangement::class, 'property' => 'adresse'])
-            ->add('etat', 'entity', ['required' => false, 'class' => \App\Entity\Etat::class, 'property' => 'label'])
-            ->add('tags', 'entity', ['required' => false, 'class' => \App\Entity\Tag::class, 'property' => 'nom', 'multiple' => true])
+            ->add('proprietaire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, ['required' => false, 'class' => \App\Entity\Proprietaire::class, 'property' => 'nom'])
+            ->add('responsable', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, ['required' => false, 'class' => \App\Entity\User01::class, 'property' => 'name'])
+            ->add('rangement', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, ['required' => false, 'class' => \App\Entity\Rangement::class, 'property' => 'adresse'])
+            ->add('etat', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, ['required' => false, 'class' => \App\Entity\Etat::class, 'property' => 'label'])
+            ->add('tags', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, ['required' => false, 'class' => \App\Entity\Tag::class, 'property' => 'nom', 'multiple' => true])
             ->add('objetCarac', new ObjetCaracType(), ['required' => false])
-            ->add('cout', 'integer', ['required' => false])
-            ->add('nombre', 'integer', ['required' => false])
-            ->add('budget', 'integer', ['required' => false])
-            ->add('investissement', 'choice', ['choices' => ['true' => 'ré-utilisable', 'false' => 'usage unique']]);
+            ->add('cout', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, ['required' => false])
+            ->add('nombre', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, ['required' => false])
+            ->add('budget', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, ['required' => false])
+            ->add('investissement', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, ['choices' => ['true' => 'ré-utilisable', 'false' => 'usage unique']]);
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver): void

@@ -19,16 +19,16 @@ class SortForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'label' => 'Label',
         ])
-            ->add('niveau', 'choice', [
+            ->add('niveau', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => ['1' => 1, '2' => 2, '3' => 3, '4' => 4],
                 'label' => 'Niveau',
             ])
-            ->add('domaine', 'entity', [
+            ->add('domaine', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'label' => 'Domaine',
                 'class' => \App\Entity\Domaine::class,
@@ -39,7 +39,7 @@ class SortForm extends AbstractType
                 'required' => true,
                 'mapped' => false,
             ])
-            ->add('description', 'textarea', [
+            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
@@ -47,7 +47,7 @@ class SortForm extends AbstractType
                     'rows' => 9,
                 ],
             ])
-            ->add('secret', 'choice', [
+            ->add('secret', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [
                     false => 'Sort visible',

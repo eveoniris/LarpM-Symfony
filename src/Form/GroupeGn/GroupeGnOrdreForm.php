@@ -21,20 +21,20 @@ class GroupeGnOrdreForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('initiative', 'integer', [
+            ->add('initiative', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'required' => false,
             ])
-            ->add('bateaux', 'integer', [
+            ->add('bateaux', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'required' => false,
             ])
-            ->add('agents', 'integer', [
+            ->add('agents', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'required' => false,
             ])
-            ->add('sieges', 'integer', [
+            ->add('sieges', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'required' => false,
                 'label' => 'Armes de Siège',
             ])
-            ->add('suzerain', 'entity', [
+            ->add('suzerain', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Participant::class,
                 'property' => 'personnage.nom',

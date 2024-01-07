@@ -18,10 +18,10 @@ class FindJoueurForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('search', 'text', [
+        $builder->add('search', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
         ])
-            ->add('type', 'choice', [
+            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [
                     'lastName' => 'Nom du joueur',

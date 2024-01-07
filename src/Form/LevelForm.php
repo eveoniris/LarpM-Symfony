@@ -19,21 +19,21 @@ class LevelForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text', [
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
         ])
-            ->add('index', 'integer', [
+            ->add('index', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'required' => true,
             ])
-            ->add('cout_favori', 'integer', [
+            ->add('cout_favori', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'Coût favori',
                 'required' => true,
             ])
-            ->add('cout', 'integer', [
+            ->add('cout', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'Coût normal',
                 'required' => true,
             ])
-            ->add('cout_meconu', 'integer', [
+            ->add('cout_meconu', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'Coût méconnu',
                 'required' => true,
             ]);

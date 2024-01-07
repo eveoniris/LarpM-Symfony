@@ -18,11 +18,11 @@ class PersonnageXpForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('xp', 'integer', [
+        $builder->add('xp', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
             'label' => 'Expérience à ajouter',
             'required' => true,
         ])
-            ->add('explanation', 'text', [
+            ->add('explanation', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'label' => 'Explication',
                 'required' => true,
             ]);
