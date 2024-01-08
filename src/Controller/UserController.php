@@ -6,15 +6,19 @@ use App\Entity\Gn;
 use App\Entity\Participant;
 use App\Entity\Restriction;
 use App\Entity\User;
+use App\Form\BilletForm;
 use App\Form\Entity\UserSearch;
 use App\Form\UserFindForm;
+use App\Form\UserForm;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\DisabledException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -105,7 +109,7 @@ class UserController extends AbstractController
     /**
      * Choix du personnage par défaut de l'utilisateur.
      */
-    public function personnageDefaultAction( EntityManagerInterface $entityManager, Request $request, User $User)
+    public function personnageDefaultAction(EntityManagerInterface $entityManager, Request $request, User $User)
     {
         if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN') && !$User == $this->getUser()) {
             $this->addFlash('error', 'Vous n\'avez pas les droits necessaires pour cette opération.');
@@ -139,7 +143,7 @@ class UserController extends AbstractController
      * Choix des restrictions alimentaires par l'utilisateur.
      */
     #[Route('/user/restriction', name: 'user.restriction')]
-    public function restrictionAction( EntityManagerInterface $entityManager, Request $request)
+    public function restrictionAction(EntityManagerInterface $entityManager, Request $request)
     {
         $form = $this->createForm(UserRestrictionForm::class, $this->getUser())
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
@@ -174,7 +178,7 @@ class UserController extends AbstractController
     /**
      * Formulaire de participation à un jeu.
      */
-    public function gnParticipeAction( EntityManagerInterface $entityManager, Request $request, Gn $gn)
+    public function gnParticipeAction(EntityManagerInterface $entityManager, Request $request, Gn $gn)
     {
         $form = $this->createForm();
 
@@ -192,7 +196,7 @@ class UserController extends AbstractController
             $entityManager->persist($participant);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Vous participez maintenant à '.$gn->getLabel().' !');
+            $this->addFlash('success', 'Vous participez maintenant à ' . $gn->getLabel() . ' !');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -206,7 +210,7 @@ class UserController extends AbstractController
     /**
      * Formulaire de validation des cg , si cette validation n'a pas été réalisé à la participation.
      */
-    public function gnValidCiAction( EntityManagerInterface $entityManager, Request $request, Gn $gn)
+    public function gnValidCiAction(EntityManagerInterface $entityManager, Request $request, Gn $gn)
     {
         $form = $this->createForm();
 
@@ -219,7 +223,7 @@ class UserController extends AbstractController
             $entityManager->persist($participant);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Vous avez validé les condition d\'inscription pour '.$gn->getLabel().' !');
+            $this->addFlash('success', 'Vous avez validé les condition d\'inscription pour ' . $gn->getLabel() . ' !');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -233,7 +237,7 @@ class UserController extends AbstractController
     /**
      * Affiche le détail d'un billet d'un utilisateur.
      */
-    public function UserHasBilletDetailAction( EntityManagerInterface $entityManager, Request $request, UserHasBillet $UserHasBillet)
+    public function UserHasBilletDetailAction(EntityManagerInterface $entityManager, Request $request, UserHasBillet $UserHasBillet)
     {
         if ($UserHasBillet->getUser() != $this->getUser()) {
             $this->addFlash('error', 'Vous ne pouvez pas acceder à cette information');
@@ -249,7 +253,7 @@ class UserController extends AbstractController
     /**
      * Affiche la liste des billets de l'utilisateur.
      */
-    public function UserHasBilletListAction( EntityManagerInterface $entityManager, Request $request)
+    public function UserHasBilletListAction(EntityManagerInterface $entityManager, Request $request)
     {
         $UserHasBillets = $this->getUser()->getUserHasBillets();
 
@@ -262,7 +266,7 @@ class UserController extends AbstractController
      * Affiche les informations de la fédéGN.
      */
     #[Route('/user/fedegn', name: 'user.fedegn')]
-    public function fedegnAction( EntityManagerInterface $entityManager, Request $request)
+    public function fedegnAction(EntityManagerInterface $entityManager, Request $request)
     {
         return $this->render('public/User/fedegn.twig', [
             'etatCivil' => $this->getUser()->getEtatCivil(),
@@ -273,7 +277,7 @@ class UserController extends AbstractController
      * Enregistrement de l'état-civil.
      */
     #[Route('/user/etatCivil', name: 'user.etatCivil')]
-    public function etatCivilAction( EntityManagerInterface $entityManager, Request $request)
+    public function etatCivilAction(EntityManagerInterface $entityManager, Request $request)
     {
         $etatCivil = $this->getUser()->getEtatCivil();
 
@@ -311,7 +315,7 @@ class UserController extends AbstractController
      *
      * @throws \InvalidArgumentException
      */
-    protected function createUserFromRequest( EntityManagerInterface $entityManager, Request $request)
+    protected function createUserFromRequest(EntityManagerInterface $entityManager, Request $request)
     {
         if ($request->request->get('password') != $request->request->get('confirm_password')) {
             throw new \InvalidArgumentException("Passwords don't match.");
@@ -360,12 +364,10 @@ class UserController extends AbstractController
     /**
      * View User action.
      *
-     * @return Response
-     *
      * @throws NotFoundHttpException if no User is found with that ID
      */
     #[Route('/user/{user}', name: 'user.view')]
-    public function viewAction(Request $request, #[MapEntity] User $user = null): Response
+    public function viewAction(Request $request, #[MapEntity] User $user): Response
     {
         if (!$user) {
             throw new NotFoundHttpException('No user was found with that ID.');
@@ -379,7 +381,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/like', name: 'user.like')]
-    public function likeAction( EntityManagerInterface $entityManager, Request $request, User $User)
+    public function likeAction(EntityManagerInterface $entityManager, Request $request, User $User)
     {
         if ($User == $this->getUser()) {
             $this->addFlash('error', 'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !');
@@ -397,61 +399,76 @@ class UserController extends AbstractController
     /**
      * Edit User action.
      *
-     * @param int $id
-     *
-     * @return Response
-     *
      * @throws NotFoundHttpException if no User is found with that ID
      */
-    #[Route('/user/{id}/edit', name: 'user.edit')]
-    public function editAction(Request $request, $id)
+    #[Route('/user/{user}/edit', name: 'user.edit')]
+    public function editAction(Request $request, #[MapEntity] ?User $user, UserPasswordHasherInterface $passwordHasher): Response
     {
         $errors = [];
 
-        $User = $this->getUser($id);
-
-        if (!$User) {
+        if (!$user) {
             throw new NotFoundHttpException('No User was found with that ID.');
         }
 
         if ($request->isMethod('POST')) {
-            $User->setEmail($request->request->get('email'));
-            if ($request->request->has('Username')) {
-                $User->setUsername($request->request->get('Username'));
+            $user->setEmail($request->request->get('email'));
+            if ($request->request->has('username')) {
+                $user->setUsername($request->request->get('username'));
             }
 
-            if ($request->request->get('password')) {
-                if ($request->request->get('password') != $request->request->get('confirm_password')) {
+            $password = $request->request->get('password');
+            if ($password) {
+                $hashedPassword = $passwordHasher->hashPassword(
+                    $user,
+                    $password
+                );
+
+                if ($password !== $request->request->get('confirm_password')) {
                     $errors['password'] = "Passwords don't match.";
-                } elseif ($error = $app['User.manager']->validatePasswordStrength($User, $request->request->get('password'))) {
+                } elseif ($error = $user->validatePasswordStrength($password)) {
                     $errors['password'] = $error;
                 } else {
-                    $app['User.manager']->setUserPassword($User, $request->request->get('password'));
+                    $user->setPassword($hashedPassword);
                 }
             }
 
-            if ($this->isGranted('ROLE_ADMIN') && $request->request->has('roles')) {
-                $User->setRoles($request->request->get('roles'));
+            $roles = $request->request->all('roles');
+            if (
+                !empty($roles)
+                && \is_array($roles)
+                && $this->isGranted(User::ROLE_ADMIN)
+            ) {
+                $user->setRoles($roles);
             }
 
-            $errors += $app['User.manager']->validate($User);
+            // unique email & usernmae & have a username
+            // TODO $errors += $app['User.manager']->validate($user);
 
             if ([] === $errors) {
-                $app['User.manager']->update($User);
-                $msg = 'Saved account information.'.($request->request->get('password') ? ' Changed password.' : '');
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+                $msg = 'Saved account information.' . ($request->request->get('password') ? ' Changed password.' : '');
                 $this->addFlash('alert', $msg);
             }
         }
 
-        return $this->render('user/update.twig', [
-            'error' => implode("\n", $errors),
-            'user' => $User,
-            'available_roles' => $this->getParameter('security.role_hierarchy.roles'),
-        ]);
+        $availableLabels = [];
+        foreach (User::getAvailableRoles() as $availableLabel) {
+            $availableLabels[] = ['label' => $availableLabel, 'value' => $availableLabel];
+        }
+
+        return $this->render(
+            'user/update.twig',
+            [
+                'error' => implode("\n", $errors),
+                'user' => $user,
+                'available_roles' => $availableLabels,
+            ]
+        );
     }
 
     #[Route('/user', name: 'user.login')]
-    public function loginAction( EntityManagerInterface $entityManager, Request $request)
+    public function loginAction(EntityManagerInterface $entityManager, Request $request)
     {
         $authException = $app['User.last_auth_exception']($request);
 
@@ -514,24 +531,25 @@ class UserController extends AbstractController
             if (empty($type) || '*' === $type) {
                 if (is_numeric($value)) {
                     $criterias[] = Criteria::create()->where(
-                        Criteria::expr()?->contains($alias.'.id', $value)
+                        Criteria::expr()?->contains($alias . '.id', $value)
                     );
                 } else {
                     $criterias[] = Criteria::create()->where(
-                        Criteria::expr()?->contains($alias.'.username', $value)
+                        Criteria::expr()?->contains($alias . '.username', $value)
                     )->orWhere(
-                        Criteria::expr()?->contains($alias.'.email', $value)
+                        Criteria::expr()?->contains($alias . '.email', $value)
                     )->orWhere(
-                        Criteria::expr()?->contains($alias.'.roles', $value)
+                        Criteria::expr()?->contains($alias . '.roles', $value)
                     )/*->orWhere(
                         Criteria::expr()?->contains('ec'.'.nom', $value)
                     )->orWhere(
                         Criteria::expr()?->contains('ec'.'.prenom', $value)
-                    )*/;
+                    )*/
+                    ;
                 }
             } else {
                 $criterias[] = Criteria::create()->andWhere(
-                    Criteria::expr()?->contains($alias.'.'.$type, $value)
+                    Criteria::expr()?->contains($alias . '.' . $type, $value)
                 );
             }
         }
@@ -560,7 +578,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user', name: 'user.register')]
-    public function registerAction( EntityManagerInterface $entityManager, Request $request)
+    public function registerAction(EntityManagerInterface $entityManager, Request $request)
     {
         if ($request->isMethod('POST')) {
             try {
@@ -615,9 +633,9 @@ class UserController extends AbstractController
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function confirmEmailAction( EntityManagerInterface $entityManager, Request $request, $token)
+    public function confirmEmailAction(EntityManagerInterface $entityManager, Request $request, $token)
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
+        $repo = $entityManager->getRepository('\\' . \App\Entity\User::class);
         $User = $repo->findOneByConfirmationToken($token);
 
         if (!$User) {
@@ -642,11 +660,11 @@ class UserController extends AbstractController
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function resendConfirmationAction( EntityManagerInterface $entityManager, Request $request)
+    public function resendConfirmationAction(EntityManagerInterface $entityManager, Request $request)
     {
         $email = $request->request->get('email');
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
+        $repo = $entityManager->getRepository('\\' . \App\Entity\User::class);
         $User = $repo->findOneByEmail($email);
 
         if (!$User) {
@@ -667,7 +685,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user', name: 'user.forgot-password')]
-    public function forgotPasswordAction( EntityManagerInterface $entityManager, Request $request)
+    public function forgotPasswordAction(EntityManagerInterface $entityManager, Request $request)
     {
         if (!$this->isPasswordResetEnabled) {
             throw new NotFoundHttpException('Password resetting is not enabled.');
@@ -677,7 +695,7 @@ class UserController extends AbstractController
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');
 
-            $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
+            $repo = $entityManager->getRepository('\\' . \App\Entity\User::class);
             $User = $repo->findOneByEmail($email);
 
             if ($User) {
@@ -719,7 +737,7 @@ class UserController extends AbstractController
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function resetPasswordAction( EntityManagerInterface $entityManager, Request $request, $token)
+    public function resetPasswordAction(EntityManagerInterface $entityManager, Request $request, $token)
     {
         if (!$this->isPasswordResetEnabled) {
             throw new NotFoundHttpException('Password resetting is not enabled.');
@@ -727,7 +745,7 @@ class UserController extends AbstractController
 
         $tokenExpired = false;
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
+        $repo = $entityManager->getRepository('\\' . \App\Entity\User::class);
         $User = $repo->findOneByConfirmationToken($token);
 
         if (!$User) {
@@ -773,7 +791,7 @@ class UserController extends AbstractController
     /**
      * Met a jours les droits des utilisateurs.
      */
-    public function rightAction( EntityManagerInterface $entityManager, Request $request)
+    public function rightAction(EntityManagerInterface $entityManager, Request $request)
     {
         $Users = $app['User.manager']->findAll();
 

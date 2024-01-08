@@ -12,6 +12,41 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserInterface, \Stringable
 {
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
+    public const ROLE_CARTOGRAPHE = 'ROLE_CARTOGRAPHE';
+    public const ROLE_MODERATOR = 'ROLE_MODERATOR';
+    public const ROLE_ORGA = 'ROLE_ORGA';
+    public const ROLE_REGLE = 'ROLE_REGLE';
+    public const ROLE_SCENARISTE = 'ROLE_SCENARISTE';
+    public const ROLE_STOCK = 'ROLE_STOCK';
+    public const ROLE_USER = 'ROLE_USER';
+
+    public static function getAvailableRoles(): array
+    {
+        return [
+            self::ROLE_ADMIN,
+            self::ROLE_CARTOGRAPHE,
+            self::ROLE_MODERATOR,
+            self::ROLE_REGLE,
+            self::ROLE_SCENARISTE,
+            self::ROLE_STOCK,
+            self::ROLE_USER,
+        ];
+    }
+
+    public function validatePasswordStrength(string $password): ?string
+    {
+        if (empty($password)) {
+            return "Pas de mot de pass, pas d'accés";
+        }
+
+        if (strlen($password) < 5) {
+            return 'Mot de pass de moins de 5 caractères ? Même un Cimérien fait mieux !';
+        }
+
+        return null;
+    }
+
     public function __construct(string $email = '')
     {
         // @deprecated
@@ -248,8 +283,6 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
 
     /**
      * Test whether the User has the given role.
-     *
-     * @param string $role
      */
     public function hasRole(string $role): bool
     {
