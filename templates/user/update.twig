@@ -15,7 +15,7 @@
 	</ol>
 	
     <div class="well well-sm">
-	    <form class="form-horizontal" method="POST" action="{{ path("user.edit", {'id': user.id}) }}">
+	    <form class="form-horizontal" method="POST" action="{{ path("user.edit", {'user': user.id}) }}">
 	
 	        <div class="form-group">
 	            <label class="col-sm-2 control-label" for="input-name">Name</label>
@@ -74,7 +74,7 @@
 	        <div class="form-group">
 	            <div class="col-sm-8 col-sm-offset-2">
 	                <button type="submit" class="btn btn-primary">Sauvegarder</button>
-	                <a style="margin-left: 10px;" href="{{ path('user.view', {'id': user.id}) }}">Retourner au profil</a>
+	                <a style="margin-left: 10px;" href="{{ path('user.view', {'user': user.id}) }}">Retourner au profil</a>
 	            </div>
 	        </div>
 	
