@@ -138,10 +138,10 @@
 					<td>
 						<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 							<div class="btn-group" role="group" aria-label="...">
-								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter une participation" href="{{ path('participant.new',{'user':user.id}) }}"><i class="fa fa-bookmark"></i></a>
-								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('user.view',{'user':user.id}) }}"><i class="fa fa-eye"></i></a>
-								{% if user.etatCivil %}<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Voir l'état civil" href="{{ path('etatCivil.detail', {'etatCivil':user.etatCivil.id}) }}"><i class="fa fa-user"></i></a>{% endif %}
-								<a class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('user.edit',{'user':user.id}) }}"><i class="fa fa-pencil"></i></a>
+								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter une participation" href="{{ path('participant.new',{'user':user.id}) }}"><i class="fa fa-bookmark"></i></a>
+								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('user.view',{'user':user.id}) }}"><i class="fa fa-eye"></i></a>
+								{% if user.etatCivil %}<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Voir l'état civil" href="{{ path('etatCivil.detail', {'id':user.etatCivil.id}) }}"><i class="fa fa-user"></i></a>{% endif %}
+								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('user.edit',{'user':user.id}) }}"><i class="fa fa-pencil"></i></a>
 							</div>
 						</div>
 					</td>

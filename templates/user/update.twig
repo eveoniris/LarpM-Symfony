@@ -11,10 +11,14 @@
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
 		{% if is_granted('ROLE_ADMIN', app.user) %}<li><a href="{{ path('user.admin.list') }}">Liste des utilisateurs</a></li>{% endif %}
-		<li class="active">Modifier l'utilisateur : {{ user.displayName }}</li>
+		<li class="active">Modifier un utilisateur</li>
 	</ol>
 	
     <div class="well well-sm">
+		<div class="header">
+			<h5>Modifier l'utilisateur : {{ user.displayName }}</h5>
+		</div>
+
 	    <form class="form-horizontal" method="POST" action="{{ path("user.edit", {'user': user.id}) }}">
 	
 	        <div class="form-group">

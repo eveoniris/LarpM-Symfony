@@ -1,16 +1,14 @@
 <?php
 
-
 namespace App\Form\User;
 
+use App\Entity\Billet;
+use App\Entity\Gn;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-/**
- * LarpManager\Form\User\UserNewForm.
- *
- * @author kevin
- */
 class UserNewForm extends AbstractType
 {
     /**
@@ -18,35 +16,25 @@ class UserNewForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('email', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('email', TextType::class, [
             'label' => 'Adresse mail',
             'required' => true,
         ])
-            ->add('Username', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('username', TextType::class, [
                 'label' => "Nom d'utilisateur",
                 'required' => true,
             ])
-            ->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('gn', EntityType::class, [
                 'label' => 'Jeu auquel le nouvel utilisateur participe',
-                'required' => false,
-                'multiple' => false,
-                'expanded' => true,
-                'class' => \App\Entity\Gn::class,
-                'property' => 'label',
+                'class' => Gn::class,
+                'choice_label' => 'label',
+                'query_builder' => static fn ($er) => $er->createQueryBuilder('gn')->orderBy('gn.id', 'DESC'),
             ])
-            ->add('billet', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-                'label' => 'Choisissez le billet a donner à cet utilisateur',
-                'multiple' => false,
-                'expanded' => true,
-                'required' => false,
-                'class' => \App\Entity\Billet::class,
-                'property' => 'fullLabel',
-                'query_builder' => static function ($er) {
-                    $qb = $er->createQueryBuilder('b');
-                    $qb->orderBy('b.gn', 'ASC');
-
-                    return $qb;
-                },
+            ->add('billet', EntityType::class, [
+                'label' => 'Choisissez le billet à donner à cet utilisateur',
+                'class' => Billet::class,
+                'choice_label' => 'fullLabel',
+                'query_builder' => static fn ($er) => $er->createQueryBuilder('b')->orderBy('b.gn', 'DESC'),
             ]);
     }
 
