@@ -39,6 +39,34 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         $this->getEntityManager()->flush();
     }
 
+    public function emailExists(User $user): bool
+    {
+        return $this->propertyExists($user, 'email');
+    }
+
+    public function usernameExists(User $user): bool
+    {
+        return $this->propertyExists($user, 'username');
+    }
+
+    protected function propertyExists(User $user, string $property): bool
+    {
+        $qb = $this->createQueryBuilder('u');
+        $result = $qb->where(
+            $qb->expr()->eq('u.'.$property, ':'.$property)
+        )->andWhere(
+            $qb->expr()->notIn('u.id', ':id')
+        )
+            ->setParameters(
+                [
+                    ':'.$property => $user->{'get'.ucfirst($property)}(),
+                    ':id' => $user->getId(),
+                ]
+            )->getQuery();
+
+        return empty($result->getScalarResult());
+    }
+
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */
