@@ -61,8 +61,8 @@ abstract class BaseUser
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
-    protected ?bool $is_enabled = false;
+    #[Column(name: 'isEnabled', type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    protected ?bool $isEnabled = false;
 
     #[ORM\Column(name: 'confirmationToken', type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
     protected ?string $confirmationToken = null;
@@ -402,7 +402,7 @@ abstract class BaseUser
 
     public function setIsEnabled(bool $isEnabled): static
     {
-        $this->is_enabled = $isEnabled;
+        $this->isEnabled = $isEnabled;
 
         return $this;
     }
@@ -414,7 +414,7 @@ abstract class BaseUser
      */
     public function getIsEnabled()
     {
-        return $this->is_enabled;
+        return $this->isEnabled;
     }
 
     /**

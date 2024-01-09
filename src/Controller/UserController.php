@@ -7,10 +7,13 @@ use App\Entity\Participant;
 use App\Entity\Restriction;
 use App\Entity\User;
 use App\Form\Entity\UserSearch;
+use App\Form\User\UserNewForm;
 use App\Form\UserFindForm;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -56,30 +59,35 @@ class UserController extends AbstractController
      */
     #[Route('/user/admin/new', name: 'user.admin.new')]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
-    public function adminNewAction(Request $request)
-    {
+    public function adminNewAction(
+        Request $request,
+        UserRepository $userRepository,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $entityManager
+    ) {
         $form = $this->createForm(UserNewForm::class, [])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => "Créer l'utilisateur"]);
+            ->add('save', SubmitType::class, ['label' => "Créer l'utilisateur"]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
+            $user = new User();
+            $user->setIsEnabled(true);
+            $user->setEmail($data['email']);
+            $user->setUsername($data['username']);
+            $user->setRoles([User::ROLE_USER]);
+
             $plainPassword = $this->generatePassword();
+            $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
+            $user->setPassword($hashedPassword);
 
-            $User = $app['User.manager']->createUser(
-                $data['email'],
-                $plainPassword,
-                $data['Username'],
-                ['ROLE_USER']);
-
-            $User->setIsEnabled(true);
-            $entityManager->persist($User);
+            $entityManager->persist($user);
 
             if ($data['gn']) {
                 $participant = new Participant();
-                $participant->setUser($User);
+                $participant->setUser($user);
                 $participant->setGn($data['gn']);
 
                 if ($data['billet']) {
@@ -91,16 +99,19 @@ class UserController extends AbstractController
 
             $entityManager->flush();
 
-            $app['notify']->newUser($User, $plainPassword);
+            // TODO $app['notify']->newUser($user, $plainPassword);
 
             $this->addFlash('success', 'L\'utilisateur a été ajouté.');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $this->render('admin/User/new.twig', [
-            'form' => $form->createView(),
-        ]);
+        return $this->render(
+            'user/new.twig',
+            [
+                'form' => $form->createView(),
+            ]
+        );
     }
 
     /**
@@ -115,7 +126,7 @@ class UserController extends AbstractController
         }
 
         $form = $this->createForm(UserPersonnageDefaultForm::class, $this->getUser(), ['User_id' => $User->getId()])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -143,7 +154,7 @@ class UserController extends AbstractController
     public function restrictionAction(EntityManagerInterface $entityManager, Request $request)
     {
         $form = $this->createForm(UserRestrictionForm::class, $this->getUser())
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -283,7 +294,7 @@ class UserController extends AbstractController
         }
 
         $form = $this->createForm(EtatCivilForm::class, $etatCivil)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -415,10 +426,7 @@ class UserController extends AbstractController
 
             $password = $request->request->get('password');
             if ($password) {
-                $hashedPassword = $passwordHasher->hashPassword(
-                    $user,
-                    $password
-                );
+                $hashedPassword = $passwordHasher->hashPassword($user, $password);
 
                 if ($password !== $request->request->get('confirm_password')) {
                     $errors['password'] = "Passwords don't match.";
