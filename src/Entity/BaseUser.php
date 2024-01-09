@@ -46,6 +46,7 @@ abstract class BaseUser
 
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 180, unique: true)]
     #[Assert\NotBlank]
+    #[Assert\Required]
     protected ?string $username = null;
 
     #[ORM\Column(type: 'json')]

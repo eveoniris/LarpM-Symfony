@@ -6,14 +6,11 @@ use App\Entity\Gn;
 use App\Entity\Participant;
 use App\Entity\Restriction;
 use App\Entity\User;
-use App\Form\BilletForm;
 use App\Form\Entity\UserSearch;
 use App\Form\UserFindForm;
-use App\Form\UserForm;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -196,7 +193,7 @@ class UserController extends AbstractController
             $entityManager->persist($participant);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Vous participez maintenant à ' . $gn->getLabel() . ' !');
+            $this->addFlash('success', 'Vous participez maintenant à '.$gn->getLabel().' !');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -223,7 +220,7 @@ class UserController extends AbstractController
             $entityManager->persist($participant);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Vous avez validé les condition d\'inscription pour ' . $gn->getLabel() . ' !');
+            $this->addFlash('success', 'Vous avez validé les condition d\'inscription pour '.$gn->getLabel().' !');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -402,7 +399,7 @@ class UserController extends AbstractController
      * @throws NotFoundHttpException if no User is found with that ID
      */
     #[Route('/user/{user}/edit', name: 'user.edit')]
-    public function editAction(Request $request, #[MapEntity] ?User $user, UserPasswordHasherInterface $passwordHasher): Response
+    public function editAction(Request $request, #[MapEntity] ?User $user, UserPasswordHasherInterface $passwordHasher, UserRepository $repository): Response
     {
         $errors = [];
 
@@ -435,19 +432,23 @@ class UserController extends AbstractController
             $roles = $request->request->all('roles');
             if (
                 !empty($roles)
-                && \is_array($roles)
                 && $this->isGranted(User::ROLE_ADMIN)
             ) {
                 $user->setRoles($roles);
             }
 
-            // unique email & usernmae & have a username
-            // TODO $errors += $app['User.manager']->validate($user);
+            if ($repository->emailExists($user)) {
+                $errors[] = "L'adresse e-mail existe déjà";
+            }
+
+            if ($repository->usernameExists($user)) {
+                $errors[] = "Nom d'utilisateur existe déjà";
+            }
 
             if ([] === $errors) {
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
-                $msg = 'Saved account information.' . ($request->request->get('password') ? ' Changed password.' : '');
+                $msg = 'Saved account information.'.($request->request->get('password') ? ' Changed password.' : '');
                 $this->addFlash('alert', $msg);
             }
         }
@@ -531,15 +532,15 @@ class UserController extends AbstractController
             if (empty($type) || '*' === $type) {
                 if (is_numeric($value)) {
                     $criterias[] = Criteria::create()->where(
-                        Criteria::expr()?->contains($alias . '.id', $value)
+                        Criteria::expr()?->contains($alias.'.id', $value)
                     );
                 } else {
                     $criterias[] = Criteria::create()->where(
-                        Criteria::expr()?->contains($alias . '.username', $value)
+                        Criteria::expr()?->contains($alias.'.username', $value)
                     )->orWhere(
-                        Criteria::expr()?->contains($alias . '.email', $value)
+                        Criteria::expr()?->contains($alias.'.email', $value)
                     )->orWhere(
-                        Criteria::expr()?->contains($alias . '.roles', $value)
+                        Criteria::expr()?->contains($alias.'.roles', $value)
                     )/*->orWhere(
                         Criteria::expr()?->contains('ec'.'.nom', $value)
                     )->orWhere(
@@ -549,7 +550,7 @@ class UserController extends AbstractController
                 }
             } else {
                 $criterias[] = Criteria::create()->andWhere(
-                    Criteria::expr()?->contains($alias . '.' . $type, $value)
+                    Criteria::expr()?->contains($alias.'.'.$type, $value)
                 );
             }
         }
@@ -635,7 +636,7 @@ class UserController extends AbstractController
      */
     public function confirmEmailAction(EntityManagerInterface $entityManager, Request $request, $token)
     {
-        $repo = $entityManager->getRepository('\\' . \App\Entity\User::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
         $User = $repo->findOneByConfirmationToken($token);
 
         if (!$User) {
@@ -664,7 +665,7 @@ class UserController extends AbstractController
     {
         $email = $request->request->get('email');
 
-        $repo = $entityManager->getRepository('\\' . \App\Entity\User::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
         $User = $repo->findOneByEmail($email);
 
         if (!$User) {
@@ -695,7 +696,7 @@ class UserController extends AbstractController
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');
 
-            $repo = $entityManager->getRepository('\\' . \App\Entity\User::class);
+            $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
             $User = $repo->findOneByEmail($email);
 
             if ($User) {
@@ -745,7 +746,7 @@ class UserController extends AbstractController
 
         $tokenExpired = false;
 
-        $repo = $entityManager->getRepository('\\' . \App\Entity\User::class);
+        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
         $User = $repo->findOneByConfirmationToken($token);
 
         if (!$User) {
