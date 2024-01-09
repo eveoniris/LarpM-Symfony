@@ -503,6 +503,7 @@ class UserController extends AbstractController
 
     /**
      * Liste des utilisateurs.
+     * Todo voir pour lien vers Personnages, Groupes et Participation (ou sur le détail)
      */
     #[Route('/user/admin/list', name: 'user.admin.list')]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]

@@ -366,9 +366,9 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
      *
      * @see DisabledException
      */
-    public function isEnabled()
+    public function isEnabled(): bool
     {
-        return $this->is_enabled;
+        return $this->getIsEnabled();
     }
 
     public function setEnabled($isEnabled): static
