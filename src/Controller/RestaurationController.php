@@ -9,7 +9,6 @@ use App\Repository\RestaurationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -137,7 +136,7 @@ class RestaurationController extends AbstractController
 
     /**
      * Liste des utilisateurs ayant ce lieu de restauration.
-     * TODO: optimize query by pagination
+     * TODO: optimize query by pagination.
      */
     #[Route('/restauration/{id}/users', name: 'restauration.users')]
     public function usersAction(Request $request, #[MapEntity] Restauration $restauration, RestaurationRepository $repository): Response
@@ -153,7 +152,7 @@ class RestaurationController extends AbstractController
 
     /**
      * Liste des utilisateurs ayant ce lieu de restauration.
-     * TODO optimize
+     * TODO optimize.
      */
     #[Route('/restauration/{id}/users-export', name: 'restauration.users.export')]
     #[NoReturn]
@@ -196,11 +195,12 @@ class RestaurationController extends AbstractController
      * Liste des restrictions alimentaires.
      */
     #[Route('/restauration/{id}/restrictions', name: 'restauration.restrictions')]
-    public function restrictionsAction(Request $request, #[MapEntity] Restauration $restauration): Response
+    public function restrictionsAction(Request $request, #[MapEntity] Restauration $restauration, RestaurationRepository $repository): Response
     {
         return $this->render(
             'restauration/restrictions.twig', [
                 'restauration' => $restauration,
+                'restrictions' => $repository->gerRestrictionByGn($restauration),
             ]
         );
     }

@@ -17,7 +17,7 @@
 
 	<div class="btn-toolbar" role="toolbar" aria-label="...">
 		<div class="btn-group" role="group" aria-label="...">
-			<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter un lieu de restauration" href="{{ path('restauration.add') }}"><i class="fa fa-plus"></i></a>
+			<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un lieu de restauration" href="{{ path('restauration.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
 		</div>
 	</div>
 </div>
@@ -45,17 +45,17 @@
 						</td>
 						<td>
 							<div class="btn-group dropdown" role="group" aria-label="...">
-						  		<button type="button" class="btn btn-default dropdown-toggle show" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						  		<button type="button" class="btn btn-dark dropdown-toggle " data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 		      						Action
 		      						<span class="caret"></span>
 		    					</button>
 		    					<ul class="dropdown-menu">
-		    						<li><a href="{{ path('restauration.users',{'id':restauration.id}) }}">Utilisateurs</a></li>
-		    						<li><a href="{{ path('restauration.users.export',{'id':restauration.id}) }}">Exporter les utilisateurs</a></li>
-		    						<li><a href="{{ path('restauration.restrictions',{'id':restauration.id}) }}">Restrictions</a></li>
-		    						<li><a href="{{ path('restauration.update',{'id':restauration.id}) }}">Modifier</a></li>
-		    						<li><a href="{{ path('restauration.detail',{'id':restauration.id}) }}">Détail</a></li>
-		    						<li><a href="{{ path('restauration.delete',{'id':restauration.id}) }}">Supprimer</a></li>
+		    						<li class="d-grid gap-2"><a class="btn btn-dark" href="{{ path('restauration.users',{'id':restauration.id}) }}">Utilisateurs</a></li>
+		    						<li class="d-grid gap-2"><a class="btn btn-dark" href="{{ path('restauration.users.export',{'id':restauration.id}) }}">Exporter les utilisateurs</a></li>
+		    						<li class="d-grid gap-2"><a class="btn btn-dark" href="{{ path('restauration.restrictions',{'id':restauration.id}) }}">Restrictions</a></li>
+		    						<li class="d-grid gap-2"><a class="btn btn-dark" href="{{ path('restauration.update',{'id':restauration.id}) }}">Modifier</a></li>
+		    						<li class="d-grid gap-2"><a class="btn btn-dark" href="{{ path('restauration.detail',{'id':restauration.id}) }}">Détail</a></li>
+		    						<li class="d-grid gap-2"><a class="btn btn-dark" href="{{ path('restauration.delete',{'id':restauration.id}) }}">Supprimer</a></li>
 					  			</ul>
 					  		</div>
 						</td>

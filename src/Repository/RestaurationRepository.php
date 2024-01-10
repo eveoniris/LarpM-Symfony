@@ -23,6 +23,52 @@ class RestaurationRepository extends BaseRepository
         return $query->getResult();
     }
 
+    public function gerRestrictionByGn(Restauration $restauration): array
+    {
+        $results = [];
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('id', 'gn_id', 'integer');
+        $rsm->addScalarResult('label', 'label', 'string');
+        $rsm->addScalarResult('restriction', 'restriction', 'string');
+        $rsm->addScalarResult('restriction_id', 'restriction_id', 'integer');
+        $rsm->addScalarResult('total', 'total', 'integer');
+
+        $query = $this->getEntityManager()
+            ->createNativeQuery(
+                <<<SQL
+                SELECT gn.id,
+                       gn.label,
+                       r.label                   as restriction,
+                       uhr.restriction_id        as restriction_id,
+                       COUNT(phr.participant_id) as total
+                FROM participant_has_restauration phr
+                         INNER JOIN participant p ON p.id = phr.participant_id
+                         INNER JOIN gn ON p.gn_id = gn.id
+                         INNER JOIN user u ON p.user_id = u.id
+                         LEFT JOIN user_has_restriction uhr ON uhr.user_id = u.id
+                         INNER JOIN restriction r ON uhr.restriction_id = r.id
+                WHERE restauration_id = :restaurationId
+                SQL,
+                $rsm
+            );
+
+        $query->setParameter('restaurationId', $restauration->getId());
+
+        foreach ($query->getResult() as $result) {
+            $results[$result['gn_id']] ??= [
+                'gn' => ['label' => $result['label']],
+                'total' => $result['total'],
+                'restrictions' => [],
+            ];
+
+            $results[$result['gn_id']]['restrictions'][$result['restriction_id']] ??= [
+                'label' => $result['restriction'],
+            ];
+        }
+
+        return $results;
+    }
+
     public function getUsersByGn(Restauration $restauration): array
     {
         $results = [];
@@ -50,7 +96,7 @@ class RestaurationRepository extends BaseRepository
                          INNER JOIN gn ON p.gn_id = gn.id
                          INNER JOIN user u ON p.user_id = u.id
                          LEFT JOIN etat_civil ec ON u.etat_civil_id = ec.id
-                         LEFT JOIN larpm.user_has_restriction uhr ON uhr.user_id = u.id
+                         LEFT JOIN user_has_restriction uhr ON uhr.user_id = u.id
                          INNER JOIN restriction r ON uhr.restriction_id = r.id
                 WHERE restauration_id = :restaurationId
                 SQL,
