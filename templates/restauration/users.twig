@@ -28,7 +28,7 @@
 			<div class="header"><h5>{{ userByGn.gn.label }} - {{ userByGn.count }} utilisateurs</h5></div>
 			<ul class="list-group">
 				{% for user in userByGn.users %}
-					<li class="list-group-item"><a href="{{ path('user.view', {'id' : user.id}) }}">{{ user.etatCivil.nom }} {{ user.etatCivil.prenom }}</a> {% if user.restrictions|length > 0 %}&nbsp;--&nbsp;{{ user.restrictions|join(', ') }}{% endif %}</li>
+					<li class="list-group-item"><a href="{{ path('user.view', {'user' : user.id}) }}">{{ user.etatCivil.nom }} {{ user.etatCivil.prenom }}</a> {% if user.restrictions|length > 0 %}&nbsp;--&nbsp;{{ user.restrictions|join(', ') }}{% endif %}</li>
 				{% endfor %}			
 			</ul>
 		{% endfor %}
