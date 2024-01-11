@@ -1,22 +1,18 @@
 <?php
 
-
 namespace App\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\StockController.
- *
- * @author kevin
- */
 #[isGranted('ROLE_STOCK')]
 class StockController extends AbstractController
 {
     #[Route('/stock', name: 'stock.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\Objet::class);
 

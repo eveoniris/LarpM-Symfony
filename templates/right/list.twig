@@ -10,12 +10,17 @@
 	</ol>
 	
 	<div class="well well-sm">
+
+		<div class="header">
+			<h5>Liste des droits</h5>
+		</div>
+
 		<div class="list-group">
-			{% for right in rights %}
+			{% for right, label in rights %}
 				<div class="list-group-item">
-					<div class="list-group-item-heading"><h6>{{ right.label }}</h6></div>
+					<div class="list-group-item-heading"><h6>{{ right }}</h6></div>
 					<div class="list-group-item-text">
-						 {{ right.descr }}
+						 {{ label }}
 					</div>
 				</div>
 			{% endfor %}

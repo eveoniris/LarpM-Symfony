@@ -1,0 +1,32 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Rappels{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li class="active">Liste des utilisateurs sans état civil</li>
+    </ol>
+
+    <div class="well well-sm bs-component">
+        <div class="header">
+            <h5>Liste des utilisateurs sans état civil</h5>
+        </div>
+
+        <p>
+           Total ({{ usersWithoutEtatCivil|length }})
+        </p>
+
+        <ul class="list-group" id="haut">
+            {% for user in usersWithoutEtatCivil %}
+                <li class="list-group-item" id="usersWithoutEtatCivil">
+                    <a href="{{ path('user.view',{'user':user.id}) }}">{{ user.email }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <a href="#haut">Revenir en haut</a>
+    </div>
+
+{% endblock body %}

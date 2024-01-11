@@ -4,23 +4,22 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('question') }}">Liste des questions</a></li>
-		<li class="active">Supprimer une question</li>
-	</ol>
-	
-	
-	<div class="well bs-component">
-		<form action="{{ path('question.delete', {'question': question.id}) }}" method="POST" {{ form_enctype(form) }}>
-			<fieldset>
-				<legend>Supression d'une question</legend>
-					{{ question.label }}
-					{{ question.text|markdown_to_html }}
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
-					{{ form(form) }}
-			</fieldset>
-		</form>
-	</div>
-				
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path('question') }}">Liste des questions</a></li>
+        <li class="active">Supprimer une question</li>
+    </ol>
+
+
+    <div class="well bs-component">
+        <div class="header">
+            <h5>Supprimer une question</h5>
+        </div>
+
+        <p>{{ question.label }}</p>
+        <p>{{ question.text|markdown_to_html }}</p>
+
+        {{ form(form) }}
+    </div>
+
 {% endblock body %}

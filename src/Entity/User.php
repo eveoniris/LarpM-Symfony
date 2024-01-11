@@ -16,6 +16,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     public const ROLE_CARTOGRAPHE = 'ROLE_CARTOGRAPHE';
     public const ROLE_MODERATOR = 'ROLE_MODERATOR';
     public const ROLE_ORGA = 'ROLE_ORGA';
+    public const ROLE_REDACTEUR = 'ROLE_REDACTEUR';
     public const ROLE_REGLE = 'ROLE_REGLE';
     public const ROLE_SCENARISTE = 'ROLE_SCENARISTE';
     public const ROLE_STOCK = 'ROLE_STOCK';
@@ -27,10 +28,27 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
             self::ROLE_ADMIN,
             self::ROLE_CARTOGRAPHE,
             self::ROLE_MODERATOR,
+            self::ROLE_REDACTEUR,
             self::ROLE_REGLE,
             self::ROLE_SCENARISTE,
             self::ROLE_STOCK,
             self::ROLE_USER,
+            self::ROLE_ORGA,
+        ];
+    }
+
+    public static function getAvailableRolesLabels(): array
+    {
+        return [
+            self::ROLE_ADMIN => 'Droit de modification sur tout',
+            self::ROLE_CARTOGRAPHE => 'Droit de modification sur l\'univers',
+            self::ROLE_MODERATOR => 'Modération du forum',
+            self::ROLE_ORGA => 'Organisateur',
+            self::ROLE_REDACTEUR => 'Droit de modification des annonces',
+            self::ROLE_REGLE => 'Droit de modification sur les règles',
+            self::ROLE_SCENARISTE => "Droit de modification sur le scénario, les groupes et le background",
+            self::ROLE_STOCK => 'Droit de modification sur le stock',
+            self::ROLE_USER => 'Utilisateur de larpManager',
         ];
     }
 

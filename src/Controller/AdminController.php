@@ -2,17 +2,20 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * App\Controllers\AdminController.
- */
+#[isGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController
 {
     // Returns a file size limit in bytes based on the PHP upload_max_filesize
     // and post_max_size
-    private function file_upload_max_size()
+    private function file_upload_max_size(): float|int
     {
         static $max_size = -1;
 
@@ -36,7 +39,7 @@ class AdminController extends AbstractController
      *
      * @param unknown $size
      */
-    private function parse_size(string|bool $size)
+    private function parse_size(string|bool $size): float
     {
         $unit = preg_replace('/[^bkmgtpezy]/i', '', $size); // Remove the non-unit characters from the size.
         $size = preg_replace('/[^0-9\.]/', '', $size); // Remove the non-numeric characters from the size.
@@ -73,7 +76,7 @@ class AdminController extends AbstractController
         $cleanPath = rtrim($path, '/').'/';
 
         foreach ($files as $t) {
-            if ('.' != $t && '..' != $t) {
+            if ('.' !== $t && '..' !== $t) {
                 $currentFile = $cleanPath.$t;
                 if (is_dir($currentFile)) {
                     $size = $this->foldersize($currentFile);
@@ -91,7 +94,8 @@ class AdminController extends AbstractController
     /**
      * Page d'accueil de l'interface d'administration.
      */
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/admin', name: 'admin')]
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $extensions = get_loaded_extensions();
         $phpVersion = phpversion();
@@ -124,13 +128,14 @@ class AdminController extends AbstractController
     /**
      * Consulter les logs de larpManager.
      */
-    public function logAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/admin/log', name: 'admin.log')]
+    public function logAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        if ('prod' == $app['config']['env']['env']) {
-            $filename = __DIR__.'/../../../logs/production.log';
-        } else {
-            $filename = __DIR__.'/../../../logs/development.log';
-        }
+        // TODO if ('prod' === $app['config']['env']['env']) {
+        $filename = __DIR__.'/../../../logs/production.log';
+        // } else {
+        //    $filename = __DIR__.'/../../../logs/development.log';
+        // }
 
         $logfile = new \SplFileObject($filename);
 
@@ -176,7 +181,7 @@ class AdminController extends AbstractController
     /**
      * Exporter la base de données.
      */
-    public function databaseExportAction(Request $request,  EntityManagerInterface $entityManager)
+    public function databaseExportAction(Request $request, EntityManagerInterface $entityManager)
     {
         return $this->render('admin/databaseExport.twig');
     }
@@ -184,7 +189,7 @@ class AdminController extends AbstractController
     /**
      * Mettre à jour la base de données.
      */
-    public function databaseUpdateAction(Request $request,  EntityManagerInterface $entityManager)
+    public function databaseUpdateAction(Request $request, EntityManagerInterface $entityManager)
     {
         return $this->render('admin/databaseUpdate.twig');
     }
@@ -192,12 +197,12 @@ class AdminController extends AbstractController
     /**
      * Vider le cache.
      */
-    public function cacheEmptyAction(Request $request,  EntityManagerInterface $entityManager)
+    public function cacheEmptyAction(Request $request, EntityManagerInterface $entityManager)
     {
         $app['twig']->clearTemplateCache();
         $app['twig']->clearCacheFiles();
 
-       $this->addFlash('success', 'Le cache a été vidé.');
+        $this->addFlash('success', 'Le cache a été vidé.');
 
         return $this->redirectToRoute('admin', [], 303);
     }
@@ -205,7 +210,7 @@ class AdminController extends AbstractController
     /**
      * Vider les logs.
      */
-    public function logEmptyAction(Request $request,  EntityManagerInterface $entityManager)
+    public function logEmptyAction(Request $request, EntityManagerInterface $entityManager)
     {
         $filename = __DIR__.'/../../../logs/production.log';
 
@@ -219,7 +224,7 @@ class AdminController extends AbstractController
         @ftruncate($myTextFileHandler, 0);
         @fclose($myTextFileHandle);
 
-       $this->addFlash('success', 'Les logs ont été vidés.');
+        $this->addFlash('success', 'Les logs ont été vidés.');
 
         return $this->redirectToRoute('admin', [], 303);
     }
@@ -228,14 +233,11 @@ class AdminController extends AbstractController
      * Fourni les listes des utilisateurs n'ayants pas remplis certaines conditions.
      */
     #[Route('/admin/rappels', name: 'admin.rappels')]
-    public function rappelsAction(Request $request,  EntityManagerInterface $entityManager)
+    public function rappelsAction(Request $request, UserRepository $repository): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
-
-        $UsersWithoutEtatCivil = $repo->findWithoutEtatCivil();
-
-        return $this->render('admin/rappels.twig', [
-            'UsersWithoutEtatCivil' => $UsersWithoutEtatCivil,
-        ]);
+        return $this->render(
+            'admin/rappels.twig',
+            ['usersWithoutEtatCivil' => $repository->findWithoutEtatCivil()]
+        );
     }
 }
