@@ -5,11 +5,6 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-/**
- * LarpManager\Repository\UserRepository.
- *
- * @author kevin
- */
 class UserRepositoryOld extends BaseRepository
 {
     /**

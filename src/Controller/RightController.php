@@ -1,30 +1,23 @@
 <?php
 
-
 namespace App\Controller;
 
+use App\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * LarpManager\Controllers\RightController.
- *
- * @author kevin
- */
 class RightController extends AbstractController
 {
     /**
      * Liste des droits.
-     *
-     * @return View $view
-     * TODO : Move to admin dashboard
      */
     #[Route('/rights/list', name: 'right.admin.list')]
-    public function listAction(Request $request,  EntityManagerInterface $entityManager)
+    public function listAction(Request $request): Response
     {
-        $rights = $app['larp.manager']->getAvailableRoles();
-
-        return $this->render('admin/right/list.twig', [
-            'rights' => $rights]);
+        return $this->render(
+            'right/list.twig',
+            ['rights' => User::getAvailableRolesLabels()]
+        );
     }
 }

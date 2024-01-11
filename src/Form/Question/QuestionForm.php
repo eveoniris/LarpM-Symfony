@@ -4,14 +4,12 @@
 namespace App\Form\Question;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Groupe\QuestionForm.
- *
- * @author kevin
- */
 class QuestionForm extends AbstractType
 {
     /**
@@ -19,8 +17,8 @@ class QuestionForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text')
-            ->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+        $builder->add('label', TextType::class)
+            ->add('text', TextareaType::class, [
                 'required' => false,
                 'label' => 'Description succinte',
                 'attr' => [
@@ -28,20 +26,20 @@ class QuestionForm extends AbstractType
                     'row' => 9,
                 ],
             ])
-            ->add('choix', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('choix', TextareaType::class, [
                 'required' => false,
                 'label' => 'les réponses possibles, séparée par un point-virgule',
                 'attr' => [
                     'row' => 9,
                 ],
             ])
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', SubmitType::class, ['label' => 'Valider']);
     }
 
     /**
      * Définition de l'entité conercné.
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function setDefaultOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => '\\'.\App\Entity\Question::class,

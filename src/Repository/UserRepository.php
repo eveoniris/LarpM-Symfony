@@ -64,8 +64,24 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
                 ]
             )->getQuery();
 
-        return empty($result->getScalarResult());
+        return !empty($result->getScalarResult());
     }
+
+    public function findWithoutEtatCivil()
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                SELECT u 
+                FROM App\Entity\User u 
+                WHERE IDENTITY(u.etatCivil) IS NULL 
+                ORDER BY u.email ASC
+                DQL
+            );
+
+        return $query->getResult();
+    }
+
 
     //    /**
     //     * @return User[] Returns an array of User objects

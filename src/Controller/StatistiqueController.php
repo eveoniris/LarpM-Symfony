@@ -1,26 +1,33 @@
 <?php
 
-
 namespace App\Controller;
 
-use LarpManager\Services\RandomColor\RandomColor;
+use App\Entity\Classe;
+use App\Entity\Competence;
+use App\Entity\Construction;
+use App\Entity\Genre;
+use App\Entity\Groupe;
+use App\Entity\Langue;
+use App\Entity\Participant;
+use App\Entity\Personnage;
+use App\Entity\User;
+use App\Manager\RandomColor;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\StatistiqueController.
- *
- * @author kevin
- */
 class StatistiqueController extends AbstractController
 {
-    // TODO : move to admin dashboard
+    /**
+     * @throws \JsonException
+     */
     #[Route('/statistique', name: 'statistique')]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access the admin dashboard.')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository(\App\Entity\Langue::class);
+        $repo = $entityManager->getRepository(Langue::class);
         $langues = $repo->findAll();
         $stats = [];
         foreach ($langues as $langue) {
@@ -37,7 +44,7 @@ class StatistiqueController extends AbstractController
             ];
         }
 
-        $repo = $entityManager->getRepository(\App\Entity\Classe::class);
+        $repo = $entityManager->getRepository(Classe::class);
         $classes = $repo->findAll();
         $statClasses = [];
         foreach ($classes as $classe) {
@@ -53,23 +60,25 @@ class StatistiqueController extends AbstractController
             ];
         }
 
-        $repo = $entityManager->getRepository(\App\Entity\Construction::class);
-        $constructions = $repo->findAll();
-        $statConstructions = [];
-        foreach ($constructions as $construction) {
-            $colors = RandomColor::many(2, [
-                'luminosity' => ['light', 'bright'],
-                'hue' => 'random',
-            ]);
-            $statConstructions[] = [
-                'value' => $construction->getTerritoires()->count(),
-                'color' => $colors[0],
-                'highlight' => $colors[1],
-                'label' => $construction->getLabel(),
-            ];
-        }
-
-        $repo = $entityManager->getRepository(\App\Entity\Competence::class);
+        /**
+         * TODO:
+         * $repo = $entityManager->getRepository(Construction::class);
+         * $constructions = $repo->findAll();
+         * $statConstructions = [];
+         * foreach ($constructions as $construction) {
+         * $colors = RandomColor::many(2, [
+         * 'luminosity' => ['light', 'bright'],
+         * 'hue' => 'random',
+         * ]);
+         * $statConstructions[] = [
+         * 'value' => $construction->getTerritoires()->count(),
+         * 'color' => $colors[0],
+         * 'highlight' => $colors[1],
+         * 'label' => $construction->getLabel(),
+         * ];
+         * }
+         * */
+        $repo = $entityManager->getRepository(Competence::class);
         $competences = $repo->findAllOrderedByLabel();
         $statCompetences = [];
         $statCompetencesFamily = [];
@@ -87,7 +96,7 @@ class StatistiqueController extends AbstractController
                 'label' => $competence->getCompetenceFamily()->getLabel().' - '.$competence->getLevel()->getLabel(),
             ];
 
-            if ($previousFamily != $competence->getCompetenceFamily()->getLabel()) {
+            if ($previousFamily !== $competence->getCompetenceFamily()->getLabel()) {
                 $statCompetencesFamily[] = [
                     'value' => $valueFamily,
                     'color' => $colors[0],
@@ -101,23 +110,23 @@ class StatistiqueController extends AbstractController
             }
         }
 
-        $repo = $entityManager->getRepository(\App\Entity\Personnage::class);
+        $repo = $entityManager->getRepository(Personnage::class);
         $personnages = $repo->findAll();
 
-        $repo = $entityManager->getRepository(\App\Entity\User::class);
+        $repo = $entityManager->getRepository(User::class);
         $Users = $repo->findAll();
 
-        $repo = $entityManager->getRepository(\App\Entity\Participant::class);
+        $repo = $entityManager->getRepository(Participant::class);
         $participants = $repo->findAll();
 
-        $repo = $entityManager->getRepository(\App\Entity\Groupe::class);
+        $repo = $entityManager->getRepository(Groupe::class);
         $groupes = $repo->findAll();
         $places = 0;
         foreach ($groupes as $groupe) {
             $places += $groupe->getClasseOpen();
         }
 
-        $repo = $entityManager->getRepository(\App\Entity\Genre::class);
+        $repo = $entityManager->getRepository(Genre::class);
         $genres = $repo->findAll();
         $statGenres = [];
         foreach ($genres as $genre) {
@@ -133,13 +142,13 @@ class StatistiqueController extends AbstractController
             ];
         }
 
-        return $this->render('admin/statistique/index.twig', [
-            'langues' => json_encode($stats),
-            'classes' => json_encode($statClasses),
-            'genres' => json_encode($statGenres),
-            'competences' => json_encode($statCompetences),
-            'competencesFamily' => json_encode($statCompetencesFamily),
-            'constructions' => json_encode($statConstructions),
+        return $this->render('statistique/index.twig', [
+            'langues' => json_encode($stats, JSON_THROW_ON_ERROR),
+            'classes' => json_encode($statClasses, JSON_THROW_ON_ERROR),
+            'genres' => json_encode($statGenres, JSON_THROW_ON_ERROR),
+            'competences' => json_encode($statCompetences, JSON_THROW_ON_ERROR),
+            'competencesFamily' => json_encode($statCompetencesFamily, JSON_THROW_ON_ERROR),
+            'constructions' => json_encode($statConstructions, JSON_THROW_ON_ERROR),
             'personnageCount' => count($personnages),
             'UserCount' => count($Users),
             'participantCount' => count($participants),
