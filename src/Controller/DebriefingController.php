@@ -34,7 +34,7 @@ class DebriefingController extends AbstractController
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
-        $form = $this->createForm(new DebriefingFindForm());
+        $form = $this->createForm(DebriefingFindForm::class);
 
         $form->handleRequest($request);
 

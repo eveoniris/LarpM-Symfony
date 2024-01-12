@@ -102,7 +102,7 @@ class GnController extends AbstractController
         $offset = ($page - 1) * $limit;
         $criteria = [];
         $criteria[] = 'gn.id = '.$gn->getId();
-        $form = $this->createForm(new PersonnageFindForm())->getForm();
+        $form = $this->createForm(new PersonnageFindForm());
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
@@ -250,8 +250,8 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu n'ayant pas encore de billets.
      */
-    #[Route('/gn/participants/withoutbillet', name: 'gn.participants.withoutbillet')]
-    public function participantsWithoutBilletAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
+    #[Route('/gn/{id}/participants/withoutbillet', name: 'gn.participants.withoutbillet')]
+    public function participantsWithoutBilletAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
     {
         $participants = $gn->getParticipantsWithoutBillet();
 
@@ -264,8 +264,8 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu ayant un billet mais pas encore de groupe.
      */
-    #[Route('/gn/participants/withoutgroup', name: 'gn.participants.withoutgroup')]
-    public function participantsWithoutGroupAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
+    #[Route('/gn/{id}/participants/withoutgroup', name: 'gn.participants.withoutgroup')]
+    public function participantsWithoutGroupAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
     {
         $participants = $gn->getParticipantsWithoutGroup();
 
@@ -278,8 +278,8 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu ayant un billet mais pas encore de personnage.
      */
-    #[Route('/gn/participants/withoutperso', name: 'gn.participants.withoutperso')]
-    public function participantsWithoutPersoAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
+    #[Route('/gn/{id}/participants/withoutperso', name: 'gn.participants.withoutperso')]
+    public function participantsWithoutPersoAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
     {
         $participants = $gn->getParticipantsWithoutPerso();
 
@@ -292,8 +292,8 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu ayant un billet mais pas encore de groupe au format CSV.
      */
-    #[Route('/gn/participants/withoutgroup/csv', name: 'gn.participants.withoutgroup.csv')]
-    public function participantsWithoutGroupCSVAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn): void
+    #[Route('/gn/{id}/participants/withoutgroup/csv', name: 'gn.participants.withoutgroup.csv')]
+    public function participantsWithoutGroupCSVAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn): void
     {
         $participants = $gn->getParticipantsWithoutGroup();
         header('Content-Type: text/csv');
@@ -326,8 +326,8 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu n'ayant pas encore de billets au format CSV.
      */
-    #[Route('/gn/participants/withoutbillet/csv', name: 'gn.participants.withoutbillet.csv')]
-    public function participantsWithoutBilletCSVAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn): void
+    #[Route('/gn/{id}/participants/withoutbillet/csv', name: 'gn.participants.withoutbillet.csv')]
+    public function participantsWithoutBilletCSVAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn): void
     {
         $participants = $gn->getParticipantsWithoutBillet();
         header('Content-Type: text/csv');
@@ -360,7 +360,7 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu n'ayant pas encore de personnage au format CSV.
      */
-    #[Route('/gn/participants/withoutperso/csv', name: 'gn.participants.withoutperso.csv')]
+    #[Route('/gn/{id}/participants/withoutperso/csv', name: 'gn.participants.withoutperso.csv')]
     public function participantsWithoutPersoCSVAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn): void
     {
         $participants = $gn->getParticipantsWithoutPerso();
@@ -398,8 +398,8 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu.
      */
-    #[Route('/gn/participants', name: 'gn.participants')]
-    public function participantsAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
+    #[Route('/gn/{id}/participants', name: 'gn.participants')]
+    public function participantsAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
     {
         $order_by = $request->get('order_by') ?: 'ec.nom';
         $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -430,7 +430,7 @@ class GnController extends AbstractController
             ->setMaxResults($limit)
             ->setFirstResult($offset);
 
-        $form = $this->createForm(new ParticipantFindForm())->getForm();
+        $form = $this->createForm(new ParticipantFindForm());
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -469,8 +469,8 @@ class GnController extends AbstractController
     /**
      * Génére le fichier à envoyer à la FédéGN.
      */
-    #[Route('/gn/fedegn', name: 'gn.fedegn')]
-    public function fedegnAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn): void
+    #[Route('/gn/{id}/fedegn', name: 'gn.fedegn')]
+    public function fedegnAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn): void
     {
         $participants = $gn->getParticipantsFedeGn();
         header('Content-Type: text/csv');
@@ -523,8 +523,8 @@ class GnController extends AbstractController
         exit;
     }
 
-    #[Route('/gn/delete/{id}', name: 'gn.delete')]
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
+    #[Route('/gn/{id}/delete', name: 'gn.delete')]
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
     {
         $form = $this->createForm(GnDeleteForm::class, $gn)
             ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [

@@ -594,7 +594,7 @@ class GroupeController extends AbstractController
                     return $qb;
                 },
             ])
-            ->add('add', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter le territoire'])->getForm();
+            ->add('add', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter le territoire']);
 
         $form->handleRequest($request);
 
@@ -639,7 +639,7 @@ class GroupeController extends AbstractController
                     return $qb;
                 },
             ])
-            ->add('add', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter le territoire'])->getForm();
+            ->add('add', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter le territoire']);
 
         $form->handleRequest($request);
 
@@ -672,7 +672,7 @@ class GroupeController extends AbstractController
         $territoire = $request->get('territoire');
 
         $form = $this->createForm()
-            ->add('remove', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Retirer le territoire'])->getForm();
+            ->add('remove', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Retirer le territoire']);
 
         $form->handleRequest($request);
 
@@ -726,7 +726,7 @@ class GroupeController extends AbstractController
             ]);
         }
 
-        $form = $formBuilder->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer'])->getForm();
+        $form = $formBuilder->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -915,7 +915,7 @@ class GroupeController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $this->createForm(new GroupFindForm())->getForm();
+        $form = $this->createForm(GroupFindForm::class);
 
         $form->handleRequest($request);
 

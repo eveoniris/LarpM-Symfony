@@ -160,7 +160,7 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/materielUpdate/{id}', name: 'groupeSecondaire.materielUpdate')]
     public function materielUpdateAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
-        $form = $this->createForm(GroupeSecondaireMaterielForm::class, $groupeSecondaire)->getForm();
+        $form = $this->createForm(GroupeSecondaireMaterielForm::class, $groupeSecondaire);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -298,7 +298,7 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/addMember/{id}', name: 'groupeSecondaire.addMember')]
     public function adminNewMembreAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
-        $form = $this->createForm(new GroupeSecondaireNewMembreForm())->getForm();
+        $form = $this->createForm(GroupeSecondaireNewMembreForm::class);
 
         $form->handleRequest($request);
 

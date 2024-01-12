@@ -51,7 +51,7 @@ class StockObjetController extends AbstractController
         $page = (int) $request->get('page', 1);
         $offset = ($page - 1) * $limit;
 
-        $form = $this->createForm(new ObjetFindForm())->getForm();
+        $form = $this->createForm(ObjetFindForm::class);
 
         $form->handleRequest($request);
 
@@ -339,7 +339,7 @@ class StockObjetController extends AbstractController
      */
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
     {
-        $form = $this->createForm(ObjetDeleteForm::class, $objet)->getForm();
+        $form = $this->createForm(ObjetDeleteForm::class, $objet);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -361,7 +361,7 @@ class StockObjetController extends AbstractController
      */
     public function tagAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
     {
-        $form = $this->createForm(ObjetTagForm::class, $objet)->getForm();
+        $form = $this->createForm(ObjetTagForm::class, $objet);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

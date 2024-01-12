@@ -142,7 +142,7 @@ class ObjetController extends AbstractController
         $item = new Item();
         $item->setObjet($objet);
 
-        $form = $this->createForm(ItemForm::class, $item)->getForm();
+        $form = $this->createForm(ItemForm::class, $item);
 
         $form->handleRequest($request);
 
@@ -210,7 +210,7 @@ class ObjetController extends AbstractController
     #[Route('/item/{id}/update', name: 'item.update')]
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Item $item)
     {
-        $form = $this->createForm(ItemForm::class, $item)->getForm();
+        $form = $this->createForm(ItemForm::class, $item);
 
         $form->handleRequest($request);
 
@@ -251,7 +251,7 @@ class ObjetController extends AbstractController
      */
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Item $item)
     {
-        $form = $this->createForm(ItemDeleteForm::class, $item)->getForm();
+        $form = $this->createForm(ItemDeleteForm::class, $item);
 
         $form->handleRequest($request);
 
@@ -275,7 +275,7 @@ class ObjetController extends AbstractController
      */
     public function linkAction(Request $request,  EntityManagerInterface $entityManager, Item $item)
     {
-        $form = $this->createForm(ItemLinkForm::class, $item)->getForm();
+        $form = $this->createForm(ItemLinkForm::class, $item);
 
         $form->handleRequest($request);
 

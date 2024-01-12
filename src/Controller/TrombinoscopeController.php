@@ -22,7 +22,7 @@ class TrombinoscopeController extends AbstractController
         $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
         $gn = $gnRepo->findNext();
 
-        $form = $this->createForm(new TrombinoscopeForm())->getForm();
+        $form = $this->createForm(new TrombinoscopeForm());
 
         $form->handleRequest($request);
 

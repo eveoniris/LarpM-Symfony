@@ -68,7 +68,7 @@ class InstallController extends AbstractController
     public function createUserAction(Request $request,  EntityManagerInterface $entityManager)
     {
         // preparation du formulaire
-        $form = $this->createForm(new \LarpManager\Form\InstallUserAdminForm())
+        $form = $this->createForm(InstallUserAdminForm::class)
             ->add('create', 'submit');
 
         $form->handleRequest($request);
