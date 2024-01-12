@@ -2346,7 +2346,7 @@ class ParticipantController extends AbstractController
          *
          * @var unknown $form
          */
-        $form = $this->createForm(new GroupeSecondairePostulerForm())
+        $form = $this->createForm(GroupeSecondairePostulerForm::class)
             ->add('postuler', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Postuler']);
 
         $form->handleRequest($request);

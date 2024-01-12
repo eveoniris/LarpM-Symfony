@@ -32,7 +32,7 @@ class LigneeController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $this->createForm(new LigneeFindForm())->getForm();
+        $form = $this->createForm(LigneeFindForm::class);
 
         $form->handleRequest($request);
 
@@ -178,7 +178,7 @@ class LigneeController extends AbstractController
         $id = $request->get('lignee');
         $lignee = $entityManager->find(Lignee::class, $id);
 
-        $form = $this->createForm(new LigneeAddMembreForm())->getForm();
+        $form = $this->createForm(LigneeAddMembreForm::class);
 
         $form->handleRequest($request);
 

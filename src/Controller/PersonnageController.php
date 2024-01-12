@@ -952,7 +952,7 @@ class PersonnageController extends AbstractController
     #[Route('/personnage/updateRenomme/{id}', name: 'personnage.admin.update.renomme')]
     public function adminUpdateRenommeAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
-        $form = $this->createForm(new PersonnageUpdateRenommeForm())
+        $form = $this->createForm(PersonnageUpdateRenommeForm::class)
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
@@ -988,7 +988,7 @@ class PersonnageController extends AbstractController
     #[Route('/personnage/updateHeroisme/{id}', name: 'personnage.admin.update.heroisme')]
     public function adminUpdateHeroismeAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
-        $form = $this->createForm(new PersonnageUpdateHeroismeForm())
+        $form = $this->createForm(PersonnageUpdateHeroismeForm::class)
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
@@ -1024,7 +1024,7 @@ class PersonnageController extends AbstractController
     #[Route('/personnage/updatePugilat/{id}', name: 'personnage.admin.update.pugilat')]
     public function adminUpdatePugilatAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
-        $form = $this->createForm(new PersonnageUpdatePugilatForm())
+        $form = $this->createForm(PersonnageUpdatePugilatForm::class)
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
@@ -1337,7 +1337,7 @@ class PersonnageController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $this->createForm(new PriereFindForm())->getForm();
+        $form = $this->createForm(PriereFindForm::class);
 
         $form->handleRequest($request);
 
@@ -1502,7 +1502,7 @@ class PersonnageController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $this->createForm(new SortFindForm())->getForm();
+        $form = $this->createForm(SortFindForm::class);
 
         $form->handleRequest($request);
 
@@ -1605,7 +1605,7 @@ class PersonnageController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $this->createForm(new PotionFindForm())->getForm();
+        $form = $this->createForm(PotionFindForm::class);
 
         $form->handleRequest($request);
 
@@ -1707,7 +1707,7 @@ class PersonnageController extends AbstractController
             $originalPersonnageIngredients->add($personnageIngredient);
         }
 
-        $form = $this->createForm(PersonnageIngredientForm::class, $personnage)->getForm();
+        $form = $this->createForm(PersonnageIngredientForm::class, $personnage);
 
         $form->handleRequest($request);
 
@@ -1778,7 +1778,7 @@ class PersonnageController extends AbstractController
             $originalPersonnageRessources->add($personnageRessource);
         }
 
-        $form = $this->createForm(PersonnageRessourceForm::class, $personnage)->getForm();
+        $form = $this->createForm(PersonnageRessourceForm::class, $personnage);
 
         $form->handleRequest($request);
 
@@ -1859,7 +1859,7 @@ class PersonnageController extends AbstractController
     #[Route('/personnage/updateRichesse/{id}', name: 'personnage.admin.update.richesse')]
     public function adminUpdateRichesseAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
-        $form = $this->createForm(PersonnageRichesseForm::class, $personnage)->getForm();
+        $form = $this->createForm(PersonnageRichesseForm::class, $personnage);
 
         $form->handleRequest($request);
 

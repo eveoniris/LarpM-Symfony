@@ -33,8 +33,8 @@ class DocumentController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $this->createForm(new DocumentFindForm())->getForm();
-
+        $form = $this->createForm(DocumentFindForm::class);
+        
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

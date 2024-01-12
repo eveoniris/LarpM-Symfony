@@ -32,7 +32,7 @@ class LoiController extends AbstractController
      */
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(LoiForm::class, new Loi())->getForm();
+        $form = $this->createForm(LoiForm::class, new Loi());
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

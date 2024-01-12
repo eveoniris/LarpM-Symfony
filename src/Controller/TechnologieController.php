@@ -34,7 +34,7 @@ class TechnologieController extends AbstractController
      */
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(TechnologieForm::class, new Technologie())->getForm();
+        $form = $this->createForm(TechnologieForm::class, new Technologie());
 
         $form->handleRequest($request);
 
@@ -199,7 +199,7 @@ class TechnologieController extends AbstractController
         $technologie = $entityManager->find(Technologie::class, $technologieId);
         $technologieNom = $technologie->getLabel();
 
-        $form = $this->createForm(new TechnologiesRessourcesForm())->getForm();
+        $form = $this->createForm(new TechnologiesRessourcesForm());
 
         $form->handleRequest($request);
 

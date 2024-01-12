@@ -102,7 +102,7 @@ class TerritoireController extends AbstractController
                 'method' => 'get',
                 'csrf_protection' => false,
             ]
-        )->getForm();
+        );
 
         $form->handleRequest($request);
 

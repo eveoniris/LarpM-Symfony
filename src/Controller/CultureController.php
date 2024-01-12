@@ -32,7 +32,7 @@ class CultureController extends AbstractController
      */
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(CultureForm::class, new Culture())->getForm();
+        $form = $this->createForm(CultureForm::class, new Culture());
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

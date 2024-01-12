@@ -101,7 +101,7 @@ class LangueController extends AbstractController
             ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
             ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer', 'disabled' => !$canBeDeleted, 'attr' => ['title' => $deleteTooltip]]);
 
-        $form = $formBuilder->getForm();
+        $form = $formBuilder;
 
         $form->handleRequest($request);
 
@@ -246,7 +246,7 @@ class LangueController extends AbstractController
             ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
             ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer', 'disabled' => !$canBeDeleted, 'attr' => ['title' => $deleteTooltip]]);
 
-        $form = $formBuilder->getForm();
+        $form = $formBuilder;
 
         $form->handleRequest($request);
 
