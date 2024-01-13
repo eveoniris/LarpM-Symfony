@@ -399,38 +399,25 @@ class GnController extends AbstractController
      * Liste des participants à un jeu.
      */
     #[Route('/gn/{id}/participants', name: 'gn.participants')]
-    public function participantsAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
+    public function participantsAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn, GnRepository $gnRepository)
     {
-        $order_by = $request->get('order_by') ?: 'ec.nom';
-        $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
-        $offset = ($page - 1) * $limit;
+        $orderBy = $this->getRequestOrder(
+            alias: 'p',
+            allowedFields: $gnRepository->getFieldNames()
+        );
 
-        // nombre de participant au total
-        $qbTotal = $entityManager->createQueryBuilder();
-        $qbTotal->select('COUNT(p.id)')
+        $qb = $entityManager->createQueryBuilder('p')
+            ->select('p')
             ->from('\\'.\App\Entity\Participant::class, 'p')
             ->join('p.gn', 'gn')
-            ->join('p.User', 'u')
-            ->join('u.etatCivil', 'ec')
-            ->where('gn.id = :gnId')
-            ->setParameter('gnId', $gn->getId());
-
-        // liste des participants à afficher
-        $qb = $entityManager->createQueryBuilder();
-        $qb->select('p')
-            ->from('\\'.\App\Entity\Participant::class, 'p')
-            ->join('p.gn', 'gn')
-            ->join('p.User', 'u')
+            ->join('p.user', 'u')
             ->join('u.etatCivil', 'ec')
             ->where('gn.id = :gnId')
             ->setParameter('gnId', $gn->getId())
-            ->orderBy($order_by, $order_dir)
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
-
-        $form = $this->createForm(new ParticipantFindForm());
+            ->orderBy(key($orderBy), current($orderBy))
+        ;
+        
+        $form = $this->createForm(ParticipantFindForm::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -439,28 +426,21 @@ class GnController extends AbstractController
             switch ($data['type']) {
                 case 'nom':
                     $qb->andWhere('ec.nom LIKE :value');
-                    $qbTotal->andWhere('ec.nom LIKE :value');
                     break;
                 case 'email':
                     $qb->andWhere('u.email LIKE :value');
-                    $qbTotal->andWhere('u.email LIKE :value');
                     break;
             }
 
             $qb->setParameter('value', '%'.$data['value'].'%');
-            $qbTotal->setParameter('value', '%'.$data['value'].'%');
         }
 
-        $participants = $qb->getQuery()->getResult();
-        $count = $qbTotal->getQuery()->getSingleScalarResult();
-
-        $paginator = new Paginator($count, $limit, $page, $app['url_generator']->generate('gn.participants', [
-                'gn' => $gn->getId(),
-            ]).'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir);
+        $paginator = $gnRepository->findPaginatedQuery(
+            $qb->getQuery(), $this->getRequestLimit(), $this->getRequestPage()
+        );
 
         return $this->render('gn/participants.twig', [
             'gn' => $gn,
-            'participants' => $participants,
             'paginator' => $paginator,
             'form' => $form->createView(),
         ]);
