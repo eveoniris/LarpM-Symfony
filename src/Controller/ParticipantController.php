@@ -23,6 +23,7 @@ use App\Entity\User;
 use App\Form\Groupe\GroupeInscriptionForm;
 use App\Form\Groupe\GroupeSecondairePostulerForm;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Form\AcceptAllianceForm;
 use App\Form\AcceptPeaceForm;
 use App\Form\BreakAllianceForm;
@@ -48,6 +49,7 @@ use App\Form\RefusePeaceForm;
 use App\Form\RequestAllianceForm;
 use App\Form\RequestPeaceForm;
 use App\Form\TrombineForm;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\Response;
@@ -147,7 +149,8 @@ class ParticipantController extends AbstractController
     /**
      * Affecte un participant à un groupe.
      */
-    public function groupeAction( EntityManagerInterface $entityManager, Request $request, Participant $participant)
+    #[Route('/participant/{id}/groupe', name: 'participant.groupe')]
+    public function groupeAction( EntityManagerInterface $entityManager, Request $request, #[MapEntity] Participant $participant)
     {
         // il faut un billet pour rejoindre un groupe
         /* Commenté parce que ça gène la manière de faire d'Edaelle.
@@ -181,7 +184,8 @@ class ParticipantController extends AbstractController
     /**
      * Retire la participation de l'utilisateur à un jeu.
      */
-    public function removeAction( EntityManagerInterface $entityManager, Request $request, Participant $participant)
+    #[Route('/participant/{id}/remove', name: 'participant.remove')]
+    public function removeAction( EntityManagerInterface $entityManager, Request $request, #[MapEntity] Participant $participant)
     {
         $form = $this->createForm(ParticipantRemoveForm::class, $participant, ['gnId' => $participant->getGn()->getId()])
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Oui, retirer la participation de cet utilisateur']);
@@ -232,7 +236,8 @@ class ParticipantController extends AbstractController
     /**
      * Ajout d'un billet à un utilisateur. L'utilisateur doit participer au même jeu que celui du billet qui lui est affecté.
      */
-    public function billetAction( EntityManagerInterface $entityManager, Request $request, Participant $participant)
+    #[Route('/participant/{id}/billet', name: 'participant.billet')]
+    public function billetAction( EntityManagerInterface $entityManager, Request $request, #[MapEntity] Participant $participant)
     {
         $form = $this->createForm(ParticipantBilletForm::class, $participant)
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
@@ -261,7 +266,8 @@ class ParticipantController extends AbstractController
     /**
      * Choix du lieu de restauration d'un utilisateur.
      */
-    public function restaurationAction( EntityManagerInterface $entityManager, Request $request, Participant $participant)
+    #[Route('/participant/{id}/restauration', name: 'participant.restauration')]
+    public function restaurationAction( EntityManagerInterface $entityManager, Request $request, #[MapEntity] Participant $participant)
     {
         $originalParticipantHasRestaurations = new ArrayCollection();
 
