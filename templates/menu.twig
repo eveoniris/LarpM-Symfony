@@ -1,213 +1,250 @@
-<nav class="navbar-main">
-    <div class="hamburger-menu">
-        <div class="navbar-header-larp">
-            <a class="navbar-larp" href="{{ path('homepage') }}">LarpManager</a>
-        </div>
-        <input id="menu__toggle" type="checkbox" checked="checked"/>
-        <label class="menu__btn" for="menu__toggle">
-            <span></span>
-        </label>
-
-        <div class="menu__box">
-            <div class="container-fluid">
-
-                <div>
-                    <ul class="nav">
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" type="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                {% if app.user %}Bienvenue {{ app.user.name }}{% else %}Connectez-vous !{% endif %}
-                                <span
-                                        class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                {% if app.user %}
-                                    <li><a href="{{ path('user.self') }}">Mon compte</a></li>
-                                    <li><a href="{{ path('messagerie') }}">Ma messagerie</a></li>
-                                    <li><a href="{{ path('forum') }}">Forum</a></li>
-                                    <li><a href="{{ path('app_logout') }}">Déconnection</a></li>
-                                {% else %}
-                                    <li><a href="{{ path('app_login') }}">Connection</a></li>
-                                    <li><a href="{{ path('user.register') }}">S'enregistrer</a></li>
-                                    <li><a href="{{ path('user.forgot-password') }}">Mot de passe oublié ?</a></li>
-                                {% endif %}
-                            </ul>
-                        </li>
-
-                        {# Menus reservé aux admins #}
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" type="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                Admin<span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a href="{{ path('gn.list') }}">Grandeurs natures</a></li>
-                                {% if is_granted('ROLE_ADMIN', app.user) %}
-                                    <li><a href="{{ path('billet.list') }}">Billets</a></li>
-                                    <li><a href="{{ path('user.admin.list') }}">Utilisateurs</a></li>
-                                    <li><a href="{{ path('restriction.list') }}">Restrictions alimentaires</a></li>
-                                    <li><a href="{{ path('restauration.list') }}">Lieux de restauration</a></li>
-                                    <li><a href="{{ path('right.admin.list') }}">Liste des droits</a></li>
-                                    <li><a href="{{ path('statistique') }}">Statistiques</a></li>
-                                    <li><a href="{{ path('admin') }}">Administration</a></li>
-                                    <li><a href="{{ path('admin.rappels') }}">Rappels</a></li>
-                                    <li><a href="{{ path('question') }}">Questions</a></li>
-                                {% endif %}
-                                {% if is_granted('ROLE_REDACTEUR', app.user) %}
-                                    <li><a href="{{ path('annonce.list') }}">Annonces</a></li>{% endif %}
-                            </ul>
-                        </li>
-
-
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" type="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                Univers<span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                {% if is_granted('ROLE_CARTOGRAPHE', app.user) %}
-                                    <li><a href="{{ path('territoire.list') }}">Territoires</a>
-                                    </li>{% endif %}
-                                {% if is_granted('ROLE_CARTOGRAPHE', app.user) %}
-                                    <li><a href="{{ path('territoire.fief') }}">Fiefs</a></li>{% endif %}
-                                <li><a href="{{ path('religion.index') }}">Religions</a></li>
-                                {% if is_granted('ROLE_CARTOGRAPHE', app.user) %}
-                                    <li><a href="{{ path('culture.index') }}">Cultures</a></li>{% endif %}
-                                <li><a href="{{ path('world') }}">Carte</a></li>
-                            </ul>
-                        </li>
-
-                        {# Menus reservé aux scénaristes #}
-                        {% if is_granted('ROLE_SCENARISTE', app.user) %}
-                            <li class="dropdown">
-                                <a class="dropdown-toggle" type="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                    Scénario<span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{{ path('groupe.list') }}">Liste des groupes</a></li>
-                                    <li><a href="{{ path('groupeSecondaire.list') }}">Liste des groupes
-                                            secondaires</a>
-                                    </li>
-                                    <li><a href="{{ path('personnage.admin.list') }}">Liste des personnages</a></li>
-                                    <li><a href="{{ path('intrigue.list') }}">Intrigues</a></li>
-                                    <li><a href="{{ path('background.list') }}">Backgrounds</a></li>
-                                    <li><a href="{{ path('debriefing.list') }}">Debriefings</a></li>
-                                    <li><a href="{{ path('rumeur.list') }}">Rumeurs</a></li>
-                                    <li><a href="{{ path('chronologie.index') }}">Chronologie</a></li>
-                                    <li><a href="{{ path('lieu.index') }}">Lieux</a></li>
-                                    <li><a href="{{ path('document.index') }}">Documents</a></li>
-                                    <li><a href="{{ path('objet.index') }}">Objets</a></li>
-                                    <li><a href="{{ path('lignee.list') }}">Lignées</a></li>
-                                </ul>
+<nav class="navbar navbar-expand-lg bg-dark-subtle">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ path('homepage') }}">LarpManager</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" aria-current="page" href="#" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if app.user %}Bienvenue {{ app.user.name }}{% else %}Connectez-vous !{% endif %}
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% if app.user %}
+                            <li><a class="dropdown-item" href="{{ path('user.self') }}">Mon compte</a></li>
+                            <li><a class="dropdown-item" href="{{ path('messagerie') }}">Ma messagerie</a></li>
+                            <li><a class="dropdown-item" href="{{ path('forum') }}">Forum</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
                             </li>
-                        {% endif %}
-                        {# Menus reservé aux scénaristes #}
-                        {% if is_granted('ROLE_SCENARISTE', app.user) %}
-                            <li class="dropdown">
-                                <a class="dropdown-toggle" type="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                    Jeu<span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{{ path('loi.index') }}">Lois</a></li>
-                                    <li><a href="{{ path('economie.index') }}">Economie</a></li>
-                                    <li><a href="{{ path('strategie.index') }}">Stratégie</a></li>
-                                    <li><a href="{{ path('groupe.diplomatie') }}">Diplomatie</a></li>
-                                    <li><a href="{{ path('groupe.quetes') }}">Quêtes commerciales</a></li>
-                                    <li><a href="{{ path('trombinoscope.index') }}">Trombinoscope</a></li>
-                                    <li><a href="{{ path('appelation.index') }}">Appelations</a></li>
-                                    <li><a href="{{ path('titre.list') }}">Titres</a></li>
-                                    <li><a href="{{ path('langue.index') }}">Langues</a></li>
-                                    <li><a href="{{ path('ressource.index') }}">Ressources</a></li>
-                                    <li><a href="{{ path('ingredient.list') }}">Ingredients</a></li>
-                                    <li><a href="{{ path('religion.level') }}">Fanatisme</a></li>
-                                    <li><a href="{{ path('monnaie.list') }}">Monnaie</a></li>
-                                    <li><a href="{{ path('quality.list') }}">Qualité</a></li>
-                                </ul>
+                            <li><a class="dropdown-item" href="{{ path('app_logout') }}">Déconnection</a></li>
+                        {% else %}
+                            <li><a class="dropdown-item" href="{{ path('app_login') }}">Connection</a></li>
+                            <li><a class="dropdown-item" href="{{ path('user.register') }}">S'enregistrer</a>
                             </li>
+                            <li><a class="dropdown-item" href="{{ path('user.forgot-password') }}">Mot de passe
+                                    oublié ?</a></li>
                         {% endif %}
+                    </ul>
+                </li>
 
-                        {# Menus reservé aux règles #}
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" type="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                Règles<span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a href="{{ path('rules.list') }}">Règles</a></li>
-                                <li><a href="{{ path('competence.list') }}">Compétences</a></li>
-                                <li><a href="{{ path('classe.index') }}">Classes</a></li>
+                {# Menus reservé aux admins #}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        Admin
+                    </a>
+                    <ul class="dropdown-menu">
 
-                                {% if is_granted('ROLE_REGLE', app.user) %}
-                                    <hr/>
-                                    <li><a href="{{ path('competenceFamily.index') }}">Famille de compétences</a></li>
-                                    <li><a href="{{ path('attributeType.index') }}">Attributs de compétences</a></li>
-                                    <li><a href="{{ path('level.index') }}">Niveaux</a></li>
-                                    <li><a href="{{ path('age.index') }}">Ages</a></li>
-                                    <li><a href="{{ path('genre.index') }}">Genres</a></li>
-                                    <li><a href="{{ path('token.list') }}">Jetons</a></li>
-                                    <li><a href="{{ path('construction.index') }}">Constructions</a></li>
-                                    <li><a href="{{ path('technologie.index') }}">Technologies</a></li>
-                                    <li><a href="{{ path('magieDomaine.list') }}">Domaine de magie</a></li>
-                                    <li><a href="{{ path('magieSort.list') }}">Sorts</a></li>
-                                    <li><a href="{{ path('magiePotion.list') }}">Potions</a></li>
-                                    <li><a href="{{ path('magieSphere.list') }}">Sphères</a></li>
-                                    <li><a href="{{ path('magiePriere.list') }}">Prières</a></li>
-                                    <li><a href="{{ path('connaissance.list') }}">Connaissances</a></li>
-                                    <li><a href="{{ path('personnageSecondaire.index') }}">Personnage secondaire</a>
-                                    </li>
-                                {% endif %}
-                            </ul>
-                        </li>
-
-                        {# Menus reservé au stock #}
-                        {% if is_granted('ROLE_STOCK', app.user) %}
-                            <li class="dropdown">
-                                <a class="dropdown-toggle" type="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                    Stock<span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{{ path('stock.index') }}">Tableau de bord</a></li>
-                                    <li><a href="{{ path('stockEtat.index') }}">Etats</a></li>
-                                    <li><a href="{{ path('stockTag.index') }}">Tags</a></li>
-                                    <li><a href="{{ path('stockLocalisation.index') }}">Localisations</a></li>
-                                    <li><a href="{{ path('stockRangement.index') }}">Rangements</a></li>
-                                    <li><a href="{{ path('stockProprietaire.index') }}">Proprietaires</a></li>
-                                    <li><a href="{{ path('stockObjet.index') }}">Objets</a></li>
-                                    <li><a href="{{ path('stockObjet.export') }}">Exporter</a></li>
-                                </ul>
+                        <li><a class="dropdown-item" href="{{ path('gn.list') }}">Grandeurs natures</a></li>
+                        {% if is_granted('ROLE_ADMIN', app.user) %}
+                            <li><a class="dropdown-item" href="{{ path('billet.list') }}">Billets</a></li>
+                            <li><a class="dropdown-item" href="{{ path('user.admin.list') }}">Utilisateurs</a>
                             </li>
+                            <li><a class="dropdown-item" href="{{ path('restriction.list') }}">Restrictions
+                                    alimentaires</a></li>
+                            <li><a class="dropdown-item" href="{{ path('restauration.list') }}">Lieux de
+                                    restauration</a></li>
+                            <li><a class="dropdown-item" href="{{ path('right.admin.list') }}">Liste des
+                                    droits</a></li>
+                            <li><a class="dropdown-item" href="{{ path('statistique') }}">Statistiques</a></li>
+                            <li><a class="dropdown-item" href="{{ path('admin') }}">Administration</a></li>
+                            <li><a class="dropdown-item" href="{{ path('admin.rappels') }}">Rappels</a></li>
+                            <li><a class="dropdown-item" href="{{ path('question') }}">Questions</a></li>
                         {% endif %}
-
-                        {% if is_granted('ADMIN_USER', app.user) %}
-                            <li class="dropdown">
-                                <a class="dropdown-toggle" type="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                    Larp
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{{ path('install') }}">Tableau de bord</a></li>
-                                </ul>
+                        {% if is_granted('ROLE_REDACTEUR', app.user) %}
+                            <li>
+                                <hr class="dropdown-divider">
                             </li>
-                        {% endif %}
-
-                        {% block module_menu %}
-                            {% include 'module/menu.twig' %}
-                        {% endblock module_menu %}
+                            <li><a class="dropdown-item" href="{{ path('annonce.list') }}">Annonces</a>
+                            </li>{% endif %}
 
                     </ul>
-                </div>
-            </div>
+                </li>
+
+                {# Menus reservé à la cohérence monde et univers #}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        Univers
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% if is_granted('ROLE_CARTOGRAPHE', app.user) %}
+                            <li><a class="dropdown-item" href="{{ path('territoire.list') }}">Territoires</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('territoire.fief') }}">Fiefs</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('culture.index') }}">Cultures</a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                        {% endif %}
+                        <li><a class="dropdown-item" href="{{ path('religion.index') }}">Religions</a></li>
+                        <li><a class="dropdown-item" href="{{ path('world') }}">Carte</a></li>
+                    </ul>
+                </li>
+
+                {# Menus reservé aux scénaristes #}
+                {% if is_granted('ROLE_SCENARISTE', app.user) %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Scénario
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ path('groupe.list') }}">Liste des groupes</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('groupeSecondaire.list') }}">Liste des
+                                    groupes
+                                    secondaires</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('personnage.admin.list') }}">Liste des
+                                    personnages</a></li>
+                            <li><a class="dropdown-item" href="{{ path('intrigue.list') }}">Intrigues</a></li>
+                            <li><a class="dropdown-item" href="{{ path('background.list') }}">Backgrounds</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('debriefing.list') }}">Debriefings</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('rumeur.list') }}">Rumeurs</a></li>
+                            <li><a class="dropdown-item" href="{{ path('chronologie.index') }}">Chronologie</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('lieu.index') }}">Lieux</a></li>
+                            <li><a class="dropdown-item" href="{{ path('document.index') }}">Documents</a></li>
+                            <li><a class="dropdown-item" href="{{ path('objet.index') }}">Objets</a></li>
+                            <li><a class="dropdown-item" href="{{ path('lignee.list') }}">Lignées</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {# Menus reservé aux scénaristes #}
+                {% if is_granted('ROLE_SCENARISTE', app.user) %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Jeu
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ path('loi.index') }}">Lois</a></li>
+                            <li><a class="dropdown-item" href="{{ path('economie.index') }}">Economie</a></li>
+                            <li><a class="dropdown-item" href="{{ path('strategie.index') }}">Stratégie</a></li>
+                            <li><a class="dropdown-item" href="{{ path('groupe.diplomatie') }}">Diplomatie</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('groupe.quetes') }}">Quêtes
+                                    commerciales</a></li>
+                            <li><a class="dropdown-item"
+                                   href="{{ path('trombinoscope.index') }}">Trombinoscope</a></li>
+                            <li><a class="dropdown-item" href="{{ path('appelation.index') }}">Appelations</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('titre.list') }}">Titres</a></li>
+                            <li><a class="dropdown-item" href="{{ path('langue.index') }}">Langues</a></li>
+                            <li><a class="dropdown-item" href="{{ path('ressource.index') }}">Ressources</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('ingredient.list') }}">Ingredients</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('religion.level') }}">Fanatisme</a></li>
+                            <li><a class="dropdown-item" href="{{ path('monnaie.list') }}">Monnaie</a></li>
+                            <li><a class="dropdown-item" href="{{ path('quality.list') }}">Qualité</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {# Menus reservé aux règles #}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        Règles
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ path('rules.list') }}">Règles</a></li>
+                        <li><a class="dropdown-item" href="{{ path('competence.list') }}">Compétences</a></li>
+                        <li><a class="dropdown-item" href="{{ path('classe.index') }}">Classes</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        {% if is_granted('ROLE_REGLE', app.user) %}
+                            <li><a class="dropdown-item" href="{{ path('competenceFamily.index') }}">Famille de
+                                    compétences</a></li>
+                            <li><a class="dropdown-item" href="{{ path('attributeType.index') }}">Attributs de
+                                    compétences</a></li>
+                            <li><a class="dropdown-item" href="{{ path('level.index') }}">Niveaux</a></li>
+                            <li><a class="dropdown-item" href="{{ path('age.index') }}">Ages</a></li>
+                            <li><a class="dropdown-item" href="{{ path('genre.index') }}">Genres</a></li>
+                            <li><a class="dropdown-item" href="{{ path('token.list') }}">Jetons</a></li>
+                            <li><a class="dropdown-item"
+                                   href="{{ path('construction.index') }}">Constructions</a></li>
+                            <li><a class="dropdown-item" href="{{ path('technologie.index') }}">Technologies</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('magieDomaine.list') }}">Domaine de
+                                    magie</a></li>
+                            <li><a class="dropdown-item" href="{{ path('magieSort.list') }}">Sorts</a></li>
+                            <li><a class="dropdown-item" href="{{ path('magiePotion.list') }}">Potions</a></li>
+                            <li><a class="dropdown-item" href="{{ path('magieSphere.list') }}">Sphères</a></li>
+                            <li><a class="dropdown-item" href="{{ path('magiePriere.list') }}">Prières</a></li>
+                            <li><a class="dropdown-item"
+                                   href="{{ path('connaissance.list') }}">Connaissances</a></li>
+                            <li><a class="dropdown-item" href="{{ path('personnageSecondaire.index') }}">Personnage
+                                    secondaire</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                {# Menus reservé au stock #}
+                {% if is_granted('ROLE_STOCK', app.user) %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Stock
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ path('stock.index') }}">Tableau de bord</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('stockEtat.index') }}">Etats</a></li>
+                            <li><a class="dropdown-item" href="{{ path('stockTag.index') }}">Tags</a></li>
+                            <li><a class="dropdown-item" href="{{ path('stockLocalisation.index') }}">Localisations</a>
+                            </li>
+                            <li><a class="dropdown-item"
+                                   href="{{ path('stockRangement.index') }}">Rangements</a></li>
+                            <li><a class="dropdown-item" href="{{ path('stockProprietaire.index') }}">Proprietaires</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('stockObjet.index') }}">Objets</a></li>
+                            <li><a class="dropdown-item" href="{{ path('stockObjet.export') }}">Exporter</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                {% endif %}
+
+                {% if is_granted('ADMIN_USER', app.user) %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Larp
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ path('install') }}">Tableau de bord</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                {% endif %}
+
+                {% block module_menu %}
+                    {% include 'module/menu.twig' %}
+                {% endblock module_menu %}
+
+            </ul>
+            <!-- form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Rechercher" aria-label="Rechercher">
+                <button type="submit" class="btn btn-outline-secondary" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
+            </form -->
         </div>
     </div>
 </nav>
