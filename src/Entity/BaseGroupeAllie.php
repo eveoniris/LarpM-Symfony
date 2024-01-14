@@ -92,7 +92,7 @@ abstract class BaseGroupeAllie
     /**
      * Get the value of groupe_allie_accepted.
      */
-    public function getGroupeAllieAccepted(): GroupeAllie
+    public function getGroupeAllieAccepted(): bool
     {
         return $this->groupe_allie_accepted;
     }

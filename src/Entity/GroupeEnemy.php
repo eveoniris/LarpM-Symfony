@@ -13,7 +13,7 @@ class GroupeEnemy extends BaseGroupeEnemy
         return $this->setGroupeRelatedByGroupeId($groupe);
     }
 
-    public function getGroupe(): static
+    public function getGroupe(): Groupe
     {
         return $this->getGroupeRelatedByGroupeId();
     }

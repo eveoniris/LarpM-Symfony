@@ -10,7 +10,9 @@ use App\Form\GroupeGn\GroupeGnForm;
 use App\Form\GroupeGn\GroupeGnOrdreForm;
 use App\Form\GroupeGn\GroupeGnPlaceAvailableForm;
 use App\Form\GroupeGn\GroupeGnResponsableForm;
+use Doctrine\ORM\EntityManagerInterface;
 use LarpManager\Repository\ParticipantRepository;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -24,6 +26,7 @@ class GroupeGnController extends AbstractController
     /**
      * Liste des sessions de jeu pour un groupe.
      */
+    #[Route('/groupeGn/{groupe}/', name: 'groupeGn.list')]
     public function listAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
         return $this->render('admin/groupeGn/list.twig', [

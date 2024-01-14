@@ -175,11 +175,14 @@ class BaseTerritoire
     #[ORM\JoinColumn(name: 'culture_id', referencedColumnName: 'id')]
     protected ?Culture $culture = null;
 
-    #[ORM\ManyToMany(targetEntity: Construction::class, mappedBy: 'territoires')]
+    //#[ORM\JoinTable(name: 'territoire_has_construction')]
+    //#[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    //#[ORM\InverseJoinColumn(name: 'construction_id', referencedColumnName: 'id', nullable: false)]
+    //#[ORM\OrderBy(['label' => 'ASC'])]
+    //#[ORM\ManyToMany(targetEntity: Construction::class, mappedBy: 'territoires')]
+    #[ORM\ManyToMany(targetEntity: Construction::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_has_construction')]
-    #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'construction_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\OrderBy(['label' => 'ASC'])]
+    #[ORM\JoinColumn(name: 'territoire_id')]
     protected Collection $constructions;
 
     #[ORM\ManyToMany(targetEntity: Loi::class, inversedBy: 'territoires')]

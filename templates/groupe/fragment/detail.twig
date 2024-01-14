@@ -91,7 +91,7 @@
 				<strong>Pays : </strong>
 			
 				{% if groupe.territoire %}
-					<a href="{{ path('territoire.admin.detail', {'territoire': groupe.territoire.id}) }}">{{ groupe.territoire.nom }}</a>
+					<a href="{{ path('territoire.detail', {'territoire': groupe.territoire.id}) }}">{{ groupe.territoire.nom }}</a>
 				{% else %}
 					Ce groupe n'est pas rataché à un pays.
 				{% endif %}
@@ -100,7 +100,7 @@
 				<strong>Territoire(s) constrollé(s) : </strong>
 				    				
 				{% for territoire in groupe.territoires %}
-					<a href="{{ path('territoire.admin.detail', {'territoire': territoire.id}) }}">{{ territoire.nom }}</a>
+					<a href="{{ path('territoire.detail', {'territoire': territoire.id}) }}">{{ territoire.nom }}</a>
 					&nbsp;<a href="{{ path('groupe.territoire.remove', {'groupe': groupe.id, 'territoire': territoire.id}) }}"><i class="fa fa-times" aria-hidden="true"></i></a>
 					,&nbsp;
 				{% endfor %}

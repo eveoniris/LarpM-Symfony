@@ -5,7 +5,7 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("groupe.admin.list") }}">Liste des groupes</a></li>
+		<li><a href="{{ path("groupe.list") }}">Liste des groupes</a></li>
 		<li class="active">{{ groupe.nom }}</li>
 	</ol>
 						
@@ -30,16 +30,16 @@
 	    					<!-- Tab panes -->
 							<div class="tab-content">
 								<div role="tabpanel" class="tab-pane active" id="detail">
-									{% include 'admin/groupe/fragment/detail.twig' with {'groupe': groupe} %}
+									{% include 'groupe/fragment/detail.twig' with {'groupe': groupe} %}
 								</div>
 								<div role="tabpanel" class="tab-pane" id="membres">
-									{% include 'admin/groupe/fragment/membres.twig' with {'groupe': groupe} %}
+									{% include 'groupe/fragment/membres.twig' with {'groupe': groupe} %}
 								</div>
 								<div role="tabpanel" class="tab-pane" id="enveloppe">
-									{% include 'admin/groupe/fragment/enveloppe.twig' with {'groupe': groupe} %}
+									{% include 'groupe/fragment/enveloppe.twig' with {'groupe': groupe} %}
 								</div>
 								<div role="tabpanel" class="tab-pane" id="domaine">
-									{% include 'admin/groupe/fragment/domaine.twig' with {'groupe': groupe} %}
+									{% include 'groupe/fragment/domaine.twig' with {'groupe': groupe} %}
 								</div>
 							</div>
 						</div>
@@ -94,7 +94,7 @@
 												</h6>
 											</div>
 											<p class="list-group-item-text text-warning">
-									    		{{ background.visibility|explainVisibility }}
+									    		{{ background.visibility }}
 									    	</p>
 									    	<p class="list-group-item-text">
 									    		Auteur : {{ background.user.username }}
@@ -136,7 +136,7 @@
 												</h6>
 											</div>
 											<p class="list-group-item-text text-warning">
-									    		{{ debriefing.visibility|explainVisibility }}
+									    		{{ debriefing.visibility }}
 									    	</p>
 									    	<p class="list-group-item-text">
 									    		Scenariste : {{ debriefing.user.username }}
