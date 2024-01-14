@@ -9,14 +9,14 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('chronologie.admin.add') }}" method="POST" {{ form_enctype(form) }}  novalidate>
+		{{ form_start(form, {"attr": {"action": path('chronologie.admin.add') }}" method="POST" {{ form_enctype(form) }}  novalidate>
 			<fieldset>
 				<legend>Ajout d'un événement</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 	
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock %}

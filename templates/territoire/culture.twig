@@ -10,10 +10,10 @@
 	<div class="header"><h5>Modifier la culture pour le territoire {{ territoire.nom }}</h5></div>
 	
 	
-	<form action="{{ path('territoire.admin.update.culture', {'territoire': territoire.id}) }}" method="POST" {{ form_enctype(form) }}>			
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+	{{ form_start(form, {"attr": {"action": path('territoire.admin.update.culture', {'territoire': territoire.id}) }}) }}			
+			
 			{{ form(form) }}
-	</form>
+	{{ form_end(form) }}
 	
 </div>
 

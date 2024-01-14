@@ -12,12 +12,12 @@
 	</ol>
 	
 	<div class="well well-sm">
-		<form action="{{ path('territoire.construction.remove',{'territoire': territoire.id, 'construction': construction.id}) }}" method="POST">
+		{{ form_start(form, {"attr": {"action": path('territoire.construction.remove',{'territoire': territoire.id, 'construction': construction.id}) }}" method="POST">
 			<div class="form-group">
 				<p>Etes-vous certain de vouloir retirer la construction {{ construction.fullLabel }} du territoire {{ territoire.nom }} ?</p>
 			</div>
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+			
 			{{ form(form) }}
-		</form>
+		{{ form_end(form) }}
 	</div>
 {% endblock %}

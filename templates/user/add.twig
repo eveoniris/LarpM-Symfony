@@ -12,11 +12,11 @@
 			<p>Cette page vous permet d'ajouter un utilisateur. Un mot de passe aléatoire lui sera alloué, et un mail automatique sera envoyé pour le prévenir.</p>
 			<p>Cette opération permet d'éviter d'attendre qu'un joueur créé lui-même son accés à larpManager.</p>
 			
-			<form action="{{ path('user.add') }}" method="POST" {{ form_enctype(form) }}>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+			{{ form_start(form, {"attr": {"action": path('user.add') }}) }}
+				
 			
 				{{ form(form) }}
-			</form>
+			{{ form_end(form) }}
 		</div>
 	</div>
 

@@ -14,17 +14,17 @@
 	</ol>
 
 	<div class="well well-sm">
-		<form action="{{ path('participant.groupeSecondaire.postuler',{'participant' : participant.id, 'groupeSecondaire': groupeSecondaire.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('participant.groupeSecondaire.postuler',{'participant' : participant.id, 'groupeSecondaire': groupeSecondaire.id}) }}) }}
 			<fieldset>
 				<legend>Postuler à {{ groupeSecondaire.label}}</legend>
 				<h5>Remarque</h5>
 				<p>Seul votre surnom sera transmis au responsable du groupe secondaire, si vous en possédez un, sinon ce sera votre nom.<p>
 				<p>Dans le cas de groupes religieux, la liste de vos religions (ainsi que vos niveaux de Ferveur associés) sera transmis et visible par responsable du groupe secondaire.</p>
 				
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 
 {% endblock body %}

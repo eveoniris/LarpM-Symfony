@@ -11,13 +11,13 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('annonce.add') }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('annonce.add') }}) }}
 			<fieldset>
 				<legend>Ajout d'une annonce</legend>
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

@@ -17,10 +17,10 @@
 		
 		<blockquote>Choisissez votre fichier et téléversez le dans larpManager.</blockquote>
 		
-		<form action="{{ path('religion.update.blason', {'religion': religion.id}) }}" method="POST" {{ form_enctype(form) }}>			
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+		{{ form_start(form, {"attr": {"action": path('religion.update.blason', {'religion': religion.id}) }}) }}			
+				
 				{{ form(form) }}
-		</form>
+		{{ form_end(form) }}
 		
 	</div>
 

@@ -13,10 +13,10 @@
 	</ol>
 
 	<div class="well bs-component">
-		<form action="{{ path('participant.restauration', {'participant': participant.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('participant.restauration', {'participant': participant.id}) }}) }}
 			<fieldset>
 				<legend>Selectionnez les restaurations de {{ participant.user.etatCivil.nom }} {{ participant.user.etatCivil.prenom }}</legend>
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 						<ul class="list-group participantHasRestaurations" data-prototype="{{ form_widget(form.participantHasRestaurations.vars.prototype)|e }}">
 					    	{% for participantHasRestauration in form.participantHasRestaurations %}
 					       		<li class="list-group-item">{{ form_widget(participantHasRestauration.restauration) }}</li>
@@ -24,7 +24,7 @@
 						</ul>
 					{{ form_rest(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

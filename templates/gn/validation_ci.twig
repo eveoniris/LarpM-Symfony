@@ -6,7 +6,7 @@
 <div class="jumbotron">
 	<h1>Validation des conditions d'inscription</h1>
 	<hr />
-	<form class="form" action="{{ path('user.gn.validationci', {'gn': gn.id}) }}" method="POST" {{ form_enctype(form) }}>
+	<form class="form" action="{{ path('user.gn.validationci', {'gn': gn.id}) }}) }}
 		{% form_theme form 'Form/bootstrap_3_horizontal_layout.html.twig' %}
 		{{ form_widget(form) }}
 		<div class="row">
@@ -40,6 +40,6 @@
 					</div>	
 			</div>
 		</div>			
-	</form>
+	{{ form_end(form) }}
 </div>
 {% endblock body %}

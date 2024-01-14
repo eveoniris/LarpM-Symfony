@@ -12,8 +12,8 @@
 	</ol>
 	
 	<div class="well well-sm">
-		<form action="{{ path('groupe.composition',{'groupe': groupe.id}) }}" method="POST">
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+		{{ form_start(form, {"attr": {"action": path('groupe.composition',{'groupe': groupe.id}) }}" method="POST">
+			
 			<div class="panel panel-default">
 			<div class="panel-heading">
 				<h6>Composition du groupe</h6>
@@ -28,7 +28,7 @@
 				</ul>
 			</div>	
 			{{ form_rest(form) }}
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock content%}

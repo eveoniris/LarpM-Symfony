@@ -13,7 +13,7 @@
 	</ol>
 		
 	<div class="well bs-component">
-		<form action="{{ path('participant.groupeSecondaire.accept', {'participant': participant.id, 'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('participant.groupeSecondaire.accept', {'participant': participant.id, 'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}) }}
 			<fieldset>
 				<legend>Acceptation d'un postulant</legend>
 				
@@ -28,13 +28,13 @@
 					</div>
 				</div>
 				
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				<p>Le message suivant sera envoyé au postulant</p>
 				<p><em>"Vous faites désormais partie du groupe {{ groupeSecondaire.label }} et vous avez accès au forum associé."</em></p>
 				
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

@@ -11,14 +11,14 @@
 	</ol>
 	
 	<div class="well well-sm">
-		<form action="{{ path('monnaie.update', {'monnaie': monnaie.id}) }}" method="POST" {{ form_enctype(form) }}  novalidate>
+		{{ form_start(form, {"attr": {"action": path('monnaie.update', {'monnaie': monnaie.id}) }}" method="POST" {{ form_enctype(form) }}  novalidate>
 			<fieldset>
 				<legend>Mise à jour d'une monnaie</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 	
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock %}

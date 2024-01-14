@@ -12,15 +12,15 @@
 	
 	
 	<div class="well bs-component">
-		<form action="{{ path('magie.potion.delete', {'potion': potion.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('magie.potion.delete', {'potion': potion.id}) }}) }}
 			<fieldset>
 				<legend>Supression d'une potion</legend>
 					{{ potion.label }} - Niveau {{ potion.niveau }}
 					{{ potion.description|markdown_to_html }}
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 				
 {% endblock body %}

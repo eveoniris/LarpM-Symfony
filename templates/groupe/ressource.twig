@@ -12,8 +12,8 @@
 	</ol>
 	
 	<div class="well well-sm">
-		<form action="{{ path('groupe.admin.ressources',{'groupe': groupe.id}) }}" method="POST">
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}		
+		{{ form_start(form, {"attr": {"action": path('groupe.admin.ressources',{'groupe': groupe.id}) }}" method="POST">
+					
 			{{ form_start(form) }}
 			<h4>{{ form_label(form.groupeHasRessources) }}</h4>
 			<p>Ajoutez içi les ressources additionnelles</p>
@@ -28,7 +28,7 @@
 				{% endfor %}
 			</ul>
 			{{ form_end(form) }}
-		</form>
+		{{ form_end(form) }}
 	</div>
 {% endblock %}
 

@@ -13,7 +13,7 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('participant.groupeSecondaire.reject', {'participant': participant.id, 'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('participant.groupeSecondaire.reject', {'participant': participant.id, 'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}) }}
 			<fieldset>
 				<legend>Refus d'un postulant</legend>
 				
@@ -30,10 +30,10 @@
 				
 				<p>Le message suivant sera envoyé au postulant :</p>
 				<p>"Nous sommes désolés mais le groupe est au complet ou bien nous n'avons pas confiance en vous et nous ne retenons pas votre candidature. Mais si vous êtes motivé, vous pourrez chercher à nous rencontrer en jeu pour en discuter de vive voix."</p>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

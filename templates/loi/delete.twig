@@ -12,15 +12,15 @@
 	
 	
 	<div class="well bs-component">
-		<form action="{{ path('loi.delete', {'loi': loi.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('loi.delete', {'loi': loi.id}) }}) }}
 			<fieldset>
 				<legend>Supression d'une loi</legend>
 					{{ loi.label }}
 					{{ loi.description|markdown_to_html }}
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 				
 {% endblock body %}

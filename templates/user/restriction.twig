@@ -10,13 +10,13 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('user.restriction') }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('user.restriction') }}) }}
 			<fieldset>
 				<legend>Choisissez une ou plusieurs restrictions alimentaires dans la liste ci-dessous</legend>
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock content%}

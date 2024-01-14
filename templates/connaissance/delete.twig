@@ -12,15 +12,15 @@
 	
 	
 	<div class="well bs-component">
-		<form action="{{ path('connaissance.delete', {'connaissance': connaissance.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('connaissance.delete', {'connaissance': connaissance.id}) }}) }}
 			<fieldset>
 				<legend>Supression d'une connaissance</legend>
 					{{ connaissance.label }} -- {{ connaissance.niveau }}
 					{{ connaissance.description|markdown_to_html }}
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 				
 {% endblock body %}

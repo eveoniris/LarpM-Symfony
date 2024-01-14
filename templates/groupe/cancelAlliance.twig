@@ -13,8 +13,8 @@
 	
 	<div class="well bs-component">
 	
-		<form action="{{ path('groupe.cancelRequestedAlliance', {'participant': participant.id, 'groupe': groupe.id, 'alliance': alliance.id}) }}" method="POST" {{ form_enctype(form) }}>
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+		{{ form_start(form, {"attr": {"action": path('groupe.cancelRequestedAlliance', {'participant': participant.id, 'groupe': groupe.id, 'alliance': alliance.id}) }}) }}
+			
 
 			<p>Vous allez annuler votre demande d'alliance faite à <strong>{{ alliance.requestedGroupe.nom }}</strong>.</p>
 			<p>Etes-vous certain ?</p>
@@ -23,7 +23,7 @@
 			
 			<p>Le chef de groupe recevra une notification pour le prévenir de l'annulation de votre demande.</p>
 			 
-		</form>
+		{{ form_end(form) }}
 	
 	</div>
 	

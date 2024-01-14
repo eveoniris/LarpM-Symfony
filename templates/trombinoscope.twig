@@ -40,8 +40,8 @@ a {
 	</a>
 	<div class="collapse" id="filtres">
 		
-			<form action="{{ path('trombinoscope') }}" method="POST" {{ form_enctype(form) }}>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+			{{ form_start(form, {"attr": {"action": path('trombinoscope') }}) }}
+				
 				<div class="row" style="overflow:visible">
 					<div class="col-md-6">
 						{{ form_row(form.renomme) }}
@@ -56,7 +56,7 @@ a {
 					</div>
 				</div>			
 				{{ form_rest(form) }}	
-			</form>
+			{{ form_end(form) }}
 		
 	</div>
 	

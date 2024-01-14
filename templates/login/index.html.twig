@@ -11,7 +11,7 @@
         <p>Bonjour, {{ app.user.displayName }}.</p>
         <p><a href="{{ path('app_logout') }}">Déconnection</a></p>
     {% else %}
-        <form action="{{ path('app_login') }}" method="post">
+        {{ form_start(form, {"attr": {"action": path('app_login') }}" method="post">
             <div class="form-group">
                 <label for="username">Email:</label>
                 <input type="text" id="username" name="_username" value="{{ last_username }}">
@@ -36,6 +36,6 @@
                 <button type="submit" class="btn btn-primary">Se connecter</button>
                 <a style="margin-left: 10px;" href="{{ path('user.forgot-password') }}">Mot de passe oublié ?</a>
             </div>
-        </form>
+        {{ form_end(form) }}
     {% endif %}
 {% endblock %}

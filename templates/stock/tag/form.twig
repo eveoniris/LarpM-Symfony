@@ -1,4 +1,4 @@
-<form action="{{ action }}" method="POST">
-		{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+{{ form_start(form, {"attr": {"action": action }}" method="POST">
+		
 		{{ form(form) }}
-</form>
+{{ form_end(form) }}

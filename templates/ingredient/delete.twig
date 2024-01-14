@@ -12,14 +12,14 @@
 	
 	
 	<div class="well bs-component">
-		<form action="{{ path('ingredient.admin.delete', {'ingredient': ingredient.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('ingredient.admin.delete', {'ingredient': ingredient.id}) }}) }}
 			<fieldset>
 				<legend>Supression d'un ingredient</legend>
 					{{ ingredient.label }} -- Niveau {{ ingredient.niveau }}
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 				
 {% endblock body %}

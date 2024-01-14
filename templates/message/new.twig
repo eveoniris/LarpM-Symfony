@@ -11,10 +11,10 @@
 	</ol>
 
 	<div class="well well-sm">
-		<form action="{{ path('message.new') }}" 
+		{{ form_start(form, {"attr": {"action": path('message.new') }}" 
 				method="POST" {{ form_enctype(form) }}
 				novalidate >
-		{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}				
+						
 			<fieldset>
 				<legend>Envoi d'un message</legend>
 				
@@ -26,7 +26,7 @@
 				
 				{{ form_rest(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 
 {% endblock %}

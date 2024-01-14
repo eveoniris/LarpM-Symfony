@@ -11,7 +11,7 @@
 </ol>
 
 	<div class="well bs-component">
-		<form action="{{ path('user.message.new',{'from_id': user.id, 'to_id':destinataire.id}) }}" 
+		{{ form_start(form, {"attr": {"action": path('user.message.new',{'from_id': user.id, 'to_id':destinataire.id}) }}" 
 				method="POST" {{ form_enctype(form) }}
 				novalidate >
 			<fieldset>
@@ -32,11 +32,11 @@
 					</div>
 				</div>
 				
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 							
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 
 {% endblock %}

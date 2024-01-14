@@ -12,14 +12,14 @@
 	</ol>
 
 	<div class="well bs-component">	
-		<form action="{{ path('personnage.admin.chronologie.delete', {'personnage': personnage.id,'personnageChronologie': personnageChronologie.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.chronologie.delete', {'personnage': personnage.id,'personnageChronologie': personnageChronologie.id}) }}) }}
 			<fieldset>
 				<legend>Retrait d'un évènement</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				Attention, vous vous appretez à retirer l'évènement <b>{{ personnageChronologie.annee }} : {{ personnageChronologie.evenement }}</b> de la chronologie du personnage {{ personnage.publicName }}.
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

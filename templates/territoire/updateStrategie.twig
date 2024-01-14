@@ -7,13 +7,13 @@
 			<div class="col-xs-12 col-md-8">
 				<div class="well bs-component">
 				
-					<form action="{{ path('territoire.admin.updateStrategie', {'territoire': territoire.id}) }}" method="POST" {{ form_enctype(form) }}>
+					{{ form_start(form, {"attr": {"action": path('territoire.admin.updateStrategie', {'territoire': territoire.id}) }}) }}
 						<fieldset>
 							<legend>Modification de {{ territoire.nom }}</legend>
-							{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+							
 							{{ form(form) }}
 						</fieldset>
-					</form>
+					{{ form_end(form) }}
 					
 					
 				</div>

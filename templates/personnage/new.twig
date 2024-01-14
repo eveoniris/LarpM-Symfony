@@ -11,11 +11,11 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('personnage.new') }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('personnage.new') }}) }}
 			<fieldset>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 {% endblock body %}

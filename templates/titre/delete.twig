@@ -12,14 +12,14 @@
 	
 	
 	<div class="well bs-component">
-		<form action="{{ path('titre.admin.delete', {'titre': titre.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('titre.admin.delete', {'titre': titre.id}) }}) }}
 			<fieldset>
 				<legend>Supression d'un titre</legend>
 					{{ titre.label }} -- {{ titre.renomme }} point de renommés necessaires
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 				
 {% endblock body %}

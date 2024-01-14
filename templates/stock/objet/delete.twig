@@ -13,16 +13,16 @@
 	
 	
 	<div class="well bs-component">
-		<form action="{{ path('stock_objet_delete', {'objet': objet.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('stock_objet_delete', {'objet': objet.id}) }}) }}
 			<fieldset>
 				<legend>Supression d'un objet</legend>
 					{{ objet.nom }}
 					{{ objet.code }}
 					{{ objet.description }}
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 				
 {% endblock body %}

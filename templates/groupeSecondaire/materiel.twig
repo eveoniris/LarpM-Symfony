@@ -11,13 +11,13 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('groupeSecondaire.materiel.update',{'groupeSecondaire':groupeSecondaire.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('groupeSecondaire.materiel.update',{'groupeSecondaire':groupeSecondaire.id}) }}) }}
 			<fieldset>
 				<legend>Matériel</legend>
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

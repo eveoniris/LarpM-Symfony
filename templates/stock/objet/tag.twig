@@ -12,8 +12,8 @@
 	<div class="well well-sm">
 		<div class="row">
 			<div class="col-md-6">
-				<form action="{{ path('stock_objet_tag', {'objet': objet.id}) }}" method="POST" {{ form_enctype(form) }}>
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				{{ form_start(form, {"attr": {"action": path('stock_objet_tag', {'objet': objet.id}) }}) }}
+					
 					{{ form_start(form) }}
 					{{ form_row(form.tags) }}
 					<ul class="list-group news" data-prototype="{{ form_widget(form.news.vars.prototype)|e }}">
@@ -26,7 +26,7 @@
 						{% endfor %}
 					</ul>
 					{{ form_end(form) }}
-				</form>
+				{{ form_end(form) }}
 			</div>
 			<div class="col-md-6">
 				{% if objet.photo %}

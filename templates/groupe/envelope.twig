@@ -12,10 +12,10 @@
 	</ol>
 	
 	<div class="well well-sm">
-		<form action="{{ path('groupe.envelope',{'groupe': groupe.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+		{{ form_start(form, {"attr": {"action": path('groupe.envelope',{'groupe': groupe.id}) }}) }}
+			
 			{{ form(form) }}			
 			
-		</form>
+		{{ form_end(form) }}
 	</div>
 {% endblock %}

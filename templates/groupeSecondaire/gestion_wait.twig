@@ -13,7 +13,7 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('participant.groupeSecondaire.wait', {'participant': participant.id, 'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('participant.groupeSecondaire.wait', {'participant': participant.id, 'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}) }}
 			<fieldset>
 				<legend>Mise en attente d'un postulant</legend>
 				
@@ -30,10 +30,10 @@
 				
 				<p>Le message suivant sera envoyé au postulant :</p>
 				<p>"Vous êtes accepté en tant que postulant, vous avez rendez-vous sur le GN pour que nous en parlions en jeu. Vous recevrez un rendez vous avant le GN."</p>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

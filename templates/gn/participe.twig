@@ -6,7 +6,7 @@
 <div class="jumbotron">
 	<h1><i class="fa fa-thumbs-up" aria-hidden="true"></i> Participer à un jeu</h1>
 	<hr />
-	<form class="form" action="{{ path('user.gn.participe', {'gn': gn.id}) }}" method="POST" {{ form_enctype(form) }}>
+	<form class="form" action="{{ path('user.gn.participe', {'gn': gn.id}) }}) }}
 		{% form_theme form 'Form/bootstrap_3_horizontal_layout.html.twig' %}
 		{{ form_widget(form) }}
 		<div class="row">
@@ -45,6 +45,6 @@
 	
 			</div>
 		</div>			
-	</form>
+	{{ form_end(form) }}
 </div>
 {% endblock body %}

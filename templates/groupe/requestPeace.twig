@@ -13,15 +13,15 @@
 	
 	<div class="well bs-component">
 	
-		<form action="{{ path('groupe.requestPeace', {'participant': participant.id, 'groupe': groupe.id, 'enemy': war.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+		{{ form_start(form, {"attr": {"action": path('groupe.requestPeace', {'participant': participant.id, 'groupe': groupe.id, 'enemy': war.id}) }}) }}
+			
 
 			<p>Vous allez demander la paix dans le conflit qui oppose <strong>{{ war.groupe.nom }}</strong> et <strong>{{ war.requestedGroupe.nom }}</strong>. 
 			{{ form(form) }}
 			
 			<p>Le chef de groupe recevra une notification pour le prévenir de votre choix. Pour que la paix soit effective, il devra accepter la paix.</p>
 			 
-		</form>
+		{{ form_end(form) }}
 	
 	</div>
 	

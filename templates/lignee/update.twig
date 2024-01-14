@@ -11,10 +11,10 @@
     </ol>
 
     <div class="well bs-component">
-        <form action="{{ path('lignee.update', {'lignee': lignee.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+        {{ form_start(form, {"attr": {"action": path('lignee.update', {'lignee': lignee.id}) }}) }}
             <fieldset>
                 <legend> {{ lignee.nom }} - Modification</legend>
-                {% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+                
 
                 <div class="panel panel-default">
                     <div class="panel-body">
@@ -24,7 +24,7 @@
                 </div>
                 {{ form_rest(form) }}
             </fieldset>
-        </form>
+        {{ form_end(form) }}
     </div>
 
 {% endblock body %}

@@ -12,10 +12,10 @@
 	</ol>
 
 	<div class="well bs-component">	
-		<form action="{{ path('personnage.admin.trigger.add', {'personnage': personnage.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.trigger.add', {'personnage': personnage.id}) }}) }}
 			<fieldset>
 				<legend>Ajout d'un déclencheur lié a {{ personnage.publicName }}</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				<ul>
 					<li><strong>ALCHIMIE APPRENTI</strong> : permet de choisir une nouvelle potion de niveau Apprenti</li>
 					<li><strong>ALCHIMIE INITIE</strong> : permet de choisir une nouvelle potion de niveau Initié</li>
@@ -34,7 +34,7 @@
 				</ul>
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

@@ -11,13 +11,13 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('participant.new', {'user': user.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('participant.new', {'user': user.id}) }}) }}
 			<fieldset>
 				<legend>Selectionnez le jeu auquel participera {{ user.username }}</legend>
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}
