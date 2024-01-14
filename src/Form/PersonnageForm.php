@@ -59,12 +59,12 @@ class PersonnageForm extends AbstractType
             ])
             ->add('intrigue', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
-                'choices' => [true => 'Oui', false => 'Non'],
+                'choices' => ['Oui' => true, false => 'Non'],
                 'label' => 'Participer aux intrigues',
             ])
             ->add('sensible', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
-                'choices' => [false => 'Non', true => 'Oui'],
+                'choices' => ['Non' => false, true => 'Oui'],
                 'label' => 'Personnage sensible',
             ]);
     }

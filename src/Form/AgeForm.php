@@ -27,7 +27,7 @@ class AgeForm extends AbstractType
             ])
             ->add('enableCreation', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
-                'choices' => [true => 'Oui', false => 'Non'],
+                'choices' => ['Oui' => true, false => 'Non'],
                 'label' => 'Disponible lors de la création d\'un personnage',
             ])
             ->add('bonus', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [

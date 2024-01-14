@@ -38,8 +38,8 @@ class BilletForm extends AbstractType
                     false,
                 ],
                 'choice_label' => static fn ($value) => match ($value) {
-                    true => 'Oui',
-                    false => 'Non',
+                    'Oui' => true,
+                    'Non' => false,
                 },
                 'expanded' => true,
             ])
