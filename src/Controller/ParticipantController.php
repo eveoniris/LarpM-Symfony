@@ -149,7 +149,7 @@ class ParticipantController extends AbstractController
     /**
      * Affecte un participant à un groupe.
      */
-    #[Route('/participant/{id}/groupe', name: 'participant.groupe')]
+    #[Route('/participant/{participant}/groupe', name: 'participant.groupe')]
     public function groupeAction( EntityManagerInterface $entityManager, Request $request, #[MapEntity] Participant $participant)
     {
         // il faut un billet pour rejoindre un groupe
@@ -184,7 +184,7 @@ class ParticipantController extends AbstractController
     /**
      * Retire la participation de l'utilisateur à un jeu.
      */
-    #[Route('/participant/{id}/remove', name: 'participant.remove')]
+    #[Route('/participant/{participant}/remove', name: 'participant.remove')]
     public function removeAction( EntityManagerInterface $entityManager, Request $request, #[MapEntity] Participant $participant)
     {
         $form = $this->createForm(ParticipantRemoveForm::class, $participant, ['gnId' => $participant->getGn()->getId()])
@@ -236,7 +236,7 @@ class ParticipantController extends AbstractController
     /**
      * Ajout d'un billet à un utilisateur. L'utilisateur doit participer au même jeu que celui du billet qui lui est affecté.
      */
-    #[Route('/participant/{id}/billet', name: 'participant.billet')]
+    #[Route('/participant/{participant}/billet', name: 'participant.billet')]
     public function billetAction( EntityManagerInterface $entityManager, Request $request, #[MapEntity] Participant $participant)
     {
         $form = $this->createForm(ParticipantBilletForm::class, $participant)
@@ -266,7 +266,7 @@ class ParticipantController extends AbstractController
     /**
      * Choix du lieu de restauration d'un utilisateur.
      */
-    #[Route('/participant/{id}/restauration', name: 'participant.restauration')]
+    #[Route('/participant/{participant}/restauration', name: 'participant.restauration')]
     public function restaurationAction( EntityManagerInterface $entityManager, Request $request, #[MapEntity] Participant $participant)
     {
         $originalParticipantHasRestaurations = new ArrayCollection();
@@ -532,7 +532,7 @@ class ParticipantController extends AbstractController
         $form = $this->createForm()
             ->add('personnage', 'entity', [
                 'label' => 'Choisissez votre personnage',
-                'property' => 'resumeParticipations',
+                'choice_label' => 'resumeParticipations',
                 'class' => \App\Entity\Personnage::class,
                 'choices' => array_unique($participant->getUser()->getPersonnagesVivants()),
                 'data' => $default,
@@ -653,7 +653,7 @@ class ParticipantController extends AbstractController
         $form = $this->createForm()
             ->add('personnage', 'entity', [
                 'label' => 'Choisissez le personnage',
-                'property' => 'nom',
+                'choice_label' => 'nom',
                 'class' => \App\Entity\Personnage::class,
                 'choices' => array_unique($participant->getUser()->getPersonnages()->toArray()),
             ])
@@ -748,7 +748,7 @@ class ParticipantController extends AbstractController
         $form = $this->createForm(PersonnageForm::class, $personnage)
             ->add('classe', 'entity', [
                 'label' => 'Classes disponibles',
-                'property' => 'label',
+                'choice_label' => 'label',
                 'class' => \App\Entity\Classe::class,
                 'choices' => array_unique($classes),
             ])
@@ -913,7 +913,7 @@ class ParticipantController extends AbstractController
         $form = $this->createForm(PersonnageForm::class, $personnage)
             ->add('classe', 'entity', [
                 'label' => 'Classes disponibles',
-                'property' => 'label',
+                'choice_label' => 'label',
                 'class' => \App\Entity\Classe::class,
                 'choices' => array_unique($classes),
             ])
@@ -1319,7 +1319,7 @@ class ParticipantController extends AbstractController
                 'label' => 'Votre religion',
                 'class' => \App\Entity\Religion::class,
                 'choices' => $availableReligions,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider votre religion']);
 

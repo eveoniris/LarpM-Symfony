@@ -24,7 +24,7 @@ class ParticipantPersonnageSecondaireForm extends AbstractType
             'required' => true,
             'expanded' => true,
             'class' => \App\Entity\PersonnageSecondaire::class,
-            'property' => 'label']);
+            'choice_label' => 'label']);
     }
 
     /**

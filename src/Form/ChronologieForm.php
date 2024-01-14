@@ -24,7 +24,7 @@ class ChronologieForm extends AbstractType
                 'required' => true,
                 'label' => 'Territoire',
                 'class' => \App\Entity\Territoire::class,
-                'property' => 'nom',
+                'choice_label' => 'nom',
             ])
             ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,

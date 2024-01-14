@@ -26,7 +26,7 @@ class GroupeDocumentForm extends AbstractType
             'expanded' => true,
             'required' => false,
             'class' => \App\Entity\Document::class,
-            'property' => 'identity',
+            'choice_label' => 'identity',
             'query_builder' => static function (DocumentRepository $er) {
                 return $er->createQueryBuilder('d')->orderBy('d.code', 'ASC');
             },

@@ -43,7 +43,7 @@ class ItemForm extends AbstractType
                 'required' => true,
                 'label' => 'Qualité',
                 'class' => \App\Entity\Quality::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'attr' => [
                     'help' => 'Qualité de l\'objet',
                 ],

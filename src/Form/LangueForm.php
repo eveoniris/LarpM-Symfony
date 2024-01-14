@@ -51,7 +51,7 @@ class LangueForm extends AbstractType
                 'expanded' => true,
                 'required' => true,
                 'class' => \App\Entity\GroupeLangue::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'query_builder' => static function (EntityRepository $er) {
                     return $er->createQueryBuilder('i')->orderBy('i.label', 'ASC');
                 },

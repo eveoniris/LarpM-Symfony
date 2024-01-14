@@ -24,7 +24,7 @@ class GroupeScenaristeForm extends AbstractType
             'label' => 'Scénariste',
             'required' => false,
             'class' => \App\Entity\User::class,
-            'property' => 'etatCivil',
+            'choice_label' => 'etatCivil',
             'query_builder' => static function (EntityRepository $er) {
                 $qb = $er->createQueryBuilder('u');
                 $qb->join('u.etatCivil', 'ec');

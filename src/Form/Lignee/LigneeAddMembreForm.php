@@ -44,7 +44,7 @@ class LigneeAddMembreForm extends AbstractType
                 'data-live-search' => 'true',
                 'placeholder' => 'Nouveau membre',
             ],
-            'property' => 'nom',
+            'choice_label' => 'nom',
             'mapped' => false,
         ])
             ->add('parent1', EntityType::class, [
@@ -62,7 +62,7 @@ class LigneeAddMembreForm extends AbstractType
                     'data-live-search' => 'true',
                     'placeholder' => 'Parent (obligatoire)',
                 ],
-                'property' => 'nom',
+                'choice_label' => 'nom',
                 'mapped' => false,
             ])
             ->add('parent2', EntityType::class, [
@@ -80,7 +80,7 @@ class LigneeAddMembreForm extends AbstractType
                     'data-live-search' => 'true',
                     'placeholder' => 'Second parent (facultatif)',
                 ],
-                'property' => 'nom',
+                'choice_label' => 'nom',
                 'mapped' => false,
             ])
             ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter']);

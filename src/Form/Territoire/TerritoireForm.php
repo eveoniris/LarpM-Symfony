@@ -33,7 +33,7 @@ class TerritoireForm extends AbstractType
                 'class' => \App\Entity\Appelation::class,
                 'multiple' => false,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description',
@@ -129,7 +129,7 @@ class TerritoireForm extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'query_builder' => static function (RessourceRepository $rr) {
                     return $rr->createQueryBuilder('rr')->orderBy('rr.label', 'ASC');
                 },
@@ -141,7 +141,7 @@ class TerritoireForm extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'query_builder' => static function (RessourceRepository $rr) {
                     return $rr->createQueryBuilder('rr')->orderBy('rr.label', 'ASC');
                 },
@@ -152,7 +152,7 @@ class TerritoireForm extends AbstractType
                 'class' => \App\Entity\Langue::class,
                 'multiple' => false,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'query_builder' => static function (LangueRepository $lr) {
                     return $lr->createQueryBuilder('lr')->orderBy('lr.label', 'ASC');
                 },
@@ -164,7 +164,7 @@ class TerritoireForm extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'query_builder' => static function (LangueRepository $lr) {
                     return $lr->createQueryBuilder('lr')->orderBy('lr.label', 'ASC');
                 },
@@ -175,7 +175,7 @@ class TerritoireForm extends AbstractType
                 'class' => \App\Entity\Religion::class,
                 'multiple' => false,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'query_builder' => static function (ReligionRepository $rr) {
                     return $rr->createQueryBuilder('rr')->orderBy('rr.label', 'ASC');
                 },
@@ -187,7 +187,7 @@ class TerritoireForm extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'query_builder' => static function (ReligionRepository $rr) {
                     return $rr->createQueryBuilder('rr')->orderBy('rr.label', 'ASC');
                 },
@@ -196,7 +196,7 @@ class TerritoireForm extends AbstractType
                 'required' => false,
                 'label' => 'Ce territoire dépend de ',
                 'class' => \App\Entity\Territoire::class,
-                'property' => 'nom',
+                'choice_label' => 'nom',
                 'empty_value' => 'Aucun, territoire indépendant',
                 'empty_data' => null,
                 'mapped' => true,

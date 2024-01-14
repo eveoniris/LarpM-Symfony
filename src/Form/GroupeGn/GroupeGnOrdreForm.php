@@ -37,7 +37,7 @@ class GroupeGnOrdreForm extends AbstractType
             ->add('suzerain', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Participant::class,
-                'property' => 'personnage.nom',
+                'choice_label' => 'personnage.nom',
                 'query_builder' => static function (ParticipantRepository $er) use ($options) {
                     $qb = $er->createQueryBuilder('p');
                     $qb->join('p.personnage', 'u');

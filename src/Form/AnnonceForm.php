@@ -33,7 +33,7 @@ class AnnonceForm extends AbstractType
                 'required' => true,
                 'multiple' => false,
                 'class' => \App\Entity\Gn::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'empty_data' => null,
                 'placeholder' => 'Aucun',
             ])

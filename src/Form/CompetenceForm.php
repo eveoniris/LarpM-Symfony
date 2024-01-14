@@ -23,13 +23,13 @@ class CompetenceForm extends AbstractType
             'label' => 'Famille',
             'required' => true,
             'class' => \App\Entity\CompetenceFamily::class,
-            'property' => 'label',
+            'choice_label' => 'label',
         ])
             ->add('level', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Niveau',
                 'required' => true,
                 'class' => \App\Entity\Level::class,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,

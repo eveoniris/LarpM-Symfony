@@ -25,7 +25,7 @@ class PersonnageRessourceType extends AbstractType
                 'label' => 'Choisissez la ressource',
                 'required' => true,
                 'class' => \App\Entity\Ressource::class,
-                'property' => 'label',
+                'choice_label' => 'label',
             ]);
     }
 

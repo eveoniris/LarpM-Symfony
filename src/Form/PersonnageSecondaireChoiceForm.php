@@ -22,7 +22,7 @@ class PersonnageSecondaireChoiceForm extends AbstractType
             'label' => 'Archétype',
             'required' => true,
             'class' => \App\Entity\PersonnageSecondaire::class,
-            'property' => 'label']);
+            'choice_label' => 'label']);
     }
 
     /**

@@ -109,7 +109,7 @@ class GroupeGnController extends AbstractController
                 'label' => 'Responsable',
                 'required' => false,
                 'class' => \App\Entity\Participant::class,
-                'property' => 'User.etatCivil',
+                'choice_label' => 'User.etatCivil',
                 'query_builder' => static function (ParticipantRepository $er) use ($groupeGn) {
                     $qb = $er->createQueryBuilder('p');
                     $qb->join('p.User', 'u');
@@ -160,7 +160,7 @@ class GroupeGnController extends AbstractController
                 'label' => 'Nouveau participant',
                 'required' => true,
                 'class' => \App\Entity\Participant::class,
-                'property' => 'User.etatCivil',
+                'choice_label' => 'User.etatCivil',
                 'query_builder' => static function (ParticipantRepository $er) use ($groupeGn) {
                     $qb = $er->createQueryBuilder('p');
                     $qb->join('p.User', 'u');
@@ -214,7 +214,7 @@ class GroupeGnController extends AbstractController
                 'label' => 'Choisissez le nouveau membre de votre groupe',
                 'required' => false,
                 'class' => \App\Entity\Participant::class,
-                'property' => 'User.Username',
+                'choice_label' => 'User.Username',
                 'query_builder' => static function (ParticipantRepository $er) use ($groupeGn) {
                     $qb = $er->createQueryBuilder('p');
                     $qb->join('p.User', 'u');

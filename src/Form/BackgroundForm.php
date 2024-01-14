@@ -34,13 +34,13 @@ class BackgroundForm extends AbstractType
                 'required' => true,
                 'label' => 'Groupe',
                 'class' => \App\Entity\Groupe::class,
-                'property' => 'nom',
+                'choice_label' => 'nom',
             ])
             ->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'label' => 'GN',
                 'class' => \App\Entity\Gn::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'placeholder' => 'Choisissez le GN auquel est lié ce background',
                 'empty_data' => null,
             ]);

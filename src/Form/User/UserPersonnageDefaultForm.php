@@ -26,7 +26,7 @@ class UserPersonnageDefaultForm extends AbstractType
             'multiple' => false,
             'expanded' => true,
             'class' => \App\Entity\Personnage::class,
-            'property' => 'identity',
+            'choice_label' => 'identity',
             'placeholder' => 'Aucun',
             'empty_data' => null,
             'query_builder' => static function (EntityRepository $er) use ($options) {

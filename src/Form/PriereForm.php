@@ -23,7 +23,7 @@ class PriereForm extends AbstractType
             'required' => true,
             'label' => 'Sphère',
             'class' => \App\Entity\Sphere::class,
-            'property' => 'label',
+            'choice_label' => 'label',
         ])
             ->add('niveau', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,

@@ -45,7 +45,7 @@ class DocumentForm extends AbstractType
                 'query_builder' => static function (LangueRepository $er) {
                     return $er->createQueryBuilder('l')->orderBy('l.label', 'ASC');
                 },
-                'property' => 'label',
+                'choice_label' => 'label',
                 'attr' => [
                     'help' => 'Vous pouvez choisir une ou plusieurs langues',
                 ],

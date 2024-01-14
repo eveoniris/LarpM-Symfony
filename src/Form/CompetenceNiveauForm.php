@@ -13,12 +13,12 @@ class CompetenceNiveauForm extends AbstractType
         $builder->add('competence', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => true,
             'class' => \App\Entity\Competence::class,
-            'property' => 'nom',
+            'choice_label' => 'nom',
         ])
             ->add('niveau', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'class' => 'App\Entity\Niveau',
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,

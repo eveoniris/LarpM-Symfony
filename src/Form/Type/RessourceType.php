@@ -19,7 +19,7 @@ class RessourceType extends AbstractType
         $builder->add('ressource', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => false,
             'required' => true,
-            'property' => 'label',
+            'choice_label' => 'label',
             'class' => \App\Entity\Ressource::class,
         ]);
     }

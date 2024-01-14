@@ -21,7 +21,7 @@ class CultureHasClasseType extends AbstractType
                 'label' => 'Choisissez la classe',
                 'required' => true,
                 'class' => \App\Entity\Classe::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'query_builder' => static function (\LarpManager\Repository\ClasseRepository $er) {
                     $qb = $er->createQueryBuilder('c');
                     $qb->where('c.creation is true');

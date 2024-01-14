@@ -29,7 +29,7 @@ class TerritoireForm extends AbstractType
                 'class' => \App\Entity\Appelation::class,
                 'multiple' => false,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description',
@@ -121,7 +121,7 @@ class TerritoireForm extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('exportations', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
@@ -130,7 +130,7 @@ class TerritoireForm extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('languePrincipale', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
@@ -138,7 +138,7 @@ class TerritoireForm extends AbstractType
                 'class' => \App\Entity\Langue::class,
                 'multiple' => false,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('langues', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
@@ -147,7 +147,7 @@ class TerritoireForm extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('religionPrincipale', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
@@ -155,7 +155,7 @@ class TerritoireForm extends AbstractType
                 'class' => \App\Entity\Religion::class,
                 'multiple' => false,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('religions', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
@@ -164,13 +164,13 @@ class TerritoireForm extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'mapped' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Ce territoire dépend de ',
                 'class' => \App\Entity\Territoire::class,
-                'property' => 'nom',
+                'choice_label' => 'nom',
                 'empty_value' => 'Aucun, territoire indépendant',
                 'empty_data' => null,
             ]);

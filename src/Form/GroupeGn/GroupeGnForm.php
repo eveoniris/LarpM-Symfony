@@ -23,7 +23,7 @@ class GroupeGnForm extends AbstractType
             'label' => 'Jeu',
             'required' => true,
             'class' => \App\Entity\Gn::class,
-            'property' => 'label',
+            'choice_label' => 'label',
         ])
             ->add('free', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'label' => 'Groupe disponible ou réservé ?',

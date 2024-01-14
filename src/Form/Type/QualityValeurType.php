@@ -20,7 +20,7 @@ class QualityValeurType extends AbstractType
             'label' => 'Choisissez la monnaie',
             'required' => true,
             'class' => \App\Entity\Monnaie::class,
-            'property' => 'label',
+            'choice_label' => 'label',
         ])
             ->add('nombre', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'Quantité',

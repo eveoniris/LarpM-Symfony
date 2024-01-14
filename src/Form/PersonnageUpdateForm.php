@@ -32,19 +32,19 @@ class PersonnageUpdateForm extends AbstractType
                 'required' => true,
                 'label' => '',
                 'class' => \App\Entity\Age::class,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('genre', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'label' => '',
                 'class' => \App\Entity\Genre::class,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'label' => 'Origine du personnage',
                 'class' => \App\Entity\Territoire::class,
-                'property' => 'nom',
+                'choice_label' => 'nom',
                 'query_builder' => static function (\LarpManager\Repository\TerritoireRepository $er) {
                     $qb = $er->createQueryBuilder('t');
                     $qb->andWhere('t.territoire IS NULL');

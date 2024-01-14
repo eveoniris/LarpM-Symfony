@@ -25,7 +25,7 @@ class UserRestrictionForm extends AbstractType
             'multiple' => true,
             'expanded' => true,
             'class' => \App\Entity\Restriction::class,
-            'property' => 'label',
+            'choice_label' => 'label',
             'placeholder' => 'Aucune',
             'empty_data' => null,
         ])

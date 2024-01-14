@@ -23,7 +23,7 @@ class PersonnageOriginForm extends AbstractType
             'required' => true,
             'label' => 'Votre origine',
             'class' => \App\Entity\Territoire::class,
-            'property' => 'nom',
+            'choice_label' => 'nom',
             'query_builder' => static function (\LarpManager\Repository\TerritoireRepository $er) {
                 $qb = $er->createQueryBuilder('t');
                 $qb->andWhere('t.territoire IS NULL');

@@ -46,7 +46,7 @@ class PersonnageFindForm extends AbstractType
                 'required' => false,
                 'label' => '	Par religion : ',
                 'class' => \App\Entity\Religion::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'query_builder' => static function (EntityRepository $er) {
                     return $er->createQueryBuilder('r')->orderBy('r.label', 'ASC');
                 },
@@ -55,7 +55,7 @@ class PersonnageFindForm extends AbstractType
                 'required' => false,
                 'label' => '	Par compétence : ',
                 'class' => \App\Entity\Competence::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'query_builder' => static function (CompetenceRepository $cr) {
                     return $cr->getQueryBuilderFindAllOrderedByLabel();
                 },
@@ -64,7 +64,7 @@ class PersonnageFindForm extends AbstractType
                 'required' => false,
                 'label' => '	Par classe : ',
                 'class' => \App\Entity\Classe::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'query_builder' => static function (ClasseRepository $er) {
                     return $er->getQueryBuilderFindAllOrderedByLabel();
                 },
@@ -73,7 +73,7 @@ class PersonnageFindForm extends AbstractType
                 'required' => false,
                 'label' => '	Par groupe : ',
                 'class' => \App\Entity\Groupe::class,
-                'property' => 'nom',
+                'choice_label' => 'nom',
                 'query_builder' => static function (GroupeRepository $gr) {
                     return $gr->createQueryBuilder('gr')->orderBy('gr.nom', 'ASC');
                 },

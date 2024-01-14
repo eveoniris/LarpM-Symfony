@@ -38,7 +38,7 @@ class TechnologieForm extends AbstractType
                 'class' => CompetenceFamily::class,
                 'required' => true,
                 'label' => 'Compétence Expert requise',
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('document', 'file', [
                 'label' => 'Téléversez un document',

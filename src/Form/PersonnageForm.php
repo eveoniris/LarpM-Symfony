@@ -31,7 +31,7 @@ class PersonnageForm extends AbstractType
                 'required' => true,
                 'label' => '',
                 'class' => \App\Entity\Age::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'query_builder' => static function (EntityRepository $er) {
                     $qb = $er->createQueryBuilder('a');
                     $qb->andWhere('a.enableCreation = true');
@@ -43,13 +43,13 @@ class PersonnageForm extends AbstractType
                 'required' => true,
                 'label' => '',
                 'class' => \App\Entity\Genre::class,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => true,
                 'label' => 'Votre origine',
                 'class' => \App\Entity\Territoire::class,
-                'property' => 'nom',
+                'choice_label' => 'nom',
                 'query_builder' => static function (\LarpManager\Repository\TerritoireRepository $er) {
                     $qb = $er->createQueryBuilder('t');
                     $qb->andWhere('t.territoire IS NULL');

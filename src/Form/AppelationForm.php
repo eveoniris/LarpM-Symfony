@@ -36,7 +36,7 @@ class AppelationForm extends AbstractType
                 'label' => 'Cette appelation dépend de',
                 'required' => false,
                 'class' => \App\Entity\Appelation::class,
-                'property' => 'label',
+                'choice_label' => 'label',
             ]);
     }
 

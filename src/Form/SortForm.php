@@ -32,7 +32,7 @@ class SortForm extends AbstractType
                 'required' => true,
                 'label' => 'Domaine',
                 'class' => \App\Entity\Domaine::class,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('document', 'file', [
                 'label' => 'Téléversez un document',

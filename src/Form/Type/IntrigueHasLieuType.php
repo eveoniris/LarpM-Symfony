@@ -20,7 +20,7 @@ class IntrigueHasLieuType extends AbstractType
             'label' => 'Ajouter un lieu concerné par cette intrigue',
             'required' => true,
             'class' => \App\Entity\Lieu::class,
-            'property' => 'nom',
+            'choice_label' => 'nom',
         ]);
     }
 

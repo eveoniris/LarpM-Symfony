@@ -26,7 +26,7 @@ class ParticipantGroupeForm extends AbstractType
             'expanded' => true,
             'required' => true,
             'class' => \App\Entity\GroupeGn::class,
-            'property' => 'groupe.nom',
+            'choice_label' => 'groupe.nom',
             'query_builder' => static function (EntityRepository $er) use ($options) {
                 $qb = $er->createQueryBuilder('gg');
                 $qb->join('gg.groupe', 'g');

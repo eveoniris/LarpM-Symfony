@@ -26,7 +26,7 @@ class TerritoireLoiForm extends AbstractType
             'multiple' => true,
             'expanded' => true,
             'mapped' => true,
-            'property' => 'label',
+            'choice_label' => 'label',
         ]);
     }
 

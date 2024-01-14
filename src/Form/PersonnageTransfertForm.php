@@ -23,7 +23,7 @@ class PersonnageTransfertForm extends AbstractType
             'required' => true,
             'label' => 'Nouveau propriétaire',
             'class' => \App\Entity\User::class,
-            'property' => 'identity',
+            'choice_label' => 'identity',
             'mapped' => false,
             /*					'query_builder' => function(\LarpManager\Repository\TerritoireRepository $er) {
                                     $qb = $er->createQueryBuilder('t');

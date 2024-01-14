@@ -20,7 +20,7 @@ class IntrigueHasGroupeType extends AbstractType
             'label' => 'Ajouter un groupe concerné par cette intrigue',
             'required' => true,
             'class' => \App\Entity\Groupe::class,
-            'property' => 'nom',
+            'choice_label' => 'nom',
         ]);
     }
 
