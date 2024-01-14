@@ -71,8 +71,8 @@ class GnForm extends AbstractType
                 'label' => 'GN actif ?',
                 'required' => true,
                 'choices' => [
-                    true => 'Oui',
-                    false => 'Non',
+                    'Oui' => true,
+                    'Non' => false,
                 ],
             ]);
     }
