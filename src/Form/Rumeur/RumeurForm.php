@@ -39,7 +39,7 @@ class RumeurForm extends AbstractType
 
                     return $qb;
                 },
-                'property' => 'nom',
+                'choice_label' => 'nom',
                 'attr' => [
                     'help' => 'Le territoire choisi donnera accès à la rumeur à tous les personnages membre de ce territoire. Remarque, si vous choisissez un territoire de type pays (ex : Aquilonnie), les territoires qui en dépendent (ex : bossonie du nord) auront aussi accès à la rumeur. Si vous ne choisissez pas de territoire, la rumeur sera accessible à tous.',
                 ],
@@ -54,7 +54,7 @@ class RumeurForm extends AbstractType
 
                     return $qb;
                 },
-                'property' => 'label',
+                'choice_label' => 'label',
                 'attr' => [
                     'help' => 'Choisissez le GN dans lequel sera utilisé votre rumeur',
                 ],

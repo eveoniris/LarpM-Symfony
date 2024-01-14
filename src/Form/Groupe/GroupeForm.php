@@ -44,7 +44,7 @@ class GroupeForm extends AbstractType
                 'label' => 'Scénariste',
                 'required' => false,
                 'class' => \App\Entity\User::class,
-                'property' => 'name',
+                'choice_label' => 'name',
                 'query_builder' => static function (EntityRepository $er) {
                     $qb = $er->createQueryBuilder('u');
                     $qb->where($qb->expr()->orX(

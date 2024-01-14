@@ -40,7 +40,7 @@ class GroupeSecondaireForm extends AbstractType
                 'label' => 'Scénariste',
                 'required' => false,
                 'class' => \App\Entity\User::class,
-                'property' => 'name',
+                'choice_label' => 'name',
                 'query_builder' => static function (EntityRepository $er) {
                     $qb = $er->createQueryBuilder('u');
                     $qb->join('u.etatCivil', 'ec');
@@ -63,13 +63,13 @@ class GroupeSecondaireForm extends AbstractType
 
                     return $qb;
                 },
-                'property' => 'identity',
+                'choice_label' => 'identity',
             ])
             ->add('secondaryGroupType', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Type',
                 'required' => true,
                 'class' => \App\Entity\SecondaryGroupType::class,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('secret', 'checkbox', [
                 'label' => 'Cochez cette case pour rendre le groupe secret (visible uniquement par les joueurs membres)',

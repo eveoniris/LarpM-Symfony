@@ -22,7 +22,7 @@ class PersonnageSecondaireForm extends AbstractType
             'required' => true,
             'label' => 'Choisissez la classe',
             'class' => \App\Entity\Classe::class,
-            'property' => 'label',
+            'choice_label' => 'label',
         ])
             ->add(
                 'personnageSecondaireCompetences', 'collection', [

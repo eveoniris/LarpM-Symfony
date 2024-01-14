@@ -20,7 +20,7 @@ class IntrigueHasGroupeSecondaireType extends AbstractType
             'label' => 'Ajouter un groupe secondaire concerné par cette intrigue',
             'required' => true,
             'class' => \App\Entity\SecondaryGroup::class,
-            'property' => 'label',
+            'choice_label' => 'label',
         ]);
     }
 

@@ -505,7 +505,7 @@ class PersonnageController extends AbstractController
                 'expanded' => true,
                 'label' => 'Nouveau propriétaire',
                 'class' => \App\Entity\Participant::class,
-                'property' => 'UserIdentity',
+                'choice_label' => 'UserIdentity',
             ])
             ->add('transfert', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Transferer']);
 
@@ -694,7 +694,7 @@ class PersonnageController extends AbstractController
         $form = $this->createForm(PersonnageForm::class, $personnage)
             ->add('classe', 'entity', [
                 'label' => 'Classes disponibles',
-                'property' => 'label',
+                'choice_label' => 'label',
                 'class' => \App\Entity\Classe::class,
             ])
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
@@ -1971,7 +1971,7 @@ class PersonnageController extends AbstractController
                 'label' => 'Votre religion',
                 'class' => \App\Entity\Religion::class,
                 'choices' => $availableReligions,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider votre religion']);
 

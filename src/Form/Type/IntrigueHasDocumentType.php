@@ -20,7 +20,7 @@ class IntrigueHasDocumentType extends AbstractType
             'label' => 'Ajouter un document concernant cette intrigue',
             'required' => true,
             'class' => \App\Entity\Document::class,
-            'property' => 'titre',
+            'choice_label' => 'titre',
         ]);
     }
 

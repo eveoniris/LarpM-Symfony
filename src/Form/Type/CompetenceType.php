@@ -19,7 +19,7 @@ class CompetenceType extends AbstractType
         $builder->add('competence', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => false,
             'required' => true,
-            'property' => 'nom',
+            'choice_label' => 'nom',
             'class' => \App\Entity\Competence::class,
         ]);
     }

@@ -18,7 +18,7 @@ class RegionMinimalForm extends AbstractType
             ->add('pays', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                     'required' => true,
                     'class' => 'App\Entity\Pays',
-                    'property' => 'nom', ]
+                    'choice_label' => 'nom', ]
             );
     }
 

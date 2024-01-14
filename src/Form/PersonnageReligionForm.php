@@ -22,7 +22,7 @@ class PersonnageReligionForm extends AbstractType
             'required' => true,
             'label' => 'Votre degré de fanatisme',
             'class' => \App\Entity\ReligionLevel::class,
-            'property' => 'label',
+            'choice_label' => 'label',
         ]);
     }
 

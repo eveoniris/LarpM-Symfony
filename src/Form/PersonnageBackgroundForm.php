@@ -30,7 +30,7 @@ class PersonnageBackgroundForm extends AbstractType
                 'required' => true,
                 'label' => 'GN',
                 'class' => \App\Entity\Gn::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'placeholder' => 'Choisissez le GN auquel est lié ce background',
                 'empty_data' => null,
             ]);

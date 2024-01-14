@@ -26,7 +26,7 @@ class TerritoireCultureForm extends AbstractType
             'multiple' => false,
             'expanded' => true,
             'mapped' => true,
-            'property' => 'label',
+            'choice_label' => 'label',
         ]);
     }
 

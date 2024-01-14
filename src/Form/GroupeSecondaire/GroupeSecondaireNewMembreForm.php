@@ -35,7 +35,7 @@ class GroupeSecondaireNewMembreForm extends AbstractType
                 'data-live-search' => 'true',
                 'placeholder' => 'Personnage',
             ],
-            'property' => 'nom',
+            'choice_label' => 'nom',
             'mapped' => false,
         ])
             ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter']);

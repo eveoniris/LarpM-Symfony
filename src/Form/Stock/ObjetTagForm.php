@@ -21,7 +21,7 @@ class ObjetTagForm extends AbstractType
             'label' => 'Choisissez les tags appliqués à cet objet',
             'required' => false,
             'multiple' => true,
-            'property' => 'nom',
+            'choice_label' => 'nom',
             'expanded' => true,
             'class' => \App\Entity\Tag::class,
         ])

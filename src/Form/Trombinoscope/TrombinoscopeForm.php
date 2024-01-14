@@ -26,7 +26,7 @@ class TrombinoscopeForm extends AbstractType
             ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Territoire::class,
-                'property' => 'nomComplet',
+                'choice_label' => 'nomComplet',
                 'label' => 'Par territoire',
                 'expanded' => false,
                 'query_builder' => static function (\LarpManager\Repository\TerritoireRepository $er) {
@@ -45,7 +45,7 @@ class TrombinoscopeForm extends AbstractType
             ->add('classe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Classe::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'label' => 'Par classe',
                 'expanded' => false,
                 'query_builder' => static function (\LarpManager\Repository\ClasseRepository $er) {
@@ -63,7 +63,7 @@ class TrombinoscopeForm extends AbstractType
             ->add('competence', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Competence::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'label' => 'Par competence',
                 'expanded' => false,
                 'query_builder' => static function (\LarpManager\Repository\CompetenceRepository $er) {
@@ -81,7 +81,7 @@ class TrombinoscopeForm extends AbstractType
             ->add('religion', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Religion::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'label' => 'Par religion',
                 'expanded' => false,
                 'query_builder' => static function (\LarpManager\Repository\ReligionRepository $er) {
@@ -99,7 +99,7 @@ class TrombinoscopeForm extends AbstractType
             ->add('language', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Langue::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'label' => 'Par langue',
                 'expanded' => false,
                 'query_builder' => static function (\LarpManager\Repository\LangueRepository $er) {
@@ -117,7 +117,7 @@ class TrombinoscopeForm extends AbstractType
             ->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Groupe::class,
-                'property' => 'nom',
+                'choice_label' => 'nom',
                 'label' => 'Par groupe',
                 'expanded' => false,
                 'query_builder' => static function (\LarpManager\Repository\GroupeRepository $er) {

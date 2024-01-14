@@ -444,7 +444,7 @@ class ForumController extends AbstractController
             $formBuilder->add('topic', 'entity', [
                 'required' => false,
                 'label' => 'Choisissez le topic parent',
-                'property' => 'title',
+                'choice_label' => 'title',
                 'class' => \App\Entity\Topic::class,
             ]);
         }

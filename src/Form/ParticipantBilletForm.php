@@ -25,7 +25,7 @@ class ParticipantBilletForm extends AbstractType
             'expanded' => true,
             'required' => true,
             'class' => \App\Entity\Billet::class,
-            'property' => 'fullLabel',
+            'choice_label' => 'fullLabel',
             'query_builder' => static function ($er) {
                 $qb = $er->createQueryBuilder('b');
                 $qb->orderBy('b.gn', 'ASC');

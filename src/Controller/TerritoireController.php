@@ -257,7 +257,7 @@ class TerritoireController extends AbstractController
                 'query_builder' => static function (ConstructionRepository $repo) {
                     return $repo->createQueryBuilder('c')->orderBy('c.label', 'ASC');
                 },
-                'property' => 'fullLabel',
+                'choice_label' => 'fullLabel',
                 'expanded' => true,
             ])
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);

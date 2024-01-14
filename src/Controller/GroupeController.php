@@ -594,7 +594,7 @@ class GroupeController extends AbstractController
             ->add('territoire', 'entity', [
                 'required' => true,
                 'class' => \App\Entity\Territoire::class,
-                'property' => 'nomComplet',
+                'choice_label' => 'nomComplet',
                 'label' => 'choisissez le territoire',
                 'expanded' => true,
                 'query_builder' => static function (\LarpManager\Repository\TerritoireRepository $er) {
@@ -639,7 +639,7 @@ class GroupeController extends AbstractController
             ->add('territoire', 'entity', [
                 'required' => true,
                 'class' => \App\Entity\Territoire::class,
-                'property' => 'nomComplet',
+                'choice_label' => 'nomComplet',
                 'label' => 'choisissez le territoire',
                 'expanded' => true,
                 'query_builder' => static function (\LarpManager\Repository\TerritoireRepository $er) {
@@ -973,7 +973,7 @@ class GroupeController extends AbstractController
                 'required' => false,
                 'expanded' => true,
                 'multiple' => false,
-                'property' => 'UserIdentity',
+                'choice_label' => 'UserIdentity',
                 'class' => \App\Entity\Participant::class,
                 'choices' => $participants,
             ])

@@ -39,7 +39,7 @@ class ClasseForm extends AbstractType
             ->add('competenceFamilyFavorites', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                     'label' => "Famille de compétences favorites (n'oubliez pas de cochez aussi la/les compétences acquises à la création)",
                     'required' => false,
-                    'property' => 'label',
+                    'choice_label' => 'label',
                     'multiple' => true,
                     'expanded' => true,
                     'mapped' => true,
@@ -48,7 +48,7 @@ class ClasseForm extends AbstractType
             ->add('competenceFamilyNormales', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                     'label' => 'Famille de compétences normales',
                     'required' => false,
-                    'property' => 'label',
+                    'choice_label' => 'label',
                     'multiple' => true,
                     'expanded' => true,
                     'mapped' => true,
@@ -57,7 +57,7 @@ class ClasseForm extends AbstractType
             ->add('competenceFamilyCreations', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                     'label' => 'Famille de compétences acquises à la création',
                     'required' => false,
-                    'property' => 'label',
+                    'choice_label' => 'label',
                     'multiple' => true,
                     'expanded' => true,
                     'mapped' => true,

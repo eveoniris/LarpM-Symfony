@@ -28,7 +28,7 @@ class BilletForm extends AbstractType
                 'multiple' => false,
                 'expanded' => false,
                 'class' => \App\Entity\Gn::class,
-                //'property' => 'label',
+                //'choice_label' => 'label',
             ])
             ->add('fedegn', ChoiceType::class, [
                 'label' => 'A transmettre à la Fédégn',

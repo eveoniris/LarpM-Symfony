@@ -27,7 +27,7 @@ class TerritoireCiblesForm extends AbstractType
             'multiple' => true,
             'expanded' => true,
             'mapped' => true,
-            'property' => 'nom',
+            'choice_label' => 'nom',
             'query_builder' => static function (EntityRepository $er) {
                 $qb = $er->createQueryBuilder('t');
                 $qb->where('t.territoire IS NULL');

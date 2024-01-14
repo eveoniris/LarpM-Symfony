@@ -24,7 +24,7 @@ class CompetenceAttributeForm extends AbstractType
                 'label' => 'Type',
                 'required' => true,
                 'class' => \App\Entity\AttributeType::class,
-                'property' => 'label',
+                'choice_label' => 'label',
             ])
             ->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => true,

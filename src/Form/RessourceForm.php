@@ -25,7 +25,7 @@ class RessourceForm extends AbstractType
             ->add('rarete', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Rareté',
                 'required' => true,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'multiple' => false,
                 'mapped' => true,
                 'class' => \App\Entity\Rarete::class,

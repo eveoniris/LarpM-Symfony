@@ -20,7 +20,7 @@ class ParticipantHasRestaurationType extends AbstractType
             'label' => 'Choisissez le lieu de restauration',
             'required' => true,
             'class' => \App\Entity\Restauration::class,
-            'property' => 'label',
+            'choice_label' => 'label',
         ]);
     }
 

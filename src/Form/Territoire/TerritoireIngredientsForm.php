@@ -27,7 +27,7 @@ class TerritoireIngredientsForm extends AbstractType
             'multiple' => true,
             'expanded' => true,
             'mapped' => true,
-            'property' => 'label',
+            'choice_label' => 'label',
             'query_builder' => static function (IngredientRepository $er) {
                 return $er->createQueryBuilder('i')->orderBy('i.label', 'ASC')->groupby('i.label');
             },

@@ -26,7 +26,7 @@ class PersonnageItemForm extends AbstractType
             'expanded' => true,
             'required' => false,
             'class' => \App\Entity\Item::class,
-            'property' => 'identitereverse',
+            'choice_label' => 'identitereverse',
             'query_builder' => static function (ItemRepository $er) {
                 return $er->createQueryBuilder('i')->orderBy('i.label', 'ASC');
             },

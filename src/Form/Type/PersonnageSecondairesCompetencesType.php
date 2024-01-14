@@ -19,7 +19,7 @@ class PersonnageSecondairesCompetencesType extends AbstractType
         $builder->add('competence', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'label' => false,
             'required' => true,
-            'property' => 'label',
+            'choice_label' => 'label',
             'class' => \App\Entity\Competence::class,
         ]);
     }

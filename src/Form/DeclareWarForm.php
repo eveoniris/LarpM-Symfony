@@ -28,7 +28,7 @@ class DeclareWarForm extends AbstractType
                     ->where('g.pj = true')
                     ->orderBy('g.nom', 'ASC');
             },
-            'property' => 'nom',
+            'choice_label' => 'nom',
         ])
             ->add('message', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Un petit mot pour expliquer votre démarche',

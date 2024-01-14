@@ -54,7 +54,7 @@ class DebriefingForm extends AbstractType
                 'required' => false,
                 'label' => 'Joueur',
                 'class' => User::class,
-                'property' => 'Username',
+                'choice_label' => 'Username',
                 'placeholder' => 'Choisissez le joueur qui vous a fourni ce debriefing',
                 'query_builder' => static function (UserRepository $p) {
                     $qb = $p->createQueryBuilder('p');
@@ -70,7 +70,7 @@ class DebriefingForm extends AbstractType
                 'required' => true,
                 'label' => 'Groupe',
                 'class' => Groupe::class,
-                'property' => 'nom',
+                'choice_label' => 'nom',
                 'query_builder' => static function (GroupeRepository $g) {
                     $qb = $g->createQueryBuilder('g');
                     $qb->orderBy('g.nom', 'ASC');
@@ -82,7 +82,7 @@ class DebriefingForm extends AbstractType
                 'required' => true,
                 'label' => 'GN',
                 'class' => Gn::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'placeholder' => 'Choisissez le GN auquel est lié ce debriefing',
                 'empty_data' => null,
             ])

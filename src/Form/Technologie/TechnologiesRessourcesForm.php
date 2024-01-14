@@ -26,7 +26,7 @@ class TechnologiesRessourcesForm extends AbstractType
     {
         $builder->add('ressource', EntityType::class, [
             'class' => Ressource::class,
-            'property' => 'label',
+            'choice_label' => 'label',
             'label' => 'Ressource requise',
         ])
             ->add('quantite', ChoiceType::class, [

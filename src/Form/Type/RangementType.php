@@ -20,7 +20,7 @@ class RangementType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('label', TextType::class, ['attr' => ['help' => 'Les trois premières lettres (avec le numéro de l\'objet) servirons à créer le code identifiant un objet']])
-            ->add('localisation', EntityType::class, ['required' => false, 'class' => \App\Entity\Localisation::class, 'property' => 'label'])
+            ->add('localisation', EntityType::class, ['required' => false, 'class' => \App\Entity\Localisation::class, 'choice_label' => 'label'])
             ->add('precision', TextareaType::class, ['required' => false, 'attr' => ['help' => '']]);
     }
 

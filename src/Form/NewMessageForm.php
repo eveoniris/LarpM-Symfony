@@ -30,7 +30,7 @@ class NewMessageForm extends AbstractType
                 'required' => true,
                 'label' => 'Destinataire',
                 'class' => \App\Entity\User::class,
-                'property' => 'UserName',
+                'choice_label' => 'UserName',
                 'attr' => [
                     'class' => 'selectpicker',
                     'data-live-search' => 'true',

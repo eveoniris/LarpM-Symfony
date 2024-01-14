@@ -25,7 +25,7 @@ class ParticipantNewForm extends AbstractType
             'expanded' => true,
             'required' => true,
             'class' => \App\Entity\Gn::class,
-            'property' => 'label',
+            'choice_label' => 'label',
         ])
             ->add('billet', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Choisissez le billet a donner à cet utilisateur',
@@ -33,7 +33,7 @@ class ParticipantNewForm extends AbstractType
                 'expanded' => true,
                 'required' => false,
                 'class' => \App\Entity\Billet::class,
-                'property' => 'fullLabel',
+                'choice_label' => 'fullLabel',
                 'query_builder' => static function ($er) {
                     $qb = $er->createQueryBuilder('b');
                     $qb->orderBy('b.gn', 'ASC');

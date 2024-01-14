@@ -11,7 +11,7 @@
 	</ol>
 	
 	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('gn.update',{'id': gn.id})}}) }}
+		{{ form_start(form, {"attr": {"action": path('gn.update',{'gn': gn.id})}}) }}
 			<fieldset>
 				<legend>Modification d'un grandeur nature</legend>
 					{{ form(form) }}

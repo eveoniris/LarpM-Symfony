@@ -21,7 +21,7 @@ class GroupeType extends AbstractType
                 'label' => 'Scénariste',
                 'required' => false,
                 'class' => \App\Entity\User::class,
-                'property' => 'name',
+                'choice_label' => 'name',
             ])
             ->add('jeu_strategique', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => false,

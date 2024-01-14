@@ -24,7 +24,7 @@ class ItemLinkForm extends AbstractType
             'mapped' => false,
             'label' => 'Personnage',
             'class' => \App\Entity\Personnage::class,
-            'property' => 'nom',
+            'choice_label' => 'nom',
             'attr' => [
                 'help' => 'Personnage qui possède cet objet',
             ],
@@ -34,7 +34,7 @@ class ItemLinkForm extends AbstractType
                 'mapped' => false,
                 'label' => 'Groupe',
                 'class' => \App\Entity\Groupe::class,
-                'property' => 'nom',
+                'choice_label' => 'nom',
                 'attr' => [
                     'help' => 'Groupe qui possède cet objet',
                 ],
@@ -44,7 +44,7 @@ class ItemLinkForm extends AbstractType
                 'mapped' => false,
                 'label' => 'Lieu',
                 'class' => \App\Entity\Lieu::class,
-                'property' => 'label',
+                'choice_label' => 'label',
                 'attr' => [
                     'help' => 'Lieu ou est entreposé cet objet',
                 ],
