@@ -196,7 +196,7 @@ class ObjetController extends AbstractController
     /**
      * Détail d'un objet de jeu.
      */
-    #[Route('/item/{id}', name: 'item.detail')]
+    #[Route('/item/{item}', name: 'item.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Item $item)
     {
         return $this->render('admin/objet/detail.twig', [
@@ -207,7 +207,7 @@ class ObjetController extends AbstractController
     /**
      * Mise à jour d'un objet de jeu.
      */
-    #[Route('/item/{id}/update', name: 'item.update')]
+    #[Route('/item/{item}/update', name: 'item.update')]
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Item $item)
     {
         $form = $this->createForm(ItemForm::class, $item);

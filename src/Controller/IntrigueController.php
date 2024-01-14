@@ -7,11 +7,13 @@ use App\Entity\Intrigue;
 use App\Entity\IntrigueHasModification;
 use App\Entity\Relecture;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use JasonGrimes\Paginator;
 use App\Form\Intrigue\IntrigueDeleteForm;
 use App\Form\Intrigue\IntrigueFindForm;
 use App\Form\Intrigue\IntrigueForm;
 use App\Form\Intrigue\IntrigueRelectureForm;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -69,6 +71,7 @@ class IntrigueController extends AbstractController
     /**
      * Lire une intrigue.
      */
+    #[Route('/intrigue/{intrigue}', name: 'intrigue.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
     {
         return $this->render('admin/intrigue/detail.twig', [
@@ -79,6 +82,7 @@ class IntrigueController extends AbstractController
     /**
      * Ajouter une intrigue.
      */
+    #[Route('/intrigue/add', name: 'intrigue.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $intrigue = new Intrigue();
@@ -170,6 +174,7 @@ class IntrigueController extends AbstractController
     /**
      * Mettre à jour une intrigue.
      */
+    #[Route('/intrigue/{intrigue}/update', name: 'intrigue.update')]
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
     {
         $originalIntrigueHasGroupes = new ArrayCollection();
@@ -382,6 +387,7 @@ class IntrigueController extends AbstractController
     /**
      * Supression d'une intrigue.
      */
+    #[Route('/intrigue/{intrigue}/delete', name: 'intrigue.delete')]
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
     {
         $form = $this->createForm(IntrigueDeleteForm::class, $intrigue)
@@ -408,6 +414,7 @@ class IntrigueController extends AbstractController
     /**
      * Ajout d'une relecture.
      */
+    #[Route('/intrigue/{intrigue}/relecture', name: 'intrigue.relecture')]
     public function relectureAddAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
     {
         $relecture = new Relecture();

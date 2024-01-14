@@ -4,10 +4,13 @@
 namespace App\Controller;
 
 use App\Entity\Background;
+use App\Entity\Groupe;
 use JasonGrimes\Paginator;
 use App\Form\BackgroundDeleteForm;
 use App\Form\BackgroundFindForm;
 use App\Form\BackgroundForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -71,6 +74,7 @@ class BackgroundController extends AbstractController
     /**
      * Impression de tous les backgrounds de groupe.
      */
+    #[Route('/background/print', name: 'background.print')]
     public function printAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $gns = $entityManager->getRepository('\\'.\App\Entity\Gn::class)->findActive();
@@ -92,6 +96,7 @@ class BackgroundController extends AbstractController
     /**
      * Impression de tous les backgrounds de personnage.
      */
+    #[Route('/background/print/perso', name: 'background.print.perso')]
     public function personnagePrintAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $gns = $entityManager->getRepository('\\'.\App\Entity\Gn::class)->findActive();
@@ -113,17 +118,11 @@ class BackgroundController extends AbstractController
     /**
      * Ajout d'un background.
      */
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/background/add/{groupe}', name: 'background.add')]
+    public function addAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $background = new \App\Entity\Background();
-        $groupeId = $request->get('groupe');
-
-        if ($groupeId) {
-            $groupe = $entityManager->find('\\'.\App\Entity\Groupe::class, $groupeId);
-            if ($groupe) {
-                $background->setGroupe($groupe);
-            }
-        }
+        $background->setGroupe($groupe);
 
         $form = $this->createForm(BackgroundForm::class, $background)
             ->add('visibility', 'choice', [
@@ -155,6 +154,7 @@ class BackgroundController extends AbstractController
     /**
      * Suppression d'un background.
      */
+    #[Route('/background/{background}/delete', name: 'background.delete')]
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Background $background)
     {
         $form = $this->createForm(BackgroundDeleteForm::class, $background)
@@ -181,6 +181,7 @@ class BackgroundController extends AbstractController
     /**
      * Mise à jour d'un background.
      */
+    #[Route('/background/{background}/update', name: 'background.update')]
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Background $background)
     {
         $form = $this->createForm(BackgroundForm::class, $background)
@@ -214,6 +215,7 @@ class BackgroundController extends AbstractController
     /**
      * Détail d'un background.
      */
+    #[Route('/background/{background}', name: 'background.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Background $background)
     {
         return $this->render('admin/background/detail.twig', [

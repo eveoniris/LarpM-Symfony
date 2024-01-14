@@ -16,8 +16,10 @@ use App\Form\Territoire\TerritoireIngredientsForm;
 use App\Form\Territoire\TerritoireLoiForm;
 use App\Form\Territoire\TerritoireStatutForm;
 use App\Form\Territoire\TerritoireStrategieForm;
+use Doctrine\ORM\EntityManagerInterface;
 use LarpManager\Repository\ConstructionRepository;
 use LarpManager\Repository\TerritoireRepository;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -207,10 +209,9 @@ class TerritoireController extends AbstractController
     /**
      * Detail d'un territoire.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/territoire/{territoire}', name: 'territoire.detail')]
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
     {
-        $territoire = $request->get('territoire');
-
         return $this->render('admin/territoire/detail.twig', ['territoire' => $territoire]);
     }
 

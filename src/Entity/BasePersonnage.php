@@ -135,12 +135,10 @@ class BasePersonnage
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
     protected Collection $users;
 
-    /*
     #[OneToMany(mappedBy: 'suzerain', targetEntity: GroupeGn::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'suzerain_id', nullable: 'false')]
     protected Collection $groupeGns;
-    */
-
+    
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'personnages')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
     protected Groupe $groupe;

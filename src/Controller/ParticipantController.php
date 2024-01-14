@@ -458,6 +458,7 @@ class ParticipantController extends AbstractController
     /**
      * Retire un personnage à un participant.
      */
+    #[Route('/participant/{participant}/remove/{personnage}', name: 'participant.personnage.remove')]
     public function personnageRemoveAction(Request $request,  EntityManagerInterface $entityManager, Participant $participant, Personnage $personnage)
     {
         $groupeGn = $participant->getGroupeGn();

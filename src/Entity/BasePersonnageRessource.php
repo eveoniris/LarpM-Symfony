@@ -25,11 +25,11 @@ abstract class BasePersonnageRessource
 
     #[ManyToOne(targetEntity: Personnage::class, cascade: ['persist', 'remove'], inversedBy: 'personnageRessources')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Personnage $personnage;
+    protected ?Personnage $personnage;
 
     #[ManyToOne(targetEntity: Ressource::class, inversedBy: 'personnageRessources')]
     #[JoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Ressource $ressource;
+    protected ?Ressource $ressource;
 
     /**
      * Set the value of id.
@@ -62,7 +62,7 @@ abstract class BasePersonnageRessource
     /**
      * Get the value of nombre.
      */
-    public function getNombre(): int
+    public function getNombre(): ?int
     {
         return $this->nombre;
     }
@@ -98,7 +98,7 @@ abstract class BasePersonnageRessource
     /**
      * Get Ressource entity (many to one).
      */
-    public function getRessource(): ?Resource
+    public function getRessource(): ?Ressource
     {
         return $this->ressource;
     }

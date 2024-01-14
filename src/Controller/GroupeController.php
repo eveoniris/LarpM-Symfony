@@ -9,6 +9,7 @@ use App\Entity\GroupeHasIngredient;
 use App\Entity\GroupeHasRessource;
 use App\Entity\Personnage;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use JasonGrimes\Paginator;
 use App\Form\BackgroundForm;
 use App\Form\Groupe\GroupeCompositionForm;
@@ -34,7 +35,8 @@ class GroupeController extends AbstractController
     /**
      * Modifier la composition du groupe.
      */
-    public function compositionAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
+    #[Route('/groupe/{groupe}/composition', name: 'groupe.composition')]
+    public function compositionAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $originalGroupeClasses = new ArrayCollection();
 
@@ -86,7 +88,8 @@ class GroupeController extends AbstractController
     /**
      * Modification de la description du groupe.
      */
-    public function descriptionAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
+    #[Route('/groupe/{groupe}/description', name: 'groupe.description')]
+    public function descriptionAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $form = $this->createForm(GroupeDescriptionForm::class, $groupe)
             ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
@@ -112,7 +115,8 @@ class GroupeController extends AbstractController
     /**
      * Choix du scenariste.
      */
-    public function scenaristeAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
+    #[Route('/groupe/{groupe}/scenariste', name: 'groupe.scenariste')]
+    public function scenaristeAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $form = $this->createForm(GroupeScenaristeForm::class, $groupe)
             ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
@@ -225,9 +229,9 @@ class GroupeController extends AbstractController
     /**
      * Générateur de quêtes commerciales.
      */
-    public function queteAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupe/{groupe}/quete', name: 'groupe.quete')]
+    public function queteAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
-        $groupe = $request->get('groupe');
         $ressourceRares = new ArrayCollection($entityManager->getRepository('\\'.\App\Entity\Ressource::class)->findRare());
         $ressourceCommunes = new ArrayCollection($entityManager->getRepository('\\'.\App\Entity\Ressource::class)->findCommun());
         $quete = $app['larp.manager']->generateQuete($groupe, $ressourceCommunes, $ressourceRares);
@@ -244,7 +248,8 @@ class GroupeController extends AbstractController
     /**
      * Modifie les ingredients du groupe.
      */
-    public function adminIngredientAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
+    #[Route('/groupe/{groupe}/ingredients', name: 'groupe.ingredients')]
+    public function adminIngredientAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $originalGroupeHasIngredients = new ArrayCollection();
 
@@ -306,7 +311,7 @@ class GroupeController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/ingredient.twig', [
+        return $this->render('groupe/ingredient.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -315,7 +320,8 @@ class GroupeController extends AbstractController
     /**
      * Modifie les ressources du groupe.
      */
-    public function adminRessourceAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
+    #[Route('/groupe/{groupe}/ressources', name: 'groupe.ressources')]
+    public function adminRessourceAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $originalGroupeHasRessources = new ArrayCollection();
 
@@ -396,7 +402,7 @@ class GroupeController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/ressource.twig', [
+        return $this->render('groupe/ressource.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -405,7 +411,8 @@ class GroupeController extends AbstractController
     /**
      * AModifie la richesse du groupe.
      */
-    public function adminRichesseAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
+    #[Route('/groupe/{groupe}/richesse', name: 'groupe.richesse')]
+    public function adminRichesseAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $form = $this->createForm(GroupeRichesseForm::class, $groupe)
             ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
@@ -431,7 +438,8 @@ class GroupeController extends AbstractController
     /**
      * Ajoute un document dans le matériel du groupe.
      */
-    public function adminDocumentAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
+    #[Route('/groupe/{groupe}/documents', name: 'groupe.documents')]
+    public function adminDocumentAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $form = $this->createForm(GroupeDocumentForm::class, $groupe)
             ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
@@ -448,7 +456,7 @@ class GroupeController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/documents.twig', [
+        return $this->render('groupe/documents.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -457,7 +465,8 @@ class GroupeController extends AbstractController
     /**
      * Gestion des objets du groupe.
      */
-    public function adminItemAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
+    #[Route('/groupe/{groupe}/items', name: 'groupe.items')]
+    public function adminItemAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $form = $this->createForm(GroupeItemForm::class, $groupe)
             ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
@@ -474,7 +483,7 @@ class GroupeController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/items.twig', [
+        return $this->render('groupe/items.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -483,7 +492,8 @@ class GroupeController extends AbstractController
     /**
      * Gestion de l'enveloppe de groupe.
      */
-    public function envelopeAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
+    #[Route('/groupe/{groupe}/envelope', name: 'groupe.envelope')]
+    public function envelopeAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $form = $this->createForm(GroupeEnvelopeForm::class, $groupe)
             ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
@@ -500,7 +510,7 @@ class GroupeController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/envelope.twig', [
+        return $this->render('groupe/envelope.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -519,7 +529,8 @@ class GroupeController extends AbstractController
     /**
      * vérouillage d'un groupe.
      */
-    public function lockAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
+    #[Route('/groupe/{groupe}/lock', name: 'groupe.lock')]
+    public function lockAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $groupe->setLock(true);
         $entityManager->persist($groupe);
@@ -533,7 +544,8 @@ class GroupeController extends AbstractController
     /**
      * devérouillage d'un groupe.
      */
-    public function unlockAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
+    #[Route('/groupe/{groupe}/unlock', name: 'groupe.unlock')]
+    public function unlockAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $groupe->setLock(false);
         $entityManager->persist($groupe);
@@ -575,10 +587,9 @@ class GroupeController extends AbstractController
     /**
      * Lier un pays à un groupe.
      */
-    public function paysAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupe/{groupe}/pays', name: 'groupe.pays')]
+    public function paysAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
-        $groupe = $request->get('groupe');
-
         $form = $this->createForm()
             ->add('territoire', 'entity', [
                 'required' => true,
@@ -621,10 +632,9 @@ class GroupeController extends AbstractController
     /**
      * Ajout d'un territoire sous le controle du groupe.
      */
-    public function territoireAddAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupe/{groupe}/territoire/add', name: 'groupe.territoire.add')]
+    public function territoireAddAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
-        $groupe = $request->get('groupe');
-
         $form = $this->createForm()
             ->add('territoire', 'entity', [
                 'required' => true,
@@ -666,11 +676,9 @@ class GroupeController extends AbstractController
     /**
      * Retirer un territoire du controle du groupe.
      */
-    public function territoireRemoveAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupe/{groupe}/territoire/{territoire}/remove', name: 'groupe.territoire.remove')]
+    public function territoireRemoveAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe, Territoire $territoire)
     {
-        $groupe = $request->get('groupe');
-        $territoire = $request->get('territoire');
-
         $form = $this->createForm()
             ->add('remove', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Retirer le territoire']);
 
@@ -697,9 +705,9 @@ class GroupeController extends AbstractController
     /**
      * Gestion de la restauration d'un groupe.
      */
-    public function restaurationAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupe/{groupe}/restauration', name: 'groupe.restauration')]
+    public function restaurationAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
-        $groupe = $request->get('groupe');
         $availableTaverns = $app['larp.manager']->getAvailableTaverns();
 
         $formBuilder = $this->createForm();
@@ -756,7 +764,8 @@ class GroupeController extends AbstractController
     /**
      * Impression matériel pour les personnages du groupe.
      */
-    public function printMaterielAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupe/{groupe}/print/materiel', name: 'groupe.print.materiel')]
+    public function printMaterielAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $groupe = $request->get('groupe');
 
@@ -773,10 +782,9 @@ class GroupeController extends AbstractController
     /**
      * Impression background pour les personnages du groupe.
      */
-    public function printBackgroundAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupe/{groupe}/print/background', name: 'groupe.print.background')]
+    public function printBackgroundAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
-        $groupe = $request->get('groupe');
-
         return $this->render('admin/groupe/printBackground.twig', [
             'groupe' => $groupe,
         ]);
@@ -785,7 +793,8 @@ class GroupeController extends AbstractController
     /**
      * Imprimmer toutes les enveloppes de tous les groupes.
      */
-    public function printAllAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupe/{groupe}/print', name: 'groupe.print')]
+    public function printAllAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $gn = $app['larp.manager']->getGnActif();
         $groupeGns = $gn->getGroupeGns();
@@ -811,10 +820,9 @@ class GroupeController extends AbstractController
     /**
      * Impression matériel pour le groupe.
      */
-    public function printMaterielGroupeAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupe/{groupe}/print/materiel/groupe', name: 'groupe.print.materiel.groupe')]
+    public function printMaterielGroupeAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
-        $groupe = $request->get('groupe');
-
         // recherche les personnages du prochains GN membre du groupe
         $session = $groupe->getNextSession();
         $participants = $session->getParticipants();
@@ -834,10 +842,9 @@ class GroupeController extends AbstractController
     /**
      * Impression fiche de perso pour le groupe.
      */
-    public function printPersoAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupe/{groupe}/print/perso', name: 'groupe.print.perso')]
+    public function printPersoAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
-        $groupe = $request->get('groupe');
-
         // recherche les personnages du prochains GN membre du groupe
         $session = $groupe->getNextSession();
         $participants = $session->getParticipants();
@@ -1239,7 +1246,7 @@ class GroupeController extends AbstractController
     /**
      * Modification d'un groupe.
      */
-    #[Route('/groupe/update/{id}', name: 'groupe.update')]
+    #[Route('/groupe/update/{groupe}', name: 'groupe.update')]
     public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $id = $request->get('index');
@@ -1353,19 +1360,15 @@ class GroupeController extends AbstractController
     /**
      * Affiche le détail d'un groupe.
      */
-    #[Route('/groupe/detail/{id}', name: 'groupe.detail')]
+    #[Route('/groupe/{groupe}', name: 'groupe.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
-        $id = $request->get('index');
-
-        $groupe = $entityManager->find('\\'.\App\Entity\Groupe::class, $id);
-
         /*
          * Si le groupe existe, on affiche son détail
          * Sinon on envoi une erreur
          */
         if ($groupe) {
-            return $this->render('admin/groupe/detail.twig', ['groupe' => $groupe]);
+            return $this->render('groupe/detail.twig', ['groupe' => $groupe]);
         } else {
            $this->addFlash('error', 'Le groupe n\'a pas été trouvé.');
 

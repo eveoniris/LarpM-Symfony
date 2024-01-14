@@ -9,6 +9,8 @@ use JasonGrimes\Paginator;
 use App\Form\Debriefing\DebriefingDeleteForm;
 use App\Form\Debriefing\DebriefingFindForm;
 use App\Form\Debriefing\DebriefingForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -76,17 +78,11 @@ class DebriefingController extends AbstractController
     /**
      * Ajout d'un debriefing.
      */
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/debriefing/add/{groupe}', name: 'debriefing.add')]
+    public function addAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
         $debriefing = new Debriefing();
-        $groupeId = $request->get('groupe');
-
-        if ($groupeId) {
-            $groupe = $entityManager->find(Groupe::class, $groupeId);
-            if ($groupe) {
-                $debriefing->setGroupe($groupe);
-            }
-        }
+        $debriefing->setGroupe($groupe);
 
         $form = $this->createForm(DebriefingForm::class, $debriefing)
             ->add('visibility', 'choice', [

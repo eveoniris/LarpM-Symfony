@@ -47,12 +47,12 @@
 								      			<span class="caret"></span>
 								    		</a>
 											<ul class="dropdown-menu">
-												<li><a href="{{ path('personnage.admin.statut', {'id':personnage.id}) }}">Modifier le statut (vivant/mort)</a></li>
-												<li><a href="{{ path('personnage.admin.update.age',{'id': personnage.id}) }}">Modifier l'age</a></li>
-												<li><a href="{{ path('personnage.admin.update', {'id':personnage.id}) }}">Modifier (nom/surnom/etc ...)</a></li>
-												<li><a href="{{ path('personnage.admin.transfert', {'id':personnage.id}) }}">Transférer à un autre joueur</a></li>
-												<li><a href="{{ path('personnage.export', {'id':personnage.id}) }}">Imprimer</a></li>
-												<li><a href="{{ path('personnage.admin.delete', {'id':personnage.id}) }}">Supprimer</a></li>
+												<li><a href="{{ path('personnage.admin.statut', {'personnage':personnage.id}) }}">Modifier le statut (vivant/mort)</a></li>
+												<li><a href="{{ path('personnage.admin.update.age',{'personnage': personnage.id}) }}">Modifier l'age</a></li>
+												<li><a href="{{ path('personnage.admin.update', {'personnage':personnage.id}) }}">Modifier (nom/surnom/etc ...)</a></li>
+												<li><a href="{{ path('personnage.admin.transfert', {'personnage':personnage.id}) }}">Transférer à un autre joueur</a></li>
+												<li><a href="{{ path('personnage.export', {'personnage':personnage.id}) }}">Imprimer</a></li>
+												<li><a href="{{ path('personnage.admin.delete', {'personnage':personnage.id}) }}">Supprimer</a></li>
 											</ul>
 										</li>
 	  								</ul>
@@ -62,7 +62,7 @@
 	  					
 	  					<div class="panel-body">
 						  	<p><strong>Numéro : </strong>{{ personnage.id }}</p> 
-	  						<p><strong>Joueur : </strong>{% if personnage.user %}<a href="{{path('user.view',{'id': personnage.user.id}) }}"> {{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}</a>{% else %}Ce personnage n'est pas lié à un joueur</p>{% endif %}
+	  						<p><strong>Joueur : </strong>{% if personnage.user %}<a href="{{path('user.view',{'user': personnage.user.id}) }}"> {{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}</a>{% else %}Ce personnage n'est pas lié à un joueur</p>{% endif %}
 		  					<p>Ce personnage {% if personnage.intrigue %}<strong class="text-success">participe aux intrigues</strong>{% else %}<strong class="text-danger">ne participe pas aux intrigues{% endif %}</strong>.</p>
 							{% if personnage.isSensible %}<p>Ce personnage est <strong class="text-success">sensible</strong>.
 							<a role="button" data-toggle="collapse" href="#sensibility" aria-expanded="false" aria-controls="collapseExample">
@@ -98,7 +98,7 @@
 										{% if participant.personnage %}
 											{% if participant.groupeGn %}
 												{% if participant.groupeGn.groupe %}
-													<a class="list-group-item" href="{{ path('groupe.detail', {'id': participant.groupeGn.groupe.id}) }}">#{{ participant.personnage.id}} {{ participant.personnage.nom }} - {{ participant.gn }} - #{{ participant.groupeGn.groupe.numero }} {{ participant.groupeGn.groupe.nom }}</a>
+													<a class="list-group-item" href="{{ path('groupe.detail', {'groupe': participant.groupeGn.groupe.id}) }}">#{{ participant.personnage.id}} {{ participant.personnage.nom }} - {{ participant.gn }} - #{{ participant.groupeGn.groupe.numero }} {{ participant.groupeGn.groupe.nom }}</a>
 												{% else %}
 													<a class="list-group-item">{{ participant.personnage.nom }} - {{ participant.gn }} - N'est pas lié à un groupe</a>
 												{% endif %}
@@ -156,18 +156,18 @@
 								      			<span class="caret"></span>
 								    		</a>
 											<ul class="dropdown-menu">
-												<li><a href="{{ path('personnage.admin.update.renomme', {'id': personnage.id}) }}">Modifier la Renommée</a></li>
-												<li><a href="{{ path('personnage.admin.update.heroisme', {'id': personnage.id}) }}">Modifier l'Héroïsme</a></li>
-												<li><a href="{{ path('personnage.admin.update.pugilat', {'id': personnage.id}) }}">Modifier le Pugilat</a></li>
-												<li><a href="{{ path('personnage.admin.update.domaine', {'id': personnage.id}) }}">Modifier la liste des domaines de magie</a></li>
-												<li><a href="{{ path('personnage.admin.add.religion', {'id': personnage.id}) }}">Ajouter une religion</a></li>
-												<li><a href="{{ path('personnage.admin.update.origine', {'id': personnage.id}) }}">Modifier l'origine</a></li>
-												<li><a href="{{ path('personnage.admin.update.langue', {'id': personnage.id}) }}">Modifier les langages</a></li>
-												<li><a href="{{ path('personnage.admin.update.sort', {'id': personnage.id}) }}">Modifier la liste des sorts</a></li>
-												<li><a href="{{ path('personnage.admin.update.potion', {'id': personnage.id}) }}">Modifier la liste des potions</a></li>
-												<li><a href="{{ path('personnage.admin.update.priere', {'id': personnage.id}) }}">Modifier la liste des prieres</a></li>
-												<li><a href="{{ path('personnage.admin.update.technologie', {'id': personnage.id}) }}">Modifier la liste des technologies</a></li>
-												<li><a href="{{ path('personnage.admin.update.connaissance', {'id': personnage.id}) }}">Modifier la liste des connaissances</a></li>
+												<li><a href="{{ path('personnage.admin.update.renomme', {'personnage': personnage.id}) }}">Modifier la Renommée</a></li>
+												<li><a href="{{ path('personnage.admin.update.heroisme', {'personnage': personnage.id}) }}">Modifier l'Héroïsme</a></li>
+												<li><a href="{{ path('personnage.admin.update.pugilat', {'personnage': personnage.id}) }}">Modifier le Pugilat</a></li>
+												<li><a href="{{ path('personnage.admin.update.domaine', {'personnage': personnage.id}) }}">Modifier la liste des domaines de magie</a></li>
+												<li><a href="{{ path('personnage.admin.add.religion', {'personnage': personnage.id}) }}">Ajouter une religion</a></li>
+												<li><a href="{{ path('personnage.admin.update.origine', {'personnage': personnage.id}) }}">Modifier l'origine</a></li>
+												<li><a href="{{ path('personnage.admin.update.langue', {'personnage': personnage.id}) }}">Modifier les langages</a></li>
+												<li><a href="{{ path('personnage.admin.update.sort', {'personnage': personnage.id}) }}">Modifier la liste des sorts</a></li>
+												<li><a href="{{ path('personnage.admin.update.potion', {'personnage': personnage.id}) }}">Modifier la liste des potions</a></li>
+												<li><a href="{{ path('personnage.admin.update.priere', {'personnage': personnage.id}) }}">Modifier la liste des prieres</a></li>
+												<li><a href="{{ path('personnage.admin.update.technologie', {'personnage': personnage.id}) }}">Modifier la liste des technologies</a></li>
+												<li><a href="{{ path('personnage.admin.update.connaissance', {'personnage': personnage.id}) }}">Modifier la liste des connaissances</a></li>
 											</ul>
 										</li>
 	  								</ul>
@@ -217,7 +217,7 @@
 							<h6>Religions :</h6>
 							<div class="list-group">
 								{% for personnageReligion in personnage.personnagesReligions %}
-									<div class="list-group-item">{% if personnageReligion.religion.secret %}<span style="color:red;">Secret</span> - {% endif %}{{ personnageReligion.religion.label }} - {{ personnageReligion.religionLevel.label }} - <a href="{{ path('personnage.admin.delete.religion', {'id': personnage.id, 'personnageReligion': personnageReligion.id }) }}">Supprimer</a></div>
+									<div class="list-group-item">{% if personnageReligion.religion.secret %}<span style="color:red;">Secret</span> - {% endif %}{{ personnageReligion.religion.label }} - {{ personnageReligion.religionLevel.label }} - <a href="{{ path('personnage.admin.delete.religion', {'personnage': personnage.id, 'personnageReligion': personnageReligion.id }) }}">Supprimer</a></div>
 								{% else %}
 									<div class="list-group-item-text">Sans - Fervent</div>
 								{% endfor %}
@@ -230,7 +230,7 @@
 							{% endif %}
 							<div class="list-group">
 								{% for personnageLangue in personnage.personnageLangues %}
-									<div class="list-group-item">{% if personnageLangue.langue.secret %}<span style="color:red;">Secret</span> - {% endif %}<strong>{{ personnageLangue.langue}}</strong> ({{ personnageLangue.source }}) - <a href="{{ path('personnage.admin.delete.langue', {'id': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Supprimer</a></div>
+									<div class="list-group-item">{% if personnageLangue.langue.secret %}<span style="color:red;">Secret</span> - {% endif %}<strong>{{ personnageLangue.langue}}</strong> ({{ personnageLangue.source }}) - <a href="{{ path('personnage.admin.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Supprimer</a></div>
 								{% endfor %}
 							</div>
 
@@ -326,8 +326,8 @@
 								      			<span class="caret"></span>
 								    		</a>
 											<ul class="dropdown-menu">
-												<!-- <li><a href="{{ path('personnage.admin.add.token', {'id': personnage.id, 'token': 'VIEILLESSE'}) }}">Ajouter un jeton vieillesse</a></li>-->
-												<li><a href="{{ path('personnage.admin.add.trigger', {'id': personnage.id}) }}">Ajouter un déclencheur de compétences</a></li>
+												<!-- <li><a href="{{ path('personnage.admin.add.token', {'personnage': personnage.id, 'token': 'VIEILLESSE'}) }}">Ajouter un jeton vieillesse</a></li>-->
+												<li><a href="{{ path('personnage.admin.add.trigger', {'personnage': personnage.id}) }}">Ajouter un déclencheur de compétences</a></li>
 											</ul>
 										</li>
 	  								</ul>
@@ -341,7 +341,7 @@
 								{% for personnageToken in personnage.personnageHasTokens %}
 									<div class="list-group-item">
 										{{ personnageToken.token.label }}
-										-- <a href="{{ path('personnage.admin.delete.token', {'id': personnage.id, 'personnageHasToken': personnageToken.id}) }}">Supprimer</a>
+										-- <a href="{{ path('personnage.admin.delete.token', {'personnage': personnage.id, 'personnageHasToken': personnageToken.id}) }}">Supprimer</a>
 									</div>
 								{% else %}
 									<div class="list-group-item">La liste est vide</div>
@@ -353,7 +353,7 @@
 								{% for trigger in personnage.personnageTriggers %}
 									<div class="list-group-item">
 										{{ trigger.tag }}
-										-- <a href="{{ path('personnage.admin.delete.trigger', {'id': personnage.id, 'trigger': trigger.id}) }}">Supprimer</a>
+										-- <a href="{{ path('personnage.admin.delete.trigger', {'personnage': personnage.id, 'trigger': trigger.id}) }}">Supprimer</a>
 									</div>
 								{% else %}
 									<div class="list-group-item">La liste est vide</div>
@@ -379,7 +379,7 @@
 								      			<span class="caret"></span>
 								    		</a>
 											<ul class="dropdown-menu">
-												<li><a href="{{ path('personnage.update.trombine', {'id': personnage.id}) }}">Modifier la trombine</a></li>
+												<li><a href="{{ path('personnage.update.trombine', {'personnage': personnage.id}) }}">Modifier la trombine</a></li>
 											</ul>
 										</li>
 	  								</ul>
@@ -410,13 +410,13 @@
 								      			<span class="caret"></span>
 								    		</a>
 											<ul class="dropdown-menu">
-												<li><a href="{{ path('personnage.documents', {'id': personnage.id}) }}">Modifier la liste des documents</a></li>
-												<li><a href="{{ path('personnage.items', {'id': personnage.id}) }}">Modifier la liste des objets</a></li>
-												<li><a href="{{ path('personnage.admin.update.ingredient', {'id': personnage.id}) }}">Modifier la liste des ingrédients</a></li>
-												<li><a href="{{ path('personnage.admin.update.ressource', {'id': personnage.id}) }}">Modifier la liste des ressources</a></li>
-												<li><a href="{{ path('personnage.admin.update.richesse', {'id': personnage.id}) }}">Modifier la richesse</a></li>
-												<li><a href="{{ path('personnage.update.materiel', {'id': personnage.id}) }}">Modifier le matériel</a></li>
-												<li><a href="{{ path('personnage.enveloppe.print', {'id':personnage.id}) }}">Imprimer l'enveloppe</a></li>
+												<li><a href="{{ path('personnage.documents', {'personnage': personnage.id}) }}">Modifier la liste des documents</a></li>
+												<li><a href="{{ path('personnage.items', {'personnage': personnage.id}) }}">Modifier la liste des objets</a></li>
+												<li><a href="{{ path('personnage.admin.update.ingredient', {'personnage': personnage.id}) }}">Modifier la liste des ingrédients</a></li>
+												<li><a href="{{ path('personnage.admin.update.ressource', {'personnage': personnage.id}) }}">Modifier la liste des ressources</a></li>
+												<li><a href="{{ path('personnage.admin.update.richesse', {'personnage': personnage.id}) }}">Modifier la richesse</a></li>
+												<li><a href="{{ path('personnage.update.materiel', {'personnage': personnage.id}) }}">Modifier le matériel</a></li>
+												<li><a href="{{ path('personnage.enveloppe.print', {'personnage':personnage.id}) }}">Imprimer l'enveloppe</a></li>
 											</ul>
 										</li>
 	  								</ul>
@@ -483,7 +483,7 @@
 								<div class="list-group-item">
 									<h6 class="list-group-item-heading">Objets :</h6>
 									{% for item in personnage.items %}
-										<div class="list-group-item-text"><a href="{{ path('item.detail', {'id':item.id}) }}"><strong>{{ item.numero }}</strong> - {{ item.label }}</a></div>
+										<div class="list-group-item-text"><a href="{{ path('item.detail', {'item':item.id}) }}"><strong>{{ item.numero }}</strong> - {{ item.label }}</a></div>
 									{% else %}
 										<div class="list-group-item-text">Aucun</div>
 									{% endfor %}
@@ -538,9 +538,9 @@
 								      			<span class="caret"></span>
 								    		</a>
 											<ul class="dropdown-menu">
-												<li><a href="{{ path('personnage.admin.xp', {'id':personnage.id}) }}">Ajouter des points d'expérience</a></li>
-												<li><a href="{{ path('personnage.admin.add.competence', {'id':personnage.id}) }}">Ajouter une compétence</a></li>
-												<li><a href="{{ path('personnage.admin.delete.competence', {'id':personnage.id}) }}">Retirer la dernière compétence acquise</a></li>
+												<li><a href="{{ path('personnage.admin.xp', {'personnage':personnage.id}) }}">Ajouter des points d'expérience</a></li>
+												<li><a href="{{ path('personnage.admin.add.competence', {'personnage':personnage.id}) }}">Ajouter une compétence</a></li>
+												<li><a href="{{ path('personnage.admin.delete.competence', {'personnage':personnage.id}) }}">Retirer la dernière compétence acquise</a></li>
 											</ul>
 										</li>
 	  								</ul>
@@ -586,7 +586,7 @@
 								      			<span class="caret"></span>
 								    		</a>
 											<ul class="dropdown-menu">
-												<li><a href="{{ path('personnage.admin.add.lignee', {'id': personnage.id}) }}">Ajouter une lignée</a></li>
+												<li><a href="{{ path('personnage.admin.add.lignee', {'personnage': personnage.id}) }}">Ajouter une lignée</a></li>
 											</ul>
 										</li>
 	  								</ul>
@@ -601,7 +601,7 @@
 											</a>
 											{% for lignage in personnage.personnageLignee %}
 											<ul class="dropdown-menu">
-												<li><a href="{{ path('personnage.admin.delete.lignee', {'id': personnage.id, 'personnageLignee' : lignage.id }) }}">Retirer</a></li>
+												<li><a href="{{ path('personnage.admin.delete.lignee', {'personnage': personnage.id, 'personnageLignee' : lignage.id }) }}">Retirer</a></li>
 											</ul>
 											{% endfor %}
 										</li>
@@ -669,7 +669,7 @@
 								      			<span class="caret"></span>
 								    		</a>
 											<ul class="dropdown-menu">
-												<li><a href="{{ path('personnage.admin.add.chronologie', {'id': personnage.id}) }}">Ajouter un evenement</a></li>
+												<li><a href="{{ path('personnage.admin.add.chronologie', {'personnage': personnage.id}) }}">Ajouter un evenement</a></li>
 											</ul>
 										</li>
 	  								</ul>
@@ -706,7 +706,7 @@
 								      			<span class="caret"></span>
 								    		</a>
 											<ul class="dropdown-menu">
-												<li><a href="{{ path('personnage.admin.add.background', {'id': personnage.id}) }}">Ajouter un background</a></li>
+												<li><a href="{{ path('personnage.admin.add.background', {'personnage': personnage.id}) }}">Ajouter un background</a></li>
 											</ul>
 										</li>
 	  								</ul>
@@ -720,7 +720,7 @@
 									{% if personnage.personnageBackgrounds|length > 0 %}
 										{% for background in personnage.personnageBackgrounds %}
 											<h6 class="list-group-item-heading">Background ({{ background.gn.label }}) - <strong>{{ background.visibility }}</strong></h6>
-											<a href="{{ path('personnage.admin.update.background', {'id': personnage.id, 'background': background.id}) }}">Modifier le background</a>
+											<a href="{{ path('personnage.admin.update.background', {'personnage': personnage.id, 'background': background.id}) }}">Modifier le background</a>
 											{{ background.text|markdown_to_html }}
 										{% endfor %}
 									{% else %}
