@@ -23,7 +23,7 @@ class LieuController extends AbstractController
     {
         $lieux = $entityManager->getRepository('\\'.\App\Entity\Lieu::class)->findAllOrderedByNom();
 
-        return $this->render('admin/lieu/index.twig', ['lieux' => $lieux]);
+        return $this->render('lieu/index.twig', ['lieux' => $lieux]);
     }
 
     /**
@@ -33,7 +33,7 @@ class LieuController extends AbstractController
     {
         $lieux = $entityManager->getRepository('\\'.\App\Entity\Lieu::class)->findAllOrderedByNom();
 
-        return $this->render('admin/lieu/print.twig', ['lieux' => $lieux]);
+        return $this->render('lieu/print.twig', ['lieux' => $lieux]);
     }
 
     /**
@@ -79,6 +79,7 @@ class LieuController extends AbstractController
     /**
      * Ajouter un lieu.
      */
+    #[Route('/lieu/add', name: 'lieu.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(LieuForm::class, new Lieu())
@@ -102,7 +103,7 @@ class LieuController extends AbstractController
             }
         }
 
-        return $this->render('admin/lieu/add.twig', [
+        return $this->render('lieu/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -110,9 +111,10 @@ class LieuController extends AbstractController
     /**
      * Détail d'un lieu.
      */
+    #[Route('/lieu/{lieu}', name: 'lieu.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Lieu $lieu)
     {
-        return $this->render('admin/lieu/detail.twig', ['lieu' => $lieu]);
+        return $this->render('lieu/detail.twig', ['lieu' => $lieu]);
     }
 
     /**
@@ -135,7 +137,7 @@ class LieuController extends AbstractController
             return $this->redirectToRoute('lieu', [], 303);
         }
 
-        return $this->render('admin/lieu/update.twig', [
+        return $this->render('lieu/update.twig', [
             'lieu' => $lieu,
             'form' => $form->createView(),
         ]);
@@ -162,7 +164,7 @@ class LieuController extends AbstractController
             return $this->redirectToRoute('lieu', [], 303);
         }
 
-        return $this->render('admin/lieu/delete.twig', [
+        return $this->render('lieu/delete.twig', [
             'lieu' => $lieu,
             'form' => $form->createView(),
         ]);
@@ -188,7 +190,7 @@ class LieuController extends AbstractController
             return $this->redirectToRoute('lieu.detail', ['lieu' => $lieu->getId()]);
         }
 
-        return $this->render('admin/lieu/documents.twig', [
+        return $this->render('lieu/documents.twig', [
             'lieu' => $lieu,
             'form' => $form->createView(),
         ]);

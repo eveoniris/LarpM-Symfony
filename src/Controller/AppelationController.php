@@ -22,7 +22,7 @@ class AppelationController extends AbstractController
         $appelations = $entityManager->getRepository('\\'.\App\Entity\Appelation::class)->findAll();
         $appelations = $app['larp.manager']->sortAppelation($appelations);
 
-        return $this->render('admin/appelation/index.twig', ['appelations' => $appelations]);
+        return $this->render('appelation/index.twig', ['appelations' => $appelations]);
     }
 
     /**
@@ -30,7 +30,7 @@ class AppelationController extends AbstractController
      */
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Appelation $appelation)
     {
-        return $this->render('admin/appelation/detail.twig', ['appelation' => $appelation]);
+        return $this->render('appelation/detail.twig', ['appelation' => $appelation]);
     }
 
     /**
@@ -58,7 +58,7 @@ class AppelationController extends AbstractController
             }
         }
 
-        return $this->render('admin/appelation/add.twig', [
+        return $this->render('appelation/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -92,7 +92,7 @@ class AppelationController extends AbstractController
             }
         }
 
-        return $this->render('admin/appelation/update.twig', [
+        return $this->render('appelation/update.twig', [
             'appelation' => $appelation,
             'form' => $form->createView(),
         ]);

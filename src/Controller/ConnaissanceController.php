@@ -25,7 +25,7 @@ class ConnaissanceController extends AbstractController
     {
         $connaissances = $entityManager->getRepository('\\'.\App\Entity\Connaissance::class)->findAllOrderedByLabel();
 
-        return $this->render('admin/connaissance/list.twig', [
+        return $this->render('connaissance/list.twig', [
             'connaissances' => $connaissances,
         ]);
     }
@@ -37,7 +37,7 @@ class ConnaissanceController extends AbstractController
     {
         $connaissance = $request->get('connaissance');
 
-        return $this->render('admin/connaissance/detail.twig', [
+        return $this->render('connaissance/detail.twig', [
             'connaissance' => $connaissance,
         ]);
     }
@@ -85,7 +85,7 @@ class ConnaissanceController extends AbstractController
             return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], [], 303);
         }
 
-        return $this->render('admin/connaissance/add.twig', [
+        return $this->render('connaissance/add.twig', [
             'connaissance' => $connaissance,
             'form' => $form->createView(),
         ]);
@@ -135,7 +135,7 @@ class ConnaissanceController extends AbstractController
             return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], [], 303);
         }
 
-        return $this->render('admin/connaissance/update.twig', [
+        return $this->render('connaissance/update.twig', [
             'connaissance' => $connaissance,
             'form' => $form->createView(),
         ]);
@@ -164,7 +164,7 @@ class ConnaissanceController extends AbstractController
             return $this->redirectToRoute('connaissance.list', [], 303);
         }
 
-        return $this->render('admin/connaissance/delete.twig', [
+        return $this->render('connaissance/delete.twig', [
             'connaissance' => $connaissance,
             'form' => $form->createView(),
         ]);

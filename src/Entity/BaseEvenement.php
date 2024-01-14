@@ -68,14 +68,14 @@ abstract class BaseEvenement
         return $this->text ?? '';
     }
 
-    public function setDate(\DateTime $date): static
+    public function setDate(string $date): static
     {
         $this->date = $date;
 
         return $this;
     }
 
-    public function getDate(): \DateTime
+    public function getDate(): string
     {
         return $this->date;
     }

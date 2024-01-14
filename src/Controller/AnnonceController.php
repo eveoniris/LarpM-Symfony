@@ -43,7 +43,7 @@ class AnnonceController extends AbstractController
             $app['url_generator']->generate('annonce.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('admin/annonce/list.twig', [
+        return $this->render('annonce/list.twig', [
             'annonces' => $annonces,
             'paginator' => $paginator,
         ]);
@@ -76,7 +76,7 @@ class AnnonceController extends AbstractController
             }
         }
 
-        return $this->render('admin/annonce/add.twig', [
+        return $this->render('annonce/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -104,7 +104,7 @@ class AnnonceController extends AbstractController
             return $this->redirectToRoute('annonce.list');
         }
 
-        return $this->render('admin/annonce/update.twig', [
+        return $this->render('annonce/update.twig', [
             'annonce' => $annonce,
             'form' => $form->createView(),
         ]);
@@ -115,7 +115,7 @@ class AnnonceController extends AbstractController
      */
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Annonce $annonce)
     {
-        return $this->render('admin/annonce/detail.twig', ['annonce' => $annonce]);
+        return $this->render('annonce/detail.twig', ['annonce' => $annonce]);
     }
 
     /**
@@ -139,7 +139,7 @@ class AnnonceController extends AbstractController
             return $this->redirectToRoute('annonce.list');
         }
 
-        return $this->render('admin/annonce/delete.twig', [
+        return $this->render('annonce/delete.twig', [
             'annonce' => $annonce,
             'form' => $form->createView(),
         ]);

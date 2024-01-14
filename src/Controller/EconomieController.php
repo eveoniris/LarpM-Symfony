@@ -157,7 +157,7 @@ class EconomieController extends AbstractController
             $constructions = new ArrayCollection(iterator_to_array($iterator));
         }
 
-        return $this->render('admin/economie/index.twig', [
+        return $this->render('economie/index.twig', [
             'gn' => $gn,
             'masseMonetaire' => $masseMonetaire,
             'ressources' => $ressources,

@@ -68,7 +68,7 @@ class DebriefingController extends AbstractController
             $app['url_generator']->generate('debriefing.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('admin/debriefing/list.twig', [
+        return $this->render('debriefing/list.twig', [
             'debriefings' => $debriefings,
             'paginator' => $paginator,
             'form' => $form->createView(),
@@ -108,7 +108,7 @@ class DebriefingController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $debriefing->getGroupe()->getId()], [], 303);
         }
 
-        return $this->render('admin/debriefing/add.twig', [
+        return $this->render('debriefing/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -116,6 +116,7 @@ class DebriefingController extends AbstractController
     /**
      * Suppression d'un debriefing.
      */
+    #[Route('/debriefing/{debriefing}/delete', name: 'debriefing.delete')]
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
         $form = $this->createForm(DebriefingDeleteForm::class, $debriefing)
@@ -133,7 +134,7 @@ class DebriefingController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $debriefing->getGroupe()->getId()], [], 303);
         }
 
-        return $this->render('admin/debriefing/delete.twig', [
+        return $this->render('debriefing/delete.twig', [
             'form' => $form->createView(),
             'debriefing' => $debriefing,
         ]);
@@ -142,6 +143,7 @@ class DebriefingController extends AbstractController
     /**
      * Mise à jour d'un debriefing.
      */
+    #[Route('/debriefing/{debriefing}/update', name: 'debriefing.update')]
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
         $form = $this->createForm(DebriefingForm::class, $debriefing)
@@ -167,7 +169,7 @@ class DebriefingController extends AbstractController
             }
         }
 
-        return $this->render('admin/debriefing/update.twig', [
+        return $this->render('debriefing/update.twig', [
             'form' => $form->createView(),
             'debriefing' => $debriefing,
         ]);
@@ -176,9 +178,10 @@ class DebriefingController extends AbstractController
     /**
      * Détail d'un debriefing.
      */
+    #[Route('/debriefing/{debriefing}', name: 'debriefing.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
-        return $this->render('admin/debriefing/detail.twig', [
+        return $this->render('debriefing/detail.twig', [
             'debriefing' => $debriefing,
         ]);
     }
@@ -232,9 +235,9 @@ class DebriefingController extends AbstractController
     /**
      * Afficher le document lié a un debriefing.
      */
-    public function documentAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/debriefing/{debriefing}/document', name: 'debriefing.document')]
+    public function documentAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
-        $debriefing = $request->get('debriefing');
         $document = $debriefing->getDocumentUrl();
         $file = self::DOC_PATH.$document;
 

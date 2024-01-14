@@ -57,7 +57,7 @@ class LigneeController extends AbstractController
             $app['url_generator']->generate('lignee.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('admin/lignee/list.twig', [
+        return $this->render('lignee/list.twig', [
             'form' => $form->createView(),
             'lignees' => $lignees,
             'paginator' => $paginator,
@@ -79,7 +79,7 @@ class LigneeController extends AbstractController
          * Sinon on envoie une erreur
          */
         if ($lignee) {
-            return $this->render('admin/lignee/details.twig', ['lignee' => $lignee]);
+            return $this->render('lignee/details.twig', ['lignee' => $lignee]);
         } else {
            $this->addFlash('error', 'La lignee n\'a pas été trouvée.');
 
@@ -118,7 +118,7 @@ class LigneeController extends AbstractController
             }
         }
 
-        return $this->render('admin/lignee/add.twig', ['form' => $form->createView()]);
+        return $this->render('lignee/add.twig', ['form' => $form->createView()]);
     }
 
     /**
@@ -164,7 +164,7 @@ class LigneeController extends AbstractController
             }
         }
 
-        return $this->render('admin/lignee/update.twig', [
+        return $this->render('lignee/update.twig', [
             'lignee' => $lignee,
             'form' => $form->createView(),
         ]);
@@ -201,7 +201,7 @@ class LigneeController extends AbstractController
             return $this->redirectToRoute('lignee.details', ['lignee' => $lignee->getId()], 303);
         }
 
-        return $this->render('admin/lignee/addMembre.twig', [
+        return $this->render('lignee/addMembre.twig', [
             'lignee' => $lignee,
             'form' => $form->createView(),
         ]);

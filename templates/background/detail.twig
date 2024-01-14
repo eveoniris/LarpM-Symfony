@@ -13,12 +13,12 @@
 	<div class="list-group">
 		<div class="list-group-item">
 			<div class="list-group-item-heading"><h6>Groupe</h6></div>
-			<div class="list-group-item-text"><a href="{{ path('groupe.detail', {'index': background.groupe.id}) }}">{{ background.groupe.nom }}</a></div>
+			<div class="list-group-item-text"><a href="{{ path('groupe.detail', {'groupe': background.groupe.id}) }}">{{ background.groupe.nom }}</a></div>
 		</div>
 		<div class="list-group-item">
 			<div class="list-group-item-heading"><h6>Informations</h6></div>
 			<p class="list-group-item-text text-warning">
-				Visibilité : {{ background.visibility|explainVisibility }}
+				Visibilité : {{ background.visibility }}
 			</p>
 			<p class="list-group-item-text">
 	    		Création  : {{ background.creationDate|date('Y-m-d H:i:s') }}

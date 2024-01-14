@@ -43,7 +43,7 @@ class StrategieController extends AbstractController
         });
         $territoires = new ArrayCollection(iterator_to_array($iterator));
 
-        return $this->render('admin/strategie/index.twig', [
+        return $this->render('strategie/index.twig', [
             'gn' => $gn,
             'territoires' => $territoires,
         ]);

@@ -84,7 +84,7 @@ class StockObjetController extends AbstractController
             )
         );
 
-        return $this->render('admin/stock/objet/list.twig', [
+        return $this->render('stock/objet/list.twig', [
             'objets' => $objets,
             'tag' => $criteria['tag'],
             'tags' => $tags,
@@ -110,7 +110,7 @@ class StockObjetController extends AbstractController
 
         $objet_without_proprio = $qb->getQuery()->getResult();
 
-        return $this->render('admin/stock/objet/listWithoutProprio.twig', [
+        return $this->render('stock/objet/listWithoutProprio.twig', [
             'objets' => $objet_without_proprio,
         ]);
     }
@@ -128,7 +128,7 @@ class StockObjetController extends AbstractController
 
         $objet_without_responsable = $qb->getQuery()->getResult();
 
-        return $this->render('admin/stock/objet/listWithoutResponsable.twig', [
+        return $this->render('stock/objet/listWithoutResponsable.twig', [
             'objets' => $objet_without_responsable,
         ]);
     }
@@ -146,7 +146,7 @@ class StockObjetController extends AbstractController
 
         $objet_without_rangement = $qb->getQuery()->getResult();
 
-        return $this->render('admin/stock/objet/listWithoutRangement.twig', [
+        return $this->render('stock/objet/listWithoutRangement.twig', [
             'objets' => $objet_without_rangement,
         ]);
     }
@@ -156,7 +156,7 @@ class StockObjetController extends AbstractController
      */
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
     {
-        return $this->render('admin/stock/objet/detail.twig', ['objet' => $objet]);
+        return $this->render('stock/objet/detail.twig', ['objet' => $objet]);
     }
 
     /**
@@ -249,7 +249,7 @@ class StockObjetController extends AbstractController
             }
         }
 
-        return $this->render('admin/stock/objet/add.twig', ['form' => $form->createView()]);
+        return $this->render('stock/objet/add.twig', ['form' => $form->createView()]);
     }
 
     /**
@@ -294,7 +294,7 @@ class StockObjetController extends AbstractController
             }
         }
 
-        return $this->render('admin/stock/objet/clone.twig', ['objet' => $newObjet, 'form' => $form->createView()]);
+        return $this->render('stock/objet/clone.twig', ['objet' => $newObjet, 'form' => $form->createView()]);
     }
 
     /**
@@ -331,7 +331,7 @@ class StockObjetController extends AbstractController
             return $this->redirectToRoute('stock_homepage');
         }
 
-        return $this->render('admin/stock/objet/update.twig', ['objet' => $objet, 'form' => $form->createView()]);
+        return $this->render('stock/objet/update.twig', ['objet' => $objet, 'form' => $form->createView()]);
     }
 
     /**
@@ -353,7 +353,7 @@ class StockObjetController extends AbstractController
             return $this->redirectToRoute('stock_objet_index');
         }
 
-        return $this->render('admin/stock/objet/delete.twig', ['objet' => $objet, 'form' => $form->createView()]);
+        return $this->render('stock/objet/delete.twig', ['objet' => $objet, 'form' => $form->createView()]);
     }
 
     /**
@@ -381,7 +381,7 @@ class StockObjetController extends AbstractController
             return $this->redirectToRoute('stock_objet_index');
         }
 
-        return $this->render('admin/stock/objet/tag.twig', ['objet' => $objet, 'form' => $form->createView()]);
+        return $this->render('stock/objet/tag.twig', ['objet' => $objet, 'form' => $form->createView()]);
     }
 
     /**

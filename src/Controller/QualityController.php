@@ -23,7 +23,7 @@ class QualityController extends AbstractController
     {
         $qualities = $entityManager->getRepository('\\'.\App\Entity\Quality::class)->findAll();
 
-        return $this->render('admin/quality/list.twig', [
+        return $this->render('quality/list.twig', [
             'qualities' => $qualities,
         ]);
     }
@@ -56,7 +56,7 @@ class QualityController extends AbstractController
             return $this->redirectToRoute('quality', [], 303);
         }
 
-        return $this->render('admin/quality/add.twig', [
+        return $this->render('quality/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -107,7 +107,7 @@ class QualityController extends AbstractController
             return $this->redirectToRoute('quality', [], 303);
         }
 
-        return $this->render('admin/quality/update.twig', [
+        return $this->render('quality/update.twig', [
             'quality' => $quality,
             'form' => $form->createView(),
         ]);
@@ -133,7 +133,7 @@ class QualityController extends AbstractController
             return $this->redirectToRoute('quality', [], 303);
         }
 
-        return $this->render('admin/quality/delete.twig', [
+        return $this->render('quality/delete.twig', [
             'quality' => $quality,
             'form' => $form->createView(),
         ]);
@@ -144,7 +144,7 @@ class QualityController extends AbstractController
      */
     public function detailAction( EntityManagerInterface $entityManager, Request $request, Quality $quality)
     {
-        return $this->render('admin/quality/detail.twig', [
+        return $this->render('quality/detail.twig', [
             'quality' => $quality,
         ]);
     }

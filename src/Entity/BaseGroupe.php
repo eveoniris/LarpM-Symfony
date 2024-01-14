@@ -372,7 +372,7 @@ class BaseGroupe
     /**
      * Get the value of richesse.
      */
-    public function getRichesse(): int
+    public function getRichesse(): ?int
     {
         return $this->richesse;
     }

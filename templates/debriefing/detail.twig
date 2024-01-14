@@ -13,12 +13,12 @@
 	<div class="list-group">
 		<div class="list-group-item">
 			<div class="list-group-item-heading"><h6>Groupe</h6></div>
-			<div class="list-group-item-text"><a href="{{ path('groupe.detail', {'index': debriefing.groupe.id}) }}">{{ debriefing.groupe.nom }}</a></div>
+			<div class="list-group-item-text"><a href="{{ path('groupe.detail', {'groupe': debriefing.groupe.id}) }}">{{ debriefing.groupe.nom }}</a></div>
 		</div>
 		<div class="list-group-item">
 			<div class="list-group-item-heading"><h6>Informations</h6></div>
 			<p class="list-group-item-text text-warning">
-				Visibilité : {{ debriefing.visibility|explainVisibility }}
+				Visibilité : {{ debriefing.visibility }}
 			</p>
 			<p class="list-group-item-text">
 				Scénariste : {{ debriefing.user }}

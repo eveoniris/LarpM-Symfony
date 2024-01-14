@@ -133,7 +133,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/trombine.twig', [
+        return $this->render('personnage/trombine.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -243,7 +243,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $this->render('admin/personnage/vieillir.twig', [
+        return $this->render('personnage/vieillir.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -270,7 +270,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/age.twig', [
+        return $this->render('personnage/age.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -337,7 +337,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/updateTechnologie.twig', [
+        return $this->render('personnage/updateTechnologie.twig', [
             'personnage' => $personnage,
             'technologies' => $technologies,
             'message' => $message,
@@ -417,7 +417,7 @@ class PersonnageController extends AbstractController
     #[Route('/personnage/{personnage}/enveloppe/print', name: 'personnage.enveloppe.print')]
     public function enveloppePrintAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
-        return $this->render('admin/personnage/enveloppe.twig', [
+        return $this->render('personnage/enveloppe.twig', [
             'personnage' => $personnage,
             'langueMateriel' => $this->getLangueMateriel($personnage),
         ]);
@@ -449,7 +449,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/materiel.twig', [
+        return $this->render('personnage/materiel.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -487,7 +487,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/statut.twig', [
+        return $this->render('personnage/statut.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -546,7 +546,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/transfert.twig', [
+        return $this->render('personnage/transfert.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -661,7 +661,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/xp.twig', [
+        return $this->render('personnage/xp.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -758,7 +758,7 @@ class PersonnageController extends AbstractController
             }
         }
 
-        return $this->render('admin/personnage/add.twig', [
+        return $this->render('personnage/add.twig', [
             'form' => $form->createView(),
             'participant' => $participant,
         ]);
@@ -836,7 +836,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $this->render('admin/personnage/delete.twig', [
+        return $this->render('personnage/delete.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -865,7 +865,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/update.twig', [
+        return $this->render('personnage/update.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage]);
     }
@@ -902,7 +902,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/addBackground.twig', [
+        return $this->render('personnage/addBackground.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'background' => $background,
@@ -939,7 +939,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/updateBackground.twig', [
+        return $this->render('personnage/updateBackground.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'background' => $background,
@@ -977,7 +977,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/updateRenomme.twig', [
+        return $this->render('personnage/updateRenomme.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage]);
     }
@@ -1013,7 +1013,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/updateHeroisme.twig', [
+        return $this->render('personnage/updateHeroisme.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage]);
     }
@@ -1049,7 +1049,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/updatePugilat.twig', [
+        return $this->render('personnage/updatePugilat.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage]);
     }
@@ -1164,7 +1164,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/addTrigger.twig', [
+        return $this->render('personnage/addTrigger.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage]);
     }
@@ -1193,7 +1193,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/deleteTrigger.twig', [
+        return $this->render('personnage/deleteTrigger.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'trigger' => $trigger,
@@ -1239,7 +1239,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/updateDomaine.twig', [
+        return $this->render('personnage/updateDomaine.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1317,7 +1317,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/updateLangue.twig', [
+        return $this->render('personnage/updateLangue.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1366,7 +1366,7 @@ class PersonnageController extends AbstractController
             $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('admin/personnage/updatePriere.twig',
+        return $this->render('personnage/updatePriere.twig',
             [
                 'prieres' => $prieres,
                 'personnage' => $personnage,
@@ -1432,7 +1432,7 @@ class PersonnageController extends AbstractController
     {
         $connaissances = $entityManager->getRepository(Connaissance::class)->findAllOrderedByLabel();
 
-        return $this->render('admin/personnage/updateConnaissance.twig', [
+        return $this->render('personnage/updateConnaissance.twig', [
             'personnage' => $personnage,
             'connaissances' => $connaissances,
         ]);
@@ -1531,7 +1531,7 @@ class PersonnageController extends AbstractController
             $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('admin/personnage/updateSort.twig',
+        return $this->render('personnage/updateSort.twig',
             [
                 'sorts' => $sorts,
                 'personnage' => $personnage,
@@ -1634,7 +1634,7 @@ class PersonnageController extends AbstractController
             $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('admin/personnage/updatePotion.twig',
+        return $this->render('personnage/updatePotion.twig',
             [
                 'potions' => $potions,
                 'personnage' => $personnage,
@@ -1757,7 +1757,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/ingredients.twig', [
+        return $this->render('personnage/ingredients.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1847,7 +1847,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/ressources.twig', [
+        return $this->render('personnage/ressources.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1874,7 +1874,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/richesse.twig', [
+        return $this->render('personnage/richesse.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1901,7 +1901,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/documents.twig', [
+        return $this->render('personnage/documents.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -1928,7 +1928,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/items.twig', [
+        return $this->render('personnage/items.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -2003,7 +2003,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/addReligion.twig', [
+        return $this->render('personnage/addReligion.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage]);
     }
@@ -2032,7 +2032,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/removeReligion.twig', [
+        return $this->render('personnage/removeReligion.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'personnageReligion' => $personnageReligion,
@@ -2063,7 +2063,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/removeLangue.twig', [
+        return $this->render('personnage/removeLangue.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'personnageLangue' => $personnageLangue,
@@ -2112,7 +2112,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/updateOrigine.twig', [
+        return $this->render('personnage/updateOrigine.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -2202,7 +2202,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/removeCompetence.twig', [
+        return $this->render('personnage/removeCompetence.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'competence' => $lastCompetence,
@@ -2310,7 +2310,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/competence.twig', [
+        return $this->render('personnage/competence.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'competences' => $availableCompetences,
@@ -2330,7 +2330,7 @@ class PersonnageController extends AbstractController
             $groupe = $participant->getGroupeGn()->getGroupe();
         }
 
-        return $this->render('admin/personnage/print.twig', [
+        return $this->render('personnage/print.twig', [
             'personnage' => $personnage,
             'participant' => $participant,
             'langueMateriel' => $this->getLangueMateriel($personnage),
@@ -2370,7 +2370,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/updateChronologie.twig', [
+        return $this->render('personnage/updateChronologie.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'personnageChronologie' => $personnageChronologie,
@@ -2401,7 +2401,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/removeChronologie.twig', [
+        return $this->render('personnage/removeChronologie.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'personnageChronologie' => $personnageChronologie,
@@ -2439,7 +2439,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/updateLignee.twig', [
+        return $this->render('personnage/updateLignee.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'lignee' => $personnageLignee,
@@ -2470,7 +2470,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
         }
 
-        return $this->render('admin/personnage/removeLignee.twig', [
+        return $this->render('personnage/removeLignee.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'personnageLignee' => $personnageLignee,

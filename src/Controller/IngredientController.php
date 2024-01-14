@@ -22,7 +22,7 @@ class IngredientController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\Ingredient::class);
         $ingredients = $repo->findAllOrderedByLabel();
 
-        return $this->render('admin/ingredient/list.twig', ['ingredients' => $ingredients]);
+        return $this->render('ingredient/list.twig', ['ingredients' => $ingredients]);
     }
 
     /**
@@ -32,7 +32,7 @@ class IngredientController extends AbstractController
     {
         $ingredient = $request->get('ingredient');
 
-        return $this->render('admin/ingredient/detail.twig', [
+        return $this->render('ingredient/detail.twig', [
             'ingredient' => $ingredient,
         ]);
     }
@@ -60,7 +60,7 @@ class IngredientController extends AbstractController
             return $this->redirectToRoute('ingredient.admin.detail', ['ingredient' => $ingredient->getId()], [], 303);
         }
 
-        return $this->render('admin/ingredient/add.twig', [
+        return $this->render('ingredient/add.twig', [
             'ingredient' => $ingredient,
             'form' => $form->createView(),
         ]);
@@ -89,7 +89,7 @@ class IngredientController extends AbstractController
             return $this->redirectToRoute('ingredient.admin.detail', ['ingredient' => $ingredient->getId()], [], 303);
         }
 
-        return $this->render('admin/ingredient/update.twig', [
+        return $this->render('ingredient/update.twig', [
             'ingredient' => $ingredient,
             'form' => $form->createView(),
         ]);
@@ -118,7 +118,7 @@ class IngredientController extends AbstractController
             return $this->redirectToRoute('ingredient.admin.list', [], 303);
         }
 
-        return $this->render('admin/ingredient/delete.twig', [
+        return $this->render('ingredient/delete.twig', [
             'ingredient' => $ingredient,
             'form' => $form->createView(),
         ]);

@@ -25,7 +25,7 @@ class ObjetController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);
         $items = $repo->findAll();
 
-        return $this->render('admin/objet/index.twig', [
+        return $this->render('objet/index.twig', [
             'items' => $items,
         ]);
     }
@@ -35,7 +35,7 @@ class ObjetController extends AbstractController
      */
     public function printAction(Request $request,  EntityManagerInterface $entityManager, Item $item)
     {
-        return $this->render('admin/objet/print.twig', [
+        return $this->render('objet/print.twig', [
             'item' => $item,
         ]);
     }
@@ -48,7 +48,7 @@ class ObjetController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);
         $items = $repo->findAll();
 
-        return $this->render('admin/objet/printAll.twig', [
+        return $this->render('objet/printAll.twig', [
             'items' => $items,
         ]);
     }
@@ -61,7 +61,7 @@ class ObjetController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);
         $items = $repo->findAll();
 
-        return $this->render('admin/objet/printPhoto.twig', [
+        return $this->render('objet/printPhoto.twig', [
             'items' => $items,
         ]);
     }
@@ -186,7 +186,7 @@ class ObjetController extends AbstractController
             return $this->redirectToRoute('items', [], 303);
         }
 
-        return $this->render('admin/objet/new.twig', [
+        return $this->render('objet/new.twig', [
             'objet' => $objet,
             'item' => $item,
             'form' => $form->createView(),
@@ -199,7 +199,7 @@ class ObjetController extends AbstractController
     #[Route('/item/{item}', name: 'item.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Item $item)
     {
-        return $this->render('admin/objet/detail.twig', [
+        return $this->render('objet/detail.twig', [
             'item' => $item,
         ]);
     }
@@ -240,7 +240,7 @@ class ObjetController extends AbstractController
             return $this->redirectToRoute('items', [], 303);
         }
 
-        return $this->render('admin/objet/update.twig', [
+        return $this->render('objet/update.twig', [
             'item' => $item,
             'form' => $form->createView(),
         ]);
@@ -264,7 +264,7 @@ class ObjetController extends AbstractController
             return $this->redirectToRoute('items', [], 303);
         }
 
-        return $this->render('admin/objet/delete.twig', [
+        return $this->render('objet/delete.twig', [
             'item' => $item,
             'form' => $form->createView(),
         ]);
@@ -288,7 +288,7 @@ class ObjetController extends AbstractController
             return $this->redirectToRoute('objet', [], 303);
         }
 
-        return $this->render('admin/objet/link.twig', [
+        return $this->render('objet/link.twig', [
             'item' => $item,
             'form' => $form->createView(),
         ]);

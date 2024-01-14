@@ -114,7 +114,7 @@ class AdminController extends AbstractController
         // taille des documents
         $docTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../../private/doc'));
 
-        return $this->render('admin/index.twig', [
+        return $this->render('index.twig', [
             'phpVersion' => $phpVersion,
             'zendVersion' => $zendVersion,
             'uploadMaxSize' => $uploadMaxSize,
@@ -172,7 +172,7 @@ class AdminController extends AbstractController
         $lines = array_reverse($lines);
         $linesFatal = array_reverse($linesFatal);
 
-        return $this->render('admin/log.twig', [
+        return $this->render('log.twig', [
             'lines' => $lines,
             'linesFatal' => $linesFatal,
         ]);
@@ -183,7 +183,7 @@ class AdminController extends AbstractController
      */
     public function databaseExportAction(Request $request, EntityManagerInterface $entityManager)
     {
-        return $this->render('admin/databaseExport.twig');
+        return $this->render('databaseExport.twig');
     }
 
     /**
@@ -191,7 +191,7 @@ class AdminController extends AbstractController
      */
     public function databaseUpdateAction(Request $request, EntityManagerInterface $entityManager)
     {
-        return $this->render('admin/databaseUpdate.twig');
+        return $this->render('databaseUpdate.twig');
     }
 
     /**

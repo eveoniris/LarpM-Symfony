@@ -23,7 +23,7 @@ class ConstructionController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\Construction::class);
         $constructions = $repo->findAllOrderedByLabel();
 
-        return $this->render('admin/construction/index.twig', [
+        return $this->render('construction/index.twig', [
             'constructions' => $constructions]);
     }
 
@@ -50,7 +50,7 @@ class ConstructionController extends AbstractController
             return $this->redirectToRoute('construction.detail', ['construction' => $construction->getId()], [], 303);
         }
 
-        return $this->render('admin/construction/add.twig', [
+        return $this->render('construction/add.twig', [
             'construction' => $construction,
             'form' => $form->createView(),
         ]);
@@ -79,7 +79,7 @@ class ConstructionController extends AbstractController
             return $this->redirectToRoute('construction.detail', ['construction' => $construction->getId()], [], 303);
         }
 
-        return $this->render('admin/construction/update.twig', [
+        return $this->render('construction/update.twig', [
             'construction' => $construction,
             'form' => $form->createView(),
         ]);
@@ -108,7 +108,7 @@ class ConstructionController extends AbstractController
             return $this->redirectToRoute('construction', [], 303);
         }
 
-        return $this->render('admin/construction/delete.twig', [
+        return $this->render('construction/delete.twig', [
             'construction' => $construction,
             'form' => $form->createView(),
         ]);
@@ -121,7 +121,7 @@ class ConstructionController extends AbstractController
     {
         $construction = $request->get('construction');
 
-        return $this->render('admin/construction/detail.twig', [
+        return $this->render('construction/detail.twig', [
             'construction' => $construction]);
     }
 
@@ -130,7 +130,7 @@ class ConstructionController extends AbstractController
      */
     public function personnagesAction(Request $request,  EntityManagerInterface $entityManager, Construction $construction)
     {
-        return $this->render('admin/construction/territoires.twig', [
+        return $this->render('construction/territoires.twig', [
             'construction' => $construction,
         ]);
     }

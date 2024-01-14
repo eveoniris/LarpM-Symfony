@@ -22,7 +22,7 @@ class TokenController extends AbstractController
     {
         $tokens = $entityManager->getRepository('\\'.\App\Entity\Token::class)->findAllOrderedByLabel();
 
-        return $this->render('admin/token/list.twig', ['tokens' => $tokens]);
+        return $this->render('token/list.twig', ['tokens' => $tokens]);
     }
 
     /**
@@ -32,7 +32,7 @@ class TokenController extends AbstractController
     {
         $tokens = $entityManager->getRepository('\\'.\App\Entity\Token::class)->findAllOrderedByLabel();
 
-        return $this->render('admin/token/print.twig', ['tokens' => $tokens]);
+        return $this->render('token/print.twig', ['tokens' => $tokens]);
     }
 
     /**
@@ -93,7 +93,7 @@ class TokenController extends AbstractController
             }
         }
 
-        return $this->render('admin/token/add.twig', [
+        return $this->render('token/add.twig', [
             'token' => $token,
             'form' => $form->createView(),
         ]);
@@ -104,7 +104,7 @@ class TokenController extends AbstractController
      */
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Token $token)
     {
-        return $this->render('admin/token/detail.twig', ['token' => $token]);
+        return $this->render('token/detail.twig', ['token' => $token]);
     }
 
     /**
@@ -128,7 +128,7 @@ class TokenController extends AbstractController
             return $this->redirectToRoute('token.list', [], 303);
         }
 
-        return $this->render('admin/token/update.twig', [
+        return $this->render('token/update.twig', [
             'token' => $token,
             'form' => $form->createView(),
         ]);
@@ -153,7 +153,7 @@ class TokenController extends AbstractController
             return $this->redirectToRoute('token.list', [], 303);
         }
 
-        return $this->render('admin/token/delete.twig', [
+        return $this->render('token/delete.twig', [
             'token' => $token,
             'form' => $form->createView(),
         ]);

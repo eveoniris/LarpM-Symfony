@@ -61,7 +61,7 @@ class IntrigueController extends AbstractController
             $app['url_generator']->generate('intrigue.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('admin/intrigue/list.twig', [
+        return $this->render('intrigue/list.twig', [
             'form' => $form->createView(),
             'intrigues' => $intrigues,
             'paginator' => $paginator,
@@ -74,7 +74,7 @@ class IntrigueController extends AbstractController
     #[Route('/intrigue/{intrigue}', name: 'intrigue.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
     {
-        return $this->render('admin/intrigue/detail.twig', [
+        return $this->render('intrigue/detail.twig', [
             'intrigue' => $intrigue,
         ]);
     }
@@ -166,7 +166,7 @@ class IntrigueController extends AbstractController
             }
         }
 
-        return $this->render('admin/intrigue/add.twig', [
+        return $this->render('intrigue/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -378,7 +378,7 @@ class IntrigueController extends AbstractController
             return $this->redirectToRoute('intrigue.detail', ['intrigue' => $intrigue->getId()], [], 303);
         }
 
-        return $this->render('admin/intrigue/update.twig', [
+        return $this->render('intrigue/update.twig', [
             'form' => $form->createView(),
             'intrigue' => $intrigue,
         ]);
@@ -405,7 +405,7 @@ class IntrigueController extends AbstractController
             return $this->redirectToRoute('intrigue.list', [], 303);
         }
 
-        return $this->render('admin/intrigue/delete.twig', [
+        return $this->render('intrigue/delete.twig', [
             'form' => $form->createView(),
             'intrigue' => $intrigue,
         ]);
@@ -414,7 +414,7 @@ class IntrigueController extends AbstractController
     /**
      * Ajout d'une relecture.
      */
-    #[Route('/intrigue/{intrigue}/relecture', name: 'intrigue.relecture')]
+    #[Route('/intrigue/{intrigue}/relecture', name: 'intrigue.relecture.add')]
     public function relectureAddAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
     {
         $relecture = new Relecture();
@@ -445,7 +445,7 @@ class IntrigueController extends AbstractController
             return $this->redirectToRoute('intrigue.detail', ['intrigue' => $intrigue->getId()], [], 303);
         }
 
-        return $this->render('admin/intrigue/relecture.twig', [
+        return $this->render('intrigue/relecture.twig', [
             'form' => $form->createView(),
             'intrigue' => $intrigue,
         ]);

@@ -110,11 +110,11 @@
 				<tr>
 					<td><a href="{{ path('background.update', {'background':background.id}) }}">{{ background.id }}</td>
 					<td><a href="{{ path('background.detail', {'background':background.id}) }}">{{ background.titre }}</td>
-					<td><a href="{{ path('groupe.detail', {'index': background.groupe.id}) }}">{{ background.groupe.nom }}</td>
+					<td><a href="{{ path('groupe.detail', {'groupe': background.groupe.id}) }}">{{ background.groupe.nom }}</td>
 					<td>{{ background.creationDate|date('Y-m-d') }}</td>
 					<td>{{ background.updateDate|date('Y-m-d') }}</td>
 					<td>{{ background.user.displayName }}</td>
-					<td>{{ background.visibility|explainVisibility }}</td>
+					<td>{{ background.visibility }}</td>
 				</tr>
 				{% endfor %}
 			</tbody>

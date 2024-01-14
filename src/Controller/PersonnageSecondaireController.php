@@ -26,7 +26,7 @@ class PersonnageSecondaireController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\PersonnageSecondaire::class);
         $personnageSecondaires = $repo->findAll();
 
-        return $this->render('admin/personnageSecondaire/index.twig', ['personnageSecondaires' => $personnageSecondaires]);
+        return $this->render('personnageSecondaire/index.twig', ['personnageSecondaires' => $personnageSecondaires]);
     }
 
     /**
@@ -35,7 +35,7 @@ class PersonnageSecondaireController extends AbstractController
     #[Route('/personnageSecondaire/detail/{id}', name: 'personnageSecondaire.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] PersonnageSecondaire $personnageSecondaire)
     {
-        return $this->render('admin/personnageSecondaire/detail.twig', ['personnageSecondaire' => $personnageSecondaire]);
+        return $this->render('personnageSecondaire/detail.twig', ['personnageSecondaire' => $personnageSecondaire]);
     }
 
     /**
@@ -67,7 +67,7 @@ class PersonnageSecondaireController extends AbstractController
             return $this->redirectToRoute('personnageSecondaire.list', [], 303);
         }
 
-        return $this->render('admin/personnageSecondaire/add.twig', [
+        return $this->render('personnageSecondaire/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -117,7 +117,7 @@ class PersonnageSecondaireController extends AbstractController
             return $this->redirectToRoute('personnageSecondaire.list');
         }
 
-        return $this->render('admin/personnageSecondaire/update.twig', [
+        return $this->render('personnageSecondaire/update.twig', [
             'personnageSecondaire' => $personnageSecondaire,
             'form' => $form->createView(),
         ]);
@@ -149,7 +149,7 @@ class PersonnageSecondaireController extends AbstractController
             return $this->redirectToRoute('personnageSecondaire.list', [], 303);
         }
 
-        return $this->render('admin/personnageSecondaire/delete.twig', [
+        return $this->render('personnageSecondaire/delete.twig', [
             'personnageSecondaire' => $personnageSecondaire,
             'form' => $form->createView(),
         ]);

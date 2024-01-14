@@ -21,7 +21,7 @@ class GroupeSecondaireTypeController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\SecondaryGroupType::class);
         $groupeSecondaireTypes = $repo->findAll();
 
-        return $this->render('admin/groupeSecondaireType/list.twig', ['groupeSecondaireTypes' => $groupeSecondaireTypes]);
+        return $this->render('groupeSecondaireType/list.twig', ['groupeSecondaireTypes' => $groupeSecondaireTypes]);
     }
 
     /**
@@ -52,7 +52,7 @@ class GroupeSecondaireTypeController extends AbstractController
             }
         }
 
-        return $this->render('admin/groupeSecondaireType/add.twig', [
+        return $this->render('groupeSecondaireType/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -88,7 +88,7 @@ class GroupeSecondaireTypeController extends AbstractController
             return $this->redirectToRoute('groupeSecondaire.admin.type.list');
         }
 
-        return $this->render('admin/groupeSecondaireType/update.twig', [
+        return $this->render('groupeSecondaireType/update.twig', [
             'groupeSecondaireType' => $groupeSecondaireType,
             'form' => $form->createView(),
         ]);
@@ -104,7 +104,7 @@ class GroupeSecondaireTypeController extends AbstractController
         $groupeSecondaireType = $entityManager->find('\\'.\App\Entity\SecondaryGroupType::class, $id);
 
         if ($groupeSecondaireType) {
-            return $this->render('admin/groupeSecondaireType/detail.twig', ['groupeSecondaireType' => $groupeSecondaireType]);
+            return $this->render('groupeSecondaireType/detail.twig', ['groupeSecondaireType' => $groupeSecondaireType]);
         } else {
            $this->addFlash('error', 'Le type de groupe secondaire n\'a pas été trouvé.');
 

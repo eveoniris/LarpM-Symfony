@@ -21,7 +21,7 @@ class CompetenceFamilyController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\CompetenceFamily::class);
         $competenceFamilies = $repo->findAllOrderedByLabel();
 
-        return $this->render('admin/competenceFamily/index.twig', ['competenceFamilies' => $competenceFamilies]);
+        return $this->render('competenceFamily/index.twig', ['competenceFamilies' => $competenceFamilies]);
     }
 
     /**
@@ -52,7 +52,7 @@ class CompetenceFamilyController extends AbstractController
             }
         }
 
-        return $this->render('admin/competenceFamily/add.twig', [
+        return $this->render('competenceFamily/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -88,7 +88,7 @@ class CompetenceFamilyController extends AbstractController
             return $this->redirectToRoute('competence.family');
         }
 
-        return $this->render('admin/competenceFamily/update.twig', [
+        return $this->render('competenceFamily/update.twig', [
             'competenceFamily' => $competenceFamily,
             'form' => $form->createView(),
         ]);
@@ -104,7 +104,7 @@ class CompetenceFamilyController extends AbstractController
         $competenceFamily = $entityManager->find('\\'.\App\Entity\CompetenceFamily::class, $id);
 
         if ($competenceFamily) {
-            return $this->render('admin/competenceFamily/detail.twig', ['competenceFamily' => $competenceFamily]);
+            return $this->render('competenceFamily/detail.twig', ['competenceFamily' => $competenceFamily]);
         } else {
            $this->addFlash('error', 'La famille de compétence n\'a pas été trouvé.');
 

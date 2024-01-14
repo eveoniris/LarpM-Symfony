@@ -76,10 +76,10 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'La composition du groupe a été sauvegardé.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/composition.twig', [
+        return $this->render('groupe/composition.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -103,10 +103,10 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'La description du groupe a été sauvegardé.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/description.twig', [
+        return $this->render('groupe/description.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -130,10 +130,10 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'Le groupe a été sauvegardé.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/scenariste.twig', [
+        return $this->render('groupe/scenariste.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -220,7 +220,7 @@ class GroupeController extends AbstractController
             exit;
         }
 
-        return $this->render('admin/groupe/quetes.twig', [
+        return $this->render('groupe/quetes.twig', [
             'quetes' => $quetes,
             'stats' => $stats,
         ]);
@@ -236,7 +236,7 @@ class GroupeController extends AbstractController
         $ressourceCommunes = new ArrayCollection($entityManager->getRepository('\\'.\App\Entity\Ressource::class)->findCommun());
         $quete = $app['larp.manager']->generateQuete($groupe, $ressourceCommunes, $ressourceRares);
 
-        return $this->render('admin/groupe/quete.twig', [
+        return $this->render('groupe/quete.twig', [
             'groupe' => $groupe,
             'needs' => $quete['needs'],
             'valeur' => $quete['valeur'],
@@ -308,7 +308,7 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'Votre groupe a été sauvegardé.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
         return $this->render('groupe/ingredient.twig', [
@@ -399,7 +399,7 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'Votre groupe a été sauvegardé.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
         return $this->render('groupe/ressource.twig', [
@@ -426,10 +426,10 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'Votre groupe a été sauvegardé.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/richesse.twig', [
+        return $this->render('groupe/richesse.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -453,7 +453,7 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'Le document a été ajouté au groupe.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
         return $this->render('groupe/documents.twig', [
@@ -480,7 +480,7 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'L\'objet a été ajouté au groupe.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
         return $this->render('groupe/items.twig', [
@@ -507,7 +507,7 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'Le groupe a été sauvegardé.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
         return $this->render('groupe/envelope.twig', [
@@ -521,7 +521,7 @@ class GroupeController extends AbstractController
      */
     public function UsersAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
-        return $this->render('admin/groupe/Users.twig', [
+        return $this->render('groupe/Users.twig', [
             'groupe' => $groupe,
         ]);
     }
@@ -538,7 +538,7 @@ class GroupeController extends AbstractController
 
        $this->addFlash('success', 'Le groupe est verrouillé. Cela bloque la création et la modification des personnages membres de ce groupe');
 
-        return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+        return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
     }
 
     /**
@@ -553,7 +553,7 @@ class GroupeController extends AbstractController
 
        $this->addFlash('success', 'Le groupe est dévérouillé');
 
-        return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+        return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
     }
 
     /**
@@ -567,7 +567,7 @@ class GroupeController extends AbstractController
 
        $this->addFlash('success', 'Le groupe est maintenant disponible. Il pourra être réservé par un joueur');
 
-        return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+        return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
     }
 
     /**
@@ -581,7 +581,7 @@ class GroupeController extends AbstractController
 
        $this->addFlash('success', 'Le groupe est maintenant réservé. Il ne pourra plus être réservé par un joueur');
 
-        return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+        return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
     }
 
     /**
@@ -620,10 +620,10 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'Le groupe est lié au pays');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/pays.twig', [
+        return $this->render('groupe/pays.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -664,10 +664,10 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'Le territoire est contrôlé par le groupe');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/addTerritoire.twig', [
+        return $this->render('groupe/addTerritoire.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -692,10 +692,10 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'Le territoire n\'est plus controlé par le groupe');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/removeTerritoire.twig', [
+        return $this->render('groupe/removeTerritoire.twig', [
             'groupe' => $groupe,
             'territoire' => $territoire,
             'form' => $form->createView(),
@@ -752,10 +752,10 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'Les options de restauration sont enregistrés.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/restauration.twig', [
+        return $this->render('groupe/restauration.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -773,7 +773,7 @@ class GroupeController extends AbstractController
         $session = $groupe->getNextSession();
         $participants = $session->getParticipants();
 
-        return $this->render('admin/groupe/printMateriel.twig', [
+        return $this->render('groupe/printMateriel.twig', [
             'groupe' => $groupe,
             'participants' => $participants,
         ]);
@@ -785,7 +785,7 @@ class GroupeController extends AbstractController
     #[Route('/groupe/{groupe}/print/background', name: 'groupe.print.background')]
     public function printBackgroundAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
-        return $this->render('admin/groupe/printBackground.twig', [
+        return $this->render('groupe/printBackground.twig', [
             'groupe' => $groupe,
         ]);
     }
@@ -812,7 +812,7 @@ class GroupeController extends AbstractController
             ];
         }
 
-        return $this->render('admin/groupe/printAll.twig', [
+        return $this->render('groupe/printAll.twig', [
             'groupes' => $groupes,
         ]);
     }
@@ -831,7 +831,7 @@ class GroupeController extends AbstractController
         $ressourceCommunes = new ArrayCollection($entityManager->getRepository('\\'.\App\Entity\Ressource::class)->findCommun());
         $quete = $app['larp.manager']->generateQuete($groupe, $ressourceCommunes, $ressourceRares);
 
-        return $this->render('admin/groupe/printMaterielGroupe.twig', [
+        return $this->render('groupe/printMaterielGroupe.twig', [
             'groupe' => $groupe,
             'participants' => $participants,
             'quete' => $quete,
@@ -866,7 +866,7 @@ class GroupeController extends AbstractController
             }
         }
 
-        return $this->render('admin/groupe/printPerso.twig', [
+        return $this->render('groupe/printPerso.twig', [
             'groupe' => $groupe,
             'participants' => $participants,
             'quetes' => $quetes,
@@ -882,7 +882,7 @@ class GroupeController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\Groupe::class);
         $groupes = $repo->findBy(['pj' => true], ['nom' => 'ASC']);
 
-        return $this->render('admin/diplomatie.twig', [
+        return $this->render('diplomatie.twig', [
             'groupes' => $groupes,
         ]);
     }
@@ -900,7 +900,7 @@ class GroupeController extends AbstractController
         $guerres = $repo->findByWar();
         $demandePaix = $repo->findByRequestPeace();
 
-        return $this->render('admin/diplomatiePrint.twig', [
+        return $this->render('diplomatiePrint.twig', [
             'alliances' => $alliances,
             'demandeAlliances' => $demandeAlliances,
             'guerres' => $guerres,
@@ -947,7 +947,7 @@ class GroupeController extends AbstractController
             $app['url_generator']->generate('groupe.admin.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('admin/groupe/list.twig', [
+        return $this->render('groupe/list.twig', [
             'form' => $form->createView(),
             'groupes' => $groupes,
             'paginator' => $paginator,
@@ -1000,10 +1000,10 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'Le participant a été ajouté au groupe.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/addParticipant.twig', [
+        return $this->render('groupe/addParticipant.twig', [
             'groupe' => $groupe,
             'participants' => $participants,
             'form' => $form->createView(),
@@ -1037,10 +1037,10 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'Le participant a été retiré du groupe.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupe/removeParticipant.twig', [
+        return $this->render('groupe/removeParticipant.twig', [
             'groupe' => $groupe,
             'participant' => $participant,
         ]);
@@ -1123,7 +1123,7 @@ class GroupeController extends AbstractController
             return $this->redirectToRoute('groupe.admin.list', [], 303);
         }
 
-        return $this->render('admin/groupe/place.twig', [
+        return $this->render('groupe/place.twig', [
             'groupe' => $groupe]);
     }
 
@@ -1149,7 +1149,7 @@ class GroupeController extends AbstractController
             return $this->redirectToRoute('groupe.admin.detail', ['index' => $groupe->getId()], [], 303);
         }
 
-        return $this->render('admin/groupe/background/add.twig', [
+        return $this->render('groupe/background/add.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -1179,7 +1179,7 @@ class GroupeController extends AbstractController
             return $this->redirectToRoute('groupe.admin.detail', ['index' => $groupe->getId()], [], 303);
         }
 
-        return $this->render('admin/groupe/background/update.twig', [
+        return $this->render('groupe/background/update.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -1240,7 +1240,7 @@ class GroupeController extends AbstractController
             }
         }
 
-        return $this->render('admin/groupe/add.twig', ['form' => $form->createView()]);
+        return $this->render('groupe/add.twig', ['form' => $form->createView()]);
     }
 
     /**
@@ -1318,7 +1318,7 @@ class GroupeController extends AbstractController
                 $entityManager->flush();
                $this->addFlash('success', 'Le groupe a été mis à jour.');
 
-                return $this->redirectToRoute('groupe.detail', ['index' => $id]);
+                return $this->redirectToRoute('groupe.detail', ['groupe' => $id]);
             } elseif ($form->get('delete')->isClicked()) {
                 // supprime le lien entre les personnages et le groupe
                 foreach ($groupe->getPersonnages() as $personnage) {
@@ -1351,7 +1351,7 @@ class GroupeController extends AbstractController
             }
         }
 
-        return $this->render('admin/groupe/update.twig', [
+        return $this->render('groupe/update.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);

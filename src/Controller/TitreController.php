@@ -22,7 +22,7 @@ class TitreController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\Titre::class);
         $titres = $repo->findAll();
 
-        return $this->render('admin/titre/list.twig', ['titres' => $titres]);
+        return $this->render('titre/list.twig', ['titres' => $titres]);
     }
 
     /**
@@ -32,7 +32,7 @@ class TitreController extends AbstractController
     {
         $titre = $request->get('titre');
 
-        return $this->render('admin/titre/detail.twig', [
+        return $this->render('titre/detail.twig', [
             'titre' => $titre,
         ]);
     }
@@ -60,7 +60,7 @@ class TitreController extends AbstractController
             return $this->redirectToRoute('titre.admin.detail', ['titre' => $titre->getId()], [], 303);
         }
 
-        return $this->render('admin/titre/add.twig', [
+        return $this->render('titre/add.twig', [
             'titre' => $titre,
             'form' => $form->createView(),
         ]);
@@ -89,7 +89,7 @@ class TitreController extends AbstractController
             return $this->redirectToRoute('titre.admin.detail', ['titre' => $titre->getId()], [], 303);
         }
 
-        return $this->render('admin/titre/update.twig', [
+        return $this->render('titre/update.twig', [
             'titre' => $titre,
             'form' => $form->createView(),
         ]);
@@ -118,7 +118,7 @@ class TitreController extends AbstractController
             return $this->redirectToRoute('titre.admin.list', [], 303);
         }
 
-        return $this->render('admin/titre/delete.twig', [
+        return $this->render('titre/delete.twig', [
             'titre' => $titre,
             'form' => $form->createView(),
         ]);

@@ -80,7 +80,7 @@ class TrombinoscopeController extends AbstractController
             }
         }
 
-        return $this->render('admin/trombinoscope.twig', [
+        return $this->render('trombinoscope.twig', [
             'gn' => $gn,
             'participants' => $participants,
             'form' => $form->createView(),
@@ -123,14 +123,14 @@ class TrombinoscopeController extends AbstractController
             $personnages = $repo->findByIds($ids);
 
             if ($form->get('print')->isClicked()) {
-                return $this->render('admin/trombinoscopePersoPrint.twig', [
+                return $this->render('trombinoscopePersoPrint.twig', [
                     'titre' => $titre,
                     'personnages' => $personnages,
                 ]);
             }
         }
 
-        return $this->render('admin/trombinoscopePerso.twig', [
+        return $this->render('trombinoscopePerso.twig', [
             'titre' => $titre,
             'personnages' => $personnages,
             'form' => $form->createView(),

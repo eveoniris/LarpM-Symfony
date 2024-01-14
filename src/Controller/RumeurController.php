@@ -55,7 +55,7 @@ class RumeurController extends AbstractController
             $app['url_generator']->generate('rumeur.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('admin/rumeur/list.twig', [
+        return $this->render('rumeur/list.twig', [
             'form' => $form->createView(),
             'rumeurs' => $rumeurs,
             'paginator' => $paginator,
@@ -67,7 +67,7 @@ class RumeurController extends AbstractController
      */
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Rumeur $rumeur)
     {
-        return $this->render('admin/rumeur/detail.twig', [
+        return $this->render('rumeur/detail.twig', [
             'rumeur' => $rumeur,
         ]);
     }
@@ -95,7 +95,7 @@ class RumeurController extends AbstractController
             return $this->redirectToRoute('rumeur.list', [], 303);
         }
 
-        return $this->render('admin/rumeur/add.twig', [
+        return $this->render('rumeur/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -122,7 +122,7 @@ class RumeurController extends AbstractController
             return $this->redirectToRoute('rumeur.detail', ['rumeur' => $rumeur->getId()], [], 303);
         }
 
-        return $this->render('admin/rumeur/update.twig', [
+        return $this->render('rumeur/update.twig', [
             'form' => $form->createView(),
             'rumeur' => $rumeur,
         ]);
@@ -148,7 +148,7 @@ class RumeurController extends AbstractController
             return $this->redirectToRoute('rumeur.list', [], 303);
         }
 
-        return $this->render('admin/rumeur/delete.twig', [
+        return $this->render('rumeur/delete.twig', [
             'form' => $form->createView(),
             'rumeur' => $rumeur,
         ]);

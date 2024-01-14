@@ -259,7 +259,7 @@ class ReligionController extends AbstractController
             return $this->redirectToRoute('religion.detail', ['index' => $religion->getId()], [], 303);
         }
 
-        return $this->render('admin/religion/blason.twig', [
+        return $this->render('religion/blason.twig', [
             'religion' => $religion,
             'form' => $form->createView(),
         ]);
@@ -274,7 +274,7 @@ class ReligionController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\ReligionLevel::class);
         $religionLevels = $repo->findAllOrderedByIndex();
 
-        return $this->render('admin/religion/level/index.twig', ['religionLevels' => $religionLevels]);
+        return $this->render('religion/level/index.twig', ['religionLevels' => $religionLevels]);
     }
 
     /**
@@ -286,7 +286,7 @@ class ReligionController extends AbstractController
 
         $religionLevel = $entityManager->find('\\'.\App\Entity\ReligionLevel::class, $id);
 
-        return $this->render('admin/religion/level/detail.twig', ['religionLevel' => $religionLevel]);
+        return $this->render('religion/level/detail.twig', ['religionLevel' => $religionLevel]);
     }
 
     /**
@@ -320,7 +320,7 @@ class ReligionController extends AbstractController
             }
         }
 
-        return $this->render('admin/religion/level/add.twig', [
+        return $this->render('religion/level/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -361,7 +361,7 @@ class ReligionController extends AbstractController
             }
         }
 
-        return $this->render('admin/religion/level/update.twig', [
+        return $this->render('religion/level/update.twig', [
             'religionLevel' => $religionLevel,
             'form' => $form->createView(),
         ]);
