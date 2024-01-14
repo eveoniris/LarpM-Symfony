@@ -25,7 +25,7 @@ class BaseRelecture
     /**
      * @Column(name="`date`", type="datetime")
      */
-    #[Column(name: 'name', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected \DateTime $date;
 
     /**
@@ -133,7 +133,7 @@ class BaseRelecture
     /**
      * Get User entity (many to one).
      */
-    public function getUser(): static
+    public function getUser(): ?User
     {
         return $this->user;
     }

@@ -67,7 +67,7 @@ class CompetenceController extends AbstractController
     {
         $competence = $request->get('competence');
 
-        return $this->render('admin/competence/perso.twig', ['competence' => $competence]);
+        return $this->render('competence/perso.twig', ['competence' => $competence]);
     }
 
     /**
@@ -78,7 +78,7 @@ class CompetenceController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\Competence::class);
         $competences = $repo->findAllOrderedByLabel();
 
-        return $this->render('admin/competence/materiel.twig', ['competences' => $competences]);
+        return $this->render('competence/materiel.twig', ['competences' => $competences]);
     }
 
     /**
@@ -153,7 +153,7 @@ class CompetenceController extends AbstractController
             }
         }
 
-        return $this->render('admin/competence/add.twig', [
+        return $this->render('competence/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -165,7 +165,7 @@ class CompetenceController extends AbstractController
     {
         $competence = $request->get('competence');
 
-        return $this->render('admin/competence/detail.twig', ['competence' => $competence]);
+        return $this->render('competence/detail.twig', ['competence' => $competence]);
     }
 
     /**
@@ -221,7 +221,7 @@ class CompetenceController extends AbstractController
             }
         }
 
-        return $this->render('admin/competence/update.twig', [
+        return $this->render('competence/update.twig', [
             'competence' => $competence,
             'form' => $form->createView(),
             'available_attributes' => $attributeRepos->findAllOrderedByLabel(),

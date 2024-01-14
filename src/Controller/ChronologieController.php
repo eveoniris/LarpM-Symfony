@@ -75,7 +75,7 @@ class ChronologieController extends AbstractController
         $repo = $entityManager->getRepository('\\'.\App\Entity\Chronologie::class);
         $chronologies = $repo->findAll();
 
-        return $this->render('admin/chronologie/index.twig', ['chronologies' => $chronologies]);
+        return $this->render('chronologie/index.twig', ['chronologies' => $chronologies]);
     }
 
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
@@ -113,7 +113,7 @@ class ChronologieController extends AbstractController
             return $this->redirectToRoute('chronologie');
         }
 
-        return $this->render('admin/chronologie/add.twig', [
+        return $this->render('chronologie/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -148,7 +148,7 @@ class ChronologieController extends AbstractController
             return $this->redirectToRoute('chronologie');
         }
 
-        return $this->render('admin/chronologie/update.twig', [
+        return $this->render('chronologie/update.twig', [
             'form' => $form->createView(),
             'chronologie' => $chronologie,
         ]);
@@ -179,7 +179,7 @@ class ChronologieController extends AbstractController
             return $this->redirectToRoute('chronologie');
         }
 
-        return $this->render('admin/chronologie/remove.twig', [
+        return $this->render('chronologie/remove.twig', [
             'chronologie' => $chronologie,
             'form' => $form->createView(),
         ]);

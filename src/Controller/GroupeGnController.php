@@ -29,7 +29,7 @@ class GroupeGnController extends AbstractController
     #[Route('/groupeGn/{groupe}/', name: 'groupeGn.list')]
     public function listAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
-        return $this->render('admin/groupeGn/list.twig', [
+        return $this->render('groupeGn/list.twig', [
             'groupe' => $groupe,
         ]);
     }
@@ -66,7 +66,7 @@ class GroupeGnController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupeGn/add.twig', [
+        return $this->render('groupeGn/add.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
@@ -92,7 +92,7 @@ class GroupeGnController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupeGn/update.twig', [
+        return $this->render('groupeGn/update.twig', [
             'groupe' => $groupe,
             'groupeGn' => $groupeGn,
             'form' => $form->createView(),
@@ -143,7 +143,7 @@ class GroupeGnController extends AbstractController
             return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
-        return $this->render('admin/groupeGn/responsable.twig', [
+        return $this->render('groupeGn/responsable.twig', [
             'groupe' => $groupe,
             'groupeGn' => $groupeGn,
             'form' => $form->createView(),
@@ -196,7 +196,7 @@ class GroupeGnController extends AbstractController
             return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
-        return $this->render('admin/groupeGn/participantAdd.twig', [
+        return $this->render('groupeGn/participantAdd.twig', [
             'groupeGn' => $groupeGn,
             'form' => $form->createView(),
         ]);
@@ -284,7 +284,7 @@ class GroupeGnController extends AbstractController
             return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
-        return $this->render('admin/groupeGn/participantRemove.twig', [
+        return $this->render('groupeGn/participantRemove.twig', [
             'groupeGn' => $groupeGn,
             'participant' => $participant,
             'form' => $form->createView(),
@@ -356,7 +356,7 @@ class GroupeGnController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
-        return $this->render('admin/groupeGn/jeudedomaine.twig', [
+        return $this->render('groupeGn/jeudedomaine.twig', [
             'groupe' => $groupe,
             'groupeGn' => $groupeGn,
             'form' => $form->createView(),

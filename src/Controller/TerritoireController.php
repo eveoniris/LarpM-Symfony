@@ -49,7 +49,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
-        return $this->render('admin/territoire/cibles.twig', [
+        return $this->render('territoire/cibles.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
@@ -63,7 +63,7 @@ class TerritoireController extends AbstractController
     {
         $territoires = $entityManager->getRepository('\\'.\App\Entity\Territoire::class)->findRoot();
 
-        return $this->render('admin/territoire/list.twig', ['territoires' => $territoires]);
+        return $this->render('territoire/list.twig', ['territoires' => $territoires]);
     }
 
     /**
@@ -173,7 +173,7 @@ class TerritoireController extends AbstractController
     {
         $territoires = $entityManager->getRepository('\\'.\App\Entity\Territoire::class)->findFiefs();
 
-        return $this->render('admin/territoire/print.twig', ['territoires' => $territoires]);
+        return $this->render('territoire/print.twig', ['territoires' => $territoires]);
     }
 
     /**
@@ -183,7 +183,7 @@ class TerritoireController extends AbstractController
     {
         $territoires = $entityManager->getRepository('\\'.\App\Entity\Territoire::class)->findFiefs();
 
-        return $this->render('admin/territoire/quete.twig', ['territoires' => $territoires]);
+        return $this->render('territoire/quete.twig', ['territoires' => $territoires]);
     }
 
     /**
@@ -193,7 +193,7 @@ class TerritoireController extends AbstractController
     {
         $territoires = $entityManager->getRepository('\\'.\App\Entity\Territoire::class)->findRoot();
 
-        return $this->render('admin/territoire/noble.twig', ['territoires' => $territoires]);
+        return $this->render('territoire/noble.twig', ['territoires' => $territoires]);
     }
 
     /**
@@ -212,7 +212,7 @@ class TerritoireController extends AbstractController
     #[Route('/territoire/{territoire}', name: 'territoire.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
     {
-        return $this->render('admin/territoire/detail.twig', ['territoire' => $territoire]);
+        return $this->render('territoire/detail.twig', ['territoire' => $territoire]);
     }
 
     /**
@@ -236,7 +236,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
-        return $this->render('admin/territoire/loi.twig', [
+        return $this->render('territoire/loi.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
@@ -276,7 +276,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
-        return $this->render('admin/territoire/addConstruction.twig', [
+        return $this->render('territoire/addConstruction.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
@@ -307,7 +307,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
-        return $this->render('admin/territoire/removeConstruction.twig', [
+        return $this->render('territoire/removeConstruction.twig', [
             'territoire' => $territoire,
             'construction' => $construction,
             'form' => $form->createView(),
@@ -360,7 +360,7 @@ class TerritoireController extends AbstractController
             }
         }
 
-        return $this->render('admin/territoire/add.twig', [
+        return $this->render('territoire/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -388,7 +388,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
-        return $this->render('admin/territoire/updateIngredients.twig', [
+        return $this->render('territoire/updateIngredients.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
@@ -416,7 +416,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
-        return $this->render('admin/territoire/update.twig', [
+        return $this->render('territoire/update.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
@@ -441,7 +441,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
-        return $this->render('admin/territoire/culture.twig', [
+        return $this->render('territoire/culture.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
@@ -466,7 +466,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
-        return $this->render('admin/territoire/updateStatut.twig', [
+        return $this->render('territoire/updateStatut.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
@@ -512,7 +512,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
-        return $this->render('admin/territoire/blason.twig', [
+        return $this->render('territoire/blason.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
@@ -540,7 +540,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
-        return $this->render('admin/territoire/updateStrategie.twig', [
+        return $this->render('territoire/updateStrategie.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
@@ -584,7 +584,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.list', [], 303);
         }
 
-        return $this->render('admin/territoire/delete.twig', [
+        return $this->render('territoire/delete.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
@@ -664,7 +664,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
-        return $this->render('admin/territoire/addEvent.twig', [
+        return $this->render('territoire/addEvent.twig', [
             'territoire' => $territoire,
             'event' => $event,
             'form' => $form->createView(),
@@ -694,7 +694,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
-        return $this->render('admin/territoire/updateEvent.twig', [
+        return $this->render('territoire/updateEvent.twig', [
             'territoire' => $territoire,
             'event' => $event,
             'form' => $form->createView(),
@@ -724,7 +724,7 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.admin.detail', ['territoire' => $territoire->getId()], [], 303);
         }
 
-        return $this->render('admin/territoire/deleteEvent.twig', [
+        return $this->render('territoire/deleteEvent.twig', [
             'territoire' => $territoire,
             'event' => $event,
             'form' => $form->createView(),

@@ -59,7 +59,7 @@ class BaseDebriefing
 
     #[ManyToOne(targetEntity: 'User', inversedBy: 'playerDebriefings')]
     #[JoinColumn(name: 'player_id', referencedColumnName: 'id', nullable: false)]
-    protected User $player;
+    protected ?User $player;
 
     #[ManyToOne(targetEntity: 'Gn', inversedBy: 'debriefings')]
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id')]
@@ -275,7 +275,7 @@ class BaseDebriefing
      *
      * @return User
      */
-    public function getPlayer(): User
+    public function getPlayer(): ?User
     {
         return $this->player;
     }

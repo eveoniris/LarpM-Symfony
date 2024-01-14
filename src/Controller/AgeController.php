@@ -24,7 +24,7 @@ class AgeController extends AbstractController
         $ages = $entityManager->getRepository('\\'.\App\Entity\Age::class)
             ->findAllOrderedByLabel();
 
-        return $this->render('admin/age/index.twig', ['ages' => $ages]);
+        return $this->render('age/index.twig', ['ages' => $ages]);
     }
 
     /**
@@ -32,7 +32,7 @@ class AgeController extends AbstractController
      */
     public function persoAction(Request $request,  EntityManagerInterface $entityManager, Age $age)
     {
-        return $this->render('admin/age/perso.twig', ['age' => $age]);
+        return $this->render('age/perso.twig', ['age' => $age]);
     }
 
     /**
@@ -44,7 +44,7 @@ class AgeController extends AbstractController
      */
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Age $age)
     {
-        return $this->render('admin/age/detail.twig', ['age' => $age]);
+        return $this->render('age/detail.twig', ['age' => $age]);
     }
 
     /**
@@ -58,7 +58,7 @@ class AgeController extends AbstractController
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
             ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
-        return $this->render('admin/age/add.twig', [
+        return $this->render('age/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -124,7 +124,7 @@ class AgeController extends AbstractController
                 ],
             ]);
 
-        return $this->render('admin/age/update.twig', [
+        return $this->render('age/update.twig', [
             'age' => $age,
             'form' => $form->createView(),
         ]);

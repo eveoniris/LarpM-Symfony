@@ -89,7 +89,7 @@ a {
 		  			</li>
 		  			<li class="list-group-item">
 						{% if participant.groupeGn %}
-							Groupe : <a href="{{ path('groupe.detail', {'index': participant.groupeGn.groupe.id} ) }}">{{ participant.groupeGn.groupe.nom }}</a>
+							Groupe : <a href="{{ path('groupe.detail', {'groupe': participant.groupeGn.groupe.id} ) }}">{{ participant.groupeGn.groupe.nom }}</a>
 						{% else %}
 							Aucun groupe
 						{% endif %}

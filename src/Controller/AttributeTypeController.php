@@ -20,7 +20,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
         $repo = $entityManager->getRepository('\\'.\App\Entity\AttributeType::class);
         $attributes = $repo->findAllOrderedByLabel();
 
-        return $this->render('admin/attributeType/index.twig', ['attributes' => $attributes]);
+        return $this->render('attributeType/index.twig', ['attributes' => $attributes]);
     }
 
     /**
@@ -51,7 +51,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
             }
         }
 
-        return $this->render('admin/attributeType/add.twig', [
+        return $this->render('attributeType/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -87,7 +87,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
             return $this->redirectToRoute('attribute.type');
         }
 
-        return $this->render('admin/attributeType/update.twig', [
+        return $this->render('attributeType/update.twig', [
             'attributeType' => $attributeType,
             'form' => $form->createView(),
         ]);
@@ -103,7 +103,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
         $attributeType = $entityManager->find('\\'.\App\Entity\AttributeType::class, $id);
 
         if ($attributeType) {
-            return $this->render('admin/attributeType/detail.twig', ['attributeType' => $attributeType]);
+            return $this->render('attributeType/detail.twig', ['attributeType' => $attributeType]);
         } else {
            $this->addFlash('error', 'La attribute type n\'a pas été trouvé.');
 

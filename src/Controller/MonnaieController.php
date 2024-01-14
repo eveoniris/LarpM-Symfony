@@ -22,7 +22,7 @@ class MonnaieController extends AbstractController
     {
         $monnaies = $entityManager->getRepository('\\'.\App\Entity\Monnaie::class)->findAll();
 
-        return $this->render('admin/monnaie/list.twig', [
+        return $this->render('monnaie/list.twig', [
             'monnaies' => $monnaies,
         ]);
     }
@@ -47,7 +47,7 @@ class MonnaieController extends AbstractController
             return $this->redirectToRoute('monnaie', [], 303);
         }
 
-        return $this->render('admin/monnaie/add.twig', [
+        return $this->render('monnaie/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -72,7 +72,7 @@ class MonnaieController extends AbstractController
             return $this->redirectToRoute('monnaie', [], 303);
         }
 
-        return $this->render('admin/monnaie/update.twig', [
+        return $this->render('monnaie/update.twig', [
             'monnaie' => $monnaie,
             'form' => $form->createView(),
         ]);
@@ -98,7 +98,7 @@ class MonnaieController extends AbstractController
             return $this->redirectToRoute('monnaie', [], 303);
         }
 
-        return $this->render('admin/monnaie/delete.twig', [
+        return $this->render('monnaie/delete.twig', [
             'monnaie' => $monnaie,
             'form' => $form->createView(),
         ]);
@@ -109,7 +109,7 @@ class MonnaieController extends AbstractController
      */
     public function detailAction( EntityManagerInterface $entityManager, Request $request, Monnaie $monnaie)
     {
-        return $this->render('admin/monnaie/detail.twig', [
+        return $this->render('monnaie/detail.twig', [
             'monnaie' => $monnaie,
         ]);
     }

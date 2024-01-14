@@ -630,7 +630,7 @@ class GnController extends AbstractController
         });
         $groupes = new ArrayCollection(iterator_to_array($iterator));
 
-        return $this->render('admin/gn/groupes.twig', [
+        return $this->render('gn/groupes.twig', [
             'groupes' => $groupes,
             'gn' => $gn,
         ]);
@@ -671,7 +671,7 @@ class GnController extends AbstractController
         $participants = $gn->getParticipantsWithBillet();
         $quetes = new ArrayCollection();
 
-        return $this->render('admin/gn/printPerso.twig', [
+        return $this->render('gn/printPerso.twig', [
             'gn' => $gn,
             'participants' => $participants,
             'quetes' => $quetes,
@@ -686,7 +686,7 @@ class GnController extends AbstractController
         $participants = $gn->getParticipantsInterGN();
         $quetes = new ArrayCollection();
 
-        return $this->render('admin/gn/printInter.twig', [
+        return $this->render('gn/printInter.twig', [
             'participants' => $participants,
             'quetes' => $quetes,
         ]);

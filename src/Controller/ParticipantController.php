@@ -139,7 +139,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('User.admin.list', [], [], 303);
         }
 
-        return $this->render('admin/participant/new.twig', [
+        return $this->render('participant/new.twig', [
             'participant' => $participant,
             'User' => $User,
             'form' => $form->createView(),
@@ -175,7 +175,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
-        return $this->render('admin/participant/groupe.twig', [
+        return $this->render('participant/groupe.twig', [
             'participant' => $participant,
             'form' => $form->createView(),
         ]);
@@ -227,7 +227,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
-        return $this->render('admin/participant/remove.twig', [
+        return $this->render('participant/remove.twig', [
             'participant' => $participant,
             'form' => $form->createView(),
         ]);
@@ -257,7 +257,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
-        return $this->render('admin/participant/billet.twig', [
+        return $this->render('participant/billet.twig', [
             'participant' => $participant,
             'form' => $form->createView(),
         ]);
@@ -310,7 +310,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], [], 303);
         }
 
-        return $this->render('admin/participant/restauration.twig', [
+        return $this->render('participant/restauration.twig', [
             'participant' => $participant,
             'form' => $form->createView(),
         ]);
@@ -479,7 +479,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
-        return $this->render('admin/participant/personnage_remove.twig', [
+        return $this->render('participant/personnage_remove.twig', [
             'form' => $form->createView(),
             'groupe' => $groupe,
             'participant' => $participant,
@@ -694,7 +694,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.participants.withoutperso', ['gn' => $gn->getId()], [], 303);
         }
 
-        return $this->render('admin/participant/personnage_old.twig', [
+        return $this->render('participant/personnage_old.twig', [
             'form' => $form->createView(),
             'groupe' => $groupe,
             'participant' => $participant,
@@ -1016,7 +1016,7 @@ class ParticipantController extends AbstractController
         $ages = $entityManager->getRepository(\App\Entity\Age::class)->findAllOnCreation();
         $territoires = $entityManager->getRepository(\App\Entity\Territoire::class)->findRoot();
 
-        return $this->render('admin/participant/personnage_new.twig', [
+        return $this->render('participant/personnage_new.twig', [
             'form' => $form->createView(),
             'classes' => array_unique($classes),
             'groupe' => $groupe,

@@ -20,7 +20,7 @@ class GenreController extends AbstractController
     {
         $genres = $entityManager->getRepository('\\'.\App\Entity\Genre::class)->findAll();
 
-        return $this->render('admin/genre/index.twig', ['genres' => $genres]);
+        return $this->render('genre/index.twig', ['genres' => $genres]);
     }
 
     /**
@@ -51,7 +51,7 @@ class GenreController extends AbstractController
             }
         }
 
-        return $this->render('admin/genre/add.twig', [
+        return $this->render('genre/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -66,7 +66,7 @@ class GenreController extends AbstractController
         $genre = $entityManager->find('\\'.\App\Entity\Genre::class, $id);
 
         if ($genre) {
-            return $this->render('admin/genre/detail.twig', ['genre' => $genre]);
+            return $this->render('genre/detail.twig', ['genre' => $genre]);
         } else {
            $this->addFlash('error', 'Le genre n\'a pas été trouvé.');
 
@@ -105,7 +105,7 @@ class GenreController extends AbstractController
             return $this->redirectToRoute('genre');
         }
 
-        return $this->render('admin/genre/update.twig', [
+        return $this->render('genre/update.twig', [
             'genre' => $genre,
             'form' => $form->createView(),
         ]);

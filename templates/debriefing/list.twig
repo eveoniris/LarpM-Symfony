@@ -150,7 +150,7 @@
 							{{ debriefing.gn.label }}
 						{% endif %}
 					</td>
-					<td><a href="{{ path('groupe.detail', {'index': debriefing.groupe.id}) }}">{{ debriefing.groupe.nom }}</td>
+					<td><a href="{{ path('groupe.detail', {'groupe': debriefing.groupe.id}) }}">{{ debriefing.groupe.nom }}</td>
 					<td>{{ debriefing.creationDate|date('Y-m-d') }}</td>
 					<td>{{ debriefing.updateDate|date('Y-m-d') }}</td>
 					<td>{{ debriefing.user.displayName }}</td>
@@ -161,7 +161,7 @@
 							{{ debriefing.player.displayName }}
 						{% endif %}
 					</td>
-					<td>{{ debriefing.visibility|explainVisibility }}</td>
+					<td>{{ debriefing.visibility }}</td>
 					<td>
 						{% if debriefing.documentUrl %}
 							<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Télécharger document" href="{{ path('debriefing.document', {'debriefing': debriefing.id}) }}">

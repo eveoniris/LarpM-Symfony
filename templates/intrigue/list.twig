@@ -76,7 +76,7 @@
 					<td>
 						<ul>
 						{% for intrigueHasGroupe in intrigue.intrigueHasGroupes %}
-							<li><a href="{{ path('groupe.detail', {'index': intrigueHasGroupe.groupe.id}) }}">{{ intrigueHasGroupe.groupe.nom }}</a></li> 
+							<li><a href="{{ path('groupe.detail', {'groupe': intrigueHasGroupe.groupe.id}) }}">{{ intrigueHasGroupe.groupe.nom }}</a></li> 
 						{% else %}
 							<li>Aucun</li>
 						{% endfor %}

@@ -26,7 +26,7 @@
 				<div class="white-box">
 					<ul>
 					{% for intrigueHasGroupe in intrigue.intrigueHasGroupes %}
-						<li><a href="{{ path('groupe.detail', {'index': intrigueHasGroupe.groupe.id}) }}">{{ intrigueHasGroupe.groupe.nom }}</a></li>
+						<li><a href="{{ path('groupe.detail', {'groupe': intrigueHasGroupe.groupe.id}) }}">{{ intrigueHasGroupe.groupe.nom }}</a></li>
 					{% else %}
 						<li>Aucun</li>
 					{% endfor %}
@@ -100,12 +100,12 @@
 			</div>
 			<div class="col-md-6">
 				<h4>Auteur</h4>
-				<p>Cette intrigue a été créé par <strong><a href="{{ path('user.view', {'id': intrigue.user.id}) }}">{{ intrigue.user.username }}</a></strong> le <strong>{{ intrigue.dateCreation|date('Y-m-d H:i:s') }}</strong></p>
+				<p>Cette intrigue a été créé par <strong><a href="{{ path('user.view', {'user': intrigue.user.id}) }}">{{ intrigue.user.username }}</a></strong> le <strong>{{ intrigue.dateCreation|date('Y-m-d H:i:s') }}</strong></p>
 					
 				<h4>Modifications</h4>
 				<ul>
 					{% for modification in intrigue.intrigueHasModifications %}
-						<li>Modification par <a href="{{ path('user.view', {'id': intrigue.user.id}) }}">{{ modification.user.username }}</a> le <strong>{{ modification.date|date('Y-m-d H:i:s') }}</strong></li>
+						<li>Modification par <a href="{{ path('user.view', {'user': intrigue.user.id}) }}">{{ modification.user.username }}</a> le <strong>{{ modification.date|date('Y-m-d H:i:s') }}</strong></li>
 					{% else %}
 						<li>Cette intrigue n'a pas encore été modifiée</li>
 					{% endfor %}
@@ -114,7 +114,7 @@
 				<h4>Relectures</h4>
 				{% for relecture in intrigue.relectures %}
 					<div class="white-box">
-						<strong>{{ relecture.date|date('Y-m-d H:i:s') }} :</strong> <strong><a href="{{ path('user.view', {'id': intrigue.user.id}) }}">{{ relecture.user.username }}</a></strong> a relu l'intrigue. Statut donné : <strong>{{ relecture.statut }}</strong>
+						<strong>{{ relecture.date|date('Y-m-d H:i:s') }} :</strong> <strong><a href="{{ path('user.view', {'user': intrigue.user.id}) }}">{{ relecture.user.username }}</a></strong> a relu l'intrigue. Statut donné : <strong>{{ relecture.statut }}</strong>
 						{{ relecture.remarque|markdown_to_html }}
 					</div>
 				{% else %}

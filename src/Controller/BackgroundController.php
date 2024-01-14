@@ -64,7 +64,7 @@ class BackgroundController extends AbstractController
             $app['url_generator']->generate('background.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('admin/background/list.twig', [
+        return $this->render('background/list.twig', [
             'backgrounds' => $backgrounds,
             'paginator' => $paginator,
             'form' => $form->createView(),
@@ -88,7 +88,7 @@ class BackgroundController extends AbstractController
 
         $backgrounds = $entityManager->getRepository('\\'.\App\Entity\Background::class)->findBackgrounds($gns[0]->getId());
 
-        return $this->render('admin/background/print.twig', [
+        return $this->render('background/print.twig', [
             'backgrounds' => $backgrounds,
         ]);
     }
@@ -110,7 +110,7 @@ class BackgroundController extends AbstractController
 
         $groupeGns = $entityManager->getRepository('\\'.\App\Entity\GroupeGn::class)->findByGn($gns[0]->getId());
 
-        return $this->render('admin/background/personnagePrint.twig', [
+        return $this->render('background/personnagePrint.twig', [
             'groupeGns' => $groupeGns,
         ]);
     }
@@ -146,7 +146,7 @@ class BackgroundController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], [], 303);
         }
 
-        return $this->render('admin/background/add.twig', [
+        return $this->render('background/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -172,7 +172,7 @@ class BackgroundController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], [], 303);
         }
 
-        return $this->render('admin/background/delete.twig', [
+        return $this->render('background/delete.twig', [
             'form' => $form->createView(),
             'background' => $background,
         ]);
@@ -206,7 +206,7 @@ class BackgroundController extends AbstractController
             return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], [], 303);
         }
 
-        return $this->render('admin/background/update.twig', [
+        return $this->render('background/update.twig', [
             'form' => $form->createView(),
             'background' => $background,
         ]);
@@ -218,7 +218,7 @@ class BackgroundController extends AbstractController
     #[Route('/background/{background}', name: 'background.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Background $background)
     {
-        return $this->render('admin/background/detail.twig', [
+        return $this->render('background/detail.twig', [
             'background' => $background,
         ]);
     }

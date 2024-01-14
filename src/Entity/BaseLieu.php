@@ -74,7 +74,7 @@ abstract class BaseLieu
     /**
      * Get the value of nom.
      */
-    public function getNom(): static
+    public function getNom(): string
     {
         return $this->nom;
     }

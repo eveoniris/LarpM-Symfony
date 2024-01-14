@@ -50,7 +50,7 @@
 				<td>{{ territoire.root }}</td>
 				<td>
 					{% if territoire.groupe %}
-						<a href="{{ path('groupe.detail', {'index':territoire.groupe.id}) }}">{{ territoire.groupe.nom }}</a>
+						<a href="{{ path('groupe.detail', {'groupe':territoire.groupe.id}) }}">{{ territoire.groupe.nom }}</a>
 					{% else %}
 						Aucun groupe ne contrôle ce territoire
 					{% endif %}

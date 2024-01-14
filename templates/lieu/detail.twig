@@ -40,7 +40,7 @@
 							<a href="{{ path('intrigue.detail', {'intrigue' : intrigueHasLieu.intrigue.id})  }}">{{ intrigueHasLieu.intrigue.titre }}</a>
 							<ul>
 								{% for intrigueHasGroupe in intrigueHasLieu.intrigue.intrigueHasGroupes %}
-									<li><a href="{{ path('groupe.detail', {'index': intrigueHasGroupe.groupe.id}) }}">{{ intrigueHasGroupe.groupe.nom }}</a></li>
+									<li><a href="{{ path('groupe.detail', {'groupe': intrigueHasGroupe.groupe.id}) }}">{{ intrigueHasGroupe.groupe.nom }}</a></li>
 								{% endfor %}
 							</ul>
 						</li>

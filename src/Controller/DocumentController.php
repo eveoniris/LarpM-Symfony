@@ -75,7 +75,7 @@ class DocumentController extends AbstractController
     {
         $documents = $entityManager->getRepository('\\'.\App\Entity\Document::class)->findAllOrderedByCode();
 
-        return $this->render('admin/document/print.twig', ['documents' => $documents]);
+        return $this->render('document/print.twig', ['documents' => $documents]);
     }
 
     /**
@@ -211,7 +211,7 @@ class DocumentController extends AbstractController
             }
         }
 
-        return $this->render('admin/document/add.twig', [
+        return $this->render('document/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -219,10 +219,10 @@ class DocumentController extends AbstractController
     /**
      * Détail d'un document.
      */
-    #[Route('/document/{id}', name: 'document.detail')]
+    #[Route('/document/{document}', name: 'document.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Document $document)
     {
-        return $this->render('admin/document/detail.twig', ['document' => $document]);
+        return $this->render('document/detail.twig', ['document' => $document]);
     }
 
     /**
@@ -266,7 +266,7 @@ class DocumentController extends AbstractController
             return $this->redirectToRoute('document', [], 303);
         }
 
-        return $this->render('admin/document/update.twig', [
+        return $this->render('document/update.twig', [
             'document' => $document,
             'form' => $form->createView(),
         ]);
@@ -293,7 +293,7 @@ class DocumentController extends AbstractController
             return $this->redirectToRoute('document', [], 303);
         }
 
-        return $this->render('admin/document/delete.twig', [
+        return $this->render('document/delete.twig', [
             'document' => $document,
             'form' => $form->createView(),
         ]);

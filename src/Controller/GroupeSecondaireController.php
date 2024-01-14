@@ -76,7 +76,7 @@ class GroupeSecondaireController extends AbstractController
             $app['url_generator']->generate('groupeSecondaire.admin.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('admin/groupeSecondaire/list.twig', [
+        return $this->render('groupeSecondaire/list.twig', [
             'groupeSecondaires' => $groupeSecondaires,
             'paginator' => $paginator,
             'form' => $form->createView(),
@@ -149,7 +149,7 @@ class GroupeSecondaireController extends AbstractController
             }
         }
 
-        return $this->render('admin/groupeSecondaire/add.twig', [
+        return $this->render('groupeSecondaire/add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -172,7 +172,7 @@ class GroupeSecondaireController extends AbstractController
             return $this->redirectToRoute('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()], [], 303);
         }
 
-        return $this->render('admin/groupeSecondaire/materiel.twig', [
+        return $this->render('groupeSecondaire/materiel.twig', [
             'groupeSecondaire' => $groupeSecondaire,
             'form' => $form->createView(),
         ]);
@@ -184,7 +184,7 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/print/{id}', name: 'groupeSecondaire.print')]
     public function materielPrintAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
-        return $this->render('admin/groupeSecondaire/print.twig', [
+        return $this->render('groupeSecondaire/print.twig', [
             'groupeSecondaire' => $groupeSecondaire,
         ]);
     }
@@ -197,7 +197,7 @@ class GroupeSecondaireController extends AbstractController
     {
         $groupeSecondaires = $entityManager->getRepository('\\'.\App\Entity\SecondaryGroup::class)->findAll();
 
-        return $this->render('admin/groupeSecondaire/printAll.twig', [
+        return $this->render('groupeSecondaire/printAll.twig', [
             'groupeSecondaires' => $groupeSecondaires,
         ]);
     }
@@ -253,7 +253,7 @@ class GroupeSecondaireController extends AbstractController
             return $this->redirectToRoute('groupeSecondaire.admin.list');
         }
 
-        return $this->render('admin/groupeSecondaire/update.twig', [
+        return $this->render('groupeSecondaire/update.twig', [
             'groupeSecondaire' => $groupeSecondaire,
             'form' => $form->createView(),
         ]);
@@ -287,7 +287,7 @@ class GroupeSecondaireController extends AbstractController
     {
         $groupeSecondaire = $request->get('groupe');
 
-        return $this->render('admin/groupeSecondaire/detail.twig',
+        return $this->render('groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)
         );
     }
@@ -326,7 +326,7 @@ class GroupeSecondaireController extends AbstractController
             return $this->redirectToRoute('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()], [], 303);
         }
 
-        return $this->render('admin/groupeSecondaire/newMembre.twig',
+        return $this->render('groupeSecondaire/newMembre.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire, ['form' => $form->createView()])
         );
     }
@@ -344,7 +344,7 @@ class GroupeSecondaireController extends AbstractController
 
        $this->addFlash('success', 'la candidature a été supprimée.');
 
-        return $this->render('admin/groupeSecondaire/detail.twig',
+        return $this->render('groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)
         );
     }
@@ -377,7 +377,7 @@ class GroupeSecondaireController extends AbstractController
            $this->addFlash('success', 'la candidature a été accepté.');
         }
 
-        return $this->render('admin/groupeSecondaire/detail.twig',
+        return $this->render('groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)
         );
     }
@@ -395,7 +395,7 @@ class GroupeSecondaireController extends AbstractController
 
        $this->addFlash('success', 'le membre a été retiré.');
 
-        return $this->render('admin/groupeSecondaire/detail.twig',
+        return $this->render('groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)
         );
     }
@@ -414,7 +414,7 @@ class GroupeSecondaireController extends AbstractController
         $entityManager->persist($membre);
         $entityManager->flush();
 
-        return $this->render('admin/groupeSecondaire/detail.twig',
+        return $this->render('groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)
         );
     }
@@ -433,7 +433,7 @@ class GroupeSecondaireController extends AbstractController
         $entityManager->persist($membre);
         $entityManager->flush();
 
-        return $this->render('admin/groupeSecondaire/detail.twig',
+        return $this->render('groupeSecondaire/detail.twig',
             $this->buildContextDetailTwig($app, $groupeSecondaire)
         );
     }

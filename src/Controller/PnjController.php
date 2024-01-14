@@ -41,7 +41,7 @@ class PnjController extends AbstractController
 		
 		$pnjs = $gn->getParticipantsPnj();
 
-		return $this->render('admin/pnj/list.twig', array(
+		return $this->render('pnj/list.twig', array(
 			'pnjs' => $pnjs,	
 		));
 	}

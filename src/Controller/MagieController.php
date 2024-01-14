@@ -35,7 +35,7 @@ class MagieController extends AbstractController
     {
         $spheres = $entityManager->getRepository('\\'.\App\Entity\Sphere::class)->findAll();
 
-        return $this->render('admin/sphere/list.twig', [
+        return $this->render('sphere/list.twig', [
             'spheres' => $spheres,
         ]);
     }
@@ -47,7 +47,7 @@ class MagieController extends AbstractController
     {
         $sphere = $request->get('sphere');
 
-        return $this->render('admin/sphere/detail.twig', [
+        return $this->render('sphere/detail.twig', [
             'sphere' => $sphere,
         ]);
     }
@@ -75,7 +75,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.sphere.detail', ['sphere' => $sphere->getId()], [], 303);
         }
 
-        return $this->render('admin/sphere/add.twig', [
+        return $this->render('sphere/add.twig', [
             'sphere' => $sphere,
             'form' => $form->createView(),
         ]);
@@ -104,7 +104,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.sphere.detail', ['sphere' => $sphere->getId()], [], 303);
         }
 
-        return $this->render('admin/sphere/update.twig', [
+        return $this->render('sphere/update.twig', [
             'sphere' => $sphere,
             'form' => $form->createView(),
         ]);
@@ -133,7 +133,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.sphere.list', [], 303);
         }
 
-        return $this->render('admin/sphere/delete.twig', [
+        return $this->render('sphere/delete.twig', [
             'sphere' => $sphere,
             'form' => $form->createView(),
         ]);
@@ -147,7 +147,7 @@ class MagieController extends AbstractController
     {
         $prieres = $entityManager->getRepository('\\'.\App\Entity\Priere::class)->findAll();
 
-        return $this->render('admin/priere/list.twig', [
+        return $this->render('priere/list.twig', [
             'prieres' => $prieres,
         ]);
     }
@@ -159,7 +159,7 @@ class MagieController extends AbstractController
     {
         $priere = $request->get('priere');
 
-        return $this->render('admin/priere/detail.twig', [
+        return $this->render('priere/detail.twig', [
             'priere' => $priere,
         ]);
     }
@@ -206,7 +206,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.priere.detail', ['priere' => $priere->getId()], [], 303);
         }
 
-        return $this->render('admin/priere/add.twig', [
+        return $this->render('priere/add.twig', [
             'priere' => $priere,
             'form' => $form->createView(),
         ]);
@@ -256,7 +256,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.priere.detail', ['priere' => $priere->getId()], [], 303);
         }
 
-        return $this->render('admin/priere/update.twig', [
+        return $this->render('priere/update.twig', [
             'priere' => $priere,
             'form' => $form->createView(),
         ]);
@@ -285,7 +285,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.priere.list', [], 303);
         }
 
-        return $this->render('admin/priere/delete.twig', [
+        return $this->render('priere/delete.twig', [
             'priere' => $priere,
             'form' => $form->createView(),
         ]);
@@ -366,7 +366,7 @@ class MagieController extends AbstractController
     {
         $potions = $entityManager->getRepository('\\'.\App\Entity\Potion::class)->findAll();
 
-        return $this->render('admin/potion/list.twig', [
+        return $this->render('potion/list.twig', [
             'potions' => $potions,
         ]);
     }
@@ -378,7 +378,7 @@ class MagieController extends AbstractController
     {
         $potion = $request->get('potion');
 
-        return $this->render('admin/potion/detail.twig', [
+        return $this->render('potion/detail.twig', [
             'potion' => $potion,
         ]);
     }
@@ -459,7 +459,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.potion.detail', ['potion' => $potion->getId()], [], 303);
         }
 
-        return $this->render('admin/potion/add.twig', [
+        return $this->render('potion/add.twig', [
             'potion' => $potion,
             'form' => $form->createView(),
         ]);
@@ -509,7 +509,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.potion.detail', ['potion' => $potion->getId()], [], 303);
         }
 
-        return $this->render('admin/potion/update.twig', [
+        return $this->render('potion/update.twig', [
             'potion' => $potion,
             'form' => $form->createView(),
         ]);
@@ -538,7 +538,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.potion.list', [], 303);
         }
 
-        return $this->render('admin/potion/delete.twig', [
+        return $this->render('potion/delete.twig', [
             'potion' => $potion,
             'form' => $form->createView(),
         ]);
@@ -573,7 +573,7 @@ class MagieController extends AbstractController
     {
         $domaines = $entityManager->getRepository('\\'.\App\Entity\Domaine::class)->findAll();
 
-        return $this->render('admin/domaine/list.twig', [
+        return $this->render('domaine/list.twig', [
             'domaines' => $domaines,
         ]);
     }
@@ -585,7 +585,7 @@ class MagieController extends AbstractController
     {
         $domaine = $request->get('domaine');
 
-        return $this->render('admin/domaine/detail.twig', [
+        return $this->render('domaine/detail.twig', [
             'domaine' => $domaine,
         ]);
     }
@@ -613,7 +613,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.domaine.detail', ['domaine' => $domaine->getId()], [], 303);
         }
 
-        return $this->render('admin/domaine/add.twig', [
+        return $this->render('domaine/add.twig', [
             'domaine' => $domaine,
             'form' => $form->createView(),
         ]);
@@ -642,7 +642,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.domaine.detail', ['domaine' => $domaine->getId()], [], 303);
         }
 
-        return $this->render('admin/domaine/update.twig', [
+        return $this->render('domaine/update.twig', [
             'domaine' => $domaine,
             'form' => $form->createView(),
         ]);
@@ -671,7 +671,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.domaine.list', [], 303);
         }
 
-        return $this->render('admin/domaine/delete.twig', [
+        return $this->render('domaine/delete.twig', [
             'domaine' => $domaine,
             'form' => $form->createView(),
         ]);
@@ -685,7 +685,7 @@ class MagieController extends AbstractController
     {
         $sorts = $entityManager->getRepository('\\'.\App\Entity\Sort::class)->findAll();
 
-        return $this->render('admin/sort/list.twig', [
+        return $this->render('sort/list.twig', [
             'sorts' => $sorts,
         ]);
     }
@@ -697,7 +697,7 @@ class MagieController extends AbstractController
     {
         $sort = $request->get('sort');
 
-        return $this->render('admin/sort/detail.twig', [
+        return $this->render('sort/detail.twig', [
             'sort' => $sort,
         ]);
     }
@@ -744,7 +744,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.sort.detail', ['sort' => $sort->getId()], [], 303);
         }
 
-        return $this->render('admin/sort/add.twig', [
+        return $this->render('sort/add.twig', [
             'sort' => $sort,
             'form' => $form->createView(),
         ]);
@@ -794,7 +794,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.sort.detail', ['sort' => $sort->getId()], [], 303);
         }
 
-        return $this->render('admin/sort/update.twig', [
+        return $this->render('sort/update.twig', [
             'sort' => $sort,
             'form' => $form->createView(),
         ]);
@@ -823,7 +823,7 @@ class MagieController extends AbstractController
             return $this->redirectToRoute('magie.sort.list', [], 303);
         }
 
-        return $this->render('admin/sort/delete.twig', [
+        return $this->render('sort/delete.twig', [
             'sort' => $sort,
             'form' => $form->createView(),
         ]);
