@@ -10,10 +10,10 @@
 	</ol>
 
 	<div class="well bs-component">	
-		<form action="{{ path('personnageSecondaire.delete', {'personnageSecondaire': personnageSecondaire.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('personnageSecondaire.delete', {'personnageSecondaire': personnageSecondaire.id}) }}) }}
 			<fieldset>
 				<legend>Supression du personnage secondaire {{ personnageSecondaire.classe.label }}</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				<p class="text-danger">
 					<span class="fa-stack fa-lg">
 						<i class="fa fa-square-o fa-stack-2x"></i>
@@ -22,7 +22,7 @@
 					Attention, vous vous appretez à supprimer définitivement un personnage secondaire</p>
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

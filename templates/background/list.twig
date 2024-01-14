@@ -23,7 +23,7 @@
 				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter un background" href="{{ path('background.add') }}"><i class="fa fa-plus"></i></a>
 			</div>
 			
-			<form class="form form-inline" action="{{ path('background.list') }}" method="POST" {{ form_enctype(form) }}>
+			<form class="form form-inline" action="{{ path('background.list') }}) }}
 				{% form_theme form 'Form/bootstrap_3_horizontal_layout.html.twig' %}
 				<div class="form-group">
 					<div class="input-group">
@@ -39,7 +39,7 @@
 				</div>						
 					
 				{{ form_rest(form) }}
-		   	</form>
+		   	{{ form_end(form) }}
 		</div>
 		
 		{{ paginator|raw }}

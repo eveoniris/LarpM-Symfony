@@ -23,13 +23,13 @@
 		
 		<div class="header"><h5>Modifier votre trombine</h5></div>
 		
-		<form action="{{ path('trombine') }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('trombine') }}) }}
 			
 				
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				{{ form(form) }}
 			
-		</form>
+		{{ form_end(form) }}
 		
 			
 	</div>

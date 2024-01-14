@@ -6,13 +6,13 @@
 
 <div class="well well-sm">
 
-<form action="{{ path('trombinoscope.perso') }}" method="POST" {{ form_enctype(form) }}>
+{{ form_start(form, {"attr": {"action": path('trombinoscope.perso') }}) }}
 	<fieldset>
 		<legend>Indiquez la liste de personnage que vous voulez affichez</legend>
-		{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+		
 		{{ form(form) }}
 	</fieldset>
-</form>
+{{ form_end(form) }}
 
 <ul class="list-group">
 	<li class="list-group-item">

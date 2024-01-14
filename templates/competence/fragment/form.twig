@@ -6,10 +6,10 @@
 		}
 	</style>
 		
-	<form action="{{ action }}" method="POST" {{ form_enctype(form) }} novalidate>
+	{{ form_start(form, {"attr": {"action": action }}) }}
 		<fieldset>
 			<legend>{{ legend }}</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				
 				{{ form_start(form) }}
 					 {{ form_row(form.competenceFamily) }}					
@@ -30,7 +30,7 @@
 				
 		</fieldset>
 				
-	</form>
+	{{ form_end(form) }}
 	{% if isNew  == false  %}
 	<div style="display:none">
 		<div id="lh-template-row-competence-attribute" class="row lh-attribute-row">				        						        

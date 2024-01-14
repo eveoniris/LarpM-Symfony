@@ -10,11 +10,11 @@
 	</ol>
 
 	<div class="well bs-component">	
-		<form action="{{ path('personnageSecondaire.choice') }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('personnageSecondaire.choice') }}) }}
 			<fieldset>
 				<legend>Choix de votre personnage secondaire</legend>
 				
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				
 				<p class="text-primary">
 					<span class="fa-stack fa-lg">
@@ -27,7 +27,7 @@
 					 dans une instance à la place de l'autre</strong> (plus utile, ou toute autre raison)</p>
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 	<div class="well bs-component">

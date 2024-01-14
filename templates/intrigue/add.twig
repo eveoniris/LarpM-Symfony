@@ -11,10 +11,10 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('intrigue.add') }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('intrigue.add') }}) }}
 			<fieldset>
 				<legend>Création d'une intrigue</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				{{ form_start(form) }}
 		
 				{{ form_row(form.add) }}
@@ -100,7 +100,7 @@
 					</div>
 				{{ form_end(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

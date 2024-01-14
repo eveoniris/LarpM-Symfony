@@ -85,13 +85,13 @@
 				</div>
 			</div>
 			<div class="col-md-4">
-				<form action="{{ path('intrigue.relecture.add', {'intrigue': intrigue.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+				{{ form_start(form, {"attr": {"action": path('intrigue.relecture.add', {'intrigue': intrigue.id}) }}) }}
 					<fieldset>
 						<legend>Ajout d'une relecture</legend>
-						{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+						
 						{{ form(form) }}
 					</fieldset>
-				</form>
+				{{ form_end(form) }}
 			</div>
 		</div>
 	</div>

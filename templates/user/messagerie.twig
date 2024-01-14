@@ -96,16 +96,16 @@
 		</div>
 		
 		<div role="tabpanel" class="tab-pane fade" id="new_message">
-			<form action="{{ path('user.messagerie.message.new',{'id':user.id}) }}"
+			{{ form_start(form, {"attr": {"action": path('user.messagerie.message.new',{'id':user.id}) }}"
 				method="POST" {{ form_enctype(form) }}
 				novalidate >
 				<fieldset>
 				<legend>Nouveau message</legend>
 				
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 				</fieldset>
-			</form>
+			{{ form_end(form) }}
 		</div>
 		
 	</div>

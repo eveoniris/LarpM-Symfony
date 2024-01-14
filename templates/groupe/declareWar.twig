@@ -13,14 +13,14 @@
 	
 	<div class="well bs-component">
 	
-		<form action="{{ path('groupe.declareWar', {'participant': participant.id, 'groupe': groupe.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+		{{ form_start(form, {"attr": {"action": path('groupe.declareWar', {'participant': participant.id, 'groupe': groupe.id}) }}) }}
+			
 
 			{{ form(form) }}
 			
 			<p>Le chef de groupe recevra une notification pour le prévenir de votre déclaration de guerre.</p>
 			 
-		</form>
+		{{ form_end(form) }}
 	
 	</div>
 	

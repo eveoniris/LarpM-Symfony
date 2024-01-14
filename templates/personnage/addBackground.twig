@@ -11,14 +11,14 @@
 	</ol>
 
 	<div class="well bs-component">	
-		<form action="{{ path('personnage.admin.background.add', {'personnage': personnage.id,'background': background.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.background.add', {'personnage': personnage.id,'background': background.id}) }}) }}
 			<fieldset>
 				<legend>Modification de {{ personnage.publicName }}</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 	
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

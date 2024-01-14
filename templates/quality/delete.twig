@@ -14,11 +14,11 @@
 		<form data-toggle="validator" action="{{ path('quality.delete', {'quality': quality.id}) }}" method="POST" {{ form_enctype(form) }}  novalidate>
 			<fieldset>
 				<legend>Suppression d'une qualité</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 	
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock %}

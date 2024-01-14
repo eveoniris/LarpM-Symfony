@@ -12,7 +12,7 @@
   		<p>En conformité avec les dispositions de la loi du 06/01/1978, ce site fait l'objet d'une déclaration préalable auprès de la Commission Nationale Informatique et Liberté (CNIL). Le numéro de déclaration est le n°1902381v0.</p>
   	</div>
   	<div class="col-md-6">
-		  <form class="form" action="{{ path('newUser.step3') }}" method="POST" {{ form_enctype(form) }}>
+		  <form class="form" action="{{ path('newUser.step3') }}) }}
 			{% form_theme form 'Form/bootstrap_3_horizontal_layout.html.twig' %}
 			{{ form_widget(form) }}
 			 <div class="clearfix">
@@ -24,7 +24,7 @@
 			  	</div>
 			  </div>
 			  {{ form_rest(form) }}
-		  </form>
+		  {{ form_end(form) }}
 	</div>
   </div>
   

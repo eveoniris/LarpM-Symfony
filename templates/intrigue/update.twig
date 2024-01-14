@@ -10,10 +10,10 @@
 		<li class="active">Modification de {{ intrigue.titre }}</li>
 	</ol>
 	<div class="well bs-component">
-		<form action="{{ path('intrigue.update', {'intrigue': intrigue.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('intrigue.update', {'intrigue': intrigue.id}) }}) }}
 			<fieldset>
 				<legend>Modification de {{ intrigue.titre }}</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				{{ form_start(form) }}
 		
 				{{ form_row(form.enregistrer) }}
@@ -99,7 +99,7 @@
 					</div>
 				{{ form_end(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

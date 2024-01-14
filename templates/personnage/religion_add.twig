@@ -14,7 +14,7 @@
 	<div class="row">
 		<div class="col-md-4">
 			<div class="well well-sm">
-				<form action="{{ path('participant.religion.add',{'participant':participant.id}) }}" method="POST" {{ form_enctype(form) }}>
+				{{ form_start(form, {"attr": {"action": path('participant.religion.add',{'participant':participant.id}) }}) }}
 					<fieldset>
 						<legend>{{ personnage.publicName }} - <small>Choix d'une religion</small></legend>
 						<p class="text-warning">Attention ! une fois votre religion choisie, vous ne pourrez plus revenir sur votre choix.</p>
@@ -25,13 +25,13 @@
 								<li>Si vous choisissez une religion au niveau "Fanatique", vous perdez toutes vos autres religions (un Fanatique n'a qu'une seule religion).</li>
 							</ul>
 						</p>
-						{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+						
 			
 						{{ form_row(form.religion) }}
 						{{ form_row(form.religionLevel) }}
 						{{ form_rest(form) }}
 					</fieldset>
-				</form>
+				{{ form_end(form) }}
 			</div>
 		</div>
 		

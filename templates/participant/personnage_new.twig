@@ -7,10 +7,10 @@
 <div class="well well-sm">
 	<div class="row">
 		<div class="col-md-4">
-			<form action="{{ path('participant.admin.personnage.new', {'participant': participant.id}) }}" method="POST" {{ form_enctype(form) }}>
+			{{ form_start(form, {"attr": {"action": path('participant.admin.personnage.new', {'participant': participant.id}) }}) }}
 				<fieldset>
 					<legend>Ajout d'un personnage, pour l'utilisateur {{ participant.user.username }}</legend>
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form_row(form.nom) }}
 					{{ form_row(form.surnom) }}
 					{{ form_row(form.age) }}
@@ -22,7 +22,7 @@
 					<p><strong class="text-danger">ATTENTION !</strong> Toute validation du personnage est définitive.</p>
 					{{ form_rest(form) }}
 				</fieldset>
-			</form>
+			{{ form_end(form) }}
 		</div>
 		<div class="col-md-8">
 			<blockquote>

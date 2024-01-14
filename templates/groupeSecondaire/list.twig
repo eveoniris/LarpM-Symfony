@@ -35,7 +35,7 @@
 		   		<form class="form" action="{{ path('groupeSecondaire.admin.list') }}" method="GET" {{ form_enctype(form) }}>
 					{% form_theme form 'Form/bootstrap_3_horizontal_layout.html.twig' %}
 					{{ form(form) }}
-		   		</form>
+		   		{{ form_end(form) }}
 		   		<a href="{{ path('groupeSecondaire.admin.list') }}">Reset</a>
 		   	</li>
 		</ul>

@@ -12,15 +12,15 @@
 	
 	
 	<div class="well bs-component">
-		<form action="{{ path('magie.domaine.delete', {'domaine': domaine.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('magie.domaine.delete', {'domaine': domaine.id}) }}) }}
 			<fieldset>
 				<legend>Supression d'un domaine de magie</legend>
 					{{ domaine.label }}
 					{{ domaine.description|markdown_to_html }}
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 				
 {% endblock body %}

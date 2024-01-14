@@ -13,7 +13,7 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('participant.remove', {'participant': participant.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('participant.remove', {'participant': participant.id}) }}) }}
 			<fieldset>
 				<legend>Attention, vous vous apprêtez à retirer la participation de {{ participant.user.etatCivil.nom }} {{ participant.user.etatCivil.prenom }} au jeu {{ participant.gn.label }}. Etes vous certain ?</legend>
 				{% if participant.groupeGn %}
@@ -35,10 +35,10 @@
 					</div>
 				{% endif %}
 				
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

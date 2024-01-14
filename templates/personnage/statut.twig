@@ -13,14 +13,14 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('personnage.admin.statut',{'personnage':personnage.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.statut',{'personnage':personnage.id}) }}) }}
 			<fieldset>
 				<legend>{{ personnage.publicName }} - <small>Statut du personnage</small></legend>
 				<p>Indiquez si le personnage est vivant ou mort</p>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 	
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 {% endblock body %}

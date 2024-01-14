@@ -12,13 +12,13 @@
 	</ol>
 	
 	<div class="well well-sm">
-		<form action="{{ path('groupe.restauration',{'groupe': groupe.id}) }}" method="POST">
+		{{ form_start(form, {"attr": {"action": path('groupe.restauration',{'groupe': groupe.id}) }}" method="POST">
 			<div class="form-group">
 				<p>Choisissez les lieux de restauration pour chacun des membres du groupe</p>
 			</div>
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+			
 			{{ form(form) }}
 			
-		</form>
+		{{ form_end(form) }}
 	</div>
 {% endblock %}

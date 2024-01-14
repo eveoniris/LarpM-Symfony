@@ -12,14 +12,14 @@
 	</ol>
 
 	<div class="well bs-component">	
-		<form action="{{ path('personnage.admin.langue.delete', {'personnage': personnage.id,'personnageLangue': personnageLangue.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.langue.delete', {'personnage': personnage.id,'personnageLangue': personnageLangue.id}) }}) }}
 			<fieldset>
 				<legend>Retrait d'une langue</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				Attention, vous vous appretez à retirer la langue <b>{{ personnageLangue.langue }}</b> du personnage {{ personnage.publicName }}.
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

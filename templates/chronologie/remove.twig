@@ -10,8 +10,8 @@
 	
 	<div class="well bs-component">
 	
-		<form action="{{ path('chronologie.admin.remove', {'index': chronologie.id}) }}" method="POST">
-		{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+		{{ form_start(form, {"attr": {"action": path('chronologie.admin.remove', {'index': chronologie.id}) }}" method="POST">
+		
 			<fieldset>
 				<legend>Suppression d'un événement</legend>
 				
@@ -26,7 +26,7 @@
 			
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock %}

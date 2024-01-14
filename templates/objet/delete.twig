@@ -22,10 +22,10 @@
 					</div>
 					<div class="panel-body">Vous vous apprétez à supprimer l'objet de jeu <strong>{{ item.label }}</strong>. Etes-vous certain de ce que vous faites ?</div>
 				</div>
-				<form action="{{ path('item.delete', {'item': item.id}) }}" method="POST" {{ form_enctype(form) }}>
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				{{ form_start(form, {"attr": {"action": path('item.delete', {'item': item.id}) }}) }}
+					
 					{{ form(form) }}
-				</form>
+				{{ form_end(form) }}
 			</div>
 			
 			<div class="col-md-6">

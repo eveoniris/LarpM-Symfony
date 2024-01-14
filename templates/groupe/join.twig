@@ -19,10 +19,10 @@
 		<p>{% trans %}subscribe_group_explain{% endtrans %}</p>
 						
 						
-		<form action="{{ path('participant.groupe.join', {'participant': participant.id}) }}" method="POST" {{ form_enctype(form) }}>
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+		{{ form_start(form, {"attr": {"action": path('participant.groupe.join', {'participant': participant.id}) }}) }}
+			
 			{{ form(form) }}
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

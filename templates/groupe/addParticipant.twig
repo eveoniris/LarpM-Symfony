@@ -12,10 +12,10 @@
 	</ol>
 	
 	<div class="well well-sm">
-		<form action="{{ path('groupe.admin.participant.add',{'groupe': groupe.id}) }}" method="POST">
+		{{ form_start(form, {"attr": {"action": path('groupe.admin.participant.add',{'groupe': groupe.id}) }}" method="POST">
 			<p>Ce formulaire ne liste que les utilisateurs n'étant pas inscrit dans un groupe</p>
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}		
+					
 			{{ form(form) }}
-		</form>
+		{{ form_end(form) }}
 	</div>
 {% endblock %}

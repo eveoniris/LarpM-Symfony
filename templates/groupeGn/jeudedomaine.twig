@@ -12,9 +12,9 @@
 	</ol>
 	
 	<div class="well well-sm">
-		<form action="{{ path('groupeGn.jeudedomaine',{'groupe': groupe.id, 'groupeGn': groupeGn.id}) }}" method="POST">
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+		{{ form_start(form, {"attr": {"action": path('groupeGn.jeudedomaine',{'groupe': groupe.id, 'groupeGn': groupeGn.id}) }}" method="POST">
+			
 			{{ form(form) }}
-		</form>
+		{{ form_end(form) }}
 	</div>
 {% endblock %}

@@ -12,13 +12,13 @@
 	
 	
 	<div class="well bs-component">
-		<form action="{{ path('magie.sphere.update', {'sphere': sphere.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('magie.sphere.update', {'sphere': sphere.id}) }}) }}
 			<fieldset>
 				<legend>Modification d'une sphère</legend>
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 				
 {% endblock body %}

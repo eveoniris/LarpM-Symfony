@@ -19,13 +19,13 @@
 	</div>
 	
 	<div class="well bs-component">
-		<form action="{{ path('background.delete', {'background': background.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('background.delete', {'background': background.id}) }}) }}
 			<fieldset>
 				<legend>Suppression du background {{ background.titre }}</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 
 

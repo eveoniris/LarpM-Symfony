@@ -11,14 +11,14 @@
 	</ol>
 	
 	<div class="well well-sm">
-		<form action="{{ path('intrigue.delete', {'intrigue': intrigue.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('intrigue.delete', {'intrigue': intrigue.id}) }}) }}
 			<fieldset>
 				<legend>Suppression de {{ intrigue.titre }}</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				<strong>Attention ! vous allez supprimer définitivement cette intrigue. Etes vous sur de vous ?</strong>
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}

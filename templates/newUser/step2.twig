@@ -13,7 +13,7 @@
   		<p>Les champs marqués d'un astérix rouge sont obligatoires</p>
   	</div>
   	<div class="col-md-6">
-		  <form class="form" action="{{ path('newUser.step2') }}" method="POST" {{ form_enctype(form) }}>
+		  <form class="form" action="{{ path('newUser.step2') }}) }}
 			{% form_theme form 'Form/bootstrap_3_horizontal_layout.html.twig' %}
 			{{ form_widget(form) }}
 			 <div class="clearfix">
@@ -25,7 +25,7 @@
 			  	</div>
 			  </div>
 			  {{ form_rest(form) }}
-		  </form>
+		  {{ form_end(form) }}
 	</div>
   </div>
   

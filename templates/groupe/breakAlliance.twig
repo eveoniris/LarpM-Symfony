@@ -13,8 +13,8 @@
 	
 	<div class="well bs-component">
 	
-		<form action="{{ path('groupe.breakAlliance', {'participant': participant.id, 'groupe': groupe.id, 'alliance': alliance.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+		{{ form_start(form, {"attr": {"action": path('groupe.breakAlliance', {'participant': participant.id, 'groupe': groupe.id, 'alliance': alliance.id}) }}) }}
+			
 
 			<p>Vous allez briser alliance entre <strong>{{ alliance.groupe.nom }}</strong> et <strong>{{ alliance.requestedGroupe.nom }}</strong>.</p>
 			<p>Etes-vous certain ?</p>
@@ -23,7 +23,7 @@
 			
 			<p>Le chef de groupe recevra une notification pour le prévenir de votre choix.</p>
 			 
-		</form>
+		{{ form_end(form) }}
 	
 	</div>
 	

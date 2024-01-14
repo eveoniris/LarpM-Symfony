@@ -11,13 +11,13 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('groupeSecondaire.admin.add') }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('groupeSecondaire.admin.add') }}) }}
 			<fieldset>
 				<legend>Ajout d'un groupe secondaire</legend>
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock body %}
