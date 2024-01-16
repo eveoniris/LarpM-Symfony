@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Restauration;
+use Eckinox\TinymceBundle\Form\Type\TinymceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -19,7 +20,7 @@ class RestaurationForm extends AbstractType
             'required' => true,
             'label' => 'Label',
         ])
-            ->add('description', TextareaType::class, [
+            ->add('description', TinymceType::class, [
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
