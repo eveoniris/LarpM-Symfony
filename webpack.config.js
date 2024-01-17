@@ -13,7 +13,22 @@ Encore
     .setPublicPath('/build')
     // only needed for CDN's or subdirectory deploy
     //.setManifestKeyPrefix('build/')
-
+    .copyFiles({
+        from: 'node_modules/tinymce/skins',
+        to: 'skins/[path]/[name].[ext]'
+    })
+    .copyFiles({
+        from: 'node_modules/tinymce/icons',
+        to: 'icons/[path]/[name].[ext]'
+    })
+    .copyFiles({
+        from: 'node_modules/tinymce/models',
+        to: 'models/[path]/[name].[ext]'
+    })
+    .copyFiles({
+        from: 'node_modules/tinymce/plugins',
+        to: 'plugins/[path]/[name].[ext]'
+    })
     /*
      * ENTRY CONFIG
      *
