@@ -56,6 +56,7 @@ Récuppérer jquery
 
 `npm install --save-dev bootstrap-select`
 `npm install tinymce`
+`npm install file-loader@^6.0.0`
 
 Pour relancer le app.js et css
 `symfony run npm run dev`
