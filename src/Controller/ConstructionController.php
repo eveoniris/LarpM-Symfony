@@ -47,7 +47,7 @@ class ConstructionController extends AbstractController
 
            $this->addFlash('success', 'La construction a été ajoutée.');
 
-            return $this->redirectToRoute('construction.detail', ['construction' => $construction->getId()], [], 303);
+            return $this->redirectToRoute('construction.detail', ['construction' => $construction->getId()], 303);
         }
 
         return $this->render('construction/add.twig', [
@@ -76,7 +76,7 @@ class ConstructionController extends AbstractController
 
            $this->addFlash('success', 'La construction a été modifié.');
 
-            return $this->redirectToRoute('construction.detail', ['construction' => $construction->getId()], [], 303);
+            return $this->redirectToRoute('construction.detail', ['construction' => $construction->getId()], 303);
         }
 
         return $this->render('construction/update.twig', [

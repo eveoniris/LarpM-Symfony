@@ -12,7 +12,7 @@
 	
 	<div class="list-group">
 		{% for territoire in construction.territoires %}
-			<a class="list-group-item" href="{{ path('territoire.admin.detail', {'territoire': territoire.id}) }}">{{ territoire.tree }}</a>
+			<a class="list-group-item" href="{{ path('territoire.detail', {'territoire': territoire.id}) }}">{{ territoire.tree }}</a>
 		{% endfor %}
 	</div>
 	

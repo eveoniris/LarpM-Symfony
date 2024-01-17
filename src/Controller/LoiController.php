@@ -6,6 +6,8 @@ namespace App\Controller;
 use App\Entity\Loi;
 use App\Form\Loi\LoiDeleteForm;
 use App\Form\Loi\LoiForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -30,6 +32,7 @@ class LoiController extends AbstractController
     /**
      * Ajout d'une loi.
      */
+    #[Route('/loi/add', name: 'loi.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(LoiForm::class, new Loi());
@@ -75,7 +78,8 @@ class LoiController extends AbstractController
     /**
      * Détail d'une loi.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Loi $loi)
+    #[Route('/loi/{loi}', name: 'loi.detail')]
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Loi $loi)
     {
         return $this->render('admin\loi\detail.twig', [
             'loi' => $loi,
@@ -85,7 +89,8 @@ class LoiController extends AbstractController
     /**
      * Mise à jour d'une loi.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Loi $loi)
+    #[Route('/loi/{loi}/update', name: 'loi.update')]
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Loi $loi)
     {
         $form = $this->createForm(LoiForm::class, $loi);
 
@@ -132,7 +137,8 @@ class LoiController extends AbstractController
     /**
      * Suppression d'une loi.
      */
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Loi $loi)
+    #[Route('/loi/{loi}/delete', name: 'loi.delete')]
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Loi $loi)
     {
         $form = $this->createForm(LoiDeleteForm::class, $loi)
             ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
@@ -159,7 +165,8 @@ class LoiController extends AbstractController
     /**
      * Retire le document d'une competence.
      */
-    public function removeDocumentAction(Request $request,  EntityManagerInterface $entityManager, Loi $loi)
+    #[Route('/loi/{loi}/removeDocument', name: 'loi.removeDocument')]
+    public function removeDocumentAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Loi $loi)
     {
         $loi->setDocumentUrl(null);
 
@@ -173,9 +180,9 @@ class LoiController extends AbstractController
     /**
      * Téléchargement du document lié à une compétence.
      */
-    public function getDocumentAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/loi/{loi}/document', name: 'loi.document')]
+    public function getDocumentAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Loi $loi)
     {
-        $loi = $request->get('loi');
         $document = $loi->getDocumentUrl();
 
         $file = __DIR__.'/../../../private/doc/'.$document;

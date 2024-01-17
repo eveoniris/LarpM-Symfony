@@ -153,7 +153,7 @@ class ForumController extends AbstractController
 
            $this->addFlash('success', 'Le message a été ajouté.');
 
-            return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], [], 303);
+            return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], 303);
         }
 
         return $this->render('forum/post_add.twig', [
@@ -255,7 +255,7 @@ class ForumController extends AbstractController
 
            $this->addFlash('success', 'Le message a été ajouté.');
 
-            return $this->redirectToRoute('forum.post', ['index' => $postToResponse->getId()], [], 303);
+            return $this->redirectToRoute('forum.post', ['index' => $postToResponse->getId()], 303);
         }
 
         return $this->render('forum/post_response.twig', [
@@ -288,7 +288,7 @@ class ForumController extends AbstractController
 
            $this->addFlash('success', 'Le message a été modifié.');
 
-            return $this->redirectToRoute('forum.post', ['index' => $post->getId()], [], 303);
+            return $this->redirectToRoute('forum.post', ['index' => $post->getId()], 303);
         }
 
         return $this->render('forum/post_update.twig', [
@@ -314,7 +314,7 @@ class ForumController extends AbstractController
 
        $this->addFlash('success', 'Les notifications sont maintenant activées.');
 
-        return $this->redirectToRoute('forum.post', ['index' => $post->getId()], [], 303);
+        return $this->redirectToRoute('forum.post', ['index' => $post->getId()], 303);
     }
 
     /**
@@ -334,7 +334,7 @@ class ForumController extends AbstractController
 
        $this->addFlash('success', 'Les notifications sont maintenant desactivées.');
 
-        return $this->redirectToRoute('forum.post', ['index' => $post->getId()], [], 303);
+        return $this->redirectToRoute('forum.post', ['index' => $post->getId()], 303);
     }
 
     /**
@@ -419,7 +419,7 @@ class ForumController extends AbstractController
 
            $this->addFlash('success', 'Le forum a été ajouté.');
 
-            return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], [], 303);
+            return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], 303);
         }
 
         return $this->render('forum/topic_add.twig', [
@@ -460,7 +460,7 @@ class ForumController extends AbstractController
 
            $this->addFlash('success', 'Le forum a été modifié.');
 
-            return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], [], 303);
+            return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], 303);
         }
 
         return $this->render('forum/topic_update.twig', [

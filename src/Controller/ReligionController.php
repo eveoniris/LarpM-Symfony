@@ -199,7 +199,7 @@ class ReligionController extends AbstractController
                 $entityManager->flush();
                 $this->addFlash('success', 'La religion a été mise à jour.');
 
-                //return $this->redirectToRoute('religion.detail', ['index' => $id], [], 303);
+                //return $this->redirectToRoute('religion.detail', ['index' => $id], 303);
                 return $this->redirectToRoute('religion.detail', [], 303);
             } elseif ($form->get('delete')->isClicked()) {
                 /*$entityManager->remove($religion);
@@ -241,7 +241,7 @@ class ReligionController extends AbstractController
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
                 $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
 
-                return $this->redirectToRoute('religion.detail', ['index' => $religion->getId()], [], 303);
+                return $this->redirectToRoute('religion.detail', ['index' => $religion->getId()], 303);
             }
 
             $blasonFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
@@ -256,7 +256,7 @@ class ReligionController extends AbstractController
 
             $this->addFlash('success', 'Le blason a été enregistré');
 
-            return $this->redirectToRoute('religion.detail', ['index' => $religion->getId()], [], 303);
+            return $this->redirectToRoute('religion.detail', ['index' => $religion->getId()], 303);
         }
 
         return $this->render('religion/blason.twig', [
@@ -351,7 +351,7 @@ class ReligionController extends AbstractController
                 $entityManager->flush();
                 $this->addFlash('success', 'Le niveau de religion a été mise à jour.');
 
-                return $this->redirectToRoute('religion.level.detail', ['index' => $id], [], 303);
+                return $this->redirectToRoute('religion.level.detail', ['index' => $id], 303);
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($religionLevel);
                 $entityManager->flush();

@@ -114,7 +114,7 @@ class LangueController extends AbstractController
                     $entityManager->flush();
                    $this->addFlash('success', 'La langue a été mise à jour.');
 
-                    return $this->redirectToRoute('langue.detail', ['index' => $id], [], 303);
+                    return $this->redirectToRoute('langue.detail', ['index' => $id], 303);
                 }
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($langue);
@@ -258,7 +258,7 @@ class LangueController extends AbstractController
                 $entityManager->flush();
                $this->addFlash('success', 'Le groupe de langue a été mis à jour.');
 
-                return $this->redirectToRoute('langue.detailGroup', ['index' => $id], [], 303);
+                return $this->redirectToRoute('langue.detailGroup', ['index' => $id], 303);
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($groupeLangue);
                 $entityManager->flush();

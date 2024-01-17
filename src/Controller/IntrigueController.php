@@ -375,7 +375,7 @@ class IntrigueController extends AbstractController
 
            $this->addFlash('success', 'Votre intrigue a été modifiée.');
 
-            return $this->redirectToRoute('intrigue.detail', ['intrigue' => $intrigue->getId()], [], 303);
+            return $this->redirectToRoute('intrigue.detail', ['intrigue' => $intrigue->getId()], 303);
         }
 
         return $this->render('intrigue/update.twig', [
@@ -442,7 +442,7 @@ class IntrigueController extends AbstractController
 
            $this->addFlash('success', 'Votre relecture a été enregistrée.');
 
-            return $this->redirectToRoute('intrigue.detail', ['intrigue' => $intrigue->getId()], [], 303);
+            return $this->redirectToRoute('intrigue.detail', ['intrigue' => $intrigue->getId()], 303);
         }
 
         return $this->render('intrigue/relecture.twig', [

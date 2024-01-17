@@ -57,7 +57,7 @@ class TitreController extends AbstractController
 
            $this->addFlash('success', 'Le titre a été ajouté');
 
-            return $this->redirectToRoute('titre.admin.detail', ['titre' => $titre->getId()], [], 303);
+            return $this->redirectToRoute('titre.admin.detail', ['titre' => $titre->getId()], 303);
         }
 
         return $this->render('titre/add.twig', [
@@ -86,7 +86,7 @@ class TitreController extends AbstractController
 
            $this->addFlash('success', 'Le titre a été sauvegardé');
 
-            return $this->redirectToRoute('titre.admin.detail', ['titre' => $titre->getId()], [], 303);
+            return $this->redirectToRoute('titre.admin.detail', ['titre' => $titre->getId()], 303);
         }
 
         return $this->render('titre/update.twig', [
