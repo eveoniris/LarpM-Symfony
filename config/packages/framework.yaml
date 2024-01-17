@@ -16,6 +16,9 @@ framework:
     php_errors:
         log: true
 
+    assets:
+        base_path: '/build/img'
+
 when@test:
     framework:
         test: true

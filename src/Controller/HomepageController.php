@@ -128,18 +128,6 @@ class HomepageController extends AbstractController
     }
 
     /**
-     * Fourni le blason pour affichage.
-     */
-    #[Route('/blason/{blason}', name: 'blason.get')]
-    public function getBlasonAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Blason $blason)
-    {
-        $blason = $request->get('blason');
-        $filename = __DIR__.'/../../../private/img/blasons/'.$blason;
-
-        return $app->sendFile($filename);
-    }
-
-    /**
      * Page d'acceuil pour les utilisateurs non connecté.
      */
     public function notConnectedIndexAction(Request $request,  EntityManagerInterface $entityManager)

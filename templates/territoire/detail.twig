@@ -19,7 +19,7 @@
 				
 					<div class="col-md-4">
 						{% if territoire.blason %}
-							<img width="160" height="200" src="{{ asset(path('blason.get', {'blason' : territoire.blason })) }}" /><br />
+							<img width="160" height="200" src="{{ asset("blasons/#{territoire.blason}") }}" /><br />
 						{% endif %}
 						<a href="{{ path('territoire.update.blason', {'territoire': territoire.id}) }}">Ajouter ou modifier le blason</a>
 					</div>

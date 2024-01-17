@@ -29,6 +29,10 @@ Encore
         from: 'node_modules/tinymce/plugins',
         to: 'plugins/[path]/[name].[ext]'
     })
+    .copyFiles({
+        from: 'assets/img',
+        to: 'img/[path]/[name].[ext]'
+    })
     /*
      * ENTRY CONFIG
      *
