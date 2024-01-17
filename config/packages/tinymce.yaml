@@ -1,0 +1,3 @@
+tinymce:
+  skin: "oxide-dark",
+  content_css: "dark"

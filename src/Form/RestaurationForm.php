@@ -5,10 +5,10 @@ namespace App\Form;
 use App\Entity\Restauration;
 use Eckinox\TinymceBundle\Form\Type\TinymceType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+
 class RestaurationForm extends AbstractType
 {
     /**
@@ -24,8 +24,10 @@ class RestaurationForm extends AbstractType
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    // 'toolbar' => 'bold italic  | bullist numlist',
                     'row' => 9,
+                    'skin' => 'oxide-dark',
+                    'content_css' => 'dark',
                 ],
             ]);
     }

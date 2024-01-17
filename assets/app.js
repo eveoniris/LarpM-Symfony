@@ -21,13 +21,14 @@ global.$ = global.jQuery = $;
 bsCustomFileInput.init();
 
 require('bootstrap');
+//require('tinymce');
 
 $(document).ready(function() {
     $("[data-toggle='tooltip']").tooltip();
     $("[data-bs-toggle='tooltip']").tooltip();
 
     // Editeur de text
-    tinymce.init({
+   /* tinymce.init({
         selector: '.tinymce',
         theme: "modern",
         plugins: "spellchecker,insertdatetime,preview,link,autolink",
@@ -35,7 +36,7 @@ $(document).ready(function() {
         menubar: "edit, insert, view, format, tools",
         toolbar: "undo, redo, formatselect, bold, italic, alignright, aligncenter, alignright, alignjustify, bullist, numlist  link",
         link_assume_external_targets: true
-    });
+    });*/
 
     // Switch de theme. TODO: En session || cookie
     document.getElementById('btnSwitch').addEventListener('click',()=>{
