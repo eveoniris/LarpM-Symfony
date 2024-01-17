@@ -27,9 +27,9 @@
 		{% else %}
 			{{ classe.description|markdown_to_html }}
 		{% endif %}
-		<img width="184" height="250" alt="{{ classe.labelFeminin }}" src="{{ asset("img/#{classe.imageF}") }}" />
+		<img width="184" height="250" alt="{{ classe.labelFeminin }}" src="{{ asset("classes/#{classe.imageF}") }}" />
 		<div class="pull-right">
-			<img width="184" height="250" alt="{{ classe.labelMasculin }}" src="{{ asset("img/#{classe.imageM}")  }}" />
+			<img width="184" height="250" alt="{{ classe.labelMasculin }}" src="{{ asset("classes/#{classe.imageM}")  }}" />
 		</div>
 	</div>
 
