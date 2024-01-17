@@ -27,7 +27,9 @@ import 'tinymce/plugins/lists';
 // Initialize the a
 tinymce.init({
     selector: 'textarea',
-    plugins: ['link', 'table', 'lists', 'code']
+    plugins: ['link', 'table', 'lists', 'code'],
+    skin: "oxide-dark",
+    content_css: "dark"
 });
 // END TinyMCE
 
