@@ -23,6 +23,7 @@ use App\Form\Groupe\GroupeRessourceForm;
 use App\Form\Groupe\GroupeRichesseForm;
 use App\Form\Groupe\GroupeScenaristeForm;
 use App\Form\Groupe\GroupFindForm;
+use App\Manager\GroupeManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -154,7 +155,7 @@ class GroupeController extends AbstractController
         $stats = [];
 
         foreach ($groupes as $groupe) {
-            $quete = $app['larp.manager']->generateQuete($groupe, $ressourceCommunes, $ressourceRares);
+            $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
             $quetes[] = [
                 'quete' => $quete,
                 'groupe' => $groupe,
@@ -234,13 +235,13 @@ class GroupeController extends AbstractController
     {
         $ressourceRares = new ArrayCollection($entityManager->getRepository('\\'.\App\Entity\Ressource::class)->findRare());
         $ressourceCommunes = new ArrayCollection($entityManager->getRepository('\\'.\App\Entity\Ressource::class)->findCommun());
-        $quete = $app['larp.manager']->generateQuete($groupe, $ressourceCommunes, $ressourceRares);
+        $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
 
         return $this->render('groupe/quete.twig', [
             'groupe' => $groupe,
             'needs' => $quete['needs'],
             'valeur' => $quete['valeur'],
-            'px' => $quete['px'],
+            'cible' => $quete['cible'],
             'recompenses' => $quete['recompenses'],
         ]);
     }
@@ -708,7 +709,7 @@ class GroupeController extends AbstractController
     #[Route('/groupe/{groupe}/restauration', name: 'groupe.restauration')]
     public function restaurationAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
-        $availableTaverns = $app['larp.manager']->getAvailableTaverns();
+        $availableTaverns = GroupeManager::getAvailableTaverns();
 
         $formBuilder = $this->createForm();
 
@@ -796,7 +797,7 @@ class GroupeController extends AbstractController
     #[Route('/groupe/{groupe}/print', name: 'groupe.print')]
     public function printAllAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
-        $gn = $app['larp.manager']->getGnActif();
+        $gn = GroupeManager::getGnActif();
         $groupeGns = $gn->getGroupeGns();
 
         $ressourceRares = new ArrayCollection($entityManager->getRepository('\\'.\App\Entity\Ressource::class)->findRare());
@@ -805,7 +806,7 @@ class GroupeController extends AbstractController
         $groupes = new ArrayCollection();
         foreach ($groupeGns as $groupeGn) {
             $groupe = $groupeGn->getGroupe();
-            $quete = $app['larp.manager']->generateQuete($groupe, $ressourceCommunes, $ressourceRares);
+            $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
             $groupes[] = [
                 'groupe' => $groupe,
                 'quete' => $quete,
@@ -829,7 +830,7 @@ class GroupeController extends AbstractController
 
         $ressourceRares = new ArrayCollection($entityManager->getRepository('\\'.\App\Entity\Ressource::class)->findRare());
         $ressourceCommunes = new ArrayCollection($entityManager->getRepository('\\'.\App\Entity\Ressource::class)->findCommun());
-        $quete = $app['larp.manager']->generateQuete($groupe, $ressourceCommunes, $ressourceRares);
+        $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
 
         return $this->render('groupe/printMaterielGroupe.twig', [
             'groupe' => $groupe,
@@ -859,7 +860,7 @@ class GroupeController extends AbstractController
                 $niveau = $personnage->getCompetenceNiveau('Commerce');
                 if ($niveau >= 2) {
                     $quetes[] = [
-                        'quete' => $app['larp.manager']->generateQuete($groupe, $ressourceCommunes, $ressourceRares),
+                        'quete' => GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares),
                         'personnage' => $personnage,
                     ];
                 }
@@ -1215,7 +1216,7 @@ class GroupeController extends AbstractController
             // défini les droits d'accés à ce forum
             // (les membres du groupe ont le droit d'accéder à ce forum)
             $topic->setRight('GROUPE_MEMBER');
-            $topic->setTopic($app['larp.manager']->findTopic('TOPIC_GROUPE'));
+            $topic->setTopic(GroupeManager::findTopic('TOPIC_GROUPE'));
 
             $groupe->setTopic($topic);
 

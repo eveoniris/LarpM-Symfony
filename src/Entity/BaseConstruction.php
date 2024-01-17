@@ -29,7 +29,7 @@ abstract class BaseConstruction
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected int $defense;
 
-    #[ORM\ManyToMany(targetEntity: Territoire::class, inversedBy: 'constructions')]
+    #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'constructions')]
     protected Collection $territoires;
 
     public function __construct()
