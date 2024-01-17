@@ -115,7 +115,7 @@ class PersonnageController extends AbstractController
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
                $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
 
-                return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+                return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
             }
 
             $trombineFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
@@ -130,7 +130,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'La photo a été enregistrée');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/trombine.twig', [
@@ -267,7 +267,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/age.twig', [
@@ -334,7 +334,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/updateTechnologie.twig', [
@@ -446,7 +446,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/materiel.twig', [
@@ -484,7 +484,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le statut du personnage a été modifié');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/statut.twig', [
@@ -543,7 +543,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été transféré');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/transfert.twig', [
@@ -658,7 +658,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Les points d\'expériences ont été ajoutés');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/xp.twig', [
@@ -752,7 +752,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Votre personnage a été sauvegardé.');
             if ($participant && $participant->getGroupe()) {
-                return $this->redirectToRoute('groupe.detail', ['index' => $participant->getGroupe()->getId()], [], 303);
+                return $this->redirectToRoute('groupe.detail', ['index' => $participant->getGroupe()->getId()], 303);
             } else {
                 return $this->redirectToRoute('homepage', [], 303);
             }
@@ -862,7 +862,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/update.twig', [
@@ -899,7 +899,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le background a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/addBackground.twig', [
@@ -936,7 +936,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le background a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/updateBackground.twig', [
@@ -974,7 +974,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/updateRenomme.twig', [
@@ -1010,7 +1010,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/updateHeroisme.twig', [
@@ -1046,7 +1046,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/updatePugilat.twig', [
@@ -1098,7 +1098,7 @@ class PersonnageController extends AbstractController
         $entityManager->flush();
        $this->addFlash('success', 'Le jeton '.$token->getTag().' a été ajouté.');
 
-        return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+        return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
     }
 
     /**
@@ -1135,7 +1135,7 @@ class PersonnageController extends AbstractController
 
        $this->addFlash('success', 'Le jeton a été retiré.');
 
-        return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+        return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
     }
 
     /**
@@ -1161,7 +1161,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le déclencheur a été ajouté.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/addTrigger.twig', [
@@ -1190,7 +1190,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le déclencheur a été supprimé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/deleteTrigger.twig', [
@@ -1236,7 +1236,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/updateDomaine.twig', [
@@ -1314,7 +1314,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/updateLangue.twig', [
@@ -1754,7 +1754,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/ingredients.twig', [
@@ -1844,7 +1844,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/ressources.twig', [
@@ -1871,7 +1871,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/richesse.twig', [
@@ -1898,7 +1898,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le document a été ajouté au personnage.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/documents.twig', [
@@ -1925,7 +1925,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'L\'objet a été ajouté au personnage.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/items.twig', [
@@ -1944,7 +1944,7 @@ class PersonnageController extends AbstractController
         if ($personnage->isFanatique()) {
            $this->addFlash('error', 'Désolé, le personnage êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. (supprimer la religion fanatique qu\'il possède avant)');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         $personnageReligion = new \App\Entity\PersonnagesReligions();
@@ -1956,7 +1956,7 @@ class PersonnageController extends AbstractController
         if (0 == $availableReligions->count()) {
            $this->addFlash('error', 'Désolé, il n\'y a plus de religion disponibles');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         // construit le tableau de choix
@@ -2000,7 +2000,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/addReligion.twig', [
@@ -2029,7 +2029,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/removeReligion.twig', [
@@ -2060,7 +2060,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/removeLangue.twig', [
@@ -2109,7 +2109,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/updateOrigine.twig', [
@@ -2129,7 +2129,7 @@ class PersonnageController extends AbstractController
         if (!$lastCompetence) {
            $this->addFlash('error', 'Désolé, le personnage n\'a pas encore acquis de compétences');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         $form = $this->createForm()
@@ -2199,7 +2199,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'La compétence a été retirée');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/removeCompetence.twig', [
@@ -2307,7 +2307,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/competence.twig', [
@@ -2367,7 +2367,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'L\'évènement a été ajouté à la chronologie.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/updateChronologie.twig', [
@@ -2398,7 +2398,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'L\'évènement a été supprimé de la chronologie.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/removeChronologie.twig', [
@@ -2436,7 +2436,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'La lignée a été ajoutée.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/updateLignee.twig', [
@@ -2467,7 +2467,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'La lignée a été retirée.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], [], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/removeLignee.twig', [

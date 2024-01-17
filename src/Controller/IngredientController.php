@@ -57,7 +57,7 @@ class IngredientController extends AbstractController
 
            $this->addFlash('success', 'L\'ingredient a été ajouté');
 
-            return $this->redirectToRoute('ingredient.admin.detail', ['ingredient' => $ingredient->getId()], [], 303);
+            return $this->redirectToRoute('ingredient.admin.detail', ['ingredient' => $ingredient->getId()], 303);
         }
 
         return $this->render('ingredient/add.twig', [
@@ -86,7 +86,7 @@ class IngredientController extends AbstractController
 
            $this->addFlash('success', 'L\'ingredient a été sauvegardé');
 
-            return $this->redirectToRoute('ingredient.admin.detail', ['ingredient' => $ingredient->getId()], [], 303);
+            return $this->redirectToRoute('ingredient.admin.detail', ['ingredient' => $ingredient->getId()], 303);
         }
 
         return $this->render('ingredient/update.twig', [

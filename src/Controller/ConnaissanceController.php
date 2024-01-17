@@ -82,7 +82,7 @@ class ConnaissanceController extends AbstractController
 
            $this->addFlash('success', 'La connaissance a été ajoutée');
 
-            return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], [], 303);
+            return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], 303);
         }
 
         return $this->render('connaissance/add.twig', [
@@ -132,7 +132,7 @@ class ConnaissanceController extends AbstractController
 
            $this->addFlash('success', 'La connaissance a été sauvegardée');
 
-            return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], [], 303);
+            return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], 303);
         }
 
         return $this->render('connaissance/update.twig', [

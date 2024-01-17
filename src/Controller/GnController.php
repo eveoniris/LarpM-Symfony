@@ -49,7 +49,7 @@ class GnController extends AbstractController
             // L'utilisateur n'a pas validé les CG.
             /*return $this->redirectToRoute('User.gn.validationci', [
                 'gn' => $gn->getId(),
-            ], [], 303);*/
+            ], 303);*/
             return $this->redirectToRoute('User.gn.validationci', ['gn' => $gn->getId()], 303);
         }
 
@@ -75,7 +75,7 @@ class GnController extends AbstractController
 
             return $this->redirectToRoute('gn.detail', [
                 'gn' => $gn->getId(),
-            ], [], 303);
+            ], 303);
         }
 
         $lois = $entityManager->getRepository(Loi::class)->findAll();

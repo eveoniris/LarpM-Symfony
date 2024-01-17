@@ -11,7 +11,7 @@
 	
 	<blockquote>Choisissez votre fichier et téléversez le dans larpManager.</blockquote>
 	
-	{{ form_start(form, {"attr": {"action": path('territoire.admin.update.blason', {'territoire': territoire.id}) }}) }}			
+	{{ form_start(form, {"attr": {"action": path('territoire.update.blason', {'territoire': territoire.id}) }}) }}			
 			
 			{{ form(form) }}
 	{{ form_end(form) }}

@@ -143,7 +143,7 @@ class BackgroundController extends AbstractController
 
            $this->addFlash('success', 'Le background a été ajouté.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], [], 303);
+            return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], 303);
         }
 
         return $this->render('background/add.twig', [
@@ -169,7 +169,7 @@ class BackgroundController extends AbstractController
 
            $this->addFlash('success', 'Le background a été supprimé.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], [], 303);
+            return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], 303);
         }
 
         return $this->render('background/delete.twig', [
@@ -203,7 +203,7 @@ class BackgroundController extends AbstractController
 
            $this->addFlash('success', 'Le background a été ajouté.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], [], 303);
+            return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], 303);
         }
 
         return $this->render('background/update.twig', [

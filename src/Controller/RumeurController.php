@@ -119,7 +119,7 @@ class RumeurController extends AbstractController
 
            $this->addFlash('success', 'Votre rumeur a été modifiée.');
 
-            return $this->redirectToRoute('rumeur.detail', ['rumeur' => $rumeur->getId()], [], 303);
+            return $this->redirectToRoute('rumeur.detail', ['rumeur' => $rumeur->getId()], 303);
         }
 
         return $this->render('rumeur/update.twig', [

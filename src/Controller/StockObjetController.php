@@ -245,7 +245,7 @@ class StockObjetController extends AbstractController
             } elseif ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('stock_objet_add', [], 303);
             } elseif ($form->get('save_clone')->isClicked()) {
-                return $this->redirectToRoute('stock_objet_clone', ['objet' => $objet->getId()], [], 303);
+                return $this->redirectToRoute('stock_objet_clone', ['objet' => $objet->getId()], 303);
             }
         }
 
@@ -290,7 +290,7 @@ class StockObjetController extends AbstractController
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('stock_homepage', [], 303);
             } else {
-                return $this->redirectToRoute('stock_objet_clone', ['objet' => $newObjet->getId()], [], 303);
+                return $this->redirectToRoute('stock_objet_clone', ['objet' => $newObjet->getId()], 303);
             }
         }
 

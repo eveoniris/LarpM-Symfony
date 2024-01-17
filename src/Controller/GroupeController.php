@@ -1147,7 +1147,7 @@ class GroupeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
            $this->addFlash('success', 'Le background du groupe a été créé');
 
-            return $this->redirectToRoute('groupe.admin.detail', ['index' => $groupe->getId()], [], 303);
+            return $this->redirectToRoute('groupe.admin.detail', ['index' => $groupe->getId()], 303);
         }
 
         return $this->render('groupe/background/add.twig', [
@@ -1177,7 +1177,7 @@ class GroupeController extends AbstractController
 
            $this->addFlash('success', 'Le background du groupe a été mis à jour');
 
-            return $this->redirectToRoute('groupe.admin.detail', ['index' => $groupe->getId()], [], 303);
+            return $this->redirectToRoute('groupe.admin.detail', ['index' => $groupe->getId()], 303);
         }
 
         return $this->render('groupe/background/update.twig', [

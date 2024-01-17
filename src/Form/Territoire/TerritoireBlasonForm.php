@@ -19,7 +19,7 @@ class TerritoireBlasonForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('blason', 'file', [
+        $builder->add('blason', \Symfony\Component\Form\Extension\Core\Type\FileType::class, [
             'label' => 'Choisissez votre fichier',
             'required' => true,
             'mapped' => false,

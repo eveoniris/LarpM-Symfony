@@ -6,8 +6,8 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("territoire.admin.list") }}">Liste des territoires</a></li>
-		<li><a href="{{ path("territoire.admin.detail", {'territoire': territoire.id}) }}">{{ territoire.nom }}</a></li>
+		<li><a href="{{ path("territoire.list") }}">Liste des territoires</a></li>
+		<li><a href="{{ path("territoire.detail", {'territoire': territoire.id}) }}">{{ territoire.nom }}</a></li>
 		<li class="active">Ajouter une construction dans un territoire</li>
 	</ol>
 	

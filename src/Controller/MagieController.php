@@ -72,7 +72,7 @@ class MagieController extends AbstractController
 
            $this->addFlash('success', 'La sphere a été ajouté');
 
-            return $this->redirectToRoute('magie.sphere.detail', ['sphere' => $sphere->getId()], [], 303);
+            return $this->redirectToRoute('magie.sphere.detail', ['sphere' => $sphere->getId()], 303);
         }
 
         return $this->render('sphere/add.twig', [
@@ -101,7 +101,7 @@ class MagieController extends AbstractController
 
            $this->addFlash('success', 'La sphere a été sauvegardé');
 
-            return $this->redirectToRoute('magie.sphere.detail', ['sphere' => $sphere->getId()], [], 303);
+            return $this->redirectToRoute('magie.sphere.detail', ['sphere' => $sphere->getId()], 303);
         }
 
         return $this->render('sphere/update.twig', [
@@ -203,7 +203,7 @@ class MagieController extends AbstractController
 
            $this->addFlash('success', 'La priere a été ajouté');
 
-            return $this->redirectToRoute('magie.priere.detail', ['priere' => $priere->getId()], [], 303);
+            return $this->redirectToRoute('magie.priere.detail', ['priere' => $priere->getId()], 303);
         }
 
         return $this->render('priere/add.twig', [
@@ -253,7 +253,7 @@ class MagieController extends AbstractController
 
            $this->addFlash('success', 'La priere a été sauvegardé');
 
-            return $this->redirectToRoute('magie.priere.detail', ['priere' => $priere->getId()], [], 303);
+            return $this->redirectToRoute('magie.priere.detail', ['priere' => $priere->getId()], 303);
         }
 
         return $this->render('priere/update.twig', [
@@ -456,7 +456,7 @@ class MagieController extends AbstractController
 
            $this->addFlash('success', 'La potion a été ajouté');
 
-            return $this->redirectToRoute('magie.potion.detail', ['potion' => $potion->getId()], [], 303);
+            return $this->redirectToRoute('magie.potion.detail', ['potion' => $potion->getId()], 303);
         }
 
         return $this->render('potion/add.twig', [
@@ -506,7 +506,7 @@ class MagieController extends AbstractController
 
            $this->addFlash('success', 'La potion a été sauvegardé');
 
-            return $this->redirectToRoute('magie.potion.detail', ['potion' => $potion->getId()], [], 303);
+            return $this->redirectToRoute('magie.potion.detail', ['potion' => $potion->getId()], 303);
         }
 
         return $this->render('potion/update.twig', [
@@ -610,7 +610,7 @@ class MagieController extends AbstractController
 
            $this->addFlash('success', 'Le domaine de magie a été ajouté');
 
-            return $this->redirectToRoute('magie.domaine.detail', ['domaine' => $domaine->getId()], [], 303);
+            return $this->redirectToRoute('magie.domaine.detail', ['domaine' => $domaine->getId()], 303);
         }
 
         return $this->render('domaine/add.twig', [
@@ -639,7 +639,7 @@ class MagieController extends AbstractController
 
            $this->addFlash('success', 'Le domaine de magie a été sauvegardé');
 
-            return $this->redirectToRoute('magie.domaine.detail', ['domaine' => $domaine->getId()], [], 303);
+            return $this->redirectToRoute('magie.domaine.detail', ['domaine' => $domaine->getId()], 303);
         }
 
         return $this->render('domaine/update.twig', [
@@ -741,7 +741,7 @@ class MagieController extends AbstractController
 
            $this->addFlash('success', 'Le sort a été ajouté');
 
-            return $this->redirectToRoute('magie.sort.detail', ['sort' => $sort->getId()], [], 303);
+            return $this->redirectToRoute('magie.sort.detail', ['sort' => $sort->getId()], 303);
         }
 
         return $this->render('sort/add.twig', [
@@ -791,7 +791,7 @@ class MagieController extends AbstractController
 
            $this->addFlash('success', 'Le sort a été sauvegardé');
 
-            return $this->redirectToRoute('magie.sort.detail', ['sort' => $sort->getId()], [], 303);
+            return $this->redirectToRoute('magie.sort.detail', ['sort' => $sort->getId()], 303);
         }
 
         return $this->render('sort/update.twig', [

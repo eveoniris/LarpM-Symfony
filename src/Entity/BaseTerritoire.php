@@ -136,7 +136,7 @@ class BaseTerritoire
 
     #[ORM\ManyToOne(targetEntity: Territoire::class, inversedBy: 'territoires')]
     #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
-    protected Territoire $territoire;
+    protected ?Territoire $territoire;
 
     #[ORM\OneToOne(mappedBy: 'territoire', targetEntity: TerritoireGuerre::class)]
     #[ORM\JoinColumn(name: 'territoire_guerre_id', referencedColumnName: 'id')]
@@ -915,7 +915,7 @@ class BaseTerritoire
     /**
      * Get Territoire entity (many to one).
      */
-    public function getTerritoire(): Territoire
+    public function getTerritoire(): ?Territoire
     {
         return $this->territoire;
     }

@@ -98,7 +98,7 @@ class ParticipantController extends AbstractController
 
        $this->addFlash('Success', 'Votre réponse a été prise en compte !');
 
-        return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+        return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
     }
 
     /**
@@ -111,7 +111,7 @@ class ParticipantController extends AbstractController
 
        $this->addFlash('Success', 'Votre réponse a été supprimée, veuillez répondre de nouveau à la question !');
 
-        return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+        return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
     }
 
     /**
@@ -136,7 +136,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('User.admin.list', [], [], 303);
+            return $this->redirectToRoute('User.admin.list', [], 303);
         }
 
         return $this->render('participant/new.twig', [
@@ -172,7 +172,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('participant/groupe.twig', [
@@ -224,7 +224,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('participant/remove.twig', [
@@ -254,7 +254,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('participant/billet.twig', [
@@ -307,7 +307,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('participant/restauration.twig', [
@@ -347,13 +347,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', "Vous n'avez pas encore de personnage.");
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->hasCompetence('Politique')) {
            $this->addFlash('error', 'Votre personnage ne dispose pas de la compétence Politique');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         // recherche de tous les groupes participant au prochain GN
@@ -385,7 +385,7 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', "Vous n'avez pas encore de personnage.");
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $form = $this->createForm(PersonnageEditForm::class, $personnage)
@@ -400,7 +400,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été prises en compte.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/personnage/edit.twig', [
@@ -430,7 +430,7 @@ class ParticipantController extends AbstractController
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
                $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
 
-                return $this->redirectToRoute('participant.personnage.trombine', ['participant' => $participant->getId(), 'personnage' => $personnage->getId()], [], 303);
+                return $this->redirectToRoute('participant.personnage.trombine', ['participant' => $participant->getId(), 'personnage' => $personnage->getId()], 303);
             }
 
             $trombineFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
@@ -445,7 +445,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Votre photo a été enregistrée');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/personnage/trombine.twig', [
@@ -497,25 +497,25 @@ class ParticipantController extends AbstractController
         if (!$groupeGn) {
            $this->addFlash('error', 'Désolé, vous devez rejoindre un groupe avant de pouvoir créer votre personnage.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$participant->getBillet()) {
            $this->addFlash('error', 'Désolé, vous devez avoir un billet avant de pouvoir créer votre personnage.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
         if (true == $groupeGn->getGroupe()->getLock()) {
            $this->addFlash('error', 'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
         if ($participant->getPersonnage()) {
            $this->addFlash('error', 'Désolé, vous disposez déjà d\'un personnage.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
         $groupe = $groupeGn->getGroupe();
@@ -631,7 +631,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
         return $this->render('public/participant/personnage_old.twig', [
@@ -691,7 +691,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('gn.participants.withoutperso', ['gn' => $gn->getId()], [], 303);
+            return $this->redirectToRoute('gn.participants.withoutperso', ['gn' => $gn->getId()], 303);
         }
 
         return $this->render('participant/personnage_old.twig', [
@@ -711,25 +711,25 @@ class ParticipantController extends AbstractController
         if (!$groupeGn) {
            $this->addFlash('error', 'Désolé, vous devez rejoindre un groupe avant de pouvoir créer votre personnage.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$participant->getBillet()) {
            $this->addFlash('error', 'Désolé, vous devez avoir un billet avant de pouvoir créer votre personnage.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
         if (true == $groupeGn->getGroupe()->getLock()) {
            $this->addFlash('error', 'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
         if ($participant->getPersonnage()) {
            $this->addFlash('error', 'Désolé, vous disposez déjà d\'un personnage.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
         $groupe = $groupeGn->getGroupe();
@@ -878,7 +878,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
         $ages = $entityManager->getRepository(\App\Entity\Age::class)->findAllOnCreation();
@@ -1010,7 +1010,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('gn.participants.withoutperso', ['gn' => $groupeGn->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.participants.withoutperso', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
         $ages = $entityManager->getRepository(\App\Entity\Age::class)->findAllOnCreation();
@@ -1072,7 +1072,7 @@ class ParticipantController extends AbstractController
         if (!$participant->getBillet()) {
            $this->addFlash('error', 'Désolé, vous devez obtenir un billet avant de pouvoir rejoindre un groupe');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $form = $this->createForm(GroupeInscriptionForm::class, [])
@@ -1087,7 +1087,7 @@ class ParticipantController extends AbstractController
             if (!$groupeGn) {
                $this->addFlash('error', 'Désolé, le code que vous utilisez ne correspond à aucun groupe');
 
-                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
             }
 
             $groupe = $groupeGn->getGroupe();
@@ -1095,21 +1095,21 @@ class ParticipantController extends AbstractController
                 // Il est possible que ce cas ne puisse pas arriver.
                $this->addFlash('error', 'Désolé, le code que vous utilisez correspond à un groupe mal paramétré');
 
-                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
             }
 
             $groupeGn = $groupe->getGroupeGn($participant->getGn());
             if (!$groupeGn) {
                $this->addFlash('error', 'Le code correspond à un groupe qui ne participe pas à cette session de jeu.');
 
-                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
             }
 
             // il faut que le groupe ai un responsable pour le rejoindre
             if (!$groupeGn->getResponsable()) {
                $this->addFlash('error', "Le groupe n'a pas encore de responsable, vous ne pouvez pas le rejoindre pour le moment.");
 
-                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
             }
 
             $participant->setGroupeGn($groupeGn);
@@ -1121,7 +1121,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vous avez rejoint le groupe.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/groupe/join.twig', [
@@ -1150,7 +1150,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Le personnage secondaire a été enregistré.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGroupeGn()->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGroupeGn()->getGn()->getId()], 303);
         }
 
         return $this->render('public/participant/personnageSecondaire.twig', [
@@ -1170,7 +1170,7 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Désolé, Vous devez faire votre personnage pour pouvoir consulter votre background.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $backsGroupe = new ArrayCollection();
@@ -1218,19 +1218,19 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Désolé, vous devez créer un personnage avant de choisir son origine.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (true == $personnage->getGroupe()->getLock()) {
            $this->addFlash('error', 'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contacter votre scénariste si vous pensez que cela est une erreur');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if ($personnage->getTerritoire()) {
            $this->addFlash('error', 'Désolé, il n\'est pas possible de modifier votre origine. Veuillez contacter votre orga pour exposer votre problème.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $form = $this->createForm(PersonnageOriginForm::class, $personnage)
@@ -1245,7 +1245,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/participant/origine.twig', [
@@ -1279,20 +1279,20 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage avant de choisir une religion !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (true == $participant->getGroupeGn()->getGroupe()->getLock()) {
            $this->addFlash('error', 'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         // refUser la demande si le personnage est Fanatique
         if ($personnage->isFanatique()) {
            $this->addFlash('error', 'Désolé, vous êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. Veuillez contacter votre orga en cas de problème.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $personnageReligion = new \App\Entity\PersonnagesReligions();
@@ -1304,7 +1304,7 @@ class ParticipantController extends AbstractController
         if (0 == $availableReligions->count()) {
            $this->addFlash('error', 'Désolé, il n\'y a plus de religion disponibles ( Sérieusement ? vous êtes éclectique, c\'est bien, mais ... faudrait savoir ce que vous voulez non ? L\'heure n\'est-il pas venu de faire un choix parmi tous ces dieux ?)');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         // construit le tableau de choix
@@ -1339,7 +1339,7 @@ class ParticipantController extends AbstractController
                 if ($personnage->isFervent()) {
                    $this->addFlash('error', 'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.');
 
-                    return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+                    return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
                 }
             }
 
@@ -1348,7 +1348,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/personnage/religion_add.twig', [
@@ -1369,13 +1369,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownPriere($priere)) {
            $this->addFlash('error', 'Vous ne connaissez pas cette prière !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/priere/detail.twig', [
@@ -1395,13 +1395,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownPriere($priere)) {
            $this->addFlash('error', 'Vous ne connaissez pas cette prière !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$priere->getDocumentUrl();
@@ -1420,13 +1420,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownTechnologie($technologie)) {
            $this->addFlash('error', 'Vous ne connaissez pas cette technologie !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$technologie->getDocumentUrl();
@@ -1445,13 +1445,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownPotion($potion)) {
            $this->addFlash('error', 'Vous ne connaissez pas cette potion !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/potion/detail.twig', [
@@ -1471,13 +1471,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownPotion($potion)) {
            $this->addFlash('error', 'Vous ne connaissez pas cette potion !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$potion->getDocumentUrl();
@@ -1496,7 +1496,7 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $niveau = $request->get('niveau');
@@ -1507,7 +1507,7 @@ class ParticipantController extends AbstractController
             && !$personnage->hasTrigger('ALCHIMIE MAITRE')) {
            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de potions supplémentaires.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $repo = $entityManager->getRepository('\\'.\App\Entity\Potion::class);
@@ -1559,7 +1559,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('personnage/potion.twig', [
@@ -1581,7 +1581,7 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $niveau = $request->get('niveau');
@@ -1589,7 +1589,7 @@ class ParticipantController extends AbstractController
         if ($participant->hasPotionsDepartByLevel($niveau)) {
            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de potions de départ supplémentaires.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $potions = $personnage->getPotionsNiveau($niveau);
@@ -1620,7 +1620,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('personnage/potiondepart.twig', [
@@ -1642,13 +1642,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->hasTrigger('PRETRISE INITIE')) {
            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de descriptif de religion supplémentaire.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $availableDescriptionReligion = $app['personnage.manager']->getAvailableDescriptionReligion($personnage);
@@ -1680,7 +1680,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/personnage/descriptionReligion.twig', [
@@ -1700,13 +1700,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->hasTrigger('LANGUE COMMUNE')) {
            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue commune supplémentaire.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $availableLangues = $app['personnage.manager']->getAvailableLangues($personnage, 2);
@@ -1742,7 +1742,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/personnage/langueCommune.twig', [
@@ -1762,13 +1762,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->hasTrigger('LANGUE COURANTE')) {
            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue courante supplémentaire.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $availableLangues = $app['personnage.manager']->getAvailableLangues($personnage, 1);
@@ -1804,7 +1804,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/personnage/langueCourante.twig', [
@@ -1824,13 +1824,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->hasTrigger('LANGUE ANCIENNE')) {
            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue ancienne supplémentaire.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $availableLangues = $app['personnage.manager']->getAvailableLangues($personnage, 0);
@@ -1866,7 +1866,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/personnage/langueAncienne.twig', [
@@ -1886,13 +1886,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownLanguage($langue)) {
            $this->addFlash('error', 'Vous ne connaissez pas cette langue !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$langue->getDocumentUrl();
@@ -1911,13 +1911,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->hasTrigger('DOMAINE MAGIE')) {
            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de domaine de magie supplémentaire.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $availableDomaines = $app['personnage.manager']->getAvailableDomaines($personnage);
@@ -1952,7 +1952,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('personnage/domaineMagie.twig', [
@@ -1973,7 +1973,7 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $niveau = $request->get('niveau');
@@ -1984,7 +1984,7 @@ class ParticipantController extends AbstractController
             && !$personnage->hasTrigger('SORT MAITRE')) {
            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de sorts supplémentaires.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $sorts = $app['personnage.manager']->getAvailableSorts($personnage, $niveau);
@@ -2035,7 +2035,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('personnage/sort.twig', [
@@ -2057,13 +2057,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownSort($sort)) {
            $this->addFlash('error', 'Vous ne connaissez pas ce sort !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/sort/detail.twig', [
@@ -2083,13 +2083,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownSort($sort)) {
            $this->addFlash('error', 'Vous ne connaissez pas ce sort !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$sort->getDocumentUrl();
@@ -2108,13 +2108,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownConnaissance($connaissance)) {
            $this->addFlash('error', 'Vous ne connaissez pas cette connaissance !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/connaissance/detail.twig', [
@@ -2134,13 +2134,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownConnaissance($connaissance)) {
            $this->addFlash('error', 'Vous ne connaissez pas cette connaissance !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$connaissance->getDocumentUrl();
@@ -2159,7 +2159,7 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $domaines = $entityManager->getRepository('\\'.\App\Entity\Domaine::class)->findAll();
@@ -2193,13 +2193,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownCompetence($competence)) {
            $this->addFlash('error', 'Vous ne connaissez pas cette compétence !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/competence/detail.twig', [
@@ -2218,13 +2218,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownDocument($document)) {
            $this->addFlash('error', 'Vous ne connaissez pas ce document !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/document/detail.twig', [
@@ -2258,13 +2258,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownCompetence($competence)) {
            $this->addFlash('error', 'Vous ne connaissez pas cette compétence !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $file = __DIR__.'/../../../private/doc/'.$competence->getDocumentUrl();
@@ -2283,13 +2283,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->isKnownDocument($document)) {
            $this->addFlash('error', 'Vous ne connaissez pas ce document !');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $file = __DIR__.'/../../../private/documents/'.$document->getDocumentUrl();
@@ -2327,7 +2327,7 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage avant de postuler à un groupe secondaire!');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         /*
@@ -2336,7 +2336,7 @@ class ParticipantController extends AbstractController
         if ($groupeSecondaire->isPostulant($personnage)) {
            $this->addFlash('error', 'Vous avez déjà postulé dans ce groupe. Inutile d\'en refaire la demande.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         /*
@@ -2345,7 +2345,7 @@ class ParticipantController extends AbstractController
         if ($groupeSecondaire->isMembre($personnage)) {
            $this->addFlash('error', 'Votre êtes déjà membre de ce groupe. Inutile d\'en refaire la demande.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         /**
@@ -2381,7 +2381,7 @@ class ParticipantController extends AbstractController
 
                $this->addFlash('success', 'Votre candidature a été enregistrée, et transmise au chef de groupe.');
 
-                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+                return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
             }
         }
 
@@ -2403,13 +2403,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$membre) {
            $this->addFlash('error', 'Votre n\'êtes pas membre de ce groupe.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/groupeSecondaire/detail.twig', [
@@ -2446,7 +2446,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vous avez accepté la candidature. Un message a été envoyé au joueur concerné.');
 
-            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], [], 303);
+            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         return $this->render('public/groupeSecondaire/gestion_accept.twig', [
@@ -2476,7 +2476,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vous avez refusé la candidature. Un message a été envoyé au joueur concerné.');
 
-            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], [], 303);
+            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         return $this->render('public/groupeSecondaire/gestion_reject.twig', [
@@ -2507,7 +2507,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'La candidature reste en attente. Un message a été envoyé au joueur concerné.');
 
-            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], [], 303);
+            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         return $this->render('public/groupeSecondaire/gestion_wait.twig', [
@@ -2545,7 +2545,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Votre message a été envoyé au joueur concerné.');
 
-            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], [], 303);
+            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         return $this->render('public/groupeSecondaire/gestion_response.twig', [
@@ -2566,13 +2566,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (true == $participant->getGroupeGn()->getGroupe()->getLock()) {
            $this->addFlash('error', 'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $availableCompetences = $app['personnage.manager']->getAvailableCompetences($personnage);
@@ -2580,7 +2580,7 @@ class ParticipantController extends AbstractController
         if (0 == $availableCompetences->count()) {
            $this->addFlash('error', 'Désolé, il n\'y a plus de compétence disponible (Bravo !).');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         // construit le tableau de choix
@@ -2689,7 +2689,7 @@ class ParticipantController extends AbstractController
                 } else {
                    $this->addFlash('error', 'Pour obtenir la compétence Prêtrise, vous devez être FERVENT ou FANATIQUE');
 
-                    return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+                    return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
                 }
             }
 
@@ -2983,7 +2983,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('public/personnage/competence.twig', [
@@ -3064,7 +3064,7 @@ class ParticipantController extends AbstractController
                 } elseif (1 == $joueurs->count()) {
                    $this->addFlash('success', 'Le joueur a été trouvé.');
 
-                    return $this->redirectToRoute('joueur.detail.orga', ['index' => $joueurs->first()->getId()], [], 303);
+                    return $this->redirectToRoute('joueur.detail.orga', ['index' => $joueurs->first()->getId()], 303);
                 } else {
                    $this->addFlash('success', 'Il y a plusieurs résultats à votre recherche.');
 
@@ -3742,13 +3742,13 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if (!$personnage->hasTrigger('TECHNOLOGIE')) {
            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de technologie supplémentaire.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $technologies = $app['personnage.manager']->getAvailableTechnologies($personnage);
@@ -3783,7 +3783,7 @@ class ParticipantController extends AbstractController
 
            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], [], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         return $this->render('personnage/technologie.twig', [

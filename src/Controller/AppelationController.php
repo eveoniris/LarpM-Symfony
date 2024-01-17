@@ -82,7 +82,7 @@ class AppelationController extends AbstractController
                 $entityManager->flush();
                $this->addFlash('success', 'L\'appelation a été mise à jour.');
 
-                return $this->redirectToRoute('appelation.detail', ['appelation' => $id], [], 303);
+                return $this->redirectToRoute('appelation.detail', ['appelation' => $id], 303);
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($appelation);
                 $entityManager->flush();

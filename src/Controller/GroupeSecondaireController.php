@@ -169,7 +169,7 @@ class GroupeSecondaireController extends AbstractController
             $entityManager->flush();
            $this->addFlash('success', 'Le groupe secondaire a été mis à jour.');
 
-            return $this->redirectToRoute('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()], [], 303);
+            return $this->redirectToRoute('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()], 303);
         }
 
         return $this->render('groupeSecondaire/materiel.twig', [
@@ -311,7 +311,7 @@ class GroupeSecondaireController extends AbstractController
             if ($groupeSecondaire->isMembre($personnage)) {
                $this->addFlash('warning', 'le personnage est déjà membre du groupe secondaire.');
 
-                return $this->redirectToRoute('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()], [], 303);
+                return $this->redirectToRoute('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()], 303);
             }
 
             $membre->setPersonnage($personnage);
@@ -323,7 +323,7 @@ class GroupeSecondaireController extends AbstractController
 
            $this->addFlash('success', 'le personnage a été ajouté au groupe secondaire.');
 
-            return $this->redirectToRoute('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()], [], 303);
+            return $this->redirectToRoute('groupeSecondaire.admin.detail', ['groupe' => $groupeSecondaire->getId()], 303);
         }
 
         return $this->render('groupeSecondaire/newMembre.twig',

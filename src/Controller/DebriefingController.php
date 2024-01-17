@@ -105,7 +105,7 @@ class DebriefingController extends AbstractController
                $this->addFlash('success', 'Le debriefing a été ajouté.');
             }
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $debriefing->getGroupe()->getId()], [], 303);
+            return $this->redirectToRoute('groupe.detail', ['index' => $debriefing->getGroupe()->getId()], 303);
         }
 
         return $this->render('debriefing/add.twig', [
@@ -131,7 +131,7 @@ class DebriefingController extends AbstractController
 
            $this->addFlash('success', 'Le debriefing a été supprimé.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $debriefing->getGroupe()->getId()], [], 303);
+            return $this->redirectToRoute('groupe.detail', ['index' => $debriefing->getGroupe()->getId()], 303);
         }
 
         return $this->render('debriefing/delete.twig', [
@@ -165,7 +165,7 @@ class DebriefingController extends AbstractController
 
                $this->addFlash('success', 'Le debriefing a été modifié.');
 
-                return $this->redirectToRoute('groupe.detail', ['index' => $debriefing->getGroupe()->getId()], [], 303);
+                return $this->redirectToRoute('groupe.detail', ['index' => $debriefing->getGroupe()->getId()], 303);
             }
         }
 

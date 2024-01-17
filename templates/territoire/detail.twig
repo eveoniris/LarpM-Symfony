@@ -9,7 +9,7 @@
 		<div class="col-xs-12 col-md-8">
 		
 			<div class="well well-sm bs-component">
-			<a href="{{ path('territoire.admin.list') }}">Retour à la liste des territoires</a>
+			<a href="{{ path('territoire.list') }}">Retour à la liste des territoires</a>
 				<div class="row">
 					<div class="col-md-8">
 						<h4>
@@ -19,9 +19,9 @@
 				
 					<div class="col-md-4">
 						{% if territoire.blason %}
-							<img width="160" height="200" src="{{ path('blason.get', {'blason' : territoire.blason }) }}" /><br />
+							<img width="160" height="200" src="{{ asset(path('blason.get', {'blason' : territoire.blason })) }}" /><br />
 						{% endif %}
-						<a href="{{ path('territoire.admin.update.blason', {'territoire': territoire.id}) }}">Ajouter ou modifier le blason</a>
+						<a href="{{ path('territoire.update.blason', {'territoire': territoire.id}) }}">Ajouter ou modifier le blason</a>
 					</div>
 				</div>
 			</div>
@@ -37,7 +37,7 @@
 					<li>Aucune cibles définies</li>
 					{% endfor %}
 				</ul>	
-				<a href="{{ path('territoire.admin.update.cibles', {'territoire': territoire.id }) }}">Modifier</a> 	
+				<a href="{{ path('territoire.update.cibles', {'territoire': territoire.id }) }}">Modifier</a> 	
 				</div>
 			</div>
 	    			
@@ -51,7 +51,7 @@
 	    			<li>Trésor de base : {{ territoire.tresor|default(0) }}</li>
 	    			<li>Richesse réelle : {{ territoire.richesse|default(0) }} (prend en compte les constructions et le statut du territoire)</li>
 	    			</ul>
-	    			<a href="{{ path('territoire.admin.updateStrategie', {'territoire': territoire.id}) }}">Modifier</a>
+	    			<a href="{{ path('territoire.update.strategie', {'territoire': territoire.id}) }}">Modifier</a>
 	    		</div>
 	    		
 	    		<div class="list-group-item">
@@ -59,7 +59,7 @@
 	    			<ul>
 	    				<li>{{ territoire.culture.label|default('Non définie') }}</li>
 	    			</ul>
-	    			<a href="{{ path('territoire.admin.update.culture', {'territoire': territoire.id}) }}">Modifier</a>
+	    			<a href="{{ path('territoire.update.culture', {'territoire': territoire.id}) }}">Modifier</a>
 	    		</div>
 	    		
 	    		<div class="list-group-item">
@@ -71,7 +71,7 @@
 	    				<li>Auncune loi définie</li>
 	    			{% endfor %}
 	    			</ul>
-	    			<a href="{{ path('territoire.loi.update', {'territoire': territoire.id}) }}">Modifier les lois</a>
+	    			<a href="{{ path('territoire.update.loi', {'territoire': territoire.id}) }}">Modifier les lois</a>
 	    		</div>
 	    		
 	    		<div class="list-group-item">
@@ -79,7 +79,7 @@
 	    			<ul>
 	    				<li>{{ territoire.statut|default('Normal') }}</li>
 	    			</ul>
-	    			<a href="{{ path('territoire.admin.update.statut', {'territoire': territoire.id}) }}">Modifier</a>
+	    			<a href="{{ path('territoire.update.statut', {'territoire': territoire.id}) }}">Modifier</a>
 	    		</div>
 	    		
 	    		<div class="list-group-item">
@@ -168,7 +168,7 @@
     						<li><strong>Exportation : </strong>{% if territoire.importations|length > 0 %}{{ territoire.importations|join(', ') }}{% else %}Rien{% endif %}</li>
     						<li><strong>Production : </strong>{% if territoire.exportations|length > 0 %}{{ territoire.exportations|join(', ') }}{% else %}Rien{% endif %}</li>
     						<li><strong>Ingrédients : </strong>{% if territoire.ingredients|length > 0 %}{{ territoire.ingredients|join(', ') }}{% else %}Rien{% endif %}</li>
-    						<li><a href="{{ path('territoire.ingredients.update', {'territoire': territoire.id}) }}">Modifier la liste des ingredients</a></li>
+    						<li><a href="{{ path('territoire.update.ingredients', {'territoire': territoire.id}) }}">Modifier la liste des ingredients</a></li>
     					</ul>
     				</p>
     			</div>
@@ -179,7 +179,7 @@
 	    		<div class="list-group-item">
 		    		<h4 class="list-group-item-heading">Ce territoire dépend de</h4>
     				<p class="list-group-item-text">
-    					<a href="{{ path('territoire.admin.detail',{'territoire': territoire.territoire.id}) }}">{{ territoire.territoire.nom }}</a>
+    					<a href="{{ path('territoire.detail',{'territoire': territoire.territoire.id}) }}">{{ territoire.territoire.nom }}</a>
     				</p>
     			</div>
     			{% endif %}
@@ -189,7 +189,7 @@
     				<p class="list-group-item-text">
 						<ul>
 						{% for territoire in territoire.territoires %}
-							<li><a href="{{ path('territoire.admin.detail',{'territoire': territoire.id}) }}">{{ territoire.nomTree }}</a></li>
+							<li><a href="{{ path('territoire.detail',{'territoire': territoire.id}) }}">{{ territoire.nomTree }}</a></li>
 						{% endfor %}
 						</ul>
 					</p>
@@ -197,13 +197,13 @@
 				
 				<div class="list-group-item">
   					<div class="btn-group" role="group" aria-label="...">
-  						<a  class="btn btn-primary" role="button" href="{{ path('territoire.admin.update', {'territoire' : territoire.id}) }}">Modifier</a>
-  						<a  class="btn btn-danger" role="button" href="{{ path('territoire.admin.delete', {'territoire' : territoire.id}) }}">Supprimer</a>
+  						<a  class="btn btn-primary" role="button" href="{{ path('territoire.update', {'territoire' : territoire.id}) }}">Modifier</a>
+  						<a  class="btn btn-danger" role="button" href="{{ path('territoire.delete', {'territoire' : territoire.id}) }}">Supprimer</a>
   						
   						{% if territoire.topic %}
-  							<a class="btn btn-default" href="{{ path('territoire.admin.topic.delete', {'territoire':territoire.id}) }}">Supprimer le topic</a>
+  							<a class="btn btn-default" href="{{ path('territoire.topic.delete', {'territoire':territoire.id}) }}">Supprimer le topic</a>
   						{% else %}
-							<a class="btn btn-default" href="{{ path('territoire.admin.topic.add', {'territoire':territoire.id}) }}">Ajouter un topic</a>  											
+							<a class="btn btn-default" href="{{ path('territoire.topic.add', {'territoire':territoire.id}) }}">Ajouter un topic</a>  											
   						{% endif %}
   						
 					</div>
