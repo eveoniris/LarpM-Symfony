@@ -23,7 +23,7 @@ class RestaurationForm extends AbstractType
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'row' => 9,
                 ],
             ]);

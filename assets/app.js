@@ -11,7 +11,25 @@ import './styles/app.scss';
 import 'bootstrap';
 import bsCustomFileInput from 'bs-custom-file-input';
 import 'bootstrap-select';
-import 'tinymce';
+
+// Import TinyMCE
+import tinymce from 'tinymce/tinymce';
+
+// A theme is also required
+import 'tinymce/themes/silver/theme';
+
+// Any plugins you want to use has to be imported
+import 'tinymce/plugins/link';
+import 'tinymce/plugins/code';
+import 'tinymce/plugins/table';
+import 'tinymce/plugins/lists';
+
+// Initialize the a
+tinymce.init({
+    selector: 'textarea',
+    plugins: ['link', 'table', 'lists', 'code']
+});
+// END TinyMCE
 
 // require jQuery normally
 const $ = require('jquery');
@@ -27,7 +45,7 @@ $(document).ready(function() {
     $("[data-bs-toggle='tooltip']").tooltip();
 
     // Editeur de text
-    tinymce.init({
+    /*tinymce.init({
         selector: '.tinymce',
         theme: "modern",
         plugins: "spellchecker,insertdatetime,preview,link,autolink",
@@ -35,7 +53,7 @@ $(document).ready(function() {
         menubar: "edit, insert, view, format, tools",
         toolbar: "undo, redo, formatselect, bold, italic, alignright, aligncenter, alignright, alignjustify, bullist, numlist  link",
         link_assume_external_targets: true
-    });
+    });*/
 
     // Switch de theme. TODO: En session || cookie
     document.getElementById('btnSwitch').addEventListener('click',()=>{
