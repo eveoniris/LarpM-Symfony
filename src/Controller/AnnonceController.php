@@ -4,6 +4,7 @@
 namespace App\Controller;
 
 use App\Entity\Annonce;
+use Doctrine\ORM\EntityManagerInterface;
 use JasonGrimes\Paginator;
 use App\Form\AnnonceDeleteForm;
 use App\Form\AnnonceForm;

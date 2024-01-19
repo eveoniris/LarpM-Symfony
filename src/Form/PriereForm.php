@@ -43,14 +43,14 @@ class PriereForm extends AbstractType
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 9],
             ])
             ->add('annonce', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'label' => 'Annonce',
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 9],
             ]);
     }

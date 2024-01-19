@@ -25,7 +25,7 @@ class GenreForm extends AbstractType
             ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'row' => 9,
                 ],
             ]);

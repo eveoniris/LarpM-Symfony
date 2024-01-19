@@ -81,7 +81,7 @@ class IntrigueForm extends AbstractType
                 'label' => 'Description de votre intrigue',
                 'required' => true,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'row' => 9,
                     'help' => 'Une courte description de votre intrigue.',
                 ],
@@ -90,7 +90,7 @@ class IntrigueForm extends AbstractType
                 'label' => 'Votre intrigue',
                 'required' => true,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'row' => 9,
                     'help' => 'Développez votre intrigue içi. N\'oubliez pas d\'ajouter les groupes concernés et les événements si votre intrigue y fait référence',
                 ],
@@ -99,7 +99,7 @@ class IntrigueForm extends AbstractType
                 'label' => 'Résolution de votre intrigue',
                 'required' => false,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'row' => 9,
                     'help' => 'Indiquez de quelle manière les joueurs peuvent résoudre cette intrigue. Il s\'agit içi de la ou des différentes solutions que vous prévoyez à votre intrigue',
                 ],

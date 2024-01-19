@@ -23,7 +23,7 @@ class AcceptAllianceForm extends AbstractType
             'label' => 'Un petit mot pour expliquer votre démarche',
             'required' => true,
             'attr' => [
-                // TODO 'class' => 'tinymce',
+                'class' => 'tinymce',
                 'rows' => 9,
                 'help' => 'Ce texte sera transmis au chef de groupe concerné.'],
         ]);

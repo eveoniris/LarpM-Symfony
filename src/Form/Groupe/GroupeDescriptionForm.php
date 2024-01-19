@@ -23,7 +23,7 @@ class GroupeDescriptionForm extends AbstractType
             'label' => 'Description du groupe',
             'required' => false,
             'attr' => [
-                // TODO 'class' => 'tinymce',
+                'class' => 'tinymce',
                 'row' => 9,
             ],
         ]);

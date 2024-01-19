@@ -33,7 +33,7 @@ class GroupeSecondaireForm extends AbstractType
                 'label' => 'Description des secrets',
                 'attr' => [
                     'rows' => 9,
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'help' => 'les secrets ne sont accessibles qu\'aux membres selectionnés par le scénariste'],
             ])
             ->add('scenariste', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [

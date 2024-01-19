@@ -31,7 +31,7 @@ class ConnaissanceForm extends AbstractType
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 5,
                 ],
             ])
@@ -39,7 +39,7 @@ class ConnaissanceForm extends AbstractType
                 'required' => false,
                 'label' => 'Contraintes',
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 5,
                 ],
             ])

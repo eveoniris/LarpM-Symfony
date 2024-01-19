@@ -24,7 +24,7 @@ class LoiForm extends AbstractType
                 'required' => false,
                 'label' => 'Description succinte',
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'row' => 9,
                 ],
             ])

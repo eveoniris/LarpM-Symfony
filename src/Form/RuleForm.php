@@ -31,7 +31,7 @@ class RuleForm extends AbstractType
                 'label' => 'Ecrivez une petite description',
                 'required' => true,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 5,
                 ],
             ]);
