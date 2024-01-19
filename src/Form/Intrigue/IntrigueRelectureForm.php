@@ -31,7 +31,7 @@ class IntrigueRelectureForm extends AbstractType
                 'label' => 'Vos remarques éventuelles',
                 'required' => false,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'row' => '9',
                     'help' => 'Vos remarques vis à vis de cette intrigue.',
                 ],

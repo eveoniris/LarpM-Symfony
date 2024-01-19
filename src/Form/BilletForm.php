@@ -28,7 +28,7 @@ class BilletForm extends AbstractType
                 'multiple' => false,
                 'expanded' => false,
                 'class' => \App\Entity\Gn::class,
-                //'choice_label' => 'label',
+                // 'choice_label' => 'label',
             ])
             ->add('fedegn', ChoiceType::class, [
                 'label' => 'A transmettre à la Fédégn',
@@ -40,17 +40,19 @@ class BilletForm extends AbstractType
                 'choice_label' => static fn ($value) => match ($value) {
                     'Oui' => true,
                     'Non' => false,
+                    true => 'Oui',
+                    false => 'Non',
                 },
                 'expanded' => true,
             ])
-                ->add('description', TextareaType::class, [
-                    'required' => true,
-                    'label' => 'Description',
-                    'attr' => [
-                        'rows' => 9,
-                  // TODO 'class' => 'tinymce',
-                    ],
-                ]);
+            ->add('description', TextareaType::class, [
+                'required' => true,
+                'label' => 'Description',
+                'attr' => [
+                    'rows' => 9,
+                    'class' => 'tinymce',
+                ],
+            ]);
     }
 
     /**

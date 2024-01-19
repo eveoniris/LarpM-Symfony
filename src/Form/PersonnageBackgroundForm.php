@@ -23,7 +23,7 @@ class PersonnageBackgroundForm extends AbstractType
             'required' => false,
             'label' => 'Background',
             'attr' => [
-                // TODO 'class' => 'tinymce',
+                'class' => 'tinymce',
                 'rows' => 9],
         ])
             ->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [

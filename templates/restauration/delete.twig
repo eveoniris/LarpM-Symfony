@@ -21,7 +21,7 @@
 		</p>
 
 		<p>
-			{{ restauration.description }}
+			{{ restauration.description|markdown_to_html  }}
 		</p>
 
 		{{ form(form) }}

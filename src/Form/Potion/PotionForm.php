@@ -49,7 +49,7 @@ class PotionForm extends AbstractType
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 9],
             ]);
     }

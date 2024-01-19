@@ -23,7 +23,7 @@ class GnForm extends AbstractType
                 'label' => 'Description du GN',
                 'required' => false,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'row' => 9,
                 ],
             ])
@@ -51,7 +51,7 @@ class GnForm extends AbstractType
                 'label' => 'Adresse du site',
                 'required' => false,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'row' => 9,
                 ],
             ])
@@ -59,7 +59,7 @@ class GnForm extends AbstractType
                 'label' => "Conditions d'inscription",
                 'required' => false,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 18,
                 ],
             ])

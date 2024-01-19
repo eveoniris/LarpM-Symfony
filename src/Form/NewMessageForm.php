@@ -48,7 +48,7 @@ class NewMessageForm extends AbstractType
                 'label' => 'Message',
                 'attr' => [
                     'rows' => 9,
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                 ],
             ]);
     }

@@ -39,14 +39,14 @@ class TerritoireForm extends AbstractType
                 'label' => 'Description',
                 'required' => false,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 10],
             ])
             ->add('description_secrete', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description connue des habitants',
                 'required' => false,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 10],
             ])
             ->add('statut', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [

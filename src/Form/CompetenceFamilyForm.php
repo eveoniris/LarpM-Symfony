@@ -35,7 +35,7 @@ class CompetenceFamilyForm extends AbstractType
                 'required' => false,
                 'constraints' => [new Length(['max' => 450])],
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'row' => 9,
                     'maxlength' => 450,
                 ],

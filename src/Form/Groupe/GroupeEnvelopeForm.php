@@ -23,7 +23,7 @@ class GroupeEnvelopeForm extends AbstractType
             'label' => "Contenu libre de l'enveloppe",
             'required' => false,
             'attr' => [
-                // TODO 'class' => 'tinymce',
+                'class' => 'tinymce',
                 'row' => 9,
             ],
         ]);

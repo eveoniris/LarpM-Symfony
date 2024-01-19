@@ -27,35 +27,35 @@ class ReligionForm extends AbstractType
                 'label' => 'Description rapide',
                 'required' => false,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 10],
             ])
             ->add('description_orga', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description pour les ORGAS',
                 'required' => false,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 10],
             ])
             ->add('description_pratiquant', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description pour les PRATIQUANTS',
                 'required' => false,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 10],
             ])
             ->add('description_fervent', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description pour les FERVENTS',
                 'required' => false,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 10],
             ])
             ->add('description_fanatique', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description pour les FANATIQUES',
                 'required' => false,
                 'attr' => [
-                    // TODO 'class' => 'tinymce',
+                    'class' => 'tinymce',
                     'rows' => 10],
             ])
             ->add('spheres', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
