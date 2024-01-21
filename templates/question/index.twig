@@ -17,41 +17,54 @@
 
         <a class="btn btn-secondary" href="{{ path('question.add') }}"><i class="fa fa-plus"></i> Ajouter une
             question</a>
-
-        <table class="table">
-            <tbody>
-            {% for question in questions %}
-                <tr>
-                    <td>{{ question.label }}</td>
-                    <td>{{ question.text|markdown_to_html }}</td>
-                    <td>{{ question.choix|markdown_to_html }}</td>
-                    {% for reponse in question.choix|split(';') %}
-                        <td>
-                            <strong>{{ reponse }}</strong> : {{ question.reponsesCount(reponse) }}
-                        </td>
-                    {% endfor %}
-                    <td>
-                        <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
-                            <div class="btn-group" role="group" aria-label="...">
-                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
-                                   title="Modifier"
-                                   href="{{ path('question.update',{'question':question.id}) }}"><i
-                                            class="fa fa-pencil"></i></a>
-                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
-                                   title="Detail"
-                                   href="{{ path('question.detail',{'question':question.id}) }}"><i
-                                            class="fa fa-eye"></i></a>
-                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
-                                   title="Supprimer"
-                                   href="{{ path('question.delete',{'question':question.id}) }}"><i
-                                            class="fa fa-eraser"></i></a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
     </div>
+
+
+    <table class="table table-striped table-bordered table-condensed table-hover">
+        <thead>
+        <tr>
+            <th>Label</th>
+            <th>Texte</th>
+            <th>Choix</th>
+            <th>Réponses</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for question in questions %}
+            <tr>
+                <td>{{ question.label|markdown_to_html }}</td>
+                <td>{{ question.text|markdown_to_html }}</td>
+                <td>{{ question.choix|markdown_to_html }}</td>
+                <td>
+                    <ul>
+
+                        {% for reponse in question.choix|split(';') %}
+                            <li><strong>{{ reponse }}</strong> : {{ question.reponsesCount(reponse) }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                        <div class="btn-group" role="group" aria-label="...">
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                               title="Modifier"
+                               href="{{ path('question.update',{'question':question.id}) }}"><i
+                                        class="fa fa-pencil"></i></a>
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                               title="Detail"
+                               href="{{ path('question.detail',{'question':question.id}) }}"><i
+                                        class="fa fa-eye"></i></a>
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                               title="Supprimer"
+                               href="{{ path('question.delete',{'question':question.id}) }}"><i
+                                        class="fa fa-eraser"></i></a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
 {% endblock %}

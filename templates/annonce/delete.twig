@@ -4,20 +4,28 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("annonce.list") }}">Liste des annonces</a></li>
-		<li class="active">Suppression d'une annonce</li>
-	</ol>
-	
-	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('annonce.delete', {'annonce': annonce.id}) }}) }}
-			<fieldset>
-				<legend>Supprimer {{ annonce.title }}</legend>
-					{{ annonce.text|markdown_to_html }}
-					
-					{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
-	</div>	
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path("annonce.list") }}">Liste des annonces</a></li>
+        <li class="active">Suppression d'une annonce</li>
+    </ol>
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Supprimer une annonce</h5>
+        </div>
+
+        <div class="list-group">
+            <div class="list-group-item">
+                <h6>Supprimer {{ annonce.title }}</h6>
+            </div>
+            <div class="list-group-item">
+                {{ annonce.text|markdown_to_html }}
+            </div>
+            <div class="list-group-item">
+                {{ form(form) }}
+            </div>
+
+        </div>
+    </div>
 {% endblock body %}
