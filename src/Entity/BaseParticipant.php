@@ -22,54 +22,54 @@ class BaseParticipant
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected int $id;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
     protected ?\DateTimeInterface $subscription_date = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected \DateTime $billet_date;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTimeInterface $valide_ci_le = null;
 
-    #[ORM\OneToMany(mappedBy: 'participant', targetEntity: GroupeGn::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'responsable_id', nullable: 'false')]
+    #[OneToMany(mappedBy: 'participant', targetEntity: GroupeGn::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'responsable_id', nullable: 'false')]
     protected Collection $groupeGns;
 
-    #[ORM\OneToMany(mappedBy: 'participant', targetEntity: ParticipantHasRestauration::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: 'false')]
+    #[OneToMany(mappedBy: 'participant', targetEntity: ParticipantHasRestauration::class, cascade: ['persist', 'remove'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: 'false')]
     protected Collection $participantHasRestaurations;
 
-    #[ORM\OneToMany(mappedBy: 'participant', targetEntity: Reponse::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: 'false')]
+    #[OneToMany(mappedBy: 'participant', targetEntity: Reponse::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: 'false')]
     protected Collection $reponses;
 
-    #[ORM\ManyToOne(targetEntity: Gn::class, inversedBy: 'participants', cascade: ['persist'])]
-    #[ORM\JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
+    #[ManyToOne(targetEntity: Gn::class, cascade: ['persist'], inversedBy: 'participants')]
+    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
     protected Gn $gn;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'participants')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'participants')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
 
-    #[ORM\ManyToOne(targetEntity: PersonnageSecondaire::class, inversedBy: 'participants')]
-    #[ORM\JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id', nullable: 'false')]
+    #[ManyToOne(targetEntity: PersonnageSecondaire::class, inversedBy: 'participants')]
+    #[JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?PersonnageSecondaire $personnageSecondaire;
 
-    #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'participants')]
-    #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'participants')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
     protected ?Personnage $personnage;
 
-    #[ORM\ManyToOne(targetEntity: Billet::class, inversedBy: 'participants')]
-    #[ORM\JoinColumn(name: 'billet_id', referencedColumnName: 'id')]
+    #[ManyToOne(targetEntity: Billet::class, inversedBy: 'participants')]
+    #[JoinColumn(name: 'billet_id', referencedColumnName: 'id')]
     protected ?Billet $billet = null;
 
-    #[ORM\ManyToOne(targetEntity: GroupeGn::class, inversedBy: 'participants')]
-    #[ORM\JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id')]
+    #[ManyToOne(targetEntity: GroupeGn::class, inversedBy: 'participants')]
+    #[JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id')]
     protected ?GroupeGn $groupeGn;
 
     #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'participants')]
     #[ORM\JoinTable(name: 'participant_potions_depart')]
-    #[ORM\JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $potions_depart;
@@ -115,7 +115,7 @@ class BaseParticipant
     /**
      * Get the value of subscription_date.
      */
-    public function getSubscriptionDate(): \DateTime
+    public function getSubscriptionDate(): \DateTimeInterface
     {
         return $this->subscription_date;
     }
@@ -155,7 +155,7 @@ class BaseParticipant
     /**
      * Get the value of valide_ci_le.
      */
-    public function getValideCiLe(): \DateTime
+    public function getValideCiLe(): \DateTimeInterface
     {
         return $this->valide_ci_le;
     }
@@ -275,7 +275,7 @@ class BaseParticipant
     /**
      * Get User entity (many to one).
      */
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }
