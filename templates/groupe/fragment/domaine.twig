@@ -7,6 +7,24 @@
                 <li class="media">
                     <div class="media-center">
 		    			<h6>Suzerain</h6>
+                        {% if session.suzerain %}
+                            <p><a href="{{ path('personnage.admin.detail', {'personnage': session.suzerain.id}) }}">{{ session.suzerain.nom }}</a> - {{ session.suzerain.renomme }} de Renommée</p>
+                            {% if groupe.territoires|length == 1 and session.suzerain.renomme <= 5 %}
+                                <p>La Renommée du Suzerain est trop faible, ses fiefs doivent être <strong class="text-danger">Instables</strong>.
+                            {% elseif groupe.territoires|length == 2 and session.suzerain.renomme <= 8 %}
+                                <p>La Renommée du Suzerain est trop faible, ses fiefs doivent être <strong class="text-danger">Instables</strong>.
+                            {% elseif groupe.territoires|length == 3 and session.suzerain.renomme <= 11 %}
+                                <p>La Renommée du Suzerain est trop faible, ses fiefs doivent être <strong class="text-danger">Instables</strong>.
+                            {% elseif groupe.territoires|length == 4 and session.suzerain.renomme <= 15 %}
+                                <p>La Renommée du Suzerain est trop faible, ses fiefs doivent être <strong class="text-danger">Instables</strong>.
+                            {% elseif groupe.territoires|length >= 5 and session.suzerain.renomme <= 20 %}
+                                <p>La Renommée du Suzerain est trop faible, ses fiefs doivent être <strong class="text-danger">Instables</strong>.
+                            {% else %}
+                                <p>La Renommée du Suzerain est suffisante pour maintenir ses fiefs <strong class="text-success">Stables</strong> (même si d'autres éléments de jeu peuvent les rendre Instables).
+                            {% endif %}
+                        {% else %}
+                            <p>Ce domaine n'a pas de Suzerain, ses fiefs doivent être <strong class="text-danger">Instables</strong>.
+                        {% endif %}
                         <a role="button" data-toggle="collapse" href="#renommee-{{ session.gn }}" aria-expanded="false" aria-controls="collapseExample">
                             <i class="fa fa-info-circle" aria-hidden="true"></i>
                         </a></p>
