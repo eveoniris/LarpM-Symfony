@@ -343,20 +343,20 @@ abstract class BaseGroupeGn
     /**
      * Set Personnage entity (many to one).
      */
-    public function setSuzerain(Personnage $suzerain = null): GroupeGn
+    /*public function setSuzerain(Personnage $suzerain = null): GroupeGn
     {
         $this->suzerain = $suzerain;
 
         return $this;
-    }
+    }*/
 
     /**
      * Get Personnage entity (many to one).
      */
-    public function getSuzerain(): ?Personnage
+    /*public function getSuzerain(): ?Personnage
     {
         return $this->suzerain;
-    }
+    }*/
 
     /**
      * Add GroupeGnOrdre entity to collection.

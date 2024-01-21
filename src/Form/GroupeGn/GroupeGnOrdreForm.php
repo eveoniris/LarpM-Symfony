@@ -34,6 +34,7 @@ class GroupeGnOrdreForm extends AbstractType
                 'required' => false,
                 'label' => 'Armes de Siège',
             ])
+            /*
             ->add('suzerain', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Participant::class,
@@ -53,7 +54,9 @@ class GroupeGnOrdreForm extends AbstractType
                     'data-live-search' => 'true',
                     'placeholder' => 'Responsable',
                 ],
-            ]);
+            ])
+            */
+            ;
     }
 
     /**
