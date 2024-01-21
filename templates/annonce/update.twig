@@ -9,14 +9,12 @@
 		<li><a href="{{ path("annonce.list") }}">Liste des annonces</a></li>
 		<li class="active">Modification d'une annonce</li>
 	</ol>
-	
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('annonce.update', {'annonce': annonce.id}) }}) }}
-			<fieldset>
-				<legend>Modification d'une annonce</legend>
-					
-					{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
-	</div>	
+
+	<div class="well well-sm bs-component">
+		<div class="header">
+			<h5>Modification d'une annonce</h5>
+		</div>
+
+		{{ form(form) }}
+	</div>
 {% endblock body %}

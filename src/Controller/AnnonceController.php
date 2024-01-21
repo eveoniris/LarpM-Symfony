@@ -1,64 +1,53 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Annonce;
-use Doctrine\ORM\EntityManagerInterface;
-use JasonGrimes\Paginator;
 use App\Form\AnnonceDeleteForm;
 use App\Form\AnnonceForm;
+use App\Repository\AnnonceRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse as RedirectResponseAlias;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 
-#[isGranted('ROLE_REDACTEUR')]
+#[IsGranted('ROLE_REDACTEUR')]
 class AnnonceController extends AbstractController
 {
     /**
      * Présentation des annonces.
      */
     #[Route('/annonce', name: 'annonce.list')]
-    public function listAction(Request $request,  EntityManagerInterface $entityManager)
+    public function listAction(Request $request, AnnonceRepository $repository): Response
     {
-        $order_by = $request->get('order_by') ?: 'creation_date';
-        $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
-        $offset = ($page - 1) * $limit;
-
-        $criteria = [];
-
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Annonce::class);
-        $annonces = $repo->findBy(
-            $criteria,
-            [$order_by => $order_dir],
-            $limit,
-            $offset);
-
-        $numResults = $repo->findCount($criteria);
-
-        $paginator = new Paginator($numResults, $limit, $page,
-            $app['url_generator']->generate('annonce.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
+        $orderBy = $this->getRequestOrder(
+            alias: 'a',
+            allowedFields: $repository->getFieldNames()
         );
 
-        return $this->render('annonce/list.twig', [
-            'annonces' => $annonces,
-            'paginator' => $paginator,
-        ]);
+        $query = $repository->createQueryBuilder('a')
+            ->orderBy(key($orderBy), current($orderBy));
+
+        $paginator = $repository->findPaginatedQuery(
+            $query->getQuery(), $this->getRequestLimit(), $this->getRequestPage()
+        );
+
+        return $this->render('annonce/list.twig', ['paginator' => $paginator]);
     }
 
     /**
      * Ajout d'une annonce.
      */
     #[Route('/annonce', name: 'annonce.add')]
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponseAlias|Response
     {
         $form = $this->createForm(AnnonceForm::class, new Annonce())
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -68,11 +57,12 @@ class AnnonceController extends AbstractController
             $entityManager->persist($annonce);
             $entityManager->flush();
 
-           $this->addFlash('success', 'L\'annonce a été ajoutée.');
+            $this->addFlash('success', 'L\'annonce a été ajoutée.');
 
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('annonce.list', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
+            }
+            if ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('annonce.add', [], 303);
             }
         }
@@ -85,11 +75,11 @@ class AnnonceController extends AbstractController
     /**
      * Mise à jour d'une annnonce.
      */
-    #[Route('/annonce/update/{id}', name: 'annonce.update')]
-    public function updateAction(Request $request, #[MapEntity] Annonce $annonce, EntityManagerInterface $entityManager)
+    #[Route('/annonce/{annonce}/update', name: 'annonce.update')]
+    public function updateAction(Request $request, #[MapEntity] Annonce $annonce, EntityManagerInterface $entityManager): RedirectResponseAlias|Response
     {
         $form = $this->createForm(AnnonceForm::class, $annonce)
-            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -100,7 +90,7 @@ class AnnonceController extends AbstractController
 
             $entityManager->persist($annonce);
             $entityManager->flush();
-           $this->addFlash('success', 'L\'annonce a été mise à jour.');
+            $this->addFlash('success', 'L\'annonce a été mise à jour.');
 
             return $this->redirectToRoute('annonce.list');
         }
@@ -114,7 +104,8 @@ class AnnonceController extends AbstractController
     /**
      * Détail d'une annonce.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Annonce $annonce)
+    #[Route('/annonce/{annonce}/detail', name: 'annonce.detail')]
+    public function detailAction(Request $request, #[MapEntity] Annonce $annonce): Response
     {
         return $this->render('annonce/detail.twig', ['annonce' => $annonce]);
     }
@@ -122,10 +113,11 @@ class AnnonceController extends AbstractController
     /**
      * Suppression d'une annonce.
      */
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Annonce $annonce)
+    #[Route('/annonce/{annonce}/delete', name: 'annonce.delete')]
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Annonce $annonce): RedirectResponseAlias|Response
     {
         $form = $this->createForm(AnnonceDeleteForm::class, $annonce)
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -135,7 +127,7 @@ class AnnonceController extends AbstractController
             $entityManager->remove($annonce);
             $entityManager->flush();
 
-           $this->addFlash('success', 'L\'annonce a été supprimée.');
+            $this->addFlash('success', 'L\'annonce a été supprimée.');
 
             return $this->redirectToRoute('annonce.list');
         }

@@ -61,14 +61,14 @@
 					</th>
 					<th>FédéGN</th>
 					<th>Quantité</th>
-					<th>Action</th>
+					<th>Actions</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for billet in paginator %}
 				<tr>
 					<td>{{ billet.id }}</td>
-					<td>{{ billet.label }}</td>
+					<td>{{ billet.label|markdown_to_html }}</td>
 					<td>{{ billet.description|markdown_to_html }}</td>
 					<td>{{ billet.gn }}</td>
 					<td>
@@ -82,9 +82,9 @@
 					<td>
 						<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 							<div class="btn-group" role="group" aria-label="...">
-								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('billet.update',{'billet':billet.id}) }}"><i class="fa fa-pencil"></i></a>
-								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('billet.detail',{'billet':billet.id}) }}"><i class="fa fa-eye"></i></a>
-								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('billet.delete',{'billet':billet.id}) }}"><i class="fa fa-eraser"></i></a>
+								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('billet.update',{'billet':billet.id}) }}"><i class="fa fa-pencil"></i></a>
+								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('billet.detail',{'billet':billet.id}) }}"><i class="fa fa-eye"></i></a>
+								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('billet.delete',{'billet':billet.id}) }}"><i class="fa fa-eraser"></i></a>
 							</div>
 						</div>
 					</td>
