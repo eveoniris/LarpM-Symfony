@@ -148,7 +148,7 @@ class StatistiqueController extends AbstractController
             'genres' => json_encode($statGenres, JSON_THROW_ON_ERROR),
             'competences' => json_encode($statCompetences, JSON_THROW_ON_ERROR),
             'competencesFamily' => json_encode($statCompetencesFamily, JSON_THROW_ON_ERROR),
-            'constructions' => json_encode($statConstructions, JSON_THROW_ON_ERROR),
+            'constructions' => [], // TODO json_encode($statConstructions, JSON_THROW_ON_ERROR),
             'personnageCount' => count($personnages),
             'UserCount' => count($Users),
             'participantCount' => count($participants),

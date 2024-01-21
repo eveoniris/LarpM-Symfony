@@ -2,15 +2,15 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse as RedirectResponseAlias;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController
 {
     // Returns a file size limit in bytes based on the PHP upload_max_filesize
@@ -103,16 +103,16 @@ class AdminController extends AbstractController
         $uploadMaxSize = $this->file_upload_max_size();
 
         // taille du cache
-        $cacheTotalSpace = $this->foldersize(__DIR__.'/../../../cache');
+        $cacheTotalSpace = $this->foldersize(__DIR__.'/../../var/cache');
         if ($cacheTotalSpace) {
             $cacheTotalSpace = $this->getSymbolByQuantity($cacheTotalSpace);
         }
 
         // taille du log
-        $logTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../../logs'));
+        $logTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../var/log'));
 
         // taille des documents
-        $docTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../../private/doc'));
+        $docTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../private/doc'));
 
         return $this->render('index.twig', [
             'phpVersion' => $phpVersion,
@@ -132,9 +132,9 @@ class AdminController extends AbstractController
     public function logAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         // TODO if ('prod' === $app['config']['env']['env']) {
-        $filename = __DIR__.'/../../../logs/production.log';
+        // $filename = __DIR__.'/../../../log/prod.log';
         // } else {
-        //    $filename = __DIR__.'/../../../logs/development.log';
+        $filename = __DIR__.'/../../var/log/dev.log';
         // }
 
         $logfile = new \SplFileObject($filename);
@@ -181,26 +181,30 @@ class AdminController extends AbstractController
     /**
      * Exporter la base de données.
      */
-    public function databaseExportAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/admin/database/export', name: 'admin.database.export')]
+    public function databaseExportAction(Request $request, EntityManagerInterface $entityManager): Response
     {
+        // TODO ?
         return $this->render('databaseExport.twig');
     }
 
     /**
      * Mettre à jour la base de données.
      */
-    public function databaseUpdateAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/admin/database/update', name: 'admin.database.update')]
+    public function databaseUpdateAction(Request $request, EntityManagerInterface $entityManager): Response
     {
+        // TODO ?
         return $this->render('databaseUpdate.twig');
     }
 
     /**
      * Vider le cache.
      */
-    public function cacheEmptyAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/admin/cache/empty', name: 'admin.cache.empty')]
+    public function cacheEmptyAction(Request $request, EntityManagerInterface $entityManager): RedirectResponseAlias
     {
-        $app['twig']->clearTemplateCache();
-        $app['twig']->clearCacheFiles();
+       dump( shell_exec('php -d memory_limit=-1 '.__DIR__.'/../../bin/console cache:clear'));
 
         $this->addFlash('success', 'Le cache a été vidé.');
 
@@ -210,19 +214,11 @@ class AdminController extends AbstractController
     /**
      * Vider les logs.
      */
-    public function logEmptyAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/admin/log/empty', name: 'admin.log.empty')]
+    public function logEmptyAction(Request $request, EntityManagerInterface $entityManager): RedirectResponseAlias
     {
-        $filename = __DIR__.'/../../../logs/production.log';
-
-        $myTextFileHandler = @fopen($filename, 'r+');
-        @ftruncate($myTextFileHandler, 0);
-        @fclose($myTextFileHandle);
-
-        $filename = __DIR__.'/../../../logs/development.log';
-
-        $myTextFileHandler = @fopen($filename, 'r+');
-        @ftruncate($myTextFileHandler, 0);
-        @fclose($myTextFileHandle);
+        file_put_contents(__DIR__.'/../../var/log/prod.log', '');
+        file_put_contents(__DIR__.'/../../var/log/dev.log', '');
 
         $this->addFlash('success', 'Les logs ont été vidés.');
 
