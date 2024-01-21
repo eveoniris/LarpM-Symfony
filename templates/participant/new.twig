@@ -1,4 +1,4 @@
-{% extends "layout.twig"  %}
+{% extends "base.html.twig" %}
 
 {% block title %}Ajout d'un billet{% endblock %}
 
@@ -11,13 +11,14 @@
 	</ol>
 	
 	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('participant.new', {'user': user.id}) }}) }}
-			<fieldset>
-				<legend>Selectionnez le jeu auquel participera {{ user.username }}</legend>
-					
-					{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
+
+		<div class="header">
+			<h5>Ajouter une participation</h5>
+		</div>
+
+		<p>Selectionnez le jeu auquel participera {{ user.username }}</p>
+
+		{{ form(form) }}
 	</div>
 	
 {% endblock body %}

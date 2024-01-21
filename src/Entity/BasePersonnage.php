@@ -135,8 +135,8 @@ class BasePersonnage
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
     protected Collection $users;
 
-    /*
-    #[OneToMany(mappedBy: 'suzerain', targetEntity: GroupeGn::class)]
+    /* not on prod table
+     #[OneToMany(mappedBy: 'suzerain', targetEntity: GroupeGn::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'suzerain_id', nullable: 'false')]
     protected Collection $groupeGns;
     */
