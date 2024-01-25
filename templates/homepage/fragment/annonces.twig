@@ -1,4 +1,4 @@
-{% for  annonce in annonces%}
+{% for annonce in annonces%}
 	<div class="panel panel-conan">
 		<div class="panel-heading">
 			<div class="pull-right">
@@ -9,7 +9,7 @@
 		<div class="panel-body">
 			{{ annonce.text|markdown_to_html }}
 			{% if is_granted('ROLE_REDACTEUR', app.user) %}
-				<a class="btn btn-primary" href="{{ path('annonce.update', {'id': annonce.id}) }}"><i class="fa fa-pencil"></i></a>
+				<a class="btn btn-primary" href="{{ path('annonce.update', {'annonce': annonce.id}) }}"><i class="fa fa-pencil"></i></a>
 			{% endif %}
 		</div>
 	</div>
