@@ -126,7 +126,7 @@ class BaseGroupe
 
     #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'groupes')]
     #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Territoire $territoire;
+    protected ?Territoire $territoire;
 
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'groupes')]
     #[ORM\JoinTable(name: 'groupe_has_document')]
@@ -808,7 +808,7 @@ class BaseGroupe
     /**
      * Get Territoire entity (many to one).
      */
-    public function getTerritoire()
+    public function getTerritoire() : ?Territoire
     {
         return $this->territoire;
     }
