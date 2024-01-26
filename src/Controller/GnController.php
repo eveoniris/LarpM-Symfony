@@ -436,7 +436,7 @@ class GnController extends AbstractController
         }
 
         $paginator = $gnRepository->findPaginatedQuery(
-            $qb->getQuery(), $this->getRequestLimit(), $this->getRequestPage()
+            $qb->getQuery(), $this->getRequestLimit(25), $this->getRequestPage()
         );
 
         return $this->render('gn/participants.twig', [

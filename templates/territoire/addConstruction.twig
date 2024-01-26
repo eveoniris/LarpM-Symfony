@@ -12,7 +12,7 @@
 	</ol>
 	
 	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('territoire.construction.add',{'territoire': territoire.id}) }}" method="POST">
+		{{ form_start(form, {"attr": {"action": path('territoire.constructionAdd',{'territoire': territoire.id}) }}) }}
 					
 			{{ form(form) }}
 		{{ form_end(form) }}

@@ -12,7 +12,7 @@
 	</ol>
 	
 	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('territoire.construction.remove',{'territoire': territoire.id, 'construction': construction.id}) }}" method="POST">
+		{{ form_start(form, {"attr": {"action": path('territoire.constructionRemove',{'territoire': territoire.id, 'construction': construction.id}) }} )}}
 			<div class="form-group">
 				<p>Etes-vous certain de vouloir retirer la construction {{ construction.fullLabel }} du territoire {{ territoire.nom }} ?</p>
 			</div>

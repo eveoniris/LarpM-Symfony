@@ -474,7 +474,7 @@
 								<div class="list-group-item">
 									<h6 class="list-group-item-heading">Documents :</h6>
 									{% for document in personnage.documents %}
-										<div class="list-group-item-text"><a href="{{ path('document.detail', {'id':document.id}) }}"><strong>{{ document.code }}</strong> - {{ document.titre }}</a></div>
+										<div class="list-group-item-text"><a href="{{ path('document.detail', {'document':document.id}) }}"><strong>{{ document.code }}</strong> - {{ document.titre }}</a></div>
 									{% else %}
 										<div class="list-group-item-text">Aucun</div>
 									{% endfor %}

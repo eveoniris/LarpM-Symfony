@@ -29,7 +29,7 @@ class BaseAppelation
     protected string $description;
 
     #[Column(name: 'titre', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
-    protected string $titre = '';
+    protected ?string $titre = '';
 
     /**
      * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Appelation>|\App\Entity\Appelation[]
@@ -98,7 +98,7 @@ class BaseAppelation
         return $this;
     }
 
-    public function getTitre(): string
+    public function getTitre(): ?string
     {
         return $this->titre;
     }

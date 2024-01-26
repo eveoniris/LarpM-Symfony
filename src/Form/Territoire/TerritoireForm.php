@@ -3,10 +3,10 @@
 
 namespace App\Form\Territoire;
 
-use LarpManager\Repository\LangueRepository;
-use LarpManager\Repository\ReligionRepository;
-use LarpManager\Repository\RessourceRepository;
-use LarpManager\Repository\TerritoireRepository;
+use App\Repository\LangueRepository;
+use App\Repository\ReligionRepository;
+use App\Repository\RessourceRepository;
+use App\Repository\TerritoireRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -197,8 +197,8 @@ class TerritoireForm extends AbstractType
                 'label' => 'Ce territoire dépend de ',
                 'class' => \App\Entity\Territoire::class,
                 'choice_label' => 'nom',
-                'empty_value' => 'Aucun, territoire indépendant',
-                'empty_data' => null,
+                'empty_data' => 'Aucun, territoire indépendant',
+                //'empty_data' => null,
                 'mapped' => true,
                 'query_builder' => static function (TerritoireRepository $tr) {
                     return $tr->createQueryBuilder('tr')->orderBy('tr.nom', 'ASC');

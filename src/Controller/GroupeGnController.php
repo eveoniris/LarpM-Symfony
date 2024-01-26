@@ -26,7 +26,7 @@ class GroupeGnController extends AbstractController
     /**
      * Liste des sessions de jeu pour un groupe.
      */
-    #[Route('/groupeGn/{groupe}/', name: 'groupeGn.list')]
+    #[Route('/groupeGn/list/{groupe}/', name: 'groupeGn.list')]
     public function listAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
         return $this->render('groupeGn/list.twig', [
@@ -252,7 +252,7 @@ class GroupeGnController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $this->render('public/groupeGn/add.twig', [
+        return $this->render('groupeGn/add.twig', [
             'groupeGn' => $groupeGn,
             'participant' => $participant,
             'form' => $form->createView(),
@@ -313,7 +313,7 @@ class GroupeGnController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $this->render('public/groupeGn/placeAvailable.twig', [
+        return $this->render('groupeGn/placeAvailable.twig', [
             'form' => $form->createView(),
             'groupe' => $groupeGn->getGroupe(),
             'participant' => $participant,
@@ -324,12 +324,12 @@ class GroupeGnController extends AbstractController
     /**
      * Détail d'un groupe.
      */
-    #[Route('/groupeGn/groupe', name: 'groupeGn.groupe')]
-    public function groupeAction(Request $request,  EntityManagerInterface $entityManager, GroupeGn $groupeGn)
+    #[Route('/groupeGn/{groupeGn}', name: 'groupeGn.groupe')]
+    public function groupeAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] GroupeGn $groupeGn)
     {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
-        return $this->render('public/groupe/detail.twig', [
+        return $this->render('groupe/detail.twig', [
             'groupe' => $groupeGn->getGroupe(),
             'participant' => $participant,
             'groupeGn' => $groupeGn,
