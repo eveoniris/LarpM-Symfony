@@ -1,13 +1,14 @@
 <?php
 
-
 namespace App\Controller;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use App\Form\PostDeleteForm;
 use App\Form\PostForm;
 use App\Form\TopicForm;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -21,7 +22,7 @@ class ForumController extends AbstractController
      * Liste des forums de premier niveau.
      */
     #[Route('/forum', name: 'forum')]
-    public function forumAction(Request $request,  EntityManagerInterface $entityManager)
+    public function forumAction(Request $request, EntityManagerInterface $entityManager)
     {
         if (null == $this->getUser()) {
             return $this->redirectToRoute('user.login', [], 303);
@@ -58,7 +59,7 @@ class ForumController extends AbstractController
      * Ajout d'un forum de premier niveau
      * (admin uniquement).
      */
-    public function forumAddAction(Request $request,  EntityManagerInterface $entityManager)
+    public function forumAddAction(Request $request, EntityManagerInterface $entityManager)
     {
         $topic = new \App\Entity\Topic();
 
@@ -86,7 +87,7 @@ class ForumController extends AbstractController
             $entityManager->persist($topic);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le forum a été ajouté.');
+            $this->addFlash('success', 'Le forum a été ajouté.');
 
             return $this->redirectToRoute('forum', [], 303);
         }
@@ -101,9 +102,10 @@ class ForumController extends AbstractController
      *
      * @return View $view
      */
-    public function topicAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/forum/topic', name: 'forum.topic')]
+    public function topicAction(Request $request, EntityManagerInterface $entityManager): View
     {
-        if (null == $this->getUser()) {
+        if (null === $this->getUser()) {
             return $this->redirectToRoute('user.login', [], 303);
         }
 
@@ -119,7 +121,8 @@ class ForumController extends AbstractController
     /**
      * Ajout d'un post dans un topic.
      */
-    public function postAddAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/forum/add/action', name: 'forum.add.action')]
+    public function postAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $topicId = $request->get('index');
 
@@ -151,7 +154,7 @@ class ForumController extends AbstractController
             $entityManager->persist($post);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le message a été ajouté.');
+            $this->addFlash('success', 'Le message a été ajouté.');
 
             return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], 303);
         }
@@ -165,10 +168,11 @@ class ForumController extends AbstractController
     /**
      * Lire un post.
      */
-    public function postAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/forum/post', name: 'forum.post')]
+    public function postAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        if (null == $this->getUser()) {
-            return $this->redirectToRoute('user.login', [],303);
+        if (null === $this->getUser()) {
+            return $this->redirectToRoute('user.login', [], 303);
         }
 
         $postId = $request->get('index');
@@ -206,7 +210,8 @@ class ForumController extends AbstractController
     /**
      * Répondre à un post.
      */
-    public function postResponseAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/forum/post/response', name: 'forum.post.response')]
+    public function postResponseAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $postId = $request->get('index');
 
@@ -253,7 +258,7 @@ class ForumController extends AbstractController
                 $app['User.mailer']->sendNotificationMessage($User, $post);
             }
 
-           $this->addFlash('success', 'Le message a été ajouté.');
+            $this->addFlash('success', 'Le message a été ajouté.');
 
             return $this->redirectToRoute('forum.post', ['index' => $postToResponse->getId()], 303);
         }
@@ -267,7 +272,8 @@ class ForumController extends AbstractController
     /**
      * Modifier un post.
      */
-    public function postUpdateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/forum/update', name: 'forum.update')]
+    public function postUpdateAction(Request $request, EntityManagerInterface $entityManager)
     {
         $postId = $request->get('index');
 
@@ -286,7 +292,7 @@ class ForumController extends AbstractController
             $entityManager->persist($post);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le message a été modifié.');
+            $this->addFlash('success', 'Le message a été modifié.');
 
             return $this->redirectToRoute('forum.post', ['index' => $post->getId()], 303);
         }
@@ -300,7 +306,8 @@ class ForumController extends AbstractController
     /**
      * Active les notifications sur un post.
      */
-    public function postNotificationOnAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/forum/notification/on', name: 'forum.post.notification.on')]
+    public function postNotificationOnAction(Request $request, EntityManagerInterface $entityManager)
     {
         $postId = $request->get('index');
 
@@ -312,7 +319,7 @@ class ForumController extends AbstractController
         $entityManager->persist($post);
         $entityManager->flush();
 
-       $this->addFlash('success', 'Les notifications sont maintenant activées.');
+        $this->addFlash('success', 'Les notifications sont maintenant activées.');
 
         return $this->redirectToRoute('forum.post', ['index' => $post->getId()], 303);
     }
@@ -320,7 +327,8 @@ class ForumController extends AbstractController
     /**
      * Desactive les notifications sur un post.
      */
-    public function postNotificationOffAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/forum/post/notification/off', name: 'forum.post.notification.off')]
+    public function postNotificationOffAction(Request $request, EntityManagerInterface $entityManager)
     {
         $postId = $request->get('index');
 
@@ -332,7 +340,7 @@ class ForumController extends AbstractController
         $entityManager->persist($post);
         $entityManager->flush();
 
-       $this->addFlash('success', 'Les notifications sont maintenant desactivées.');
+        $this->addFlash('success', 'Les notifications sont maintenant desactivées.');
 
         return $this->redirectToRoute('forum.post', ['index' => $post->getId()], 303);
     }
@@ -340,7 +348,8 @@ class ForumController extends AbstractController
     /**
      * Supprimer un post.
      */
-    public function postDeleteAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/forum/post/delete', name: 'forum.post.delete')]
+    public function postDeleteAction(Request $request, EntityManagerInterface $entityManager)
     {
         $postId = $request->get('index');
 
@@ -379,7 +388,7 @@ class ForumController extends AbstractController
             $entityManager->remove($post);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le message a été supprimé.');
+            $this->addFlash('success', 'Le message a été supprimé.');
 
             return $app->redirect($url, 303);
         }
@@ -393,7 +402,8 @@ class ForumController extends AbstractController
     /**
      * Ajouter un sous-forum.
      */
-    public function topicAddAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/forum/topic/add', name: 'forum.topic.add')]
+    public function topicAddAction(Request $request, EntityManagerInterface $entityManager)
     {
         $topicId = $request->get('index');
 
@@ -417,7 +427,7 @@ class ForumController extends AbstractController
             $entityManager->persist($topic);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le forum a été ajouté.');
+            $this->addFlash('success', 'Le forum a été ajouté.');
 
             return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], 303);
         }
@@ -431,7 +441,8 @@ class ForumController extends AbstractController
     /**
      * Modfifier un topic.
      */
-    public function topicUpdateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/forum/topic/update', name: 'forum.topic.update')]
+    public function topicUpdateAction(Request $request, EntityManagerInterface $entityManager)
     {
         $topicId = $request->get('index');
 
@@ -458,7 +469,7 @@ class ForumController extends AbstractController
             $entityManager->persist($topic);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le forum a été modifié.');
+            $this->addFlash('success', 'Le forum a été modifié.');
 
             return $this->redirectToRoute('forum.topic', ['index' => $topic->getId()], 303);
         }
