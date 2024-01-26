@@ -14,10 +14,9 @@ use App\Form\Territoire\TerritoireIngredientsForm;
 use App\Form\Territoire\TerritoireLoiForm;
 use App\Form\Territoire\TerritoireStatutForm;
 use App\Form\Territoire\TerritoireStrategieForm;
+use App\Repository\TerritoireRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use JasonGrimes\Paginator;
-use LarpManager\Repository\ConstructionRepository;
-use LarpManager\Repository\TerritoireRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -32,7 +31,7 @@ class TerritoireController extends AbstractController
     /**
      * Modifier les listes de cibles pour les quêtes commerciales.
      */
-    #[Route('/territoire/{territoire}/update/cibles', name: 'territoire.update.cibles')]
+    #[Route('/territoire/{territoire}/update/cibles', name: 'territoire.admin.update.cibles')]
     public function updateCiblesAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): RedirectResponse|Response
     {
         $form = $this->createForm(TerritoireCiblesForm::class, $territoire)
@@ -61,11 +60,23 @@ class TerritoireController extends AbstractController
      * Liste des territoires.
      */
     #[Route('/territoire', name: 'territoire.list')]
-    public function listAction(Request $request, EntityManagerInterface $entityManager)
+    public function listAction(Request $request, TerritoireRepository $repository): Response
     {
-        $territoires = $entityManager->getRepository('\\'.Territoire::class)->findRoot();
+        $orderBy = $this->getRequestOrder(
+            alias: 't',
+            allowedFields: $repository->getFieldNames()
+        );
 
-        return $this->render('territoire/list.twig', ['territoires' => $territoires]);
+        $query = $repository->createQueryBuilder('t')
+            ->orderBy(key($orderBy), current($orderBy));
+
+        $paginator = $repository->findPaginatedQuery(
+            $query->getQuery(), $this->getRequestLimit(), $this->getRequestPage()
+        );
+
+        return $this->render(
+            'territoire\list.twig', ['paginator' => $paginator]
+        );
     }
 
     /**
@@ -171,7 +182,7 @@ class TerritoireController extends AbstractController
     /**
      * Impression des territoires.
      */
-    #[Route('/territoire/print', name: 'territoire.print')]
+    #[Route('/territoire/print', name: 'territoire.admin.print')]
     public function printAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $territoires = $entityManager->getRepository('\\'.Territoire::class)->findFiefs();
@@ -182,7 +193,7 @@ class TerritoireController extends AbstractController
     /**
      * Liste des fiefs pour les quêtes.
      */
-    #[Route('/territoire/quete', name: 'territoire.quete')]
+    #[Route('/territoire/quete', name: 'territoire.admin.quete')]
     public function queteAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $territoires = $entityManager->getRepository('\\'.Territoire::class)->findFiefs();
@@ -193,7 +204,7 @@ class TerritoireController extends AbstractController
     /**
      * Liste des pays avec le nombre de noble.
      */
-    #[Route('/territoire/noble', name: 'territoire.noble')]
+    #[Route('/territoire/noble', name: 'territoire.admin.noble')]
     public function nobleAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $territoires = $entityManager->getRepository('\\'.Territoire::class)->findRoot();
@@ -324,7 +335,7 @@ class TerritoireController extends AbstractController
     /**
      * Ajoute un territoire.
      */
-    #[Route('/territoire/add', name: 'territoire.add')]
+    #[Route('/territoire/add', name: 'territoire.admin.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $territoire = new Territoire();
@@ -363,7 +374,9 @@ class TerritoireController extends AbstractController
 
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('territoire.list', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
+            }
+
+            if ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('territoire.admin.add', [], 303);
             }
         }
@@ -406,7 +419,7 @@ class TerritoireController extends AbstractController
     /**
      * Modifie un territoire.
      */
-    #[Route('/territoire/{territoire}/update', name: 'territoire.update')]
+    #[Route('/territoire/{territoire}/update', name: 'territoire.admin.update')]
     public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): RedirectResponse|Response
     {
         $form = $this->createForm(TerritoireForm::class, $territoire)
@@ -531,8 +544,8 @@ class TerritoireController extends AbstractController
     /**
      * Modifie le jeu strategique d'un territoire.
      */
-    #[Route('/territoire/{territoire}/update/strategie', name: 'territoire.update.strategie')]
-    public function updateStrategieAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
+    #[Route('/territoire/{territoire}/update/strategie', name: 'territoire.admin.updateStrategie')]
+    public function updateStrategieAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): RedirectResponse|Response
     {
         $form = $this->createForm(TerritoireStrategieForm::class, $territoire)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -559,7 +572,7 @@ class TerritoireController extends AbstractController
      * Supression d'un territoire.
      */
     #[Route('/territoire/{territoire}/delete', name: 'territoire.delete')]
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): RedirectResponse|Response
     {
         $form = $this->createForm(TerritoireDeleteForm::class, $territoire)
             ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
