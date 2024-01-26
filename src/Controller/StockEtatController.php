@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Etat;
 use App\Form\Type\EtatType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,7 +30,7 @@ class StockEtatController extends AbstractController
         $etat = new Etat();
 
         $form = $this->createForm(EtatType::class, $etat)
-            ->add('save', 'submit');
+            ->add('save', SubmitType::class);
 
         // on passe la requête de l'utilisateur au formulaire
         $form->handleRequest($request);
@@ -42,23 +44,20 @@ class StockEtatController extends AbstractController
 
             $this->addFlash('success', 'L\'état a été ajouté.');
 
-            return $this->redirectToRoute('stock_etat_index');
+            return $this->redirectToRoute('stockEtat.index');
         }
 
         return $this->render('stock/etat/add.twig', ['form' => $form->createView()]);
     }
 
-    #[Route('/stock/etat/update', name: 'stockEtat.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    #[Route('/stock/etat/{etat}/update', name: 'stockEtat.update')]
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Etat $etat): RedirectResponse|Response
     {
         $id = $request->get('index');
 
-        $repo = $entityManager->getRepository(Etat::class);
-        $etat = $repo->find($id);
-
         $form = $this->createForm(EtatType::class, $etat)
-            ->add('update', 'submit')
-            ->add('delete', 'submit');
+            ->add('update', SubmitType::class)
+            ->add('delete', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -75,7 +74,7 @@ class StockEtatController extends AbstractController
                 $this->addFlash('success', 'L\'état a été supprimé.');
             }
 
-            return $this->redirectToRoute('stock_etat_index');
+            return $this->redirectToRoute('stockEtat.index');
         }
 
         return $this->render('stock/etat/update.twig', [
