@@ -112,7 +112,7 @@ class BaseTerritoire
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: Groupe::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: 'false')]
-    protected Collection $groupes;
+    protected ?Collection $groupes;
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: Personnage::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: 'false')]
@@ -785,7 +785,7 @@ class BaseTerritoire
     /**
      * Get Groupe entity collection (one to many).
      */
-    public function getGroupes(): Collection
+    public function getGroupes(): ?Collection
     {
         return $this->groupes;
     }
@@ -1023,7 +1023,7 @@ class BaseTerritoire
     /**
      * Get Groupe entity (many to one).
      */
-    public function getGroupe(): Groupe
+    public function getGroupe(): ?Groupe
     {
         return $this->groupe;
     }

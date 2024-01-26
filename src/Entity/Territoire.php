@@ -413,12 +413,12 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Fourni le nom de tous les groupes présents dans ce territoire.
      */
-    public function getGroupes(): Collection
+    public function getGroupesNom(): array
     {
-        $groupes = new ArrayCollection();
+        $groupes = [];
 
         if ($this->getGroupe()) {
-            $groupes->add($this->getGroupe()->getNom());
+            $groupes[] = $this->getGroupe()->getNom();
         }
 
         foreach ($this->getTerritoires() as $territoire) {
