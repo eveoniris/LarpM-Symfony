@@ -2,19 +2,25 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
+use App\Entity\Localisation;
+use App\Entity\Objet;
+use App\Entity\Proprietaire;
+use App\Entity\Rangement;
+use App\Entity\Tag;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_STOCK')]
+#[IsGranted('ROLE_STOCK')]
 class StockController extends AbstractController
 {
     #[Route('/stock', name: 'stock.index')]
     public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Objet::class);
+        $repo = $entityManager->getRepository('\\'.Objet::class);
 
         $qb = $repo->createQueryBuilder('objet');
         $qb->select('COUNT(objet)');
@@ -41,19 +47,19 @@ class StockController extends AbstractController
 
         $last_add = $repo->findBy([], ['creation_date' => 'DESC'], 10, 0);
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Etat::class);
+        $repo = $entityManager->getRepository('\\'.Etat::class);
         $etats = $repo->findAll();
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Tag::class);
+        $repo = $entityManager->getRepository('\\'.Tag::class);
         $tags = $repo->findAll();
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Localisation::class);
+        $repo = $entityManager->getRepository('\\'.Localisation::class);
         $localisations = $repo->findAll();
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Rangement::class);
+        $repo = $entityManager->getRepository('\\'.Rangement::class);
         $rangements = $repo->findAll();
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Proprietaire::class);
+        $repo = $entityManager->getRepository('\\'.Proprietaire::class);
         $proprietaires = $repo->findAll();
 
         return $this->render('stock/index.twig', [
