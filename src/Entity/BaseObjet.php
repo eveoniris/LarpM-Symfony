@@ -49,16 +49,16 @@ abstract class BaseObjet
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date = null;
 
-    #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'objet')]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'objet_id', nullable: 'false')]
+    #[OneToMany(mappedBy: 'objet', targetEntity: Item::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'objet_id', nullable: 'false')]
     protected Collection $items;
 
-    #[ORM\OneToOne(targetEntity: ObjetCarac::class, inversedBy: 'objet', cascade: ['persist', 'remove', 'detach', 'all'])]
-    #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id')]
-    protected Collection $objetCaracs;
+    #[OneToMany(mappedBy: 'objet', targetEntity: ObjetCarac::class)]
+    #[JoinColumn(name: 'objet_id', referencedColumnName: 'id')]
+    protected ?Collection $objetCaracs;
 
-    #[ORM\ManyToOne(targetEntity: Etat::class, inversedBy: 'objets')]
-    #[ORM\JoinColumn(name: 'etat_id', referencedColumnName: 'id')]
+    #[ManyToOne(targetEntity: Etat::class, inversedBy: 'objets')]
+    #[JoinColumn(name: 'etat_id', referencedColumnName: 'id')]
     protected Etat $etat;
 
     #[ManyToOne(targetEntity: Proprietaire::class, inversedBy: 'objets')]
@@ -69,7 +69,7 @@ abstract class BaseObjet
     #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
 
-    #[ManyToOne(targetEntity: Photo::class, inversedBy: 'objets', cascade: ['persist', 'merge', 'remove', 'detach', 'all'])]
+    #[ManyToOne(targetEntity: Photo::class, cascade: ['persist', 'merge', 'remove', 'detach', 'all'], inversedBy: 'objets')]
     #[JoinColumn(name: 'photo_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected Photo $photo;
 
@@ -79,7 +79,7 @@ abstract class BaseObjet
 
     #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'objets')]
     #[ORM\JoinTable(name: 'objet_tag')]
-    #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'objet_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'tag_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $tags;
 
