@@ -82,7 +82,7 @@ class BilletController extends AbstractController
     /**
      * Détail d'un billet.
      */
-    #[Route('/billet/detail/{billet}', name: 'billet.detail')]
+    #[Route('/billet/{billet}/detail', name: 'billet.detail')]
     public function detailAction(Request $request, #[MapEntity] Billet $billet): Response
     {
         return $this->render(
@@ -94,7 +94,7 @@ class BilletController extends AbstractController
     /**
      * Mise à jour d'un billet.
      */
-    #[Route('/billet/update/{billet}', name: 'billet.update')]
+    #[Route('/billet/{billet}/update', name: 'billet.update')]
     public function updateAction(Request $request, #[MapEntity] Billet $billet, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(BilletForm::class, $billet)
@@ -123,7 +123,7 @@ class BilletController extends AbstractController
     /**
      * Suppression d'un billet.
      */
-    #[Route('/billet/delete/{billet}', name: 'billet.delete')]
+    #[Route('/billet/{billet}/delete', name: 'billet.delete')]
     public function deleteAction(Request $request, Billet $billet, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(BilletDeleteForm::class, $billet)
@@ -153,7 +153,7 @@ class BilletController extends AbstractController
     /**
      * Liste des utilisateurs ayant ce billet.
      */
-    #[Route('/billet/participants/{billet}', name: 'billet.participants')]
+    #[Route('/billet/{billet}/participants', name: 'billet.participants')]
     public function participantsAction(Request $request, #[MapEntity] Billet $billet, EntityManagerInterface $entityManager): Response
     {
         $participantRepository = $entityManager->getRepository('\\'.\App\Entity\Participant::class);
