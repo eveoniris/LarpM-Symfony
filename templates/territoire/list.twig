@@ -15,15 +15,15 @@
 			</div>
 			
 			<div>
-				<a href="{{ path('territoire.admin.print') }}"><button  type="button" class="btn btn-default">Imprimer</button></a>
+				<a href="{{ path('territoire.print') }}"><button  type="button" class="btn btn-default">Imprimer</button></a>
 				<a href="{{ path('groupe.quetes') }}"><button  type="button" class="btn btn-default">Quêtes</button></a>
 				<a href="{{ path('groupe.quetes',{'csv': true}) }}"><button  type="button" class="btn btn-default">Quêtes (csv)</button></a>
-				<a href="{{ path('territoire.admin.quete') }}"><button  type="button" class="btn btn-default">Quête individuelle</button></a>
-				<a href="{{ path('territoire.admin.noble') }}"><button  type="button" class="btn btn-default">Nobles</button></a>
+				<a href="{{ path('territoire.quete') }}"><button  type="button" class="btn btn-default">Quête individuelle</button></a>
+				<a href="{{ path('territoire.noble') }}"><button  type="button" class="btn btn-default">Nobles</button></a>
 			</div>
 			
 			<ul class="list-group">
-					<a href="{{ path('territoire.admin.add') }}" class="list-group-item active">
+					<a href="{{ path('territoire.add') }}" class="list-group-item active">
 						<span class="badge"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
 						<h4 class="list-group-item-heading">Ajouter un territoire</h4>
 					</a>
@@ -36,9 +36,9 @@
 							{{ territoire.nom }} ({% if territoire.appelation %}{{ territoire.appelation.label }}{% else %}<span class="text-warning">Attention, ce territoire n'a pas d'appelation</span>{% endif %})
 							<div class="btn-group pull-right" role="group" aria-label="...">
 							    <a href="{{ path('territoire.detail', {'territoire': territoire.id}) }}" class="btn btn-primary" role="button">Détail</a>
-							    <a href="{{ path('territoire.admin.update.cibles', {'territoire': territoire.id}) }}" class="btn btn-default" role="button">Cibles</a> 
-							    <a href="{{ path('territoire.admin.update', {'territoire': territoire.id}) }}" class="btn btn-default" role="button">Modifier</a>
-							    <a href="{{ path('territoire.admin.updateStrategie', {'territoire': territoire.id}) }}" class="btn btn-default" role="button">Stratégie</a>
+							    <a href="{{ path('territoire.updateCibles', {'territoire': territoire.id}) }}" class="btn btn-default" role="button">Cibles</a> 
+							    <a href="{{ path('territoire.update', {'territoire': territoire.id}) }}" class="btn btn-default" role="button">Modifier</a>
+							    <a href="{{ path('territoire.updateStrategie', {'territoire': territoire.id}) }}" class="btn btn-default" role="button">Stratégie</a>
 							</div>
 						</h4>
 						<p class="list-group-item-text">		
@@ -71,8 +71,8 @@
 								{{ region.nom }} ({% if region.appelation %}{{ region.appelation.label }}{% else %}<span class="text-warning">Attention, ce territoire n'a pas d'appelation</span>{% endif %})
 								<div class="btn-group pull-right" role="group" aria-label="...">
 									<a href="{{ path('territoire.detail', {'territoire': region.id}) }}" class="btn btn-primary" role="button">Détail</a>
-								    <a href="{{ path('territoire.admin.update', {'territoire': region.id}) }}" class="btn btn-default" role="button">Modifier</a>
-								    <a href="{{ path('territoire.admin.updateStrategie', {'territoire': region.id}) }}" class="btn btn-default" role="button">Stratégie</a>
+								    <a href="{{ path('territoire.update', {'territoire': region.id}) }}" class="btn btn-default" role="button">Modifier</a>
+								    <a href="{{ path('territoire.updateStrategie', {'territoire': region.id}) }}" class="btn btn-default" role="button">Stratégie</a>
 								</div>
 							</h4>
 							<p class="list-group-item-text">		
@@ -105,8 +105,8 @@
 									{{ fief.nom }} ({% if fief.appelation %}{{ fief.appelation.label }}{% else %}<span class="text-warning">Attention, ce territoire n'a pas d'appelation</span>{% endif %})
 									<div class="btn-group pull-right" role="group" aria-label="...">
 										<a href="{{ path('territoire.detail', {'territoire': fief.id}) }}" class="btn btn-primary" role="button">Détail</a>
-									    <a href="{{ path('territoire.admin.update', {'territoire': fief.id}) }}" class="btn btn-default" role="button">Modifier</a>
-									    <a href="{{ path('territoire.admin.updateStrategie', {'territoire': fief.id}) }}" class="btn btn-default" role="button">Stratégie</a>
+									    <a href="{{ path('territoire.update', {'territoire': fief.id}) }}" class="btn btn-default" role="button">Modifier</a>
+									    <a href="{{ path('territoire.updateStrategie', {'territoire': fief.id}) }}" class="btn btn-default" role="button">Stratégie</a>
 									</div>
 								</h4>
 								<p class="list-group-item-text">		

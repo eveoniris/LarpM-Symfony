@@ -3,7 +3,7 @@
 
 namespace App\Form\Territoire;
 
-use App\Repository\IngredientRepository;
+use App\Repository\ConstructionRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -13,23 +13,23 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * @author kevin
  */
-class TerritoireIngredientsForm extends AbstractType
+class TerritoireConstructionForm extends AbstractType
 {
     /**
      * Construction du formulaire.
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('ingredients', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+        $builder->add('constructions', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
             'required' => false,
-            'label' => 'Ingrédients',
-            'class' => \App\Entity\Ingredient::class,
+            'label' => 'Ajouter une construction',
+            'class' => \App\Entity\Construction::class,
             'multiple' => true,
             'expanded' => true,
-            'mapped' => true,
+            //'mapped' => true,
             'choice_label' => 'label',
-            'query_builder' => static function (IngredientRepository $er) {
-                return $er->createQueryBuilder('i')->orderBy('i.label', 'ASC')->groupby('i.label');
+            'query_builder' => static function (ConstructionRepository $er) {
+                return $er->createQueryBuilder('c')->orderBy('c.label', 'ASC');
             },
         ]);
     }
@@ -49,6 +49,6 @@ class TerritoireIngredientsForm extends AbstractType
      */
     public function getName(): string
     {
-        return 'territoireIngredients';
+        return 'constructionIngredients';
     }
 }

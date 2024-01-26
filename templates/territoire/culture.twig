@@ -10,7 +10,7 @@
 	<div class="header"><h5>Modifier la culture pour le territoire {{ territoire.nom }}</h5></div>
 	
 	
-	{{ form_start(form, {"attr": {"action": path('territoire.admin.update.culture', {'territoire': territoire.id}) }}) }}			
+	{{ form_start(form, {"attr": {"action": path('territoire.updateCulture', {'territoire': territoire.id}) }}) }}			
 			
 			{{ form(form) }}
 	{{ form_end(form) }}

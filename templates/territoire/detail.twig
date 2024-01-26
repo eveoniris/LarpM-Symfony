@@ -19,9 +19,9 @@
 				
 					<div class="col-md-4">
 						{% if territoire.blason %}
-							<img width="160" height="200" src="{{ asset("blasons/#{territoire.blason}") }}" /><br />
+							<img width="160" height="200" src="{{ path('territoire.blason', {'territoire' : territoire.id }) }}" /><br />
 						{% endif %}
-						<a href="{{ path('territoire.update.blason', {'territoire': territoire.id}) }}">Ajouter ou modifier le blason</a>
+						<a href="{{ path('territoire.updateBlason', {'territoire': territoire.id}) }}">Ajouter ou modifier le blason</a>
 					</div>
 				</div>
 			</div>
@@ -37,7 +37,7 @@
 					<li>Aucune cibles définies</li>
 					{% endfor %}
 				</ul>	
-				<a href="{{ path('territoire.update.cibles', {'territoire': territoire.id }) }}">Modifier</a> 	
+				<a href="{{ path('territoire.updateCibles', {'territoire': territoire.id }) }}">Modifier</a> 	
 				</div>
 			</div>
 	    			
@@ -51,7 +51,7 @@
 	    			<li>Trésor de base : {{ territoire.tresor|default(0) }}</li>
 	    			<li>Richesse réelle : {{ territoire.richesse|default(0) }} (prend en compte les constructions et le statut du territoire)</li>
 	    			</ul>
-	    			<a href="{{ path('territoire.update.strategie', {'territoire': territoire.id}) }}">Modifier</a>
+	    			<a href="{{ path('territoire.updateStrategie', {'territoire': territoire.id}) }}">Modifier</a>
 	    		</div>
 	    		
 	    		<div class="list-group-item">
@@ -59,7 +59,7 @@
 	    			<ul>
 	    				<li>{{ territoire.culture.label|default('Non définie') }}</li>
 	    			</ul>
-	    			<a href="{{ path('territoire.update.culture', {'territoire': territoire.id}) }}">Modifier</a>
+	    			<a href="{{ path('territoire.updateCulture', {'territoire': territoire.id}) }}">Modifier</a>
 	    		</div>
 	    		
 	    		<div class="list-group-item">
@@ -71,7 +71,7 @@
 	    				<li>Auncune loi définie</li>
 	    			{% endfor %}
 	    			</ul>
-	    			<a href="{{ path('territoire.update.loi', {'territoire': territoire.id}) }}">Modifier les lois</a>
+	    			<a href="{{ path('territoire.updateLoi', {'territoire': territoire.id}) }}">Modifier les lois</a>
 	    		</div>
 	    		
 	    		<div class="list-group-item">
@@ -79,17 +79,17 @@
 	    			<ul>
 	    				<li>{{ territoire.statut|default('Normal') }}</li>
 	    			</ul>
-	    			<a href="{{ path('territoire.update.statut', {'territoire': territoire.id}) }}">Modifier</a>
+	    			<a href="{{ path('territoire.updateStatut', {'territoire': territoire.id}) }}">Modifier</a>
 	    		</div>
 	    		
 	    		<div class="list-group-item">
 			    	<h4 class="list-group-item-heading">Constructions</h4>
 			    	<ul>
 			    		{% for construction in territoire.constructions %}
-			    			<li>{{ construction.fullLabel }} / <a href="{{ path('territoire.construction.remove', {'territoire': territoire.id, 'construction': construction.id}) }}">Retirer</a></li>
+			    			<li>{{ construction.fullLabel }} / <a href="{{ path('territoire.constructionRemove', {'territoire': territoire.id, 'construction': construction.id}) }}">Retirer</a></li>
 			    		{% endfor %}
 			    	</ul>
-			    	<a href="{{ path('territoire.construction.add', {'territoire': territoire.id}) }}">Ajouter une construction</a>
+			    	<a href="{{ path('territoire.constructionAdd', {'territoire': territoire.id}) }}">Ajouter une construction</a>
 			    </div>
 		    		
 		    	<div class="list-group-item">
@@ -145,8 +145,8 @@
 	    					<li><strong>Population : </strong>{{ territoire.population|default('Inconnue') }}</li>
 	    					<li><strong>Symbole : </strong>{{ territoire.symbole|default('Aucun') }}</li>
 	    					<li><strong>Niveau technologique : </strong>{{ territoire.techLevel|default('Aucun') }}</li>
-	    					<li><strong>Langues parlée : </strong>{{ territoire.langues|join(', ') }}</li>
-	    					<li><strong>Langue principale : </strong>{{ territoire.langue }}</li> 
+	    					<li><strong>Langues parlée : </strong>{{ territoire.langues|join(', ')|default('Aucunes') }}</li>
+	    					<li><strong>Langue principale : </strong>{{ territoire.langue|default('Aucune') }}</li> 
 	    				</ul>
 	    			</p>
 	    		</div>
@@ -155,8 +155,8 @@
 	    			<h4 class="list-group-item-heading">Cultes</h4>
     				<p class="list-group-item-text">
     					<ul>
-    						<li><strong>Religion dominante : </strong>{{ territoire.religion }}</li>
-    						<li><strong>Religion secondaires : </strong>{{territoire.religions|join(', ') }}</li>
+    						<li><strong>Religion dominante : </strong>{{ territoire.religion|default('Aucune') }}</li>
+    						<li><strong>Religions secondaires : </strong>{{territoire.religions|join(', ')|default('Aucunes') }}</li>
     					</ul>
     				</p>
     			</div>
@@ -165,10 +165,10 @@
 	    			<h4 class="list-group-item-heading">Economie</h4>
     				<p class="list-group-item-text">
     					<ul>
-    						<li><strong>Exportation : </strong>{% if territoire.importations|length > 0 %}{{ territoire.importations|join(', ') }}{% else %}Rien{% endif %}</li>
-    						<li><strong>Production : </strong>{% if territoire.exportations|length > 0 %}{{ territoire.exportations|join(', ') }}{% else %}Rien{% endif %}</li>
-    						<li><strong>Ingrédients : </strong>{% if territoire.ingredients|length > 0 %}{{ territoire.ingredients|join(', ') }}{% else %}Rien{% endif %}</li>
-    						<li><a href="{{ path('territoire.update.ingredients', {'territoire': territoire.id}) }}">Modifier la liste des ingredients</a></li>
+    						<li><strong>Exportation : </strong>{{ territoire.importations|join(', ')|default('Rien') }}</li>
+    						<li><strong>Production : </strong>{{ territoire.exportations|join(', ')|default('Rien') }}</li>
+    						<li><strong>Ingrédients : </strong>{{ territoire.ingredients|join(', ')|default('Rien') }}</li>
+    						<li><a href="{{ path('territoire.updateIngredients', {'territoire': territoire.id}) }}">Modifier la liste des ingredients</a></li>
     					</ul>
     				</p>
     			</div>
@@ -201,9 +201,9 @@
   						<a  class="btn btn-danger" role="button" href="{{ path('territoire.delete', {'territoire' : territoire.id}) }}">Supprimer</a>
   						
   						{% if territoire.topic %}
-  							<a class="btn btn-default" href="{{ path('territoire.topic.delete', {'territoire':territoire.id}) }}">Supprimer le topic</a>
+  							<a class="btn btn-default" href="{{ path('territoire.deleteTopic', {'territoire':territoire.id}) }}">Supprimer le topic</a>
   						{% else %}
-							<a class="btn btn-default" href="{{ path('territoire.topic.add', {'territoire':territoire.id}) }}">Ajouter un topic</a>  											
+							<a class="btn btn-default" href="{{ path('territoire.addTtopic', {'territoire':territoire.id}) }}">Ajouter un topic</a>  											
   						{% endif %}
   						
 					</div>

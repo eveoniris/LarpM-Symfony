@@ -148,7 +148,7 @@ class BaseTerritoire
 
     #[ORM\ManyToOne(targetEntity: Langue::class, inversedBy: 'territoires')]
     #[ORM\JoinColumn(name: 'langue_id', referencedColumnName: 'id')]
-    protected Langue $langue;
+    protected ?Langue $langue;
 
     #[ORM\ManyToOne(targetEntity: Topic::class, inversedBy: 'territoires')]
     #[ORM\JoinColumn(name: 'topic_id', referencedColumnName: 'id')]
@@ -156,7 +156,7 @@ class BaseTerritoire
 
     #[ORM\ManyToOne(targetEntity: Religion::class, inversedBy: 'territoires')]
     #[ORM\JoinColumn(name: 'religion_id', referencedColumnName: 'id')]
-    protected Religion $religion;
+    protected ?Religion $religion;
 
     #[ORM\ManyToMany(targetEntity: Territoire::class, inversedBy: 'territoireStarts')]
     #[ORM\JoinTable(name: 'territoire_quete')]
@@ -579,7 +579,7 @@ class BaseTerritoire
     /**
      * Get the value of tresor.
      */
-    public function getTresor(): int
+    public function getTresor(): ?int
     {
         return $this->tresor;
     }
@@ -969,7 +969,7 @@ class BaseTerritoire
     /**
      * Get Langue entity (many to one).
      */
-    public function getLangue(): Langue
+    public function getLangue(): ?Langue
     {
         return $this->langue;
     }
@@ -1005,7 +1005,7 @@ class BaseTerritoire
     /**
      * Get Religion entity (many to one).
      */
-    public function getReligion(): Religion
+    public function getReligion(): ?Religion
     {
         return $this->religion;
     }
