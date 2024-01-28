@@ -1,32 +1,51 @@
 {% extends "base.html.twig" %}
 
+{% block title %}Liste des rangements{% endblock title %}
+
 {% block body %}
 
-<div class="well well-sm">
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li class="active">Liste des rangements</li>
+    </ol>
 
-	<div class="page-header">
-		<h1>Liste des rangements</h1>
-	</div>
-	
-	<div class="panel panel-info">
-		<div class="panel-heading">
-			<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-			Qu'est-ce qu'un rangement ?
-		</div>
-		<div class="panel-body">Un rangement correspond à une étagère, un carton, un emplacement. Un rangement appartient à une localisation.</div>
-	</div>
-	
-	{% if rangements|length == 0 %}
-		<div class="panel panel-warning">
-			<div class="panel-heading">
-				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-				Attention !
-			</div>
-			<div class="panel-body">Aucun rangement n'est défini ! Vous devez définir au moins un rangement.</div>
-		</div>
-	{% endif %}
-	
-	{{ include("admin/stock/rangement/list.twig", {'rangements' : rangements}) }}
+    <div class="well well-sm">
 
-</div>	
+        <div class="header">
+            <h5>Liste des rangements</h5>
+        </div>
+
+        <div class="card mb-3 border-info">
+            <div class="card-header ">
+                <i class="fa fa-info-circle text-info"></i> Qu'est-ce qu'un rangement ?
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Un rangement correspond à une étagère, un carton, un emplacement. Un rangement appartient à une
+                    localisation.
+                </p>
+            </div>
+        </div>
+
+        {% if rangements|length == 0 %}
+            <div class="card mb-3 border-warning">
+                <div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Aucun rangement n'est défini ! Vous devez définir au moins un rangement.
+                    </p>
+                </div>
+            </div>
+
+        {% endif %}
+
+        <div class="btn-toolbar mb-3" role="toolbar" aria-label="...">
+            <a href="{{ path('stockRangement.add') }}" class="btn btn-secondary">
+                <i class="fa fa-plus"></i> Ajouter un rangement
+            </a>
+        </div>
+    </div>
+
+    {{ include("stock/rangement/list.twig", {'rangements' : rangements}) }}
+
 {% endblock %}

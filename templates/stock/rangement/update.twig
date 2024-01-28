@@ -1,20 +1,27 @@
 {% extends "base.html.twig" %}
 
+{% block title %}Modification d'un rangement{% endblock title %}
+
 {% block body %}
 
-<div class="well well-sm">
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li class="active">Modification d'un rangement</li>
+    </ol>
 
-	<div class="page-header">
-		<h1>Modification d'un rangement</h1>
-	</div>
+    <div class="well well-sm">
 
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-xs-12 col-md-8">
-				{{ include("admin/stock/rangement/form.twig",{'action': path('stock_rangement_update', {index:rangement.id} ), 'form' : form}) }}
-			</div>
-		</div>
-	</div>
+        <div class="header">
+            <h5>Modification d'un rangement</h5>
+        </div>
 
-</div>	
-{%  endblock %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    {{ include("stock/rangement/form.twig",{'action': path('stockRangement.update', {rangement:rangement.id} ), 'form' : form}) }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

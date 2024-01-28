@@ -1,20 +1,27 @@
 {% extends "base.html.twig" %}
 
+{% block title %}Modification d'un propriétaire{% endblock title %}
+
 {% block body %}
 
-<div class="well well-sm">
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li class="active">Modification d'un propriétaire</li>
+    </ol>
 
-	<div class="page-header">
-		<h1>Modification d'un propriétaire</h1>
-	</div>
-	
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-xs-12 col-md-8">
-				{{ include("admin/stock/proprietaire/form.twig",{'action': path('stock_proprietaire_update', {index:proprietaire.id} ), 'form' : form}) }}
-			</div>
-		</div>
-	</div>
+    <div class="well well-sm">
 
-</div>	
-{%  endblock %}
+        <div class="header">
+            <h5>Modification d'un propriétaire</h5>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    {{ include("stock/proprietaire/form.twig",{'action': path('stockProprietaire.update', {proprietaire:proprietaire.id} ), 'form' : form}) }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
