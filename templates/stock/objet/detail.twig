@@ -4,7 +4,7 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('stock_objet_index') }}">Objets</a></li>
+		<li><a href="{{ path('stockObjet.index') }}">Objets</a></li>
 		<li>{{ objet.nom }}</li>
 	</ol>
 	
@@ -12,9 +12,9 @@
 
 	<div class="page-header">
 		<h1>Détail de {{ objet.code }} - {{ objet.nom }} 
-		<a href="{{ path('stock_objet_update', {'objet': objet.id}) }}" class="btn btn-primary" role="button">Modifier</a> 
-		<a href="{{ path('stock_objet_clone', {'objet': objet.id}) }}" class="btn btn-primary" role="button">Cloner</a>
-		<a href="{{ path('stock_objet_delete', {'objet': objet.id}) }}" class="btn btn-danger" role="button">Supprimer</a>
+		<a href="{{ path('stockObjet.update', {'objet': objet.id}) }}" class="btn btn-primary" role="button">Modifier</a>
+		<a href="{{ path('stockObjet.clone', {'objet': objet.id}) }}" class="btn btn-primary" role="button">Cloner</a>
+		<a href="{{ path('stockObjet.delete', {'objet': objet.id}) }}" class="btn btn-danger" role="button">Supprimer</a>
 		</h1>		
 	</div>
 
@@ -35,7 +35,7 @@
 						</ul>
 						
 						{% if objet.photo %}
-        					<img src="{{ path('stock_objet_photo',{'objet': objet.id}) }}" alt="{{ objet.photo.name }}" class="img-responsive" />
+        					<img src="{{ path('stockObjet.photo',{'objet': objet.id}) }}" alt="{{ objet.photo.name }}" class="img-responsive" />
         				{% endif %}
 					</div>
 				</div>

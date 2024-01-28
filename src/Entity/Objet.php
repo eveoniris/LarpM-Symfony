@@ -43,7 +43,7 @@ class Objet extends BaseObjet
             'nom' => ('' !== $this->getNom() && '0' !== $this->getNom()) ? $this->getNom() : '',
             'code' => ($this->getcode()) ? $this->getCode() : '',
             'description' => ('' !== $this->getDescription() && '0' !== $this->getDescription()) ? $this->getDescription() : '',
-            'photo' => ($this->getPhoto()) ? $this->getPhoto()->getRealName() : '',
+            'photo' => ($this->getPhoto()) ? $this->getPhoto()?->getRealName() : '',
             'rangement' => ($this->getRangement()) ? $this->getRangement()->getAdresse() : '',
             'etat' => ($this->getEtat()) ? $this->getEtat()->getLabel() : '',
             'proprietaire' => ($this->getProprietaire()) ? $this->getProprietaire()->getNom() : '',

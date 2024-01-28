@@ -59,11 +59,11 @@ abstract class BaseObjet
 
     #[ManyToOne(targetEntity: Etat::class, inversedBy: 'objets')]
     #[JoinColumn(name: 'etat_id', referencedColumnName: 'id')]
-    protected Etat $etat;
+    protected ?Etat $etat = null;
 
     #[ManyToOne(targetEntity: Proprietaire::class, inversedBy: 'objets')]
     #[JoinColumn(name: 'proprietaire_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Proprietaire $proprietaire;
+    protected ?Proprietaire $proprietaire = null;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'objets')]
     #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: 'false')]
@@ -71,11 +71,11 @@ abstract class BaseObjet
 
     #[ManyToOne(targetEntity: Photo::class, cascade: ['persist', 'merge', 'remove', 'detach', 'all'], inversedBy: 'objets')]
     #[JoinColumn(name: 'photo_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    protected Photo $photo;
+    protected ?Photo $photo = null;
 
     #[ManyToOne(targetEntity: Rangement::class, cascade: ['persist', 'merge', 'remove', 'detach', 'all'], inversedBy: 'objets')]
     #[JoinColumn(name: 'rangement_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Rangement $rangement;
+    protected ?Rangement $rangement = null;
 
     #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'objets')]
     #[ORM\JoinTable(name: 'objet_tag')]
@@ -177,7 +177,7 @@ abstract class BaseObjet
      */
     public function getNombre(): int
     {
-        return $this->nombre;
+        return $this->nombre ?? 0;
     }
 
     /**
@@ -314,7 +314,7 @@ abstract class BaseObjet
     /**
      * Get Etat entity (many to one).
      */
-    public function getEtat(): Etat
+    public function getEtat(): ?Etat
     {
         return $this->etat;
     }
@@ -332,7 +332,7 @@ abstract class BaseObjet
     /**
      * Get Proprietaire entity (many to one).
      */
-    public function getProprietaire(): Proprietaire
+    public function getProprietaire(): ?Proprietaire
     {
         return $this->proprietaire;
     }
@@ -350,7 +350,7 @@ abstract class BaseObjet
     /**
      * Get User entity (many to one).
      */
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }
@@ -368,7 +368,7 @@ abstract class BaseObjet
     /**
      * Get Photo entity (many to one).
      */
-    public function getPhoto(): Photo
+    public function getPhoto(): ?Photo
     {
         return $this->photo;
     }
@@ -386,7 +386,7 @@ abstract class BaseObjet
     /**
      * Get Rangement entity (many to one).
      */
-    public function getRangement(): Rangement
+    public function getRangement(): ?Rangement
     {
         return $this->rangement;
     }

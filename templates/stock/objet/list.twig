@@ -2,14 +2,6 @@
 
 {% block title %}Objets{% endblock title %}
 
-{% block style %}
-<style>
-.hover_img a { position:relative; }
-.hover_img a span { position:absolute; display:none; z-index:99; }
-.hover_img a:hover span { display:block; }
-</style>
-{% endblock style %}
-
 {% block body %}
 
 	<ol class="breadcrumb">
@@ -22,7 +14,7 @@
 		<div class="flex-container">
 
 			<div class="flex-item">
-				<form class="form-inline" action="{{ path('stock_objet_index', {'order_by': 'nom', 'order_dir': 'DESC'}) }}) }}
+				<form class="form-inline" action="{{ path('stockObjet.index', {'order_by': 'nom', 'order_dir': 'DESC'}) }}) }}
 					
 					<div class="form-group">
 						<div class="input-group">
@@ -32,7 +24,7 @@
 							{{ form_widget(form.type) }}
 							<div class="input-group-btn">
 								<button type="submit" class="btn btn-default" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
-								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('stock_objet_index', {'order_by': 'nom', 'order_dir': 'DESC'}) }}"><i class="fa fa-refresh"></i></a>
+								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('stockObjet.index', {'order_by': 'nom', 'order_dir': 'DESC'}) }}"><i class="fa fa-refresh"></i></a>
 							</div>
 						</div>
 					</div>
@@ -44,20 +36,20 @@
 
 			<div class="flex-item-center flex-column">
 				<div  class="flex-item-center">
-					{{ paginator|raw }}
+					 paginator|raw
 				</div>
 
 				<div class="flex-item-center">
 
-						{% if paginator.totalItems == 1 %}
+						 paginator.totalItems == 1
 							<strong>1</strong>&nbsp;objet trouvé
-						{% else %}
-							<strong>{{ paginator.totalItems }}</strong>&nbsp;objets trouvés
-						{% endif %}
+						--
+							<strong> paginator.totalItems </strong>&nbsp;objets trouvés
 
-						{% if paginator.totalItems >= 1 %}
-						&nbsp;Montre&nbsp;<strong>{{ paginator.currentPageFirstItem }} - {{ paginator.currentPageLastItem }}</strong>
-						{% endif %}
+
+						if paginator.totalItems >= 1
+						&nbsp;Montre&nbsp;<strong> paginator.currentPageFirstItem  -  paginator.currentPageLastItem </strong>
+
 
 						{% if tag == -1 %}
 							&nbsp;- Sans tag
@@ -80,9 +72,9 @@
 							</a>
 							<ul class="dropdown-menu">
 								{% for tag in tags %}
-									<li><a href="{{ path('stock_objet_index', {'tag':tag.id, 'rangement':rangement}) }}">{{ tag.nom }}&nbsp</a></li>
+									<li><a href="{{ path('stockObjet.index', {'tag':tag.id, 'rangement':rangement}) }}">{{ tag.nom }}&nbsp</a></li>
 								{% endfor %}
-								<li><a href="{{ path('stock_objet_index', {'tag':-1, 'rangement':rangement}) }}">Objets sans tag&nbsp;({{ objetsWithoutTagCount }})</a></li>
+								<li><a href="{{ path('stockObjet.index', {'tag':-1, 'rangement':rangement}) }}">Objets sans tag&nbsp;({{ objetsWithoutTagCount }})</a></li>
 							</ul>
 						</li>
 						<li role="presentation" class="dropdown">
@@ -92,12 +84,12 @@
 							</a>
 							<ul class="dropdown-menu">
 								{% for rangement in rangements %}
-									<li><a href="{{ path('stock_objet_index', {'rangement':rangement.id, 'tag':tag}) }}">{{ rangement.label }}</a></li>
+									<li><a href="{{ path('stockObjet.index', {'rangement':rangement.id, 'tag':tag}) }}">{{ rangement.label }}</a></li>
 								{% endfor %}
-								<li><a href="{{ path('stock_objet_index', {'rangement':-1, 'tag':tag}) }}">Objets sans rangement&nbsp;{{ objetsWithoutRangementCount }}</a></li>
+								<li><a href="{{ path('stockObjet.index', {'rangement':-1, 'tag':tag}) }}">Objets sans rangement&nbsp;{{ objetsWithoutRangementCount }}</a></li>
 							</ul>
 						</li>
-						<a href="{{ path('stock_objet_add') }}" class="btn btn-primary navbar-btn">Créer un nouvel objet</a>
+						<a href="{{ path('stockObjet.add') }}" class="btn btn-primary navbar-btn">Créer un nouvel objet</a>
 					</ul>
 				</div>
 			</div>
@@ -112,9 +104,9 @@
 	 			<tr>
 	 				<th>
 						{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'nom' %}
-							<a href="{{ path('stock_objet_index', {'order_by': 'nom', 'order_dir': 'DESC', 'tag':tag, 'rangement': rangement}) }}">
+							<a href="{{ path('stockObjet.index', {'order_by': 'nom', 'order_dir': 'DESC', 'tag':tag, 'rangement': rangement}) }}">
 						{%  else %}
-							<a href="{{ path('stock_objet_index', {'order_by': 'nom', 'order_dir': 'ASC', 'tag':tag, 'rangement': rangement}) }}">
+							<a href="{{ path('stockObjet.index', {'order_by': 'nom', 'order_dir': 'ASC', 'tag':tag, 'rangement': rangement}) }}">
 						{% endif %}
 							Nom
 						{% if app.request.get('order_by') == 'nom'  %}
@@ -145,7 +137,7 @@
 		 						<div class="hover_img">
 									<a href="#">Show Image
 										<span>
-											<img src="{{ path('stock_objet_photo',{'objet': objet.id}) }}" alt="{{ objet.photo.name }}" />
+											stockObjet.photo
 										</span>
 									</a>
 								</div>
@@ -170,11 +162,11 @@
 	      							<span class="caret"></span>
 	    						</button>
 		 						<ul class="dropdown-menu">
-									<li><a href="{{ path('stock_objet_tag', {'objet': objet.id}) }}">Modifier les tags</a></li>
+									<li><a href="{{ path('stockObjet.tag', {'objet': objet.id}) }}">Modifier les tags</a></li>
 									<li><a href="{{ path('item.new', {'objet': objet.id}) }}">Creer un objet de jeu</a></li>
-									<li><a href="{{ path('stock_objet_update', {'objet': objet.id}) }}">Modifier</a></li>
-				  					<li><a href="{{ path('stock_objet_clone', {'objet': objet.id}) }}">Cloner</a></li>
-				  					<li><a href="{{ path('stock_objet_delete', {'objet': objet.id}) }}">Supprimer</a></li>
+									<li><a href="{{ path('stockObjet.update', {'objet': objet.id}) }}">Modifier</a></li>
+				  					<li><a href="{{ path('stockObjet.clone', {'objet': objet.id}) }}">Cloner</a></li>
+				  					<li><a href="{{ path('stockObjet.delete', {'objet': objet.id}) }}">Supprimer</a></li>
 								</ul>
 							</div>
 	 					</td>

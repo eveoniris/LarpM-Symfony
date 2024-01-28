@@ -2,33 +2,43 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
 use App\Entity\Objet;
-use JasonGrimes\Paginator;
+use App\Entity\Rangement;
+use App\Entity\Tag;
 use App\Form\ObjetFindForm;
 use App\Form\Stock\ObjetDeleteForm;
 use App\Form\Stock\ObjetForm;
 use App\Form\Stock\ObjetTagForm;
-use LarpManager\Repository\ObjetRepository;
+use App\Repository\ObjetRepository;
+use Doctrine\ORM\EntityManagerInterface;
+// use Imagine\Image\Box; // TODO
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use JetBrains\PhpStorm\NoReturn;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_STOCK')]
+#[IsGranted('ROLE_STOCK')]
 class StockObjetController extends AbstractController
 {
     /**
      * Affiche la liste des objets.
      */
     #[Route('/stock/objet', name: 'stockObjet.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repoRangement = $entityManager->getRepository('\\'.\App\Entity\Rangement::class);
+        $repoRangement = $entityManager->getRepository(Rangement::class);
         $rangements = $repoRangement->findAll();
 
-        $repoTag = $entityManager->getRepository('\\'.\App\Entity\Tag::class);
+        $repoTag = $entityManager->getRepository(Tag::class);
         $tags = $repoTag->findAll();
 
-        $repoObjet = $entityManager->getRepository('\\'.\App\Entity\Objet::class);
+        $repoObjet = $entityManager->getRepository(Objet::class);
 
         $objetsWithoutTagCount = $repoObjet->findCount(['tag' => ObjetRepository::CRIT_WITHOUT]);
         $objetsWithoutRangementCount = $repoObjet->findCount(['rangement' => ObjetRepository::CRIT_WITHOUT]);
@@ -67,7 +77,7 @@ class StockObjetController extends AbstractController
             $offset
         );
 
-        $url = $app['url_generator']->generate('stock_objet_index');
+        $url = '';//$app['url_generator']->generate('stockObjet.index');
 
         $paginator = new Paginator(
             $repoObjet->findCount($criteria),
@@ -100,9 +110,10 @@ class StockObjetController extends AbstractController
     /**
      * Fourni la liste des objets sans proprietaire.
      */
-    public function listWithoutProprioAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/stock/objet/list-without-proprio', name: 'stockObjet.list-without-proprio')]
+    public function listWithoutProprioAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Objet::class);
+        $repo = $entityManager->getRepository(Objet::class);
 
         $qb = $repo->createQueryBuilder('o');
         $qb->select('o');
@@ -118,9 +129,10 @@ class StockObjetController extends AbstractController
     /**
      * Fourni la liste des objets sans responsable.
      */
-    public function listWithoutResponsableAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/stock/objet/list-without-responsable', name: 'stockObjet.list-without-responsable')]
+    public function listWithoutResponsableAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Objet::class);
+        $repo = $entityManager->getRepository(Objet::class);
 
         $qb = $repo->createQueryBuilder('o');
         $qb->select('o');
@@ -136,9 +148,10 @@ class StockObjetController extends AbstractController
     /**
      * Fourni la liste des objets sans rangement.
      */
-    public function listWithoutRangementAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/stock/objet/list-without-rangement', name: 'stockObjet.list-without-rangement')]
+    public function listWithoutRangementAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Objet::class);
+        $repo = $entityManager->getRepository(Objet::class);
 
         $qb = $repo->createQueryBuilder('o');
         $qb->select('o');
@@ -154,15 +167,17 @@ class StockObjetController extends AbstractController
     /**
      * Affiche la détail d'un objet.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
+    #[Route('/stock/objet/{objet}/detail', name: 'stockObjet.detail')]
+    public function detailAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Objet $objet): Response
     {
         return $this->render('stock/objet/detail.twig', ['objet' => $objet]);
     }
 
     /**
-     * Fourni les données de la photo lié à l'objet.
+     * Fourni les données de la photo liée à l'objet.
      */
-    public function photoAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
+    #[Route('/stock/objet/{objet}/photo', name: 'stockObjet.photo')]
+    public function photoAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Objet $objet)
     {
         $miniature = $request->get('miniature');
         $photo = $objet->getPhoto();
@@ -178,7 +193,7 @@ class StockObjetController extends AbstractController
             $image = $app['imagine']->open($filename);
 
             $stream = static function () use ($image): void {
-                $size = new \Imagine\Image\Box(200, 200);
+                $size = new Box(200, 200);
                 $thumbnail = $image->thumbnail($size);
                 ob_start(null, 0, PHP_OUTPUT_HANDLER_FLUSHABLE | PHP_OUTPUT_HANDLER_REMOVABLE);
                 echo $thumbnail->get('jpeg');
@@ -199,22 +214,23 @@ class StockObjetController extends AbstractController
     /**
      * Ajoute un objet.
      */
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/stock/objet/add', name: 'stockObjet.add')]
+    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $objet = new \App\Entity\Objet();
+        $objet = new Objet();
 
         $objet->setNombre(1);
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Etat::class);
+        $repo = $entityManager->getRepository(Etat::class);
         $etat = $repo->find(1);
         if ($etat) {
             $objet->setEtat($etat);
         }
 
         $form = $this->createForm(ObjetForm::class, $objet)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder et fermer'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder et nouveau'])
-            ->add('save_clone', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder et cloner']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder et nouveau'])
+            ->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
 
         $form->handleRequest($request);
 
@@ -238,14 +254,16 @@ class StockObjetController extends AbstractController
             $entityManager->persist($objet);
             $entityManager->flush();
 
-           $this->addFlash('success', 'L\'objet a été ajouté dans le stock');
+            $this->addFlash('success', 'L\'objet a été ajouté dans le stock');
 
             if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('stock_homepage', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
-                return $this->redirectToRoute('stock_objet_add', [], 303);
-            } elseif ($form->get('save_clone')->isClicked()) {
-                return $this->redirectToRoute('stock_objet_clone', ['objet' => $objet->getId()], 303);
+                return $this->redirectToRoute('stock.homepage', [], 303);
+            }
+            if ($form->get('save_continue')->isClicked()) {
+                return $this->redirectToRoute('stockObjet.add', [], 303);
+            }
+            if ($form->get('save_clone')->isClicked()) {
+                return $this->redirectToRoute('stockObjet.clone', ['objet' => $objet->getId()], 303);
             }
         }
 
@@ -255,7 +273,8 @@ class StockObjetController extends AbstractController
     /**
      * Créé un objet à partir d'un autre.
      */
-    public function cloneAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
+    #[Route('/stock/objet/{objet}/clone', name: 'stockObjet.clone')]
+    public function cloneAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Objet $objet): RedirectResponse|Response
     {
         $newObjet = clone $objet;
 
@@ -265,8 +284,8 @@ class StockObjetController extends AbstractController
         }
 
         $form = $this->createForm(ObjetForm::class, $newObjet)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder et fermer'])
-            ->add('save_clone', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder et cloner']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
+            ->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
 
         $form->handleRequest($request);
 
@@ -285,13 +304,13 @@ class StockObjetController extends AbstractController
             $entityManager->persist($objet);
             $entityManager->flush();
 
-           $this->addFlash('success', 'L\'objet a été ajouté dans le stock');
+            $this->addFlash('success', 'L\'objet a été ajouté dans le stock');
 
             if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('stock_homepage', [], 303);
-            } else {
-                return $this->redirectToRoute('stock_objet_clone', ['objet' => $newObjet->getId()], 303);
+                return $this->redirectToRoute('stock.homepage', [], 303);
             }
+
+            return $this->redirectToRoute('stockObjet.clone', ['objet' => $newObjet->getId()], 303);
         }
 
         return $this->render('stock/objet/clone.twig', ['objet' => $newObjet, 'form' => $form->createView()]);
@@ -300,12 +319,13 @@ class StockObjetController extends AbstractController
     /**
      * Mise à jour un objet.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
+    #[Route('/stock/objet/{objet}/update', name: 'stockObjet.update')]
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Objet $objet): RedirectResponse|Response
     {
         $form = $this->createForm(ObjetForm::class, $objet)
-            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder et fermer'])
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
-        $form = $form;
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -321,14 +341,14 @@ class StockObjetController extends AbstractController
                 }
                 $entityManager->persist($objet);
                 $entityManager->flush();
-               $this->addFlash('success', 'L\'objet a été mis à jour');
+                $this->addFlash('success', 'L\'objet a été mis à jour');
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($objet);
                 $entityManager->flush();
-               $this->addFlash('success', 'L\'objet a été supprimé');
+                $this->addFlash('success', 'L\'objet a été supprimé');
             }
 
-            return $this->redirectToRoute('stock_homepage');
+            return $this->redirectToRoute('stock.homepage');
         }
 
         return $this->render('stock/objet/update.twig', ['objet' => $objet, 'form' => $form->createView()]);
@@ -337,7 +357,8 @@ class StockObjetController extends AbstractController
     /**
      * Suppression d'un objet.
      */
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
+    #[Route('/stock/objet/{objet}/delete', name: 'stockObjet.delete')]
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Objet $objet): RedirectResponse|Response
     {
         $form = $this->createForm(ObjetDeleteForm::class, $objet);
         $form->handleRequest($request);
@@ -348,9 +369,9 @@ class StockObjetController extends AbstractController
             $entityManager->remove($objet);
             $entityManager->flush();
 
-           $this->addFlash('success', 'L\'objet a été supprimé');
+            $this->addFlash('success', 'L\'objet a été supprimé');
 
-            return $this->redirectToRoute('stock_objet_index');
+            return $this->redirectToRoute('stockObjet.index');
         }
 
         return $this->render('stock/objet/delete.twig', ['objet' => $objet, 'form' => $form->createView()]);
@@ -359,7 +380,8 @@ class StockObjetController extends AbstractController
     /**
      * Modification des tags d'un objet.
      */
-    public function tagAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
+    #[Route('/stock/objet/{objet}/tag', name: 'stockObjet.tag')]
+    public function tagAction(Request $request, EntityManagerInterface $entityManager, Objet $objet): RedirectResponse|Response
     {
         $form = $this->createForm(ObjetTagForm::class, $objet);
         $form->handleRequest($request);
@@ -376,9 +398,9 @@ class StockObjetController extends AbstractController
             $entityManager->persist($objet);
             $entityManager->flush();
 
-           $this->addFlash('success', 'les tags ont été mis à jour');
+            $this->addFlash('success', 'les tags ont été mis à jour');
 
-            return $this->redirectToRoute('stock_objet_index');
+            return $this->redirectToRoute('stockObjet.index');
         }
 
         return $this->render('stock/objet/tag.twig', ['objet' => $objet, 'form' => $form->createView()]);
@@ -387,10 +409,10 @@ class StockObjetController extends AbstractController
     /**
      * Exporte la liste des objets au format CSV.
      */
-    #[Route('/stock/objet/export', name: 'stockObjet.export')]
-    public function exportAction(Request $request,  EntityManagerInterface $entityManager): void
+    #[NoReturn] #[Route('/stock/objet/export', name: 'stockObjet.export')]
+    public function exportAction(Request $request, EntityManagerInterface $entityManager): void
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Objet::class);
+        $repo = $entityManager->getRepository(Objet::class);
         $objets = $repo->findAll();
 
         header('Content-Type: text/csv');
@@ -398,7 +420,7 @@ class StockObjetController extends AbstractController
         header('Pragma: no-cache');
         header('Expires: 0');
 
-        $output = fopen('php://output', 'w');
+        $output = fopen('php://output', 'wb');
 
         // header
         fputcsv($output,

@@ -25,7 +25,7 @@
 				<h5>Information du stock</h5>
 				
 				{% if item.objet.photo %}
-        			<img src="{{ path('stock_objet_photo',{'objet': item.objet.id}) }}" alt="{{ item.objet.photo.name }}" class="img-responsive" />
+        			<img src="{{ path('stockObjet.photo',{'objet': item.objet.id}) }}" alt="{{ item.objet.photo.name }}" class="img-responsive" />
         		{% endif %}
 				<ul>
 					<li><b>Nom :</b> {{ item.objet.nom }}</li>
