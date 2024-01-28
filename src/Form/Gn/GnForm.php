@@ -7,7 +7,6 @@ use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class GnForm extends AbstractType
 {
@@ -83,14 +82,8 @@ class GnForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'class' => \App\Entity\Gn::class,
-        ]);
-    }
-
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setDefaults([
             'data_class' => Gn::class,
+            'class' => \App\Entity\Gn::class,
         ]);
     }
 
