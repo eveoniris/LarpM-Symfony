@@ -4,48 +4,47 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des localisations</li>
-	</ol>
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li class="active">Liste des localisations</li>
+    </ol>
 
-<div class="well well-sm">
+    <div class="well well-sm">
 
-	<div class="header">
-		<h5>Liste des localisations</h5>
-	</div>
+        <div class="header">
+            <h5>Liste des localisations</h5>
+        </div>
 
-	<div class="card mb-3 border-info">
-		<div class="card-header ">
-			<i class="fa fa-info-circle text-info"></i> Qu'est-ce qu'une localisation ?
-		</div>
-		<div class="card-body">
-			<p class="card-text">
-				Une localisation permet de définir précisemment où se trouve l'objet.
-			</p>
-		</div>
-	</div>
-	
-	{% if localisations|length == 0 %}
-		<div class="card mb-3 border-warning">
-			<div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
-			<div class="card-body">
-				<p class="card-text">
-					Aucune localisations n'est définie ! Vous devez définir au moins une localisation.
-				</p>
-			</div>
-		</div>
-	{% endif %}
+        <div class="card mb-3 border-info">
+            <div class="card-header ">
+                <i class="fa fa-info-circle text-info"></i> Qu'est-ce qu'une localisation ?
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Une localisation permet de définir précisemment où se trouve l'objet.
+                </p>
+            </div>
+        </div>
 
-	<div class="btn-toolbar mb-3" role="toolbar" aria-label="...">
+        {% if localisations|length == 0 %}
+            <div class="card mb-3 border-warning">
+                <div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Aucune localisations n'est définie ! Vous devez définir au moins une localisation.
+                    </p>
+                </div>
+            </div>
+        {% endif %}
 
-	<a href="{{ path('stockLocalisation.add') }}" class="btn btn-secondary">
-		<i class="fa fa-plus"></i>Ajouter une localisation
-	</a>
-	</div>
-</div>
+        <div class="btn-toolbar mb-3" role="toolbar" aria-label="...">
+            <a href="{{ path('stockLocalisation.add') }}" class="btn btn-secondary">
+                <i class="fa fa-plus"></i>Ajouter une localisation
+            </a>
+        </div>
+    </div>
 
-	{{ include("stock/localisation/list.twig", {'localisations' : localisations}) }}
+    {{ include("stock/localisation/list.twig", {'localisations' : localisations}) }}
 
 
 {% endblock %}

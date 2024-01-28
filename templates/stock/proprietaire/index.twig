@@ -1,33 +1,50 @@
 {% extends "base.html.twig" %}
 
+{% block title %}Liste des propriétaires{% endblock title %}
+
 {% block body %}
 
-<div class="well well-sm">
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li class="active">Liste des propriétaires</li>
+    </ol>
 
-	<div class="page-header">
-		<h1>Liste des propriétaires</h1>
-	</div>
-	
-	<div class="panel panel-info">
-		<div class="panel-heading">
-			<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-			Qu'est-ce qu'un propriétaire ?
-		</div>
-		<div class="panel-body">Les propriétaires sont les personnes (morale ou physique) qui possédent l'objet.</div>
-	</div>
-	
-	{% if proprietaires|length == 0 %}
-		<div class="panel panel-warning">
-			<div class="panel-heading">
-				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-				Attention !
-			</div>
-			<div class="panel-body">Aucun propriétaire n'est défini ! Vous devez définir au moins un propriétaire.</div>
-		</div>
-	{% endif %}
+    <div class="well well-sm">
 
-{{ include("admin/stock/proprietaire/list.twig", {'proprietaires' : proprietaires}) }}
+        <div class="header">
+            <h5>Liste des propriétaires</h5>
+        </div>
 
-</div>
-	
+        <div class="card mb-3 border-info">
+            <div class="card-header ">
+                <i class="fa fa-info-circle text-info"></i> Qu'est-ce qu'un propriétaire ?
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Les propriétaires sont les personnes (morale ou physique) qui possédent l'objet.
+                </p>
+            </div>
+        </div>
+
+        {% if proprietaires|length == 0 %}
+            <div class="card mb-3 border-warning">
+                <div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Aucun propriétaire n'est défini ! Vous devez définir au moins un propriétaire.
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="btn-toolbar mb-3" role="toolbar" aria-label="...">
+            <a href="{{ path('stockProprietaire.add') }}" class="btn btn-secondary">
+                <i class="fa fa-plus"></i> Ajouter un propriétaire
+            </a>
+        </div>
+
+    </div>
+
+    {{ include("stock/proprietaire/list.twig", {'proprietaires' : proprietaires}) }}
+
 {% endblock %}

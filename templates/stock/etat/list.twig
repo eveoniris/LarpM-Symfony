@@ -3,7 +3,7 @@
         <a href="{{ path('stockEtat.update', {etat: etat.id}) }}"
            class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
             <div class="ms-2 me-auto">
-                <span class="fw-bold">{{ etat.label }}</span>
+                <h5 class="fw-bold">{{ etat.label }}</h5>
             </div>
             <span class="badg text-bg-info">{{ etat.objets|length }}</span>
         </a>

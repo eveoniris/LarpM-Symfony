@@ -1,20 +1,26 @@
 {% extends "base.html.twig" %}
 
+{% block title %}Ajout d'un propriétaire{% endblock title %}
+
 {% block body %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Ajout d'un propriétaire</li>
+	</ol>
 
 <div class="well well-sm">
 
-	<div class="page-header">
-		<h1>Ajout d'un proprietaire</h1>
+	<div class="header">
+		<h5>Ajout d'un proprietaire</h5>
 	</div>
 
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-12 col-md-8">
-				{{ include("admin/stock/proprietaire/form.twig",{'action': path('stock_proprietaire_add'), 'form' : form}) }}
+				{{ include("stock/proprietaire/form.twig",{'action': path('stockProprietaire.add'), 'form' : form}) }}
 			</div>
 		</div>
 	</div>
-			
 </div>
 {% endblock %}

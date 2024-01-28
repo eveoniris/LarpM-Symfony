@@ -1,17 +1,24 @@
 {% extends "base.html.twig" %}
 
+{% block title %}Ajout d'un rangement{% endblock title %}
+
 {% block body %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Ajout d'un rangement</li>
+	</ol>
 
 <div class="well well-sm">
 
-	<div class="page-header">
-		<h1>Ajout d'un rangement</h1>
+	<div class="header">
+		<h5>Ajout d'un rangement</h5>
 	</div>
 
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-12 col-md-8">
-				{{ include("admin/stock/rangement/form.twig",{'action': path('stock_rangement_add'), 'form' : form}) }}
+				{{ include("stock/rangement/form.twig",{'action': path('stockRangement.add'), 'form' : form}) }}
 			</div>
 		</div>
 	</div>
