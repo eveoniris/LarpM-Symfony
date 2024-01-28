@@ -15,11 +15,6 @@ use Symfony\Component\Validator\Constraints\Length;
  */
 class CompetenceFamilyForm extends AbstractType
 {
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setDefaults(['sanitize_html' => true]);
-    }
-
     /**
      * Construction du formulaire.
      */
@@ -48,6 +43,7 @@ class CompetenceFamilyForm extends AbstractType
     {
         $resolver->setDefaults([
             'class' => \App\Entity\CompetenceFamily::class,
+            'sanitize_html' => true,
         ]);
     }
 
