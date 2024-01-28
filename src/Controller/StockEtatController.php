@@ -2,57 +2,62 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
+use App\Form\Type\EtatType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_STOCK')]
+#[IsGranted('ROLE_STOCK')]
 class StockEtatController extends AbstractController
 {
     #[Route('/stock/etat', name: 'stockEtat.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Etat::class);
-        $etats = $repo->findAll();
+        $repo = $entityManager->getRepository(Etat::class);
 
-        return $this->render('stock/etat/index.twig', ['etats' => $etats]);
+        return $this->render('stock/etat/index.twig', ['etats' => $repo->findAll()]);
     }
 
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/stock/etat/add', name: 'stockEtat.add')]
+    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $etat = new \App\Entity\Etat();
+        $etat = new Etat();
 
         $form = $this->createForm(EtatType::class, $etat)
-            ->add('save', 'submit');
+            ->add('save', SubmitType::class);
 
         // on passe la requête de l'utilisateur au formulaire
         $form->handleRequest($request);
 
         // si la requête est valide
         if ($form->isSubmitted() && $form->isValid()) {
-            // on récupére les data de l'utilisateur
+            // on récupère les data de l'utilisateur
             $etat = $form->getData();
             $entityManager->persist($etat);
             $entityManager->flush();
 
             $this->addFlash('success', 'L\'état a été ajouté.');
 
-            return $this->redirectToRoute('stock_etat_index');
+            return $this->redirectToRoute('stockEtat.index');
         }
 
         return $this->render('stock/etat/add.twig', ['form' => $form->createView()]);
     }
 
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/stock/etat/{etat}/update', name: 'stockEtat.update')]
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Etat $etat): RedirectResponse|Response
     {
         $id = $request->get('index');
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Etat::class);
-        $etat = $repo->find($id);
-
         $form = $this->createForm(EtatType::class, $etat)
-            ->add('update', 'submit')
-            ->add('delete', 'submit');
+            ->add('update', SubmitType::class)
+            ->add('delete', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -69,7 +74,7 @@ class StockEtatController extends AbstractController
                 $this->addFlash('success', 'L\'état a été supprimé.');
             }
 
-            return $this->redirectToRoute('stock_etat_index');
+            return $this->redirectToRoute('stockEtat.index');
         }
 
         return $this->render('stock/etat/update.twig', [

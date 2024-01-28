@@ -1,32 +1,42 @@
 {% extends "base.html.twig" %}
 
+{% block title %}Liste des états{% endblock title %}
+
 {% block body %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Liste des états</li>
+	</ol>
 
 <div class="well well-sm">
 
-	<div class="page-header">
-		<h1>Liste des états</h1>
+	<div class="header">
+		<h5>Liste des états</h5>
 	</div>
-	
-	<div class="panel panel-info">
-		<div class="panel-heading">
-			<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-			Qu'est-ce qu'un état ?
+
+	<div class="card mb-3 border-info">
+		<div class="card-header "><i class="fa fa-info-circle text-info"></i> Qu'est-ce qu'un état ?</div>
+		<div class="card-body">
+			<p class="card-text">
+				Un objet peut prendre un état (casser, à réparer, à fabriquer, etc ..). Cette page permet de définir les différents états pouvant s'appliquer à un objet.
+			</p>
 		</div>
-		<div class="panel-body">Un objet peut prendre un état (casser, à réparer, à fabriquer, etc ..). Cette page permet de définir les différents états pouvant s'appliquer à un objet.</div>
 	</div>
+
 	
 	{% if etats|length == 0 %}
-		<div class="panel panel-warning">
-			<div class="panel-heading">
-				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-				Attention !
+		<div class="card mb-3 border-warning">
+			<div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
+			<div class="card-body">
+				<p class="card-text">
+					Aucun état n'est défini ! Vous devez définir au moins un état.
+				</p>
 			</div>
-			<div class="panel-body">Aucun état n'est défini ! Vous devez définir au moins un état.</div>
 		</div>
 	{% endif %}
 	
-	{{ include("admin/stock/etat/list.twig", {'etats' : etats}) }}
+	{{ include("stock/etat/list.twig", {'etats' : etats}) }}
 	
 </div>
 {% endblock %}

@@ -20,8 +20,8 @@
 
         <ul class="list-group" id="haut">
             {% for user in usersWithoutEtatCivil %}
-                <li class="list-group-item" id="usersWithoutEtatCivil">
-                    <a href="{{ path('user.view',{'user':user.id}) }}">{{ user.email }}</a>
+                <li class="list-group-item list-group-item-action" id="usersWithoutEtatCivil">
+                    <a class="link-underline-opacity-0 link-underline" href="{{ path('user.view',{'user':user.id}) }}">{{ user.email }}</a>
                 </li>
             {% endfor %}
         </ul>

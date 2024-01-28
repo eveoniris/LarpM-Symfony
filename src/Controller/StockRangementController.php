@@ -55,8 +55,8 @@ class StockRangementController extends AbstractController
         $rangement = $repo->find($id);
 
         $form = $this->createForm(RangementType::class, $rangement)
-            ->add('update', 'submit')
-            ->add('delete', 'submit');
+            ->add('update', SubmitType::class)
+            ->add('delete', SubmitType::class);
 
         $form->handleRequest($request);
 

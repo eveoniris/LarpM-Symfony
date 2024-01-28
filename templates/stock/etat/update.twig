@@ -2,16 +2,21 @@
 
 {% block body %}
 
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Modification d'un état</li>
+	</ol>
+
 <div class="well well-sm">
 
-	<div class="page-header">
-		<h1>Modification d'un état</h1>
+	<div class="header">
+		<h5>Modification d'un état</h5>
 	</div>
 	
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-12 col-md-8">
-				{{ include("admin/stock/etat/form.twig",{'action': path('stock_etat_update', {index:etat.id} ), 'form' : form}) }}
+				{{ include("stock/etat/form.twig",{'action': path('stockEtat.update', {etat:etat.id} ), 'form' : form}) }}
 			</div>
 		</div>
 	</div>
