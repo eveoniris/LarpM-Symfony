@@ -6,7 +6,7 @@ namespace App\Form;
 use App\Form\Type\ParticipantHasRestaurationType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\ParticipantRestaurationForm.
@@ -20,20 +20,20 @@ class ParticipantRestaurationForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('participantHasRestaurations', 'collection', [
+        $builder->add('participantHasRestaurations', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
             'label' => 'Lieux de restauration',
             'required' => false,
             'allow_add' => true,
             'allow_delete' => true,
             'by_reference' => false,
-            'type' => new ParticipantHasRestaurationType(),
+            'entry_type' => ParticipantHasRestaurationType::class,
         ]);
     }
 
     /**
      * Définition de l'entité concerné.
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'class' => \App\Entity\Participant::class,

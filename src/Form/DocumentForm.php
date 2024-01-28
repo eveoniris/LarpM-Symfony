@@ -6,7 +6,7 @@ namespace App\Form;
 use LarpManager\Repository\LangueRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\DocumentForm.
@@ -93,7 +93,7 @@ class DocumentForm extends AbstractType
     /**
      * Définition de la classe d'entité concernée.
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'class' => \App\Entity\Document::class,

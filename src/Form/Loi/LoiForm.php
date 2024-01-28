@@ -5,7 +5,7 @@ namespace App\Form\Loi;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\Groupe\LoiForm.
@@ -39,7 +39,7 @@ class LoiForm extends AbstractType
     /**
      * Définition de l'entité conercné.
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => '\\'.\App\Entity\Loi::class,

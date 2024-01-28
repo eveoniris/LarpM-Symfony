@@ -6,7 +6,7 @@ namespace App\Form\Type;
 use LarpManager\Repository\IngredientRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\Type\PersonnageIngredientType.
@@ -36,7 +36,7 @@ class PersonnageIngredientType extends AbstractType
             ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => '\\'.\App\Entity\PersonnageIngredient::class,

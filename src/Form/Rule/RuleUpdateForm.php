@@ -5,7 +5,7 @@ namespace App\Form\Rule;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\Rule\RuleForm.
@@ -37,7 +37,7 @@ class RuleUpdateForm extends AbstractType
     /**
      * Définition de l'entité concerné.
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => '\\'.\App\Entity\rule::class,

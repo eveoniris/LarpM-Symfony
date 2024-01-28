@@ -6,7 +6,7 @@ namespace App\Form\Personnage;
 use App\Form\Type\PersonnageRessourceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\PersonnageRessourceForm.
@@ -37,13 +37,13 @@ class PersonnageRessourceForm extends AbstractType
                     'help' => 'Indiquez combien de ressources RARES il faut ajouter à ce personnage.',
                 ],
             ])
-            ->add('personnageRessources', 'collection', [
+            ->add('personnageRessources', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
                 'label' => 'Ressources',
                 'required' => false,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-                'type' => new PersonnageRessourceType(),
+                'entry_type' => PersonnageRessourceType::class,
             ])
             ->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
     }
@@ -51,7 +51,7 @@ class PersonnageRessourceForm extends AbstractType
     /**
      * Définition de l'entité conercné.
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => '\\'.\App\Entity\Personnage::class,

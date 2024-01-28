@@ -11,7 +11,7 @@ use App\Form\Type\IntrigueHasLieuType;
 use App\Form\Type\IntrigueHasObjectifType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\Groupe\IntrigueForm.
@@ -29,53 +29,53 @@ class IntrigueForm extends AbstractType
             'label' => 'Le titre de votre intrigue',
             'required' => true,
         ])
-            ->add('intrigueHasGroupes', 'collection', [
+            ->add('intrigueHasGroupes', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
                 'label' => 'Groupes concernés',
                 'required' => false,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-                'type' => new IntrigueHasGroupeType(),
+                'entry_type' => IntrigueHasGroupeType::class,
             ])
-            ->add('intrigueHasGroupeSecondaires', 'collection', [
+            ->add('intrigueHasGroupeSecondaires', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
                 'label' => 'Groupes secondaires concernés',
                 'required' => false,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-                'type' => new IntrigueHasGroupeSecondaireType(),
+                'entry_type' => IntrigueHasGroupeSecondaireType::class,
             ])
-            ->add('intrigueHasDocuments', 'collection', [
+            ->add('intrigueHasDocuments', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
                 'label' => 'Documents concernées',
                 'required' => false,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-                'type' => new IntrigueHasDocumentType(),
+                'entry_type' => IntrigueHasDocumentType::class,
             ])
-            ->add('intrigueHasLieus', 'collection', [
+            ->add('intrigueHasLieus', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
                 'label' => 'Instances concernées',
                 'required' => false,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-                'type' => new IntrigueHasLieuType(),
+                'entry_type' => IntrigueHasLieuType::class,
             ])
-            ->add('intrigueHasEvenements', 'collection', [
+            ->add('intrigueHasEvenements', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
                 'label' => 'Evénements',
                 'required' => false,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-                'type' => new IntrigueHasEvenementType(),
+                'entry_type' => IntrigueHasEvenementType::class,
             ])
-            ->add('intrigueHasObjectifs', 'collection', [
+            ->add('intrigueHasObjectifs', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
                 'label' => 'Objectifs',
                 'required' => false,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-                'type' => new IntrigueHasObjectifType(),
+                'entry_type' => IntrigueHasObjectifType::class,
             ])
             ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'label' => 'Description de votre intrigue',
@@ -109,7 +109,7 @@ class IntrigueForm extends AbstractType
     /**
      * Définition de l'entité conercné.
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => '\\'.\App\Entity\Intrigue::class,

@@ -6,7 +6,7 @@ namespace App\Form\Type;
 use App\Form\Type\ObjectifType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\Type\IntrigueHasObjectifType.
@@ -23,7 +23,7 @@ class IntrigueHasObjectifType extends AbstractType
         ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => '\\'.\App\Entity\IntrigueHasObjectif::class,

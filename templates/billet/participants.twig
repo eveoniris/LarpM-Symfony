@@ -7,7 +7,7 @@
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
 		<li><a href="{{ path("gn.list") }}">Liste des grandeur nature</a></li>
-		<li><a href="{{ path("gn.detail", {'id': billet.gn.id}) }}">{{ billet.gn.label }}</a></li>
+		<li><a href="{{ path("gn.detail", {'gn': billet.gn.id}) }}">{{ billet.gn.label }}</a></li>
 		<li class="active">Liste des utilisateurs -- {{ billet.label }}</li>
 	</ol>
 

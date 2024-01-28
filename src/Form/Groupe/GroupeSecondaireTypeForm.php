@@ -5,7 +5,7 @@ namespace App\Form\Groupe;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\GroupeSecondaireTypeForm.
@@ -30,7 +30,7 @@ class GroupeSecondaireTypeForm extends AbstractType
     /**
      * Définition de l'entité concerné.
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data' => \App\Entity\SecondaryGroupType::class,

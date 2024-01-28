@@ -125,7 +125,7 @@ class BaseParticipant
      *
      * @param \DateTime $billet_date
      */
-    public function setBilletDate(string $billet_date): static
+    public function setBilletDate(\DateTime $billet_date): static
     {
         $this->billet_date = $billet_date;
 
