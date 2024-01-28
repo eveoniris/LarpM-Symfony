@@ -20,25 +20,31 @@
 								
 						<div>
 						  	<!-- Nav tabs -->
-							<ul class="nav nav-tabs" role="tablist">
+							<!--ul class="nav nav-tabs" role="tablist">
 	    						<li role="presentation" class="active"><a href="#detail" aria-controls="detail" role="tab" data-toggle="tab">Détail</a></li>
 								<li role="presentation" class="nav-item"><a href="#membres" aria-controls="membres" role="tab" data-toggle="tab">Membres</a></li>
 	    						<li role="presentation"><a href="#enveloppe" aria-controls="enveloppe" role="tab" data-toggle="tab">Enveloppe</a></li>
 	    						<li role="presentation"><a href="#domaine" aria-controls="domaine" role="tab" data-toggle="tab">Jeu de domaine</a></li>
-	    					</ul>
+	    					</ul-->
+							<nav class="nav nav-tabs" id="nav-tab" role="tablist">
+								<button class="nav-link active" id="nav-detail-tab" href="#detail" data-bs-toggle="tab" data-bs-target="#detail" aria-current="page" aria-selected="true">Détail</button>
+								<button class="nav-link" id="nav-membres-tab" href="#membres"  data-bs-toggle="tab" data-bs-target="#membres" aria-selected="false">Membres</button>
+								<button class="nav-link" id="nav-enveloppe-tab" href="#enveloppe"  data-bs-toggle="tab" data-bs-target="#enveloppe" aria-selected="false">Enveloppe</button>
+								<button class="nav-link" id="nav-domaine-tab" href="#domaine"  data-bs-toggle="tab" data-bs-target="#detail" aria-selected="false">Jeu de domaine</button>
+							</nav>
 	    					
 	    					<!-- Tab panes -->
 							<div class="tab-content">
-								<div role="tabpanel" class="tab-pane active" id="detail">
+								<div role="tabpanel" class="tab-pane active" role="tabpanel" id="detail" aria-labelledby="detail-tab" tabindex="0">
 									{% include 'groupe/fragment/detail.twig' with {'groupe': groupe} %}
 								</div>
-								<div role="tabpanel" class="tab-pane" id="membres">
+								<div role="tabpanel" class="tab-pane" role="tabpanel" id="membres" aria-labelledby="membres-tab" tabindex="0">
 									{% include 'groupe/fragment/membres.twig' with {'groupe': groupe} %}
 								</div>
-								<div role="tabpanel" class="tab-pane" id="enveloppe">
+								<div role="tabpanel" class="tab-pane" role="tabpanel" id="enveloppe" aria-labelledby="enveloppe-tab" tabindex="0">
 									{% include 'groupe/fragment/enveloppe.twig' with {'groupe': groupe} %}
 								</div>
-								<div role="tabpanel" class="tab-pane" id="domaine">
+								<div role="tabpanel" class="tab-pane" role="tabpanel" id="domaine" aria-labelledby="domaine-tab" tabindex="0">
 									{% include 'groupe/fragment/domaine.twig' with {'groupe': groupe} %}
 								</div>
 							</div>
