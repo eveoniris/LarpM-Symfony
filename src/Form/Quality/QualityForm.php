@@ -6,7 +6,7 @@ namespace App\Form\Quality;
 use App\Form\Type\QualityValeurType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\Quality\QualityForm.
@@ -28,20 +28,20 @@ class QualityForm extends AbstractType
                 'required' => true,
                 'label' => 'Numéro',
             ])
-            ->add('qualityValeurs', 'collection', [
+            ->add('qualityValeurs', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
                 'label' => 'Valeur',
                 'required' => true,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-                'type' => new QualityValeurType(),
+                'entry_type' => QualityValeurType::class,
             ]);
     }
 
     /**
      * Définition de l'entité concerné.
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'class' => \App\Entity\Quality::class,

@@ -6,7 +6,7 @@ namespace App\Form\Groupe;
 use App\Form\Type\GroupeHasRessourceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\GroupeRessourceForm.
@@ -37,20 +37,20 @@ class GroupeRessourceForm extends AbstractType
                     'help' => 'Indiquez combien de ressources RARES il faut ajouter à ce groupe.',
                 ],
             ])
-            ->add('groupeHasRessources', 'collection', [
+            ->add('groupeHasRessources', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
                 'label' => 'Ressources',
                 'required' => false,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-                'type' => new GroupeHasRessourceType(),
+                'entry_type' => GroupeHasRessourceType::class,
             ]);
     }
 
     /**
      * Définition de l'entité conercné.
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => '\\'.\App\Entity\Groupe::class,

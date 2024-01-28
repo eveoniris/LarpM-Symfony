@@ -5,7 +5,7 @@ namespace App\Form\Technologie;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\TechnologieDeleteForm.
@@ -24,7 +24,7 @@ class TechnologieDeleteForm extends AbstractType
     /**
      * Définition de l'entité concerné.
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'class' => \App\Entity\Technologie::class,

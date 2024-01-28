@@ -25,13 +25,13 @@ class PersonnageSecondaireForm extends AbstractType
             'choice_label' => 'label',
         ])
             ->add(
-                'personnageSecondaireCompetences', 'collection', [
+                'personnageSecondaireCompetences', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
                 'label' => 'Competences',
                 'required' => false,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-                'type' => new PersonnageSecondairesCompetencesType(),
+                'entry_type' => PersonnageSecondairesCompetencesType::class,
             ]);
     }
 

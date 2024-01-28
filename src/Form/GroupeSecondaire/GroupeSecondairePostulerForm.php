@@ -5,7 +5,7 @@ namespace App\Form\GroupeSecondaire;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\GroupeSecondairePostulerForm.
@@ -32,7 +32,7 @@ class GroupeSecondairePostulerForm extends AbstractType
     /**
      * Définition de l'entité conercné.
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
     }
 

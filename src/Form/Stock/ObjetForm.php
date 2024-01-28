@@ -7,7 +7,7 @@ use App\Form\Type\ObjetCaracType;
 use App\Form\Type\PhotoType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * LarpManager\Form\Type\ObjetType.
@@ -34,7 +34,7 @@ class ObjetForm extends AbstractType
             ->add('investissement', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, ['choices' => ['true' => 'ré-utilisable', 'false' => 'usage unique']]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver): void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'class' => \App\Entity\Objet::class,

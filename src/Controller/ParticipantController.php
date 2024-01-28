@@ -258,7 +258,7 @@ class ParticipantController extends AbstractController
             $entityManager->persist($participant);
             $entityManager->flush();
 
-            $app['notify']->newBillet($participant->getUser(), $participant->getBillet());
+            // $app['notify']->newBillet($participant->getUser(), $participant->getBillet()); // TODO
 
             $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
@@ -317,6 +317,8 @@ class ParticipantController extends AbstractController
 
             return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], 303);
         }
+
+        dump($form->createView());
 
         return $this->render('participant/restauration.twig', [
             'participant' => $participant,
