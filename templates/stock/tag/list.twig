@@ -1,12 +1,17 @@
-<ul class="list-group">
-	<a href="{{ path('stock_tag_add') }}" class="list-group-item active">
-		<span class="badge"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
-		<h4 class="list-group-item-heading">Ajouter un tag</h4>
+<div class="btn-toolbar mb-3" role="toolbar" aria-label="...">
+	<a href="{{ path('stockTag.add') }}" class="btn btn-secondary">
+		<i class="fa fa-plus"></i> Ajouter un tag
 	</a>
+</div>
+
+<ul class="list-group">
 	{%  for tag in tags %}
-		<a href="{{ path('stock_tag_update', {index: tag.id}) }}" class="list-group-item">
-			<span class="badge">{{ tag.objets|length }}</span>
-			<h4 class="list-group-item-heading">{{ tag.nom }}</h4>
+		<a href="{{ path('stockTag.update',  {tag: tag.id}) }}"
+		   class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+			<div class="ms-2 me-auto">
+				<h4 class="list-group-item-heading">{{ tag.nom }}</h4>
+			</div>
+			<span class="badge text-bg-info">{{ tag.objets|length }}</span>
 		</a>
 	{%  endfor %}
 </ul>
