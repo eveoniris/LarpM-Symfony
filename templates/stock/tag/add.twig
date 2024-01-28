@@ -2,6 +2,11 @@
 
 {% block body %}
 
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Ajout d'un état</li>
+	</ol>
+
 <div class="well well-sm">
 
 	<div class="page-header">
@@ -11,7 +16,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-12 col-md-8">
-				{{ include("admin/stock/tag/form.twig",{'action': path('stock_tag_add'), 'form' : form}) }}
+				{{ include("stock/tag/form.twig",{'action': path('stockTag.add'), 'form' : form}) }}
 			</div>
 		</div>
 	</div>
