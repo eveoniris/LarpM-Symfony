@@ -1,32 +1,43 @@
 {% extends "base.html.twig" %}
 
+{% block title %}Liste des tags{% endblock title %}
+
 {% block body %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Liste des tags</li>
+	</ol>
+
+	<div class="well well-sm">
+		<div class="header">
+			<h5>Liste des tags</h5>
+		</div>
+	</div>
 
 <div class="well well-sm">
 
-	<div class="page-header">
-		<h1>Liste des tags</h1>
-	</div>
-	
-	<div class="panel panel-info">
-		<div class="panel-heading">
-			<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-			Qu'est-ce qu'un tag ?
+	<div class="card mb-3 border-info">
+		<div class="card-header "><i class="fa fa-info-circle text-info"></i> Qu'est-ce qu'un tag ?</div>
+		<div class="card-body">
+			<p class="card-text">
+				Les tags permettent de regrouper les objets afin d'avoir plus de faciliter à parcourir le stock d'objet. Voici quelques exemples de tags : Armes, décors, tentes, etc ...
+			</p>
 		</div>
-		<div class="panel-body">Les tags permettent de regrouper les objets afin d'avoir plus de faciliter à parcourir le stock d'objet. Voici quelques exemples de tags : Armes, décors, tentes, etc ...</div>
 	</div>
-	
+
 	{% if tags|length == 0 %}
-		<div class="panel panel-warning">
-			<div class="panel-heading">
-				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-				Attention !
+		<div class="card mb-3 border-warning">
+			<div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
+			<div class="card-body">
+				<p class="card-text">
+					Aucun tag n'est défini ! Vous devez définir au moins un tag.
+				</p>
 			</div>
-			<div class="panel-body">Aucun tag n'est défini ! Vous devez définir au moins un tag.</div>
 		</div>
 	{% endif %}
 
-	{{ include("admin/stock/tag/list.twig", {'tags' : tags}) }}
+	{{ include("stock/tag/list.twig", {'tags' : tags}) }}
 	
 </div>
 {% endblock %}

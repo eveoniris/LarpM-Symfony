@@ -25,7 +25,7 @@ class StockProprietaireController extends AbstractController
         $proprietaire = new \App\Entity\Proprietaire();
 
         $form = $this->createForm(ProprietaireType::class, $proprietaire)
-            ->add('save', 'submit');
+            ->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -50,8 +50,8 @@ class StockProprietaireController extends AbstractController
         $proprietaire = $repo->find($id);
 
         $form = $this->createForm(ProprietaireType::class, $proprietaire)
-            ->add('update', 'submit')
-            ->add('delete', 'submit');
+            ->add('update', SubmitType::class)
+            ->add('delete', SubmitType::class);
 
         $form->handleRequest($request);
 
