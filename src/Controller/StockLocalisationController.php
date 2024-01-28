@@ -2,25 +2,33 @@
 
 namespace App\Controller;
 
+use App\Entity\Localisation;
+use App\Form\Type\LocalisationType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_STOCK')]
+#[IsGranted('ROLE_STOCK')]
 class StockLocalisationController extends AbstractController
 {
     #[Route('/stock/localisation', name: 'stockLocalisation.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Localisation::class);
+        $repo = $entityManager->getRepository(Localisation::class);
         $localisations = $repo->findAll();
 
         return $this->render('stock/localisation/index.twig', ['localisations' => $localisations]);
     }
 
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/stock/localisation/add', name: 'stockLocalisation.add')]
+    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $localisation = new \App\Entity\Localisation();
+        $localisation = new Localisation();
 
         $form = $this->createForm(LocalisationType::class, $localisation)
             ->add('save', SubmitType::class);
@@ -35,21 +43,17 @@ class StockLocalisationController extends AbstractController
             $entityManager->persist($localisation);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La localisation a été ajoutée.');
+            $this->addFlash('success', 'La localisation a été ajoutée.');
 
-            return $this->redirectToRoute('stock_localisation_index');
+            return $this->redirectToRoute('stockLocalisation.index');
         }
 
         return $this->render('stock/localisation/add.twig', ['form' => $form->createView()]);
     }
 
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/stock/localisation/{localisation}/update', name: 'stockLocalisation.update')]
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Localisation $localisation): RedirectResponse|Response
     {
-        $id = $request->get('index');
-
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Localisation::class);
-        $localisation = $repo->find($id);
-
         $form = $this->createForm(LocalisationType::class, $localisation)
             ->add('update', SubmitType::class)
             ->add('delete', SubmitType::class);
@@ -62,14 +66,14 @@ class StockLocalisationController extends AbstractController
             if ($form->get('update')->isClicked()) {
                 $entityManager->persist($localisation);
                 $entityManager->flush();
-               $this->addFlash('success', 'La localisation a été mise à jour');
+                $this->addFlash('success', 'La localisation a été mise à jour');
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($localisation);
                 $entityManager->flush();
-               $this->addFlash('success', 'La localisation a été suprimée');
+                $this->addFlash('success', 'La localisation a été suprimée');
             }
 
-            return $this->redirectToRoute('stock_localisation_index');
+            return $this->redirectToRoute('stockLocalisation.index');
         }
 
         return $this->render('stock/localisation/update.twig', [

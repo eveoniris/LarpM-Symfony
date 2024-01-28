@@ -9,13 +9,10 @@
 		<li class="active">Liste des tags</li>
 	</ol>
 
-	<div class="well well-sm">
-		<div class="header">
-			<h5>Liste des tags</h5>
-		</div>
-	</div>
-
 <div class="well well-sm">
+	<div class="header">
+		<h5>Liste des tags</h5>
+	</div>
 
 	<div class="card mb-3 border-info">
 		<div class="card-header "><i class="fa fa-info-circle text-info"></i> Qu'est-ce qu'un tag ?</div>
@@ -37,7 +34,14 @@
 		</div>
 	{% endif %}
 
+	<div class="btn-toolbar mb-3" role="toolbar" aria-label="...">
+		<a href="{{ path('stockTag.add') }}" class="btn btn-secondary">
+			<i class="fa fa-plus"></i> Ajouter un tag
+		</a>
+	</div>
+</div>
+
 	{{ include("stock/tag/list.twig", {'tags' : tags}) }}
 	
-</div>
+
 {% endblock %}

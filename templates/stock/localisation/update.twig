@@ -1,17 +1,25 @@
 {% extends "base.html.twig" %}
 
+{% block title %}Modification d'une localisation{% endblock title %}
+
 {% block body %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Modification d'une localisation</li>
+	</ol>
+
 
 <div class="well well-sm">
 
-	<div class="page-header">
-		<h1>Modification d'une localisation</h1>
+	<div class="header">
+		<h5>Modification d'une localisation</h5>
 	</div>
 
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-12 col-md-8">
-				{{ include("admin/stock/localisation/form.twig",{'action': path('stock_localisation_update', {index:localisation.id} ), 'form' : form}) }}
+				{{ include("stock/localisation/form.twig",{'action': path('stockLocalisation.update', {localisation:localisation.id} ), 'form' : form}) }}
 			</div>
 		</div>
 	</div>

@@ -1,9 +1,3 @@
-<div class="btn-toolbar mb-3" role="toolbar" aria-label="...">
-	<a href="{{ path('stockTag.add') }}" class="btn btn-secondary">
-		<i class="fa fa-plus"></i> Ajouter un tag
-	</a>
-</div>
-
 <ul class="list-group">
 	{%  for tag in tags %}
 		<a href="{{ path('stockTag.update',  {tag: tag.id}) }}"

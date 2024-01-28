@@ -35,8 +35,12 @@
 			</div>
 		</div>
 	{% endif %}
-	
-	{{ include("stock/etat/list.twig", {'etats' : etats}) }}
-	
+	<div class="btn-toolbar mb-3" role="toolbar" aria-label="...">
+		<a href="{{ path('stockEtat.add') }}" class="btn btn-secondary">
+			<i class="fa fa-plus"></i> Ajouter un état
+		</a>
+	</div>
 </div>
+	{{ include("stock/etat/list.twig", {'etats' : etats}) }}
+
 {% endblock %}
