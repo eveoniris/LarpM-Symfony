@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -29,19 +30,19 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BasePhoto', 'extended' => 'Photo'])]
 abstract class BasePhoto
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $name = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected string $extension = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(name: 'real_name', type: Types::STRING, length: 45)]
     protected string $real_name = '';
 
-    #[Column(name: 'data', type: \Doctrine\DBAL\Types\Types::BLOB, nullable: true)]
+    #[Column(name: 'data', type: Types::BLOB, nullable: true)]
     protected ?string $data = null;
 
     protected \DateTime $creation_date;

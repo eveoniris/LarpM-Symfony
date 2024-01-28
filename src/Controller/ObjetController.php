@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Item;
@@ -12,17 +11,16 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class ObjetController extends AbstractController
 {
     /**
      * Présentation des objets de jeu.
      */
-    #[Route('/objet', name: 'objet.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/item', name: 'item.index')]
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);
+        $repo = $entityManager->getRepository('\\'.Item::class);
         $items = $repo->findAll();
 
         return $this->render('objet/index.twig', [
@@ -33,7 +31,8 @@ class ObjetController extends AbstractController
     /**
      * Impression d'une etiquette.
      */
-    public function printAction(Request $request,  EntityManagerInterface $entityManager, Item $item)
+    #[Route('/item/print', name: 'item.print')]
+    public function printAction(Request $request, EntityManagerInterface $entityManager, Item $item): Response
     {
         return $this->render('objet/print.twig', [
             'item' => $item,
@@ -43,9 +42,10 @@ class ObjetController extends AbstractController
     /**
      * Impression de toutes les etiquettes.
      */
-    public function printAllAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/item/print-all', name: 'item.print-all')]
+    public function printAllAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);
+        $repo = $entityManager->getRepository('\\'.Item::class);
         $items = $repo->findAll();
 
         return $this->render('objet/printAll.twig', [
@@ -56,9 +56,10 @@ class ObjetController extends AbstractController
     /**
      * Impression de tous les objets avec photo.
      */
-    public function printPhotoAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/item/print-photo', name: 'item.print-photo')]
+    public function printPhotoAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);
+        $repo = $entityManager->getRepository('\\'.Item::class);
         $items = $repo->findAll();
 
         return $this->render('objet/printPhoto.twig', [
@@ -69,9 +70,10 @@ class ObjetController extends AbstractController
     /**
      * Sortie CSV.
      */
-    public function printCsvAction(Request $request,  EntityManagerInterface $entityManager): void
+    #[Route('/item/print-csv', name: 'item.print-csv')]
+    public function printCsvAction(Request $request, EntityManagerInterface $entityManager): void
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);
+        $repo = $entityManager->getRepository('\\'.Item::class);
         $items = $repo->findAll();
 
         header('Content-Type: text/csv');
@@ -137,7 +139,8 @@ class ObjetController extends AbstractController
     /**
      * Création d'un nouvel objet de jeu.
      */
-    public function newAction(Request $request,  EntityManagerInterface $entityManager, Objet $objet)
+    #[Route('/item/new', name: 'item.new')]
+    public function newAction(Request $request, EntityManagerInterface $entityManager, Objet $objet): \Symfony\Component\HttpFoundation\RedirectResponse|Response
     {
         $item = new Item();
         $item->setObjet($objet);
@@ -152,7 +155,7 @@ class ObjetController extends AbstractController
             // si le numéro est vide, générer un numéro en suivant l'ordre
             $numero = $item->getNumero();
             if (!$numero) {
-                $repo = $entityManager->getRepository('\\'.\App\Entity\Item::class);
+                $repo = $entityManager->getRepository('\\'.Item::class);
                 $numero = $repo->findNextNumero();
                 if (!$numero) {
                     $numero = 0;
@@ -181,7 +184,7 @@ class ObjetController extends AbstractController
             $entityManager->persist($item);
             $entityManager->flush();
 
-           $this->addFlash('success', 'L\'objet de jeu a été créé');
+            $this->addFlash('success', 'L\'objet de jeu a été créé');
 
             return $this->redirectToRoute('items', [], 303);
         }
@@ -197,7 +200,7 @@ class ObjetController extends AbstractController
      * Détail d'un objet de jeu.
      */
     #[Route('/item/{item}', name: 'item.detail')]
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Item $item)
+    public function detailAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Item $item): Response
     {
         return $this->render('objet/detail.twig', [
             'item' => $item,
@@ -208,7 +211,7 @@ class ObjetController extends AbstractController
      * Mise à jour d'un objet de jeu.
      */
     #[Route('/item/{item}/update', name: 'item.update')]
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Item $item)
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Item $item): \Symfony\Component\HttpFoundation\RedirectResponse|Response
     {
         $form = $this->createForm(ItemForm::class, $item);
 
@@ -235,7 +238,7 @@ class ObjetController extends AbstractController
                     break;
             }
 
-           $this->addFlash('success', 'L\'objet de jeu a été sauvegardé');
+            $this->addFlash('success', 'L\'objet de jeu a été sauvegardé');
 
             return $this->redirectToRoute('items', [], 303);
         }
@@ -249,7 +252,7 @@ class ObjetController extends AbstractController
     /**
      * Suppression d'un objet de jeu.
      */
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Item $item)
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Item $item): \Symfony\Component\HttpFoundation\RedirectResponse|Response
     {
         $form = $this->createForm(ItemDeleteForm::class, $item);
 
@@ -259,7 +262,7 @@ class ObjetController extends AbstractController
             $entityManager->remove($item);
             $entityManager->flush();
 
-           $this->addFlash('success', 'L\'objet de jeu a été supprimé');
+            $this->addFlash('success', 'L\'objet de jeu a été supprimé');
 
             return $this->redirectToRoute('items', [], 303);
         }
@@ -273,7 +276,7 @@ class ObjetController extends AbstractController
     /**
      * Lier un objet de jeu à un groupe/personnage/lieu.
      */
-    public function linkAction(Request $request,  EntityManagerInterface $entityManager, Item $item)
+    public function linkAction(Request $request, EntityManagerInterface $entityManager, Item $item): \Symfony\Component\HttpFoundation\RedirectResponse|Response
     {
         $form = $this->createForm(ItemLinkForm::class, $item);
 
@@ -283,7 +286,7 @@ class ObjetController extends AbstractController
             $entityManager->persist($item);
             $entityManager->flush();
 
-           $this->addFlash('success', 'L\'objet de jeu a été créé');
+            $this->addFlash('success', 'L\'objet de jeu a été créé');
 
             return $this->redirectToRoute('objet', [], 303);
         }
