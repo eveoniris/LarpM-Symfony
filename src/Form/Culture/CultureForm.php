@@ -19,7 +19,7 @@ class CultureForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text')
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class)
             ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
                 'label' => 'Description succinte',

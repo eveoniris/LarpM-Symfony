@@ -155,7 +155,7 @@ class BaseParticipant
     /**
      * Get the value of valide_ci_le.
      */
-    public function getValideCiLe(): \DateTimeInterface
+    public function getValideCiLe(): ?\DateTimeInterface
     {
         return $this->valide_ci_le;
     }

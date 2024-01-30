@@ -6,6 +6,8 @@ namespace App\Controller;
 use App\Entity\Culture;
 use App\Form\Culture\CultureDeleteForm;
 use App\Form\Culture\CultureForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,7 +24,7 @@ class CultureController extends AbstractController
     {
         $cultures = $entityManager->getRepository(\App\Entity\Culture::class)->findAll();
 
-        return $this->render('admin\culture\index.twig', [
+        return $this->render('culture\index.twig', [
             'cultures' => $cultures,
         ]);
     }
@@ -30,6 +32,7 @@ class CultureController extends AbstractController
     /**
      * Ajout d'une culture.
      */
+    #[Route('/culture/add', name: 'culture.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(CultureForm::class, new Culture());
@@ -42,10 +45,10 @@ class CultureController extends AbstractController
 
            $this->addFlash('success', 'La culture a été ajoutée.');
 
-            return $this->redirectToRoute('culture', [], 303);
+            return $this->redirectToRoute('culture.index', [], 303);
         }
 
-        return $this->render('admin\culture\add.twig', [
+        return $this->render('culture\add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -53,9 +56,10 @@ class CultureController extends AbstractController
     /**
      * Détail d'une culture.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Culture $culture)
+    #[Route('/culture/{culture}/detail', name: 'culture.detail')]
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Culture $culture)
     {
-        return $this->render('admin\culture\detail.twig', [
+        return $this->render('culture\detail.twig', [
             'culture' => $culture,
         ]);
     }
@@ -63,7 +67,8 @@ class CultureController extends AbstractController
     /**
      * Mise à jour d'une culture.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Culture $culture)
+    #[Route('/culture/{culture}/update', name: 'culture.update')]
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Culture $culture)
     {
         $form = $this->createForm(CultureForm::class, $culture);
 
@@ -76,10 +81,10 @@ class CultureController extends AbstractController
 
            $this->addFlash('success', 'La culture a été mise à jour.');
 
-            return $this->redirectToRoute('culture', [], 303);
+            return $this->redirectToRoute('culture.index', [], 303);
         }
 
-        return $this->render('admin\culture\update.twig', [
+        return $this->render('culture\update.twig', [
             'form' => $form->createView(),
             'culture' => $culture,
         ]);
@@ -88,7 +93,8 @@ class CultureController extends AbstractController
     /**
      * Suppression d'une culture.
      */
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Culture $culture)
+    #[Route('/culture/{culture}/delete', name: 'culture.delete')]
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Culture $culture)
     {
         $form = $this->createForm(CultureDeleteForm::class, $culture)
             ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
@@ -102,10 +108,10 @@ class CultureController extends AbstractController
 
            $this->addFlash('success', 'La culture a été supprimée.');
 
-            return $this->redirectToRoute('culture', [], 303);
+            return $this->redirectToRoute('culture.index', [], 303);
         }
 
-        return $this->render('admin\culture\delete.twig', [
+        return $this->render('culture\delete.twig', [
             'form' => $form->createView(),
             'culture' => $culture,
         ]);
