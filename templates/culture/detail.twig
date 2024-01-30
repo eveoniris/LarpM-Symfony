@@ -6,29 +6,28 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('culture') }}">Liste des cultures</a></li>
+		<li><a href="{{ path('culture.index') }}">Liste des cultures</a></li>
 		<li class="active">Détail d'une culture</li>
 	</ol>
 
-	<div class="list-group">
-		<div class="list-group-item">
-			<div class="list-group-item-heading"><h6>Label</h6></div>
-			<div class="list-group-item-text">{{ culture.label }}</div>
+	<div class="well well-sm bs-component">
+		<div class="header">
+			<h5>{{ culture.label }}</h5>
 		</div>
 	</div>
-	
-	<div class="panel panel-default">
-		<div class="panel-heading"><h4>Description</h4></div>
-		<div class="panel-body">
-			<p>{{ culture.description|markdown_to_html }}</p>
+
+	<div class="well well-sm bs-component">
+
+		<div class="header">
+			<h5>Description</h5>
 		</div>
-	</div>
-	
-	<div class="panel panel-default">
-		<div class="panel-heading"><h4>Description complète</h4></div>
-		<div class="panel-body">
-			<p>{{ culture.descriptionComplete|markdown_to_html }}</p>
+		<p>{{ culture.description|markdown_to_html }}</p>
+
+		<div class="header">
+			<h5>Description complète</h5>
 		</div>
+		<p>{{ culture.descriptionComplete|markdown_to_html }}</p>
+		
 	</div>
 	
 {% endblock body %}
