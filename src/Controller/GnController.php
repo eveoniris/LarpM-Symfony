@@ -28,7 +28,7 @@ class GnController extends AbstractController
         $limit = 10;
 
         $paginator = $gnRepository->findPaginated($page, $limit);
-        dump($paginator);
+        //dump($paginator);
 
         return $this->render(
             'gn/list.twig',

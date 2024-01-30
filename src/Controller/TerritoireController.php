@@ -65,9 +65,25 @@ class TerritoireController extends AbstractController
     #[Route('/territoire', name: 'territoire.list')]
     public function listAction(Request $request, EntityManagerInterface $entityManager)
     {
-        $territoires = $entityManager->getRepository('\\'.Territoire::class)->findRoot();
+        $territoirenRepository = $entityManager->getRepository(Territoire::class);
 
-        return $this->render('territoire/list.twig', ['territoires' => $territoires]);
+        $orderBy = $this->getRequestOrder(
+            alias: 't',
+            allowedFields: $territoirenRepository->getFieldNames()
+        );
+
+        $qb = $entityManager->createQueryBuilder('t')
+            ->select('t')
+            ->from(Territoire::class, 't')
+            ->where('t.territoire IS NULL')
+            ->orderBy(key($orderBy), current($orderBy))
+        ;
+
+        $paginator = $territoirenRepository->findPaginatedQuery(
+            $qb->getQuery(), $this->getRequestLimit(10), $this->getRequestPage()
+        );
+
+        return $this->render('territoire/list.twig', ['paginator' => $paginator]);
     }
 
     /**
