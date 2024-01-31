@@ -2,89 +2,165 @@
 
 {% block body %}
 
-<ol class="breadcrumb">
-	<li><a href="{{ path('homepage') }}">Accueil</a></li>
-	<li class="active">Gestion du stock</li>
-</ol>
-	
-<div class="well well-sm">
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li class="active">Gestion du stock</li>
+    </ol>
 
-<div class="row">
+    <div class="well well-sm">
 
-	<div class="col-xs-12 col-md-8">
-	
-		<h3>{{ objet_count }} objets en stock</h3>
-		
-		{% if objet_without_proprio_count != 0 
-			or objet_without_responsable_count != 0 
-			or objet_without_rangement_count != 0 
-			or etats|length == 0
-			or tags|length == 0
-			or localisations|length == 0
-			or rangements|length == 0
-			or proprietaires|length == 0 %}
-			
-		<div class="panel panel-warning">
-			<div class="panel-heading">
-				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-				Des problèmes sont à régler !
-			</div>
-		  	<div class="panel-body">
-				<ul>
-				{% if objet_without_proprio_count != 0 %}
-				<li>Attention, {{ objet_without_proprio_count }} objet(s) sans propriétaire. (<a href="{{ path('stockObjet.list-without-proprio',{'page':1}) }}" >Voir la liste</a>)</li>
-				{%  endif %}
-				
-				{% if objet_without_responsable_count != 0 %}
-				<li>Attention, {{ objet_without_responsable_count }} objet(s) sans responsable. (<a href="{{ path('stockObjet.list-without-responsable',{'page':1}) }}" >Voir la liste</a>)</li>
-				{%  endif %}
-				
-				{% if objet_without_rangement_count != 0 %}
-				<li>Attention, {{ objet_without_rangement_count }} objet(s) sans rangement. (<a href="{{ path('stockObjet.list-without-rangement',{'page':1}) }}" >Voir la liste</a>)</li>
-				{%  endif %}
-				
-				{% if etats|length == 0 %}
-				<li>Aucun état n'est défini. Vous devriez en définir au moins un.</li>
-				{%  endif %}
-				
-				{% if tags|length == 0 %}
-				<li>Aucun tag n'est défini. Vous devriez en définir au moins un.</li>
-				{%  endif %}
-				
-				{% if localisations|length == 0 %}
-				<li>Aucune localisation n'est définie. Vous devriez en définir au moins un.</li>
-				{%  endif %}
-				
-				{% if rangements|length == 0 %}
-				<li>Aucun rangement n'est défini. Vous devriez en définir au moins un.</li>
-				{%  endif %}
-				
-				{% if proprietaires|length == 0 %}
-				<li>Aucun Propriétaires n'est défini. Vous devriez en définir au moins un.</li>
-				{%  endif %}
-				
-				</ul>
-			</div>
-		</div>
-		{% endif %}
-		
+        <div class="header">
+            <h5>Gestion du stock</h5>
+        </div>
 
-		<h3>Liste des 10 derniers objets ajoutés dans le stock.</h3>
-		{{ include("stock/objet/fragment/list.twig", {'objets' : last_add, 'add' : true}) }}
-		
-	</div>
+        <div class="row">
 
+            <div class="col-xs-12 col-md-8">
 
-	<div class="col-xs-12 col-md-4">
-		{{ include("stock/etat/list.twig", {'etats' : etats}) }}
-		{{ include("stock/tag/list.twig", {'tags' : tags}) }}
-		{{ include("stock/localisation/list.twig", {'localisations' : localisations}) }}
-		{{ include("stock/rangement/list.twig", {'rangements' : rangements}) }}
-		{{ include("stock/proprietaire/list.twig", {'proprietaires' : proprietaires}) }}
-	</div>
-</div>
+                <h3>{{ objet_count }} objets en stock</h3>
 
+                {% if objet_without_proprio_count != 0
+                    or objet_without_responsable_count != 0
+                    or objet_without_rangement_count != 0
+                    or etats|length == 0
+                    or tags|length == 0
+                    or localisations|length == 0
+                    or rangements|length == 0
+                    or proprietaires|length == 0 %}
 
-</div>
+                    <div class="card mb-3 border-warning">
+                        <div class="card-header "><i class="fa fa-warning text-warning"></i> Des problèmes sont à régler
+                            !
+                        </div>
+                        <div class="card-body">
+                            <ul class="card-text list-group list-group-flush">
+                                {% if objet_without_proprio_count != 0 %}
+                                    <li class="list-group-item">Attention, {{ objet_without_proprio_count }} objet(s)
+                                        sans propriétaire. (<a
+                                                href="{{ path('stockObjet.list-without-proprio',{'page':1}) }}">Voir la
+                                            liste</a>)
+                                    </li>
+                                {% endif %}
 
-{%  endblock %}
+                                {% if objet_without_responsable_count != 0 %}
+                                    <li class="list-group-item">Attention, {{ objet_without_responsable_count }}
+                                        objet(s) sans responsable. (<a
+                                                href="{{ path('stockObjet.list-without-responsable',{'page':1}) }}">Voir
+                                            la liste</a>)
+                                    </li>
+                                {% endif %}
+
+                                {% if objet_without_rangement_count != 0 %}
+                                    <li class="list-group-item">Attention, {{ objet_without_rangement_count }} objet(s)
+                                        sans rangement. (<a
+                                                href="{{ path('stockObjet.list-without-rangement',{'page':1}) }}">Voir
+                                            la liste</a>)
+                                    </li>
+                                {% endif %}
+
+                                {% if etats|length == 0 %}
+                                    <li class="list-group-item">Aucun état n'est défini. Vous devriez en définir au
+                                        moins un.
+                                    </li>
+                                {% endif %}
+
+                                {% if tags|length == 0 %}
+                                    <li class="list-group-item">Aucun tag n'est défini. Vous devriez en définir au moins
+                                        un.
+                                    </li>
+                                {% endif %}
+
+                                {% if localisations|length == 0 %}
+                                    <li class="list-group-item">Aucune localisation n'est définie. Vous devriez en
+                                        définir au moins un.
+                                    </li>
+                                {% endif %}
+
+                                {% if rangements|length == 0 %}
+                                    <li class="list-group-item">Aucun rangement n'est défini. Vous devriez en définir au
+                                        moins un.
+                                    </li>
+                                {% endif %}
+
+                                {% if proprietaires|length == 0 %}
+                                    <li class="list-group-item">Aucun Propriétaires n'est défini. Vous devriez en
+                                        définir au moins un.
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <h3>Liste des 10 derniers objets ajoutés dans le stock.</h3>
+                {{ include("stock/objet/fragment/list.twig", {'objets' : last_add, 'add' : true}) }}
+
+            </div>
+
+            <div class="col-xs-12 col-md-4">
+
+                <div class="d-flex justify-content-between align-items-start">
+                    <h5><a href="{{ path('stockEtat.index') }}">États</a></h5>
+
+                    <a href="{{ path('stockEtat.add') }}" class="badge bg-secondary rounded-pill" data-toggle="tooltip"
+                       data-placement="top" title="Ajouter">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </div>
+                {{ include("stock/etat/list.twig", {'etats' : etats}) }}
+
+                <div class="d-flex justify-content-between align-items-start my-2">
+                    <h5><a href="{{ path('stockTag.index') }}">Tags</a></h5>
+
+                    <a href="{{ path('stockTag.add') }}" class="badge bg-secondary rounded-pill" data-toggle="tooltip"
+                       data-placement="top" title="Ajouter">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </div>
+                {{ include("stock/tag/list.twig", {'tags' : tags}) }}
+
+            </div>
+
+            <div class="row my-2 py-2 border-top">
+
+                <div class="col-xs-12 col-md-6">
+                    <div class="d-flex justify-content-between align-items-start my-2">
+                        <h5><a href="{{ path('stockProprietaire.index') }}">Localisations</a></h5>
+
+                        <a href="{{ path('stockLocalisation.add') }}" class="badge bg-secondary rounded-pill"
+                           data-toggle="tooltip"
+                           data-placement="top" title="Ajouter">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </div>
+                    {{ include("stock/localisation/list.twig", {'localisations' : localisations}) }}
+
+                    <div class="d-flex justify-content-between align-items-start my-2 py-2 border-top">
+                        <h5><a href="{{ path('stockRangement.index') }}">Rangements</a></h5>
+
+                        <a href="{{ path('stockRangement.add') }}" class="badge bg-secondary rounded-pill"
+                           data-toggle="tooltip"
+                           data-placement="top" title="Ajouter">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </div>
+                    {{ include("stock/rangement/list.twig", {'rangements' : rangements}) }}
+                </div>
+                <div class="col-xs-12 col-md-6 ">
+                    <div class="d-flex justify-content-between align-items-start my-2">
+                        <h5><a href="{{ path('stockProprietaire.index') }}">Propriétaire</a></h5>
+
+                        <a href="{{ path('stockProprietaire.add') }}" class="badge bg-secondary rounded-pill"
+                           data-toggle="tooltip"
+                           data-placement="top" title="Ajouter">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </div>
+                    {{ include("stock/proprietaire/list.twig", {'proprietaires' : proprietaires}) }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
