@@ -33,8 +33,7 @@ class GroupeSecondaireController extends AbstractController
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
-        $form = $this->createForm(
-            new SecondaryGroupFindForm(),
+        $form = $this->createForm(SecondaryGroupFindForm::class,
             null,
             [
                 'method' => 'get',

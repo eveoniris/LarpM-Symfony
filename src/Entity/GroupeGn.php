@@ -32,7 +32,7 @@ class GroupeGn extends BaseGroupeGn
     /**
      * Fourni le responsable de cette session de jeu.
      */
-    public function getResponsable(): Participant
+    public function getResponsable(): ?Participant
     {
         return $this->getParticipant();
     }
