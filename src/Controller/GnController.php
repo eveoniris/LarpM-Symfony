@@ -416,6 +416,8 @@ class GnController extends AbstractController
             ->setParameter('gnId', $gn->getId())
             ->orderBy(key($orderBy), current($orderBy))
         ;
+
+        dump($qb->getQuery());
         
         $form = $this->createForm(ParticipantFindForm::class);
         $form->handleRequest($request);
@@ -444,6 +446,56 @@ class GnController extends AbstractController
             'paginator' => $paginator,
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * Liste des participants à un jeu (CSV)
+     */
+    #[Route('/gn/{gn}/participantsCSV', name: 'gn.participants.csv')]
+    public function participantsCSVAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn, GnRepository $gnRepository): void
+    {
+        $participants = $gn->getParticipants();
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename=eveoniris_participants_'.$gn->getLabel().'_'.date('Ymd').'.csv');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        $output = fopen('php://output', 'w');
+
+        // header
+        fputcsv($output,
+            [
+                'Participant',
+                'Email',
+                'Billet',
+                'Restauration',
+                'Groupe'], ';');
+
+        foreach ($participants as $participant) {
+            $line = [];
+            $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding((string) $participant->getUser()->getEtatCivil()->getPrenom().' '.$participant->getUser()->getEtatCivil()->getNom(), 'ISO-8859-1') : '';
+            $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding((string) $participant->getUser()->getEmail(), 'ISO-8859-1') : '';
+            
+            $line[] = $participant->getBillet() ? mb_convert_encoding((string) $participant->getBillet()->getLabel(), 'ISO-8859-1') : '';
+            
+            $restauration_string = '';
+            foreach ($participant->getParticipantHasRestaurations() as $restauration) {
+                if ($restauration_string == '')
+                    $restauration_string = $restauration->getRestauration()->getLabel();
+                else
+                $restauration_string = $restauration_string . ', ' . $restauration->getRestauration()->getLabel();
+            }
+            $line[] = mb_convert_encoding((string) $restauration_string, 'ISO-8859-1');
+
+            $line[] = $participant->getGroupeGn() ? mb_convert_encoding((string) $participant->getGroupeGn()->getGroupe()->getNom(), 'ISO-8859-1') : '';
+
+            $line[] = '';
+            fputcsv($output, $line, ';');
+        }
+
+        fclose($output);
+        exit;
     }
 
     /**
