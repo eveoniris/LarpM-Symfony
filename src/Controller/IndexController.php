@@ -22,6 +22,13 @@ class IndexController extends AbstractController
         ]);
     }
 
+    #[Route('/design', name: 'design')]
+    public function designAction(Request $request): Response
+    {
+        return $this->render('index/design.twig', ['user' => $this->getUser()]);
+    }
+
+
     #[Route('/setpwd', name: 'setpwd')]
     public function pwd(
         UserPasswordHasherInterface $passwordHasher,
