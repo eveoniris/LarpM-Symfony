@@ -65,7 +65,7 @@ abstract class BaseGroupeGn
 
     #[ORM\ManyToOne(targetEntity: Participant::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Participant $participant;
+    protected ?Participant $participant;
 
     /*
     #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'groupeGns')]
@@ -335,7 +335,7 @@ abstract class BaseGroupeGn
     /**
      * Get Participant entity (many to one).
      */
-    public function getParticipant(): Participant
+    public function getParticipant(): ?Participant
     {
         return $this->participant;
     }

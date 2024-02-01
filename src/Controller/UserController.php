@@ -209,7 +209,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $this->render('public/gn/participe.twig', [
+        return $this->render('gn/participe.twig', [
             'gn' => $gn,
             'form' => $form->createView(),
         ]);
@@ -218,13 +218,14 @@ class UserController extends AbstractController
     /**
      * Formulaire de validation des cg , si cette validation n'a pas été réalisé à la participation.
      */
+    #[Route('/user/{gn}/validationci', name: 'user.gn.validationci')]
     public function gnValidCiAction(EntityManagerInterface $entityManager, Request $request, Gn $gn)
     {
-        $form = $this->createForm();
+        $form = $this->createFormBuilder()->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && 'ok' == $request->request->get('acceptCi')) {
+        if ($form->isSubmitted() && $form->isValid() && 'ok' == $request->request->get('acceptCi')) {
             $participant = $this->getUser()->getParticipant($gn);
             $participant->setValideCiLe(new \DateTime('NOW'));
 
@@ -236,7 +237,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $this->render('public/gn/validation_ci.twig', [
+        return $this->render('gn/validation_ci.twig', [
             'gn' => $gn,
             'form' => $form->createView(),
         ]);

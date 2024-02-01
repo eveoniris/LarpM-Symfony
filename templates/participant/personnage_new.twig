@@ -33,7 +33,7 @@
   				Aide pour choisir l'age
 			</button></p>
 			<div class="collapse" id="collapseAge">
-				{{ include("public/age/fragment/info.twig", {'ages' : ages}) }}
+				{{ include("age/fragment/info.twig", {'ages' : ages}) }}
 			</div>
 
 			<p><button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseSensible" aria-expanded="false" aria-controls="collapseSensible">
@@ -50,7 +50,7 @@
 			</div>
 
 			<div class="collapse" id="collapseOrigine">
-				{{ include("public/territoire/fragment/info.twig", {'territoires' : territoires}) }}
+				{{ include("territoire/fragment/info.twig", {'territoires' : territoires}) }}
 			</div>
 			<p><button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseClasse" aria-expanded="false" aria-controls="collapseClasse">
 				Aide pour choisir la classe
@@ -60,7 +60,7 @@
 				Aide pour choisir l'origine
 			</button></p>
 			<div class="collapse" id="collapseClasse">
-				{{ include("public/classe/fragment/info.twig", {'classes' : classes}) }}
+				{{ include("classe/fragment/info.twig", {'classes' : classes}) }}
 			</div>
 
 		</div>

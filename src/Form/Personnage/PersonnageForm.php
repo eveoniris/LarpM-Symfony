@@ -4,8 +4,8 @@
 namespace App\Form\Personnage;
 
 use Doctrine\ORM\EntityRepository;
-use LarpManager\Repository\ClasseRepository;
-use LarpManager\Repository\TerritoireRepository;
+use App\Repository\ClasseRepository;
+use App\Repository\TerritoireRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -55,7 +55,7 @@ class PersonnageForm extends AbstractType
                 'choice_label' => 'label',
                 'query_builder' => static function (ClasseRepository $er) {
                     $qb = $er->createQueryBuilder('c');
-                    $qb->where('c.creation is true');
+                    $qb->where('c.creation = true');
                     $qb->orderBy('c.label_masculin', 'ASC');
 
                     return $qb;
@@ -76,12 +76,12 @@ class PersonnageForm extends AbstractType
             ])
             ->add('intrigue', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
-                'choices' => ['Oui' => true, false => 'Non'],
+                'choices' => ['Oui' => true, 'Non' => false],
                 'label' => 'Participer aux intrigues',
             ])
             ->add('sensible', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
-                'choices' => ['Non' => false, true => 'Oui'],
+                'choices' => ['Non' => false, 'Oui' => true],
                 'label' => 'Personnage sensible',
             ]);
     }

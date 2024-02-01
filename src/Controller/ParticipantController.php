@@ -500,6 +500,7 @@ class ParticipantController extends AbstractController
     /**
      * Reprendre un ancien personnage.
      */
+    #[Route('/participant/{participant}/personnageOld', name: 'participant.personnage.old')]
     public function personnageOldAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $groupeGn = $participant->getGroupeGn();
@@ -654,6 +655,7 @@ class ParticipantController extends AbstractController
     /**
      * Reprendre un ancien personnage.
      */
+    #[Route('/participant/{participant}/admin/personnageOld', name: 'participant.admin.personnage.old')]
     public function adminPersonnageOldAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $groupeGn = $participant->getGroupeGn();
@@ -714,6 +716,7 @@ class ParticipantController extends AbstractController
     /**
      * Création d'un nouveau personnage. L'utilisateur doit être dans un groupe et son billet doit être valide.
      */
+    #[Route('/participant/{participant}/personnageNew', name: 'participant.personnage.new')]
     public function personnageNewAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
     {
         $groupeGn = $participant->getGroupeGn();
@@ -907,6 +910,7 @@ class ParticipantController extends AbstractController
     /**
      * Création d'un nouveau personnage. L'utilisateur doit être dans un groupe et son billet doit être valide.
      */
+    #[Route('/participant/{participant}/admin/personnageNew', name: 'participant.admin.personnage.new')]
     public function adminPersonnageNewAction(Request $request, EntityManagerInterface $entityManager)
     {
         $participant = $request->get('participant');
@@ -921,7 +925,7 @@ class ParticipantController extends AbstractController
         // j'ajoute içi certain champs du formulaires (les classes)
         // car j'ai besoin des informations du groupe pour les alimenter
         $form = $this->createForm(PersonnageForm::class, $personnage)
-            ->add('classe', 'entity', [
+            ->add('classe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Classes disponibles',
                 'choice_label' => 'label',
                 'class' => \App\Entity\Classe::class,
@@ -1043,7 +1047,7 @@ class ParticipantController extends AbstractController
     {
         $regles = $entityManager->getRepository(Rule::class)->findAll();
 
-        return $this->render('public/rule/list.twig', [
+        return $this->render('rule/list.twig', [
             'regles' => $regles,
             'participant' => $participant,
         ]);

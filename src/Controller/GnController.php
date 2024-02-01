@@ -50,7 +50,7 @@ class GnController extends AbstractController
             /*return $this->redirectToRoute('User.gn.validationci', [
                 'gn' => $gn->getId(),
             ], 303);*/
-            return $this->redirectToRoute('User.gn.validationci', ['gn' => $gn->getId()], 303);
+            return $this->redirectToRoute('user.gn.validationci', ['gn' => $gn->getId()], 303);
         }
 
         $questions = $questionRepository->findByParticipant($participant);
@@ -309,13 +309,10 @@ class GnController extends AbstractController
         ], ';');
         foreach ($participants as $participant) {
             $line = [];
-            $line[] = mb_convert_encoding((string) $participant->getUser()
-                ->getEtatCivil()
-                ->getNom(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding((string) $participant->getUser()
-                ->getEtatCivil()
-                ->getPrenom(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding((string) $participant->getUser()->getEmail(), 'ISO-8859-1');
+            $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding((string) $participant->getUser()->getEtatCivil()->getNom(), 'ISO-8859-1') : '';
+            $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding((string) $participant->getUser()->getEtatCivil()->getPrenom(), 'ISO-8859-1') : '';
+            $line[] = $participant->getUser() ? mb_convert_encoding((string) $participant->getUser()->getEmail(), 'ISO-8859-1') : '';
+            
             fputcsv($output, $line, ';');
         }
 
@@ -343,13 +340,10 @@ class GnController extends AbstractController
         ], ';');
         foreach ($participants as $participant) {
             $line = [];
-            $line[] = mb_convert_encoding((string) $participant->getUser()
-                ->getEtatCivil()
-                ->getNom(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding((string) $participant->getUser()
-                ->getEtatCivil()
-                ->getPrenom(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding((string) $participant->getUser()->getEmail(), 'ISO-8859-1');
+            $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding((string) $participant->getUser()->getEtatCivil()->getNom(), 'ISO-8859-1') : '';
+            $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding((string) $participant->getUser()->getEtatCivil()->getPrenom(), 'ISO-8859-1') : '';
+            $line[] = $participant->getUser() ? mb_convert_encoding((string) $participant->getUser()->getEmail(), 'ISO-8859-1') : '';
+            
             fputcsv($output, $line, ';');
         }
 
@@ -381,13 +375,11 @@ class GnController extends AbstractController
 
         foreach ($participants as $participant) {
             $line = [];
-            $line[] = mb_convert_encoding((string) $participant->getUser()
-                ->getEtatCivil()
-                ->getNom(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding((string) $participant->getUser()
-                ->getEtatCivil()
-                ->getPrenom(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding((string) $participant->getUser()->getEmail(), 'ISO-8859-1');
+
+            $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding((string) $participant->getUser()->getEtatCivil()->getNom(), 'ISO-8859-1') : '';
+            $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding((string) $participant->getUser()->getEtatCivil()->getPrenom(), 'ISO-8859-1') : '';
+            $line[] = $participant->getUser() ? mb_convert_encoding((string) $participant->getUser()->getEmail(), 'ISO-8859-1') : '';
+            
             fputcsv($output, $line, ';');
         }
 
@@ -417,8 +409,6 @@ class GnController extends AbstractController
             ->orderBy(key($orderBy), current($orderBy))
         ;
 
-        dump($qb->getQuery());
-        
         $form = $this->createForm(ParticipantFindForm::class);
         $form->handleRequest($request);
 
@@ -579,7 +569,7 @@ class GnController extends AbstractController
     }
 
     #[Route('/gn/{gn}/update', name: 'gn.update')]
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
     {
         $form = $this->createForm(GnForm::class, $gn)
             ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
@@ -604,8 +594,8 @@ class GnController extends AbstractController
     /**
      * Affiche la billetterie d'un GN.
      */
-    #[Route('/gn/billetterie', name: 'gn.billetterie')]
-    public function billetterieAction( EntityManagerInterface $entityManager, Request $request, Gn $gn)
+    #[Route('/gn/{gn}/billetterie', name: 'gn.billetterie')]
+    public function billetterieAction( EntityManagerInterface $entityManager, Request $request, #[MapEntity] Gn $gn)
     {
         $groupeGns = $gn->getGroupeGnsPj();
         $iterator = $groupeGns->getIterator();
@@ -625,8 +615,8 @@ class GnController extends AbstractController
     /**
      * Liste des personnages renommé prévu sur le jeu.
      */
-    #[Route('/gn/renom', name: 'gn.renom')]
-    public function renomAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
+    #[Route('/gn/{gn}/renom', name: 'gn.renom')]
+    public function renomAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
     { // trouver tous les personnages participants au prochain GN et ayant une renommé supérieur à 10
         $personnages = $gn->getPersonnagesRenom(10);
 
@@ -639,8 +629,8 @@ class GnController extends AbstractController
     /**
      * Liste des pnjs prévu sur le jeu.
      */
-    #[Route('/gn/pnjs', name: 'gn.pnjs')]
-    public function pnjsAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
+    #[Route('/gn/{gn}/pnjs', name: 'gn.pnjs')]
+    public function pnjsAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
     {
         $pnjs = $gn->getParticipantsPnj();
 
@@ -653,8 +643,8 @@ class GnController extends AbstractController
     /**
      * Liste des groupes prévu sur le jeu.
      */
-    #[Route('/gn/groupes/csv', name: 'gn.groupes.csv')]
-    public function groupesAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
+    #[Route('/gn/{gn}/groupes', name: 'gn.groupes')]
+    public function groupesAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
     {
         $groupes = $gn->getGroupes();
         $iterator = $groupes->getIterator();
@@ -672,8 +662,8 @@ class GnController extends AbstractController
     /**
      * Liste des groupes réservés.
      */
-    #[Route('/gn/groupes/reserves', name: 'gn.groupes.reserves')]
-    public function groupesReservesAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
+    #[Route('/gn/{gn}/groupes/reserves', name: 'gn.groupes.reserves')]
+    public function groupesReservesAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
     {
         $groupes = $gn->getGroupesReserves();
         $iterator = $groupes->getIterator();
@@ -691,8 +681,8 @@ class GnController extends AbstractController
     /**
      * Liste des groupes recherchant des joueurs.
      */
-    #[Route('/gn/groupes/avecPlace', name: 'gn.groupes.avecPlace')]
-    public function groupesPlacesAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
+    #[Route('/gn/{gn}/groupes/avecPlace', name: 'gn.groupes.avecPlace')]
+    public function groupesPlacesAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
     {
         $groupesPlaces = new ArrayCollection();
         $groupes = $gn->getGroupes();
@@ -718,7 +708,8 @@ class GnController extends AbstractController
     /**
      * Impression fiche de perso pour le gn.
      */
-    public function printPersoAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
+    #[Route('/gn/{gn}/printPerso', name: 'gn.print.perso')]
+    public function printPersoAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
     {
         $participants = $gn->getParticipantsWithBillet();
         $quetes = new ArrayCollection();
@@ -733,7 +724,8 @@ class GnController extends AbstractController
     /**
      * Impression fiche de perso pour le gn.
      */
-    public function printInterAction(Request $request,  EntityManagerInterface $entityManager, Gn $gn)
+    #[Route('/gn/{gn}/printInter', name: 'gn.print.inter')]
+    public function printInterAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Gn $gn)
     {
         $participants = $gn->getParticipantsInterGN();
         $quetes = new ArrayCollection();
