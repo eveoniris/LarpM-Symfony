@@ -111,6 +111,12 @@ $(document).ready(function() {
 
     function toggleTinyMCE(mode) {
         let activeEditor = tinymce.activeEditor;
+
+        console.log(activeEditor);
+        if (! activeEditor) {
+            return;
+        }
+
         let content = activeEditor.getContent();
         activeEditor.destroy();
 
@@ -130,7 +136,6 @@ $(document).ready(function() {
 
     // Switch de theme. TODO: En session || cookie
     document.getElementById('btnSwitch').addEventListener('click',()=>{
-        //console.log(document.documentElement.getAttribute('data-bs-theme'));
         if (document.documentElement.getAttribute('data-bs-theme') === 'dark') {
             document.documentElement.setAttribute('data-bs-theme','light')
             toggleTinyMCE('light');
