@@ -42,8 +42,8 @@
 			
 				<ul>
 					<li><a href="{{ path('gn.participants', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants ({{ gn.participants|length }})</a></li>
-					<li><a href="{{ path('gn.participants', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants CSV({{ gn.participants|length }})</a></li>
-					<li><a href="{{ path('gn.groupes.csv', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Groupes CSV</a></li>
+					<li><a href="{{ path('gn.participants.csv', {'gn': gn.id}) }}"><i class="fa fa-download"></i> Participants CSV ({{ gn.participants|length }})</a></li>
+					<li><a href="{{ path('gn.groupes.csv', {'gn': gn.id}) }}"><i class="fa fa-download"></i> Groupes CSV</a></li>
 					<li><a href="{{ path('gn.participants.withoutbillet', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants sans billet ({{ gn.participantswithoutbillet|length }})</a></li>
 					<li><a href="{{ path('gn.participants.withoutgroup', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants sans groupe (mais avec billet) ({{ gn.participantswithoutgroup|length }})</a></li>
 					<li><a href="{{ path('gn.participants.withoutperso', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants sans personnage ({{ gn.participantswithoutperso|length }})</a></li>
