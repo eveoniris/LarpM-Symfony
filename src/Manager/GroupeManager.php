@@ -4,6 +4,7 @@ namespace App\Manager;
 
 use App\Entity\Groupe;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 
 final class GroupeManager
 {
@@ -129,9 +130,9 @@ final class GroupeManager
 	/**
 	 * Fourni le gn actif
 	 */
-	public function getGnActif()
+	public static function getGnActif(EntityManagerInterface $entityManager)
 	{
-		$repo = $this->app['orm.em']->getRepository('\LarpManager\Entities\Gn');
+		$repo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
 		return $repo->findNext();
 	}
 

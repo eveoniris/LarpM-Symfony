@@ -10,6 +10,7 @@ use App\Form\GroupeSecondaire\GroupeSecondaireForm;
 use App\Form\GroupeSecondaire\GroupeSecondaireMaterielForm;
 use App\Form\GroupeSecondaire\GroupeSecondaireNewMembreForm;
 use App\Form\GroupeSecondaire\SecondaryGroupFindForm;
+use App\Manager\GroupeManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
@@ -265,7 +266,7 @@ class GroupeSecondaireController extends AbstractController
      */
     public function buildContextDetailTwig( EntityManagerInterface $entityManager, SecondaryGroup $groupeSecondaire, array $extraParameters = null): array
     {
-        $gnActif = $app['larp.manager']->getGnActif();
+        $gnActif = GroupeManager::getGnActif($entityManager);
         $result = [
             'groupeSecondaire' => $groupeSecondaire,
             'gn' => $gnActif,
