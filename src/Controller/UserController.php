@@ -12,6 +12,7 @@ use App\Form\EtatCivilForm;
 use App\Form\UserFindForm;
 use App\Form\UserRestrictionForm;
 use App\Form\UserPersonnageDefaultForm;
+use App\Manager\FedegnManager;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -278,10 +279,13 @@ class UserController extends AbstractController
      * Affiche les informations de la fédéGN.
      */
     #[Route('/user/fedegn', name: 'user.fedegn')]
-    public function fedegnAction(EntityManagerInterface $entityManager, Request $request)
+    public function fedegnAction(EntityManagerInterface $entityManager, Request $request, FedegnManager $fedegnManager)
     {
+        $etatCivil = $this->getUser()->getEtatCivil();
+        //$statutEtatCivil = $fedegnManager->test($etatCivil);
         return $this->render('user/fedegn.twig', [
-            'etatCivil' => $this->getUser()->getEtatCivil(),
+            'etatCivil' => $etatCivil,
+            'fedegnManager' => $fedegnManager,
         ]);
     }
 
