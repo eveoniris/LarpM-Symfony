@@ -8,6 +8,7 @@ use App\Entity\Restriction;
 use App\Entity\User;
 use App\Form\Entity\UserSearch;
 use App\Form\User\UserNewForm;
+use App\Form\EtatCivilForm;
 use App\Form\UserFindForm;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
@@ -141,7 +142,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $this->render('public/User/personnageDefault.twig', [
+        return $this->render('user/personnageDefault.twig', [
             'form' => $form->createView(),
             'User' => $User,
         ]);
@@ -178,7 +179,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $this->render('public/User/restriction.twig', [
+        return $this->render('user/restriction.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -254,7 +255,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $this->render('public/UserHasBillet/detail.twig', [
+        return $this->render('UserHasBillet/detail.twig', [
             'UserHasBillet' => $UserHasBillet,
         ]);
     }
@@ -266,7 +267,7 @@ class UserController extends AbstractController
     {
         $UserHasBillets = $this->getUser()->getUserHasBillets();
 
-        return $this->render('public/UserHasBillet/list.twig', [
+        return $this->render('UserHasBillet/list.twig', [
             'UserHasBillets' => $UserHasBillets,
         ]);
     }
@@ -277,7 +278,7 @@ class UserController extends AbstractController
     #[Route('/user/fedegn', name: 'user.fedegn')]
     public function fedegnAction(EntityManagerInterface $entityManager, Request $request)
     {
-        return $this->render('public/User/fedegn.twig', [
+        return $this->render('user/fedegn.twig', [
             'etatCivil' => $this->getUser()->getEtatCivil(),
         ]);
     }
@@ -312,7 +313,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $this->render('public/User/etatCivil.twig', [
+        return $this->render('user/etatCivil.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -488,14 +489,14 @@ class UserController extends AbstractController
             // The Security system throws this exception before actually checking if the password was valid.
             $User = $app['User.manager']->refreshUser($authException->getUser());
 
-            return $this->render('User/login-confirmation-needed.twig', [
+            return $this->render('user/login-confirmation-needed.twig', [
                 'email' => $User->getEmail(),
                 'fromAddress' => $app['User.mailer']->getFromAddress(),
                 'resendUrl' => $app['url_generator']->generate('User.resend-confirmation'),
             ]);
         }
 
-        return $this->render('User/login.twig', [
+        return $this->render('user/login.twig', [
             'error' => $authException ? $authException->getMessageKey() : null,
             'last_Username' => $app['session']->get('_security.last_Username'),
             'allowRememberMe' => isset($app['security.remember_me.response_listener']),
@@ -611,7 +612,7 @@ class UserController extends AbstractController
                     $app['User.mailer']->sendConfirmationMessage($User);
 
                     // Render the "go check your email" page.
-                    return $this->render('User/register-confirmation-sent.twig', [
+                    return $this->render('user/register-confirmation-sent.twig', [
                         'email' => $User->getEmail(),
                     ]);
                 } else {
@@ -627,7 +628,7 @@ class UserController extends AbstractController
             }
         }
 
-        return $this->render('User/register.twig', [
+        return $this->render('user/register.twig', [
             'error' => isset($error) ? $error : null,
             'name' => $request->request->get('name'),
             'email' => $request->request->get('email'),
@@ -690,7 +691,7 @@ class UserController extends AbstractController
 
         $app['User.mailer']->sendConfirmationMessage($User);
 
-        return $this->render('User/register-confirmation-sent.twig', [
+        return $this->render('user/register-confirmation-sent.twig', [
             'email' => $User->getEmail(),
         ]);
     }
@@ -734,7 +735,7 @@ class UserController extends AbstractController
             }
         }
 
-        return $this->render('User/forgot-password.twig', [
+        return $this->render('user/forgot-password.twig', [
             'email' => $email,
             'fromAddress' => $app['User.mailer']->getFromAddress(),
             'error' => $error,
@@ -792,7 +793,7 @@ class UserController extends AbstractController
             }
         }
 
-        return $this->render('User/reset-password.twig', [
+        return $this->render('user/reset-password.twig', [
             'User' => $User,
             'token' => $token,
             'error' => $error,
@@ -818,7 +819,7 @@ class UserController extends AbstractController
         }
 
         // trouve tous les rôles
-        return $this->render('User/right.twig', [
+        return $this->render('user/right.twig', [
                 'Users' => $Users,
                 'roles' => $app['larp.manager']->getAvailableRoles()]
         );

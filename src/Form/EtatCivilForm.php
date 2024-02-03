@@ -40,7 +40,7 @@ class EtatCivilForm extends AbstractType
                     'placeholder' => "Nom d'usage",
                 ],
             ])
-            ->add('date_naissance', 'date', [
+            ->add('date_naissance', \Symfony\Component\Form\Extension\Core\Type\DateType::class, [
                 'label' => 'Date de naissance',
                 'required' => true,
                 'years' => range(1900, 2020),

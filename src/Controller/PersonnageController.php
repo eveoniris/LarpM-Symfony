@@ -165,7 +165,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $this->render('public/personnage/new.twig', [
+        return $this->render('personnage/new.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
@@ -176,7 +176,7 @@ class PersonnageController extends AbstractController
      */
     public function accueilAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $this->render('public/personnage/accueil.twig', []);
+        return $this->render('personnage/accueil.twig', []);
     }
 
     /**
