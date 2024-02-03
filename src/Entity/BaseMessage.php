@@ -107,7 +107,7 @@ class BaseMessage
      *
      * @param \DateTime $creation_date
      */
-    public function setCreationDate(string $creation_date): static
+    public function setCreationDate(\DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 

@@ -80,7 +80,7 @@ class MessageController extends AbstractController
 
             // création de la notification
             $destinataire = $message->getUserRelatedByDestinataire();
-            $app['notify']->newMessage($destinataire, $message);
+            // NOTIFY $app['notify']->newMessage($destinataire, $message);
 
            $this->addFlash('success', 'Votre message a été envoyé.');
 
@@ -147,7 +147,7 @@ class MessageController extends AbstractController
 
             // création de la notification
             $destinataire = $message->getUserRelatedByDestinataire();
-            $app['notify']->newMessage($destinataire, $message);
+            // NOTIFY $app['notify']->newMessage($destinataire, $message);
 
            $this->addFlash('success', 'Votre message a été envoyé.');
 

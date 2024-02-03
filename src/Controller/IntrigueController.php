@@ -156,7 +156,7 @@ class IntrigueController extends AbstractController
                  */
                 foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
                     if (false == $this->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
-                        $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
+                        // NOTIFY $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
                     }
                 }
 
@@ -351,7 +351,7 @@ class IntrigueController extends AbstractController
              */
             foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
                 if (false == $this->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
-                    $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
+                    // NOTIFY $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
                 }
             }
 
@@ -368,7 +368,7 @@ class IntrigueController extends AbstractController
                     }
 
                     if ($sendNotification) {
-                        $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
+                        // NOTIFY $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
                     }
                 }
             }
@@ -436,7 +436,7 @@ class IntrigueController extends AbstractController
              */
             foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
                 if (false == $this->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
-                    $app['notify']->relecture($intrigue, $intrigueHasGroupe->getGroupe());
+                    // NOTIFY $app['notify']->relecture($intrigue, $intrigueHasGroupe->getGroupe());
                 }
             }
 

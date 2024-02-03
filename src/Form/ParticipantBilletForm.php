@@ -26,9 +26,11 @@ class ParticipantBilletForm extends AbstractType
             'required' => true,
             'class' => \App\Entity\Billet::class,
             'choice_label' => 'fullLabel',
-            'query_builder' => static function ($er) {
+            'query_builder' => static function ($er) use ($options) {
                 $qb = $er->createQueryBuilder('b');
                 $qb->orderBy('b.gn', 'ASC');
+                $qb->where('b.gn_id = :gnId');
+                $qb->setParameter('gnId', $options['gnId']);
 
                 return $qb;
             },
@@ -42,6 +44,7 @@ class ParticipantBilletForm extends AbstractType
     {
         $resolver->setDefaults([
             'class' => \App\Entity\Participant::class,
+            'gnId' => null,
         ]);
     }
 
