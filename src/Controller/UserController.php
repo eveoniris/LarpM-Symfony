@@ -10,6 +10,8 @@ use App\Form\Entity\UserSearch;
 use App\Form\User\UserNewForm;
 use App\Form\EtatCivilForm;
 use App\Form\UserFindForm;
+use App\Form\UserRestrictionForm;
+use App\Form\UserPersonnageDefaultForm;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
