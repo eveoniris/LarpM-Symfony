@@ -19,6 +19,7 @@ use App\Entity\RenommeHistory;
 use App\Entity\Sort;
 use App\Entity\Technologie;
 use App\Form\Personnage\PersonnageChronologieForm;
+use App\Manager\GroupeManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use JasonGrimes\Paginator;
@@ -674,13 +675,14 @@ class PersonnageController extends AbstractController
     public function adminAddAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = new Personnage();
+        $gnActif = GroupeManager::getGnActif($entityManager);
 
         $participant = $request->get('participant');
         if (!$participant) {
             // essaye de récupérer le participant du gn actif
-            $gn = $app['larp.manager']->getGnActif();
-            if ($gn) {
-                $participant = $this->getUser()->getParticipant($gn);
+            
+            if ($gnActif) {
+                $participant = $this->getUser()->getParticipant($gnActif);
             }
 
             if (!$participant) {
@@ -711,14 +713,14 @@ class PersonnageController extends AbstractController
                 }
             }
 
-            $personnage->setXp($app['larp.manager']->getGnActif()->getXpCreation());
+            $personnage->setXp($gnActif->getXpCreation());
 
             // historique
             $historique = new ExperienceGain();
             $historique->setExplanation('Création de votre personnage');
             $historique->setOperationDate(new \DateTime('NOW'));
             $historique->setPersonnage($personnage);
-            $historique->setXpGain($app['larp.manager']->getGnActif()->getXpCreation());
+            $historique->setXpGain($gnActif->getXpCreation());
             $entityManager->persist($historique);
 
             // ajout des compétences acquises à la création

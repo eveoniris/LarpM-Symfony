@@ -797,7 +797,7 @@ class GroupeController extends AbstractController
     #[Route('/groupe/{groupe}/print', name: 'groupe.print')]
     public function printAllAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
-        $gn = GroupeManager::getGnActif();
+        $gn = GroupeManager::getGnActif($entityManager);
         $groupeGns = $gn->getGroupeGns();
 
         $ressourceRares = new ArrayCollection($entityManager->getRepository('\\'.\App\Entity\Ressource::class)->findRare());

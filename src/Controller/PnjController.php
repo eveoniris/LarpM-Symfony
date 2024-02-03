@@ -20,9 +20,10 @@
  
 namespace App\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
 use App\Form\PnjInscriptionForm;
-
+use App\Manager\GroupeManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * LarpManager\Controllers\PnjController
@@ -37,7 +38,7 @@ class PnjController extends AbstractController
 	 */
 	public function listAction(Request $request,  EntityManagerInterface $entityManager)
 	{
-		$gn = $app['larp.manager']->getGnActif();
+		$gn = GroupeManager::getGnActif($entityManager);
 		
 		$pnjs = $gn->getParticipantsPnj();
 

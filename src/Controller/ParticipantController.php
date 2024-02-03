@@ -48,6 +48,7 @@ use App\Form\RefusePeaceForm;
 use App\Form\RequestAllianceForm;
 use App\Form\RequestPeaceForm;
 use App\Form\TrombineForm;
+use App\Manager\GroupeManager;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -374,7 +375,7 @@ class ParticipantController extends AbstractController
         }
 
         // recherche de tous les groupes participant au prochain GN
-        $gn = $app['larp.manager']->getGnActif();
+        $gn = GroupeManager::getGnActif($entityManager);
         $groupeGns = $gn->getGroupeGns();
         $groupes = new ArrayCollection();
         foreach ($groupeGns as $groupeGn) {
