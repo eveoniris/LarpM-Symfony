@@ -55,7 +55,7 @@ class HomepageController extends AbstractController
             ]);
         }
 
-        return $this->render('public/newUser/step1.twig', []);
+        return $this->render('newUser/step1.twig', []);
     }
 
     /**
@@ -82,7 +82,7 @@ class HomepageController extends AbstractController
             return $this->redirectToRoute('newUser.step3', [], 303);
         }
 
-        return $this->render('public/newUser/step2.twig', [
+        return $this->render('newUser/step2.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -114,7 +114,7 @@ class HomepageController extends AbstractController
             return $this->redirectToRoute('newUser.step4', [], 303);
         }
 
-        return $this->render('public/newUser/step3.twig', [
+        return $this->render('newUser/step3.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -124,7 +124,7 @@ class HomepageController extends AbstractController
      */
     public function newUserStep4Action(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $this->render('public/newUser/step4.twig');
+        return $this->render('newUser/step4.twig');
     }
 
     /**
@@ -141,7 +141,7 @@ class HomepageController extends AbstractController
     #[Route('/world', name: 'world')]
     public function worldAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $this->render('public/world.twig');
+        return $this->render('world.twig');
     }
 
     /**
@@ -367,7 +367,7 @@ class HomepageController extends AbstractController
      */
     public function discuterAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $this->render('public/discuter.twig');
+        return $this->render('discuter.twig');
     }
 
     /**
@@ -375,7 +375,7 @@ class HomepageController extends AbstractController
      */
     public function evenementAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        return $this->render('public/evenement.twig');
+        return $this->render('evenement.twig');
     }
 
     /**

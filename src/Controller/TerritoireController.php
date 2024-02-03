@@ -224,7 +224,7 @@ class TerritoireController extends AbstractController
     #[Route('/territoire/{territoire}/detailJoueur', name: 'territoire.detailJoueur')]
     public function detailJoueurAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): Response
     {
-        return $this->render('public/territoire/detail.twig', ['territoire' => $territoire]);
+        return $this->render('territoire/detail.twig', ['territoire' => $territoire]);
     }
 
     /**
