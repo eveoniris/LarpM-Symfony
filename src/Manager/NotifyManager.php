@@ -23,13 +23,13 @@ namespace App\Manager;
 use Silex\Application;
 use Doctrine\Common\Collections\ArrayCollection;
 
-use App\Entities\User;
-use App\Entities\Message;
-use App\Entities\Billet;
-use App\Entities\GroupeGn;
-use App\Entities\Intrigue;
-use App\Entities\Groupe;
-use App\Entities\Notification;
+use App\Entity\User;
+use App\Entity\Message;
+use App\Entity\Billet;
+use App\Entity\GroupeGn;
+use App\Entity\Intrigue;
+use App\Entity\Groupe;
+use App\Entity\Notification;
 
 class NotifyManager
 {
@@ -60,6 +60,9 @@ class NotifyManager
 		
 		$this->app['orm.em']->persist($notification);
 		$this->app['orm.em']->flush();
+
+		//$entityManager->persist($etatCivil);
+		//$entityManager->flush();
 	}
 	
 	/**

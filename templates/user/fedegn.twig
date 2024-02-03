@@ -18,7 +18,7 @@
 		</blockquote>
 		{% if etatCivil %}
 			<div class="text-center">
-				{% if app['fedegn.manager'].test(etatCivil) %}
+				{% if fedegnManager.test(etatCivil) %}
 					<h5 class="text-success">Vous disposez d'une carte GN valide.</h5>
 				{% else %}
 					<h5 class="text-danger">Vous n'avez pas de carte GN valide.</h5>
@@ -28,7 +28,7 @@
 				{% endif %}
 										
 				{% if etatCivil.fedegn %}
-					<img src="http://www.fedegn.org/cartegn.php?annee={{ "now"|date("Y") }}&carte={{ etatCivil.fedegn }}&user_cleanname={{ app['fedegn.manager'].cleanname(etatCivil.prenom, etatCivil.nom) }}" />
+					<img src="http://www.fedegn.org/cartegn.php?annee={{ "now"|date("Y") }}&carte={{ etatCivil.fedegn }}&user_cleanname={{ fedegnManager.cleanname(etatCivil.prenom, etatCivil.nom) }}" />
 				{% endif %}
 			</div>
 		{% else %}
