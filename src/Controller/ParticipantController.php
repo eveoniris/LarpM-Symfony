@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Age;
 use App\Entity\Competence;
 use App\Entity\Connaissance;
 use App\Entity\Document;
+use App\Entity\Groupe;
 use App\Entity\Langue;
 use App\Entity\Message;
 use App\Entity\Participant;
@@ -55,6 +57,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -67,6 +70,7 @@ class ParticipantController extends AbstractController
     /**
      * Interface Joueur d'un jeu.
      */
+    #[Route('/participant/{participant}/index', name: 'participant.index')]
     public function indexAction(EntityManagerInterface $entityManager, Request $request, Participant $participant)
     {
         $groupeGn = $participant->getSession();
@@ -75,7 +79,7 @@ class ParticipantController extends AbstractController
         $repo = $entityManager->getRepository(Question::class);
         $questions = $repo->findByParticipant($participant);
 
-        return $this->render('public/participant/index.twig', [
+        return $this->render('participant/index.twig', [
             'gn' => $participant->getGn(),
             'participant' => $participant,
             'groupeGn' => $groupeGn,
@@ -88,6 +92,7 @@ class ParticipantController extends AbstractController
      *
      * @param unknown $reponse
      */
+    #[Route('/participant/{participant}/question/{question}/reponse', name: 'participant.reponse')]
     public function reponseAction(EntityManagerInterface $entityManager, Request $request, Participant $participant, Question $question, $reponse)
     {
         $rep = new Reponse();
@@ -106,6 +111,7 @@ class ParticipantController extends AbstractController
     /**
      * Supprimer une réponse à une question.
      */
+    #[Route('/participant/{participant}/reponse/{reponse}/delete', name: 'participant.reponse.delete')]
     public function reponseDeleteAction(EntityManagerInterface $entityManager, Request $request, Participant $participant, Reponse $reponse)
     {
         $entityManager->remove($reponse);
@@ -247,7 +253,7 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/billet', name: 'participant.billet')]
     public function billetAction(EntityManagerInterface $entityManager, Request $request, #[MapEntity] Participant $participant)
     {
-        $form = $this->createForm(ParticipantBilletForm::class, $participant)
+        $form = $this->createForm(ParticipantBilletForm::class, $participant, ['gnId' => $participant->getGn()->getId()])
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -258,7 +264,7 @@ class ParticipantController extends AbstractController
             $entityManager->persist($participant);
             $entityManager->flush();
 
-            // $app['notify']->newBillet($participant->getUser(), $participant->getBillet()); // TODO
+            // // NOTIFY $app['notify']->newBillet($participant->getUser(), $participant->getBillet()); // TODO
 
             $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
@@ -341,7 +347,7 @@ class ParticipantController extends AbstractController
 
         $lois = $entityManager->getRepository('App\Entity\Loi')->findAll();
 
-        return $this->render('public/personnage/detail.twig', array(
+        return $this->render('personnage/detail.twig', array(
                 'personnage' => $personnage,
                 'participant' => $participant,
                 'lois' => $lois
@@ -350,6 +356,7 @@ class ParticipantController extends AbstractController
     /**
      * Fourni la page détaillant les relations entre les fiefs.
      */
+    #[Route('/participant/{participant}/politique', name: 'participant.politique')]
     public function politiqueAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -378,7 +385,7 @@ class ParticipantController extends AbstractController
             // }
         }
 
-        return $this->render('public/personnage/politique.twig', [
+        return $this->render('personnage/politique.twig', [
             'personnage' => $personnage,
             'participant' => $participant,
             'groupes' => $groupes,
@@ -388,6 +395,7 @@ class ParticipantController extends AbstractController
     /**
      * Modification de quelques informations concernant le personnage.
      */
+    #[Route('/participant/{participant}/personnageEdit', name: 'participant.personnageEdit')]
     public function personnageEditAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -413,7 +421,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/personnage/edit.twig', [
+        return $this->render('personnage/edit.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'participant' => $participant,
@@ -423,6 +431,7 @@ class ParticipantController extends AbstractController
     /**
      * Modification de la photo lié à un personnage.
      */
+    #[Route('/participant/{participant}/personnage/{personnage}/trombine', name: 'participant.personnage.trombine')]
     public function personnageTrombineAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Personnage $personnage)
     {
         $form = $this->createForm(TrombineForm::class, [])
@@ -445,7 +454,8 @@ class ParticipantController extends AbstractController
 
             $trombineFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
 
-            $image = $app['imagine']->open($files['trombine']->getPathname());
+            $imagine = new \Imagine\Gd\Imagine();
+            $image = $imagine->open($files['trombine']->getPathname());
             $image->resize($image->getSize()->widen(160));
             $image->save($path.$trombineFilename);
 
@@ -458,7 +468,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/personnage/trombine.twig', [
+        return $this->render('personnage/trombine.twig', [
             'participant' => $participant,
             'personnage' => $personnage,
             'form' => $form->createView(),
@@ -468,14 +478,15 @@ class ParticipantController extends AbstractController
     /**
      * Retire un personnage à un participant.
      */
-    #[Route('/participant/{participant}/remove/{personnage}', name: 'participant.personnage.remove')]
+    #[Route('/participant/{participant}/personnage/{personnage}/remove', name: 'participant.personnage.remove')]
     public function personnageRemoveAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Personnage $personnage)
     {
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
 
-        $form = $this->createForm()
-            ->add('save', SubmitType::class, ['label' => 'Valider']);
+        $form = $this->createFormBuilder($personnage)
+            ->add('save', SubmitType::class, ['label' => 'Valider'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -540,7 +551,7 @@ class ParticipantController extends AbstractController
 
         // error_log($default->getNom());
 
-        $form = $this->createForm()
+        $form = $this->createFormBuilder($participant)
             ->add('personnage', 'entity', [
                 'label' => 'Choisissez votre personnage',
                 'choice_label' => 'resumeParticipations',
@@ -548,7 +559,8 @@ class ParticipantController extends AbstractController
                 'choices' => array_unique($participant->getUser()->getPersonnagesVivants()),
                 'data' => $default,
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider']);
+            ->add('save', SubmitType::class, ['label' => 'Valider'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -645,7 +657,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
-        return $this->render('public/participant/personnage_old.twig', [
+        return $this->render('participant/personnage_old.twig', [
             'form' => $form->createView(),
             'groupe' => $groupe,
             'participant' => $participant,
@@ -662,14 +674,15 @@ class ParticipantController extends AbstractController
         $groupe = $groupeGn->getGroupe();
         $gn = $groupeGn->getGn();
 
-        $form = $this->createForm()
+        $form = $this->createFormBuilder($participant)
             ->add('personnage', 'entity', [
                 'label' => 'Choisissez le personnage',
                 'choice_label' => 'nom',
                 'class' => Personnage::class,
                 'choices' => array_unique($participant->getUser()->getPersonnages()->toArray()),
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider']);
+            ->add('save', SubmitType::class, ['label' => 'Valider'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -897,7 +910,7 @@ class ParticipantController extends AbstractController
         $ages = $entityManager->getRepository(\App\Entity\Age::class)->findAllOnCreation();
         $territoires = $entityManager->getRepository(\App\Entity\Territoire::class)->findRoot();
 
-        return $this->render('public/participant/personnage_new.twig', [
+        return $this->render('participant/personnage_new.twig', [
             'form' => $form->createView(),
             'classes' => array_unique($classes),
             'groupe' => $groupe,
@@ -911,11 +924,8 @@ class ParticipantController extends AbstractController
      * Création d'un nouveau personnage. L'utilisateur doit être dans un groupe et son billet doit être valide.
      */
     #[Route('/participant/{participant}/admin/personnageNew', name: 'participant.admin.personnage.new')]
-    public function adminPersonnageNewAction(Request $request, EntityManagerInterface $entityManager)
+    public function adminPersonnageNewAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
-        $participant = $request->get('participant');
-        $participant = $entityManager->getRepository('\\'.Participant::class)->find($participant);
-
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
 
@@ -1043,6 +1053,7 @@ class ParticipantController extends AbstractController
     /**
      * Page listant les règles à télécharger.
      */
+    #[Route('/participant/{participant}/regle/list', name: 'participant.regle.list')]
     public function regleListAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $regles = $entityManager->getRepository(Rule::class)->findAll();
@@ -1056,10 +1067,10 @@ class ParticipantController extends AbstractController
     /**
      * Détail d'une règle.
      */
-    #[Route('/{participant}/regle/{rule}', name: 'participant.regle.detail')]
+    #[Route('/participant/{participant}/regle/{rule}/detail', name: 'participant.regle.detail')]
     public function regleDetailAction(Request $request, Participant $participant, Rule $rule)
     {
-        return $this->render('public/rule/detail.twig', [
+        return $this->render('rule/detail.twig', [
             'regle' => $rule,
             'participant' => $participant,
         ]);
@@ -1070,18 +1081,20 @@ class ParticipantController extends AbstractController
      *
      * @param Rule rule
      */
+    #[Route('/participant/{participant}/regle/{rule}/document', name: 'participant.regle.document')]
     public function regleDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Rule $rule)
     {
         $filename = __DIR__.'/../../../private/rules/'.$rule->getUrl();
+        $file = new File($filename);
 
-        return $app->sendFile($filename);
+        return $this->file($file);
     }
 
     /**
      * Rejoindre un groupe.
      */
 
-    #[Route('/participant/groupe/join', name: 'participant.groupe.join')]
+    #[Route('/participant/{participant}/groupe/join', name: 'participant.groupe.join')]
     public function groupeJoinAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
     {
         // il faut un billet pour rejoindre un groupe
@@ -1133,14 +1146,14 @@ class ParticipantController extends AbstractController
             $entityManager->flush();
 
             // envoyer une notification au chef de groupe et au scénariste
-            $app['notify']->joinGroupe($participant, $groupeGn);
+            // NOTIFY $app['notify']->joinGroupe($participant, $groupeGn);
 
             $this->addFlash('success', 'Vous avez rejoint le groupe.');
 
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/groupe/join.twig', [
+        return $this->render('groupe/join.twig', [
             'form' => $form->createView(),
             'participant' => $participant,
         ]);
@@ -1149,6 +1162,7 @@ class ParticipantController extends AbstractController
     /**
      * Choix du personnage secondaire par un utilisateur.
      */
+    #[Route('/participant/{participant}/personnageSecondaire', name: 'participant.personnageSecondaire')]
     public function personnageSecondaireAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\PersonnageSecondaire::class);
@@ -1169,7 +1183,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGroupeGn()->getGn()->getId()], 303);
         }
 
-        return $this->render('public/participant/personnageSecondaire.twig', [
+        return $this->render('participant/personnageSecondaire.twig', [
             'participant' => $participant,
             'personnageSecondaires' => $personnageSecondaires,
             'form' => $form->createView(),
@@ -1179,6 +1193,7 @@ class ParticipantController extends AbstractController
     /**
      * Liste des background pour le joueur.
      */
+    #[Route('/participant/{participant}/background', name: 'participant.background')]
     public function backgroundAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         // l'utilisateur doit avoir un personnage
@@ -1215,7 +1230,7 @@ class ParticipantController extends AbstractController
             ));
         }
 
-        return $this->render('public/participant/background.twig', [
+        return $this->render('participant/background.twig', [
             'backsJoueur' => $backsJoueur,
             'backsGroupe' => $backsGroupe,
             'personnage' => $personnage,
@@ -1227,6 +1242,7 @@ class ParticipantController extends AbstractController
      * Mise à jour de l'origine d'un personnage.
      * Impossible si le personnage dispose déjà d'une origine.
      */
+    #[Route('/participant/{participant}/origine', name: 'participant.origine')]
     public function origineAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -1264,7 +1280,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/participant/origine.twig', [
+        return $this->render('participant/origine.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'participant' => $participant,
@@ -1274,12 +1290,13 @@ class ParticipantController extends AbstractController
     /**
      * Liste des religions.
      */
+    #[Route('/participant/{participant}/religion/list', name: 'participant.religion.list')]
     public function religionListAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\Religion::class);
         $religions = $repo->findAllOrderedByLabel();
 
-        return $this->render('public/participant/religion.twig', [
+        return $this->render('participant/religion.twig', [
             'religions' => $religions,
             'participant' => $participant,
         ]);
@@ -1288,6 +1305,7 @@ class ParticipantController extends AbstractController
     /**
      * Ajoute une religion au personnage.
      */
+    #[Route('/participant/{participant}/religion/add', name: 'participant.religion.add')]
     public function religionAddAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -1367,7 +1385,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/personnage/religion_add.twig', [
+        return $this->render('personnage/religion_add.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'participant' => $participant,
@@ -1378,6 +1396,7 @@ class ParticipantController extends AbstractController
     /**
      * Detail d'une priere.
      */
+    #[Route('/participant/{participant}/priere/{priere}/detail', name: 'participant.priere.detail')]
     public function priereDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Priere $priere)
     {
         $personnage = $participant->getPersonnage();
@@ -1394,7 +1413,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/priere/detail.twig', [
+        return $this->render('priere/detail.twig', [
             'priere' => $priere,
             'participant' => $participant,
             'filename' => $priere->getPrintLabel(),
@@ -1404,6 +1423,7 @@ class ParticipantController extends AbstractController
     /**
      * Obtenir le document lié à une priere.
      */
+    #[Route('/participant/{participant}/priere/{priere}/document', name: 'participant.priere.document')]
     public function priereDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Priere $priere)
     {
         $personnage = $participant->getPersonnage();
@@ -1420,15 +1440,16 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $file = __DIR__.'/../../../private/doc/'.$priere->getDocumentUrl();
+        $filename = __DIR__.'/../../../private/doc/'.$priere->getDocumentUrl();
+        $file = new File($filename);
 
-        return $app->sendFile($file)
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $priere->getPrintLabel().'.pdf');
+        return $this->file($file, $priere->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
     /**
      * Obtenir le document lié à une technologie.
      */
+    #[Route('/participant/{participant}/technologie/{technologie}/document', name: 'participant.technologie.document')]
     public function technologieDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Technologie $technologie)
     {
         $personnage = $participant->getPersonnage();
@@ -1445,15 +1466,16 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $file = __DIR__.'/../../../private/doc/'.$technologie->getDocumentUrl();
+        $filename = __DIR__.'/../../../private/doc/'.$technologie->getDocumentUrl();
+        $file = new File($filename);
 
-        return $app->sendFile($file)
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $technologie->getPrintLabel().'.pdf');
+        return $this->file($file, $technologie->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
     /**
      * Detail d'une potion.
      */
+    #[Route('/participant/{participant}/potion/{potion}/detail', name: 'participant.potion.detail')]
     public function potionDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Potion $potion)
     {
         $personnage = $participant->getPersonnage();
@@ -1470,7 +1492,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/potion/detail.twig', [
+        return $this->render('potion/detail.twig', [
             'potion' => $potion,
             'participant' => $participant,
             'filename' => $potion->getPrintLabel(),
@@ -1480,6 +1502,7 @@ class ParticipantController extends AbstractController
     /**
      * Obtenir le document lié à une potion.
      */
+    #[Route('/participant/{participant}/potion/{potion}/document', name: 'participant.potion.document')]
     public function potionDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Potion $potion)
     {
         $personnage = $participant->getPersonnage();
@@ -1496,15 +1519,16 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $file = __DIR__.'/../../../private/doc/'.$potion->getDocumentUrl();
+        $filename = __DIR__.'/../../../private/doc/'.$potion->getDocumentUrl();
+        $file = new File($filename);
 
-        return $app->sendFile($file)
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $potion->getPrintLabel().'.pdf');
+        return $this->file($file, $potion->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
     /**
      * Choix d'une nouvelle potion.
      */
+    #[Route('/participant/{participant}/potion', name: 'participant.potion')]
     public function potionAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -1529,7 +1553,7 @@ class ParticipantController extends AbstractController
         $repo = $entityManager->getRepository('\\'.Potion::class);
         $potions = $repo->findByNiveau($niveau);
 
-        $form = $this->createForm()
+        $form = $this->createFormBuilder($participant)
             ->add('potions', 'entity', [
                 'required' => true,
                 'label' => 'Choisissez votre potion',
@@ -1539,7 +1563,8 @@ class ParticipantController extends AbstractController
                 'choices' => $potions,
                 'choice_label' => 'fullLabel',
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre potion']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre potion'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -1590,6 +1615,7 @@ class ParticipantController extends AbstractController
     /**
      * Choix d'une nouvelle potion de départ.
      */
+    #[Route('/participant/{participant}/potionDepart', name: 'participant.potionDepart')]
     public function potiondepartAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -1610,7 +1636,7 @@ class ParticipantController extends AbstractController
 
         $potions = $personnage->getPotionsNiveau($niveau);
 
-        $form = $this->createForm()
+        $form = $this->createFormBuilder($participant)
             ->add('potions', 'entity', [
                 'required' => true,
                 'label' => 'Choisissez votre potion de départ',
@@ -1620,7 +1646,8 @@ class ParticipantController extends AbstractController
                 'choices' => $potions,
                 'choice_label' => 'fullLabel',
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre potion de départ']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre potion de départ'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -1651,6 +1678,7 @@ class ParticipantController extends AbstractController
     /**
      * Choix d'une nouvelle description de religion.
      */
+    #[Route('/participant/{participant}/religionDescription', name: 'participant.religionDescription')]
     public function religionDescriptionAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -1699,7 +1727,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/personnage/descriptionReligion.twig', [
+        return $this->render('personnage/descriptionReligion.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'participant' => $participant,
@@ -1709,6 +1737,7 @@ class ParticipantController extends AbstractController
     /**
      * Choix d'une nouvelle langue commune.
      */
+    #[Route('/participant/{participant}/langueCommune', name: 'participant.langueCommune')]
     public function langueCommuneAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -1727,7 +1756,7 @@ class ParticipantController extends AbstractController
 
         $availableLangues = $app['personnage.manager']->getAvailableLangues($personnage, 2);
 
-        $form = $this->createForm()
+        $form = $this->createFormBuilder($participant)
             ->add('langue', 'entity', [
                 'required' => true,
                 'label' => 'Choisissez votre nouvelle langue',
@@ -1737,7 +1766,8 @@ class ParticipantController extends AbstractController
                 'choices' => $availableLangues,
                 'choice_label' => 'fullDescription',
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -1761,7 +1791,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/personnage/langueCommune.twig', [
+        return $this->render('personnage/langueCommune.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'participant' => $participant,
@@ -1771,6 +1801,7 @@ class ParticipantController extends AbstractController
     /**
      * Choix d'une nouvelle langue courante.
      */
+    #[Route('/participant/{participant}/langueCourante', name: 'participant.langueCourante')]
     public function langueCouranteAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -1789,7 +1820,7 @@ class ParticipantController extends AbstractController
 
         $availableLangues = $app['personnage.manager']->getAvailableLangues($personnage, 1);
 
-        $form = $this->createForm()
+        $form = $this->createFormBuilder($participant)
             ->add('langue', 'entity', [
                 'required' => true,
                 'label' => 'Choisissez votre nouvelle langue',
@@ -1799,7 +1830,8 @@ class ParticipantController extends AbstractController
                 'choices' => $availableLangues,
                 'choice_label' => 'fullDescription',
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -1823,7 +1855,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/personnage/langueCourante.twig', [
+        return $this->render('personnage/langueCourante.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'participant' => $participant,
@@ -1833,6 +1865,7 @@ class ParticipantController extends AbstractController
     /**
      * Choix d'une nouvelle langue ancienne.
      */
+    #[Route('/participant/{participant}/langueAncienne', name: 'participant.langueAncienne')]
     public function langueAncienneAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -1851,7 +1884,7 @@ class ParticipantController extends AbstractController
 
         $availableLangues = $app['personnage.manager']->getAvailableLangues($personnage, 0);
 
-        $form = $this->createForm()
+        $form = $this->createFormBuilder($participant)
             ->add('langue', 'entity', [
                 'required' => true,
                 'label' => 'Choisissez votre nouvelle langue',
@@ -1861,7 +1894,8 @@ class ParticipantController extends AbstractController
                 'choices' => $availableLangues,
                 'choice_label' => 'fullDescription',
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -1885,7 +1919,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/personnage/langueAncienne.twig', [
+        return $this->render('personnage/langueAncienne.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'participant' => $participant,
@@ -1895,6 +1929,7 @@ class ParticipantController extends AbstractController
     /**
      * Obtenir le document lié à une langue.
      */
+    #[Route('/participant/{participant}/langue/{langue}/document', name: 'participant.langue.document')]
     public function langueDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Langue $langue)
     {
         $personnage = $participant->getPersonnage();
@@ -1911,15 +1946,16 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $file = __DIR__.'/../../../private/doc/'.$langue->getDocumentUrl();
+        $filename = __DIR__.'/../../../private/doc/'.$langue->getDocumentUrl();
+        $file = new File($filename);
 
-        return $app->sendFile($file)
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $langue->getPrintLabel().'.pdf');
+        return $this->file($file, $langue->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
     /**
      * Choix d'un domaine de magie.
      */
+    #[Route('/participant/{participant}/domaineMagie', name: 'participant.domaineMagie')]
     public function domaineMagieAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -1938,7 +1974,7 @@ class ParticipantController extends AbstractController
 
         $availableDomaines = $app['personnage.manager']->getAvailableDomaines($personnage);
 
-        $form = $this->createForm()
+        $form = $this->createFormBuilder($participant)
             ->add('domaine', 'entity', [
                 'required' => true,
                 'label' => 'Choisissez votre domaine de magie',
@@ -1948,7 +1984,8 @@ class ParticipantController extends AbstractController
                 'choices' => $availableDomaines,
                 'choice_label' => 'label',
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre domaine de magie']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre domaine de magie'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -1982,6 +2019,7 @@ class ParticipantController extends AbstractController
     /**
      * Choix d'un nouveau sortilège.
      */
+    #[Route('/participant/{participant}/sort', name: 'participant.sort')]
     public function sortAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -2005,7 +2043,7 @@ class ParticipantController extends AbstractController
 
         $sorts = $app['personnage.manager']->getAvailableSorts($personnage, $niveau);
 
-        $form = $this->createForm()
+        $form = $this->createFormBuilder($participant)
             ->add('sorts', 'entity', [
                 'required' => true,
                 'label' => 'Choisissez votre sort',
@@ -2015,7 +2053,8 @@ class ParticipantController extends AbstractController
                 'choices' => $sorts,
                 'choice_label' => 'fullLabel',
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre sort']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre sort'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -2066,6 +2105,7 @@ class ParticipantController extends AbstractController
     /**
      * Detail d'un sort.
      */
+    #[Route('/participant/{participant}/sort/{sort}/detail', name: 'participant.sort.detail')]
     public function sortDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Sort $sort)
     {
         $personnage = $participant->getPersonnage();
@@ -2082,7 +2122,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/sort/detail.twig', [
+        return $this->render('sort/detail.twig', [
             'sort' => $sort,
             'participant' => $participant,
             'filename' => $sort->getPrintLabel(),
@@ -2092,6 +2132,7 @@ class ParticipantController extends AbstractController
     /**
      * Obtenir le document lié à un sort.
      */
+    #[Route('/participant/{participant}/sort/{sort}/document', name: 'participant.sort.document')]
     public function sortDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Sort $sort)
     {
         $personnage = $participant->getPersonnage();
@@ -2108,15 +2149,16 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $file = __DIR__.'/../../../private/doc/'.$sort->getDocumentUrl();
+        $filename = __DIR__.'/../../../private/doc/'.$sort->getDocumentUrl();
+        $file = new File($filename);
 
-        return $app->sendFile($file)
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $sort->getPrintLabel().'.pdf');
+        return $this->file($file, $sort->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
     /**
      * Detail d'une connaissance.
      */
+    #[Route('/participant/{participant}/connaissance/{connaissance}/detail', name: 'participant.connaissance.detail')]
     public function connaissanceDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Connaissance $connaissance)
     {
         $personnage = $participant->getPersonnage();
@@ -2133,7 +2175,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/connaissance/detail.twig', [
+        return $this->render('connaissance/detail.twig', [
             'connaissance' => $connaissance,
             'participant' => $participant,
             'filename' => $connaissance->getPrintLabel(),
@@ -2143,6 +2185,7 @@ class ParticipantController extends AbstractController
     /**
      * Obtenir le document lié à une connaissance.
      */
+    #[Route('/participant/{participant}/connaissance/{connaissance}/document', name: 'participant.connaissance.document')]
     public function connaissanceDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Connaissance $connaissance)
     {
         $personnage = $participant->getPersonnage();
@@ -2159,15 +2202,16 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $file = __DIR__.'/../../../private/doc/'.$connaissance->getDocumentUrl();
+        $filename = __DIR__.'/../../../private/doc/'.$connaissance->getDocumentUrl();
+        $file = new File($filename);
 
-        return $app->sendFile($file)
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $connaissance->getPrintLabel().'.pdf');
+        return $this->file($file, $connaissance->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
     /**
      * Découverte de la magie, des domaines et sortilèges.
      */
+    #[Route('/participant/{participant}/magie', name: 'participant.magie')]
     public function magieAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -2180,7 +2224,7 @@ class ParticipantController extends AbstractController
 
         $domaines = $entityManager->getRepository('\\'.\App\Entity\Domaine::class)->findAll();
 
-        return $this->render('public/magie/index.twig', [
+        return $this->render('magie/index.twig', [
             'domaines' => $domaines,
             'personnage' => $personnage,
             'participant' => $participant,
@@ -2190,11 +2234,12 @@ class ParticipantController extends AbstractController
     /**
      * Liste des compétences pour les joueurs.
      */
+    #[Route('/participant/{participant}/competence/list', name: 'participant.competence.list')]
     public function competenceListAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $competences = $app['larp.manager']->getRootCompetences();
 
-        return $this->render('public/competence/list.twig', [
+        return $this->render('competence/list.twig', [
             'competences' => $competences,
             'participant' => $participant,
         ]);
@@ -2203,6 +2248,7 @@ class ParticipantController extends AbstractController
     /**
      * Detail d'une competence.
      */
+    #[Route('/participant/{participant}/competence/{competence}/detail', name: 'participant.competence.detail')]
     public function competenceDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Competence $competence)
     {
         $personnage = $participant->getPersonnage();
@@ -2218,7 +2264,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/competence/detail.twig', [
+        return $this->render('competence/detail.twig', [
             'competence' => $competence,
             'participant' => $participant,
             'filename' => $competence->getPrintLabel(),
@@ -2228,6 +2274,7 @@ class ParticipantController extends AbstractController
     /**
      * Detail d'un document.
      */
+    #[Route('/participant/{participant}/document/{document}/detail', name: 'participant.document.detail')]
     public function documentDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Document $document)
     {
         $personnage = $participant->getPersonnage();
@@ -2243,7 +2290,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/document/detail.twig', [
+        return $this->render('document/detail.twig', [
             'document' => $document,
             'participant' => $participant,
             'filename' => $document->getPrintLabel(),
@@ -2253,12 +2300,13 @@ class ParticipantController extends AbstractController
     /**
      * Liste des classes pour le joueur.
      */
+    #[Route('/participant/{participant}/classe/list', name: 'participant.classe.list')]
     public function classeListAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\Classe::class);
         $classes = $repo->findAllOrderedByLabel();
 
-        return $this->render('public/classe/list.twig', [
+        return $this->render('classe/list.twig', [
             'classes' => $classes,
             'participant' => $participant,
         ]);
@@ -2267,6 +2315,7 @@ class ParticipantController extends AbstractController
     /**
      * Obtenir le document lié à une competence.
      */
+    #[Route('/participant/{participant}/competence/{competence}/document', name: 'participant.competence.document')]
     public function competenceDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Competence $competence)
     {
         $personnage = $participant->getPersonnage();
@@ -2283,15 +2332,16 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $file = __DIR__.'/../../../private/doc/'.$competence->getDocumentUrl();
+        $filename = __DIR__.'/../../../private/doc/'.$competence->getDocumentUrl();
+        $file = new File($filename);
 
-        return $app->sendFile($file)
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $competence->getPrintLabel().'.pdf');
+        return $this->file($file, $competence->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
     /**
      * Obtenir le document lié à un document.
      */
+    #[Route('/participant/{participant}/document/{document}/document', name: 'participant.document.document')]
     public function documentDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Document $document)
     {
         $personnage = $participant->getPersonnage();
@@ -2308,21 +2358,22 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $file = __DIR__.'/../../../private/documents/'.$document->getDocumentUrl();
+        $filename = __DIR__.'/../../../private/documents/'.$document->getDocumentUrl();
+        $file = new File($filename);
 
-        return $app->sendFile($file)
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $document->getPrintLabel().'.pdf');
+        return $this->file($file, $document->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
     /**
      * Liste des groupes secondaires public (pour les joueurs).
      */
+    #[Route('/participant/{participant}/groupeSecondaire/list', name: 'participant.groupeSecondaire.list')]
     public function groupeSecondaireListAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $repo = $entityManager->getRepository('\\'.SecondaryGroup::class);
         $groupeSecondaires = $repo->findAllPublic();
 
-        return $this->render('public/groupeSecondaire/list.twig', [
+        return $this->render('groupeSecondaire/list.twig', [
             'groupeSecondaires' => $groupeSecondaires,
             'participant' => $participant,
         ]);
@@ -2331,6 +2382,7 @@ class ParticipantController extends AbstractController
     /**
      * Postuler à un groupe secondaire.
      */
+    #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postuler', name: 'participant.groupeSecondaire.postuler')]
     public function groupeSecondairePostulerAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire)
     {
         /**
@@ -2392,7 +2444,7 @@ class ParticipantController extends AbstractController
                 // envoi d'un mail au chef du groupe secondaire
                 if ($groupeSecondaire->getResponsable()) {
                     // envoyer une notification au responsable
-                    $app['notify']->joinGroupeSecondaire($groupeSecondaire->getResponsable(), $groupeSecondaire);
+                    // NOTIFY $app['notify']->joinGroupeSecondaire($groupeSecondaire->getResponsable(), $groupeSecondaire);
                 }
 
                 $this->addFlash('success', 'Votre candidature a été enregistrée, et transmise au chef de groupe.');
@@ -2401,7 +2453,7 @@ class ParticipantController extends AbstractController
             }
         }
 
-        return $this->render('public/groupeSecondaire/postuler.twig', [
+        return $this->render('groupeSecondaire/postuler.twig', [
             'groupeSecondaire' => $groupeSecondaire,
             'participant' => $participant,
             'form' => $form->createView(),
@@ -2411,6 +2463,7 @@ class ParticipantController extends AbstractController
     /**
      * Affichage à destination d'un membre du groupe secondaire.
      */
+    #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/detail', name: 'participant.groupeSecondaire.detail')]
     public function groupeSecondaireDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire)
     {
         $personnage = $participant->getPersonnage();
@@ -2428,7 +2481,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/groupeSecondaire/detail.twig', [
+        return $this->render('groupeSecondaire/detail.twig', [
             'groupeSecondaire' => $groupeSecondaire,
             'membre' => $membre,
             'participant' => $participant,
@@ -2438,10 +2491,12 @@ class ParticipantController extends AbstractController
     /**
      * Accepter une candidature à un groupe secondaire.
      */
+    #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/accept', name: 'participant.groupeSecondaire.postulant.accept')]
     public function groupeSecondaireAcceptAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire, Postulant $postulant)
     {
-        $form = $this->createForm()
-            ->add('envoyer', SubmitType::class, ['label' => 'Accepter le postulant']);
+        $form = $this->createFormBuilder($participant)
+            ->add('envoyer', SubmitType::class, ['label' => 'Accepter le postulant'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -2458,14 +2513,14 @@ class ParticipantController extends AbstractController
             $entityManager->flush();
 
             // envoyer une notification au nouveau membre
-            $app['notify']->acceptGroupeSecondaire($personnage->getUser(), $groupeSecondaire);
+            // NOTIFY $app['notify']->acceptGroupeSecondaire($personnage->getUser(), $groupeSecondaire);
 
             $this->addFlash('success', 'Vous avez accepté la candidature. Un message a été envoyé au joueur concerné.');
 
             return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
-        return $this->render('public/groupeSecondaire/gestion_accept.twig', [
+        return $this->render('groupeSecondaire/gestion_accept.twig', [
             'groupeSecondaire' => $groupeSecondaire,
             'postulant' => $postulant,
             'participant' => $participant,
@@ -2476,10 +2531,12 @@ class ParticipantController extends AbstractController
     /**
      * Accepter une candidature à un groupe secondaire.
      */
+    #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/reject', name: 'participant.groupeSecondaire.postulant.reject')]
     public function groupeSecondaireRejectAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire, Postulant $postulant)
     {
-        $form = $this->createForm()
-            ->add('envoyer', SubmitType::class, ['label' => 'RefUser le postulant']);
+        $form = $this->createFormBuilder($participant)
+            ->add('envoyer', SubmitType::class, ['label' => 'Refuser le postulant'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -2488,14 +2545,14 @@ class ParticipantController extends AbstractController
             $entityManager->remove($postulant);
             $entityManager->flush();
 
-            $app['notify']->rejectGroupeSecondaire($personnage->getUser(), $groupeSecondaire);
+            // NOTIFY $app['notify']->rejectGroupeSecondaire($personnage->getUser(), $groupeSecondaire);
 
             $this->addFlash('success', 'Vous avez refusé la candidature. Un message a été envoyé au joueur concerné.');
 
             return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
-        return $this->render('public/groupeSecondaire/gestion_reject.twig', [
+        return $this->render('groupeSecondaire/gestion_reject.twig', [
             'groupeSecondaire' => $groupeSecondaire,
             'postulant' => $postulant,
             'participant' => $participant,
@@ -2506,10 +2563,12 @@ class ParticipantController extends AbstractController
     /**
      * Laisser la candidature dans les postulant.
      */
+    #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/wait', name: 'participant.groupeSecondaire.postulant.wait')]
     public function groupeSecondaireWaitAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire, Postulant $postulant)
     {
-        $form = $this->createForm()
-            ->add('envoyer', SubmitType::class, ['label' => 'Laisser en attente']);
+        $form = $this->createFormBuilder($participant)
+            ->add('envoyer', SubmitType::class, ['label' => 'Laisser en attente'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -2519,14 +2578,14 @@ class ParticipantController extends AbstractController
             $entityManager->persist($postulant);
             $entityManager->flush($postulant);
 
-            $app['notify']->waitGroupeSecondaire($personnage->getUser(), $groupeSecondaire);
+            // NOTIFY $app['notify']->waitGroupeSecondaire($personnage->getUser(), $groupeSecondaire);
 
             $this->addFlash('success', 'La candidature reste en attente. Un message a été envoyé au joueur concerné.');
 
             return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
-        return $this->render('public/groupeSecondaire/gestion_wait.twig', [
+        return $this->render('groupeSecondaire/gestion_wait.twig', [
             'groupeSecondaire' => $groupeSecondaire,
             'postulant' => $postulant,
             'participant' => $participant,
@@ -2537,6 +2596,7 @@ class ParticipantController extends AbstractController
     /**
      * Répondre à un postulant.
      */
+    #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/response', name: 'participant.groupeSecondaire.postulant.response')]
     public function groupeSecondaireResponseAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire, Postulant $postulant)
     {
         $message = new Message();
@@ -2557,14 +2617,14 @@ class ParticipantController extends AbstractController
             $entityManager->persist($message);
             $entityManager->flush();
 
-            $app['notify']->newMessage($postulant->getPersonnage()->getUser(), $message);
+            // NOTIFY $app['notify']->newMessage($postulant->getPersonnage()->getUser(), $message);
 
             $this->addFlash('success', 'Votre message a été envoyé au joueur concerné.');
 
             return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
-        return $this->render('public/groupeSecondaire/gestion_response.twig', [
+        return $this->render('groupeSecondaire/gestion_response.twig', [
             'groupeSecondaire' => $groupeSecondaire,
             'postulant' => $postulant,
             'participant' => $participant,
@@ -2575,6 +2635,7 @@ class ParticipantController extends AbstractController
     /**
      * Ajoute une compétence au personnage.
      */
+    #[Route('/participant/{participant}/competence/add', name: 'participant.competence.add')]
     public function competenceAddAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -2605,12 +2666,13 @@ class ParticipantController extends AbstractController
             $choices[$competence->getId()] = $competence->getLabel().' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
         }
 
-        $form = $this->createForm()
+        $form = $this->createFormBuilder($participant)
             ->add('competenceId', 'choice', [
                 'label' => 'Choisissez une nouvelle compétence',
                 'choices' => $choices,
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider la compétence']);
+            ->add('save', SubmitType::class, ['label' => 'Valider la compétence'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -3002,7 +3064,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('public/personnage/competence.twig', [
+        return $this->render('personnage/competence.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'competences' => $availableCompetences,
@@ -3013,9 +3075,10 @@ class ParticipantController extends AbstractController
     /**
      * Affiche le formulaire d'ajout d'un joueur.
      */
+    #[Route('/participant/add', name: 'participant.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager)
     {
-        $joueur = new \App\Entity\Joueur();
+        $joueur = new \App\Entity\Participant();
 
         $form = $this->createForm(JoueurForm::class, $joueur)
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -3043,6 +3106,7 @@ class ParticipantController extends AbstractController
     /**
      * Recherche d'un joueur.
      */
+    #[Route('/participant/search', name: 'participant.search')]
     public function searchAction(Request $request, EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(FindJoueurForm::class, [])
@@ -3056,7 +3120,7 @@ class ParticipantController extends AbstractController
             $type = $data['type'];
             $search = $data['search'];
 
-            $repo = $entityManager->getRepository('\App\Entity\Joueur');
+            $repo = $entityManager->getRepository('\App\Entity\Participant');
 
             $joueurs = null;
 
@@ -3101,16 +3165,13 @@ class ParticipantController extends AbstractController
     /**
      * Detail d'un joueur.
      */
-    public function adminDetailAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/participant/admin/{participant}/detail', name: 'participant.admin.detail')]
+    public function adminDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
-        $id = $request->get('index');
-
-        $joueur = $entityManager->find('\App\Entity\Joueur', $id);
-
-        if ($joueur) {
-            return $this->render('joueur/admin/detail.twig', ['joueur' => $joueur]);
+        if ($participant) {
+            return $this->render('joueur/admin/detail.twig', ['participant' => $participant]);
         } else {
-            $this->addFlash('error', 'Le joueur n\'a pas été trouvé.');
+            $this->addFlash('error', 'Le participant n\'a pas été trouvé.');
 
             return $this->redirectToRoute('homepage');
         }
@@ -3119,13 +3180,10 @@ class ParticipantController extends AbstractController
     /**
      * Met a jours les points d'expérience des joueurs.
      */
-    public function adminXpAction(EntityManagerInterface $entityManager, Request $request)
+    #[Route('/participant/admin/{participant}/xp', name: 'participant.admin.xp')]
+    public function adminXpAction(EntityManagerInterface $entityManager, Request $request, Participant $participant)
     {
-        $id = $request->get('index');
-
-        $joueur = $entityManager->find('\App\Entity\Joueur', $id);
-
-        $form = $this->createForm(JoueurXpForm::class, $joueur)
+        $form = $this->createForm(JoueurXpForm::class, $participant)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -3134,7 +3192,7 @@ class ParticipantController extends AbstractController
             $newXps = $request->get('xp');
             $explanation = $request->get('explanation');
 
-            $personnage = $joueur->getPersonnage();
+            $personnage = $participant->getPersonnage();
             if ($personnage->getXp() != $newXps) {
                 $oldXp = $personnage->getXp();
                 $gain = $newXps - $oldXp;
@@ -3156,23 +3214,20 @@ class ParticipantController extends AbstractController
         }
 
         return $this->render('joueur/admin/xp.twig', [
-            'joueur' => $joueur,
+            'participant' => $participant,
         ]);
     }
 
     /**
      * Detail d'un joueur (pour les orgas).
      */
-    public function detailOrgaAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/participant/orga/{participant}/detail', name: 'participant.orga.detail')]
+    public function detailOrgaAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
-        $id = $request->get('index');
-
-        $joueur = $entityManager->find('\App\Entity\Joueur', $id);
-
-        if ($joueur) {
-            return $this->render('joueur/admin/detail.twig', ['joueur' => $joueur]);
+        if ($participant) {
+            return $this->render('joueur/admin/detail.twig', ['participant' => $participant]);
         } else {
-            $this->addFlash('error', 'Le joueur n\'a pas été trouvé.');
+            $this->addFlash('error', 'Le participant n\'a pas été trouvé.');
 
             return $this->redirectToRoute('homepage');
         }
@@ -3181,13 +3236,10 @@ class ParticipantController extends AbstractController
     /**
      * Met à jour les informations d'un joueur.
      */
-    public function updateAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/participant/orga/{participant}/detail', name: 'participant.orga.detail')]
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
-        $id = $request->get('index');
-
-        $joueur = $entityManager->find('\App\Entity\Joueur', $id);
-
-        $form = $this->createForm(JoueurForm::class, $joueur)
+        $form = $this->createForm(JoueurForm::class, $participant)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -3199,11 +3251,11 @@ class ParticipantController extends AbstractController
             $entityManager->flush();
             $this->addFlash('success', 'Le joueur a été mis à jour.');
 
-            return $this->redirectToRoute('joueur.detail', ['index' => $id]);
+            return $this->redirectToRoute('participant.orga.detail', ['participant' => $participant->getId()]);
         }
 
         return $this->render('joueur/update.twig', [
-            'joueur' => $joueur,
+            'joueur' => $participant,
             'form' => $form->createView(),
         ]);
     }
@@ -3211,10 +3263,9 @@ class ParticipantController extends AbstractController
     /**
      * Demander une nouvelle alliance.
      */
-    public function requestAllianceAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/participant/{participant}/groupe/{groupe}/requestAlliance', name: 'participant.groupe.requestAlliance')]
+    public function requestAllianceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
     {
-        $participant = $request->get('participant');
-        $groupe = $request->get('groupe');
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
@@ -3292,7 +3343,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $this->render('public/groupe/requestAlliance.twig', [
+        return $this->render('groupe/requestAlliance.twig', [
             'groupe' => $groupe,
             'participant' => $participant,
             'groupeGn' => $groupeGn,
@@ -3303,10 +3354,9 @@ class ParticipantController extends AbstractController
     /**
      * Annuler une demande d'alliance.
      */
-    public function cancelRequestedAllianceAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/participant/{participant}/groupe/{groupe}/cancelRequestedAlliance', name: 'participant.groupe.cancelRequestedAlliance')]
+    public function cancelRequestedAllianceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
     {
-        $participant = $request->get('participant');
-        $groupe = $request->get('groupe');
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
 
@@ -3334,7 +3384,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $this->render('public/groupe/cancelAlliance.twig', [
+        return $this->render('groupe/cancelAlliance.twig', [
             'alliance' => $alliance,
             'groupe' => $groupe,
             'participant' => $participant,
@@ -3346,10 +3396,9 @@ class ParticipantController extends AbstractController
     /**
      * Accepter une alliance.
      */
-    public function acceptAllianceAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/participant/{participant}/groupe/{groupe}/acceptAlliance', name: 'participant.groupe.acceptAlliance')]
+    public function acceptAllianceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
     {
-        $participant = $request->get('participant');
-        $groupe = $request->get('groupe');
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
 
@@ -3378,7 +3427,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $this->render('public/groupe/acceptAlliance.twig', [
+        return $this->render('groupe/acceptAlliance.twig', [
             'alliance' => $alliance,
             'groupe' => $groupe,
             'participant' => $participant,
@@ -3390,10 +3439,9 @@ class ParticipantController extends AbstractController
     /**
      * RefUser une alliance.
      */
-    public function refuseAllianceAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/participant/{participant}/groupe/{groupe}/refuseAlliance', name: 'participant.groupe.refuseAlliance')]
+    public function refuseAllianceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
     {
-        $participant = $request->get('participant');
-        $groupe = $request->get('groupe');
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
 
@@ -3421,7 +3469,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $this->render('public/groupe/refuseAlliance.twig', [
+        return $this->render('groupe/refuseAlliance.twig', [
             'alliance' => $alliance,
             'groupe' => $groupe,
             'participant' => $participant,
@@ -3433,10 +3481,9 @@ class ParticipantController extends AbstractController
     /**
      * Briser une alliance.
      */
-    public function breakAllianceAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/participant/{participant}/groupe/{groupe}/breakAlliance', name: 'participant.groupe.breakAlliance')]
+    public function breakAllianceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
     {
-        $participant = $request->get('participant');
-        $groupe = $request->get('groupe');
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
 
@@ -3468,7 +3515,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $this->render('public/groupe/breakAlliance.twig', [
+        return $this->render('groupe/breakAlliance.twig', [
             'alliance' => $alliance,
             'groupe' => $groupe,
             'participant' => $participant,
@@ -3480,10 +3527,9 @@ class ParticipantController extends AbstractController
     /**
      * Déclarer la guerre.
      */
-    public function declareWarAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/participant/{participant}/groupe/{groupe}/declareWar', name: 'participant.groupe.declareWar')]
+    public function declareWarAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
     {
-        $participant = $request->get('participant');
-        $groupe = $request->get('groupe');
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
@@ -3550,7 +3596,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $this->render('public/groupe/declareWar.twig', [
+        return $this->render('groupe/declareWar.twig', [
             'groupe' => $groupe,
             'participant' => $participant,
             'groupeGn' => $groupeGn,
@@ -3561,10 +3607,9 @@ class ParticipantController extends AbstractController
     /**
      * Demander la paix.
      */
-    public function requestPeaceAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/participant/{participant}/groupe/{groupe}/requestPeace', name: 'participant.groupe.requestPeace')]
+    public function requestPeaceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
     {
-        $participant = $request->get('participant');
-        $groupe = $request->get('groupe');
         $war = $request->get('enemy');
         $groupeGn = $participant->getGroupeGn();
 
@@ -3597,7 +3642,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $this->render('public/groupe/requestPeace.twig', [
+        return $this->render('groupe/requestPeace.twig', [
             'war' => $war,
             'groupe' => $groupe,
             'participant' => $participant,
@@ -3609,10 +3654,9 @@ class ParticipantController extends AbstractController
     /**
      * Accepter la paix.
      */
-    public function acceptPeaceAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/participant/{participant}/groupe/{groupe}/acceptPeace', name: 'participant.groupe.acceptPeace')]
+    public function acceptPeaceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
     {
-        $participant = $request->get('participant');
-        $groupe = $request->get('groupe');
         $war = $request->get('enemy');
         $groupeGn = $participant->getGroupeGn();
 
@@ -3645,7 +3689,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $this->render('public/groupe/acceptPeace.twig', [
+        return $this->render('groupe/acceptPeace.twig', [
             'war' => $war,
             'groupe' => $groupe,
             'participant' => $participant,
@@ -3657,10 +3701,9 @@ class ParticipantController extends AbstractController
     /**
      * RefUser la paix.
      */
-    public function refusePeaceAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/participant/{participant}/groupe/{groupe}/refusePeace', name: 'participant.groupe.refusePeace')]
+    public function refusePeaceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
     {
-        $participant = $request->get('participant');
-        $groupe = $request->get('groupe');
         $war = $request->get('enemy');
         $groupeGn = $participant->getGroupeGn();
 
@@ -3690,7 +3733,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $this->render('public/groupe/refusePeace.twig', [
+        return $this->render('groupe/refusePeace.twig', [
             'war' => $war,
             'groupe' => $groupe,
             'participant' => $participant,
@@ -3702,10 +3745,9 @@ class ParticipantController extends AbstractController
     /**
      * Annuler la demande de paix.
      */
-    public function cancelRequestedPeaceAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/participant/{participant}/groupe/{groupe}/cancelRequestedPeace', name: 'participant.groupe.cancelRequestedPeace')]
+    public function cancelRequestedPeaceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
     {
-        $participant = $request->get('participant');
-        $groupe = $request->get('groupe');
         $war = $request->get('enemy');
 
         $groupeGn = $participant->getGroupeGn();
@@ -3739,7 +3781,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        return $this->render('public/groupe/cancelPeace.twig', [
+        return $this->render('groupe/cancelPeace.twig', [
             'war' => $war,
             'groupe' => $groupe,
             'participant' => $participant,
@@ -3751,6 +3793,7 @@ class ParticipantController extends AbstractController
     /**
      * Choix d'une technologie.
      */
+    #[Route('/participant/{participant}/technologie', name: 'participant.technologie')]
     public function technologieAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -3769,7 +3812,7 @@ class ParticipantController extends AbstractController
 
         $technologies = $app['personnage.manager']->getAvailableTechnologies($personnage);
 
-        $form = $this->createForm()
+        $form = $this->createFormBuilder($participant)
             ->add('technologies', 'entity', [
                 'required' => true,
                 'label' => 'Choisissez votre technologie',
@@ -3779,7 +3822,8 @@ class ParticipantController extends AbstractController
                 'choices' => $technologies,
                 'choice_label' => 'label',
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre technologie']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre technologie'])
+            ->getForm();
 
         $form->handleRequest($request);
 

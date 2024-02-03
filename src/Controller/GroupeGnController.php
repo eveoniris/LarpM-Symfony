@@ -136,7 +136,7 @@ class GroupeGnController extends AbstractController
             $entityManager->persist($groupeGn);
             $entityManager->flush();
 
-            $app['notify']->newResponsable($groupeGn->getResponsable()->getUser(), $groupeGn);
+            // NOTIFY $app['notify']->newResponsable($groupeGn->getResponsable()->getUser(), $groupeGn);
 
            $this->addFlash('success', 'Le responsable du groupe a été enregistré.');
 
@@ -189,7 +189,7 @@ class GroupeGnController extends AbstractController
             $entityManager->persist($data['participant']);
             $entityManager->flush();
 
-            $app['notify']->newMembre($data['participant']->getUser(), $groupeGn);
+            // NOTIFY $app['notify']->newMembre($data['participant']->getUser(), $groupeGn);
 
            $this->addFlash('success', 'Le joueur a été ajouté à cette session.');
 
@@ -244,7 +244,7 @@ class GroupeGnController extends AbstractController
                 $entityManager->persist($data['participant']);
                 $entityManager->flush();
 
-                $app['notify']->newMembre($data['participant']->getUser(), $groupeGn);
+                // NOTIFY $app['notify']->newMembre($data['participant']->getUser(), $groupeGn);
 
                $this->addFlash('success', 'Le joueur a été ajouté à votre groupe.');
             }

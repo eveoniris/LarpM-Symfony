@@ -99,7 +99,7 @@ class UserController extends AbstractController
 
             $entityManager->flush();
 
-            // TODO $app['notify']->newUser($user, $plainPassword);
+            // TODO // NOTIFY $app['notify']->newUser($user, $plainPassword);
 
             $this->addFlash('success', 'L\'utilisateur a été ajouté.');
 
@@ -398,7 +398,7 @@ class UserController extends AbstractController
             $User->addCoeur();
             $entityManager->persist($User);
             $entityManager->flush();
-            $app['notify']->coeur($this->getUser(), $User);
+            // NOTIFY $app['notify']->coeur($this->getUser(), $User);
             $this->addFlash('success', 'Votre coeur a été envoyé !');
         }
 
