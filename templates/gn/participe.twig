@@ -3,11 +3,22 @@
 {% block title %}Participer à un jeu{% endblock title %}
 
 {% block body %}
-<div class="jumbotron">
-	<h1><i class="fa fa-thumbs-up" aria-hidden="true"></i> Participer à un jeu</h1>
-	<hr />
-	<form class="form" action="{{ path('user.gn.participe', {'gn': gn.id}) }}) }}
-		{% form_theme form 'Form/bootstrap_3_horizontal_layout.html.twig' %}
+
+{# display navigation #}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Liste des grandeurs nature</li>
+	</ol>
+
+	<div class="well well-sm">
+
+		<div class="header">
+			<h5><i class="fa fa-thumbs-up" aria-hidden="true"></i> Participer à un jeu</h5>
+		</div>
+
+		{{ form_start(form, {"attr": {"action": path('user.gn.participe', {'gn': gn.id}) }}) }}
+
 		{{ form_widget(form) }}
 		<div class="row">
 		  	<div class="col-md-12">
@@ -27,7 +38,7 @@
 			<div class="row">		
 				<div class="col-md-12">
 						<div class="checkbox">
-						  <label><input type="checkbox" name="acceptCi" value="ok" required="required">En cochant cette case, vous confirmez avoir pris connaissance des conditions d'inscription et vous les acceptez</label>
+						  <label><input type="checkbox" name="acceptCi" value="ok" required="required"> En cochant cette case, vous confirmez avoir pris connaissance des conditions d'inscription et vous les acceptez</label>
 						</div>
 				</div>
 			</div>
@@ -37,7 +48,7 @@
 					 <div class="clearfix">
 					  	<div class="pull-right">
 					  		<p>
-					  			<a class="btn btn-primary btn-lg" href="{{ path('homepage') }}" role="button"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Annuler</a>
+					  			<a class="btn btn-primary btn-lg" href="{{ path('gn.list') }}" role="button"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Annuler</a>
 					  			<button type="submit" class="btn btn-primary btn-lg" >Je participe <i class="fa fa-exclamation" aria-hidden="true"></i></button>
 					  		</p>
 				  		</div>
@@ -45,6 +56,8 @@
 	
 			</div>
 		</div>			
-	{{ form_end(form) }}
-</div>
+		{{ form_end(form) }}
+
+	</div>
+
 {% endblock body %}
