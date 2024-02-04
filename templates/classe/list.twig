@@ -17,7 +17,7 @@
 
 		<div class="btn-toolbar" role="toolbar" aria-label="...">
 			<div class="btn-group" role="group" aria-label="...">
-				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter une classe" href="{{ path('classe.add') }}"><i class="fa fa-plus"></i></a>
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter une classe" href="{{ path('classe.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
 			</div>
 		</div>
 	</div>
@@ -35,8 +35,8 @@
 
 		<p class="list-group-item-text">
 			<div class="btn-group pull-right" role="group" aria-label="...">
-				<a href="{{ path('classe.detail', {'id': classe.id}) }}" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Détail" role="button"><i class="fa fa-eye"></i></a>
-				<a href="{{ path('classe.update', {'id': classe.id}) }}" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier" role="button"><i class="fa fa-pencil"></i></a>
+				<a href="{{ path('classe.detail', {'id': classe.id}) }}" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail" role="button"><i class="fa fa-eye"></i></a>
+				<a href="{{ path('classe.update', {'id': classe.id}) }}" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" role="button"><i class="fa fa-pencil"></i></a>
 			</div>
 			
 			{% if classe.description %}
@@ -71,9 +71,9 @@
 			
 		</p>
 
-		<img width="184" height="250" alt="{{ classe.labelFeminin }}" src="{{ asset("img/#{classe.imageF}") }}" />
+		<img width="184" height="250" alt="{{ classe.labelFeminin }}" src="{{ path('classe.image', {'classe' : classe.id, 'sexe' : 'F' }) }}" />
 		<div class="pull-right">
-			<img width="184" height="250" alt="{{ classe.labelMasculin }}" src="{{ asset("img/#{classe.imageM}")  }}" />
+			<img width="184" height="250" alt="{{ classe.labelMasculin }}" src="{{ path('classe.image', {'classe' : classe.id, 'sexe' : 'M' }) }}" />
 		</div>	
 	</div>
 	{%  endfor %}

@@ -142,4 +142,24 @@ class ClasseController extends AbstractController
 
         return $this->render('classe/perso.twig', ['classe' => $classe]);
     }
+
+    /**
+     * Récupération de l'image d'une classe en fonction du sexe.
+     */
+    #[Route('/classe/{classe}/image/{sexe}', name: 'classe.image', methods: ['GET'])]
+    public function imagrAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Classe $classe, String $sexe): Response
+	{
+        if ($sexe == "F")
+		    $image = $classe->getImageF();
+        else
+            $image = $classe->getImageM();
+
+        $filename = __DIR__.'/../../assets/img/'.$image;
+        //var_dump($filename);
+        
+        $response = new Response(file_get_contents($filename));
+        $response->headers->set('Content-Type', 'image/png');
+
+        return $response;
+	}
 }
