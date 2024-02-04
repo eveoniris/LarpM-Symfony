@@ -190,13 +190,15 @@ class UserController extends AbstractController
     /**
      * Formulaire de participation à un jeu.
      */
+    #[Route('/user/{gn}/participe', name: 'user.gn.participe')]
     public function gnParticipeAction(EntityManagerInterface $entityManager, Request $request, Gn $gn)
     {
-        $form = $this->createForm();
+        $form = $this->createFormBuilder($gn)
+            ->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && (!$gn->getBesoinValidationCi() || 'ok' == $request->request->get('acceptCi'))) {
+        if ($form->isSubmitted() && $form->isValid() && (!$gn->getBesoinValidationCi() || 'ok' == $request->request->get('acceptCi'))) {
             $participant = new Participant();
             $participant->setUser($this->getUser());
             $participant->setGn($gn);
