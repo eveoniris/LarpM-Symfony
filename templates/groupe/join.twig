@@ -13,10 +13,10 @@
 	<div class="well well-sm">
 
 		<div class="header">
-			<h5>{% trans %}subscribe_group_title{% endtrans %}</h5>
+			<h5>Rejoindre un groupe</h5>
 		</div>
 							
-		<p>{% trans %}subscribe_group_explain{% endtrans %}</p>
+		<p>Vous n'êtes pour le moment inscrit dans aucun groupe. Entrez le code de votre groupe dans le formulaire ci-dessous. Le code doit vous être transmis par le responsable de votre groupe.</p>
 						
 						
 		{{ form_start(form, {"attr": {"action": path('participant.groupe.join', {'participant': participant.id}) }}) }}

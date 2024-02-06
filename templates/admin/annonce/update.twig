@@ -1,0 +1,22 @@
+{% extends "layout.twig" %}
+
+{% block title %}Annonces{% endblock title %}
+
+{% block content %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li><a href="{{ path("annonce.list") }}">Liste des annonces</a></li>
+		<li class="active">Modification d'une annonce</li>
+	</ol>
+	
+	<div class="well bs-component">
+		<form action="{{ path('annonce.update', {'annonce': annonce.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+			<fieldset>
+				<legend>Modification d'une annonce</legend>
+					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					{{ form(form) }}
+			</fieldset>
+		</form>
+	</div>	
+{% endblock content %}

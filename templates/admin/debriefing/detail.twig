@@ -1,0 +1,60 @@
+{% extends "layout.twig" %}
+
+{% block title %}Debriefing{% endblock title %}
+
+{% block content %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li><a href="{{ path('debriefing.list') }}">Liste des debriefing</a></li>
+		<li class="active">Détail du debriefing {{ debriefing.titre|default('Pas de titre') }}</li>
+	</ol>
+
+	<div class="list-group">
+		<div class="list-group-item">
+			<div class="list-group-item-heading"><h6>Groupe</h6></div>
+			<div class="list-group-item-text"><a href="{{ path('groupe.detail', {'index': debriefing.groupe.id}) }}">{{ debriefing.groupe.nom }}</a></div>
+		</div>
+		<div class="list-group-item">
+			<div class="list-group-item-heading"><h6>Informations</h6></div>
+			<p class="list-group-item-text text-warning">
+				Visibilité : {{ debriefing.visibility|explainVisibility }}
+			</p>
+			<p class="list-group-item-text">
+				Scénariste : {{ debriefing.user }}
+			</p>
+			<p class="list-group-item-text">
+				Auteur :
+					{% if debriefing.player is null %}
+						Non renseigné
+					{% else %}
+						{{ debriefing.player.displayName }}
+					{% endif %}
+			</p>
+			<p class="list-group-item-text">
+	    		Création : {{ debriefing.creationDate|date('Y-m-d H:i:s') }}
+	    	</p>
+	    	<p class="list-group-item-text">
+	    		Dernière modification : {{ debriefing.updateDate|date('Y-m-d H:i:s') }}
+	    	</p>
+			{% if debriefing.documentUrl %}
+	    	<p class="list-group-item-text">
+	    		Document : <a href="{{ path('debriefing.document', {'debriefing': debriefing.id}) }}">{{ debriefing.getPrintTitre }}</a>
+	    	</p>			
+			{% endif %}
+		</div>
+	</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4>{{ debriefing.titre|default('Pas de titre') }}
+				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('debriefing.update', {'debriefing': debriefing.id}) }}"><i class="fa fa-pencil"></i></a>
+				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('debriefing.delete', {'debriefing': debriefing.id}) }}"><i class="fa fa-eraser"></i></a>
+			</h4>
+		</div>
+		<div class="panel-body">
+			<p>{{ debriefing.text|markdown }}</p>
+		</div>
+	</div>
+	
+{% endblock %}

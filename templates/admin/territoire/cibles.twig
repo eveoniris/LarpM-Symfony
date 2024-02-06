@@ -1,0 +1,20 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Territoire{% endblock title %}
+
+{% block body %}
+
+<div class="well bs-component">
+	
+	
+	<div class="header"><h5>Modifier les cibles (quêtes commerciales) pour le territoire {{ territoire.nom }}</h5></div>
+	
+	
+	{{ form_start(form, {"attr": {"action": path('territoire.admin.updateCibles', {'territoire': territoire.id}) }}) }}			
+			
+			{{ form(form) }}
+	{{ form_end(form) }}
+	
+</div>
+
+{% endblock body %}
