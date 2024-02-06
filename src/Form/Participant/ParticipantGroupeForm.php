@@ -21,7 +21,7 @@ class ParticipantGroupeForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('groupeGn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-            'label' => 'Choisissez le groupe a affecter à cet utilisateur',
+            'label' => 'Choisissez le groupe à affecter à cet utilisateur',
             'multiple' => false,
             'expanded' => true,
             'required' => true,

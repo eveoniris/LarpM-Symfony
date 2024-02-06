@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Repository\ReligionRepository;
 use App\Entity\Religion;
+use App\Entity\ReligionLevel;
 use App\Form\Religion\ReligionBlasonForm;
 use App\Form\Religion\ReligionForm;
 use App\Form\Religion\ReligionLevelForm;
@@ -26,10 +27,9 @@ class ReligionController extends AbstractController
     /**
      * Liste des perso ayant cette religion.
      */
-    public function persoAction(Request $request): Response
+    #[Route('/religion/{religion}/perso', name: 'religion.perso')]
+    public function persoAction(Request $request, Religion $religion): Response
     {
-        $religion = $request->get('religion');
-
         return $this->render(
             'admin/religion/perso.twig', 
             [
@@ -55,7 +55,6 @@ class ReligionController extends AbstractController
             $where = 'r.secret = 0';
         }
         
-
         $paginator = $religionRepository->findPaginated($page, $limit, $orderBy, $orderDir, $where);
         
         return $this->render(
@@ -71,6 +70,7 @@ class ReligionController extends AbstractController
     /**
      * affiche la liste des religions.
      */
+    #[Route('/religion/mail', name: 'religion.mail')]
     public function mailAction(Request $request, ReligionRepository $religionRepository): Response
     {
         $religions = $religionRepository->findAllOrderedByLabel();
@@ -86,7 +86,7 @@ class ReligionController extends AbstractController
     /**
      * Detail d'une religion.
      */
-    #[Route('/religion/{id}')]
+    #[Route('/religion/{religion}/detail', name: 'religion.detail')]
     public function detailAction(Religion $religion): Response
     {
         return $this->render(
@@ -100,6 +100,7 @@ class ReligionController extends AbstractController
     /**
      * Ajoute une religion.
      */
+    #[Route('/religion/add', name: 'religion.add')]
     public function addAction(EntityManagerInterface $entityManager, Request $request, TopicRepository $topicRepository): Response
     {
         $religion = new Religion();
@@ -165,11 +166,9 @@ class ReligionController extends AbstractController
      * Si l'utilisateur clique sur "supprimer", la religion est supprimée et l'utilisateur est
      * redirigé vers la liste des religions.
      */
-    #[Route('/religion/edit/{id}', name: 'religion_edit')]
-    public function updateAction(EntityManagerInterface $entityManager, Request $request, int $id)
+    #[Route('/religion/{religion}/update', name: 'religion.update')]
+    public function updateAction(EntityManagerInterface $entityManager, Request $request, Religion $religion)
     {
-        $religion = $entityManager->getRepository(Religion::class)->find($id);
-
         $form = $this->createForm(ReligionForm::class, $religion)
             ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
             ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer'])
@@ -222,10 +221,9 @@ class ReligionController extends AbstractController
     /**
      * Met à jour le blason d'une religion.
      */
-    public function updateBlasonAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/religion/{religion}/updateBlason', name: 'religion.updateBlason')]
+    public function updateBlasonAction(Request $request,  EntityManagerInterface $entityManager, Religion $religion)
     {
-        $religion = $request->get('religion');
-
         $form = $this->createForm(ReligionBlasonForm::class, $religion)
             ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -266,7 +264,7 @@ class ReligionController extends AbstractController
     }
 
     /**
-     * affiche la liste des niveau de fanatisme.
+     * affiche la liste des niveaux de fanatisme.
      */
     #[Route('/religion/level', name: 'religion.level')]
     public function levelIndexAction(Request $request,  EntityManagerInterface $entityManager)
@@ -280,18 +278,16 @@ class ReligionController extends AbstractController
     /**
      * Detail d'un niveau de fanatisme.
      */
-    public function levelDetailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/religion/level/{religionLevel}/detail', name: 'religion.level.detail')]
+    public function levelDetailAction(Request $request,  EntityManagerInterface $entityManager, ReligionLevel $religionLevel)
     {
-        $id = $request->get('index');
-
-        $religionLevel = $entityManager->find('\\'.\App\Entity\ReligionLevel::class, $id);
-
         return $this->render('religion/level/detail.twig', ['religionLevel' => $religionLevel]);
     }
 
     /**
      * Ajoute un niveau de fanatisme.
      */
+    #[Route('/religion/level/add', name: 'religion.level.add')]
     public function levelAddAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $religionLevel = new \App\Entity\ReligionLevel();
@@ -331,12 +327,9 @@ class ReligionController extends AbstractController
      * Si l'utilisateur clique sur "supprimer", le niveau religion est supprimée et l'utilisateur est
      * redirigé vers la liste de niveaux de religions.
      */
-    public function levelUpdateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/religion/level/{religionLevel}/detail', name: 'religion.level.detail')]
+    public function levelUpdateAction(Request $request,  EntityManagerInterface $entityManager, ReligionLevel $religionLevel)
     {
-        $id = $request->get('index');
-
-        $religionLevel = $entityManager->find('\\'.\App\Entity\ReligionLevel::class, $id);
-
         $form = $this->createForm(ReligionLevelForm::class, $religionLevel)
             ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
             ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);

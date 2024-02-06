@@ -217,6 +217,7 @@ class GnController extends AbstractController
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
                 'label' => 'Sauvegarder',
             ]);
+        
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $gn = $form->getData();

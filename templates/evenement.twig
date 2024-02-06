@@ -15,7 +15,7 @@
 		{% if app.user.gns|length > 0 %}
 			<div class="panel panel-default">
 				<div class="panel-body">
-					<h6>{% trans %}gn_list_title{% endtrans %}</h6>
+					<h6>Les GNs auxquels vous participez</h6>
 					<ul class="list-group">
 						{% for gn in app.user.gns %}
 							<a class="list-group-item" href="{{ path('gn.detail', {'index': gn.id}) }}">{{ gn.label }}</a>

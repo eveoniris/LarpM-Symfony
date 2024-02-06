@@ -1,0 +1,25 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Religion{% endblock title %}
+
+{% block body %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Liste des religions</li>
+	</ol>
+
+	<div class="well well-sm">
+	
+			<h4>
+				Gestion des religions
+				<small>
+					( {{ paginator|length }} religions )
+				</small>
+			</h4>	
+			<a href="{{ path('religion.mail') }}"><button  type="button" class="btn btn-default">Liste mail</button></a>
+			
+			{{ include("admin/religion/fragment/list.twig", {'religions' : paginator, 'add' : true}) }}
+	</div>
+	
+{% endblock %}

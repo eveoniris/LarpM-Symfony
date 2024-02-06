@@ -115,7 +115,7 @@ class TerritoireRepository extends BaseRepository
         $defaultEntityAlias = strstr((string) $order['by'], '.') ? '' : 't.';
         $qb->orderBy($defaultEntityAlias.$order['by'], $order['dir']);
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 
     /**
