@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\BaseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 
 abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
 {
@@ -13,6 +14,15 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected RequestStack $requestStack,
         // Cache $cache,
     ) {
+    }
+
+    protected function render(string $view, array $parameters = [], ?Response $response = null): Response 
+    { 
+        //dump($this->container->get('twig')->getLoader()->exists('admin/' . $view));
+        if($this->isGranted('ROLE_ADMIN') && $this->container->get('twig')->getLoader()->exists('admin/' . $view))
+            return parent::render('admin/' . $view, $parameters, $response);
+        
+        return parent::render($view, $parameters, $response);
     }
 
     protected function getRequestLimit(int $defLimit = 10): int
