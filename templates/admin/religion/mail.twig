@@ -1,12 +1,12 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Religion{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("religion") }}">Liste des religions</a></li>
+		<li><a href="{{ path("religion.index") }}">Liste des religions</a></li>
 		<li class="active">Liste des adresses mails</li>
 	</ol>
 
@@ -23,9 +23,9 @@
 			<tr>
 				<td>{{ religion.label }}</td>
 				<td>
-			{% for personnageReligion in religion.personnagesReligions %}
-				{{ personnageReligion.personnage.user.email }},&nbsp;
-			{% endfor %}
+				{% for personnageReligion in religion.personnagesReligions %}
+					{{ personnageReligion.personnage.user.email }},&nbsp;
+				{% endfor %}
 				</td>
 			</tr>
 		{%  endfor %}
@@ -33,4 +33,4 @@
 		</table>
 	</div>
 	
-{% endblock content %}
+{% endblock body %}

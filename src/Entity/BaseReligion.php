@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -73,12 +74,12 @@ abstract class BaseReligion
 
     public function __construct()
     {
-        $this->personnagesReligions = new Collection();
-        $this->religionDescriptions = new Collection();
-        $this->territoires = new Collection();
-        $this->personnages = new Collection();
-        $this->spheres = new Collection();
-        $this->territoireSecondaires = new Collection();
+        $this->personnagesReligions = new ArrayCollection();
+        $this->religionDescriptions = new ArrayCollection();
+        $this->territoires = new ArrayCollection();
+        $this->personnages = new ArrayCollection();
+        $this->spheres = new ArrayCollection();
+        $this->territoireSecondaires = new ArrayCollection();
     }
 
     /**
@@ -156,7 +157,7 @@ abstract class BaseReligion
     /**
      * Set the value of description_orga.
      */
-    public function setDescriptionOrga(string $description_orga): static
+    public function setDescriptionOrga(?string $description_orga): static
     {
         $this->description_orga = $description_orga;
 
@@ -174,7 +175,7 @@ abstract class BaseReligion
     /**
      * Set the value of description_fervent.
      */
-    public function setDescriptionFervent(string $description_fervent): static
+    public function setDescriptionFervent(?string $description_fervent): static
     {
         $this->description_fervent = $description_fervent;
 
@@ -192,7 +193,7 @@ abstract class BaseReligion
     /**
      * Set the value of description_pratiquant.
      */
-    public function setDescriptionPratiquant(string $description_pratiquant): static
+    public function setDescriptionPratiquant(?string $description_pratiquant): static
     {
         $this->description_pratiquant = $description_pratiquant;
 
@@ -210,7 +211,7 @@ abstract class BaseReligion
     /**
      * Set the value of description_fanatique.
      */
-    public function setDescriptionFanatique(string $description_fanatique): static
+    public function setDescriptionFanatique(?string $description_fanatique): static
     {
         $this->description_fanatique = $description_fanatique;
 

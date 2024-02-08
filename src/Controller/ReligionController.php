@@ -7,6 +7,7 @@ use App\Repository\ReligionRepository;
 use App\Entity\Religion;
 use App\Entity\ReligionLevel;
 use App\Form\Religion\ReligionBlasonForm;
+use App\Form\Religion\ReligionDeleteForm;
 use App\Form\Religion\ReligionForm;
 use App\Form\Religion\ReligionLevelForm;
 use App\Repository\TopicRepository;
@@ -74,7 +75,7 @@ class ReligionController extends AbstractController
     public function mailAction(Request $request, ReligionRepository $religionRepository): Response
     {
         $religions = $religionRepository->findAllOrderedByLabel();
-
+        
         return $this->render(
             'admin/religion/mail.twig', 
             [
@@ -126,7 +127,7 @@ class ReligionController extends AbstractController
             $topic->setTitle($religion->getLabel());
             $topic->setDescription($religion->getDescription());
             $topic->setUser($this->getUser());
-            $topic->setTopic($topicRepository->findOneBy(['kay' => 'TOPIC_CULTE']));
+            $topic->setTopic($topicRepository->findOneBy(['key' => 'TOPIC_CULTE']));
             $topic->setRight('CULTE');
 
             $entityManager->persist($topic);
@@ -144,8 +145,8 @@ class ReligionController extends AbstractController
             // l'utilisateur est redirigé soit vers la liste des religions, soit vers de nouveau
             // vers le formulaire d'ajout d'une religion
             if ($form->get('save')->isClicked()) {
-                //return $this->redirectToRoute('religion', [], 303);
-                return $this->redirectToRoute('religion', [], 303);
+                //return $this->redirectToRoute('religion.index', [], 303);
+                return $this->redirectToRoute('religion.index', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
                 //return $this->redirectToRoute('religion.add', [], 303);
                 return $this->redirectToRoute('religion.add', [], 303);
@@ -198,14 +199,14 @@ class ReligionController extends AbstractController
                 $entityManager->flush();
                 $this->addFlash('success', 'La religion a été mise à jour.');
 
-                //return $this->redirectToRoute('religion.detail', ['index' => $id], 303);
-                return $this->redirectToRoute('religion.detail', [], 303);
+                return $this->redirectToRoute('religion.detail', ['religion' => $religion->getId()], 303);
+                //return $this->redirectToRoute('religion.detail', [], 303);
             } elseif ($form->get('delete')->isClicked()) {
                 /*$entityManager->remove($religion);
                 $entityManager->flush();
                 $this->addFlash('success', 'La religion a été supprimée.');*/
-                //return $this->redirectToRoute('religion', [], 303);
-                return $this->redirectToRoute('religion', [], 303);
+                //return $this->redirectToRoute('religion.index', [], 303);
+                return $this->redirectToRoute('religion.delete', ['religion' => $religion->getId()], 303);
             }
         }
 
@@ -219,9 +220,64 @@ class ReligionController extends AbstractController
     }
 
     /**
+     * Supression d'une religion.
+     */
+    #[Route('/religion/{religion}/delete', name: 'religion.delete')]
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Religion $religion)
+    {
+        $form = $this->createForm(ReligionDeleteForm::class, $religion)
+            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $religion = $form->getData();
+
+            foreach ($religion->getPersonnages() as $personnage) {
+                $personnage->removeReligion($religion);
+                $entityManager->persist($personnage);
+            }
+
+            foreach ($religion->getTerritoires() as $territoire) {
+                if ($territoire->getReligion() == $religion) {
+                    $territoire->setReligion(null);
+                }
+                $territoire->removeReligion($religion);
+                $entityManager->persist($territoire);
+            }
+
+            $entityManager->remove($religion);
+            $entityManager->flush();
+            $this->addFlash('success', 'La religion a été supprimée.');
+
+            return $this->redirectToRoute('religion.index', [], 303);
+        }
+
+        return $this->render('religion/delete.twig', [
+            'religion' => $religion,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Récupération de l'image du blason d'une religion.
+     */
+    #[Route('/religion/{religion}/blason', name: 'religion.blason', methods: ['GET'])]
+    public function blasonAction(Request $request, EntityManagerInterface $entityManager, Religion $religion): Response
+	{
+		$blason = $religion->getBlason();
+        $filename = __DIR__.'/../../assets/img/blasons/'.$blason;
+        
+        $response = new Response(file_get_contents($filename));
+        $response->headers->set('Content-Type', 'image/png');
+
+        return $response;
+	}
+
+    /**
      * Met à jour le blason d'une religion.
      */
-    #[Route('/religion/{religion}/updateBlason', name: 'religion.updateBlason')]
+    #[Route('/religion/{religion}/updateBlason', name: 'religion.update.blason')]
     public function updateBlasonAction(Request $request,  EntityManagerInterface $entityManager, Religion $religion)
     {
         $form = $this->createForm(ReligionBlasonForm::class, $religion)
@@ -232,19 +288,20 @@ class ReligionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $files = $request->files->get($form->getName());
 
-            $path = __DIR__.'/../../../private/img/blasons/';
+            $path = __DIR__.'/../../assets/img/blasons/';
             $filename = $files['blason']->getClientOriginalName();
             $extension = $files['blason']->guessExtension();
 
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
                 $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
 
-                return $this->redirectToRoute('religion.detail', ['index' => $religion->getId()], 303);
+                return $this->redirectToRoute('religion.detail', ['religion' => $religion->getId()], 303);
             }
 
             $blasonFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
 
-            $image = $app['imagine']->open($files['blason']->getPathname());
+            $imagine = new \Imagine\Gd\Imagine();
+            $image = $imagine->open($files['blason']->getPathname());
             $image->resize($image->getSize()->widen(160));
             $image->save($path.$blasonFilename);
 
@@ -254,7 +311,7 @@ class ReligionController extends AbstractController
 
             $this->addFlash('success', 'Le blason a été enregistré');
 
-            return $this->redirectToRoute('religion.detail', ['index' => $religion->getId()], 303);
+            return $this->redirectToRoute('religion.detail', ['religion' => $religion->getId()], 303);
         }
 
         return $this->render('religion/blason.twig', [

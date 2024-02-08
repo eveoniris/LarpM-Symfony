@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\Sort;
+use App\Entity\Sphere;
 use App\Form\DomaineDeleteForm;
 use App\Form\DomaineForm;
 use App\Form\Potion\PotionDeleteForm;
@@ -16,6 +17,7 @@ use App\Form\SortDeleteForm;
 use App\Form\SortForm;
 use App\Form\SphereDeleteForm;
 use App\Form\SphereForm;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -43,10 +45,9 @@ class MagieController extends AbstractController
     /**
      * Detail d'une sphere.
      */
-    public function sphereDetailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/sphere/{sphere}', name: 'magie.sphere.detail')]
+    public function sphereDetailAction(Request $request,  EntityManagerInterface $entityManager, Sphere $sphere)
     {
-        $sphere = $request->get('sphere');
-
         return $this->render('sphere/detail.twig', [
             'sphere' => $sphere,
         ]);

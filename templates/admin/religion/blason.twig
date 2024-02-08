@@ -1,13 +1,12 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
-{% block title %}Blason{% endblock title %}
+{% block title %}Religion{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("religion") }}">Liste des religions</a></li>
-		<li><a href="{{ path('religion.detail', {'index': religion.id}) }}">{{ religion.label }}</a></li>
+		<li><a href="{{ path("religion.index") }}">Liste des religions</a></li>
 		<li class="active">Modifier le blason</li>
 	</ol>
 	
@@ -16,12 +15,11 @@
 		<div class="header"><h5>Ajouter un blason pour la religion {{ religion.label }}</h5></div>
 		
 		<blockquote>Choisissez votre fichier et téléversez le dans larpManager.</blockquote>
-		
-		<form action="{{ path('religion.update.blason', {'religion': religion.id}) }}" method="POST" {{ form_enctype(form) }}>			
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
-				{{ form(form) }}
-		</form>
+
+		{{ form_start(form, {"attr": {"action": path('religion.update.blason', {'religion': religion.id}) }}) }}
+			{{ form(form) }}
+		{{ form_end(form) }}
 		
 	</div>
 
-{% endblock content %}
+{% endblock body %}

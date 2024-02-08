@@ -68,8 +68,8 @@ class ReligionForm extends AbstractType
             ->add('secret', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [
-                    false => 'Religion publique',
-                    true => 'Religion secrète',
+                    'Religion publique' => false,
+                    'Religion secrète' => true,
                 ],
                 'label' => 'Secret',
             ]);

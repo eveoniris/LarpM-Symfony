@@ -157,7 +157,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Mise à jour du matériel necessaire à un groupe secondaire.
      */
-    #[Route('/groupeSecondaire/materielUpdate/{id}', name: 'groupeSecondaire.materielUpdate')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/materielUpdate', name: 'groupeSecondaire.materielUpdate')]
     public function materielUpdateAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
         $form = $this->createForm(GroupeSecondaireMaterielForm::class, $groupeSecondaire);
@@ -181,7 +181,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Impression de l'enveloppe du groupe secondaire.
      */
-    #[Route('/groupeSecondaire/print/{id}', name: 'groupeSecondaire.print')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/print', name: 'groupeSecondaire.print')]
     public function materielPrintAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
         return $this->render('groupeSecondaire/print.twig', [
@@ -205,7 +205,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Met à jour un de groupe secondaire.
      */
-    #[Route('/groupeSecondaire/update/{id}', name: 'groupeSecondaire.update')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/update', name: 'groupeSecondaire.update')]
     public function adminUpdateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
         $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)
@@ -282,7 +282,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Détail d'un groupe secondaire (pour les orgas).
      */
-    #[Route('/groupeSecondaire/detail/{id}', name: 'groupeSecondaire.detail')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/detail', name: 'groupeSecondaire.admin.detail')]
     public function adminDetailAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $groupeSecondaire = $request->get('groupe');
@@ -295,7 +295,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Ajoute un nouveau membre au groupe secondaire.
      */
-    #[Route('/groupeSecondaire/addMember/{id}', name: 'groupeSecondaire.addMember')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/addMember', name: 'groupeSecondaire.addMember')]
     public function adminNewMembreAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
         $form = $this->createForm(GroupeSecondaireNewMembreForm::class);
@@ -334,7 +334,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Retire un postulant du groupe.
      */
-    #[Route('/groupeSecondaire/removePostulant/{id}', name: 'groupeSecondaire.removePostulant')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/removePostulant', name: 'groupeSecondaire.removePostulant')]
    public function adminRemovePostulantAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
         $postulant = $request->get('postulant');
@@ -352,7 +352,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Accepte un postulant dans le groupe.
      */
-    #[Route('/groupeSecondaire/acceptPostulant/{id}', name: 'groupeSecondaire.acceptPostulant')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/acceptPostulant', name: 'groupeSecondaire.acceptPostulant')]
     public function adminAcceptPostulantAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
         $groupeSecondaire = $request->get('groupe');
@@ -385,7 +385,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Retire un membre du groupe.
      */
-    #[Route('/groupeSecondaire/removeMember/{id}', name: 'groupeSecondaire.removeMember')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/removeMember', name: 'groupeSecondaire.removeMember')]
     public function adminRemoveMembreAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
         $membre = $request->get('membre');
@@ -405,7 +405,7 @@ class GroupeSecondaireController extends AbstractController
      *
      * @param Applicetion $app
      */
-    #[Route('/groupeSecondaire/secretOff/{id}', name: 'groupeSecondaire.secretOff')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/secretOff/{id}', name: 'groupeSecondaire.secretOff')]
     public function adminSecretOffAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
         $membre = $request->get('membre');
@@ -424,7 +424,7 @@ class GroupeSecondaireController extends AbstractController
      *
      * @param Applicetion $app
      */
-    #[Route('/groupeSecondaire/secretOn/{id}', name: 'groupeSecondaire.secretOn')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/secretOn', name: 'groupeSecondaire.secretOn')]
     public function adminSecretOnAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
         $membre = $request->get('membre');
