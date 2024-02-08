@@ -98,7 +98,7 @@ class PersonnageController extends AbstractController
     /**
      * Mise à jour de la photo.
      */
-    #[Route('/personnage/{personnage}/updateTrombine', name: 'personnage.update.trombine')]
+    #[Route('/personnage/{personnage}/updateTrombine', name: 'personnage.trombine.update')]
     public function updateTrombineAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $form = $this->createForm(TrombineForm::class, [])

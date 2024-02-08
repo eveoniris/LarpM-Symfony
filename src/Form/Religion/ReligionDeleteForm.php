@@ -8,22 +8,15 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\TrombineForm.
- *
- * @author kevin
+ * App\Form\ReligionDeleteForm.
  */
-class ReligionBlasonForm extends AbstractType
+class ReligionDeleteForm extends AbstractType
 {
     /**
      * Construction du formulaire.
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('blason', \Symfony\Component\Form\Extension\Core\Type\FileType::class, [
-            'label' => 'Choisissez votre fichier',
-            'required' => true,
-            'mapped' => false,
-        ]);
     }
 
     /**
@@ -41,6 +34,6 @@ class ReligionBlasonForm extends AbstractType
      */
     public function getName(): string
     {
-        return 'religionBlason';
+        return 'religionDelete';
     }
 }

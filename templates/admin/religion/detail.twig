@@ -18,7 +18,7 @@
 			</h4>
 			<div class="pull-right">
 				{% if religion.blason %}
-					<img width="160" src="{{ path('blason.get', {'blason' : religion.blason }) }}" /><br />
+					<img width="160" src="{{ path('religion.blason', {'religion' : religion.id }) }}" /><br />
 				{% endif %}
 				<small><a href="{{ path('religion.update.blason', {'religion': religion.id}) }}">Ajouter ou modifier le blason</a></small>
 			</div>
@@ -130,7 +130,7 @@
 			
 			<div class="list-group-item">
   				<div class="btn-group" role="group" aria-label="...">
-  					<a  class="btn btn-primary" role="button" href="{{ path('religion.update', {index : religion.id}) }}">Modifier</a>
+  					<a  class="btn btn-primary" role="button" href="{{ path('religion.update', {religion : religion.id}) }}">Modifier</a>
 				</div>
   			</div>
 		</div>

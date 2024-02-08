@@ -9,17 +9,24 @@
 		<li class="active">Liste des religions</li>
 	</ol>
 
-	<div class="well well-sm">
-	
-			<h4>
-				Gestion des religions
-				<small>
-					( {{ paginator|length }} religions )
-				</small>
-			</h4>	
-			<a href="{{ path('religion.mail') }}"><button  type="button" class="btn btn-default">Liste mail</button></a>
-			
-			{{ include("admin/religion/fragment/list.twig", {'religions' : paginator, 'add' : true}) }}
+	<div class="well well-sm bs-component">
+
+		<div class="header">
+			<h5>Liste des religions</h5>
+		</div>
+
+		<div class="btn-toolbar" role="toolbar" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter une religion" href="{{ path('religion.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Liste mail" href="{{ path('religion.mail') }}"><i class="fa fa-list"></i> Liste</a>
+			</div>
+		</div>
 	</div>
+
+	{% include '_partials/pagination.html.twig' %}
+
+	{{ include("admin/religion/fragment/list.twig", {'religions' : paginator, 'add' : true}) }}
+
+	{% include '_partials/pagination.html.twig' %}
 	
 {% endblock %}
