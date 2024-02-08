@@ -68,6 +68,15 @@ Pour ne pas avoir à recompiler en cas de changement
 Si le clear:cache échoue :
    php -d memory_limit=-1 bin/console cache:clear
 
+Export de la base de donnée
+`docker exec -it larpm-symfony-database-1 mariadb-dump -uadmin -ppassword --opt larpm > backup.sql`
+
+Copier le fichier dans le container 
+`docker cp backup.sql larpm-symfony-database-1:/tmp/backup.sql`
+
+Import de la base de donnée (le fichier doit être dans le container)
+`docker exec -it larpm-symfony-database-1 /bin/sh -c "mariadb -uadmin -ppassword larpm < /tmp/backup.sql"`
+
 9) mise à jour
 Commande pour maj aller sur le container (voir point 6) puis faire :
 - docker compose build
