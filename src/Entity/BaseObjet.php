@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'objet')]
@@ -53,9 +54,8 @@ abstract class BaseObjet
     #[JoinColumn(name: 'id', referencedColumnName: 'objet_id', nullable: 'false')]
     protected Collection $items;
 
-    #[OneToMany(mappedBy: 'objet', targetEntity: ObjetCarac::class)]
-    #[JoinColumn(name: 'objet_id', referencedColumnName: 'id')]
-    protected ?Collection $objetCaracs;
+    #[OneToOne(mappedBy: 'objet', targetEntity: ObjetCarac::class)]
+    protected ?ObjetCarac $objetCarac = null;
 
     #[ManyToOne(targetEntity: Etat::class, inversedBy: 'objets')]
     #[JoinColumn(name: 'etat_id', referencedColumnName: 'id')]
@@ -86,7 +86,6 @@ abstract class BaseObjet
     public function __construct()
     {
         $this->items = new ArrayCollection();
-        $this->objetCaracs = new ArrayCollection();
         $this->tags = new ArrayCollection();
     }
 
@@ -195,7 +194,7 @@ abstract class BaseObjet
      */
     public function getCout(): float
     {
-        return $this->cout;
+        return $this->cout ?? 0;
     }
 
     /**
@@ -213,7 +212,7 @@ abstract class BaseObjet
      */
     public function getBudget(): float
     {
-        return $this->budget;
+        return $this->budget ?? 0;
     }
 
     /**
@@ -293,10 +292,7 @@ abstract class BaseObjet
         return $this;
     }
 
-    /**
-     * Get ObjetCarac entity (one to one).
-     */
-    public function getObjetCarac(): ObjetCarac
+    public function getObjetCarac(): ?ObjetCarac
     {
         return $this->objetCarac;
     }

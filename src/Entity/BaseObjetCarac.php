@@ -27,8 +27,8 @@ abstract class BaseObjetCarac
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 6, nullable: true)]
     protected ?string $couleur = null;
 
-    #[ORM\OneToOne(mappedBy: 'objetCaracs', targetEntity: Objet::class, cascade: ['persist', 'remove', 'merge', 'detach', 'all'])]
-    #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id')]
+    #[ORM\OneToOne(inversedBy: 'objetCarac', targetEntity: Objet::class, cascade: ['persist', 'remove', 'merge', 'detach', 'all'])]
+    #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id', nullable: false)]
     protected Objet $objet;
 
     /**
@@ -120,9 +120,4 @@ abstract class BaseObjetCarac
     {
         return $this->objet;
     }
-
-    /* public function __sleep()
-    {
-        return ['id', 'objet_id', 'taille', 'poid', 'couleur'];
-    } */
 }

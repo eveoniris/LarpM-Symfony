@@ -6,14 +6,15 @@ use App\Entity\Etat;
 use App\Entity\Objet;
 use App\Entity\Rangement;
 use App\Entity\Tag;
+use App\Form\Entity\ListSearch;
 use App\Form\ObjetFindForm;
 use App\Form\Stock\ObjetDeleteForm;
 use App\Form\Stock\ObjetForm;
 use App\Form\Stock\ObjetTagForm;
 use App\Repository\ObjetRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 // use Imagine\Image\Box; // TODO
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -30,7 +31,7 @@ class StockObjetController extends AbstractController
      * Affiche la liste des objets.
      */
     #[Route('/stock/objet', name: 'stockObjet.index')]
-    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
+    public function indexAction(Request $request, EntityManagerInterface $entityManager, ObjetRepository $objetRepository): Response
     {
         $repoRangement = $entityManager->getRepository(Rangement::class);
         $rangements = $repoRangement->findAll();
@@ -38,10 +39,8 @@ class StockObjetController extends AbstractController
         $repoTag = $entityManager->getRepository(Tag::class);
         $tags = $repoTag->findAll();
 
-        $repoObjet = $entityManager->getRepository(Objet::class);
-
-        $objetsWithoutTagCount = $repoObjet->findCount(['tag' => ObjetRepository::CRIT_WITHOUT]);
-        $objetsWithoutRangementCount = $repoObjet->findCount(['rangement' => ObjetRepository::CRIT_WITHOUT]);
+        $objetsWithoutTagCount = $objetRepository->findCount(['tag' => ObjetRepository::CRIT_WITHOUT]);
+        $objetsWithoutRangementCount = $objetRepository->findCount(['rangement' => ObjetRepository::CRIT_WITHOUT]);
 
         $criteria = [];
 
@@ -55,55 +54,73 @@ class StockObjetController extends AbstractController
         // rangement: [a-Z]+ => search object with this rangement name
         $criteria['rangement'] = $request->get('rangement');
 
-        $order_by = $request->get('order_by', 'nom');
-        $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) $request->get('limit', 50);
-        $page = (int) $request->get('page', 1);
-        $offset = ($page - 1) * $limit;
+        // /////////////////////////////////////////////////////
+        // TODO discover WHY search ad in AND id IN () to the query
+        $type = null;
+        $value = null;
 
-        $form = $this->createForm(ObjetFindForm::class);
+        $objetSearch = new ListSearch();
+        $form = $this->createForm(ObjetFindForm::class, $objetSearch);
+        // TODO add to form the Tag and Rangement choise
+        // TODO move photo from database to drive
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            $criteria[$data['type']] = $data['value'];
+            $type = $data->getType();
+            $value = $data->getValue();
         }
 
-        $objets = $repoObjet->findList(
-            $criteria,
-            ['by' => $order_by, 'dir' => $order_dir],
-            $limit,
-            $offset
+        $alias = ObjetRepository::getEntityAlias();
+
+        $criterias = [];
+        if (!empty($value)) {
+            if (empty($type) || '*' === $type) {
+                if (is_numeric($value)) {
+                    $criterias[] = Criteria::create()->where(
+                        Criteria::expr()?->contains($alias.'.id', $value)
+                    )->orWhere(
+                        Criteria::expr()?->contains($alias.'.numero', $value)
+                    ); // TODO look for linked ITEM
+                } else {
+                    Criteria::create()->where(
+                        Criteria::expr()?->contains($alias.'.nom', $value)
+                    )->orWhere(
+                        Criteria::expr()?->contains($alias.'.description', $value)
+                    );
+                }
+            } else {
+                $criterias[] = Criteria::create()->andWhere(
+                    Criteria::expr()?->contains($alias.'.'.$type, $value)
+                );
+            }
+        }
+
+        $orderBy = $this->getRequestOrder(
+            defOrderBy: 'nom',
+            alias: $alias,
+            allowedFields: $objetRepository->getFieldNames()
         );
 
-        $url = '';//$app['url_generator']->generate('stockObjet.index');
-
-        $paginator = new Paginator(
-            $repoObjet->findCount($criteria),
-            $limit,
-            $page,
-            $url.'?page=(:num)&'.http_build_query(
-                [
-                    'limit' => $limit,
-                    'order_by' => $order_by,
-                    'order_dir' => $order_dir,
-                    'tag' => $criteria['tag'],
-                    'rangement' => $criteria['rangement'],
-                ]
-            )
+        $paginator = $objetRepository->getPaginator(
+            limit: $this->getRequestLimit(25),
+            page: $this->getRequestPage(),
+            orderBy: $orderBy,
+            alias: $alias,
+            criterias: $criterias
         );
 
         return $this->render('stock/objet/list.twig', [
-            'objets' => $objets,
-            'tag' => $criteria['tag'],
-            'tags' => $tags,
+            'tag' => $criteria['tag'], // TODO
+            'tags' => $tags, // TODO
             'form' => $form->createView(),
-            'objetsWithoutTagCount' => $objetsWithoutTagCount,
-            'objetsWithoutRangementCount' => $objetsWithoutRangementCount,
+            'objetsWithoutTagCount' => $objetsWithoutTagCount, // TODO
+            'objetsWithoutRangementCount' => $objetsWithoutRangementCount, // TODO
             'paginator' => $paginator,
-            'rangements' => $rangements,
-            'rangement' => $criteria['rangement'],
+            'rangements' => $rangements, // TODO
+            'rangement' => $criteria['rangement'], // TODO
+            'orderDir' => $this->getRequestOrderDir(),
         ]);
     }
 
