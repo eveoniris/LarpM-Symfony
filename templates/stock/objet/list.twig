@@ -4,176 +4,181 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Objets</li>
-	</ol>
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li class="active">Objets</li>
+    </ol>
 
-	<nav class="navbar navbar-default" style="padding-right: 5px;">
+    <div class="well well-sm">
 
-		<div class="flex-container">
+        <div class="header">
+            <h5>Objets</h5>
+        </div>
 
-			<div class="flex-item">
-				<form class="form-inline" action="{{ path('stockObjet.index', {'order_by': 'nom', 'order_dir': 'DESC'}) }}) }}
-					
-					<div class="form-group">
-						<div class="input-group">
-							{{ form_widget(form.value) }}
-						</div>
-						<div class="input-group">
-							{{ form_widget(form.type) }}
-							<div class="input-group-btn">
-								<button type="submit" class="btn btn-default" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
-								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('stockObjet.index', {'order_by': 'nom', 'order_dir': 'DESC'}) }}"><i class="fa fa-refresh"></i></a>
-							</div>
-						</div>
-					</div>
-					{{ form_rest(form) }}
-				{{ form_end(form) }}
+        <div class="d-flex justify-content-between">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <div class="btn-toolbar" role="toolbar" aria-label="...">
+                        {{ form_start(form, {"action": path('stockObjet.index')}) }}
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ form_widget(form.value) }}
 
+                                {{ form_widget(form.type) }}
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-default" data-toggle="tooltup"
+                                            data-placement="top"
+                                            title="Lancer la recherche"><i class="fa fa-search"></i></button>
+                                    <a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset"
+                                       href="{{ path('stockObjet.index') }}"><i class="fa fa-refresh"></i></a>
+                                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                       title="Ajouter un objet" href="{{ path('stockObjet.add') }}"><i
+                                                class="fa fa-plus"></i> Ajouter</a>
+                                </div>
+                            </div>
+                        </div>
+                        {{ form_rest(form) }}
+                        {{ form_end(form) }}
+                    </div>
+                </li>
+            </ul>
+            <div>
+                {% if tag == -1 %}
+                    &nbsp;- Sans tag
+                {% endif %}
 
-			</div>
+                {% if rangement == -1 %}
+                    &nbsp;- sans rangement
+                {% endif %}
+            </div>
+            <div class="d-flex justify-content-between">
+                <div class="btn-group dropdown" role="group" aria-label="...">
+                    <button type="button" class="btn btn-dark dropdown-toggle " data-bs-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        Tags
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% for tag in tags %}
+                            <li class="d-grid gap-2">
+                                <a class="btn btn-dark"
+                                   href="{{ path('stockObjet.index', {'tag':tag.id, 'rangement':rangement}) }}">{{ tag.nom }}
+                                    &nbsp</a></li>
+                        {% endfor %}
+                        <li class="d-grid gap-2"><a class="btn btn-dark"
+                                                    href="{{ path('stockObjet.index', {'tag':-1, 'rangement':rangement}) }}">Objets
+                                sans
+                                tag&nbsp;({{ objetsWithoutTagCount }})</a></li>
+                    </ul>
+                </div>
 
-			<div class="flex-item-center flex-column">
-				<div  class="flex-item-center">
-					 paginator|raw
-				</div>
+                <div class="btn-group dropdown" role="group" aria-label="...">
+                    <button type="button" class="btn btn-dark dropdown-toggle " data-bs-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        Rangements
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% for rangement in rangements %}
+                            <li class="d-grid gap-2">
+                                <a class="btn btn-dark"
+                                   href="{{ path('stockObjet.index', {'rangement':rangement.id, 'tag':tag}) }}">{{ rangement.label }}</a>
+                            </li>
+                        {% endfor %}
+                        <li class="d-grid gap-2"><a class="btn btn-dark"
+                                                    href="{{ path('stockObjet.index', {'rangement':-1, 'tag':tag}) }}">Objets
+                                sans
+                                rangement&nbsp;{{ objetsWithoutRangementCount }}</a></li>
+                    </ul>
+                </div>
 
-				<div class="flex-item-center">
+            </div>
+        </div>
 
-						 paginator.totalItems == 1
-							<strong>1</strong>&nbsp;objet trouvé
-						--
-							<strong> paginator.totalItems </strong>&nbsp;objets trouvés
+    </div>
 
+    {% include '_partials/pagination.html.twig' %}
 
-						if paginator.totalItems >= 1
-						&nbsp;Montre&nbsp;<strong> paginator.currentPageFirstItem  -  paginator.currentPageLastItem </strong>
-
-
-						{% if tag == -1 %}
-							&nbsp;- Sans tag
-						{% endif %}
-
-						{% if rangement == -1 %}
-							&nbsp;- sans rangement
-						{% endif %}
-
-				</div>
-			</div>
-
-			<div class="flex-item-right">
-				<div id="bs-example-navbar-collapse-2" class="collapse navbar-collapse">
-					<ul class="nav navbar-nav navbar-right">
-						<li role="presentation" class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-								Tags
-								<span class="caret"></span>
-							</a>
-							<ul class="dropdown-menu">
-								{% for tag in tags %}
-									<li><a href="{{ path('stockObjet.index', {'tag':tag.id, 'rangement':rangement}) }}">{{ tag.nom }}&nbsp</a></li>
-								{% endfor %}
-								<li><a href="{{ path('stockObjet.index', {'tag':-1, 'rangement':rangement}) }}">Objets sans tag&nbsp;({{ objetsWithoutTagCount }})</a></li>
-							</ul>
-						</li>
-						<li role="presentation" class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-								Rangements
-								<span class="caret"></span>
-							</a>
-							<ul class="dropdown-menu">
-								{% for rangement in rangements %}
-									<li><a href="{{ path('stockObjet.index', {'rangement':rangement.id, 'tag':tag}) }}">{{ rangement.label }}</a></li>
-								{% endfor %}
-								<li><a href="{{ path('stockObjet.index', {'rangement':-1, 'tag':tag}) }}">Objets sans rangement&nbsp;{{ objetsWithoutRangementCount }}</a></li>
-							</ul>
-						</li>
-						<a href="{{ path('stockObjet.add') }}" class="btn btn-primary navbar-btn">Créer un nouvel objet</a>
-					</ul>
-				</div>
-			</div>
-
-		</div>
-
-	</nav>
-			
-	<div class="well well-sm">
-	 	<table class="table">
-	 		<thead>
-	 			<tr>
-	 				<th>
-						{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'nom' %}
-							<a href="{{ path('stockObjet.index', {'order_by': 'nom', 'order_dir': 'DESC', 'tag':tag, 'rangement': rangement}) }}">
-						{%  else %}
-							<a href="{{ path('stockObjet.index', {'order_by': 'nom', 'order_dir': 'ASC', 'tag':tag, 'rangement': rangement}) }}">
-						{% endif %}
-							Nom
-						{% if app.request.get('order_by') == 'nom'  %}
-							{% if app.request.get('order_dir') == 'ASC' %}
-								<span class="caret"></span>
-							{% else %}
-								<span class="dropup">
-									<span class="caret"></span>
-								</span>
-							{% endif %}
-						{% endif %}
-						</a>
-					</th>
-	 				<th>Photo</th>
-	 				<th>Description</th>
-	 				<th>Tags</th>
-	 				<th>Rangement</th>
-	 				<th>Objet de jeu</th>
-	 				<th>Action</th>
-	 			</tr>
-	 		</thead>
-	 		<tbody>
-	 			{% for objet in objets %}
-	 				<tr>
-	 					<td>{{ objet.nom }}</td>
-	 					<td>
-	 						{% if objet.photo %}
-		 						<div class="hover_img">
-									<a href="#">Show Image
-										<span>
+    <table class="table table-striped table-bordered table-condensed table-hover">
+        <thead>
+        <tr>
+            <th>
+                <a href="{{ path('stockObjet.index', {'order_by': 'nom', 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC'), 'tag':tag, 'rangement': rangement}) }}">
+                    Nom
+                    {% if app.request.get('order_by') == 'nom' %}
+                        <i class="fa-solid fa-caret-{{ orderDir == 'ASC' ? 'down' : 'up' }}"></i>
+                    {% endif %}
+                </a>
+            </th>
+            <th>Photo</th>
+            <th>Description</th>
+            <th>Tags</th>
+            <th>Rangement</th>
+            <th>Objet de jeu</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for objet in paginator %}
+            <tr>
+                <td>{{ objet.nom }}</td>
+                <td>
+                    {% if objet.photo %}
+                        <div class="hover_img">
+                            <a href="#">Show Image
+                                <span>
 											stockObjet.photo
 										</span>
-									</a>
-								</div>
-							{% else %}
-			  					aucune photo
-			  				{% endif %}
-			  			</td>
-	 					<td>{{ objet.description }}</td>
-	 					<td>{{ objet.tags|join(', ') }}</td>
-	 					<td>{{ objet.rangement.adresse }}</td>
-	 					<td>
-		 					{% for item in objet.items %}
-			  					<span class="text-info"><strong>{{ item.numero }} - {{ item.label }}</strong></span> 
-			  				{% else %}
-			  					<span class="text-success">Cet objet n'est pas utilisé en jeu.</span>
-			  				{% endfor %}
-		  				</td>
-	 					<td>
-	 						<div class="btn-group" role="group" aria-label="...">
-					  			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-	      							Action
-	      							<span class="caret"></span>
-	    						</button>
-		 						<ul class="dropdown-menu">
-									<li><a href="{{ path('stockObjet.tag', {'objet': objet.id}) }}">Modifier les tags</a></li>
-									<li><a href="{{ path('item.new', {'objet': objet.id}) }}">Creer un objet de jeu</a></li>
-									<li><a href="{{ path('stockObjet.update', {'objet': objet.id}) }}">Modifier</a></li>
-				  					<li><a href="{{ path('stockObjet.clone', {'objet': objet.id}) }}">Cloner</a></li>
-				  					<li><a href="{{ path('stockObjet.delete', {'objet': objet.id}) }}">Supprimer</a></li>
-								</ul>
-							</div>
-	 					</td>
-	 				</tr>
-	 			{% endfor %}
-	 		</tbody>
-	 	</table>
-	 </div>
-	
+                            </a>
+                        </div>
+                    {% else %}
+                        aucune photo
+                    {% endif %}
+                </td>
+                <td>{{ objet.description }}</td>
+                <td>{{ objet.tags|join(', ') }}</td>
+                <td>{{ objet.rangement.adresse }}</td>
+                <td>
+                    {% for item in objet.items %}
+                        <span class="text-info"><strong>{{ item.numero }} - {{ item.label }}</strong></span>
+                    {% else %}
+                        <span class="text-success">Cet objet n'est pas utilisé en jeu.</span>
+                    {% endfor %}
+                </td>
+                <td>
+                    <div class="btn-group dropdown" role="group" aria-label="...">
+                        <button type="button" class="btn btn-dark dropdown-toggle " data-bs-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                            Action
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="d-grid gap-2"><a class="btn btn-dark"
+                                                        href="{{ path('stockObjet.tag', {'objet': objet.id}) }}">Modifier
+                                    les tags</a></li>
+                            <li class="d-grid gap-2"><a class="btn btn-dark"
+                                                        href="{{ path('item.new', {'objet': objet.id}) }}">Creer un
+                                    objet de jeu</a></li>
+                            <li class="d-grid gap-2"><a class="btn btn-dark"
+                                                        href="{{ path('stockObjet.detail', {'objet': objet.id}) }}">Voir</a>
+                            </li>
+                            <li class="d-grid gap-2"><a class="btn btn-dark"
+                                                        href="{{ path('stockObjet.update', {'objet': objet.id}) }}">Modifier</a>
+                            </li>
+                            <li class="d-grid gap-2"><a class="btn btn-dark"
+                                                        href="{{ path('stockObjet.clone', {'objet': objet.id}) }}">Cloner</a>
+                            </li>
+                            <li class="d-grid gap-2"><a class="btn btn-dark"
+                                                        href="{{ path('stockObjet.delete', {'objet': objet.id}) }}">Supprimer</a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include '_partials/pagination.html.twig' %}
+
 {% endblock body %}

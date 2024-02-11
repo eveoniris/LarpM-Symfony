@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Form\Entity\UserSearch;
+use App\Form\Entity\ListSearch;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -60,16 +60,9 @@ class UserFindForm extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $constraints = [
-            'value' => new NotBlank(),
-            'type' => [
-                new NotBlank(),
-            ],
-        ];
 
         $resolver->setDefaults([
-            'data_class' => UserSearch::class,
-     //       'constraints' => $constraints,
+            'data_class' => ListSearch::class,
         ]);
     }
 }

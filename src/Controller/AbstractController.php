@@ -61,6 +61,22 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return max(1, $page);
     }
 
+    protected function getRequestOrderDir(string $defOrderDir = 'ASC'): string
+    {
+        $request = $this->requestStack?->getCurrentRequest();
+        if (!$request) {
+            return $defOrderDir;
+        }
+
+        $orderDir = $request->query->getString('order_dir', $defOrderDir);
+
+        if (!\in_array($orderDir, ['ASC', 'DESC'], true)) {
+            $orderDir = $defOrderDir;
+        }
+
+        return $orderDir;
+    }
+
     protected function getRequestOrder(
         string $defOrderBy = 'id',
         string $defOrderDir = 'ASC',
@@ -73,14 +89,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         $orderBy = $request->query->getString('order_by', $defOrderBy);
-        $orderDir = $request->query->getString('order_dir', $defOrderDir);
+        $orderDir = $this->getRequestOrderDir($defOrderDir);
 
         if (!empty($allowedFields) && !\in_array($orderBy, $allowedFields, true)) {
             $orderBy = $defOrderBy;
-        }
-
-        if (!\in_array($orderDir, ['ASC', 'DESC'], true)) {
-            $orderDir = $defOrderDir;
         }
 
         if ($alias) {

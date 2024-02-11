@@ -2,7 +2,7 @@
 
 namespace App\Form\Entity;
 
-class UserSearch
+class ListSearch
 {
     protected string $type = '';
     public string $value = '';

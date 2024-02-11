@@ -6,12 +6,12 @@ use App\Entity\Gn;
 use App\Entity\Participant;
 use App\Entity\Restriction;
 use App\Entity\User;
-use App\Form\Entity\UserSearch;
-use App\Form\User\UserNewForm;
+use App\Form\Entity\ListSearch;
 use App\Form\EtatCivilForm;
+use App\Form\User\UserNewForm;
 use App\Form\UserFindForm;
-use App\Form\UserRestrictionForm;
 use App\Form\UserPersonnageDefaultForm;
+use App\Form\UserRestrictionForm;
 use App\Manager\FedegnManager;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
@@ -68,7 +68,7 @@ class UserController extends AbstractController
         UserRepository $userRepository,
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager
-    ) {
+    ): RedirectResponse|Response {
         $form = $this->createForm(UserNewForm::class, [])
             ->add('save', SubmitType::class, ['label' => "Créer l'utilisateur"]);
 
@@ -284,7 +284,8 @@ class UserController extends AbstractController
     public function fedegnAction(EntityManagerInterface $entityManager, Request $request, FedegnManager $fedegnManager)
     {
         $etatCivil = $this->getUser()->getEtatCivil();
-        //$statutEtatCivil = $fedegnManager->test($etatCivil);
+
+        // $statutEtatCivil = $fedegnManager->test($etatCivil);
         return $this->render('user/fedegn.twig', [
             'etatCivil' => $etatCivil,
             'fedegnManager' => $fedegnManager,
@@ -513,7 +514,7 @@ class UserController extends AbstractController
 
     /**
      * Liste des utilisateurs.
-     * Todo voir pour lien vers Personnages, Groupes et Participation (ou sur le détail)
+     * Todo voir pour lien vers Personnages, Groupes et Participation (ou sur le détail).
      */
     #[Route('/user/admin/list', name: 'user.admin.list')]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
@@ -522,7 +523,7 @@ class UserController extends AbstractController
         $type = null;
         $value = null;
 
-        $userSearch = new UserSearch();
+        $userSearch = new ListSearch();
         $form = $this->createForm(UserFindForm::class, $userSearch);
         $form->handleRequest($request);
 
@@ -649,13 +650,13 @@ class UserController extends AbstractController
      *
      * @param string $token
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @throws NotFoundHttpException
      */
     public function confirmEmailAction(EntityManagerInterface $entityManager, Request $request, $token)
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
+        $repo = $entityManager->getRepository('\\'.User::class);
         $User = $repo->findOneByConfirmationToken($token);
 
         if (!$User) {
@@ -678,13 +679,13 @@ class UserController extends AbstractController
     /**
      * Renvoyer un email de confirmation.
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @throws NotFoundHttpException
      */
     public function resendConfirmationAction(EntityManagerInterface $entityManager, Request $request)
     {
         $email = $request->request->get('email');
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
+        $repo = $entityManager->getRepository('\\'.User::class);
         $User = $repo->findOneByEmail($email);
 
         if (!$User) {
@@ -715,7 +716,7 @@ class UserController extends AbstractController
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');
 
-            $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
+            $repo = $entityManager->getRepository('\\'.User::class);
             $User = $repo->findOneByEmail($email);
 
             if ($User) {
@@ -753,9 +754,9 @@ class UserController extends AbstractController
     /**
      * @param string $token
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @throws NotFoundHttpException
      */
     public function resetPasswordAction(EntityManagerInterface $entityManager, Request $request, $token)
     {
@@ -765,7 +766,7 @@ class UserController extends AbstractController
 
         $tokenExpired = false;
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\User::class);
+        $repo = $entityManager->getRepository('\\'.User::class);
         $User = $repo->findOneByConfirmationToken($token);
 
         if (!$User) {
