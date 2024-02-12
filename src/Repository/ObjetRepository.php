@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
 class ObjetRepository extends BaseRepository
@@ -63,51 +62,71 @@ class ObjetRepository extends BaseRepository
             }
         }
 
-        if ($criteria['tag'] ?? false) {
-            $criter = $criteria['tag'];
-
-            if (is_numeric($criter)) {
-                $criter = (int) $criter;
-
-                if (-1 === $criter) {
-                    $qb->leftjoin('o.tags', 't');
-                    $qb->andWhere('t.id is null');
-                } else {
-                    $qb->join('o.tags', 't');
-                    $qb->andWhere('t.id = :tag');
-                    $qb->setParameter('tag', $criter);
-                }
-            } else {
-                $qb->join('o.tags', 't');
-                $qb->andWhere('t.nom LIKE :tag');
-                $qb->setParameter('tag', $criter);
-            }
-        }
+        $this->addTagCriteriaToQueryBuilder($criteria['tag'] ?? null, $qb);
 
         if ($criteria['numero'] ?? false) {
             $qb->andWhere('o.numero LIKE :numero');
             $qb->setParameter('numero', $criteria['numero']);
         }
 
-        if (isset($criteria['rangement'])) {
-            $criter = $criteria['rangement'];
-
-            if (is_numeric($criter)) {
-                $criter = (int) $criter;
-                if (-1 === $criter) {
-                    $qb->leftjoin('o.rangement', 'r');
-                    $qb->andWhere('r.id is null');
-                } else {
-                    $qb->andWhere('o.rangement = :rangement');
-                    $qb->setParameter('rangement', $criter);
-                }
-            } else {
-                $qb->join('o.rangement', 'r');
-                $qb->andWhere('r.label LIKE :rangement');
-                $qb->setParameter('rangement', $criter);
-            }
-        }
+        $this->addTagCriteriaToQueryBuilder($criteria['rangement'] ?? null, $qb);
 
         return $qb;
     }
+
+    public function addTagCriteriaToQueryBuilder(null|string|int $criter, QueryBuilder $qb): QueryBuilder
+    {
+        $alias = $qb->getRootAliases()[0] ?? 'o';
+        if (null === $criter) {
+            return $qb;
+        }
+
+        if (\is_numeric($criter)) {
+            $criter = (int) $criter;
+
+            if (-1 === $criter) {
+                $qb->leftjoin($alias.'.tags', 't');
+                $qb->andWhere('t.id is null');
+            } else {
+                $qb->join($alias.'.tags', 't');
+                $qb->andWhere('t.id = :tag');
+                $qb->setParameter('tag', $criter);
+            }
+
+            return $qb;
+        }
+
+        $qb->join($alias.'.tags', 't');
+        $qb->andWhere('t.nom LIKE :tag');
+        $qb->setParameter('tag', $criter);
+
+        return $qb;
+    }
+
+    public function addRangementCriteriaToQueryBuilder(null|string|int $criter, QueryBuilder $qb): QueryBuilder
+    {
+        $alias = $qb->getRootAliases()[0] ?? 'o';
+        if (null === $criter) {
+            return $qb;
+        }
+
+        if (\is_numeric($criter)) {
+            $criter = (int) $criter;
+            if (-1 === $criter) {
+                $qb->leftjoin($alias.'.rangement', 'r');
+                $qb->andWhere('r.id is null');
+            } else {
+                $qb->andWhere($alias.'.rangement = :rangement');
+                $qb->setParameter('rangement', $criter);
+            }
+
+            return $qb;
+        }
+            $qb->join($alias.'.rangement', 'r');
+            $qb->andWhere('r.label LIKE :rangement');
+            $qb->setParameter('rangement', $criter);
+
+        return $qb;
+    }
+
 }

@@ -17,6 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 // use Imagine\Image\Box; // TODO
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,11 +48,13 @@ class StockObjetController extends AbstractController
         // tag: null => no search based on tag;
         // tag: -1 or ObjetRepository::CRIT_WITHOUT => search object without
         // tag: [a-Z]+ => search object with this tag name
+        $tag = $request->get('tag');
         $criteria['tag'] = $request->get('tag');
 
         // rangement: null => no search based on rangement;
         // rangement: -1 or ObjetRepository::CRIT_WITHOUT => search object without
         // rangement: [a-Z]+ => search object with this rangement name
+        $rangement = $request->get('rangement');
         $criteria['rangement'] = $request->get('rangement');
 
         // /////////////////////////////////////////////////////
@@ -60,9 +63,18 @@ class StockObjetController extends AbstractController
         $value = null;
 
         $objetSearch = new ListSearch();
-        $form = $this->createForm(ObjetFindForm::class, $objetSearch);
+        $form = $this->createForm(
+            ObjetFindForm::class,
+            $objetSearch
+        );
+        /*$form->add('tag', HiddenType::class, [
+            'data' => $tag,
+        ])->add('rangement', HiddenType::class, [
+            'data' => $rangement,
+        ]);*/
         // TODO add to form the Tag and Rangement choise
         // TODO move photo from database to drive
+        // TODO form as GET request
 
         $form->handleRequest($request);
 
@@ -73,7 +85,7 @@ class StockObjetController extends AbstractController
         }
 
         $alias = ObjetRepository::getEntityAlias();
-
+        /*
         $criterias = [];
         if (!empty($value)) {
             if (empty($type) || '*' === $type) {
@@ -95,7 +107,7 @@ class StockObjetController extends AbstractController
                     Criteria::expr()?->contains($alias.'.'.$type, $value)
                 );
             }
-        }
+        }*/
 
         $orderBy = $this->getRequestOrder(
             defOrderBy: 'nom',
@@ -103,13 +115,52 @@ class StockObjetController extends AbstractController
             allowedFields: $objetRepository->getFieldNames()
         );
 
-        $paginator = $objetRepository->getPaginator(
-            limit: $this->getRequestLimit(25),
-            page: $this->getRequestPage(),
-            orderBy: $orderBy,
-            alias: $alias,
-            criterias: $criterias
+        // Via Generic paginator
+        /* $paginator = $objetRepository->getPaginator(
+             limit: $this->getRequestLimit(25),
+             page: $this->getRequestPage(),
+             orderBy: $orderBy,
+             alias: $alias,
+             criterias: $criterias
+         );*/
+        // End via generic
+
+        // / VIA query
+        $query = $objetRepository->createQueryBuilder($alias)
+            ->orderBy(key($orderBy), current($orderBy));
+
+        $objetRepository->addTagCriteriaToQueryBuilder($tag, $query);
+        $objetRepository->addRangementCriteriaToQueryBuilder($rangement, $query);
+
+        $query->leftJoin($alias.'.items', 'i');
+        $query->leftJoin($alias.'.photo', 'p');
+
+        if (!empty($value)) {
+            if (empty($type) || '*' === $type) {
+                if (\is_numeric($value)) {
+                    $query->orWhere($alias.'.id LIKEooù :value');
+                    $query->orWhere($alias.'.numero LIKE :value');
+                    $query->orWhere('i.numero LIKE :value');
+                    $query->setParameter('value', $value);
+                } else {
+                    $query->orWhere($alias.'.nom LIKE :value');
+                    $query->orWhere($alias.'.description LIKE :value');
+                    $query->orWhere('i.label LIKE :value');
+                    $query->setParameter('value', '%'.$value.'%');
+                }
+            } else {
+                $query->where($query->expr()->like($alias.'.'.$type, $value));
+            }
+        }
+
+        if (!empty($tag)) {
+
+        }
+
+        $paginator = $objetRepository->findPaginatedQuery(
+            $query->getQuery(), $this->getRequestLimit(25), $this->getRequestPage()
         );
+        // END VIA QUERY
 
         return $this->render('stock/objet/list.twig', [
             'tag' => $criteria['tag'], // TODO
