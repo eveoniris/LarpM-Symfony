@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Groupes{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -18,8 +18,8 @@
 		<ul class="list-group">
 			<li class="list-group-item">
 				<div class="btn-toolbar" role="toolbar" aria-label="...">
-					<form class="form-inline" action="{{ path('groupe.admin.list') }}" method="POST" {{ form_enctype(form) }}>
-						{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					<form class="form-inline" action="{{ path('groupe.admin.list') }}) }}
+						
 						<div class="form-group">
 							<div class="input-group">
 								{{ form_widget(form.search) }}
@@ -33,7 +33,7 @@
 							</div>
 						</div>
 						{{ form_rest(form) }}
-			   		</form>
+			   		{{ form_end(form) }}
 				</div>
 			</li>
 			<li class="list-group-item">
@@ -138,7 +138,7 @@
 					<td>
 						<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 							<div class="btn-group" role="group" aria-label="...">
-								<a class="btn btn-primary" href="{{ path('groupe.detail', {'index':groupe.id}) }}"><i class="fa fa-eye"></i></a>
+								<a class="btn btn-primary" href="{{ path('groupe.detail', {'groupe':groupe.id}) }}"><i class="fa fa-eye"></i></a>
 								<a class="btn btn-danger" href="{{ path('groupe.update', {'index':groupe.id}) }}"><i class="fa fa-pencil"></i></a>
 							</div>
 						</div>
@@ -151,4 +151,4 @@
 		{{ paginator|raw }}
 	</div>
 
-{% endblock content %}
+{% endblock body %}

@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Connaissances{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -33,16 +33,16 @@
 	<div class="panel panel-default">
 		<div class="panel-heading"><h4>Description</h4></div>
 		<div class="panel-body">
-			<p>{{ connaissance.description|markdown }}</p>
+			<p>{{ connaissance.description|markdown_to_html }}</p>
 		</div>
 	</div>
 	{% if connaissance.contraintes %}
 	<div class="panel panel-default">
 		<div class="panel-heading"><h4>Contraintes</h4></div>
 		<div class="panel-body">
-			<p>{{ connaissance.contraintes|markdown }}</p>
+			<p>{{ connaissance.contraintes|markdown_to_html }}</p>
 		</div>
 	</div>
 	{% endif %}
 		
-{% endblock content %}
+{% endblock body %}

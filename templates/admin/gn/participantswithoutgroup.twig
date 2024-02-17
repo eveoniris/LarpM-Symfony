@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Grandeur nature{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -11,21 +11,26 @@
 		<li class="active">Liste des participants avec un billet mais n'étant pas dans un groupe</li>
 	</ol>
 
-<div class="well well-sm">
+	<div class="well well-sm bs-component">
 
-	<div class="header">
-		<h5>Liste des participants à {{ gn.label }} avec un billet mais n'étant pas dans un groupe</h5>
+		<div class="header">
+			<h5>Liste des participants à {{ gn.label }} avec un billet mais n'étant pas dans un groupe</h5>
+		</div>
+
+		<div class="btn-toolbar" role="toolbar" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Export CSV" href="{{  path('gn.participants.withoutgroup.csv', {'gn': gn.id}) }}"><i class="fa fa-file-csv"></i> Export CSV</a>
+			</div>
+		</div>
 	</div>
-		
-	<a href="{{  path('gn.participants.withoutgroup.csv', {'gn': gn.id}) }}">Télécharger cette liste au format CSV</a>
-	
+
 	<table class="table table-condensed table-striped table-bordered">
 		<thead>
 			<tr>
 				<th>Participant</th>
 				<th>Email</th>
 				<th>Billet</th>
-				<th />
+				<th>Action</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -43,7 +48,7 @@
 					<td>
 						<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 							<div class="btn-group" role="group" aria-label="...">
-								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter à un groupe" href="{{ path('participant.groupe',{'participant':participant.id}) }}"><i class="fa fa-users"></i></a>
+								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter à un groupe" href="{{ path('participant.groupe',{'participant':participant.id}) }}"><i class="fa fa-users"></i></a>
 							</div>
 						</div>
 					</td>
@@ -52,6 +57,4 @@
 		</tbody>
 	</table>	
 
-</div>
-
-{% endblock content %}
+{% endblock body %}

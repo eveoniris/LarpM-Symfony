@@ -3,7 +3,7 @@
 {% set displayAdminToolbar = displayAdminToolbar is defined ? displayAdminToolbar : true %}
 {% set displaySearchFilter = displaySearchFilter is defined ? displaySearchFilter : true %}
 
-{% block content %}
+{% block body %}
 
 {% if paginator.totalItems == 1 %}
 	<strong>1</strong> personnage trouvé.
@@ -23,7 +23,7 @@ Résultats affichés : <strong>{{ paginator.currentPageFirstItem }} - {{ paginat
 	{% endif %}	
 	{% if displaySearchFilter %}	
 		<form class="form-inline" action="{{ path(formPath, formParams) }}" method="GET" {{ form_enctype(form) }}>
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+			
 	
 			<div class="form-group">
 				<div class="input-group">
@@ -38,7 +38,7 @@ Résultats affichés : <strong>{{ paginator.currentPageFirstItem }} - {{ paginat
 				</div>
 			</div>
 			{{ form_rest(form) }}
-		</form>	
+		{{ form_end(form) }}	
 	{% endif %}	
 </div>
 
@@ -48,4 +48,4 @@ Résultats affichés : <strong>{{ paginator.currentPageFirstItem }} - {{ paginat
 </div>
 			
 			
-{% endblock content %}
+{% endblock body %}

@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Prieres{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -12,15 +12,15 @@
 	
 	
 	<div class="well bs-component">
-		<form action="{{ path('magie.priere.delete', {'priere': priere.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('magie.priere.delete', {'priere': priere.id}) }}) }}
 			<fieldset>
 				<legend>Supression d'une priere</legend>
 					{{ priere.label }} - Niveau {{ priere.niveau }}
-					{{ priere.description|markdown }}
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					{{ priere.description|markdown_to_html }}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 				
-{% endblock content %}
+{% endblock body %}

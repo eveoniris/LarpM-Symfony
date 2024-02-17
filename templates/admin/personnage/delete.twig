@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Personnages{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -12,10 +12,10 @@
 	</ol>
 
 	<div class="well bs-component">	
-		<form action="{{ path('personnage.admin.delete', {'personnage': personnage.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.delete', {'personnage': personnage.id}) }}) }}
 			<fieldset>
 				<legend>Supression du personnage {{ personnage.publicName }}</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				<p class="text-danger">
 					<span class="fa-stack fa-lg">
 						<i class="fa fa-square-o fa-stack-2x"></i>
@@ -24,7 +24,7 @@
 					Attention, vous vous appretez à supprimer définitivement un personnage</p>
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
-{% endblock content %}
+{% endblock body %}

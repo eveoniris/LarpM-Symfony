@@ -1,15 +1,15 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Restrictions alimentaires{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
 		<li><a href="{{ path('restriction.list') }}">Liste des restrictions alimentaires</a></li>
 		<li class="active">Détail d'une restriction alimentaire</li>
 	</ol>
-	
+
 	<div class="well well-sm">
 		<div class="list-group">
 			<div class="list-group-item">{{ restriction.label }}</div>

@@ -1,0 +1,29 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Accepter la paix{% endblock title %}
+
+{% block body %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Page d'accueil</a></li>
+		<li><a href="{{ path('participant.index', {'participant' : participant.id}) }}">{{ participant.gn.label }}</a></li>
+		<li><a href="{{ path('groupeGn.groupe', {'groupeGn' : groupeGn.id}) }}">{{ groupe.nom }}</a></li>
+		<li class="active">Accepter la paix</li>
+	</ol>
+	
+	<div class="well bs-component">
+	
+		{{ form_start(form, {"attr": {"action": path('groupe.acceptPeace', {'participant': participant.id, 'groupe': groupe.id, 'enemy': war.id}) }}) }}
+			
+
+			<p>Vous allez accepter la proposition de paix dans le conflit qui oppose <strong>{{ war.groupe.nom }}</strong> et <strong>{{ war.requestedGroupe.nom }}</strong>.
+
+			{{ form(form) }}
+			
+			<p>Le chef de groupe recevra une notification pour le prévenir de votre choix.</p>
+			 
+		{{ form_end(form) }}
+	
+	</div>
+	
+{% endblock %}

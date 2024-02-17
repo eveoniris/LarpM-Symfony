@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}{{ personnage.publicName }}{% endblock title %}
 
-{% block content %}
+{% block body %}
 <div class="container-fluid">
 
 	<ol class="breadcrumb">
@@ -13,7 +13,7 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('personnage.admin.religion.add',{'personnage':personnage.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.religion.add',{'personnage':personnage.id}) }}) }}
 			<fieldset>
 				<legend>{{ personnage.publicName }} - <small>Choix d'une religion</small></legend>
 				<p class="text-warning">Attention ! une fois votre religion choisie, vous ne pourrez plus revenir sur votre choix.</p>
@@ -24,12 +24,12 @@
 						<li>Si vous choisissez une religion au niveau "Fanatique", vous perdez toutes vos autres religions (un Fanatique n'a qu'une seule religion).</li>
 					</ul>
 				</p>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 	
 				{{ form_row(form.religion) }}
 				{{ form_row(form.religionLevel) }}
 				{{ form_rest(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
-{% endblock content %}
+{% endblock body %}

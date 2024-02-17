@@ -1,8 +1,8 @@
-{% extends "base.html.twig" %}
+{% extends "layout.twig" %}
 
 {% block title %}{{ personnage.publicName }}{% endblock title %}
 
-{% block body %}
+{% block content %}
 
 <div class="container-fluid">
 
@@ -14,17 +14,17 @@
 	</ol>
 	
 	<div class="well bs-component">
-	{{ form_start(form, {"attr": {"action": path('participant.personnage.langueCourante',{'participant':participant.id}) }}) }}
+	<form action="{{ path('participant.personnage.langueCourante',{'participant':participant.id}) }}" method="POST" {{ form_enctype(form) }}>
 		<fieldset>
 			<blockquote>Votre compétence vous permet de choisir une nouvelle langue courante.</blockquote>
 
-			
+			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
 			
 			{{ form_row(form.langue) }}
 			{{ form_rest(form) }}
 		</fieldset>
-	{{ form_end(form) }}
+	</form>
 	</div>
 </div>
 
-{% endblock body %}
+{% endblock content %}

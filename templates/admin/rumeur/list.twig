@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Rumeurs{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -18,8 +18,8 @@
 		<ul class="list-group">
 			<li class="list-group-item">	
 				<div class="btn-toolbar" role="toolbar" aria-label="...">
-					<form class="form-inline" action="{{ path('rumeur.list') }}" method="POST" {{ form_enctype(form) }}>
-						{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}				
+					<form class="form-inline" action="{{ path('rumeur.list') }}) }}
+										
 						<div class="form-group">
 							<div class="input-group">
 								{{ form_widget(form.search) }}
@@ -33,7 +33,7 @@
 							</div>
 						</div>
 						{{ form_rest(form) }}
-			   		</form>
+			   		{{ form_end(form) }}
 				</div>
 			</li>
 			<li class="list-group-item">
@@ -66,7 +66,7 @@
 			<tbody>
 			{% for rumeur in rumeurs %}
 				<tr>
-					<td>{{ rumeur.text|markdown }}</td>
+					<td>{{ rumeur.text|markdown_to_html }}</td>
 					<td>{{ rumeur.territoire|default('Tous') }}</td>
 					<td>{{ rumeur.gn.label }}</td>
 					<td>{{ rumeur.visibility }}</td>
@@ -89,4 +89,4 @@
 		{{ paginator|raw }}
 	</div>
 	
-{% endblock content %}
+{% endblock body %}

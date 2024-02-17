@@ -1,39 +1,75 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Billets{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
 		<li class="active">Liste des billets</li>
 	</ol>
 
-	<div class="well well-sm">
-	
+	<div class="well well-sm bs-component">
+
+		<div class="header">
+			<h5>Liste des billets</h5>
+		</div>
+
 		<div class="btn-toolbar" role="toolbar" aria-label="...">
 			<div class="btn-group" role="group" aria-label="...">
-				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter un billet" href="{{ path('billet.add') }}"><i class="fa fa-plus"></i></a>
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un billet" href="{{ path('billet.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
 			</div>
 		</div>
-	</div>	
-	
-		<table class="table table-condensed table-striped table-bordered">
+	</div>
+		{% include '_partials/pagination.html.twig' %}
+		<table class="table table-condensed table-striped table-bordered table-hover">
 			<thead>
 				<tr>
+					<th>
+						{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'id' %}
+						<a href="{{ path('billet.list', {'order_by': 'id', 'order_dir': 'DESC'}) }}">
+							{%  else %}
+							<a href="{{ path('billet.list', {'order_by': 'id', 'order_dir': 'ASC'}) }}">
+								{% endif %}
+								#
+								{% if app.request.get('order_by') == 'id'  %}
+									{% if app.request.get('order_dir') == 'ASC' %}
+										<i class="fa-solid fa-caret-down"></i>
+									{%else%}
+    									<i class="fa-solid fa-caret-up"></i>
+									{% endif %}
+								{% endif %}
+							</a>
+					</th>
 					<th>Nom</th>
 					<th>Description</th>
-					<th>GN</th>
+					<th>
+						{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'gn' %}
+							<a href="{{ path('billet.list', {'order_by': 'gn', 'order_dir': 'DESC'}) }}">
+						{%  else %}
+							<a href="{{ path('billet.list', {'order_by': 'gn', 'order_dir': 'ASC'}) }}">
+						{% endif %}
+							GN	
+						{% if app.request.get('order_by') == 'gn'  %}
+							{% if app.request.get('order_dir') == 'ASC' %}
+								<i class="fa-solid fa-caret-down"></i>
+							{%else%}
+								<i class="fa-solid fa-caret-up"></i>
+								{% endif %}
+						{% endif %}
+						</a>
+					</th>
 					<th>FédéGN</th>
 					<th>Quantité</th>
-					<th />
+					<th>Actions</th>
 				</tr>
 			</thead>
 			<tbody>
-				{% for billet in billets %}
+				{% for billet in paginator %}
 				<tr>
-					<td>{{ billet.label }}</td>
-					<td>{{ billet.description|markdown }}</td>
+					<td>{{ billet.id }}</td>
+					<td>{{ billet.label|markdown_to_html }}</td>
+					<td>{{ billet.description|markdown_to_html }}</td>
 					<td>{{ billet.gn }}</td>
 					<td>
 						{% if billet.fedegn %}
@@ -46,9 +82,9 @@
 					<td>
 						<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 							<div class="btn-group" role="group" aria-label="...">
-								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('billet.update',{'billet':billet.id}) }}"><i class="fa fa-pencil"></i></a>
-								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('billet.detail',{'billet':billet.id}) }}"><i class="fa fa-eye"></i></a>
-								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('billet.delete',{'billet':billet.id}) }}"><i class="fa fa-eraser"></i></a>
+								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('billet.update',{'billet':billet.id}) }}"><i class="fa fa-pencil"></i></a>
+								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('billet.detail',{'billet':billet.id}) }}"><i class="fa fa-eye"></i></a>
+								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('billet.delete',{'billet':billet.id}) }}"><i class="fa fa-eraser"></i></a>
 							</div>
 						</div>
 					</td>
@@ -57,5 +93,8 @@
 			</tbody>
 		</table>
 
-	
+	{% include '_partials/pagination.html.twig' %}
+
+
+
 {% endblock %}

@@ -1,16 +1,16 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Création d'un personnage{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 <div class="well well-sm">
 	<div class="row">
 		<div class="col-md-4">
-			<form action="{{ path('participant.admin.personnage.new', {'participant': participant.id}) }}" method="POST" {{ form_enctype(form) }}>
+			{{ form_start(form, {"attr": {"action": path('participant.admin.personnage.new', {'participant': participant.id}) }}) }}
 				<fieldset>
 					<legend>Ajout d'un personnage, pour l'utilisateur {{ participant.user.username }}</legend>
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form_row(form.nom) }}
 					{{ form_row(form.surnom) }}
 					{{ form_row(form.age) }}
@@ -22,7 +22,7 @@
 					<p><strong class="text-danger">ATTENTION !</strong> Toute validation du personnage est définitive.</p>
 					{{ form_rest(form) }}
 				</fieldset>
-			</form>
+			{{ form_end(form) }}
 		</div>
 		<div class="col-md-8">
 			<blockquote>
@@ -33,7 +33,7 @@
   				Aide pour choisir l'age
 			</button></p>
 			<div class="collapse" id="collapseAge">
-				{{ include("public/age/fragment/info.twig", {'ages' : ages}) }}
+				{{ include("age/fragment/info.twig", {'ages' : ages}) }}
 			</div>
 
 			<p><button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseSensible" aria-expanded="false" aria-controls="collapseSensible">
@@ -50,7 +50,7 @@
 			</div>
 
 			<div class="collapse" id="collapseOrigine">
-				{{ include("public/territoire/fragment/info.twig", {'territoires' : territoires}) }}
+				{{ include("territoire/fragment/info.twig", {'territoires' : territoires}) }}
 			</div>
 			<p><button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseClasse" aria-expanded="false" aria-controls="collapseClasse">
 				Aide pour choisir la classe
@@ -60,10 +60,10 @@
 				Aide pour choisir l'origine
 			</button></p>
 			<div class="collapse" id="collapseClasse">
-				{{ include("public/classe/fragment/info.twig", {'classes' : classes}) }}
+				{{ include("classe/fragment/info.twig", {'classes' : classes}) }}
 			</div>
 
 		</div>
 	</div>		
 </div>
-{% endblock content %}
+{% endblock body %}

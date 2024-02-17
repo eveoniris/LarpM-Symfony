@@ -1,6 +1,6 @@
 {% extends "layout_print.twig" %}
-{% block content %}
-		<div>
+{% block body %}
+		<div> 
                         <h4>Quête commerciale pour #{{ groupe.numero}} {{ groupe.nom }}</h4>
                         <p>La route commerciale doit partir de <strong>{% if groupe.territoire %}{{ groupe.territoire.nom }}{% else %}INCONNU{% endif %}</strong> et parvenir à <strong>{% if cible %}{{ cible.nom }}{% else %}INCONNU{% endif %}</strong></p>
                         <strong>Les ressources demandées sont :</strong>
@@ -12,4 +12,4 @@
                         <strong>Récompenses : </strong>{{ recompenses|join(', ') }}
                 </div>
 
-{% endblock content %}
+{% endblock body %}

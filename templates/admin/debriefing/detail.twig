@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Debriefing{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -13,12 +13,12 @@
 	<div class="list-group">
 		<div class="list-group-item">
 			<div class="list-group-item-heading"><h6>Groupe</h6></div>
-			<div class="list-group-item-text"><a href="{{ path('groupe.detail', {'index': debriefing.groupe.id}) }}">{{ debriefing.groupe.nom }}</a></div>
+			<div class="list-group-item-text"><a href="{{ path('groupe.detail', {'groupe': debriefing.groupe.id}) }}">{{ debriefing.groupe.nom }}</a></div>
 		</div>
 		<div class="list-group-item">
 			<div class="list-group-item-heading"><h6>Informations</h6></div>
 			<p class="list-group-item-text text-warning">
-				Visibilité : {{ debriefing.visibility|explainVisibility }}
+				Visibilité : {{ debriefing.visibility }}
 			</p>
 			<p class="list-group-item-text">
 				Scénariste : {{ debriefing.user }}
@@ -53,7 +53,7 @@
 			</h4>
 		</div>
 		<div class="panel-body">
-			<p>{{ debriefing.text|markdown }}</p>
+			<p>{{ debriefing.text|markdown_to_html }}</p>
 		</div>
 	</div>
 	

@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Sorts{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -23,7 +23,7 @@
 						<span style="color:red;">Sort secret</span><br />
 						{% endif %}
 						{{ sort.label }} -- {{ sort.niveau }}
-						{{ sort.description|markdown }}
+						{{ sort.description|markdown_to_html }}
 						{% if sort.documentUrl %}
 							<a href="{{ path('magie.sort.document', {'sort': sort.id, 'document': sort.documentUrl}) }}">Télécharger le pdf associé</a>
 						{% else %}

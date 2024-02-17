@@ -1,0 +1,39 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Groupes secondaires{% endblock title %}
+
+{% block body %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li><a href="{{ path('gn.detail', {'gn' : participant.gn.id}) }}">{{ participant.gn.label }}</a></li>
+		<li><a href="{{ path('gn.personnage', {'gn': participant.gn.id}) }}">{{ participant.personnage.nom }}</a></li>
+		<li><a href="{{ path("participant.groupeSecondaire.detail", {'participant': participant.id, 'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.label }}</a></li>
+		<li class="active">Refus d'un postulant</li>
+	</ol>
+	
+	<div class="well bs-component">
+		{{ form_start(form, {"attr": {"action": path('participant.groupeSecondaire.reject', {'participant': participant.id, 'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}) }}
+			<fieldset>
+				<legend>Refus d'un postulant</legend>
+				
+				<div class="list-group">
+					<div class="list-group-item">
+						<div class="list-group-item-heading">
+							<strong>{{ postulant.personnage.publicName }}</strong>
+						</div>
+						<div class="list-group-item-text">
+							{{ postulant.explanation|markdown_to_html }}
+						</div>
+					</div>
+				</div>
+				
+				<p>Le message suivant sera envoyé au postulant :</p>
+				<p>"Nous sommes désolés mais le groupe est au complet ou bien nous n'avons pas confiance en vous et nous ne retenons pas votre candidature. Mais si vous êtes motivé, vous pourrez chercher à nous rencontrer en jeu pour en discuter de vive voix."</p>
+				
+				{{ form(form) }}
+			</fieldset>
+		{{ form_end(form) }}
+	</div>
+	
+{% endblock body %}

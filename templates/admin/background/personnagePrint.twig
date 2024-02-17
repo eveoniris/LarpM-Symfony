@@ -8,7 +8,7 @@ body {
 </style>
 {% endblock style %}
 
-{% block content %}
+{% block body %}
 
 	{% for groupeGn in groupeGns %}
 		{% for participant in groupeGn.participants if participant.personnage %}
@@ -19,7 +19,7 @@ body {
 				<h2>#{{ groupeGn.groupe.numero }} {{ groupeGn.groupe.nom }} ({{ background.gn.label }})</h2>
 				<h3>#{{ background.personnage.id }} {{ background.personnage.nom }}{% if background.personnage.surnom %} ({{ background.personnage.surnom }}){% endif %}
 						
-				{{ background.text|markdown }}
+				{{ background.text|markdown_to_html }}
 		
 				<hr class="print-page-break" />
 				{% endif %}
@@ -29,4 +29,4 @@ body {
 		
 	{% endfor %}
 
-{% endblock content %}
+{% endblock body %}

@@ -1,12 +1,12 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Age{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('classe') }}">Liste des classes</a></li>
+		<li><a href="{{ path('classe.index') }}">Liste des classes</a></li>
 		<li class="active">Personnages ayant cette classe</li>
 	</ol>
 	

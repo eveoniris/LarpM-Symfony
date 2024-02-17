@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}{{ personnage.publicName }}, liste de prières{% endblock title %}
 
-{% block content %}
+{% block body %}
 <div class="container-fluid">
 
 	<ol class="breadcrumb">
@@ -22,8 +22,8 @@
 			<li class="list-group-item">
 				<div class="btn-toolbar" role="toolbar" aria-label="...">
 
-					<form class="form-inline" action="{{ path('personnage.admin.update.priere',{'personnage':personnage.id}) }}" method="POST" {{ form_enctype(form) }}>
-						{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					<form class="form-inline" action="{{ path('personnage.admin.update.priere',{'personnage':personnage.id}) }}) }}
+						
 						<div class="form-group">
 							<div class="input-group">
 								{{ form_widget(form.value) }}
@@ -38,7 +38,7 @@
 							</div>
 						</div>
 						{{ form_rest(form) }}
-					</form>
+					{{ form_end(form) }}
 
 				</div>
 			</li>
@@ -125,7 +125,7 @@
 					<td>{{ priere.niveau }}</td>
 					<td>Non</td>			
 					<td>{{ priere.sphere.label }}</td>		
-					<td>{{ priere.description|markdown}}</td>
+					<td>{{ priere.description|markdown_to_html}}</td>
 					<td>{% if personnage in priere.personnages  %}
 							<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Retirer cette priere"
 							   href="{{ path('personnage.admin.remove.priere',{'personnage':personnage.id, 'priere':priere.id}) }}">
@@ -143,4 +143,4 @@
 			</tbody>
 		</table>
 	</div>
-{% endblock content %}
+{% endblock body %}

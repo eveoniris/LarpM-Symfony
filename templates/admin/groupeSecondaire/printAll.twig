@@ -1,6 +1,6 @@
 {% extends "layout_print.twig" %}
 
-{% block content %}
+{% block body %}
 
 {% for groupeSecondaire in groupeSecondaires %}
 	<h2>Groupe {% if groupeSecondaire.secret%}secret{% endif %} : {{ groupeSecondaire.label }}</h2>
@@ -18,4 +18,4 @@
 	<hr class="print-page-break" />
 {% endfor %}
 
-{% endblock content %}
+{% endblock body %}

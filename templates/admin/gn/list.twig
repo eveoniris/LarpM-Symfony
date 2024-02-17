@@ -1,101 +1,78 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Grandeur nature{% endblock title %}
 
-{% block content %}
+{% block body %}
+	{# display navigation #}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des grandeur nature</li>
+		<li class="active">Liste des grandeurs nature</li>
 	</ol>
 
 	<div class="well well-sm">
-	
-		<ul class="list-group">
-			<li class="list-group-item">
-				{% if paginator.totalItems == 1 %}
-			        <strong>1</strong> grandeur nature trouvé.
-			    {% else %}
-			        <strong>{{ paginator.totalItems }}</strong> grandeur nature trouvés.
-			    {% endif %}
-			
-			    Montre <strong>{{ paginator.currentPageFirstItem }} - {{ paginator.currentPageLastItem }}</strong>.
-		    </li>
-		    <li class="list-group-item">
-		    	<a href="{{ path('gn.add') }}">Ajouter un grandeur nature</a>
-		    </li>
-		 </ul>
 
-		{{ paginator|raw }}
-	    <table class="table table-striped table-bordered table-condensed table-hover">
-			<thead>
-				<tr>
-					<th>
-						{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'id' %}
-							<a href="{{ path('gn.list', {'order_by': 'id', 'order_dir': 'DESC'}) }}">
-						{%  else %}
-							<a href="{{ path('gn.list', {'order_by': 'id', 'order_dir': 'ASC'}) }}">
-						{% endif %}
-							#	
-						{% if app.request.get('order_by') == 'id'  %}
-							{% if app.request.get('order_dir') == 'ASC' %}
-								<span class="caret"></span>
-							{%else%}
-									<span class="dropup">
-    									<span class="caret"></span>
-									</span>
-								{% endif %}
-						{% endif %}
-						</a>
-					</th>
-					<th>
-						{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'label' %}
-							<a href="{{ path('gn.list', {'order_by': 'label', 'order_dir': 'DESC'}) }}">
-						{%  else %}
-							<a href="{{ path('gn.list', {'order_by': 'label', 'order_dir': 'ASC'}) }}">
-						{% endif %}
-							Titre
-						{% if app.request.get('order_by') == 'label'  %}
-							{% if app.request.get('order_dir') == 'ASC' %}
-								<span class="caret"></span>
-							{%else%}
-									<span class="dropup">
-    									<span class="caret"></span>
-									</span>
-								{% endif %}
-						{% endif %}
-						</a> 
-					</th>
-					<th>Etat</th>
-					<th>Nombre de participants</th>
-					<th>Nombre de billets vendu</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for gn in gns %}
-					<tr>
-						<td>{{ gn.id }}</td>
-						<td>{{ gn.label }}</td>
-						<td>{% if gn.actif %}<span class="text-success">Actif</span>{% else %}non actif{% endif %}</td>
-						<td>{{ gn.participants|length }}</td>
-						<td>{{ gn.billetCount }}</td>
-						<td>
-							<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
-								<div class="btn-group" role="group" aria-label="...">
-									<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('gn.update',{'gn':gn.id}) }}"><i class="fa fa-pencil"></i></a>
-									<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('gn.detail',{'gn':gn.id}) }}"><i class="fa fa-eye"></i></a>
-									<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('gn.delete',{'gn':gn.id}) }}"><i class="fa fa-eraser"></i></a>
-								</div>
-							</div>
-						</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-		
-		{{ paginator|raw }}
-		
+		<div class="header">
+			<h5>Liste des grandeurs nature</h5>
+		</div>
+
+		<blockquote>
+			Voici la liste des jeux organisés par Eve-Oniris. Choisissez celui auquel vous voulez participer. Vous pourrez ainsi acceder aux différentes ressources (Règles, groupes, univers, billeterie) qui composent le jeu.
+		</blockquote>
+
+		{% if is_granted('ROLE_ADMIN', app.user) %}
+		<div class="btn-toolbar" role="toolbar" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ajouter un GN" href="{{ path('gn.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+			</div>
+		</div>
+		{% endif %}
 	</div>
-	
+
+	{% include '_partials/pagination.html.twig' %}
+
+	{%  for gn in paginator %}
+	<div class="well well-sm bs-component">
+
+		<div class="header">
+			<h5>
+				{{ gn.label }}
+			</h5>
+		</div>
+
+		<div class="panel-body clearfix">
+			<p>Du <strong>{{ gn.dateDebut|date('d/m/Y') }}</strong> au <strong>{{ gn.dateFin|date('d/m/Y') }}</strong></p>
+			
+			{% if gn.description %}
+				{{ gn.description|markdown_to_html }}
+			{% else %}
+				<p>Aucune description.</p>
+			{% endif %}
+
+			
+				{% if gn.isPast %}
+					<span class="text-danger">Le jeu est terminé, il n'est plus possible d'y participer</span>
+				{% else %}
+					{% if app.user.takePart(gn) %}
+						<span class="text-success">Vous participez à ce jeu</span>
+					{% else %}
+						<a class="btn btn-primary" href="{{ path('user.gn.participe', {'gn': gn.id}) }}"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;Participer !</a>
+					{% endif %}
+				{% endif %}
+			
+			
+			<div class="pull-right">
+				<a class="btn btn-primary" href="{{ path('gn.detail', {'gn': gn.id}) }}">
+					<i class="fa fa-eye" aria-hidden="true"></i>&nbsp;Plus d'informations
+				</a>
+			</div>
+		</div>
+
+		
+
+	</div>
+	{%  endfor %}
+
+	{% include '_partials/pagination.html.twig' %}
+
 {% endblock %}

@@ -8,15 +8,15 @@ body {
 </style>
 {% endblock style %}
 
-{% block content %}
+{% block body %}
 
 {% for background in backgrounds %}
 	<h2>#{{ background.groupe.numero }} {{ background.groupe.nom }} ({{ background.gn.label }})</h2>
 	<h3>{{ background.titre }}</h3>
 	
-	{{ background.text|markdown }}
+	{{ background.text|markdown_to_html }}
 	
 	<hr class="print-page-break" />
 {% endfor %}
 
-{% endblock content %}
+{% endblock body %}

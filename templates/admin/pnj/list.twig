@@ -1,6 +1,6 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
-{% block content %}
+{% block body %}
 
 <ol class="breadcrumb">
   <li class="active">Personnages non joueurs</li>
@@ -45,7 +45,7 @@
 					</td>
 					<td>
 						{% if pnj.groupegn %}
-							<a href="{{ path('groupe.detail', {'index': pnj.groupegn.groupe.id}) }}">{{ pnj.groupegn.groupe }}</a>
+							<a href="{{ path('groupe.detail', {'groupe': pnj.groupegn.groupe.id}) }}">{{ pnj.groupegn.groupe }}</a>
 						{% else %}
 							<span class="text-danger">Aucun groupe</span>
 						{% endif %}
@@ -58,4 +58,4 @@
 		
 </div>
 			
-{% endblock content %}
+{% endblock body %}

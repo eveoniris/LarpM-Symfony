@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Personnages{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 
 	<ol class="breadcrumb">
@@ -13,4 +13,4 @@
 
 	{{ include('admin/personnage/search.twig') }}	
 
-{% endblock content %}
+{% endblock body %}

@@ -1,71 +1,57 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Classes{% endblock title %}
 
-{% block content %}
-	
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-xs-12 col-md-8">
-			
-			<a href="{{ path("classe") }}">Retour à la liste des classes</a>
-			<div class="well well-sm bs-component">
-				<h4>
-					{{ classe.label }}
-				</h4>
-			</div>
-			
-  			<div class="list-group">
-		    		
-		    	<div class="list-group-item">
-			    	<h4 class="list-group-item-heading">Description</h4>
-	    			<p class="list-group-item-text">
-	    			{% if not classe.description %}
-    				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-    				Attention, cette classe n'a pas de description.
-    				{% else %}
-    					{{ classe.description|markdown }}
-    				{% endif %}
-    				</p>
-	    		</div>
-	    		
-				<div class="list-group-item">
-	  				<h4 class="list-group-item-heading">
-	  					Famille de compétences acquises à la création		
-	  				</h4>
-  					<p class="list-group-item-text">
-						{{ classe.competenceFamilyCreations|join(', ') }}
-  					</p>
-  				</div>
-  				
-				<div class="list-group-item">
-	  				<h4 class="list-group-item-heading">
-	  					Famille de Compétences favorites		
-	  				</h4>
-  					<p class="list-group-item-text">
-						{{ classe.competenceFamilyFavorites|join(', ') }}
-  					</p>
-  				</div>
-  				
-  				<div class="list-group-item">
-	  				<h4 class="list-group-item-heading">
-	  					Famille de compétences normales		
-	  				</h4>
-  					<p class="list-group-item-text">
-						{{ classe.competenceFamilyNormales|join(', ') }}
-  					</p>
-  				</div>
-  				
-  				<div class="list-group-item">
-  					<div class="btn-group" role="group" aria-label="...">
-  						<a  class="btn btn-primary" role="button" href="{{ path('classe.update', {index : classe.id}) }}">Modifier</a>
-					</div>
-				</div>
-				
-			</div>
+{% block body %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li><a href="{{ path("classe.index") }}">Liste des classes</a></li>
+		<li class="active">{{ classe.label }}</li>
+	</ol>
+
+	<div class="well well-sm bs-component">
+		<div class="header">
+			<h5>{{ classe.label }}</h5>
+		</div>
+		<a href="{{ path('classe.update', {'id': classe.id}) }}" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier" role="button"><i class="fa fa-pencil"></i></a>
+	</div>
+
+	<div class="well well-sm bs-component">
+		<div class="header">
+			<h5>Description</h5>
+		</div>
+		{% if not classe.description %}
+		<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+		Attention, cette classe n'a pas de description.
+		{% else %}
+			{{ classe.description|markdown_to_html }}
+		{% endif %}
+		<img width="184" height="250" alt="{{ classe.labelFeminin }}" src="{{ asset("classes/#{classe.imageF}") }}" />
+		<div class="pull-right">
+			<img width="184" height="250" alt="{{ classe.labelMasculin }}" src="{{ asset("classes/#{classe.imageM}")  }}" />
 		</div>
 	</div>
-</div>
-	
+
+	<div class="well well-sm bs-component">
+		<div class="header">
+			<h5>Famille de compétences acquises à la création</h5>
+		</div>
+		{{ classe.competenceFamilyCreations|join(', ') }}
+	</div>
+
+	<div class="well well-sm bs-component">
+		<div class="header">
+			<h5>Famille de Compétences favorites</h5>
+		</div>
+		{{ classe.competenceFamilyFavorites|join(', ') }}
+	</div>
+
+	<div class="well well-sm bs-component">
+		<div class="header">
+			<h5>Famille de compétences normales</h5>
+		</div>
+		{{ classe.competenceFamilyNormales|join(', ') }}
+	</div>	
 			
 {% endblock %}

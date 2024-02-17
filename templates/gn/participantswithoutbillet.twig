@@ -1,8 +1,8 @@
-{% extends "base.html.twig" %}
+{% extends "layout.twig" %}
 
 {% block title %}Grandeur nature{% endblock title %}
 
-{% block body %}
+{% block content %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -11,36 +11,31 @@
 		<li class="active">Liste des participants sans billets</li>
 	</ol>
 
-	<div class="well well-sm bs-component">
+<div class="well well-sm">
 
-		<div class="header">
-			<h5>Liste des participants à {{ gn.label }} n'ayant pas encore de billet</h5>
-		</div>
-
-		<div class="btn-toolbar" role="toolbar" aria-label="...">
-			<div class="btn-group" role="group" aria-label="...">
-				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Export CSV" href="{{  path('gn.participants.withoutbillet.csv', {'gn': gn.id}) }}"><i class="fa fa-file-csv"></i> Export CSV</a>
-			</div>
-		</div>
+	<div class="header">
+		<h5>Liste des participants à {{ gn.label }} n'ayant pas encore de billets</h5>
 	</div>
-
+		
+	<a href="{{  path('gn.participants.withoutbillet.csv', {'gn': gn.id}) }}">Télécharger cette liste au format CSV</a>
+	
 	<table class="table table-condensed table-striped table-bordered">
 		<thead>
 			<tr>
 				<th>Participant</th>
 				<th>Email</th>
-				<th>Action</th>
+				<th />
 			</tr>
 		</thead>
 		<tbody>
 			{% for participant in participants %}
 				<tr>
-					<td>{{ participant.user.etatCivil.nom|default('Inconnnu') }} {{ participant.user.etatCivil.prenom|default('Inconnnu') }}</td>
+					<td>{{ participant.user.etatCivil }}</td>
 					<td>{{ participant.user.email }}</td>
 					<td>
 						<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 							<div class="btn-group" role="group" aria-label="...">
-								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Choisir le billet" href="{{ path('participant.billet',{'participant':participant.id}) }}"><i class="fa fa-ticket"></i></a>
+								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Choisir le billet" href="{{ path('participant.billet',{'participant':participant.id}) }}"><i class="fa fa-ticket"></i></a>
 							</div>
 						</div>
 					</td>
@@ -49,4 +44,6 @@
 		</tbody>
 	</table>	
 
-{% endblock body %}
+</div>
+
+{% endblock content %}

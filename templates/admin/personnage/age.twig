@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}{{ personnage.publicName }}{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 
 	<ol class="breadcrumb">
@@ -13,13 +13,13 @@
 	</ol>
 	
 	<div class="well bs-component">	
-		<form action="{{ path('personnage.admin.update.age', {'personnage': personnage.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.update.age', {'personnage': personnage.id}) }}) }}
 			<fieldset>
 				<legend>Choix de l'age</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 
-{% endblock content %}
+{% endblock body %}

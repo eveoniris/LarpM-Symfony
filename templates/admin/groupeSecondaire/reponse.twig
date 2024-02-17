@@ -1,28 +1,28 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Accepter ou refuser une candidature{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
 		<li><a href="{{ path("groupeSecondaire.admin.list") }}">Liste des groupes secondaires</a></li>
-		<li><a href="{{ path("groupeSecondaire.admin.detail",{'index':groupeSecondaire.id}) }}">Détail de {{ groupeSecondaire.label }}</a></li>
+		<li><a href="{{ path("groupeSecondaire.admin.detail",{'groupeSecondaire':groupeSecondaire.id}) }}">Détail de {{ groupeSecondaire.label }}</a></li>
 		<li class="active">Accepter ou refuser une candidature</li>
 	</ol>
 	
 	<div class="well bs-component">
 		
-		<form action="{{ path('groupeSecondaire.admin.reponse', {'index': groupeSecondaire.id, 'postulantId': postulant.id}) }}" method="POST" {{ form_enctype(form) }} novalidate>
+		{{ form_start(form, {"attr": {"action": path('groupeSecondaire.admin.reponse', {'index': groupeSecondaire.id, 'postulantId': postulant.id}) }}) }}
 			<fieldset>
 				<legend>Accepter ou refuser la candidature de {{ postulant.personnage.publicidentity }}</legend>
-					{{ postulant.explanation|markdown }}
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					{{ postulant.explanation|markdown_to_html }}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
-{% endblock content %}
+{% endblock body %}
 
 
 {% block javascript %}

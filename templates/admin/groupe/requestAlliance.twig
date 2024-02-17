@@ -1,0 +1,28 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Demander une alliance{% endblock title %}
+
+{% block body %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Page d'accueil</a></li>
+		<li><a href="{{ path('participant.index', {'participant' : participant.id}) }}">{{ participant.gn.label }}</a></li>
+		<li><a href="{{ path('groupeGn.groupe', {'groupeGn' : groupeGn.id}) }}">{{ groupe.nom }}</a></li>
+		<li class="active">Demander une alliance</li>
+	</ol>
+	
+	<div class="well bs-component">
+	
+		{{ form_start(form, {"attr": {"action": path('groupe.requestAlliance', {'participant': participant.id, 'groupe': groupe.id}) }}) }}
+			
+
+			{{ form(form) }}
+			
+			<p>Le chef de groupe recevra une notification pour le prévenir de votre demande.
+			Pour que l'alliance soit active, il faut qu'elle soit validée par le chef du groupe concerné. Il pourra soit accepter votre demande, soit la refuser.</p>
+			 
+		{{ form_end(form) }}
+	
+	</div>
+	
+{% endblock %}

@@ -1,5 +1,5 @@
 
-{% block content %}
+{% block body %}
 
 	{% set formPath = formPath is defined ? formPath : 'personnage.admin.list' %}
 	{% set formParams = formParams is defined ? formParams : {} %}
@@ -26,4 +26,4 @@
 		{{ paginator|raw }}
 	</div>
 
-{% endblock content %}
+{% endblock body %}

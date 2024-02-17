@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}{{ personnage.publicName }}{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 <div class="container-fluid">
 
@@ -14,17 +14,17 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('personnage.admin.transfert',{'personnage':personnage.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.transfert',{'personnage':personnage.id}) }}) }}
 			<fieldset>
 				<legend>Tranfert de #{{ personnage.id }} - {{ personnage.nom }} ({{ personnage.surnom }}) - <small>appartient actuellement à {{ personnage.user }}</small></legend>
 						
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 	
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 </div>
 
-{% endblock content %}
+{% endblock body %}

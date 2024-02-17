@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Potions{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -21,7 +21,7 @@
 					<div class="col-md-8">
 						<strong>{{potion.numero}}</strong> : {{ potion.label }} - Niveau {{ potion.niveau }}
 						{% if potion.secret %}<span style="color:red;">&nbsp;(SECRET)&nbsp;</span>{% endif %}
-						{{ potion.description|markdown }}
+						{{ potion.description|markdown_to_html }}
 						{% if potion.documentUrl %}
 							<a href="{{ path('magie.potion.document', {'potion': potion.id, 'document': potion.documentUrl}) }}">Télécharger le pdf associé</a>
 						{% else %}

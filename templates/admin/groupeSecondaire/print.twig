@@ -1,6 +1,6 @@
 {% extends "layout_print.twig" %}
 
-{% block content %}
+{% block body %}
 
 	<h2>Groupe {% if groupeSecondaire.secret%}secret{% endif %} : {{ groupeSecondaire.label }}</h2>
 	{% if groupeSecondaire.responsable %}
@@ -16,4 +16,4 @@
 
 	<p>{{ groupeSecondaire.materiel }}</p>
 	
-{% endblock content %}
+{% endblock body %}

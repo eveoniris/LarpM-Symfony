@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Documents{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -19,8 +19,8 @@
 			<li class="list-group-item">
 				<div class="btn-toolbar" role="toolbar" aria-label="...">
 
-					<form class="form-inline" action="{{ path('document') }}" method="POST" {{ form_enctype(form) }}>
-						{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					<form class="form-inline" action="{{ path('document') }}) }}
+						
 						<div class="form-group">
 							<div class="input-group">
 								{{ form_widget(form.value) }}
@@ -37,7 +37,7 @@
 							</div>
 						</div>
 						{{ form_rest(form) }}
-					</form>
+					{{ form_end(form) }}
 
 				</div>
 			</li>
@@ -128,7 +128,7 @@
 				<tr>
 					<td>{{ document.code }} -- {{ document.titre }}</td>
 					<td>{% if document.impression %}Imprimé{% else %}Non imprimé{% endif %}</td>
-					<td>{{ document.description|markdown }}</td>
+					<td>{{ document.description|markdown_to_html }}</td>
 					<td>{% if document.langues|length > 0 %}{{ document.langues|join(', ') }}{% else %}Aucune langue définie{% endif %}</td>
 					<td>{% if document.lieus|length > 0 %}{{ document.lieus|join(', ') }}{% else %}Non défini{% endif %}</td>
 					<td>{% if document.groupes|length > 0 %}{{ document.groupes|join(', ') }}{% else %}Non défini{% endif %}</td>

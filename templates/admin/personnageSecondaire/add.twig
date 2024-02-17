@@ -1,6 +1,6 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
-{% block content %}
+{% block body %}
 	<ol class="breadcrumb">
 	  <li><a href="{{ path('personnageSecondaire') }}">Personnages secondaires</a></li>
 	  <li class="active">Ajout</li>
@@ -13,7 +13,7 @@
 		'form' : form}) }}
 	
 	
-{% endblock content %}
+{% endblock body %}
 
 {% block javascript %}
 	{{ parent() }}

@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}{{ personnage.publicName }}{% endblock title %}
 
-{% block content %}
+{% block body %}
 <div class="container-fluid">
 
 	<ol class="breadcrumb">
@@ -13,15 +13,15 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('personnage.admin.origine.update',{'personnage':personnage.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.origine.update',{'personnage':personnage.id}) }}) }}
 			<fieldset>
 				<legend>{{ personnage.publicName }} - <small>Choix d'une origine</small></legend>
 				<p>Choisissez l'origine du personnage, en général, les personnages sont issus du même pays que celui de leur groupe !</p>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 	
 				{{ form_row(form.territoire) }}
 				{{ form_rest(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
-{% endblock content %}
+{% endblock body %}

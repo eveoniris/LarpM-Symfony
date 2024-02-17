@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Grandeur nature{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -11,14 +11,19 @@
 		<li class="active">Liste des participants avec un billet mais n'ayant pas de personnage</li>
 	</ol>
 
-<div class="well well-sm">
+	<div class="well well-sm bs-component">
 
-	<div class="header">
-		<h5>Liste des participants à {{ gn.label }} avec un billet mais n'ayant pas de personnages</h5>
+		<div class="header">
+			<h5>Liste des participants à {{ gn.label }} avec un billet mais n'ayant pas de personnage</h5>
+		</div>
+
+		<div class="btn-toolbar" role="toolbar" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Export CSV" href="{{  path('gn.participants.withoutperso.csv', {'gn': gn.id}) }}"><i class="fa fa-file-csv"></i> Export CSV</a>
+			</div>
+		</div>
 	</div>
-		
-	<a href="{{  path('gn.participants.withoutperso.csv', {'gn': gn.id}) }}">Télécharger cette liste au format CSV</a>
-	
+
 	<table class="table table-condensed table-striped table-bordered">
 		<thead>
 			<tr>
@@ -26,7 +31,7 @@
 				<th>Email</th>
 				<th>Billet</th>
 				<th>Groupe</th>
-				<th />
+				<th>Actions</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -47,8 +52,10 @@
 						{% endif %}
 					</td>
 					<td>
-						<a href="{{ path('participant.admin.personnage.old', {'participant' : participant.id}) }}">Récupérer un ancien personnage</a>
-						<a href="{{ path('participant.admin.personnage.new', {'participant' : participant.id}) }}">Créer un nouveau personnage</a>
+						{% if participant.groupeGn %}
+							<a href="{{ path('participant.admin.personnage.old', {'participant' : participant.id}) }}">Récupérer un ancien personnage</a>
+							<a href="{{ path('participant.admin.personnage.new', {'participant' : participant.id}) }}">Créer un nouveau personnage</a>
+						{% endif %}
 					</td>
 				</tr>
 			{% endfor %}
@@ -57,4 +64,4 @@
 
 </div>
 
-{% endblock content %}
+{% endblock body %}

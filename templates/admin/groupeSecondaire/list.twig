@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Groupe secondaire{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -35,7 +35,7 @@
 		   		<form class="form" action="{{ path('groupeSecondaire.admin.list') }}" method="GET" {{ form_enctype(form) }}>
 					{% form_theme form 'Form/bootstrap_3_horizontal_layout.html.twig' %}
 					{{ form(form) }}
-		   		</form>
+		   		{{ form_end(form) }}
 		   		<a href="{{ path('groupeSecondaire.admin.list') }}">Reset</a>
 		   	</li>
 		</ul>
@@ -97,10 +97,10 @@
 			<tbody>
 			{% for groupeSecondaire in groupeSecondaires %}
 				<tr>
-					<td><a href="{{ path('groupeSecondaire.admin.update', {'groupe':groupeSecondaire.id}) }}">{{ groupeSecondaire.id }}</td>
+					<td><a href="{{ path('groupeSecondaire.admin.update', {'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.id }}</td>
 					<td>{% if groupeSecondaire.secret %}<span style="color:red;">Secret</span>{% else %} -- {% endif %}</td>
-					<td><a href="{{ path('groupeSecondaire.admin.detail', {'groupe':groupeSecondaire.id}) }}">{{ groupeSecondaire.label }}</td>
-					<td>{{ groupeSecondaire.description|markdown }}</td>
+					<td><a href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.label }}</td>
+					<td>{{ groupeSecondaire.description|markdown_to_html }}</td>
 					<td>{{ groupeSecondaire.secondaryGroupType.label }}</td>
 					<td>{{ groupeSecondaire.membres|length }}</td>
 				</tr>
@@ -111,4 +111,4 @@
 		{{ paginator|raw }}
 	</div>
 
-{% endblock content %}
+{% endblock body %}

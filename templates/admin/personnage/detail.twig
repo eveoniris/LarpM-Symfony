@@ -135,7 +135,7 @@
 								<h6>Postulation(s)</h6>
 								<ul class="list-group">
 								{% for postulant in personnage.postulants %}
-									<a class="list-group-item" href="{{ path('groupeSecondaire.admin.detail', {'groupe': postulant.secondaryGroup.id}) }}">{{ postulant.secondaryGroup.label }} en attente de validation.</a>
+									<a class="list-group-item" href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire': postulant.secondaryGroup.id}) }}">{{ postulant.secondaryGroup.label }} en attente de validation.</a>
 								{% endfor %}
 								</ul>
 							{% endif %}
@@ -185,7 +185,7 @@
 								<h6>Historique</h6>
 								<div class="list-group">
 									{% for historique in personnage.renommeHistories %}
-										<div class="list-group-item">{{ historique.date|date("Y-m-d h:i:s") }} : {% if historique.renomme > 0 %}+{% endif %}{{ historique.renomme }} {% if historique.explication %} pour la raison suivante : "{{ historique.explication }}"{% endif %}.</div>
+										<div class="list-group-item">{{ historique.date|date("Y-m-d H:i:s") }} : {% if historique.renomme > 0 %}+{% endif %}{{ historique.renomme }} {% if historique.explication %} pour la raison suivante : "{{ historique.explication }}"{% endif %}.</div>
 									{% endfor %}
 								</div>
 							</div>
@@ -197,7 +197,7 @@
 								<h6>Historique</h6>		
 								<div class="list-group">
 									{% for historique in personnage.displayHeroisme %}
-										<div class="list-group-item">{{ historique.date|date("Y-m-d h:i:s") }} : {% if historique.heroisme > 0 %}+{% endif %}{{ historique.heroisme }} {% if historique.explication %} pour la raison suivante : "{{ historique.explication }}"{% endif %}.</div>
+										<div class="list-group-item">{{ historique.date|date("Y-m-d H:i:s") }} : {% if historique.heroisme > 0 %}+{% endif %}{{ historique.heroisme }} {% if historique.explication %} pour la raison suivante : "{{ historique.explication }}"{% endif %}.</div>
 									{% endfor %}
 								</div>
 							</div>
@@ -209,7 +209,7 @@
 								<h6>Historique</h6>		
 								<div class="list-group">
 									{% for historique in personnage.displayPugilat %}
-										<div class="list-group-item">{{ historique.date|date("Y-m-d h:i:s") }} : {% if historique.pugilat > 0 %}+{% endif %}{{ historique.pugilat }} {% if historique.explication %} pour la raison suivante : "{{ historique.explication }}"{% endif %}.</div>
+										<div class="list-group-item">{{ historique.date|date("Y-m-d H:i:s") }} : {% if historique.pugilat > 0 %}+{% endif %}{{ historique.pugilat }} {% if historique.explication %} pour la raison suivante : "{{ historique.explication }}"{% endif %}.</div>
 									{% endfor %}
 								</div>
 							</div>														
@@ -353,7 +353,7 @@
 								{% for trigger in personnage.personnageTriggers %}
 									<div class="list-group-item">
 										{{ trigger.tag }}
-										-- <a href="{{ path('personnage.admin.trigger.delete', {'personnage': personnage.id, 'trigger': trigger.id}) }}">Supprimer</a>
+										-- <a href="{{ path('personnage.admin.delete.trigger', {'personnage': personnage.id, 'trigger': trigger.id}) }}">Supprimer</a>
 									</div>
 								{% else %}
 									<div class="list-group-item">La liste est vide</div>
@@ -464,7 +464,7 @@
 								{% endif %}
 								<div class="list-group-item">
 									<h6 class="list-group-item-heading">Lié aux langues :</h6>
-									{% for materiel in langueMateriel %}
+									{% for materiel in personnage.langueMateriel %}
 											<div class="list-group-item-text"><strong>{{ materiel }}</strong></div>
 									{% else %}
 										<div class="list-group-item-text">Aucun</div>
@@ -560,10 +560,10 @@
 									
 								<div class="list-group">
 									{% for historique in personnage.experienceGains %}
-										<div class="list-group-item">{{ historique.operationDate|date("Y-m-d h:i:s") }} : + {{ historique.xpGain }} xp {% if historique.explanation %} pour la raison suivante : "{{ historique.explanation }}"{% endif %}.</div>
+										<div class="list-group-item">{{ historique.operationDate|date("Y-m-d H:i:s") }} : + {{ historique.xpGain }} xp {% if historique.explanation %} pour la raison suivante : "{{ historique.explanation }}"{% endif %}.</div>
 									{% endfor %}
 									{% for historique in personnage.experienceUsages %}
-										<div class="list-group-item">{{ historique.operationDate|date("Y-m-d h:i:s") }} : - {{ historique.xpUse }} xp pour acquérir {{ historique.competence.label }}.</div>
+										<div class="list-group-item">{{ historique.operationDate|date("Y-m-d H:i:s") }} : - {{ historique.xpUse }} xp pour acquérir {{ historique.competence.label }}.</div>
 									{% endfor %}
 								</div>
 							</div>
@@ -616,7 +616,7 @@
 								{% if personnage.personnageLignee|length > 0 %}
 									{% for lignage in personnage.personnageLignee %}
 										{% if lignage.lignee %}<div class="list-group-item">
-											Lignée :<a href="{{ path('lignee.details', {'lignee':lignage.lignee.id}) }}"> {{ lignage.lignee.nom }}</a></div>
+											Lignée :<a href="{{ path('lignee.detail', {'id':lignage.lignee.id}) }}"> {{ lignage.lignee.nom }}</a></div>
 										{% endif %}
 										<li class="list-group-item">
 											<strong>Parents :</strong>
@@ -719,7 +719,7 @@
 									{# Gestion du background du personnage #}
 									{% if personnage.personnageBackgrounds|length > 0 %}
 										{% for background in personnage.personnageBackgrounds %}
-											<h6 class="list-group-item-heading">Background - <strong>{{ background.visibility }}</strong></h6>
+											<h6 class="list-group-item-heading">Background ({{ background.gn.label }}) - <strong>{{ background.visibility }}</strong></h6>
 											<a href="{{ path('personnage.admin.update.background', {'personnage': personnage.id, 'background': background.id}) }}">Modifier le background</a>
 											{{ background.text|markdown_to_html }}
 										{% endfor %}
