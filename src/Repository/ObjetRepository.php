@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Entity\Rangement;
+use App\Entity\Tag;
 use Doctrine\ORM\QueryBuilder;
 
 class ObjetRepository extends BaseRepository
@@ -74,11 +76,19 @@ class ObjetRepository extends BaseRepository
         return $qb;
     }
 
-    public function addTagCriteriaToQueryBuilder(null|string|int $criter, QueryBuilder $qb): QueryBuilder
+    public function addTagCriteriaToQueryBuilder(null|string|int|Tag $criter, QueryBuilder $qb): QueryBuilder
     {
         $alias = $qb->getRootAliases()[0] ?? 'o';
         if (null === $criter) {
             return $qb;
+        }
+
+        if ($criter instanceof Tag) {
+            if ($criter->getId() <= 0) {
+                $criter = -1;
+            } else {
+                $criter = $criter->getNom();
+            }
         }
 
         if (\is_numeric($criter)) {
@@ -103,11 +113,19 @@ class ObjetRepository extends BaseRepository
         return $qb;
     }
 
-    public function addRangementCriteriaToQueryBuilder(null|string|int $criter, QueryBuilder $qb): QueryBuilder
+    public function addRangementCriteriaToQueryBuilder(null|string|int|Rangement $criter, QueryBuilder $qb): QueryBuilder
     {
         $alias = $qb->getRootAliases()[0] ?? 'o';
         if (null === $criter) {
             return $qb;
+        }
+
+        if ($criter instanceof Rangement) {
+            if ($criter->getId() <= 0) {
+                $criter = -1;
+            } else {
+                $criter = $criter->getLabel();
+            }
         }
 
         if (\is_numeric($criter)) {
@@ -122,11 +140,10 @@ class ObjetRepository extends BaseRepository
 
             return $qb;
         }
-            $qb->join($alias.'.rangement', 'r');
-            $qb->andWhere('r.label LIKE :rangement');
-            $qb->setParameter('rangement', $criter);
+        $qb->join($alias.'.rangement', 'r');
+        $qb->andWhere('r.label LIKE :rangement');
+        $qb->setParameter('rangement', $criter);
 
         return $qb;
     }
-
 }

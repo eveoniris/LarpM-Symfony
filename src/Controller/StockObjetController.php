@@ -6,18 +6,16 @@ use App\Entity\Etat;
 use App\Entity\Objet;
 use App\Entity\Rangement;
 use App\Entity\Tag;
-use App\Form\Entity\ListSearch;
+use App\Form\Entity\ObjetSearch;
 use App\Form\ObjetFindForm;
 use App\Form\Stock\ObjetDeleteForm;
 use App\Form\Stock\ObjetForm;
 use App\Form\Stock\ObjetTagForm;
 use App\Repository\ObjetRepository;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 // use Imagine\Image\Box; // TODO
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,15 +43,9 @@ class StockObjetController extends AbstractController
 
         $criteria = [];
 
-        // tag: null => no search based on tag;
-        // tag: -1 or ObjetRepository::CRIT_WITHOUT => search object without
-        // tag: [a-Z]+ => search object with this tag name
         $tag = $request->get('tag');
         $criteria['tag'] = $request->get('tag');
 
-        // rangement: null => no search based on rangement;
-        // rangement: -1 or ObjetRepository::CRIT_WITHOUT => search object without
-        // rangement: [a-Z]+ => search object with this rangement name
         $rangement = $request->get('rangement');
         $criteria['rangement'] = $request->get('rangement');
 
@@ -62,16 +54,12 @@ class StockObjetController extends AbstractController
         $type = null;
         $value = null;
 
-        $objetSearch = new ListSearch();
+        $objetSearch = new ObjetSearch();
         $form = $this->createForm(
-            ObjetFindForm::class,
-            $objetSearch
+            type: ObjetFindForm::class,
+            data: $objetSearch,
         );
-        /*$form->add('tag', HiddenType::class, [
-            'data' => $tag,
-        ])->add('rangement', HiddenType::class, [
-            'data' => $rangement,
-        ]);*/
+
         // TODO add to form the Tag and Rangement choise
         // TODO move photo from database to drive
         // TODO form as GET request
@@ -82,32 +70,19 @@ class StockObjetController extends AbstractController
             $data = $form->getData();
             $type = $data->getType();
             $value = $data->getValue();
+
+            // tag: null => no search based on tag;
+            // tag: <= 0 or ObjetRepository::CRIT_WITHOUT => search object without
+            // tag: [a-Z]+ => search object with this tag name
+            $tag = $data->getTag();
+
+            // rangement: null => no search based on rangement;
+            // rangement: <= 0> or ObjetRepository::CRIT_WITHOUT => search object without
+            // rangement: [a-Z]+ => search object with this rangement name
+            $rangement = $data->getRangement();
         }
 
         $alias = ObjetRepository::getEntityAlias();
-        /*
-        $criterias = [];
-        if (!empty($value)) {
-            if (empty($type) || '*' === $type) {
-                if (is_numeric($value)) {
-                    $criterias[] = Criteria::create()->where(
-                        Criteria::expr()?->contains($alias.'.id', $value)
-                    )->orWhere(
-                        Criteria::expr()?->contains($alias.'.numero', $value)
-                    ); // TODO look for linked ITEM
-                } else {
-                    Criteria::create()->where(
-                        Criteria::expr()?->contains($alias.'.nom', $value)
-                    )->orWhere(
-                        Criteria::expr()?->contains($alias.'.description', $value)
-                    );
-                }
-            } else {
-                $criterias[] = Criteria::create()->andWhere(
-                    Criteria::expr()?->contains($alias.'.'.$type, $value)
-                );
-            }
-        }*/
 
         $orderBy = $this->getRequestOrder(
             defOrderBy: 'nom',
@@ -115,17 +90,6 @@ class StockObjetController extends AbstractController
             allowedFields: $objetRepository->getFieldNames()
         );
 
-        // Via Generic paginator
-        /* $paginator = $objetRepository->getPaginator(
-             limit: $this->getRequestLimit(25),
-             page: $this->getRequestPage(),
-             orderBy: $orderBy,
-             alias: $alias,
-             criterias: $criterias
-         );*/
-        // End via generic
-
-        // / VIA query
         $query = $objetRepository->createQueryBuilder($alias)
             ->orderBy(key($orderBy), current($orderBy));
 
@@ -138,7 +102,7 @@ class StockObjetController extends AbstractController
         if (!empty($value)) {
             if (empty($type) || '*' === $type) {
                 if (\is_numeric($value)) {
-                    $query->orWhere($alias.'.id LIKEooù :value');
+                    $query->orWhere($alias.'.id LIKE :value');
                     $query->orWhere($alias.'.numero LIKE :value');
                     $query->orWhere('i.numero LIKE :value');
                     $query->setParameter('value', $value);
@@ -153,14 +117,9 @@ class StockObjetController extends AbstractController
             }
         }
 
-        if (!empty($tag)) {
-
-        }
-
         $paginator = $objetRepository->findPaginatedQuery(
             $query->getQuery(), $this->getRequestLimit(25), $this->getRequestPage()
         );
-        // END VIA QUERY
 
         return $this->render('stock/objet/list.twig', [
             'tag' => $criteria['tag'], // TODO

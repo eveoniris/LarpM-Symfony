@@ -23,8 +23,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 {{ form_widget(form.value) }}
-
                                 {{ form_widget(form.type) }}
+                                {{ form_widget(form.tag) }}
+                                {{ form_widget(form.rangement) }}
                                 <div class="input-group-btn">
                                     <button type="submit" class="btn btn-default" data-toggle="tooltup"
                                             data-placement="top"
@@ -50,48 +51,6 @@
                 {% if rangement == -1 %}
                     &nbsp;- sans rangement
                 {% endif %}
-            </div>
-            <div class="d-flex justify-content-between">
-                <div class="btn-group dropdown" role="group" aria-label="...">
-                    <button type="button" class="btn btn-dark dropdown-toggle " data-bs-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                        Tags
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        {% for tag in tags %}
-                            <li class="d-grid gap-2">
-                                <a class="btn btn-dark"
-                                   href="{{ path('stockObjet.index', {'tag':tag.id, 'rangement':rangement}) }}">{{ tag.nom }}
-                                    &nbsp</a></li>
-                        {% endfor %}
-                        <li class="d-grid gap-2"><a class="btn btn-dark"
-                                                    href="{{ path('stockObjet.index', {'tag':-1, 'rangement':rangement}) }}">Objets
-                                sans
-                                tag&nbsp;({{ objetsWithoutTagCount }})</a></li>
-                    </ul>
-                </div>
-
-                <div class="btn-group dropdown" role="group" aria-label="...">
-                    <button type="button" class="btn btn-dark dropdown-toggle " data-bs-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                        Rangements
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        {% for rangement in rangements %}
-                            <li class="d-grid gap-2">
-                                <a class="btn btn-dark"
-                                   href="{{ path('stockObjet.index', {'rangement':rangement.id, 'tag':tag}) }}">{{ rangement.label }}</a>
-                            </li>
-                        {% endfor %}
-                        <li class="d-grid gap-2"><a class="btn btn-dark"
-                                                    href="{{ path('stockObjet.index', {'rangement':-1, 'tag':tag}) }}">Objets
-                                sans
-                                rangement&nbsp;{{ objetsWithoutRangementCount }}</a></li>
-                    </ul>
-                </div>
-
             </div>
         </div>
 
