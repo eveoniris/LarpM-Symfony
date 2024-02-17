@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}{{ personnage.publicName }}{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 <div class="container-fluid">
 
@@ -14,7 +14,7 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('personnage.admin.competence.add',{'personnage':personnage.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.competence.add',{'personnage':personnage.id}) }}) }}
 			<fieldset>
 				<legend>{{ personnage.nom }} - <small>Achat d'une compétence</small></legend>
 				
@@ -25,22 +25,22 @@
 					<li class="list-group-item">Les autres compétences sont méconnues</li>
 				</ul> 
 		
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 	
 				{{ form_row(form.competenceId) }}
 				{{ form_rest(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 		
 		<h4>Détail des competences accessibles</h4>
 		<div class="list-group">
 			{% for competence in competences|sort %}
 				<div class="list-group-item">
 					<div class="list-group-item-heading"><h6>{{ competence.label }}</h6></div>
-					<div class="list-group-item-text">{{ competence.description|markdown }}</div>
+					<div class="list-group-item-text">{{ competence.description|markdown_to_html }}</div>
 				</div>
 			{% endfor %}
 		</div>
 	</div>
 </div>
-{% endblock content %}
+{% endblock body %}

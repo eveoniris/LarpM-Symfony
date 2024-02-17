@@ -1,32 +1,31 @@
-{% extends "layout.twig"  %}
+{% extends "base.html.twig" %}
 
 {% block title %}Etat-civil{% endblock %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
 		<li><a href="{{ path('user.admin.list') }}">Liste des utilisateurs</a></li>
 		<li class="active">Etat-civil d'un utilisateur</li>
 	</ol>
-	
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<h4 class="list-group-item-heading">
-				Etat civil de {{ etatCivil.prenom }} {{ etatCivil.nom }}
-			</h4>
+
+	<div class="well well-sm">
+
+		<div class="header">
+			<h5>Etat-civil d'un utilisateur de {{ etatCivil.prenom }} {{ etatCivil.nom }}</h5>
 		</div>
-		
-		<div class="panel-body">
-			<table class="table table-striped table-bordered table-condensed table-hover">
+	</div>
+	
+	<table class="table table-striped table-bordered table-condensed table-hover">
 				<caption>Informations</caption>
 				<thead>
 					<tr>
-						<th class="col-md-2"></th>
-						<th class="col-md-10"></th>
+						<th class="col-md-4">Propriété</th>
+						<th class="col-md-8">Valeur</th>
 					</tr>
 				</thead>
-				<tbocy>
+				<tbody>
 					<tr>
 						<th>Nom civil</th>
 						<td>{{ etatCivil.nom }}</td>
@@ -69,9 +68,7 @@
 						<th>Numéro d'adhérant à la FédéGn</th>
 						<td>{{ etatCivil.fedegn }}</td>
 					</tr>
-				</tbocy>
+				</tbody>
 			</table>
-		</div>
-	</div>
 	
-{% endblock content %}
+{% endblock body %}

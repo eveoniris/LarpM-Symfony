@@ -237,6 +237,8 @@ class GroupeController extends AbstractController
         $ressourceCommunes = new ArrayCollection($entityManager->getRepository('\\'.\App\Entity\Ressource::class)->findCommun());
         $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
 
+        dump($quete);
+
         return $this->render('groupe/quete.twig', [
             'groupe' => $groupe,
             'needs' => $quete['needs'],

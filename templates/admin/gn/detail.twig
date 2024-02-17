@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Grandeur nature{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -23,7 +23,7 @@
 	   			{% if not gn.description %}
 	   				<span class="text-danger">Attention, ce gn n'a pas de description.</span>
 	    		{% else %}
-	    			{{ gn.description|markdown }}
+	    			{{ gn.description|markdown_to_html }}
 	    		{% endif %}
 	
 		    	<h6>Création d'un personnage</h6>
@@ -42,13 +42,13 @@
 			
 				<ul>
 					<li><a href="{{ path('gn.participants', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants ({{ gn.participants|length }})</a></li>
-					<li><a href="{{ path('gn.participants.csv', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants CSV({{ gn.participants|length }})</a></li>
-					<li><a href="{{ path('gn.groupes.csv', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Groupes CSV</a></li>
+					<li><a href="{{ path('gn.participants.csv', {'gn': gn.id}) }}"><i class="fa fa-file-csv"></i> Participants CSV ({{ gn.participants|length }})</a></li>
+					<li><a href="{{ path('gn.groupes', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Groupes ({{ gn.groupeGns|length }})</a></li>
 					<li><a href="{{ path('gn.participants.withoutbillet', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants sans billet ({{ gn.participantswithoutbillet|length }})</a></li>
 					<li><a href="{{ path('gn.participants.withoutgroup', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants sans groupe (mais avec billet) ({{ gn.participantswithoutgroup|length }})</a></li>
 					<li><a href="{{ path('gn.participants.withoutperso', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants sans personnage ({{ gn.participantswithoutperso|length }})</a></li>
-					<li><a href="{{ path('gn.groupesReserves', {'gn': gn.id}) }}"><i class="fa fa-download"></i> Groupes réservés</a></li>
-					<li><a href="{{ path('gn.fedegn', {'gn': gn.id}) }}"><i class="fa fa-download"></i> Document FédéGN</a></li>
+					<li><a href="{{ path('gn.groupes.reserves', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Groupes réservés</a></li>
+					<li><a href="{{ path('gn.fedegn', {'gn': gn.id}) }}"><i class="fa fa-file-csv"></i> Document FédéGN</a></li>
 					<li><a href="{{ path('billet.add',{'gn': gn.id}) }}"><i class="fa fa-plus"></i> Ajouter un billet</a></li>
 				</ul>
 					    

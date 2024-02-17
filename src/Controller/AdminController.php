@@ -112,7 +112,8 @@ class AdminController extends AbstractController
         $logTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../var/log'));
 
         // taille des documents
-        $docTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../private/doc'));
+        // TODO $docTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../private/doc'));
+        $docTotalSpace = 0;
 
         return $this->render('index.twig', [
             'phpVersion' => $phpVersion,

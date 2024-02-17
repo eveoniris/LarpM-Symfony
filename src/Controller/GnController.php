@@ -40,6 +40,48 @@ class GnController extends AbstractController
         );
     }
 
+    /**
+     * affiche le formulaire d'ajout d'un gn
+     * Lorsqu'un GN est créé, son forum associé doit lui aussi être créé.
+     */
+    #[Route('/gn/add', name: 'gn.add')]
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    {
+        $form = $this->createForm(GnForm::class, new Gn())
+            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+                'label' => 'Sauvegarder',
+            ]);
+        
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $gn = $form->getData();
+            /**
+             * Création du topic associé à ce gn.
+             *
+             * @var \App\Entity\Topic $topic
+             */
+            $topic = new \App\Entity\Topic();
+            $topic->setTitle($gn->getLabel());
+            $topic->setDescription($gn->getDescription());
+            $topic->setUser($this->getUser()); // défini les droits d'accés à ce forum // (les participants au GN ont le droits d'accéder à ce forum)
+            $topic->setRight('GN_PARTICIPANT');
+            $gn->setTopic($topic);
+            $entityManager->persist($gn);
+            $entityManager->flush();
+            $entityManager->persist($topic);
+            $topic->setObjectId($gn->getId());
+            $entityManager->persist($gn);
+            $entityManager->flush();
+           $this->addFlash('success', 'Le gn a été ajouté.');
+
+            return $this->redirectToRoute('gn.list', [], 303);
+        }
+
+        return $this->render('gn/add.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
     #[Route('/gn/{gn}', name: 'gn.detail')]
     public function detailAction(Request $request, #[MapEntity] Gn $gn, QuestionRepository $questionRepository): Response
     {
@@ -206,47 +248,7 @@ class GnController extends AbstractController
         ]);
     }
 
-    /**
-     * affiche le formulaire d'ajout d'un gn
-     * Lorsqu'un GN est créé, son forum associé doit lui aussi être créé.
-     */
-    #[Route('/gn/add', name: 'gn.add')]
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $form = $this->createForm(GnForm::class, new Gn())
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
-                'label' => 'Sauvegarder',
-            ]);
-        
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $gn = $form->getData();
-            /**
-             * Création du topic associé à ce gn.
-             *
-             * @var \App\Entity\Topic $topic
-             */
-            $topic = new \App\Entity\Topic();
-            $topic->setTitle($gn->getLabel());
-            $topic->setDescription($gn->getDescription());
-            $topic->setUser($this->getUser()); // défini les droits d'accés à ce forum // (les participants au GN ont le droits d'accéder à ce forum)
-            $topic->setRight('GN_PARTICIPANT');
-            $gn->setTopic($topic);
-            $entityManager->persist($gn);
-            $entityManager->flush();
-            $entityManager->persist($topic);
-            $topic->setObjectId($gn->getId());
-            $entityManager->persist($gn);
-            $entityManager->flush();
-           $this->addFlash('success', 'Le gn a été ajouté.');
-
-            return $this->redirectToRoute('gn.list', [], 303);
-        }
-
-        return $this->render('gn/add.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
+    
 
     /**
      * Liste des participants à un jeu n'ayant pas encore de billets.

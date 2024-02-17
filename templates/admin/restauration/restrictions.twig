@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Lieux de restauration{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -11,11 +11,16 @@
 	</ol>
 	
 	<div class="well well-sm">
-		{% for restrictionByGn in restauration.restrictionByGn %}
+
+		<div class="header">
+			<h5>{{ restauration.label }} - restrictions alimentaires</h5>
+		</div>
+
+		{% for restrictionByGn in restrictions %}
 			<div class="header"><h5>Restrictions alimentaires pour {{ restrictionByGn.gn.label }}</h5></div>
 			<ul class="list-group">
-				{% for res in restrictionByGn.restrictions %}
-					<li class="list-group-item">{{ res.restriction.label }} -- nombre de personnes : {{ res.count }}</li>
+				{% for restriction in restrictionByGn.restrictions %}
+					<li class="list-group-item">{{ restriction.label }} -- nombre de personnes : {{ restrictionByGn.total }}</li>
 				{% endfor %}			
 			</ul>
 		{% endfor %}			

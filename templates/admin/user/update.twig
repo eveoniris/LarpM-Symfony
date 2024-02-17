@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Modifier l'utilisateur : {{ user.displayName }}{% endblock %}
 
-{% block content %}
+{% block body %}
 
 	{% if error %}
         <div class="alert alert-danger">{{ error|nl2br }}</div>
@@ -11,11 +11,15 @@
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
 		{% if is_granted('ROLE_ADMIN', app.user) %}<li><a href="{{ path('user.admin.list') }}">Liste des utilisateurs</a></li>{% endif %}
-		<li class="active">Modifier l'utilisateur : {{ user.displayName }}</li>
+		<li class="active">Modifier un utilisateur</li>
 	</ol>
 	
     <div class="well well-sm">
-	    <form class="form-horizontal" method="POST" action="{{ path("user.edit", {'id': user.id}) }}">
+		<div class="header">
+			<h5>Modifier l'utilisateur : {{ user.displayName }}</h5>
+		</div>
+
+	    <form class="form-horizontal" method="POST" action="{{ path("user.edit", {'user': user.id}) }}">
 	
 	        <div class="form-group">
 	            <label class="col-sm-2 control-label" for="input-name">Name</label>
@@ -74,10 +78,9 @@
 	        <div class="form-group">
 	            <div class="col-sm-8 col-sm-offset-2">
 	                <button type="submit" class="btn btn-primary">Sauvegarder</button>
-	                <a style="margin-left: 10px;" href="{{ path('user.view', {'id': user.id}) }}">Retourner au profil</a>
+	                <a style="margin-left: 10px;" href="{{ path('user.view', {'user': user.id}) }}">Retourner au profil</a>
 	            </div>
 	        </div>
-	
-	    </form>
+		</form>
 	</div>
 {% endblock %}

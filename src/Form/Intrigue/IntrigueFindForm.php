@@ -19,7 +19,7 @@ class IntrigueFindForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('search', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'attr' => [
                 'placeholder' => 'Votre recherche',
@@ -28,7 +28,7 @@ class IntrigueFindForm extends AbstractType
             ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [
-                    'titre' => 'Titre',
+                    'Titre' => 'titre',
                 ],
             ]);
     }

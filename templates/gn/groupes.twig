@@ -1,55 +1,67 @@
-{% extends "base.html.twig" %}
+{% extends "layout.twig" %}
 
-{% block title %}Grandeur nature{% endblock title %}
+{% block title %}Gn -- {{ gn.label }}{% endblock title %}
 
-{% block body %}
-
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("gn.list") }}">Liste des grandeur nature</a></li>
-		<li><a href="{{ path('gn.detail', {'gn':gn.id}) }}">{{ gn.label }}</a></li>
-		<li class="active">Liste des groupes réservés</li>
-	</ol>
-
-	<div class="well well-sm bs-component">
-
-		<div class="header">
-			<h5>Liste des groupes réservés pour {{ gn.label }} ({{ groupes|length }})</h5>
-		</div>
-
-	</div>
+{% block content %}
+	<div class="well well-sm clearfix">
+		<ol class="breadcrumb">
+			<li><a href="{{ path('homepage')  }}">Accueil</a></li>
+			<li><a href="{{path('gn.list') }}">Liste des GNs</a></li>
+			<li><a href="{{path('gn.detail', {'gn': gn.id}) }}">{{ gn.label }}</a></li>
+			<li class="active">Les groupes</li>
+		</ol>
 		
-	<table class="table table-condensed table-striped table-bordered">
-		<thead>
-			<tr>
-				<th>Groupe</th>
-				<th>Responsable</th>
-				<th>Scénariste</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for groupe in groupes %}
-				{% set groupeGn = groupe.groupeGn(gn) %}
-				<tr>
-					<td><a href="{{ path('groupe.detail', {'groupe': groupe.id}) }}">#{{groupe.numero}} {{ groupe.nom }}</a></td>
-					<td>
-						{% if groupeGn.responsable %}
-							{{ groupeGn.responsable.user.etatCivil }}
-						{% else %}
-							<span class="text-danger">Aucun responsable</span>
-						{% endif %}
-					</td>
-					<td>
-						{% if groupe.scenariste %}
-							{{ groupe.scenariste.etatCivil }}
-						{% else %}
-							<span class="text-danger">Aucun scénariste</span>
-						{% endif %}
-					</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-
+		<blockquote>
+			Tous les groupes prévu sur {{ gn.label }}
+			<small>
+				{{ groupes|length }} groupes
+			</small>
+		</blockquote>
+		
+		{% if is_granted('ROLE_ADMIN', app.user) %}
+		Actions (visible uniquement par ADMIN) :
+		<ul>
+			<li><a href="{{ path('groupe.add') }}">Ajouter un groupe</a></li>
+			<li><a href="{{ path('gn.groupes.enveloppes',{'gn': gn.id}) }}">Imprimer les enveloppes</a></li>
+			<li><a href="{{ path('gn.groupes.backgrounds.chef',{'gn': gn.id}) }}">Imprimer les backgrounds des chefs de groupes</a></li>
+			<li><a href="{{ path('gn.groupes.backgrounds.groupe',{'gn': gn.id}) }}">Imprimer les backgrounds des groupes</a></li>
+			<li><a href="{{ path('gn.groupes.backgrounds.membres',{'gn': gn.id}) }}">Imprimer les backgrounds des membres de groupes</a></li>
+		</ul>
+		{% endif %}
+	</div>
 	
-{% endblock body %}
+	<div class="well well-sm">
+		{% if is_granted('ROLE_ADMIN', app.user) %}
+			Les groupes de PNJ (visible uniquement par ADMIN)
+			<ul class="list-group">
+				{% for groupe in groupes if not groupe.pj %}
+					<li class="list-group-item">{{ groupe.numero }} -- {{ groupe.nom }}</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+	
+		Les groupes de joueurs
+		<div class="list-group">
+			{% for groupe in groupes if groupe.pj %}
+				{% set session = groupe.getSession(gn) %}	
+				<div class="list-group-item">
+					<h4 class="list-group-item-heading">
+						{{ groupe.numero }} -- {{ groupe.nom }}
+					 	{% if is_granted('ROLE_SCENARISTE', app.user) %}
+					 		<a href="{{ path('groupe.detail', {'index': groupe.id}) }}">Détail</a>
+					 	{% endif %}
+					</h4>
+					{% if session.free %}Ce groupe est libre{% else %}Ce groupe est réservé{% endif %}<br />
+					Joueur.euse.s recherché.e : {{ session.placeAvailable|default(0) }}<br />
+					Contacter le/la responsable : 
+						{% if session.responsable %} 
+							{{ session.responsable.user }}. <a href="{{ path('message.new', {'to': session.responsable.user.id }) }}">Envoyer un message</a>
+						{% else %}
+							Aucun chef de groupe, impossible de le/la contacter.
+						{% endif %}
+					<p class="list-group-item-text">{{ groupe.description|markdown }}</p>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock content %}

@@ -1,39 +1,34 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Lieux de restauration{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
 		<li><a href="{{ path('restauration.list') }}">Liste des lieux de restauration</a></li>
 		<li class="active">{{ restauration.label }} - utilisateurs</li>
 	</ol>
-	
-	<nav class="navbar navbar-default" style="padding-right: 5px;">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2" aria-expanded="false">
-		        <span class="sr-only">Toggle navigation</span>
-		        <span class="icon-bar"></span>
-		        <span class="icon-bar"></span>
-		        <span class="icon-bar"></span>
-			</button>
-			<span class="navbar-brand">
-			</span>
+
+	<div class="well well-sm bs-component">
+
+		<div class="header">
+			<h5>{{ restauration.label }} - utilisateurs</h5>
 		</div>
-		<div id="bs-example-navbar-collapse-2" class="collapse navbar-collapse">
-			<ul class="nav navbar-nav navbar-right">
-				<a href="{{ path('restauration.users.export', {'restauration' : restauration.id}) }}" class="btn btn-primary navbar-btn">Exporter</a>
-			</ul>
+
+		<div class="btn-toolbar" role="toolbar" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Exporter" href="{{ path('restauration.users.export', {'id' : restauration.id}) }}"><i class="fa-solid fa-file-arrow-down"></i> Exporter</a>
+			</div>
 		</div>
-	</nav>
+	</div>
 	
-	<div class="well well-sm">
-		{% for userByGn in restauration.userByGn %}
+	<div class="well well-sm bs-component">
+		{% for userByGn in restaurations %}
 			<div class="header"><h5>{{ userByGn.gn.label }} - {{ userByGn.count }} utilisateurs</h5></div>
 			<ul class="list-group">
 				{% for user in userByGn.users %}
-					<li class="list-group-item">{{ user.etatCivil.nom }} {{ user.etatCivil.prenom }} {% if user.restrictions|length > 0 %}&nbsp;--&nbsp;{{ user.restrictions|join(', ') }}{% endif %}</li>
+					<li class="list-group-item"><a href="{{ path('user.view', {'user' : user.id}) }}">{{ user.etatCivil.nom }} {{ user.etatCivil.prenom }}</a> {% if user.restrictions|length > 0 %}&nbsp;--&nbsp;{{ user.restrictions|join(', ') }}{% endif %}</li>
 				{% endfor %}			
 			</ul>
 		{% endfor %}

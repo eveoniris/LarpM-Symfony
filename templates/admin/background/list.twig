@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Backgrounds{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -23,7 +23,7 @@
 				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter un background" href="{{ path('background.add') }}"><i class="fa fa-plus"></i></a>
 			</div>
 			
-			<form class="form form-inline" action="{{ path('background.list') }}" method="POST" {{ form_enctype(form) }}>
+			<form class="form form-inline" action="{{ path('background.list') }}) }}
 				{% form_theme form 'Form/bootstrap_3_horizontal_layout.html.twig' %}
 				<div class="form-group">
 					<div class="input-group">
@@ -39,7 +39,7 @@
 				</div>						
 					
 				{{ form_rest(form) }}
-		   	</form>
+		   	{{ form_end(form) }}
 		</div>
 		
 		{{ paginator|raw }}
@@ -110,11 +110,11 @@
 				<tr>
 					<td><a href="{{ path('background.update', {'background':background.id}) }}">{{ background.id }}</td>
 					<td><a href="{{ path('background.detail', {'background':background.id}) }}">{{ background.titre }}</td>
-					<td><a href="{{ path('groupe.detail', {'index': background.groupe.id}) }}">{{ background.groupe.nom }}</td>
+					<td><a href="{{ path('groupe.detail', {'groupe': background.groupe.id}) }}">{{ background.groupe.nom }}</td>
 					<td>{{ background.creationDate|date('Y-m-d') }}</td>
 					<td>{{ background.updateDate|date('Y-m-d') }}</td>
 					<td>{{ background.user.displayName }}</td>
-					<td>{{ background.visibility|explainVisibility }}</td>
+					<td>{{ background.visibility }}</td>
 				</tr>
 				{% endfor %}
 			</tbody>
@@ -122,4 +122,4 @@
 		{{ paginator|raw }}
 	</div>
 	
-{% endblock content %}
+{% endblock body %}

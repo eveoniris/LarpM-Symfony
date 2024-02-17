@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Construction{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -20,7 +20,7 @@
 				<div class="row">
 					<div class="col-md-8">
 						{{ construction.label }} -- {{ construction.defense }}
-						{{ construction.description|markdown }}
+						{{ construction.description|markdown_to_html }}
 					</div>
 					<div class="col-md-4">
 						<a href="{{ path('construction.update',{'construction':construction.id}) }}"><i class="fa fa-pencil"></i> Modifier</a>&nbsp;|&nbsp;

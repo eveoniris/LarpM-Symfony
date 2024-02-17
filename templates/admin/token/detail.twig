@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Jetons{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -15,7 +15,7 @@
 			<h5>{{ token.label }} -- {{ token.tag }}</h5>
 		</div>
 		<p>
-			{{ token.description|markdown }}
+			{{ token.description|markdown_to_html }}
 		</p>
 		<div class="btn-toolbar" role="toolbar" aria-label="...">
 			<div class="btn-group" role="group" aria-label="...">
@@ -25,4 +25,4 @@
 		</div>
 	</div>
 
-{% endblock content %}
+{% endblock body %}

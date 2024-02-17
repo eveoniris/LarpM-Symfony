@@ -25,7 +25,7 @@ class AnnonceForm extends AbstractType
         ])
             ->add('archive', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
-                'choices' => [false => 'Publique', true => 'Dans les archive'],
+                'choices' => ['Publique' => false, 'Dans les archive' => true],
                 'label' => 'Choisissez la visibilité de votre annonce',
             ])
             ->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [

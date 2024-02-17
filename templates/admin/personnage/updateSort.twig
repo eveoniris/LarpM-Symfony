@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}{{ personnage.publicName }} liste de sorts{% endblock title %}
 
-{% block content %}
+{% block body %}
 <div class="container-fluid">
 
 	<ol class="breadcrumb">
@@ -21,8 +21,8 @@
             <li class="list-group-item">
                 <div class="btn-toolbar" role="toolbar" aria-label="...">
 
-                    <form class="form-inline" action="{{ path('personnage.admin.update.sort',{'personnage':personnage.id}) }}" method="POST" {{ form_enctype(form) }}>
-                        {% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+                    <form class="form-inline" action="{{ path('personnage.admin.update.sort',{'personnage':personnage.id}) }}) }}
+                        
                         <div class="form-group">
                             <div class="input-group">
                                 {{ form_widget(form.value) }}
@@ -37,7 +37,7 @@
                             </div>
                         </div>
                         {{ form_rest(form) }}
-                    </form>
+                    {{ form_end(form) }}
 
                 </div>
             </li>
@@ -129,7 +129,7 @@
 						{% endif %}
 					</td>
 					<td>{{ sort.domaine.label }}</td>
-					<td>{{ sort.description|markdown}}</td>
+					<td>{{ sort.description|markdown_to_html}}</td>
 					<td>{% if personnage in sort.personnages  %}
 						<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Retirer ce sort"
 							href="{{ path('personnage.admin.remove.sort',{'personnage':personnage.id, 'sort':sort.id}) }}">
@@ -146,4 +146,4 @@
 		</table>
 	</div>
 
-{% endblock content %}
+{% endblock body %}

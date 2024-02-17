@@ -1,0 +1,21 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Nouveau personnage{% endblock title %}
+
+{% block body %}
+
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage')  }}">Accueil</a></li>
+		<li class="active">Nouveau personnage</li>
+	</ol>
+	
+	<div class="well bs-component">
+		{{ form_start(form, {"attr": {"action": path('personnage.new') }}) }}
+			<fieldset>
+				
+				{{ form(form) }}
+			</fieldset>
+		{{ form_end(form) }}
+	</div>
+{% endblock body %}

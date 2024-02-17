@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Documents{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -11,14 +11,14 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('document.update', {'document':document.id}) }}" method="POST" {{ form_enctype(form) }}  novalidate>
+		{{ form_start(form, {"attr": {"action": path('document.update', {'document':document.id}) }}" method="POST" {{ form_enctype(form) }}  novalidate>
 			<fieldset>
 				<legend>Modification d'un document</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 	
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock %}

@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Stratégie{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -50,7 +50,7 @@
 				<td>{{ territoire.root }}</td>
 				<td>
 					{% if territoire.groupe %}
-						<a href="{{ path('groupe.detail', {'index':territoire.groupe.id}) }}">{{ territoire.groupe.nom }}</a>
+						<a href="{{ path('groupe.detail', {'groupe':territoire.groupe.id}) }}">{{ territoire.groupe.nom }}</a>
 					{% else %}
 						Aucun groupe ne contrôle ce territoire
 					{% endif %}
@@ -65,4 +65,4 @@
 		</table>
 	</div>
 	
-{% endblock content %}
+{% endblock body %}

@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Potions{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -31,8 +31,8 @@
 	<div class="panel panel-default">
 		<div class="panel-heading"><h4>Description</h4></div>
 		<div class="panel-body">
-			<p>{{ potion.description|markdown }}</p>
+			<p>{{ potion.description|markdown_to_html }}</p>
 		</div>
 	</div>
 		
-{% endblock content %}
+{% endblock body %}

@@ -1,8 +1,8 @@
-{% extends "layout.twig"  %}
+{% extends "base.html.twig" %}
 
 {% block title %}Ajout d'un billet{% endblock %}
 
-{% block content %}
+{% block body %}
     
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -13,13 +13,13 @@
 	</ol>
 	
 	<div class="well bs-component">
-		<form action="{{ path('participant.billet', {'participant': participant.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('participant.billet', {'participant': participant.id}) }}) }}
 			<fieldset>
 				<legend>Selectionnez le billet a ajouter à {{ participant.user.etatCivil.nom }} {{ participant.user.etatCivil.prenom }}</legend>
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+					
 					{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
-{% endblock content %}
+{% endblock body %}

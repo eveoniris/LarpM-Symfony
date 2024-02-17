@@ -1,28 +1,27 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Classes{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-12 col-md-8">
 								
 				<div class="well bs-component">
-					<form action="{{ path('classe.add') }}" method="POST" {{ form_enctype(form) }} novalidate>
+					{{ form_start(form, {"attr": {"action": path('classe.add') }}) }}
 						<fieldset>
 							<legend>Ajout d'une classe</legend>
-								{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
 								{{ form(form) }}
 						</fieldset>
-					</form>
+					{{ form_end(form) }}
 				</div>
 				
 			</div>
 		</div>
 	</div>
 	
-{% endblock content %}
+{% endblock body %}
 
 {% block javascript %}
 

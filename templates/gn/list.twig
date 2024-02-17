@@ -1,78 +1,68 @@
-{% extends "base.html.twig" %}
+{% extends "layout.twig" %}
 
-{% block title %}Grandeur nature{% endblock title %}
+{% block title %}Gn{% endblock title %}
 
-{% block body %}
-	{# display navigation #}
+{% block content %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des grandeurs nature</li>
-	</ol>
-
-	<div class="well well-sm">
-
-		<div class="header">
-			<h5>Liste des grandeurs nature</h5>
-		</div>
-
+	<div class="well well-sm clearfix">
+		<ol class="breadcrumb">
+			<li><a href="{{ path('homepage')  }}">Accueil</a></li>
+			<li class="active">Liste des GNs</li>
+		</ol>
+	
 		<blockquote>
 			Voici la liste des jeux organisés par Eve-Oniris. Choisissez celui auquel vous voulez participer. Vous pourrez ainsi acceder aux différentes ressources (Règles, groupes, univers, billeterie) qui composent le jeu.
 		</blockquote>
-
-		{% if is_granted('ROLE_ADMIN', app.user) %}
-		<div class="btn-toolbar" role="toolbar" aria-label="...">
-			<div class="btn-group" role="group" aria-label="...">
-				<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ajouter un GN" href="{{ path('gn.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
-			</div>
-		</div>
-		{% endif %}
-	</div>
-
-	{% include '_partials/pagination.html.twig' %}
-
-	{%  for gn in paginator %}
-	<div class="well well-sm bs-component">
-
-		<div class="header">
-			<h5>
-				{{ gn.label }}
-			</h5>
-		</div>
-
-		<div class="panel-body clearfix">
-			<p>Du <strong>{{ gn.dateDebut|date('d/m/Y') }}</strong> au <strong>{{ gn.dateFin|date('d/m/Y') }}</strong></p>
-			
-			{% if gn.description %}
-				{{ gn.description|markdown_to_html }}
-			{% else %}
-				<p>Aucune description.</p>
-			{% endif %}
-
-			
-				{% if gn.isPast %}
-					<span class="text-danger">Le jeu est terminé, il n'est plus possible d'y participer</span>
-				{% else %}
-					{% if app.user.takePart(gn) %}
-						<span class="text-success">Vous participez à ce jeu</span>
-					{% else %}
-						<a class="btn btn-primary" href="{{ path('user.gn.participe', {'gn': gn.id}) }}"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;Participer !</a>
-					{% endif %}
-				{% endif %}
-			
-			
-			<div class="pull-right">
-				<a class="btn btn-primary" href="{{ path('gn.detail', {'gn': gn.id}) }}">
-					<i class="fa fa-eye" aria-hidden="true"></i>&nbsp;Plus d'informations
-				</a>
-			</div>
-		</div>
-
 		
-
+		<div class="pull-right">
+			{% if is_granted('ROLE_ADMIN', app.user) %}<a href="{{ path('gn.add') }}" class="btn btn-primary">Ajouter un GN</a>{% endif %}
+		</div>
 	</div>
-	{%  endfor %}
+		
+	{% for gn in gns %}
+		<div class="panel panel-conan">
+			<div class="panel-heading">
+				{{ gn.label }}
+			</div>
+	  		<div class="panel-body clearfix">
+	  		
+		  		<p>Du <strong>{{ gn.dateDebut|date('d/m/Y') }}</strong> au <strong>{{ gn.dateFin|date('d/m/Y') }}</strong></p>
+		  		 
+    			{% if gn.description %}
+					{{ gn.description|markdown }}
+				{% else %}
+					<p>Aucune description.</p>
+				{% endif %}
+				
+				<ul class="list-group">
+					{% if gn.isPast %}
+						<li class="list-group-item"><span class="text-danger">Le jeu est terminé, il n'est plus possible d'y participer</span></li>
+					{% else %}
+						{% if app.user.takePart(gn) %}
+							<li class="list-group-item"><span class="text-success">Vous participez à ce jeu</span></li>
+						{% else %}
+							<li class="list-group-item"><a href="{{ path('user.gn.participe', {'gn': gn.id}) }}"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;Participer !</a></li>
+						{% endif %}
+					{% endif %}
+				</ul>
+				
+				{% if is_granted('ROLE_ADMIN', app.user) %}
+		  				<p>Ces informations ne sont visibles que par les ADMINs</p>
+			  			<ul>
+			  				<li>Etat : {% if gn.actif %}<span class="text-success">Actif</span>{% else %}non actif{% endif %}</li>
+			  				<li>Nombre de participants : {{ gn.participants|length }}</li>
+			  				<li>Nombre de billets vendus : {{ gn.billetCount }}</li>
+			  			</ul>
+			  	{% endif %}
+			  	
+			  	<div class="pull-right">
+					<a class="btn btn-primary" href="{{ path('gn.detail', {'gn': gn.id}) }}">
+						<i class="fa fa-eye" aria-hidden="true"></i>&nbsp;Plus d'informations
+					</a>
+				</div>
+			  	
+			</div>
+		</div>
+	{% endfor %}	
 
-	{% include '_partials/pagination.html.twig' %}
-
-{% endblock %}
+{% endblock content %}

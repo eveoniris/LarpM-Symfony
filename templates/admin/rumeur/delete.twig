@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Rumeurs{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -11,15 +11,15 @@
 	</ol>
 	
 	<div class="well well-sm">
-		<form action="{{ path('rumeur.delete', {'rumeur': rumeur.id}) }}" method="POST" {{ form_enctype(form) }}>
+		{{ form_start(form, {"attr": {"action": path('rumeur.delete', {'rumeur': rumeur.id}) }}) }}
 			<fieldset>
 				<legend>Suppression d'une rumeur</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
-				{{ rumeur.text|markdown }}
+				
+				{{ rumeur.text|markdown_to_html }}
 				<strong>Attention ! vous allez supprimer définitivement cette rumeur. Etes vous sur de vous ?</strong>
 				{{ form(form) }}
 			</fieldset>
-		</form>
+		{{ form_end(form) }}
 	</div>
 	
-{% endblock content %}
+{% endblock body %}

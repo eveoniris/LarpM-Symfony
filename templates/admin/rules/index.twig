@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Règles{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 <div class="well">
 	
@@ -12,11 +12,11 @@
 			
 			<blockquote>Choisissez votre fichier pdf et téléversez le dans larpManager. Vous devez spécifier son label ainsi qu'une petite description.</blockquote>
 			
-			<form action="{{ path('rules') }}" method="POST" {{ form_enctype(form) }} novalidate>			
-					{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+			{{ form_start(form, {"attr": {"action": path('rules') }}) }}			
+					
 					{{ form(form) }}
 					{{ form_rest(form) }}
-			</form>
+			{{ form_end(form) }}
 		</div>
 		<div class="col-md-6">
 	
@@ -32,7 +32,7 @@
 									<small><a target="_blank" href="{{ path('rule.document',{'rule': regle.id}) }}"><i class="fa fa-download"></i> Téléchargez le fichier</a></small>
 								</div>
 							</h5>
-							<p class="list-group-item-text">{{ regle.description|markdown }}</p>
+							<p class="list-group-item-text">{{ regle.description|markdown_to_html }}</p>
 							<p class="list-group-item-text"><a href="{{ path('rule.delete',{'rule': regle.id}) }}"><i class="fa fa-remove"></i> Supprimer le fichier</a></p>
 						</div>
 				{% endfor %}
@@ -41,4 +41,4 @@
 	</div>
 </div>
 
-{% endblock content %}
+{% endblock body %}

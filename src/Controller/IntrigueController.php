@@ -7,12 +7,14 @@ use App\Entity\Intrigue;
 use App\Entity\IntrigueHasModification;
 use App\Entity\Relecture;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use JasonGrimes\Paginator;
 use App\Form\Intrigue\IntrigueDeleteForm;
 use App\Form\Intrigue\IntrigueFindForm;
 use App\Form\Intrigue\IntrigueForm;
 use App\Form\Intrigue\IntrigueRelectureForm;
+use App\Repository\IntrigueRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,13 +28,8 @@ class IntrigueController extends AbstractController
      * Liste de toutes les intrigues.
      */
     #[Route('/intrigue', name: 'intrigue.list')]
-    public function listAction(Request $request,  EntityManagerInterface $entityManager)
+    public function listAction(Request $request, EntityManagerInterface $entityManager, IntrigueRepository $intrigueRepository)
     {
-        $order_by = $request->get('order_by') ?: 'titre';
-        $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
-        $offset = ($page - 1) * $limit;
         $type = null;
         $value = null;
 
@@ -43,41 +40,52 @@ class IntrigueController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $type = $data['type'];
-            $value = $data['search'];
+            $value = $data['value'];
+        }
+        
+        $alias = IntrigueRepository::getEntityAlias();
+        dump($type);
+
+        $criterias = [];
+        if (!empty($value)) {
+            if (empty($type) || '*' === $type) {
+                $criterias[] = Criteria::create()->where(
+                    Criteria::expr()?->contains($alias.'.titre', $value)
+                )->orWhere(
+                    Criteria::expr()?->contains($alias.'.description', $value)
+                )->orWhere(
+                    Criteria::expr()?->contains($alias.'.text', $value)
+                )
+                ;
+            } else {
+                $criterias[] = Criteria::create()->andWhere(
+                    Criteria::expr()?->contains($alias.'.'.$type, $value)
+                );
+            }
         }
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Intrigue::class);
+        $orderBy = $this->getRequestOrder(
+            defOrderBy: 'titre',
+            alias: $alias,
+            allowedFields: $intrigueRepository->getFieldNames()
+        );
 
-        $intrigues = $repo->findList(
-            $type,
-            $value,
-            ['by' => $order_by, 'dir' => $order_dir],
-            $limit,
-            $offset);
-
-        $numResults = $repo->findCount($type, $value);
-
-        $paginator = new Paginator($numResults, $limit, $page,
-            $app['url_generator']->generate('intrigue.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
+        $paginator = $intrigueRepository->getPaginator(
+            limit: $this->getRequestLimit(),
+            page: $this->getRequestPage(),
+            orderBy: $orderBy,
+            alias: $alias,
+            criterias: $criterias
         );
 
         return $this->render('intrigue/list.twig', [
             'form' => $form->createView(),
-            'intrigues' => $intrigues,
+            //'intrigues' => $intrigues,
             'paginator' => $paginator,
         ]);
     }
 
-    /**
-     * Lire une intrigue.
-     */
-    #[Route('/intrigue/{intrigue}', name: 'intrigue.detail')]
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
-    {
-        return $this->render('intrigue/detail.twig', [
-            'intrigue' => $intrigue,
-        ]);
-    }
+    
 
     /**
      * Ajouter une intrigue.
@@ -87,10 +95,13 @@ class IntrigueController extends AbstractController
     {
         $intrigue = new Intrigue();
         $form = $this->createForm(IntrigueForm::class, $intrigue)
-            ->add('state', 'choice', [
+            ->add('state', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'label' => 'Etat',
-                'choices' => $app['larp.manager']->getState(),
+                'choices' => [
+                    'L\'élément est actif' => 'ACTIF',
+				    'L\'élément est inactif' => 'INACTIF',
+                ],
             ])
             ->add('add', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => "Ajouter l'intrigue"]);
 
@@ -168,6 +179,17 @@ class IntrigueController extends AbstractController
 
         return $this->render('intrigue/add.twig', [
             'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Lire une intrigue.
+     */
+    #[Route('/intrigue/{intrigue}', name: 'intrigue.detail')]
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
+    {
+        return $this->render('intrigue/detail.twig', [
+            'intrigue' => $intrigue,
         ]);
     }
 

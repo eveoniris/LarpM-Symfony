@@ -1,8 +1,8 @@
 {% extends "layout_print.twig" %}
-{% block content %}
+{% block body %}
 
 	{% for quete in quetes %}
-		<div>
+		<div> 
 			<h4>Quête commerciale pour #{{ quete.groupe.numero}} {{ quete.groupe.nom }}</h4>
 			<p>La route commerciale doit partir de <strong>{% if quete.groupe.territoire %}{{ quete.groupe.territoire.nom }}{% else %}INCONNU{% endif %}</strong> est parvenir au territoire <strong>{% if quete.quete.cible %}{{ quete.quete.cible.nom }}{% else %}INCONNU{% endif %}</strong></p>
 			<strong>Les ressources demandées sont :</strong>
@@ -17,4 +17,4 @@
 		<hr class="print-page-break" />
 	{% endfor %}
 
-{% endblock content %}
+{% endblock body %}

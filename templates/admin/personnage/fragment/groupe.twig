@@ -1,0 +1,17 @@
+{# Groupe principal #}
+<div class="header">
+	<h5>Groupe principal</h5>
+</div>
+
+<div class="list-group">
+	{% if participant.groupeGn %}
+		<a class="list-group-item" href="{{ path('groupeGn.groupe', {'groupeGn': participant.groupeGn.id }) }}">{{ participant.session.groupe.nom }}</a>
+		{% if not participant.session.groupe.scenariste %}
+			<p class="list-group-item"><span class="fa fa-exclamation-triangle" aria-hidden="true"></span>&nbsp;Attention, ce groupe n'a pas de scénariste.</p>
+		{% else %}
+			<p class="list-group-item">Votre scénariste est {{ participant.session.groupe.scenariste.etatCivil }}&nbsp;({{ participant.session.groupe.scenariste.email }})</p>
+		{% endif %}
+	{% else %}
+		Votre groupe n'est pas encore actif.
+	{% endif %}
+</div>

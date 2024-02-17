@@ -1,8 +1,8 @@
 <div class="well bs-component">
-	<form action="{{ action }}" method="POST" {{ form_enctype(form) }} novalidate>
+	{{ form_start(form, {"attr": {"action": action }}) }}
 		<fieldset>
 			<legend>{{ legend }}</legend>
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
+				
 										
 				{{ form_row(form.classe) }}
 				
@@ -17,5 +17,5 @@
 								
 				{{ form_rest(form) }}
 		</fieldset>
-	</form>
+	{{ form_end(form) }}
 </div>
