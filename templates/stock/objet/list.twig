@@ -80,7 +80,7 @@
         <tbody>
         {% for objet in paginator %}
             <tr>
-                <td>{{ objet.nom }}</td>
+                <td>{{ objet.nom|highlight(searchValue) }}</td>
                 <td>
                     {% if objet.photo %}
                         <div class="hover_img">
@@ -94,12 +94,14 @@
                         aucune photo
                     {% endif %}
                 </td>
-                <td>{{ objet.description }}</td>
+                <td>
+                    {{ objet.description|highlight(searchValue) }}
+                </td>
                 <td>{{ objet.tags|join(', ') }}</td>
                 <td>{{ objet.rangement.adresse }}</td>
                 <td>
                     {% for item in objet.items %}
-                        <span class="text-info"><strong>{{ item.numero }} - {{ item.label }}</strong></span>
+                        <strong>{{ item.numero|highlight(searchValue) }} - {{ item.label|highlight(searchValue) }}</strong>
                     {% else %}
                         <span class="text-success">Cet objet n'est pas utilisé en jeu.</span>
                     {% endfor %}
