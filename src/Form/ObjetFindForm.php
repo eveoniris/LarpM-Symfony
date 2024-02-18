@@ -55,12 +55,14 @@ class ObjetFindForm extends AbstractType
                     'nom',
                     'description',
                     'numero',
+                    'i.label', // JOIN item
                 ],
                 'choice_label' => static fn ($value) => match ($value) {
                     '*' => 'Tout critère',
                     'nom' => 'Nom',
                     'description' => 'Description',
-                    'numero' => 'Numero',
+                    'numero' => 'Numero de stock',
+                    'i.label' => 'Numero de jeu', // JOIN item
                     'id' => 'ID',
                 },
             ])

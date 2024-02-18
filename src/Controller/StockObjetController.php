@@ -101,18 +101,19 @@ class StockObjetController extends AbstractController
 
         if (!empty($value)) {
             if (empty($type) || '*' === $type) {
-                if (\is_numeric($value)) {
-                    $query->orWhere($alias.'.id LIKE :value');
-                    $query->orWhere($alias.'.numero LIKE :value');
-                    $query->orWhere('i.numero LIKE :value');
-                    $query->setParameter('value', $value);
-                } else {
-                    $query->orWhere($alias.'.nom LIKE :value');
-                    $query->orWhere($alias.'.description LIKE :value');
-                    $query->orWhere('i.label LIKE :value');
-                    $query->setParameter('value', '%'.$value.'%');
-                }
+                $query->orWhere($alias.'.id LIKE :value');
+                $query->orWhere($alias.'.numero LIKE :value');
+                $query->orWhere('i.numero LIKE :value');
+                $query->orWhere($alias.'.nom LIKE :value');
+                $query->orWhere($alias.'.description LIKE :value');
+                $query->orWhere('i.label LIKE :value');
+                $query->orWhere($alias.'.nom LIKE :value');
+                $query->orWhere($alias.'.description LIKE :value');
+                $query->orWhere('i.label LIKE :value');
+
+                $query->setParameter('value', '%'.$value.'%');
             } else {
+                // TODO debug when using this criteria
                 $query->where($query->expr()->like($alias.'.'.$type, $value));
             }
         }
@@ -123,6 +124,7 @@ class StockObjetController extends AbstractController
 
         return $this->render('stock/objet/list.twig', [
             'tag' => $criteria['tag'], // TODO
+            'searchValue' => $value,
             'tags' => $tags, // TODO
             'form' => $form->createView(),
             'objetsWithoutTagCount' => $objetsWithoutTagCount, // TODO
