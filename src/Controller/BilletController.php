@@ -10,11 +10,13 @@ use App\Repository\ParticipantRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class BilletController extends AbstractController
 {
@@ -44,6 +46,7 @@ class BilletController extends AbstractController
     /**
      * Ajout d'un billet.
      */
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
     #[Route('/billet/add', name: 'billet.add')]
     public function addAction(Request $request, BilletRepository $repository, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
@@ -56,7 +59,7 @@ class BilletController extends AbstractController
         }
 
         $form = $this->createForm(BilletForm::class, $billet)
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -94,11 +97,12 @@ class BilletController extends AbstractController
     /**
      * Mise à jour d'un billet.
      */
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
     #[Route('/billet/{billet}/update', name: 'billet.update')]
     public function updateAction(Request $request, #[MapEntity] Billet $billet, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(BilletForm::class, $billet)
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -123,11 +127,12 @@ class BilletController extends AbstractController
     /**
      * Suppression d'un billet.
      */
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
     #[Route('/billet/{billet}/delete', name: 'billet.delete')]
     public function deleteAction(Request $request, Billet $billet, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(BilletDeleteForm::class, $billet)
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -157,9 +162,9 @@ class BilletController extends AbstractController
     public function participantsAction(Request $request, #[MapEntity] Billet $billet, EntityManagerInterface $entityManager): Response
     {
         $participantRepository = $entityManager->getRepository('\\'.\App\Entity\Participant::class);
-        
+
         $alias = ParticipantRepository::getEntityAlias();
-        
+
         $orderBy = $this->getRequestOrder(
             defOrderBy: 'id',
             alias: $alias,
@@ -179,10 +184,10 @@ class BilletController extends AbstractController
         );
 
         return $this->render(
-            'billet\participants.twig', 
+            'billet\participants.twig',
             [
                 'billet' => $billet,
-                'paginator' => $paginator
+                'paginator' => $paginator,
             ]
         );
     }
