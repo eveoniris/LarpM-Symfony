@@ -32,27 +32,10 @@ class StockObjetController extends AbstractController
     #[Route('/stock/objet', name: 'stockObjet.index')]
     public function indexAction(Request $request, EntityManagerInterface $entityManager, ObjetRepository $objetRepository): Response
     {
-        $repoRangement = $entityManager->getRepository(Rangement::class);
-        $rangements = $repoRangement->findAll();
-
-        $repoTag = $entityManager->getRepository(Tag::class);
-        $tags = $repoTag->findAll();
-
-        $objetsWithoutTagCount = $objetRepository->findCount(['tag' => ObjetRepository::CRIT_WITHOUT]);
-        $objetsWithoutRangementCount = $objetRepository->findCount(['rangement' => ObjetRepository::CRIT_WITHOUT]);
-
-        $criteria = [];
-
-        $tag = $request->get('tag');
-        $criteria['tag'] = $request->get('tag');
-
-        $rangement = $request->get('rangement');
-        $criteria['rangement'] = $request->get('rangement');
-
-        // /////////////////////////////////////////////////////
-        // TODO discover WHY search ad in AND id IN () to the query
         $type = null;
         $value = null;
+        $tag = null;
+        $rangement = null;
 
         $objetSearch = new ObjetSearch();
         $form = $this->createForm(
@@ -60,9 +43,7 @@ class StockObjetController extends AbstractController
             data: $objetSearch,
         );
 
-        // TODO add to form the Tag and Rangement choise
         // TODO move photo from database to drive
-        // TODO form as GET request
 
         $form->handleRequest($request);
 
@@ -123,15 +104,9 @@ class StockObjetController extends AbstractController
         );
 
         return $this->render('stock/objet/list.twig', [
-            'tag' => $criteria['tag'], // TODO
             'searchValue' => $value,
-            'tags' => $tags, // TODO
             'form' => $form->createView(),
-            'objetsWithoutTagCount' => $objetsWithoutTagCount, // TODO
-            'objetsWithoutRangementCount' => $objetsWithoutRangementCount, // TODO
             'paginator' => $paginator,
-            'rangements' => $rangements, // TODO
-            'rangement' => $criteria['rangement'], // TODO
             'orderDir' => $this->getRequestOrderDir(),
         ]);
     }

@@ -43,15 +43,6 @@
                     </div>
                 </li>
             </ul>
-            <div>
-                {% if tag == -1 %}
-                    &nbsp;- Sans tag
-                {% endif %}
-
-                {% if rangement == -1 %}
-                    &nbsp;- sans rangement
-                {% endif %}
-            </div>
         </div>
 
     </div>
@@ -62,7 +53,7 @@
         <thead>
         <tr>
             <th>
-                <a href="{{ path('stockObjet.index', {'order_by': 'nom', 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC'), 'tag':tag, 'rangement': rangement}) }}">
+                <a href="{{ path('stockObjet.index', {'order_by': 'nom', 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')}) }}">
                     Nom
                     {% if app.request.get('order_by') == 'nom' %}
                         <i class="fa-solid fa-caret-{{ orderDir == 'ASC' ? 'down' : 'up' }}"></i>
