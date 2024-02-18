@@ -21,11 +21,6 @@ class ObjetFindForm extends AbstractType
     protected EntityRepository $rangementRepository;
     protected EntityRepository $objetRepository;
 
-    /*public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }*/
-
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
@@ -37,9 +32,9 @@ class ObjetFindForm extends AbstractType
     /**
      * Construction du formulaire.
      *
-     * If option "All" is selected then $form->get('user')->getData() is equal to null
-     * If option "None" is selected then $form->get('user')->getData() is equal to 0
-     * If option "Rangement A" is selected then $form->get('user')->getData() is an instance of User
+     * If option "All" is selected then $form->getData() is equal to null
+     * If option "None" is selected then $form->getData() is equal to 0
+     * If option "Rangement A" is selected then $form->getData() is an instance of Rangement
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -93,7 +88,6 @@ class ObjetFindForm extends AbstractType
                     $this->rangementRepository->findAll()
                 ),
                 'choice_label' => 'label',
-                // 'choice_label' => static fn (Rangement $rangement, string $key, mixed $value) => $value.'-'.$key.'-'.$rangement->getLabel(),
             ])
         ;
     }
