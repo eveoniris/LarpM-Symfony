@@ -19,7 +19,7 @@ class ObjetForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('nom', TextType::class, ['required' => true])
-            ->add('numero', TextType::class, ['required' => true])
+            ->add('numero', TextType::class, ['required' => true, 'label' => 'Numero de stock'])
             ->add('description', TextareaType::class, ['required' => false])
             ->add('photo', PhotoType::class, ['required' => false])
             ->add('proprietaire', EntityType::class, ['required' => false, 'class' => \App\Entity\Proprietaire::class, 'choice_label' => 'nom'])
@@ -36,10 +36,10 @@ class ObjetForm extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-         $resolver->setDefaults([
-             'class' => Objet::class,
-             'cascade_validation' => true,
-         ]);
+        $resolver->setDefaults([
+            'class' => Objet::class,
+            'cascade_validation' => true,
+        ]);
     }
 
     public function getName(): string

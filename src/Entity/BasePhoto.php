@@ -45,8 +45,10 @@ abstract class BasePhoto
     #[Column(name: 'data', type: Types::BLOB, nullable: true)]
     protected ?string $data = null;
 
+    #[Column(name: 'creation_date', type: Types::DATETIME_MUTABLE, nullable: true)]
     protected \DateTime $creation_date;
 
+    #[Column(name: 'filename', type: Types::STRING, length: 100, nullable: true)]
     protected string $filename = '';
 
     #[OneToMany(mappedBy: 'photo', targetEntity: Objet::class, cascade: ['persist', 'remove', 'detach', 'all'])]
@@ -56,6 +58,7 @@ abstract class BasePhoto
     public function __construct()
     {
         $this->objets = new ArrayCollection();
+        $this->creation_date = new \DateTime();
     }
 
     /**

@@ -6,6 +6,7 @@
 parameters:
     fedegn.url: 'http://api.fedegn.org/creagn.php'
     fedegn.password: 33fe9b242877621f81adb912b9a3705e
+    projectDir: "%kernel.project_dir%/"
 
 services:
     # default configuration for services in *this* file
@@ -24,3 +25,6 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Service\FileUploader:
+        arguments:
+            $projectDirectory: '%projectDir%'
