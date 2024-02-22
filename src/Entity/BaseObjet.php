@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\BaseObjetRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,8 +11,9 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: BaseObjetRepository::class)]
 #[ORM\Table(name: 'objet')]
 #[ORM\Index(columns: ['etat_id'], name: 'fk_objet_etat1_idx')]
 #[ORM\Index(columns: ['proprietaire_id'], name: 'fk_objet_possesseur1_idx')]
@@ -75,6 +77,7 @@ abstract class BaseObjet
 
     #[ManyToOne(targetEntity: Rangement::class, cascade: ['persist', 'merge', 'remove', 'detach', 'all'], inversedBy: 'objets')]
     #[JoinColumn(name: 'rangement_id', referencedColumnName: 'id', nullable: 'false')]
+    #[Assert\NotNull]
     protected ?Rangement $rangement = null;
 
     #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'objets')]
@@ -90,16 +93,6 @@ abstract class BaseObjet
     }
 
     /**
-     * Set the value of id.
-     */
-    public function setId(?int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
      * Get the value of id.
      */
     public function getId(): int
@@ -108,11 +101,11 @@ abstract class BaseObjet
     }
 
     /**
-     * Set the value of numero.
+     * Set the value of id.
      */
-    public function setNumero(string $numero): static
+    public function setId(?int $id): static
     {
-        $this->numero = $numero;
+        $this->id = $id;
 
         return $this;
     }
@@ -126,11 +119,11 @@ abstract class BaseObjet
     }
 
     /**
-     * Set the value of nom.
+     * Set the value of numero.
      */
-    public function setNom(string $nom): static
+    public function setNumero(string $numero): static
     {
-        $this->nom = $nom;
+        $this->numero = $numero;
 
         return $this;
     }
@@ -144,11 +137,11 @@ abstract class BaseObjet
     }
 
     /**
-     * Set the value of description.
+     * Set the value of nom.
      */
-    public function setDescription(string $description): static
+    public function setNom(string $nom): static
     {
-        $this->description = $description;
+        $this->nom = $nom;
 
         return $this;
     }
@@ -162,11 +155,11 @@ abstract class BaseObjet
     }
 
     /**
-     * Set the value of nombre.
+     * Set the value of description.
      */
-    public function setNombre(int $nombre): static
+    public function setDescription(string $description): static
     {
-        $this->nombre = $nombre;
+        $this->description = $description;
 
         return $this;
     }
@@ -180,11 +173,11 @@ abstract class BaseObjet
     }
 
     /**
-     * Set the value of cout.
+     * Set the value of nombre.
      */
-    public function setCout(float $cout): static
+    public function setNombre(int $nombre): static
     {
-        $this->cout = $cout;
+        $this->nombre = $nombre;
 
         return $this;
     }
@@ -198,11 +191,11 @@ abstract class BaseObjet
     }
 
     /**
-     * Set the value of budget.
+     * Set the value of cout.
      */
-    public function setBudget(float $budget): static
+    public function setCout(float $cout): static
     {
-        $this->budget = $budget;
+        $this->cout = $cout;
 
         return $this;
     }
@@ -216,11 +209,11 @@ abstract class BaseObjet
     }
 
     /**
-     * Set the value of investissement.
+     * Set the value of budget.
      */
-    public function setInvestissement(bool $investissement): static
+    public function setBudget(float $budget): static
     {
-        $this->investissement = $investissement;
+        $this->budget = $budget;
 
         return $this;
     }
@@ -234,11 +227,11 @@ abstract class BaseObjet
     }
 
     /**
-     * Set the value of creation_date.
+     * Set the value of investissement.
      */
-    public function setCreationDate(\DateTime $creation_date): static
+    public function setInvestissement(bool $investissement): static
     {
-        $this->creation_date = $creation_date;
+        $this->investissement = $investissement;
 
         return $this;
     }
@@ -249,6 +242,16 @@ abstract class BaseObjet
     public function getCreationDate(): \DateTime
     {
         return $this->creation_date;
+    }
+
+    /**
+     * Set the value of creation_date.
+     */
+    public function setCreationDate(\DateTime $creation_date): static
+    {
+        $this->creation_date = $creation_date;
+
+        return $this;
     }
 
     /**
@@ -279,6 +282,11 @@ abstract class BaseObjet
         return $this->items;
     }
 
+    public function getObjetCarac(): ?ObjetCarac
+    {
+        return $this->objetCarac;
+    }
+
     /**
      * Set ObjetCarac entity (one to one).
      */
@@ -292,9 +300,12 @@ abstract class BaseObjet
         return $this;
     }
 
-    public function getObjetCarac(): ?ObjetCarac
+    /**
+     * Get Etat entity (many to one).
+     */
+    public function getEtat(): ?Etat
     {
-        return $this->objetCarac;
+        return $this->etat;
     }
 
     /**
@@ -308,11 +319,11 @@ abstract class BaseObjet
     }
 
     /**
-     * Get Etat entity (many to one).
+     * Get Proprietaire entity (many to one).
      */
-    public function getEtat(): ?Etat
+    public function getProprietaire(): ?Proprietaire
     {
-        return $this->etat;
+        return $this->proprietaire;
     }
 
     /**
@@ -326,11 +337,11 @@ abstract class BaseObjet
     }
 
     /**
-     * Get Proprietaire entity (many to one).
+     * Get User entity (many to one).
      */
-    public function getProprietaire(): ?Proprietaire
+    public function getUser(): ?User
     {
-        return $this->proprietaire;
+        return $this->user;
     }
 
     /**
@@ -344,11 +355,11 @@ abstract class BaseObjet
     }
 
     /**
-     * Get User entity (many to one).
+     * Get Photo entity (many to one).
      */
-    public function getUser(): ?User
+    public function getPhoto(): ?Photo
     {
-        return $this->user;
+        return $this->photo;
     }
 
     /**
@@ -362,11 +373,11 @@ abstract class BaseObjet
     }
 
     /**
-     * Get Photo entity (many to one).
+     * Get Rangement entity (many to one).
      */
-    public function getPhoto(): ?Photo
+    public function getRangement(): ?Rangement
     {
-        return $this->photo;
+        return $this->rangement;
     }
 
     /**
@@ -377,14 +388,6 @@ abstract class BaseObjet
         $this->rangement = $rangement;
 
         return $this;
-    }
-
-    /**
-     * Get Rangement entity (many to one).
-     */
-    public function getRangement(): ?Rangement
-    {
-        return $this->rangement;
     }
 
     /**
@@ -416,9 +419,4 @@ abstract class BaseObjet
     {
         return $this->tags;
     }
-
-    /* public function __sleep()
-    {
-        return ['id', 'numero', 'nom', 'description', 'etat_id', 'proprietaire_id', 'responsable_id', 'nombre', 'cout', 'budget', 'investissement', 'creation_date', 'photo_id', 'rangement_id'];
-    } */
 }

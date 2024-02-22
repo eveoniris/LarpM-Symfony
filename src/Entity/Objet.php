@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Enum\DocumentType;
+use App\Enum\FolderType;
 use App\Repository\ObjetRepository;
 use Doctrine\ORM\Mapping\Entity;
 
@@ -12,6 +14,21 @@ class Objet extends BaseObjet
     {
         parent::__construct();
         $this->setCreationDate(new \DateTime('NOW'));
+    }
+
+    public function getPhotosDocumentType(): DocumentType
+    {
+        return DocumentType::Objet;
+    }
+
+    public function getPhotosFolderType(): FolderType
+    {
+        return FolderType::Photos;
+    }
+
+    public function getPhotoFilePath(string $projectDir): string
+    {
+        return $projectDir.$this->getPhotosFolderType()->value.$this->getPhotosDocumentType()->value;
     }
 
     /**

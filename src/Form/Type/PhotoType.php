@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Form\Type;
 
 use App\Entity\Photo;
@@ -13,7 +12,15 @@ class PhotoType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('file', FileType::class, ['data' => '', 'attr' => ['accept' => 'image/*', 'capture' => 'camera']]);
+        $builder->add(
+            'file',
+            FileType::class,
+            [
+                'label' => 'Photo',
+                'data' => '',
+                'attr' => ['accept' => 'image/*', 'capture' => 'camera'],
+            ]
+        );
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -1,20 +1,21 @@
 {% extends "base.html.twig" %}
 
+{% block title %}Ajout objets{% endblock title %}
+
 {% block body %}
 
-<div class="well well-sm">
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li>Objets</li>
+        <li class="active">Ajout d'un objet</li>
+    </ol>
 
-	<div class="page-header">
-		<h1>Ajout d'un objet</h1>
-	</div>
+    <div class="well well-sm">
 
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-xs-12 col-md-8">
-				{{ include("stock/objet/fragment/form.twig",{'action': path('stockObjet.add'), 'form' : form}) }}
-			</div>
-		</div>
-	</div>
+        <div class="header">
+            <h5>Ajout d'un objet</h5>
+        </div>
 
-</div>	
+        {{ include("stock/objet/fragment/form.twig",{'action': path('stockObjet.add'), 'form' : form}) }}
+    </div>
 {% endblock body %}

@@ -6,17 +6,20 @@ use App\Entity\Etat;
 use App\Entity\Objet;
 use App\Entity\Rangement;
 use App\Entity\Tag;
+use App\Enum\DocumentType;
 use App\Form\Entity\ObjetSearch;
 use App\Form\ObjetFindForm;
 use App\Form\Stock\ObjetDeleteForm;
 use App\Form\Stock\ObjetForm;
 use App\Form\Stock\ObjetTagForm;
 use App\Repository\ObjetRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 // use Imagine\Image\Box; // TODO
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -140,7 +143,7 @@ class StockObjetController extends AbstractController
 
         $qb = $repo->createQueryBuilder('o');
         $qb->select('o');
-        $qb->where('o.User IS NULL');
+        $qb->where('o.user IS NULL');
 
         $objet_without_responsable = $qb->getQuery()->getResult();
 
@@ -219,8 +222,11 @@ class StockObjetController extends AbstractController
      * Ajoute un objet.
      */
     #[Route('/stock/objet/add', name: 'stockObjet.add')]
-    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
-    {
+    public function addAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        FileUploader $fileUploader
+    ): RedirectResponse|Response {
         $objet = new Objet();
 
         $objet->setNombre(1);
@@ -233,12 +239,13 @@ class StockObjetController extends AbstractController
 
         $form = $this->createForm(ObjetForm::class, $objet)
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder et nouveau'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder et créer un nouveau'])
             ->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Objet $objet */
             $objet = $form->getData();
 
             if ($objet->getObjetCarac()) {
@@ -246,14 +253,10 @@ class StockObjetController extends AbstractController
             }
 
             if ($objet->getPhoto()) {
-                $objet->getPhoto()->upload($app);
+                $objet->getPhoto()->handleUpload($fileUploader, $objet->getPhotosDocumentType(), $objet->getPhotosFolderType());
                 $entityManager->persist($objet->getPhoto());
             }
 
-            /**$repo = $entityManager->getRepository('\App\Entity\User');
-             * $User = $repo->find(1);
-             * $User->addObjetRelatedByCreateurId($objet);
-             * $objet->setUserRelatedByCreateurId($User);**/
 
             $entityManager->persist($objet);
             $entityManager->flush();
@@ -261,7 +264,7 @@ class StockObjetController extends AbstractController
             $this->addFlash('success', 'L\'objet a été ajouté dans le stock');
 
             if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('stock.homepage', [], 303);
+                return $this->redirectToRoute('stockObjet.index', [], 303);
             }
             if ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('stockObjet.add', [], 303);
