@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Enum\FolderType;
 use App\Repository\BaseRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -12,16 +15,31 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     public function __construct(
         protected EntityManagerInterface $entityManager,
         protected RequestStack $requestStack,
+        protected FileUploader $fileUploader
         // Cache $cache,
     ) {
     }
 
-    protected function render(string $view, array $parameters = [], ?Response $response = null): Response 
-    { 
-        //dump($this->container->get('twig')->getLoader()->exists('admin/' . $view));
-        if($this->isGranted('ROLE_ADMIN') && $this->container->get('twig')->getLoader()->exists('admin/' . $view))
-            return parent::render('admin/' . $view, $parameters, $response);
-        
+    protected function sendNoImageAvailable(): BinaryFileResponse
+    {
+        $response = new BinaryFileResponse(
+            $this->fileUploader->getDirectory(
+                FolderType::Private
+            ).'No_Image_Available.jpg'
+        );
+        $response->headers->set('Content-Type', 'image/jpeg');
+        $response->headers->set('Content-Control', 'private');
+
+        return $response->send();
+    }
+
+    protected function render(string $view, array $parameters = [], Response $response = null): Response
+    {
+        // dump($this->container->get('twig')->getLoader()->exists('admin/' . $view));
+        if ($this->isGranted('ROLE_ADMIN') && $this->container->get('twig')->getLoader()->exists('admin/'.$view)) {
+            return parent::render('admin/'.$view, $parameters, $response);
+        }
+
         return parent::render($view, $parameters, $response);
     }
 

@@ -75,10 +75,9 @@
                 <td>
                     {% if objet.photo %}
                         <div class="hover_img">
-                            <a href="#">Show Image
-                                <span>
-											stockObjet.photo
-										</span>
+                            <a href="#">Show Image<span>
+						    		<img src="{{ path('stockObjet.photo', {'objet': objet.id, 'miniature': true}) }}" alt="{{ objet.photo.name }} - {{ objet.nom }}" width="200px" />
+						    		</span>
                             </a>
                         </div>
                     {% else %}
