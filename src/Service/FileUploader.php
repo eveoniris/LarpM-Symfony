@@ -38,7 +38,7 @@ final class FileUploader
         );
 
         try {
-            $file->move($this->getDirectory($docType, $folderType), $this->storedFileName);
+            $file->move($this->getDirectory($folderType, $docType), $this->storedFileName);
         } catch (FileException $e) {
             // TODO log or handle exception if something happens during file upload
         }
@@ -59,9 +59,9 @@ final class FileUploader
         return $this->fileName;
     }
 
-    public function getDirectory(DocumentType $docType, FolderType $folderType): string
+    public function getDirectory(?FolderType $folderType, DocumentType $docType = null): string
     {
-        return $this->getProjectDirectory().$folderType->value.$docType->value;
+        return $this->getProjectDirectory().($folderType->value ?? '').($docType->value ?? '');
     }
 
     public function getProjectDirectory(): string

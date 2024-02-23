@@ -6,23 +6,25 @@ use App\Entity\Etat;
 use App\Entity\Objet;
 use App\Entity\Rangement;
 use App\Entity\Tag;
-use App\Enum\DocumentType;
 use App\Form\Entity\ObjetSearch;
 use App\Form\ObjetFindForm;
 use App\Form\Stock\ObjetDeleteForm;
 use App\Form\Stock\ObjetForm;
 use App\Form\Stock\ObjetTagForm;
 use App\Repository\ObjetRepository;
-use App\Service\FileUploader;
+use App\Service\ImageOptimizer;
 use Doctrine\ORM\EntityManagerInterface;
 // use Imagine\Image\Box; // TODO
+use Imagine\Gd\Imagine;
+use Imagine\Image\Box;
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -184,38 +186,60 @@ class StockObjetController extends AbstractController
      * Fourni les données de la photo liée à l'objet.
      */
     #[Route('/stock/objet/{objet}/photo', name: 'stockObjet.photo')]
-    public function photoAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Objet $objet)
-    {
+    public function photoAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Objet $objet,
+        ImageOptimizer $imageOptimizer,
+    ) {
         $miniature = $request->get('miniature');
         $photo = $objet->getPhoto();
 
         if (!$photo) {
-            return null;
+            return $this->sendNoImageAvailable();
         }
 
         $file = $photo->getFilename();
-        $filename = __DIR__.'/../../../private/stock/'.$file;
+        $filename = $objet->getPhotoFilePath($imageOptimizer->getProjectDirectory()).$file;
 
-        if ($miniature) {
-            $image = $app['imagine']->open($filename);
-
-            $stream = static function () use ($image): void {
-                $size = new Box(200, 200);
-                $thumbnail = $image->thumbnail($size);
-                ob_start(null, 0, PHP_OUTPUT_HANDLER_FLUSHABLE | PHP_OUTPUT_HANDLER_REMOVABLE);
-                echo $thumbnail->get('jpeg');
-                ob_end_flush();
-            };
-        } else {
-            $stream = static function () use ($filename): void {
-                readfile($filename);
-            };
+        if (!file_exists($filename)) {
+            return $this->sendNoImageAvailable();
         }
 
-        return $app->stream($stream, 200, [
-            'Content-Type' => 'image/jpeg',
-            'cache-control' => 'private',
-        ]);
+        if ($miniature) {
+            // TOdo fix GD for php version over 7.4 https://github.com/docker-library/php/issues/912
+            try {
+                $image = (new Imagine())->open($filename);
+            } catch (\RuntimeException $e) {
+                dump($e);
+
+                return $this->sendNoImageAvailable();
+            }
+
+            $response = new StreamedResponse();
+
+            $response->setCallback(static function () use ($image): void {
+                echo $image->thumbnail(new Box(200, 200))->get('jpeg');
+                // echo $thumbnail->get('jpeg');
+                flush();
+            });
+            $response->headers->set('Content-Type', 'image/jpeg');
+
+        /*$stream = static function () use ($image): void {
+            $size = new Box(200, 200);
+            $thumbnail = $image->thumbnail($size);
+            ob_start(null, 0, PHP_OUTPUT_HANDLER_FLUSHABLE | PHP_OUTPUT_HANDLER_REMOVABLE);
+            echo $thumbnail->get('jpeg');
+            ob_end_flush();
+        };*/
+        } else {
+            $response = new BinaryFileResponse($filename);
+            $response->headers->set('Content-Type', 'image/'.$photo->getExtension());
+        }
+
+        $response->headers->set('Content-Control', 'private');
+
+        return $response->send();
     }
 
     /**
@@ -224,8 +248,7 @@ class StockObjetController extends AbstractController
     #[Route('/stock/objet/add', name: 'stockObjet.add')]
     public function addAction(
         Request $request,
-        EntityManagerInterface $entityManager,
-        FileUploader $fileUploader
+        EntityManagerInterface $entityManager
     ): RedirectResponse|Response {
         $objet = new Objet();
 
@@ -253,10 +276,9 @@ class StockObjetController extends AbstractController
             }
 
             if ($objet->getPhoto()) {
-                $objet->getPhoto()->handleUpload($fileUploader, $objet->getPhotosDocumentType(), $objet->getPhotosFolderType());
+                $objet->getPhoto()->handleUpload($this->fileUploader, $objet->getPhotosDocumentType(), $objet->getPhotosFolderType());
                 $entityManager->persist($objet->getPhoto());
             }
-
 
             $entityManager->persist($objet);
             $entityManager->flush();

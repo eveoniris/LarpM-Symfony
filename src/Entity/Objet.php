@@ -18,17 +18,17 @@ class Objet extends BaseObjet
 
     public function getPhotosDocumentType(): DocumentType
     {
-        return DocumentType::Objet;
+        return DocumentType::Stock;
     }
 
     public function getPhotosFolderType(): FolderType
     {
-        return FolderType::Photos;
+        return FolderType::Private;
     }
 
     public function getPhotoFilePath(string $projectDir): string
     {
-        return $projectDir.$this->getPhotosFolderType()->value.$this->getPhotosDocumentType()->value;
+        return $projectDir.$this->getPhotosFolderType()->value.$this->getPhotosDocumentType()->value.DIRECTORY_SEPARATOR;
     }
 
     /**

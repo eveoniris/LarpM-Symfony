@@ -28,3 +28,6 @@ services:
     App\Service\FileUploader:
         arguments:
             $projectDirectory: '%projectDir%'
+    App\Service\ImageOptimizer:
+        arguments:
+            $projectDirectory: '%projectDir%'

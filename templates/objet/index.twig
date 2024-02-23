@@ -64,13 +64,13 @@ td {white-space: normal; text-overflow: ellipsis;}
 		   				<td>
 							<div class="hover_img">
 								<a href="#">Show Image<span>
-						    		<img src="{{ path('stockObjet.photo',{'objet': item.objet.id, 'miniature': true}) }}" alt="{{ item.label }}" />
+						    		<img src="{{ path('stockObjet.photo', 'objet': item.objet_id, 'miniature': true}) }}" alt="{{ item.label }}" />
 						    		</span>
 						    	</a>
 					    	</div>
 					    </td>
 					    <td>{{ item.quantite }}</td>
-		    			<td st>{{ item.description|markdown_to_html }}</td>
+		    			<td>{{ item.description|markdown_to_html }}</td>
 		    			<td>{{ item.special|markdown_to_html }}</td>
 		    			<td>
 		    				{% for groupe in item.groupes %}
