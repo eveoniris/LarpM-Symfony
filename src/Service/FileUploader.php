@@ -93,7 +93,7 @@ final class FileUploader
 
     public function getStoredFileWithPath(): string
     {
-        return $this->getFilePath().$this->getStoredFileName();
+        return $this->getFilePath().'/'.$this->getStoredFileName();
     }
 
     public function getExtension(): string
