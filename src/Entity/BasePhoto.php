@@ -43,7 +43,7 @@ abstract class BasePhoto
     protected string $real_name = '';
 
     #[Column(name: 'data', type: Types::BLOB, nullable: true)]
-    protected ?string $data = null;
+    /* Stream Ressource */ protected $data;
 
     #[Column(name: 'creation_date', type: Types::DATETIME_MUTABLE, nullable: true)]
     protected \DateTime $creation_date;
@@ -136,7 +136,7 @@ abstract class BasePhoto
     /**
      * Set the value of data.
      */
-    public function setData(string $data): static
+    public function setData(/* Stream Ressource */ $data): static
     {
         $this->data = $data;
 
@@ -146,9 +146,9 @@ abstract class BasePhoto
     /**
      * Get the value of data.
      */
-    public function getData(): string
+    public function getData() /* Stream Ressource */
     {
-        return $this->data ?? '';
+        return $this->data;
     }
 
     /**

@@ -27,15 +27,17 @@ final class FileUploader
         $this->slugger = $slugger;
     }
 
-    public function upload(UploadedFile $file, DocumentType $docType, FolderType $folderType = FolderType::Photos): self
+    public function upload(UploadedFile $file, FolderType $folderType, DocumentType $docType): self
     {
         $this->extension = $file->guessExtension();
         $this->storedFileName = sprintf(
             '%s-%s.%s',
             substr($this->getOriginalFilename($file), 0, 70),
-            uniqid('', true),
+            str_replace('.', '-', uniqid('', true)),
             $this->extension
         );
+
+        $this->filePath = $this->getDirectory($folderType, $docType);
 
         try {
             $file->move($this->getDirectory($folderType, $docType), $this->storedFileName);
@@ -89,8 +91,14 @@ final class FileUploader
         return $this->storedFileName;
     }
 
+    public function getStoredFileWithPath(): string
+    {
+        return $this->getFilePath().$this->getStoredFileName();
+    }
+
     public function getExtension(): string
     {
         return $this->extension;
     }
+
 }

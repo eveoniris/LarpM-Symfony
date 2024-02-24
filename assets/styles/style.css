@@ -2,6 +2,50 @@
 #menu {
     margin: 0 0 1em 0;
 }
+
+
+/** Page content **/
+.panel {
+    padding: 0.5em;
+}
+
+.panel-conan > .panel-heading {
+    padding-left: 1em;
+    margin-bottom: 0.5em;
+    border-radius: 1em;
+}
+
+.well {
+    min-height: 20px;
+    padding: 1em;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.well blockquote {
+
+}
+
+.well-lg {
+    padding: 1em;
+    border-radius: 6px
+}
+
+.well-sm {
+    padding: 0.5em;
+    border-radius: 3px
+}
+/** EndPage content **/
+
+.pull-right {
+    float:right !important
+}
+
+/** Petit tools **/
+.hover_img a { position:relative; }
+.hover_img a span { position:absolute; display:none; z-index:99; }
+.hover_img a:hover span { display:block; }
+
 /******* OLDER ******/
 .row {
     overflow: hidden;
@@ -209,41 +253,4 @@ ul.forum li {
 .personnage-list-column-pugilat,
 .personnage-list-column-heroisme {
     text-align: center;
-}
-
-/** Page content **/
-.panel {
-    padding: 0.5em;
-}
-
-.panel-conan > .panel-heading {
-    padding-left: 1em;
-    margin-bottom: 0.5em;
-    border-radius: 1em;
-}
-
-.well {
-    min-height: 20px;
-    padding: 1em;
-    margin-bottom: 20px;
-    border-radius: 4px;
-}
-
-.well blockquote {
-
-}
-
-.well-lg {
-    padding: 1em;
-    border-radius: 6px
-}
-
-.well-sm {
-    padding: 0.5em;
-    border-radius: 3px
-}
-/** EndPage content **/
-
-.pull-right {
-    float:right !important 
 }

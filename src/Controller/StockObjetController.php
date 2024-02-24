@@ -191,7 +191,7 @@ class StockObjetController extends AbstractController
         EntityManagerInterface $entityManager,
         #[MapEntity] Objet $objet,
         ImageOptimizer $imageOptimizer,
-    ) {
+    ): BinaryFileResponse|StreamedResponse {
         $miniature = $request->get('miniature');
         $photo = $objet->getPhoto();
 
@@ -200,38 +200,35 @@ class StockObjetController extends AbstractController
         }
 
         $file = $photo->getFilename();
-        $filename = $objet->getPhotoFilePath($imageOptimizer->getProjectDirectory()).$file;
+        $path = $objet->getPhotoFilePath($imageOptimizer->getProjectDirectory());
+        $filename = $path.$file;
 
         if (!file_exists($filename)) {
-            return $this->sendNoImageAvailable();
-        }
-
-        if ($miniature) {
-            // TOdo fix GD for php version over 7.4 https://github.com/docker-library/php/issues/912
-            try {
-                $image = (new Imagine())->open($filename);
-            } catch (\RuntimeException $e) {
-                dump($e);
-
+            if (null === $photo->getData()) {
                 return $this->sendNoImageAvailable();
             }
 
-            $response = new StreamedResponse();
+            $photo->blobToFile($path);
+            // If it's failed :
+            if (!file_exists($filename)) {
+                return $this->sendNoImageAvailable();
+            }
+        }
 
+        if ($miniature) {
+           // try {
+                $image = (new Imagine())->open($filename);
+         //   } catch (\RuntimeException $e) {
+        //        dump($e);
+                //return $this->sendNoImageAvailable();
+        //    }
+
+            $response = new StreamedResponse();
             $response->setCallback(static function () use ($image): void {
                 echo $image->thumbnail(new Box(200, 200))->get('jpeg');
-                // echo $thumbnail->get('jpeg');
                 flush();
             });
             $response->headers->set('Content-Type', 'image/jpeg');
-
-        /*$stream = static function () use ($image): void {
-            $size = new Box(200, 200);
-            $thumbnail = $image->thumbnail($size);
-            ob_start(null, 0, PHP_OUTPUT_HANDLER_FLUSHABLE | PHP_OUTPUT_HANDLER_REMOVABLE);
-            echo $thumbnail->get('jpeg');
-            ob_end_flush();
-        };*/
         } else {
             $response = new BinaryFileResponse($filename);
             $response->headers->set('Content-Type', 'image/'.$photo->getExtension());
