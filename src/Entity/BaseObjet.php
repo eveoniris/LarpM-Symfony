@@ -75,7 +75,7 @@ abstract class BaseObjet
     #[JoinColumn(name: 'photo_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected ?Photo $photo = null;
 
-    #[ManyToOne(targetEntity: Rangement::class, cascade: ['persist', 'merge', 'remove', 'detach', 'all'], inversedBy: 'objets')]
+    #[ManyToOne(targetEntity: Rangement::class, inversedBy: 'objets')]
     #[JoinColumn(name: 'rangement_id', referencedColumnName: 'id', nullable: 'false')]
     #[Assert\NotNull]
     protected ?Rangement $rangement = null;

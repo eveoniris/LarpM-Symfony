@@ -7,7 +7,6 @@ use App\Enum\FolderType;
 use App\Service\FileUploader;
 use Doctrine\ORM\Mapping\Entity;
 use Imagine\Gd\Imagine;
-use JetBrains\PhpStorm\Deprecated;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -37,7 +36,6 @@ class Photo extends BasePhoto
         } catch (\RuntimeException $e) {
             dump($e);
         }
-
 
         $this->setCreationDate(new \DateTime('NOW'));
         $this->setName($fileUploader->getFileName());
