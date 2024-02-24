@@ -346,7 +346,10 @@ class StockObjetController extends AbstractController
      * Mise à jour un objet.
      */
     #[Route('/stock/objet/{objet}/update', name: 'stockObjet.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Objet $objet): RedirectResponse|Response
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Objet $objet): RedirectResponse|Response
     {
         $form = $this->createForm(ObjetForm::class, $objet)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
@@ -362,7 +365,7 @@ class StockObjetController extends AbstractController
                     $entityManager->persist($objet->getObjetCarac());
                 }
                 if ($objet->getPhoto()) {
-                    $objet->getPhoto()->upload($app);
+                    $objet->getPhoto()->handleUpload($this->fileUploader, $objet->getPhotosDocumentType(), $objet->getPhotosFolderType());
                     $entityManager->persist($objet->getPhoto());
                 }
                 $entityManager->persist($objet);
