@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Repository\BaseObjetRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,7 +12,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: BaseObjetRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: 'objet')]
 #[ORM\Index(columns: ['etat_id'], name: 'fk_objet_etat1_idx')]
 #[ORM\Index(columns: ['proprietaire_id'], name: 'fk_objet_possesseur1_idx')]
@@ -32,6 +31,7 @@ abstract class BaseObjet
     protected string $numero = '';
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
+    #[Assert\NotNull]
     protected string $nom = '';
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
@@ -157,7 +157,7 @@ abstract class BaseObjet
     /**
      * Set the value of description.
      */
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
 

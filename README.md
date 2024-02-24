@@ -83,3 +83,6 @@ Commande pour maj aller sur le container (voir point 6) puis faire :
 - docker compose pull
 - composer install
 - composer recipes:install
+
+10) ajout de Imagine
+`symfony composer req "imagine/imagine:^1.2"`
