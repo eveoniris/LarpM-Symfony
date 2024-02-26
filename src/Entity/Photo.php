@@ -22,7 +22,7 @@ class Photo extends BasePhoto
         FolderType $folderType = FolderType::Photos
     ): void {
         // la propriété « file » peut être vide si le champ n'est pas requis
-        if (null === $this->file) {
+        if (!isset($this->file) || null === $this->file) {
             return;
         }
 
