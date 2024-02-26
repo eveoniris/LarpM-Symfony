@@ -16,7 +16,7 @@ class PhotoType extends AbstractType
             'file',
             FileType::class,
             [
-                'label' => 'Photo',
+                'label' => 'Fichier',
                 'data' => '',
                 'attr' => ['accept' => 'image/*', 'capture' => 'camera'],
             ]
