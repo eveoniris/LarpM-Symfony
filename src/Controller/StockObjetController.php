@@ -4,8 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Etat;
 use App\Entity\Objet;
-use App\Entity\Rangement;
-use App\Entity\Tag;
 use App\Form\Entity\ObjetSearch;
 use App\Form\ObjetFindForm;
 use App\Form\Stock\ObjetDeleteForm;
@@ -14,12 +12,12 @@ use App\Form\Stock\ObjetTagForm;
 use App\Repository\ObjetRepository;
 use App\Service\ImageOptimizer;
 use Doctrine\ORM\EntityManagerInterface;
-// use Imagine\Image\Box; // TODO
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface as FormInterfaceAlias;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -216,25 +214,26 @@ class StockObjetController extends AbstractController
         }
 
         if ($miniature) {
-           // try {
+            try {
                 $image = (new Imagine())->open($filename);
-         //   } catch (\RuntimeException $e) {
-        //        dump($e);
-                //return $this->sendNoImageAvailable();
-        //    }
+            } catch (\RuntimeException $e) {
+                dump($e);
+
+                return $this->sendNoImageAvailable();
+            }
 
             $response = new StreamedResponse();
+            $response->headers->set('Content-Control', 'private');
+            $response->headers->set('Content-Type', 'image/jpeg');
             $response->setCallback(static function () use ($image): void {
                 echo $image->thumbnail(new Box(200, 200))->get('jpeg');
                 flush();
             });
-            $response->headers->set('Content-Type', 'image/jpeg');
         } else {
             $response = new BinaryFileResponse($filename);
+            $response->headers->set('Content-Control', 'private');
             $response->headers->set('Content-Type', 'image/'.$photo->getExtension());
         }
-
-        $response->headers->set('Content-Control', 'private');
 
         return $response->send();
     }
@@ -266,21 +265,7 @@ class StockObjetController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Objet $objet */
-            $objet = $form->getData();
-
-            if ($objet->getObjetCarac()) {
-                $entityManager->persist($objet->getObjetCarac());
-            }
-
-            if ($objet->getPhoto()) {
-                $objet->getPhoto()->handleUpload($this->fileUploader, $objet->getPhotosDocumentType(), $objet->getPhotosFolderType());
-                $entityManager->persist($objet->getPhoto());
-            }
-
-            $entityManager->persist($objet);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'L\'objet a été ajouté dans le stock');
+            $objet = $this->handleObjetPost($form, $entityManager);
 
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('stockObjet.index', [], 303);
@@ -305,8 +290,10 @@ class StockObjetController extends AbstractController
         $newObjet = clone $objet;
 
         $numero = $objet->getNumero();
-        if ('' !== $numero && '0' !== $numero) {
-            $newObjet->setNumero($numero + 1);
+        if ('' !== $numero && '0' !== $numero && is_numeric($numero)) {
+            $newObjet->setNumero(++$numero);
+        } else {
+            $newObjet->setNumero($numero.'_2');
         }
 
         $form = $this->createForm(ObjetForm::class, $newObjet)
@@ -316,24 +303,10 @@ class StockObjetController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $objet = $form->getData();
-
-            if ($objet->getObjetCarac()) {
-                $entityManager->persist($objet->getObjetCarac());
-            }
-
-            if ($objet->getPhoto()) {
-                $objet->getPhoto()->upload($app);
-                $entityManager->persist($objet->getPhoto());
-            }
-
-            $entityManager->persist($objet);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'L\'objet a été ajouté dans le stock');
+            $newObjet = $this->handleObjetPost($form, $entityManager);
 
             if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('stock.homepage', [], 303);
+                return $this->redirectToRoute('stockObjet.index', [], 303);
             }
 
             return $this->redirectToRoute('stockObjet.clone', ['objet' => $newObjet->getId()], 303);
@@ -361,23 +334,14 @@ class StockObjetController extends AbstractController
             $objet = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                if ($objet->getObjetCarac()) {
-                    $entityManager->persist($objet->getObjetCarac());
-                }
-                if ($objet->getPhoto()) {
-                    $objet->getPhoto()->handleUpload($this->fileUploader, $objet->getPhotosDocumentType(), $objet->getPhotosFolderType());
-                    $entityManager->persist($objet->getPhoto());
-                }
-                $entityManager->persist($objet);
-                $entityManager->flush();
-                $this->addFlash('success', 'L\'objet a été mis à jour');
+                $this->handleObjetPost($form, $entityManager, 'L\'objet a été mis à jour');
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($objet);
                 $entityManager->flush();
                 $this->addFlash('success', 'L\'objet a été supprimé');
             }
 
-            return $this->redirectToRoute('stock.homepage');
+            return $this->redirectToRoute('stockObjet.index');
         }
 
         return $this->render('stock/objet/update.twig', ['objet' => $objet, 'form' => $form->createView()]);
@@ -441,8 +405,8 @@ class StockObjetController extends AbstractController
     #[NoReturn] #[Route('/stock/objet/export', name: 'stockObjet.export')]
     public function exportAction(Request $request, EntityManagerInterface $entityManager): void
     {
+        /** @var ObjetRepository $repo */
         $repo = $entityManager->getRepository(Objet::class);
-        $objets = $repo->findAll();
 
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename=eveoniris_stock_'.date('Ymd').'.csv');
@@ -465,11 +429,32 @@ class StockObjetController extends AbstractController
                 'nombre',
                 'creation_date'], ',');
 
-        foreach ($objets as $objet) {
-            fputcsv($output, $objet->getExportValue(), ',');
+        foreach ($repo->findIterable() as $objet) {
+            fputcsv($output, $objet, ',');
         }
 
         fclose($output);
         exit;
+    }
+
+    public function handleObjetPost(FormInterfaceAlias $form, EntityManagerInterface $entityManager, string $successMsg = null): mixed
+    {
+        $objet = $form->getData();
+
+        if ($objet->getObjetCarac()) {
+            $entityManager->persist($objet->getObjetCarac());
+        }
+
+        if ($objet->getPhoto()) {
+            $objet->getPhoto()->handleUpload($this->fileUploader, $objet->getPhotosDocumentType(), $objet->getPhotosFolderType());
+            $entityManager->persist($objet->getPhoto());
+        }
+
+        $entityManager->persist($objet);
+        $entityManager->flush();
+
+        $this->addFlash('success', $successMsg ?? 'L\'objet a été ajouté dans le stock');
+
+        return $objet;
     }
 }

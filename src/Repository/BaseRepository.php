@@ -135,4 +135,20 @@ abstract class BaseRepository extends ServiceEntityRepository
 
         return new Paginator($qb);
     }
+
+    public function findIterable(Query $query = null, int $batchSize = 100): \Generator
+    {
+        $query ??= $this->createQueryBuilder(static::getEntityAlias())->getQuery();
+        $i = 0;
+        /** @var Entity $iterable */
+        foreach ($query->toIterable() as $iterable) {
+            yield method_exists($iterable::class, 'getExportValue')
+                ? $iterable->getExportValue()
+                : (array) $iterable;
+
+            if (0 === ++$i % $batchSize) {
+                flush();
+            }
+        }
+    }
 }

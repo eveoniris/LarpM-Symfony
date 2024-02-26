@@ -53,6 +53,14 @@
         <thead>
         <tr>
             <th>
+                <a href="{{ path('stockObjet.index', {'order_by': 'numero', 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')}) }}">
+                    Numéro de stock
+                    {% if app.request.get('order_by') == 'numero' %}
+                        <i class="fa-solid fa-caret-{{ orderDir == 'ASC' ? 'down' : 'up' }}"></i>
+                    {% endif %}
+                </a>
+            </th>
+            <th>
                 <a href="{{ path('stockObjet.index', {'order_by': 'nom', 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')}) }}">
                     Nom
                     {% if app.request.get('order_by') == 'nom' %}
@@ -71,6 +79,7 @@
         <tbody>
         {% for objet in paginator %}
             <tr>
+                <td>{{ objet.numero|highlight(searchValue) }}</td>
                 <td>{{ objet.nom|highlight(searchValue) }}</td>
                 <td>
                     {% if objet.photo %}
