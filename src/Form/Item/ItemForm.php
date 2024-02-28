@@ -1,17 +1,19 @@
 <?php
 
-
 namespace App\Form\Item;
 
+use App\Entity\Item;
+use App\Entity\Quality;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Monnaie\ItemForm.
- *
- * @author kevin
- */
 class ItemForm extends AbstractType
 {
     /**
@@ -19,11 +21,11 @@ class ItemForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('label', TextType::class, [
             'label' => 'Label',
             'required' => true,
         ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'required' => true,
                 'label' => 'Description',
                 'attr' => [
@@ -32,23 +34,23 @@ class ItemForm extends AbstractType
                     'help' => 'Quelques mots pour décrire votre objet, c\'est le texte décrivant ce que la personne voit, situé au centre de l\'étiquette',
                 ],
             ])
-            ->add('numero', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            ->add('numero', IntegerType::class, [
                 'required' => false,
                 'label' => 'Numéro',
                 'attr' => [
                     'help' => 'Situé en haut à gauche, il permet de retrouver rapidement l\'objet. NE REMPLISSEZ CETTE CASE QUE SI VOTRE OBJET DE JEU DISPOSE DEJA D\'UN NUMERO (il a été créé pendant le LH2 ou le LH1). Si vous laissez vide, un numero lui sera automatiquement attribué.',
                 ],
             ])
-            ->add('quality', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('quality', EntityType::class, [
                 'required' => true,
                 'label' => 'Qualité',
-                'class' => \App\Entity\Quality::class,
+                'class' => Quality::class,
                 'choice_label' => 'label',
                 'attr' => [
                     'help' => 'Qualité de l\'objet',
                 ],
             ])
-            ->add('identification', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('identification', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Identification',
                 'choices' => [
@@ -89,14 +91,14 @@ class ItemForm extends AbstractType
                     'help' => "Information sur l'objet",
                 ],
             ])
-            ->add('quantite', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            ->add('quantite', IntegerType::class, [
                 'required' => false,
                 'label' => 'Quantite',
                 'attr' => [
                     'help' => "Nombre d'exemplaire",
                 ],
             ])
-            ->add('special', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('special', TextareaType::class, [
                 'required' => true,
                 'label' => 'Description spéciale',
                 'attr' => [
@@ -105,7 +107,7 @@ class ItemForm extends AbstractType
                     'help' => 'Quelques mots pour un effet spécial. Ce texte est révélé au joueur si celui-ci réussi à identifier l\'objet',
                 ],
             ])
-            ->add('couleur', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('couleur', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Couleur de l\'étiquette',
                 'choices' => [
@@ -115,7 +117,7 @@ class ItemForm extends AbstractType
                     'help' => 'La couleur de l\'étiquette indique si l\'on peux prendre l\'objet en lui-même ou seulement l\'étiquette',
                 ],
             ])
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+            ->add('submit', SubmitType::class, [
                 'label' => 'Valider',
             ]);
     }
@@ -126,7 +128,7 @@ class ItemForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'class' => \App\Entity\Item::class,
+            'class' => Item::class,
         ]);
     }
 

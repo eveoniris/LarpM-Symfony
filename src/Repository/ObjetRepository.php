@@ -5,28 +5,16 @@ namespace App\Repository;
 use App\Entity\Rangement;
 use App\Entity\Tag;
 use Doctrine\ORM\QueryBuilder;
+use JetBrains\PhpStorm\Deprecated;
 
 class ObjetRepository extends BaseRepository
 {
     final public const CRIT_WITHOUT = -1;
 
     /**
-     * Trouve tous les objets.
-     */
-    public function findAll(): array
-    {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-
-        $qb->select('o');
-        $qb->from(\App\Entity\Objet::class, 'o');
-        $qb->orderBy('o.id', 'DESC');
-
-        return $qb->getQuery()->getResult();
-    }
-
-    /**
      * Trouve le nombre d'objets correspondant aux critères de recherche.
      */
+    #[Deprecated]
     public function findCount(array $criteria): float|bool|int|string|null
     {
         $qb = $this->getQueryBuilder($criteria);
@@ -38,6 +26,7 @@ class ObjetRepository extends BaseRepository
     /**
      * Trouve les objets correspondant aux critères de recherche.
      */
+    #[Deprecated]
     public function findList(array $criteria, array $order = [], int $limit = 50, int $offset = 0)
     {
         $qb = $this->getQueryBuilder($criteria);
@@ -48,6 +37,7 @@ class ObjetRepository extends BaseRepository
         return $qb->getQuery()->getResult();
     }
 
+    #[Deprecated]
     protected function getQueryBuilder(array $criteria): QueryBuilder
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
