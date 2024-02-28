@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -11,6 +12,8 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Contracts\Service\Attribute\Required;
 
 #[Entity]
 #[ORM\Table(name: 'gn')]
@@ -20,79 +23,84 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseGn', 'extended' => 'Gn'])]
 class BaseGn
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Required]
     protected string $label = '';
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $xp_creation = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(name: 'date_jeu', type: Types::INTEGER, nullable: true)]
     protected ?int $date_jeu = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
+    #[Assert\NotBlank]
+    #[Required]
     protected ?string $description = '';
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $date_debut = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $date_fin = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $date_installation_joueur = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $date_fin_orga = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
-    protected string $adresse;
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
+    protected ?string $adresse = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[Column(type: Types::BOOLEAN)]
     protected bool $actif;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $billetterie = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $conditions_inscription = null;
 
-    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: Annonce::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[OneToMany(mappedBy: 'gn', targetEntity: Annonce::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $annonces;
 
-    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: Background::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[OneToMany(mappedBy: 'gn', targetEntity: Background::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $backgrounds;
 
-    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: Billet::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[OneToMany(mappedBy: 'gn', targetEntity: Billet::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $billets;
 
-    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: Debriefing::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[OneToMany(mappedBy: 'gn', targetEntity: Debriefing::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $debriefings;
 
-    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: GroupeGn::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[OneToMany(mappedBy: 'gn', targetEntity: GroupeGn::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $groupeGns;
 
-    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: Participant::class, cascade: ['persist'])]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[OneToMany(mappedBy: 'gn', targetEntity: Participant::class, cascade: ['persist'])]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $participants;
 
-    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: PersonnageBackground::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[OneToMany(mappedBy: 'gn', targetEntity: PersonnageBackground::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $personnageBackgrounds;
 
-    #[ORM\OneToMany(mappedBy: 'gn', targetEntity: Rumeur::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[OneToMany(mappedBy: 'gn', targetEntity: Rumeur::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $rumeurs;
 
     #[ORM\ManyToOne(targetEntity: Topic::class, cascade: ['persist'], inversedBy: 'gns')]
-    #[ORM\JoinColumn(name: 'topic_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'topic_id', referencedColumnName: 'id')]
     protected Topic $topic;
 
     public function __construct()
@@ -140,10 +148,10 @@ class BaseGn
 
     public function getXpCreation(): int
     {
-        return $this->xp_creation;
+        return $this->xp_creation ?? 0;
     }
 
-    public function setDateJeu(int $date_jeu): static
+    public function setDateJeu(?int $date_jeu): static
     {
         $this->date_jeu = $date_jeu;
 
@@ -155,7 +163,7 @@ class BaseGn
         return $this->date_jeu;
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
 
@@ -164,58 +172,58 @@ class BaseGn
 
     public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
-    public function setDateDebut(\DateTime $date_debut): static
+    public function setDateDebut(?\DateTime $date_debut): static
     {
         $this->date_debut = $date_debut;
 
         return $this;
     }
 
-    public function getDateDebut(): \DateTime
+    public function getDateDebut(): ?\DateTime
     {
         return $this->date_debut;
     }
 
-    public function setDateFin(\DateTime $date_fin): static
+    public function setDateFin(?\DateTime $date_fin): static
     {
         $this->date_fin = $date_fin;
 
         return $this;
     }
 
-    public function getDateFin(): \DateTime
+    public function getDateFin(): ?\DateTime
     {
         return $this->date_fin;
     }
 
-    public function setDateInstallationJoueur(\DateTime $date_installation_joueur): static
+    public function setDateInstallationJoueur(?\DateTime $date_installation_joueur): static
     {
         $this->date_installation_joueur = $date_installation_joueur;
 
         return $this;
     }
 
-    public function getDateInstallationJoueur(): \DateTime
+    public function getDateInstallationJoueur(): ?\DateTime
     {
         return $this->date_installation_joueur;
     }
 
-    public function setDateFinOrga(\DateTime $date_fin_orga): static
+    public function setDateFinOrga(?\DateTime $date_fin_orga): static
     {
         $this->date_fin_orga = $date_fin_orga;
 
         return $this;
     }
 
-    public function getDateFinOrga(): \DateTime
+    public function getDateFinOrga(): ?\DateTime
     {
         return $this->date_fin_orga;
     }
 
-    public function setAdresse(string $adresse): static
+    public function setAdresse(?string $adresse): static
     {
         $this->adresse = $adresse;
 
@@ -239,7 +247,7 @@ class BaseGn
         return $this->actif;
     }
 
-    public function setBilletterie(string $billetterie): static
+    public function setBilletterie(?string $billetterie): static
     {
         $this->billetterie = $billetterie;
 
@@ -251,7 +259,7 @@ class BaseGn
         return $this->billetterie ?? '';
     }
 
-    public function setConditionsInscription(string $conditions_inscription): static
+    public function setConditionsInscription(?string $conditions_inscription): static
     {
         $this->conditions_inscription = $conditions_inscription;
 

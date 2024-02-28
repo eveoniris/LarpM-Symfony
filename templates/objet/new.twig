@@ -1,4 +1,4 @@
-{% extends "layout.twig"  %}
+{% extends "base.html.twig" %}
 
 {% block title %}Création d'un objet de jeu{% endblock %}
 
@@ -6,17 +6,14 @@
     
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('items') }}">Liste des objets de jeu</a></li>
+		<li><a href="{{ path('item.index') }}">Liste des objets de jeu</a></li>
 		<li class="active">Créer un objet de jeu</li>
 	</ol>
 	
 	<div class="well well-sm">
 		<div class="row">
 			<div class="col-md-6">
-				{{ form_start(form, {"attr": {"action": path('item.new', {'objet': objet.id}) }}) }}
-					
-					{{ form(form) }}
-				{{ form_end(form) }}
+				{{ form(form) }}
 			</div>
 			<div class="col-md-6">
 			

@@ -11,11 +11,10 @@
 	</ol>
 	
 	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('gn.update',{'gn': gn.id})}}) }}
-			<fieldset>
-				<legend>Modification d'un grandeur nature</legend>
-					{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
+		<div class="header">
+			<h5>Modification d'un grandeur nature</h5>
+		</div>
+
+		{{ form(form) }}
 	</div>
 {% endblock body %}

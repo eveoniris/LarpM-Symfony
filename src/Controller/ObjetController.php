@@ -8,6 +8,7 @@ use App\Form\Item\ItemDeleteForm;
 use App\Form\Item\ItemForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\HttpFoundation\RedirectResponse as RedirectResponseAlias;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -139,8 +140,8 @@ class ObjetController extends AbstractController
     /**
      * Création d'un nouvel objet de jeu.
      */
-    #[Route('/item/new', name: 'item.new')]
-    public function newAction(Request $request, EntityManagerInterface $entityManager, Objet $objet): \Symfony\Component\HttpFoundation\RedirectResponse|Response
+    #[Route('/item/new/{objet}', name: 'item.new')]
+    public function newAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Objet $objet): RedirectResponseAlias|Response
     {
         $item = new Item();
         $item->setObjet($objet);
@@ -211,7 +212,7 @@ class ObjetController extends AbstractController
      * Mise à jour d'un objet de jeu.
      */
     #[Route('/item/{item}/update', name: 'item.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Item $item): \Symfony\Component\HttpFoundation\RedirectResponse|Response
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Item $item): RedirectResponseAlias|Response
     {
         $form = $this->createForm(ItemForm::class, $item);
 
@@ -252,7 +253,7 @@ class ObjetController extends AbstractController
     /**
      * Suppression d'un objet de jeu.
      */
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Item $item): \Symfony\Component\HttpFoundation\RedirectResponse|Response
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Item $item): RedirectResponseAlias|Response
     {
         $form = $this->createForm(ItemDeleteForm::class, $item);
 
@@ -276,7 +277,7 @@ class ObjetController extends AbstractController
     /**
      * Lier un objet de jeu à un groupe/personnage/lieu.
      */
-    public function linkAction(Request $request, EntityManagerInterface $entityManager, Item $item): \Symfony\Component\HttpFoundation\RedirectResponse|Response
+    public function linkAction(Request $request, EntityManagerInterface $entityManager, Item $item): RedirectResponseAlias|Response
     {
         $form = $this->createForm(ItemLinkForm::class, $item);
 

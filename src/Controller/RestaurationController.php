@@ -9,6 +9,7 @@ use App\Repository\RestaurationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -99,8 +100,8 @@ class RestaurationController extends AbstractController
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(RestaurationForm::class, new Restauration())
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -213,7 +214,7 @@ class RestaurationController extends AbstractController
     public function updateAction(Request $request, #[MapEntity] Restauration $restauration, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(RestaurationForm::class, $restauration)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -243,7 +244,7 @@ class RestaurationController extends AbstractController
     public function deleteAction(Request $request, #[MapEntity] Restauration $restauration, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(RestaurationDeleteForm::class, $restauration)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

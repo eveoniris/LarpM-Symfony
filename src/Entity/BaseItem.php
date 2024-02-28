@@ -156,7 +156,7 @@ abstract class BaseItem
      *
      * @param string $identification
      */
-    public function setIdentification($identification): static
+    public function setIdentification(string $identification): static
     {
         $this->identification = $identification;
 
@@ -166,7 +166,7 @@ abstract class BaseItem
     /**
      * Get the value of identification.
      */
-    public function getIdentification(): static
+    public function getIdentification(): string
     {
         return $this->identification;
     }
