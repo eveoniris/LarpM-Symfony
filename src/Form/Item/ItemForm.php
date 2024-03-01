@@ -26,7 +26,7 @@ class ItemForm extends AbstractType
             'required' => true,
         ])
             ->add('description', TextareaType::class, [
-                'required' => true,
+                // TinyMce may bug here if let 'required' => true,
                 'label' => 'Description',
                 'attr' => [
                     'rows' => 9,
@@ -54,6 +54,40 @@ class ItemForm extends AbstractType
                 'required' => true,
                 'label' => 'Identification',
                 'choices' => [
+                    '81',
+                    '01',
+                    '11',
+                    '21',
+                    '22',
+                    '23',
+                    '24',
+                    '25',
+                    '26',
+                    '27',
+                    '28',
+                    '29',
+                    '30',
+                    '31',
+                    '32',
+                    '33',
+                    '34',
+                    '35',
+                    '36',
+                    '37',
+                    '38',
+                    '39',
+                    '40',
+                    '41',
+                    '42',
+                    '43',
+                    '44',
+                    '45',
+                    '46',
+                    '47',
+                    '48',
+                    '49',
+                ],
+                'choice_label' => static fn ($value) => match ($value) {
                     '81' => 'Rien de spécial',
                     '01' => 'Objet spécial mais non magique',
                     '11' => 'Objet enchanté par magie',
@@ -86,7 +120,7 @@ class ItemForm extends AbstractType
                     '47' => 'Objet enchanté par prêtrise Shub-niggurath',
                     '48' => 'Objet enchanté par prêtrise Yajur',
                     '49' => 'Objet enchanté par prêtrise Ereshkigal',
-                ],
+                },
                 'attr' => [
                     'help' => "Information sur l'objet",
                 ],
@@ -99,7 +133,7 @@ class ItemForm extends AbstractType
                 ],
             ])
             ->add('special', TextareaType::class, [
-                'required' => true,
+                // TinyMce may bug here if let 'required' => true,
                 'label' => 'Description spéciale',
                 'attr' => [
                     'rows' => 9,

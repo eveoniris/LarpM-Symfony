@@ -169,15 +169,15 @@ class ObjetController extends AbstractController
             $identification = $item->getIdentification();
             switch ($identification) {
                 case 1:
-                    $identification = sprintf('%02d', mt_rand(1, 10));
+                    $identification = sprintf('%02d', random_int(1, 10));
                     $item->setIdentification($identification);
                     break;
                 case 11:
-                    $identification = mt_rand(11, 20);
+                    $identification = random_int(11, 20);
                     $item->setIdentification($identification);
                     break;
                 case 81:
-                    $identification = mt_rand(81, 99);
+                    $identification = random_int(81, 99);
                     $item->setIdentification($identification);
                     break;
             }
@@ -187,7 +187,8 @@ class ObjetController extends AbstractController
 
             $this->addFlash('success', 'L\'objet de jeu a été créé');
 
-            return $this->redirectToRoute('items', [], 303);
+            // todo handle "referer" or "redirectUrl"
+            return $this->redirectToRoute('item.index', [], 303);
         }
 
         return $this->render('objet/new.twig', [
