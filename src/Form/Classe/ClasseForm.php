@@ -1,21 +1,19 @@
 <?php
 
-
 namespace App\Form\Classe;
 
 use App\Entity\Classe;
 use App\Repository\CompetenceFamilyRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-
 
 /**
  * LarpManager\Form\Classe\ClasseForm.
@@ -117,7 +115,12 @@ class ClasseForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Classe::class,
+            'data_class' => Classe::class,
+            // TinyMce Hide the text field. It's break the form Submit because autovalidate can't allow it
+            // Reason : the user can't fill a hidden field, so it's couldn't be "required"
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
             'constraints' => [
                 new Callback(static function (Classe $classe, ExecutionContextInterface $context): void {
                     $competenceFamilyLabelsInCommons = $classe->getCompetenceFamilyLabelsInCommons();

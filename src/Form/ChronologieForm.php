@@ -3,15 +3,15 @@
 
 namespace App\Form;
 
+use App\Entity\Chronologie;
+use App\Entity\Territoire;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\ChronologieForm.
- *
- * @author kevin
- */
 class ChronologieForm extends AbstractType
 {
     /**
@@ -20,26 +20,26 @@ class ChronologieForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('territoire', EntityType::class, [
                 'required' => true,
                 'label' => 'Territoire',
-                'class' => \App\Entity\Territoire::class,
+                'class' => Territoire::class,
                 'choice_label' => 'nom',
             ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'required' => true,
                 'label' => 'Description',
                 'attr' => ['rows' => 9],
             ])
-            ->add('year', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            ->add('year', IntegerType::class, [
                 'required' => true,
                 'label' => 'Année',
             ])
-            ->add('month', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            ->add('month', IntegerType::class, [
                 'required' => false,
                 'label' => 'Mois (falcultatif)',
             ])
-            ->add('day', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            ->add('day', IntegerType::class, [
                 'required' => false,
                 'label' => 'Jour (falcultatif)',
             ]);
@@ -51,7 +51,12 @@ class ChronologieForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Chronologie::class,
+            'data_class' => Chronologie::class,
+            // TinyMce Hide the text field. It's break the form Submit because autovalidate can't allow it
+            // Reason : the user can't fill a hidden field, so it's couldn't be "required"
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

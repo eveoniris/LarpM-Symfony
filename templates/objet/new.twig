@@ -3,20 +3,20 @@
 {% block title %}Création d'un objet de jeu{% endblock %}
 
 {% block body %}
-    
+
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
 		<li><a href="{{ path('item.index') }}">Liste des objets de jeu</a></li>
 		<li class="active">Créer un objet de jeu</li>
 	</ol>
-	
+
 	<div class="well well-sm">
 		<div class="row">
 			<div class="col-md-6">
 				{{ form(form) }}
 			</div>
 			<div class="col-md-6">
-			
+
 				{% if objet.photo %}
         			<img src="{{ path('stockObjet.photo',{'objet': objet.id}) }}" alt="{{ objet.photo.name }}" class="img-responsive" />
         		{% endif %}
@@ -35,5 +35,5 @@
 			</div>
 		</div>
 	</div>
-	
+
 {% endblock body %}

@@ -1,0 +1,124 @@
+{% for classe in classes %}
+    <div class="well well-sm bs-component">
+
+        <div class="header">
+            <h5>{{ classe.label }}</h5>
+        </div>
+
+        <div class="">
+            {% if is_granted('ROLE_REGLE', app.user) %}
+                <div class="d-flex flex-row-reverse">
+                    <div class="btn-group pull-right" role="group" aria-label="...">
+                        <a href="{{ path('classe.perso', {'id': classe.id}) }}" class="btn btn-secondary"
+                           data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Voir les personnages de cette classe" role="button"><i
+                                    class="fa fa-link"></i> {{ classe.personnages|length }} personnages</a>
+                        <a href="{{ path('classe.detail', {'id': classe.id}) }}" class="btn btn-secondary"
+                           data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Détail" role="button"><i class="fa fa-eye"></i> Voir</a>
+                        <a href="{{ path('classe.update', {'id': classe.id}) }}" class="btn btn-secondary"
+                           data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Modifier" role="button"><i class="fa fa-pencil"></i> Modifier</a>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if classe.description %}
+                <p>{{ classe.description|markdown_to_html }}</p>
+            {% elseif is_granted('ROLE_REGLE', app.user) %}
+                <div class="card mb-2 border-warning">
+                    <div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Cette classe n'a pas description
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if classe.competenceFamilyCreations|length != 0 %}
+                <div class="card mb-2">
+                    <div class="card-header">
+                        Famille de compétence acquises à la création
+                    </div>
+                    <div class="card-body">
+                        <div class="card-text mb-0">
+                            {% for competenceFamily in classe.competenceFamilyCreations %}
+                                <a class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0"
+                                   href="{{ path('competenceFamily.detail', {'competenceFamily': competenceFamily.id }) }}">{{ competenceFamily.label }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% elseif is_granted('ROLE_REGLE', app.user) %}
+                <div class="card mb-2 border-warning">
+                    <div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Cette classe n'a pas de famille de compétences acquises à la créations
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if classe.competenceFamilyFavorites|length != 0 %}
+                <div class="card mb-2">
+                    <div class="card-header">
+                        Famille de compétence favorites
+                    </div>
+                    <div class="card-body">
+                        <div class="card-text">
+                            {% for competenceFamily in classe.competenceFamilyFavorites %}
+                                <a class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0"
+                                   href="{{ path('competenceFamily.detail', {'competenceFamily': competenceFamily.id }) }}">{{ competenceFamily.label }}</a>
+                            {% endfor %}
+                        </div>
+                        <div class="card-subtitle mt-1"><small>Bénéficie d'un cout d'apprentissage moindre en
+                                XP</small></div>
+                    </div>
+                </div>
+            {% elseif is_granted('ROLE_REGLE', app.user) %}
+                <div class="card mb-2 border-warning">
+                    <div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Cette classe n'a pas de famille de compétences acquises à la créations
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if classe.competenceFamilyNormales|length != 0 %}
+                <div class="card mb-2">
+                    <div class="card-header">
+                        Famille de compétence normales
+                    </div>
+                    <div class="card-body">
+                        <div class="card-text">
+                            {% for competenceFamily in classe.competenceFamilyFavorites %}
+                                <a class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0"
+                                   href="{{ path('competenceFamily.detail', {'competenceFamily': competenceFamily.id }) }}">{{ competenceFamily.label }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% elseif is_granted('ROLE_REGLE', app.user) %}
+                <div class="card mb-2 border-warning">
+                    <div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Cette classe n'a pas de famille de compétences normales
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <img width="184" height="250" alt="{{ classe.labelFeminin }}"
+             src="{{ path('classe.image', {'classe' : classe.id, 'sexe' : 'F' }) }}"/>
+        <div class="pull-right">
+            <img width="184" height="250" alt="{{ classe.labelMasculin }}"
+                 src="{{ path('classe.image', {'classe' : classe.id, 'sexe' : 'M' }) }}"/>
+        </div>
+    </div>
+{% endfor %}

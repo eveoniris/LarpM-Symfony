@@ -3,15 +3,11 @@
 
 namespace App\Form;
 
+use App\Entity\Background;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\BackgroundForm.
- *
- * @author kevin
- */
 class BackgroundDeleteForm extends AbstractType
 {
     /**
@@ -27,7 +23,12 @@ class BackgroundDeleteForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Background::class,
+            'data_class' => Background::class,
+            // TinyMce Hide the text field. It's break the form Submit because autovalidate can't allow it
+            // Reason : the user can't fill a hidden field, so it's couldn't be "required"
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

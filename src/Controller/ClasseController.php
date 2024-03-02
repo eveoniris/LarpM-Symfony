@@ -1,11 +1,10 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Classe;
-use App\Repository\ClasseRepository;
 use App\Form\Classe\ClasseForm;
+use App\Repository\ClasseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -14,12 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-
-/**
- * LarpManager\Controllers\ClasseController.
- *
- * @author kevin
- */
 class ClasseController extends AbstractController
 {
     /**
@@ -55,11 +48,11 @@ class ClasseController extends AbstractController
     #[Route('/classe/add', name: 'classe.add')]
     public function addAction(EntityManagerInterface $entityManager, Request $request, ClasseRepository $classeRepository): Response
     {
-        $classe = new \App\Entity\Classe();
+        $classe = new Classe();
 
         $form = $this->createForm(ClasseForm::class, $classe)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -90,8 +83,8 @@ class ClasseController extends AbstractController
     public function updateAction(EntityManagerInterface $entityManager, Request $request, #[MapEntity] Classe $classe)
     {
         $form = $this->createForm(ClasseForm::class, $classe)
-            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer'])
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer'])
         ;
 
         $form->handleRequest($request);
@@ -109,7 +102,7 @@ class ClasseController extends AbstractController
                 $this->addFlash('success', 'La classe a été supprimée.');
             }
 
-            //return $this->redirectToRoute('classe'));
+            // return $this->redirectToRoute('classe'));
             return $this->redirectToRoute('classe.index', [], 303);
         }
 
@@ -127,7 +120,7 @@ class ClasseController extends AbstractController
     public function detailAction(EntityManagerInterface $entityManager, int $id)
     {
         $classe = $entityManager->getRepository(Classe::class)->find($id);
-        
+
         return $this->render('classe/detail.twig', ['classe' => $classe]);
     }
 
@@ -147,19 +140,20 @@ class ClasseController extends AbstractController
      * Récupération de l'image d'une classe en fonction du sexe.
      */
     #[Route('/classe/{classe}/image/{sexe}', name: 'classe.image', methods: ['GET'])]
-    public function imagrAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Classe $classe, String $sexe): Response
-	{
-        if ($sexe == "F")
-		    $image = $classe->getImageF();
-        else
+    public function imagrAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Classe $classe, string $sexe): Response
+    {
+        if ('F' == $sexe) {
+            $image = $classe->getImageF();
+        } else {
             $image = $classe->getImageM();
+        }
 
         $filename = __DIR__.'/../../assets/img/'.$image;
-        //var_dump($filename);
-        
+        // var_dump($filename);
+
         $response = new Response(file_get_contents($filename));
         $response->headers->set('Content-Type', 'image/png');
 
         return $response;
-	}
+    }
 }
