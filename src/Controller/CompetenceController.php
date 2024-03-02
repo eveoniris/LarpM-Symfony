@@ -8,6 +8,7 @@ use App\Repository\CompetenceRepository;
 use App\Form\CompetenceForm;
 use App\Form\CompetenceFindForm;
 use App\Form\Entity\BaseSearch;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -161,10 +162,9 @@ class CompetenceController extends AbstractController
     /**
      * Detail d'une compétence.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/competence/{competence}', name: 'competence.detail')]
+    public function detailAction(#[MapEntity] Competence $competence): Response
     {
-        $competence = $request->get('competence');
-
         return $this->render('competence/detail.twig', ['competence' => $competence]);
     }
 

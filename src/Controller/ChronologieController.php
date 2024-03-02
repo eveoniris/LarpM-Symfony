@@ -1,30 +1,32 @@
 <?php
 
-
 namespace App\Controller;
 
+use App\Entity\Chronologie;
+use App\Entity\Territoire;
 use App\Form\ChronologieForm;
 use App\Form\ChronologieRemoveForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_SCENARISTE')]
 class ChronologieController extends AbstractController
 {
     /**
      * API : mettre à jour un événement
      * POST /api/chronologies/{event}.
      */
-    public function apiUpdateAction(Request $request,  EntityManagerInterface $entityManager): JsonResponse
+    public function apiUpdateAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $event = $request->get('event');
 
-        $payload = json_decode($request->getContent());
+        $payload = json_decode($request->getContent(), false, 512, JSON_THROW_ON_ERROR);
 
-        $territoire = $entityManager->find('\\'.\App\Entity\Territoire::class, $payload->territoire_id);
+        $territoire = $entityManager->find(Territoire::class, $payload->territoire_id);
 
         $event->setTerritoire($territoire);
         $event->JsonUnserialize($payload);
@@ -39,7 +41,7 @@ class ChronologieController extends AbstractController
      * API : supprimer un événement
      * DELETE /api/chronologies/{event}.
      */
-    public function apiDeleteAction(Request $request,  EntityManagerInterface $entityManager): JsonResponse
+    public function apiDeleteAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $event = $request->get('event');
         $entityManager->remove($event);
@@ -52,13 +54,13 @@ class ChronologieController extends AbstractController
      * API : ajouter un événement
      * POST /api/chronologies.
      */
-    public function apiAddAction(Request $request,  EntityManagerInterface $entityManager): JsonResponse
+    public function apiAddAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $payload = json_decode($request->getContent());
 
-        $territoire = $entityManager->find('\\'.\App\Entity\Territoire::class, $payload->territoire_id);
+        $territoire = $entityManager->find(Territoire::class, $payload->territoire_id);
 
-        $event = new \App\Entity\Chronologie();
+        $event = new Chronologie();
 
         $event->setTerritoire($territoire);
         $event->JsonUnserialize($payload);
@@ -70,23 +72,23 @@ class ChronologieController extends AbstractController
     }
 
     #[Route('/chronologie', name: 'chronologie.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager)
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Chronologie::class);
+        $repo = $entityManager->getRepository(Chronologie::class);
         $chronologies = $repo->findAll();
 
         return $this->render('chronologie/index.twig', ['chronologies' => $chronologies]);
     }
 
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    public function addAction(Request $request, EntityManagerInterface $entityManager)
     {
-        $chronologie = new \App\Entity\Chronologie();
+        $chronologie = new Chronologie();
 
         // Un territoire peut avoir été passé en paramètre
         $territoireId = $request->get('territoire');
 
         if ($territoireId) {
-            $territoire = $entityManager->find('\\'.\App\Entity\Territoire::class, $territoireId);
+            $territoire = $entityManager->find(Territoire::class, $territoireId);
             if ($territoire) {
                 $chronologie->setTerritoire($territoire);
             }
@@ -98,7 +100,7 @@ class ChronologieController extends AbstractController
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getChronologieVisibility(),
             ])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -108,7 +110,7 @@ class ChronologieController extends AbstractController
             $entityManager->persist($chronologie);
             $entityManager->flush();
 
-           $this->addFlash('success', 'L\'événement a été ajouté.');
+            $this->addFlash('success', 'L\'événement a été ajouté.');
 
             return $this->redirectToRoute('chronologie');
         }
@@ -118,11 +120,11 @@ class ChronologieController extends AbstractController
         ]);
     }
 
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    public function updateAction(Request $request, EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $chronologie = $entityManager->find('\\'.\App\Entity\Chronologie::class, $id);
+        $chronologie = $entityManager->find(Chronologie::class, $id);
         if (!$chronologie) {
             return $this->redirectToRoute('chronologie');
         }
@@ -133,7 +135,7 @@ class ChronologieController extends AbstractController
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getChronologieVisibility(),
             ])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -143,7 +145,7 @@ class ChronologieController extends AbstractController
             $entityManager->persist($chronologie);
             $entityManager->flush();
 
-           $this->addFlash('success', 'L\'événement a été mis à jour.');
+            $this->addFlash('success', 'L\'événement a été mis à jour.');
 
             return $this->redirectToRoute('chronologie');
         }
@@ -154,17 +156,17 @@ class ChronologieController extends AbstractController
         ]);
     }
 
-    public function removeAction(Request $request,  EntityManagerInterface $entityManager)
+    public function removeAction(Request $request, EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
-        $chronologie = $entityManager->find('\\'.\App\Entity\Chronologie::class, $id);
+        $chronologie = $entityManager->find( Chronologie::class, $id);
         if (!$chronologie) {
             return $this->redirectToRoute('chronologie');
         }
 
         $form = $this->createForm(ChronologieRemoveForm::class, $chronologie)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -174,7 +176,7 @@ class ChronologieController extends AbstractController
             $entityManager->remove($chronologie);
             $entityManager->flush();
 
-           $this->addFlash('success', 'L\'événement a été supprimé.');
+            $this->addFlash('success', 'L\'événement a été supprimé.');
 
             return $this->redirectToRoute('chronologie');
         }

@@ -1,29 +1,26 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Background;
 use App\Entity\Groupe;
-use JasonGrimes\Paginator;
 use App\Form\BackgroundDeleteForm;
 use App\Form\BackgroundFindForm;
 use App\Form\BackgroundForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_SCENARISTE')]
 class BackgroundController extends AbstractController
 {
     /**
      * Présentation des backgrounds.
      */
     #[Route('/background', name: 'background.list')]
-    public function listAction(Request $request,  EntityManagerInterface $entityManager)
+    public function listAction(Request $request, EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -51,7 +48,7 @@ class BackgroundController extends AbstractController
             }*/
         }
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Background::class);
+        $repo = $entityManager->getRepository('\\'.Background::class);
         $backgrounds = $repo->findBy(
             $criteria,
             [$order_by => $order_dir],
@@ -75,7 +72,7 @@ class BackgroundController extends AbstractController
      * Impression de tous les backgrounds de groupe.
      */
     #[Route('/background/print', name: 'background.print')]
-    public function printAction(Request $request,  EntityManagerInterface $entityManager)
+    public function printAction(Request $request, EntityManagerInterface $entityManager)
     {
         $gns = $entityManager->getRepository('\\'.\App\Entity\Gn::class)->findActive();
         if (0 == count($gns)) {
@@ -86,7 +83,7 @@ class BackgroundController extends AbstractController
             exit;
         }
 
-        $backgrounds = $entityManager->getRepository('\\'.\App\Entity\Background::class)->findBackgrounds($gns[0]->getId());
+        $backgrounds = $entityManager->getRepository('\\'.Background::class)->findBackgrounds($gns[0]->getId());
 
         return $this->render('background/print.twig', [
             'backgrounds' => $backgrounds,
@@ -97,7 +94,7 @@ class BackgroundController extends AbstractController
      * Impression de tous les backgrounds de personnage.
      */
     #[Route('/background/print/perso', name: 'background.print.perso')]
-    public function personnagePrintAction(Request $request,  EntityManagerInterface $entityManager)
+    public function personnagePrintAction(Request $request, EntityManagerInterface $entityManager)
     {
         $gns = $entityManager->getRepository('\\'.\App\Entity\Gn::class)->findActive();
         if (0 == count($gns)) {
@@ -121,7 +118,7 @@ class BackgroundController extends AbstractController
     #[Route('/background/add/{groupe}', name: 'background.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
-        $background = new \App\Entity\Background();
+        $background = new Background();
         $background->setGroupe($groupe);
 
         $form = $this->createForm(BackgroundForm::class, $background)
@@ -141,7 +138,7 @@ class BackgroundController extends AbstractController
             $entityManager->persist($background);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le background a été ajouté.');
+            $this->addFlash('success', 'Le background a été ajouté.');
 
             return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], 303);
         }
@@ -155,7 +152,7 @@ class BackgroundController extends AbstractController
      * Suppression d'un background.
      */
     #[Route('/background/{background}/delete', name: 'background.delete')]
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Background $background)
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Background $background)
     {
         $form = $this->createForm(BackgroundDeleteForm::class, $background)
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
@@ -167,7 +164,7 @@ class BackgroundController extends AbstractController
             $entityManager->remove($background);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le background a été supprimé.');
+            $this->addFlash('success', 'Le background a été supprimé.');
 
             return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], 303);
         }
@@ -182,7 +179,7 @@ class BackgroundController extends AbstractController
      * Mise à jour d'un background.
      */
     #[Route('/background/{background}/update', name: 'background.update')]
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Background $background)
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, Background $background)
     {
         $form = $this->createForm(BackgroundForm::class, $background)
             ->add('visibility', 'choice', [
@@ -201,7 +198,7 @@ class BackgroundController extends AbstractController
             $entityManager->persist($background);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le background a été ajouté.');
+            $this->addFlash('success', 'Le background a été ajouté.');
 
             return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], 303);
         }
@@ -216,7 +213,7 @@ class BackgroundController extends AbstractController
      * Détail d'un background.
      */
     #[Route('/background/{background}', name: 'background.detail')]
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Background $background)
+    public function detailAction(Request $request, EntityManagerInterface $entityManager, Background $background)
     {
         return $this->render('background/detail.twig', [
             'background' => $background,
