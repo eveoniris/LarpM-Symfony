@@ -7,13 +7,14 @@
 	<div class="well well-sm clearfix">
 		<ol class="breadcrumb">
 			<li><a href="{{ path('homepage')  }}">Accueil</a></li>
-			<li><a href="{{path('gn.list') }}">Liste des GNs</a></li>
+			<li><a href="{{ path("gn.list") }}">Liste des grandeur nature</a></li>
+			<li class="active">Détail d'un grandeur nature</li>
 			<li class="active">{{ gn.label }}</li>
 		</ol>
 		
 		<blockquote>
 			{% if gn.description %}
-				{{ gn.description|markdown }}
+				{{ gn.description|markdown_to_html }}
 			{% else %}
 				Aucune description
 			{% endif %}

@@ -4,15 +4,14 @@
 
 {% block body %}
 
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-xs-12 col-md-8">
-				{{ include("admin/genre/fragment/form.twig",{
-					'legend': 'Ajout d\'un genre',
-					'action': path('genre.add'), 
-					'form' : form}) }}
-			</div>
-		</div>
-	</div>
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li><a href="{{ path('genre.index') }}">Liste des genres</a></li>
+		<li class="active">Ajout d'un genre</li>
+	</ol>
+
+	{{ include("_partials/form.twig",{
+		'title': 'Ajout d\'un genre',
+		'form' : form}) }}
 	
 {% endblock body %}

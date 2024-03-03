@@ -4,21 +4,29 @@
 
 {% block body %}
 
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-xs-12 col-md-12">
-				<div class="well well-sm">
-				<h4>
-					Gestion des genres
-					<small>
-						( {{ genres|length }} genres )
-					</small>
-				</h4>
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Gestion des genres</li>
+	</ol>
+
+	<div class="well well-sm">
+		<div class="header">
+			<h5>Gestion des genres</h5>
+		</div>
+
+		<p>
+			<small>
+				( {{ genres|length }} genres )
+			</small>
+		</p>
+
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group" role="group">
+				<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ajouter un genre" href="{{ path('genre.add') }}"><i class="fa fa-plus"></i>Ajouter</a>
 			</div>
-			{{ include("admin/genre/fragment/list.twig", {'genres' : genres, 'add' : true}) }}
 		</div>
 	</div>
 
-</div>
+	{{ include("genre/fragment/list.twig", {'genres' : genres, 'add' : true}) }}
 	
 {% endblock %}

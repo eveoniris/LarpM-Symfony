@@ -16,9 +16,13 @@
 	<div class="header">
 		<h5>Liste des participants à {{ gn.label }} avec un billet mais n'ayant pas de personnages</h5>
 	</div>
-		
-	<a href="{{  path('gn.participants.withoutperso.csv', {'gn': gn.id}) }}">Télécharger cette liste au format CSV</a>
-	
+
+	<div class="btn-toolbar" role="toolbar" aria-label="...">
+		<div class="btn-group" role="group" aria-label="...">
+			<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Export CSV" href="{{  path('gn.participants.withoutperso.csv', {'gn': gn.id}) }}"><i class="fa fa-file-csv"></i> Export CSV</a>
+		</div>
+	</div>
+
 	<table class="table table-condensed table-striped table-bordered">
 		<thead>
 			<tr>

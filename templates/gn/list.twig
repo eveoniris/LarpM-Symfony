@@ -1,35 +1,48 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
-{% block title %}Gn{% endblock title %}
+{% block title %}Grandeur nature{% endblock title %}
 
-{% block content %}
+{% block body %}
 
-	<div class="well well-sm clearfix">
-		<ol class="breadcrumb">
-			<li><a href="{{ path('homepage')  }}">Accueil</a></li>
-			<li class="active">Liste des GNs</li>
-		</ol>
-	
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage')  }}">Accueil</a></li>
+		<li class="active">Liste des GNs</li>
+	</ol>
+
+	<div class="well well-sm clearfix bs-component">
+		<div class="header">
+			<h5>Liste des grandeurs nature</h5>
+		</div>
+
 		<blockquote>
 			Voici la liste des jeux organisés par Eve-Oniris. Choisissez celui auquel vous voulez participer. Vous pourrez ainsi acceder aux différentes ressources (Règles, groupes, univers, billeterie) qui composent le jeu.
 		</blockquote>
-		
-		<div class="pull-right">
-			{% if is_granted('ROLE_ADMIN', app.user) %}<a href="{{ path('gn.add') }}" class="btn btn-primary">Ajouter un GN</a>{% endif %}
-		</div>
-	</div>
-		
-	{% for gn in gns %}
-		<div class="panel panel-conan">
-			<div class="panel-heading">
-				{{ gn.label }}
+
+		{% if is_granted('ROLE_ADMIN', app.user) %}
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group" role="group">
+					<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Ajouter un GN" href="{{ path('gn.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+				</div>
 			</div>
+		{% endif %}
+	</div>
+
+	{% include '_partials/pagination.html.twig' %}
+		
+	{% for gn in paginator %}
+		<div class="well well-sm bs-component">
+
+			<div class="header">
+				<h5>
+					{{ gn.label }}
+				</h5>
+			</div>
+
 	  		<div class="panel-body clearfix">
-	  		
 		  		<p>Du <strong>{{ gn.dateDebut|date('d/m/Y') }}</strong> au <strong>{{ gn.dateFin|date('d/m/Y') }}</strong></p>
 		  		 
     			{% if gn.description %}
-					{{ gn.description|markdown }}
+					{{ gn.description|markdown_to_html }}
 				{% else %}
 					<p>Aucune description.</p>
 				{% endif %}
@@ -63,6 +76,8 @@
 			  	
 			</div>
 		</div>
-	{% endfor %}	
+	{% endfor %}
 
-{% endblock content %}
+	{% include '_partials/pagination.html.twig' %}
+
+{% endblock body %}

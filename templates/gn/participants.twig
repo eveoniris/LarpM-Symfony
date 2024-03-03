@@ -11,7 +11,7 @@
 		<li class="active">Liste des participants</li>
 	</ol>
 
-<div class="well well-sm">
+	<div class="well well-sm bs-component">
 
 	<div class="header">
 		<h5>Liste des participants à {{ gn.label }}</h5>
@@ -51,8 +51,8 @@
 		    Montre <strong>{{ paginator.currentPageFirstItem }} - {{ paginator.currentPageLastItem }}</strong>.
 	    </li>
 	 </ul>
-		 
-	{{ paginator|raw }}	
+
+		{% include '_partials/pagination.html.twig' %}
 		
 	<table class="table table-condensed table-striped table-bordered">
 		<thead>
@@ -67,7 +67,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{% for participant in participants %}
+			{% for participant in paginator %}
 				<tr>
 					<td>{{ participant.user.etatCivil.nom }} {{ participant.user.etatCivil.prenom }}</td>
 					<td>{{ participant.user.email }}</td>
@@ -143,8 +143,8 @@
 			{% endfor %}
 		</tbody>
 	</table>
-	
-	{{ paginator|raw }}	
+
+		{% include '_partials/pagination.html.twig' %}
 
 </div>
 

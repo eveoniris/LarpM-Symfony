@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'item')]
@@ -23,9 +24,11 @@ abstract class BaseItem
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Assert\NotBlank()]
     protected ?string $label = '';
 
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Assert\NotBlank()]
     protected ?string $description = '';
 
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
@@ -100,7 +103,7 @@ abstract class BaseItem
     /**
      * Set the value of label.
      */
-    public function setLabel(string $label): static
+    public function setLabel(?string $label): static
     {
         $this->label = $label;
 
@@ -118,7 +121,7 @@ abstract class BaseItem
     /**
      * Set the value of description.
      */
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
 
@@ -174,7 +177,7 @@ abstract class BaseItem
     /**
      * Set the value of special.
      */
-    public function setSpecial(string $special): Item
+    public function setSpecial(?string $special): Item
     {
         $this->special = $special;
 

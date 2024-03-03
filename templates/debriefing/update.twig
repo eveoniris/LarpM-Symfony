@@ -10,15 +10,12 @@
 		<li class="active">Modification d'un debriefing</li>
 	</ol>
 
-	<div class="well bs-component">	
-		{{ form_start(form, {"attr": {"action": path('debriefing.update', {'debriefing': debriefing.id}) }}" method="POST" {{ form_enctype(form) }}  novalidate>
-			<fieldset>
-				<legend>Modification d'un debriefing</legend>
-				
-	
-				{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
+	<div class="well well-sm bs-component">
+		<div class="header">
+			<h5>Modification d'un debriefing</h5>
+		</div>
+
+		{{ form(form) }}
 	</div>
 	
 {% endblock body %}
