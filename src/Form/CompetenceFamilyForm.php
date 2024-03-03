@@ -1,9 +1,11 @@
 <?php
 
-
 namespace App\Form;
 
+use App\Entity\CompetenceFamily;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
@@ -20,12 +22,12 @@ class CompetenceFamilyForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('label', TextType::class, [
             'required' => true,
             'attr' => ['maxlength' => 45],
             'constraints' => [new Length(['max' => 45])],
         ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'required' => false,
                 'constraints' => [new Length(['max' => 450])],
                 'attr' => [
@@ -42,8 +44,13 @@ class CompetenceFamilyForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'class' => \App\Entity\CompetenceFamily::class,
+            'class' => CompetenceFamily::class,
             'sanitize_html' => true,
+            // TinyMce Hide the text field. It's break the form Submit because autovalidate can't allow it
+            // Reason : the user can't fill a hidden field, so it's couldn't be "required"
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

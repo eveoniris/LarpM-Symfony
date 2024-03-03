@@ -10,7 +10,7 @@
 		<li class="active">Ajout d'un personnage</li>
 	</ol>
 
-	<div class="well bs-component">	
+	<div class="well well-sm bs-component">
 		{{ form_start(form, {"attr": {"action": path('personnage.admin.add', {'participant' : participant ? participant.id : null}) }}) }}
 			<fieldset>
 				<legend>Ajout d'un personnage, pour l'utilisateur {{ participant.user }}</legend>

@@ -1,6 +1,8 @@
+( a convertir en tableau )
+
 <ul class="list-group">
 	{%  if add != false %}
-		<a href="{{ path('competence.family.add') }}" class="list-group-item active">
+		<a href="{{ path('competenceFamily.add') }}" class="list-group-item active">
 			<span class="badge"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
 			<h4 class="list-group-item-heading">Ajouter une famille de compétence</h4>
 		</a>
@@ -10,8 +12,8 @@
 			<h4 class="list-group-item-heading">
 				{{ competenceFamily.label }}
 				<div class="btn-group pull-right" role="group" aria-label="...">
-					<a href="{{ path('competence.family.detail', {index: competenceFamily.id}) }}" class="btn btn-primary" role="button">Voir</a>
-				    <a href="{{ path('competence.family.update', {index: competenceFamily.id}) }}" class="btn btn-default" role="button">Modifier</a>
+					<a href="{{ path('competenceFamily.detail', {competenceFamily: competenceFamily.id}) }}" class="btn btn-primary" role="button">Voir</a>
+				    <a href="{{ path('competenceFamily.update', {competenceFamily: competenceFamily.id}) }}" class="btn btn-default" role="button">Modifier</a>
 				</div>
 			</h4>
 			{% if competenceFamily.description %}

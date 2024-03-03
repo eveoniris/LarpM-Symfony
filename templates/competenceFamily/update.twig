@@ -4,17 +4,14 @@
 
 {% block body %}
 
-	
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-xs-12 col-md-8">
-				<a href="{{ path("competence.family") }}">Retour à la liste des familles de compétence</a>
-				{{ include("admin/competenceFamily/fragment/form.twig",{
-					'legend': 'Modification d\'une famille de compétence',
-					'action': path('competence.family.update',{'index': competenceFamily.id}), 
-					'form' : form}) }}
-			</div>
-		</div>
-	</div>
-		
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path('competenceFamily.index') }}">Liste des familles de compétences</a></li>
+        <li class="active">Modification d'une famille compétence</li>
+    </ol>
+
+    {{ include("_partials/form.twig",{
+        'title': 'Modification d\'une famille de compétence',
+        'form' : form}) }}
+
 {% endblock body %}

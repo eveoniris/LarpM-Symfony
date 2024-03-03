@@ -4,17 +4,17 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[Table(name: 'competence_family')]
 #[InheritanceType('SINGLE_TABLE')]
@@ -23,28 +23,30 @@ use Doctrine\ORM\Mapping\Table;
 class BaseCompetenceFamily
 {
     #[Id]
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, columnDefinition: 'INT AUTO_INCREMENT')]
+    #[Column(type: Types::INTEGER, columnDefinition: 'INT AUTO_INCREMENT')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
+    #[Assert\NotBlank()]
     protected ?string $label = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 450, nullable: true)]
+    #[Column(type: Types::STRING, length: 450, nullable: true)]
+    #[Assert\NotBlank()]
     protected ?string $description = null;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<\App\Entity\Technologie>
+     * @var Collection<Technologie>
      */
     #[OneToMany(mappedBy: 'competenceFamily', targetEntity: 'Technologie', cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_family_id', nullable: false)]
-    protected \Doctrine\Common\Collections\Collection $technologies;
+    protected Collection $technologies;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<\App\Entity\Competence>
+     * @var Collection<Competence>
      */
     #[OneToMany(mappedBy: 'competenceFamily', targetEntity: 'Competence', cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_family_id', nullable: false)]
-    protected \Doctrine\Common\Collections\Collection $competences;
+    protected Collection $competences;
 
     public function __construct()
     {

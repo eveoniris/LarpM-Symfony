@@ -4,21 +4,21 @@
 
 {% block body %}
 
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-xs-12 col-md-12">
-			<div class="well well-sm">
-				<h4>
-					Gestion des familles de compétences
-					<small>
-						( {{ competenceFamilies|length }} familles )
-					</small>
-				</h4>
-			</div>
-			{{ include("competenceFamily/fragment/list.twig", {'competenceFamilies' : competenceFamilies, 'add' : true}) }}
-		</div>
-	</div>
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li class="active"><a href="{{ path('competenceFamily.index') }}">Liste des familles de compétences</a></li>
+    </ol>
 
-</div>
-	
+    <div class="well well-sm bs-component">
+        <div class="header">
+            <h5>Liste des familles de compétences</h5>
+        </div>
+
+        <div class="well well-sm">
+            {{ competenceFamilies|length }} familles
+        </div>
+
+        {{ include("competenceFamily/fragment/list.twig", {'competenceFamilies' : competenceFamilies, 'add' : true}) }}
+    </div>
+
 {% endblock %}
