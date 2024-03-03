@@ -1,0 +1,31 @@
+<div class="well well-sm bs-component">
+    <div class="header">
+        <h5>{{ title }}</h5>
+    </div>
+
+        {% if data is defined %}
+            <div class="card my-4">
+                {% if data.header is defined %}
+                    <div class="card-header">{{ data.header }}</div>
+                {% endif %}
+                <div class="card-body">
+                    {% if data.title is defined %}
+                        <h5 class="card-title">{{ data.title }}</h5>
+                    {% endif %}
+                    {% if data.subtitle is defined %}
+                        <h6 class="card-subtitle mb-2 text-body-secondary">{{ data.subtitle }}</h6>
+                    {% endif %}
+                    {% if data.content is defined %}
+                        <p class="card-text">
+                            {{ data.content|markdown_to_html }}
+                        </p>
+                    {% endif %}
+                </div>
+                {% if data.footer is defined %}
+                    <div class="card-footer">{{ data.footer }}</div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+    {{ form(form) }}
+</div>

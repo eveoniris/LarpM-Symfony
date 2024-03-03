@@ -1,16 +1,22 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
-{% block title %}Gn -- {{ gn.label }}{% endblock title %}
+{% block title %}Grandeur nature -- {{ gn.label }}{% endblock title %}
 
-{% block content %}
-	<div class="well well-sm clearfix">
-		<ol class="breadcrumb">
-			<li><a href="{{ path('homepage')  }}">Accueil</a></li>
-			<li><a href="{{path('gn.list') }}">Liste des GNs</a></li>
-			<li><a href="{{path('gn.detail', {'gn': gn.id}) }}">{{ gn.label }}</a></li>
-			<li class="active">Les groupes</li>
-		</ol>
-		
+{% block body %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li><a href="{{ path("gn.list") }}">Liste des grandeur nature</a></li>
+		<li><a href="{{ path('gn.detail', {'gn':gn.id}) }}">{{ gn.label }}</a></li>
+		<li class="active">Liste des groupes réservés</li>
+	</ol>
+
+	<div class="well well-sm clearfix bs-component">
+
+		<div class="header">
+			<h5>Liste des groupes réservés pour {{ gn.label }} ({{ groupes|length }})</h5>
+		</div>
+
 		<blockquote>
 			Tous les groupes prévu sur {{ gn.label }}
 			<small>
@@ -30,7 +36,7 @@
 		{% endif %}
 	</div>
 	
-	<div class="well well-sm">
+	<div class="well well-sm bs-component">
 		{% if is_granted('ROLE_ADMIN', app.user) %}
 			Les groupes de PNJ (visible uniquement par ADMIN)
 			<ul class="list-group">
@@ -59,9 +65,9 @@
 						{% else %}
 							Aucun chef de groupe, impossible de le/la contacter.
 						{% endif %}
-					<p class="list-group-item-text">{{ groupe.description|markdown }}</p>
+					<p class="list-group-item-text">{{ groupe.description|markdown_to_html }}</p>
 				</div>
 			{% endfor %}
 		</div>
 	</div>
-{% endblock content %}
+{% endblock body %}

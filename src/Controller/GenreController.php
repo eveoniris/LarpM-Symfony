@@ -1,24 +1,28 @@
 <?php
 
-
 namespace App\Controller;
 
+use App\Entity\Genre;
 use App\Form\GenreForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_REGLE')]
+#[IsGranted('ROLE_REGLE')]
 class GenreController extends AbstractController
 {
     /**
      * Présentation des genres.
      */
     #[Route('/genre', name: 'genre.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(EntityManagerInterface $entityManager): Response
     {
-        $genres = $entityManager->getRepository('\\'.\App\Entity\Genre::class)->findAll();
+        $genres = $entityManager->getRepository(Genre::class)->findAll();
 
         return $this->render('genre/index.twig', ['genres' => $genres]);
     }
@@ -26,13 +30,14 @@ class GenreController extends AbstractController
     /**
      * Ajout d'un genre.
      */
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/genre/add', name: 'genre.add')]
+    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $genre = new \App\Entity\Genre();
+        $genre = new Genre();
 
         $form = $this->createForm(GenreForm::class, $genre)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -42,11 +47,13 @@ class GenreController extends AbstractController
             $entityManager->persist($genre);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le genre a été ajouté.');
+            $this->addFlash('success', 'Le genre a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('genre', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
+            }
+
+            if ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('genre.add', [], 303);
             }
         }
@@ -59,33 +66,28 @@ class GenreController extends AbstractController
     /**
      * Detail d'un genre.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/genre/{genre}', name: 'genre.detail')]
+    public function detailAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] ?Genre $genre): RedirectResponse|Response
     {
-        $id = $request->get('index');
-
-        $genre = $entityManager->find('\\'.\App\Entity\Genre::class, $id);
-
-        if ($genre) {
+        if (null !== $genre) {
             return $this->render('genre/detail.twig', ['genre' => $genre]);
-        } else {
-           $this->addFlash('error', 'Le genre n\'a pas été trouvé.');
-
-            return $this->redirectToRoute('genre');
         }
+
+        $this->addFlash('error', 'Le genre n\'a pas été trouvé.');
+        $this->createNotFoundException(); // Todo render 404 ?
+
+        return $this->redirectToRoute('genre');
     }
 
     /**
      * Met à jour un genre.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/genre/{genre}/update', name: 'genre.update')]
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] ?Genre $genre): RedirectResponse|Response
     {
-        $id = $request->get('index');
-
-        $genre = $entityManager->find('\\'.\App\Entity\Genre::class, $id);
-
         $form = $this->createForm(GenreForm::class, $genre)
-            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -95,11 +97,11 @@ class GenreController extends AbstractController
             if ($form->get('update')->isClicked()) {
                 $entityManager->persist($genre);
                 $entityManager->flush();
-               $this->addFlash('success', 'Le genre a été mis à jour.');
+                $this->addFlash('success', 'Le genre a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($genre);
                 $entityManager->flush();
-               $this->addFlash('success', 'Le genre a été supprimé.');
+                $this->addFlash('success', 'Le genre a été supprimé.');
             }
 
             return $this->redirectToRoute('genre');

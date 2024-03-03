@@ -4,21 +4,19 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('document') }}">Liste des documents</a></li>
-		<li class="active">Suppression d'un document</li>
-	</ol>
-	
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('document.delete', {'document':document.id}) }}) }}
-			<fieldset>
-				<legend>Suppression d'un document</legend>
-				{{ document.code }} -- {{ document.titre }}
-				
-				{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
-	</div>
-	
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path('document') }}">Liste des documents</a></li>
+        <li class="active">Suppression d'un document</li>
+    </ol>
+
+    <div class="well well-sm bs-component">
+        <div class="header">
+            <h5>Suppression d'un document</h5>
+
+            <p>{{ document.code }} -- {{ document.titre }}</p>
+        </div>
+        {{ form(form) }}
+    </div>
+
 {% endblock %}

@@ -10,14 +10,12 @@
 		<li class="active">Ajouter une connaissance</li>
 	</ol>
 	
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('connaissance.add') }}) }}
-			<fieldset>
-				<legend>Ajout d'une connaissance</legend>
-					
-					{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
+	<div class="well well-sm bs-component">
+		<div class="header">
+			<h5>Ajout d'une connaissance</h5>
+
+			{{ form(form) }}
+		</div>
 	</div>
 				
 {% endblock body %}

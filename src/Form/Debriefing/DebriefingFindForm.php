@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Form\Debriefing;
 
 use Symfony\Component\Form\AbstractType;

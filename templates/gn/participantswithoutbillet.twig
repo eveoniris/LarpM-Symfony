@@ -11,20 +11,24 @@
 		<li class="active">Liste des participants sans billets</li>
 	</ol>
 
-<div class="well well-sm">
+	<div class="well well-sm bs-component">
 
 	<div class="header">
 		<h5>Liste des participants à {{ gn.label }} n'ayant pas encore de billets</h5>
 	</div>
-		
-	<a href="{{  path('gn.participants.withoutbillet.csv', {'gn': gn.id}) }}">Télécharger cette liste au format CSV</a>
-	
+
+	<div class="btn-toolbar" role="toolbar" aria-label="...">
+		<div class="btn-group" role="group" aria-label="...">
+			<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Export CSV" href="{{  path('gn.participants.withoutbillet.csv', {'gn': gn.id}) }}"><i class="fa fa-file-csv"></i> Export CSV</a>
+		</div>
+	</div>
+
 	<table class="table table-condensed table-striped table-bordered">
 		<thead>
 			<tr>
 				<th>Participant</th>
 				<th>Email</th>
-				<th />
+				<th>Action</th>
 			</tr>
 		</thead>
 		<tbody>

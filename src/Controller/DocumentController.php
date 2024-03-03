@@ -4,12 +4,14 @@
 namespace App\Controller;
 
 use App\Entity\Document;
+use DateTime;
 use JasonGrimes\Paginator;
 use App\Form\DocumentDeleteForm;
 use App\Form\DocumentFindForm;
 use App\Form\DocumentForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -43,7 +45,7 @@ class DocumentController extends AbstractController
             $value = $data['value'];
         }
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Document::class);
+        $repo = $entityManager->getRepository('\\'. Document::class);
         $documents = $repo->findList(
             $type,
             $value,
@@ -73,7 +75,7 @@ class DocumentController extends AbstractController
      */
     public function printAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $documents = $entityManager->getRepository('\\'.\App\Entity\Document::class)->findAllOrderedByCode();
+        $documents = $entityManager->getRepository('\\'. Document::class)->findAllOrderedByCode();
 
         return $this->render('document/print.twig', ['documents' => $documents]);
     }
@@ -83,7 +85,7 @@ class DocumentController extends AbstractController
      */
     public function downloadAction(Request $request,  EntityManagerInterface $entityManager): void
     {
-        $documents = $entityManager->getRepository('\\'.\App\Entity\Document::class)->findAllOrderedByCode();
+        $documents = $entityManager->getRepository('\\'. Document::class)->findAllOrderedByCode();
 
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename=eveoniris_documents_'.date('Ymd').'.csv');
@@ -172,8 +174,8 @@ class DocumentController extends AbstractController
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(DocumentForm::class, new Document())
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -231,13 +233,13 @@ class DocumentController extends AbstractController
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Document $document)
     {
         $form = $this->createForm(DocumentForm::class, $document)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $document = $form->getData();
-            $document->setUpdateDate(new \DateTime('NOW'));
+            $document->setUpdateDate(new DateTime('NOW'));
 
             $files = $request->files->get($form->getName());
             if ($files['document']) {
@@ -278,7 +280,7 @@ class DocumentController extends AbstractController
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Document $document)
     {
         $form = $this->createForm(DocumentDeleteForm::class, $document)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

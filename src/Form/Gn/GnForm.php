@@ -2,7 +2,13 @@
 
 namespace App\Form\Gn;
 
+use App\Entity\Gn;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -13,10 +19,10 @@ class GnForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('label', TextType::class, [
             'required' => true,
         ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'label' => 'Description du GN',
                 'required' => false,
                 'attr' => [
@@ -24,27 +30,27 @@ class GnForm extends AbstractType
                     'row' => 9,
                 ],
             ])
-            ->add('xpCreation', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            ->add('xpCreation', IntegerType::class, [
                 'label' => 'Point d\'expérience à la création d\'un personnage',
                 'required' => false,
             ])
-            ->add('dateDebut', \Symfony\Component\Form\Extension\Core\Type\DateTimeType::class, [
+            ->add('dateDebut', DateTimeType::class, [
                 'label' => 'Date et heure de début du jeu',
                 'required' => false,
             ])
-            ->add('dateFin', \Symfony\Component\Form\Extension\Core\Type\DateTimeType::class, [
+            ->add('dateFin', DateTimeType::class, [
                 'label' => 'Date et heure de fin du jeu',
                 'required' => false,
             ])
-            ->add('dateInstallationJoueur', \Symfony\Component\Form\Extension\Core\Type\DateTimeType::class, [
+            ->add('dateInstallationJoueur', DateTimeType::class, [
                 'label' => 'Date et heure du début de l\'accueil des joueurs',
                 'required' => false,
             ])
-            ->add('dateFinOrga', \Symfony\Component\Form\Extension\Core\Type\DateTimeType::class, [
+            ->add('dateFinOrga', DateTimeType::class, [
                 'label' => 'Date limite pour libérer le site',
                 'required' => false,
             ])
-            ->add('adresse', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('adresse', TextareaType::class, [
                 'label' => 'Adresse du site',
                 'required' => false,
                 'attr' => [
@@ -52,7 +58,7 @@ class GnForm extends AbstractType
                     'row' => 9,
                 ],
             ])
-            ->add('conditionsInscription', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('conditionsInscription', TextareaType::class, [
                 'label' => "Conditions d'inscription",
                 'required' => false,
                 'attr' => [
@@ -60,11 +66,11 @@ class GnForm extends AbstractType
                     'rows' => 18,
                 ],
             ])
-            ->add('billetterie', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('billetterie', TextareaType::class, [
                 'label' => 'Code de la billetterie',
                 'required' => false,
             ])
-            ->add('actif', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('actif', ChoiceType::class, [
                 'label' => 'GN actif ?',
                 'required' => true,
                 'choices' => [
@@ -80,8 +86,12 @@ class GnForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            //'data_class' => '\\'.\App\Entity\Gn::class,
-           // 'class' => '\\'.\App\Entity\Gn::class,
+            'data_class' => Gn::class,
+            // TinyMce Hide the text field. It's break the form Submit because autovalidate can't allow it
+            // Reason : the user can't fill a hidden field, so it's couldn't be "required"
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

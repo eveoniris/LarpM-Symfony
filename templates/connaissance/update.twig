@@ -9,16 +9,14 @@
 		<li><a href="{{ path('connaissance.list') }}">Liste des connaissances</a></li>
 		<li class="active">Modifier une connaissance</li>
 	</ol>
-	
-	
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('connaissance.update', {'connaissance': connaissance.id}) }}) }}
-			<fieldset>
-				<legend>Modification d'une connaissance</legend>
-					
-					{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
+
+
+	<div class="well well-sm bs-component">
+		<div class="header">
+			<h5>Modification d'une connaissance</h5>
+
+			{{ form(form) }}
+		</div>
 	</div>
 				
 {% endblock body %}
