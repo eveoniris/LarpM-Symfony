@@ -4,20 +4,28 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("groupe.admin.list") }}">Liste des groupes</a></li>
-		<li><a href="{{ path("groupe.detail", {'index': groupe.id}) }}">{{ groupe.nom }}</a></li>
-		<li class="active">Ajouter un territoire à un groupe</li>
-	</ol>
-	
-	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('groupe.territoire.add',{'groupe': groupe.id}) }}" method="POST">
-			<div class="form-group">
-				<p>Attention !  Si le territoire choisi est déjà contrôlé par un autre groupe, celui-ci perdra le contrôle du territoire</p>
-			</div>
-			
-			{{ form(form) }}
-		{{ form_end(form) }}
-	</div>
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path("groupe.admin.list") }}">Liste des groupes</a></li>
+        <li><a href="{{ path("groupe.detail", {'index': groupe.id}) }}">{{ groupe.nom }}</a></li>
+        <li class="active">Ajouter un territoire à un groupe</li>
+    </ol>
+
+    {% set cardContent %}
+        <div class="card mb-3 border-warning">
+            <div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
+            <div class="card-body">
+                <p class="card-text">
+                    Si le territoire choisi est déjà contrôlé par un autre groupe, celui-ci perdra le contrôle du
+                    territoire
+                </p>
+            </div>
+        </div>
+    {% endset %}
+
+    {{ include("_partials/form.twig",{
+        'title': 'Ajouter un territoire à un groupe',
+        'data': {'content': cardContent},
+        'form' : form}) }}
+
 {% endblock %}

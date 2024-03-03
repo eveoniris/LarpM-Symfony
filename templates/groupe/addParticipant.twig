@@ -4,18 +4,16 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("groupe.admin.list") }}">Liste des groupes</a></li>
-		<li><a href="{{ path("groupe.detail", {'index': groupe.id}) }}">{{ groupe.nom }}</a></li>
-		<li class="active">Ajouter un participant</li>
-	</ol>
-	
-	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('groupe.admin.participant.add',{'groupe': groupe.id}) }}" method="POST">
-			<p>Ce formulaire ne liste que les utilisateurs n'étant pas inscrit dans un groupe</p>
-					
-			{{ form(form) }}
-		{{ form_end(form) }}
-	</div>
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path("groupe.admin.list") }}">Liste des groupes</a></li>
+        <li><a href="{{ path("groupe.detail", {'index': groupe.id}) }}">{{ groupe.nom }}</a></li>
+        <li class="active">Ajouter un participant</li>
+    </ol>
+
+    {{ include("_partials/form.twig",{
+        'title': 'Ajout d\'un participant',
+        'data': {'content': 'Ce formulaire ne liste que les utilisateurs n\'étant pas inscrit dans un groupe'}
+        'form' : form}) }}
+
 {% endblock %}
