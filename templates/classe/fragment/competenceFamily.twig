@@ -45,6 +45,7 @@
                         <div class="card-text mb-0">
                             {% for competenceFamily in classe.competenceFamilyCreations %}
                                 <a class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0"
+                                   data-bs-toggle="tooltip" data-bs-title="{{ competenceFamily.description|striptags }}" data-bs-placement="bottom"
                                    href="{{ path('competenceFamily.detail', {'competenceFamily': competenceFamily.id }) }}">{{ competenceFamily.label }}</a>
                             {% endfor %}
                         </div>
@@ -70,6 +71,7 @@
                         <div class="card-text">
                             {% for competenceFamily in classe.competenceFamilyFavorites %}
                                 <a class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0"
+                                   data-bs-toggle="tooltip" data-bs-title="{{ competenceFamily.description|striptags }}" data-bs-placement="bottom"
                                    href="{{ path('competenceFamily.detail', {'competenceFamily': competenceFamily.id }) }}">{{ competenceFamily.label }}</a>
                             {% endfor %}
                         </div>
@@ -95,8 +97,9 @@
                     </div>
                     <div class="card-body">
                         <div class="card-text">
-                            {% for competenceFamily in classe.competenceFamilyFavorites %}
+                            {% for competenceFamily in classe.competenceFamilyNormales %}
                                 <a class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0"
+                                   data-bs-toggle="tooltip" data-bs-title="{{ competenceFamily.description|striptags }}" data-bs-placement="bottom"
                                    href="{{ path('competenceFamily.detail', {'competenceFamily': competenceFamily.id }) }}">{{ competenceFamily.label }}</a>
                             {% endfor %}
                         </div>

@@ -1,19 +1,18 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Competence;
-use App\Repository\CompetenceRepository;
-use App\Form\CompetenceForm;
 use App\Form\CompetenceFindForm;
+use App\Form\CompetenceForm;
 use App\Form\Entity\BaseSearch;
+use App\Repository\CompetenceRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
-
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class CompetenceController extends AbstractController
 {
@@ -25,7 +24,7 @@ class CompetenceController extends AbstractController
     {
         $form = $this->createForm(CompetenceFindForm::class, new BaseSearch());
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $value = $data->getValue();
@@ -37,7 +36,7 @@ class CompetenceController extends AbstractController
             ->addOrderBy('cf.label')
             ->addOrderBy('l.index')
         ;
-        
+
         if (!$this->isGranted('ROLE_REGLE')) {
             $query->andWhere('c.level = 1');
         }
@@ -53,7 +52,7 @@ class CompetenceController extends AbstractController
         );
 
         return $this->render(
-            'competence/list.twig', 
+            'competence/list.twig',
             [
                 'paginator' => $paginator,
                 'form' => $form->createView(),
@@ -64,7 +63,7 @@ class CompetenceController extends AbstractController
     /**
      * Liste des perso ayant cette compétence.
      */
-    public function persoAction(Request $request,  EntityManagerInterface $entityManager)
+    public function persoAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $competence = $request->get('competence');
 
@@ -74,9 +73,9 @@ class CompetenceController extends AbstractController
     /**
      * Liste du matériel necessaire par compétence.
      */
-    public function materielAction(Request $request,  EntityManagerInterface $entityManager)
+    public function materielAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Competence::class);
+        $repo = $entityManager->getRepository('\\'.Competence::class);
         $competences = $repo->findAllOrderedByLabel();
 
         return $this->render('competence/materiel.twig', ['competences' => $competences]);
@@ -85,9 +84,11 @@ class CompetenceController extends AbstractController
     /**
      * Ajout d'une compétence.
      */
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/competence/add', name: 'competence.add')]
+    #[IsGranted('ROLE_REGLE')]
+    public function addAction(Request $request, EntityManagerInterface $entityManager): \Symfony\Component\HttpFoundation\RedirectResponse|Response
     {
-        $competence = new \App\Entity\Competence();
+        $competence = new Competence();
 
         // l'identifiant de la famille de competence peux avoir été passé en paramètre
         // pour initialiser le formulaire avec une valeur par défaut.
@@ -130,9 +131,9 @@ class CompetenceController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                    $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $this->redirectToRoute('competence.family', [], 303);
+                    return $this->redirectToRoute('competenceFamily.index', [], 303);
                 }
 
                 $documentFilename = hash('md5', $competence->getLabel().$filename.time()).'.'.$extension;
@@ -145,7 +146,7 @@ class CompetenceController extends AbstractController
             $entityManager->persist($competence);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La compétence a été ajoutée.');
+            $this->addFlash('success', 'La compétence a été ajoutée.');
 
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('competence.detail', ['competence' => $competence->getId()]);
@@ -171,7 +172,7 @@ class CompetenceController extends AbstractController
     /**
      * Met à jour une compétence.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    public function updateAction(Request $request, EntityManagerInterface $entityManager): \Symfony\Component\HttpFoundation\RedirectResponse|Response
     {
         $competence = $request->get('competence');
         $attributeRepos = $entityManager->getRepository('\\'.\App\Entity\AttributeType::class);
@@ -193,9 +194,9 @@ class CompetenceController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                    $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
-                    return $this->redirectToRoute('competence.family', [], 303);
+                    return $this->redirectToRoute('competenceFamily.index', [], 303);
                 }
 
                 $documentFilename = hash('md5', $competence->getLabel().$filename.time()).'.'.$extension;
@@ -209,13 +210,13 @@ class CompetenceController extends AbstractController
                 $competence->setCompetenceAttributesAsString($request->get('competenceAttributesAsString'), $app['orm.em'], $attributeRepos);
                 $entityManager->persist($competence);
                 $entityManager->flush();
-               $this->addFlash('success', 'La compétence a été mise à jour.');
+                $this->addFlash('success', 'La compétence a été mise à jour.');
 
                 return $this->redirectToRoute('competence.detail', ['competence' => $competence->getId()]);
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($competence);
                 $entityManager->flush();
-               $this->addFlash('success', 'La compétence a été supprimée.');
+                $this->addFlash('success', 'La compétence a été supprimée.');
 
                 return $this->redirectToRoute('competence');
             }
@@ -231,13 +232,14 @@ class CompetenceController extends AbstractController
     /**
      * Retire le document d'une competence.
      */
-    public function removeDocumentAction(Request $request,  EntityManagerInterface $entityManager, Competence $competence)
+    #[IsGranted('ROLE_REGLE')]
+    public function removeDocumentAction(Request $request, EntityManagerInterface $entityManager, Competence $competence): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $competence->setDocumentUrl(null);
 
         $entityManager->persist($competence);
         $entityManager->flush();
-       $this->addFlash('success', 'La compétence a été mise à jour.');
+        $this->addFlash('success', 'La compétence a été mise à jour.');
 
         return $this->redirectToRoute('competence');
     }
@@ -245,7 +247,7 @@ class CompetenceController extends AbstractController
     /**
      * Téléchargement du document lié à une compétence.
      */
-    public function getDocumentAction(Request $request,  EntityManagerInterface $entityManager)
+    public function getDocumentAction(Request $request, EntityManagerInterface $entityManager)
     {
         $document = $request->get('document');
         $competence = $request->get('competence');
@@ -253,7 +255,7 @@ class CompetenceController extends AbstractController
         // on ne peux télécharger que les documents des compétences que l'on connait
         if (!$app['security.authorization_checker']->isGranted('ROLE_REGLE') && $this->getUser()->getPersonnage()) {
             if (!$this->getUser()->getPersonnage()->getCompetences()->contains($competence)) {
-               $this->addFlash('error', "Vous n'avez pas les droits necessaires");
+                $this->addFlash('error', "Vous n'avez pas les droits necessaires");
             }
         }
 
