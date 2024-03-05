@@ -3,15 +3,16 @@
 
 namespace App\Form;
 
+use App\Entity\Competence;
+use App\Entity\CompetenceFamily;
+use App\Entity\Level;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\CompetenceForm.
- *
- * @author kevin
- */
 class CompetenceForm extends AbstractType
 {
     /**
@@ -19,30 +20,30 @@ class CompetenceForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('competenceFamily', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+        $builder->add('competenceFamily', EntityType::class, [
             'label' => 'Famille',
             'required' => true,
-            'class' => \App\Entity\CompetenceFamily::class,
+            'class' => CompetenceFamily::class,
             'choice_label' => 'label',
         ])
-            ->add('level', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('level', EntityType::class, [
                 'label' => 'Niveau',
                 'required' => true,
-                'class' => \App\Entity\Level::class,
+                'class' => Level::class,
                 'choice_label' => 'label',
             ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
                 ],
             ])
-            ->add('document', 'file', [
+            ->add('document', FileType::class, [
                 'label' => 'Téléversez un document',
                 'required' => true,
                 'mapped' => false,
             ])
-            ->add('materiel', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('materiel', TextareaType::class, [
                 'label' => 'Matériel necessaire',
                 'required' => false,
                 'attr' => [
@@ -57,7 +58,7 @@ class CompetenceForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'class' => \App\Entity\Competence::class,
+            'class' => Competence::class,
         ]);
     }
 
