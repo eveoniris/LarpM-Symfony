@@ -4,15 +4,8 @@
 
 {% block body %}
 
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-xs-12 col-md-8">
-				{{ include("admin/competenceFamily/fragment/form.twig",{
-					'legend': 'Ajout d\'une famille de compétence',
-					'action': path('competenceFamily.add'),
-					'form' : form}) }}
-			</div>
-		</div>
-	</div>
+	{{ include("_partials/form.twig",{
+		'title': 'Ajout d\'une famille de compétence',
+		'form' : form}) }}
 	
 {% endblock body %}

@@ -6,10 +6,10 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-12 col-md-8">
-				<a href="{{ path("competence") }}">Retour à la liste des compétences</a>
-				{{ include("admin/competence/fragment/form.twig",{
+				<a href="{{ path("competence.list") }}">Retour à la liste des compétences</a>
+				{{ include("competence/fragment/form.twig",{
 					'legend': 'Ajout d\'une compétence',
-					'action': path('competence.add'), 
+					'action': path('competence.add'),
 					'form' : form,
 					'isNew': true}) }}
 			</div>
