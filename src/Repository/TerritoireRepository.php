@@ -88,10 +88,8 @@ class TerritoireRepository extends BaseRepository
 
         $qb->select('distinct t');
         $qb->from(\App\Entity\Territoire::class, 't');
-        if (array_key_exists('tgr.id', $criteria)) {
-            $qb->join('t.groupe', 'tgr');
-        }
-
+        
+        $qb->join('t.groupe', 'tgr');
         $qb->join('t.territoire', 'tpr');
         $qb->leftjoin('tpr.territoire', 'tp');
         $qb->andWhere('t.territoire IS NOT NULL');
@@ -114,7 +112,7 @@ class TerritoireRepository extends BaseRepository
 
         $defaultEntityAlias = strstr((string) $order['by'], '.') ? '' : 't.';
         $qb->orderBy($defaultEntityAlias.$order['by'], $order['dir']);
-
+        
         return $qb->getQuery();
     }
 

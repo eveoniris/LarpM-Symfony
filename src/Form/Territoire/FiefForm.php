@@ -24,7 +24,7 @@ class FiefForm extends AbstractType
             'attr' => [
                 'placeholder' => 'Votre recherche',
             ],
-        ])
+            ])
             ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => false,
                 'choices' => [
@@ -37,18 +37,21 @@ class FiefForm extends AbstractType
                 'label' => 'Par pays',
                 'class' => \App\Entity\Territoire::class,
                 'choices' => $options['listePays'],
+                'placeholder' => 'Filtrer par pays',
             ])
             ->add('province', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Par province',
                 'class' => \App\Entity\Territoire::class,
                 'choices' => $options['listeProvinces'],
+                'placeholder' => 'Filtrer par province',
             ])
             ->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Par groupe',
                 'class' => \App\Entity\Groupe::class,
                 'choices' => $options['listeGroupes'],
+                'placeholder' => 'Filtrer par groupe',
             ]);
     }
 
