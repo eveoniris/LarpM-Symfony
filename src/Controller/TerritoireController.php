@@ -96,7 +96,7 @@ class TerritoireController extends AbstractController
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) ($request->get('limit') ?: 500);
+        $limit = (int) ($request->get('limit') ?: 50);
         $page = (int) ($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
@@ -181,7 +181,9 @@ class TerritoireController extends AbstractController
         //);
 
         $paginator = $repo->findPaginatedQuery(
-            $fiefs, $this->getRequestLimit(10), $this->getRequestPage()
+            $fiefs, 
+            $this->getRequestLimit(),
+            $this->getRequestPage()
         );
 
         return $this->render('territoire/fief.twig', [
@@ -231,18 +233,8 @@ class TerritoireController extends AbstractController
     /**
      * Detail d'un territoire pour les joueurs.
      */
-    #[Route('/territoire/{territoire}/detailJoueur', name: 'territoire.detailJoueur')]
+    #[Route('/territoire/{territoire}', name: 'territoire.detail')]
     public function detailJoueurAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): Response
-    {
-        return $this->render('territoire/detail.twig', ['territoire' => $territoire]);
-    }
-
-    /**
-     * Detail d'un territoire.
-     */
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
-    #[Route('/admin/territoire/{territoire}/detail', name: 'territoire.admin.detail')]
-    public function detailAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
     {
         return $this->render('territoire/detail.twig', ['territoire' => $territoire]);
     }

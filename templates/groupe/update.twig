@@ -10,7 +10,7 @@
 				<a href="{{ path("groupe") }}">Retour à la liste des groupes</a>
 				{{ include("groupe/fragment/form.twig",{
 					'legend': 'Modification d\'un groupe',
-					'action': path('groupe.update',{'index': groupe.id}), 
+					'action': path('groupe.update',{'groupe': groupe.id}), 
 					'form' : form}) }}
 			</div>
 		</div>

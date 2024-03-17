@@ -12,7 +12,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * @author kevin
  */
-class GroupFindForm extends AbstractType
+class GroupeFindForm extends AbstractType
 {
     /**
      * Construction du formulaire.
@@ -28,8 +28,8 @@ class GroupFindForm extends AbstractType
             ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [
-                    'numero' => 'Numéro',
-                    'nom' => 'Nom du groupe',
+                    'Numéro' => 'numero',
+                    'Nom du groupe' => 'nom',
                 ],
             ]);
     }

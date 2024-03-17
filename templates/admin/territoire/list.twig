@@ -43,7 +43,7 @@
 						<h4 class="list-group-item-heading">
 							{{ territoire.nom }} ({% if territoire.appelation %}{{ territoire.appelation.label }}{% else %}<span class="text-warning">Attention, ce territoire n'a pas d'appelation</span>{% endif %})
 							<div class="btn-group pull-right" role="group" aria-label="...">
-							    <a href="{{ path('territoire.admin.detail', {'territoire': territoire.id}) }}" class="btn btn-primary" role="button">Détail</a>
+							    <a href="{{ path('territoire.detail', {'territoire': territoire.id}) }}" class="btn btn-primary" role="button">Détail</a>
 							    <a href="{{ path('territoire.admin.updateCibles', {'territoire': territoire.id}) }}" class="btn btn-default" role="button">Cibles</a> 
 							    <a href="{{ path('territoire.admin.update', {'territoire': territoire.id}) }}" class="btn btn-default" role="button">Modifier</a>
 							    <a href="{{ path('territoire.admin.updateStrategie', {'territoire': territoire.id}) }}" class="btn btn-default" role="button">Stratégie</a>
@@ -78,7 +78,7 @@
 							<h4 class="list-group-item-heading">
 								{{ region.nom }} ({% if region.appelation %}{{ region.appelation.label }}{% else %}<span class="text-warning">Attention, ce territoire n'a pas d'appelation</span>{% endif %})
 								<div class="btn-group pull-right" role="group" aria-label="...">
-									<a href="{{ path('territoire.admin.detail', {'territoire': region.id}) }}" class="btn btn-primary" role="button">Détail</a>
+									<a href="{{ path('territoire.detail', {'territoire': region.id}) }}" class="btn btn-primary" role="button">Détail</a>
 								    <a href="{{ path('territoire.admin.update', {'territoire': region.id}) }}" class="btn btn-default" role="button">Modifier</a>
 								    <a href="{{ path('territoire.admin.updateStrategie', {'territoire': region.id}) }}" class="btn btn-default" role="button">Stratégie</a>
 								</div>
@@ -112,7 +112,7 @@
 								<h4 class="list-group-item-heading">
 									{{ fief.nom }} ({% if fief.appelation %}{{ fief.appelation.label }}{% else %}<span class="text-warning">Attention, ce territoire n'a pas d'appelation</span>{% endif %})
 									<div class="btn-group pull-right" role="group" aria-label="...">
-										<a href="{{ path('territoire.admin.detail', {'territoire': fief.id}) }}" class="btn btn-primary" role="button">Détail</a>
+										<a href="{{ path('territoire.detail', {'territoire': fief.id}) }}" class="btn btn-primary" role="button">Détail</a>
 									    <a href="{{ path('territoire.admin.update', {'territoire': fief.id}) }}" class="btn btn-default" role="button">Modifier</a>
 									    <a href="{{ path('territoire.admin.updateStrategie', {'territoire': fief.id}) }}" class="btn btn-default" role="button">Stratégie</a>
 									</div>

@@ -107,7 +107,7 @@
 	    		<p class="list-group-item-text">
 	    			<ul>
 		    			{% for territoire in religion.territoirePrincipaux %}
-		    				<li><a href="{{ path('territoire.admin.detail', {'territoire': territoire.id}) }}">{{ territoire.nom }}</a></li>
+		    				<li><a href="{{ path('territoire.detail', {'territoire': territoire.id}) }}">{{ territoire.nom }}</a></li>
 		    			{% else %}
 		    				<li>Cette religion n'est le culte principal d'aucun territoire</li>
 		    			{% endfor %}
@@ -120,7 +120,7 @@
 	    		<p class="list-group-item-text">
 	    			<ul>
 		    			{% for territoire in religion.territoireSecondaires %}
-		    				<li><a href="{{ path('territoire.admin.detail', {'territoire': territoire.id}) }}">{{ territoire.nom }}</a></li>
+		    				<li><a href="{{ path('territoire.detail', {'territoire': territoire.id}) }}">{{ territoire.nom }}</a></li>
 		    			{% else %}
 		    				<li>Cette religion n'est le culte secondaire d'aucun territoire</li>
 		    			{% endfor %}
