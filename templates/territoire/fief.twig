@@ -95,8 +95,8 @@
 		<tbody>
 		{% for fief in paginator %}
 			<tr>
-				<td><a href="{{ path('territoire.admin.detail', {'territoire': fief.id}) }}">{{ fief.id }}</a></td>
-				<td><a href="{{ path('territoire.admin.detail', {'territoire': fief.id}) }}">{{ fief.nom }}</a></td>
+				<td><a href="{{ path('territoire.detail', {'territoire': fief.id}) }}">{{ fief.id }}</a></td>
+				<td><a href="{{ path('territoire.detail', {'territoire': fief.id}) }}">{{ fief.nom }}</a></td>
 				<td>
 					{% if fief.territoire.territoire %}
 						<a href="{{ path('territoire.fief', {'order_by': 'id', 'order_dir': 'DESC','fief[province]': fief.territoire.id})~optionalParameters }}">

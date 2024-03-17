@@ -179,7 +179,7 @@
 	    		<div class="list-group-item">
 		    		<h4 class="list-group-item-heading">Ce territoire dépend de</h4>
     				<p class="list-group-item-text">
-    					<a href="{{ path('territoire.admin.detail',{'territoire': territoire.territoire.id}) }}">{{ territoire.territoire.nom }}</a>
+    					<a href="{{ path('territoire.detail',{'territoire': territoire.territoire.id}) }}">{{ territoire.territoire.nom }}</a>
     				</p>
     			</div>
     			{% endif %}
@@ -189,7 +189,7 @@
     				<p class="list-group-item-text">
 						<ul>
 						{% for territoire in territoire.territoires %}
-							<li><a href="{{ path('territoire.admin.detail',{'territoire': territoire.id}) }}">{{ territoire.nomTree }}</a></li>
+							<li><a href="{{ path('territoire.detail',{'territoire': territoire.id}) }}">{{ territoire.nomTree }}</a></li>
 						{% endfor %}
 						</ul>
 					</p>

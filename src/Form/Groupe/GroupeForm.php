@@ -20,7 +20,7 @@ class GroupeForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', 'text')
+        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class)
             ->add('numero', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'required' => true,
             ])
@@ -28,8 +28,8 @@ class GroupeForm extends AbstractType
                 'label' => 'Type de groupe',
                 'required' => true,
                 'choices' => [
-                    true => 'Groupe composé de PJs',
-                    false => 'Groupe composé PNJs',
+                    'Groupe composé de PJs' => true,
+                    'Groupe composé PNJs' => false,
                 ],
                 'expanded' => true,
             ])

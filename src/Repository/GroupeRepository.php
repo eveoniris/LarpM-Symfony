@@ -39,6 +39,7 @@ class GroupeRepository extends BaseRepository
 
         $qb->select('g');
         $qb->from(\App\Entity\Groupe::class, 'g');
+
         if ($type && $value) {
             switch ($type) {
                 case 'numero':
@@ -56,7 +57,7 @@ class GroupeRepository extends BaseRepository
         $qb->setMaxResults($limit);
         $qb->orderBy('g.'.$order['by'], $order['dir']);
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 
     /**

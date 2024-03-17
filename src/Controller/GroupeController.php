@@ -22,7 +22,7 @@ use App\Form\Groupe\GroupeItemForm;
 use App\Form\Groupe\GroupeRessourceForm;
 use App\Form\Groupe\GroupeRichesseForm;
 use App\Form\Groupe\GroupeScenaristeForm;
-use App\Form\Groupe\GroupFindForm;
+use App\Form\Groupe\GroupeFindForm;
 use App\Manager\GroupeManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
@@ -796,8 +796,8 @@ class GroupeController extends AbstractController
     /**
      * Imprimmer toutes les enveloppes de tous les groupes.
      */
-    #[Route('/groupe/{groupe}/print', name: 'groupe.print')]
-    public function printAllAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
+    #[Route('/groupe/print', name: 'groupe.print')]
+    public function printAllAction(Request $request,  EntityManagerInterface $entityManager): Response
     {
         $gn = GroupeManager::getGnActif($entityManager);
         $groupeGns = $gn->getGroupeGns();
@@ -914,8 +914,8 @@ class GroupeController extends AbstractController
     /**
      * Liste des groupes.
      */
-    #[Route('/groupe', name: 'groupe.list')]
-    public function adminListAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/admin/groupe', name: 'groupe.admin.list')]
+    public function adminListAction(Request $request,  EntityManagerInterface $entityManager): Response
     {
         $order_by = $request->get('order_by') ?: 'numero';
         $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -925,7 +925,7 @@ class GroupeController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $this->createForm(GroupFindForm::class);
+        $form = $this->createForm(GroupeFindForm::class);
 
         $form->handleRequest($request);
 
@@ -940,19 +940,18 @@ class GroupeController extends AbstractController
         $groupes = $repo->findList(
             $type,
             $value,
-            ['by' => $order_by, 'dir' => $order_dir],
             $limit,
-            $offset);
+            $offset,
+            ['by' => $order_by, 'dir' => $order_dir]);
 
-        $numResults = $repo->findCount($type, $value);
-
-        $paginator = new Paginator($numResults, $limit, $page,
-            $app['url_generator']->generate('groupe.admin.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
+        $paginator = $repo->findPaginatedQuery(
+            $groupes, 
+            $this->getRequestLimit(),
+            $this->getRequestPage()
         );
 
         return $this->render('groupe/list.twig', [
             'form' => $form->createView(),
-            'groupes' => $groupes,
             'paginator' => $paginator,
         ]);
     }
@@ -1218,11 +1217,17 @@ class GroupeController extends AbstractController
             // défini les droits d'accés à ce forum
             // (les membres du groupe ont le droit d'accéder à ce forum)
             $topic->setRight('GROUPE_MEMBER');
-            $topic->setTopic(GroupeManager::findTopic('TOPIC_GROUPE'));
+            
+            //$topic->setTopic(GroupeManager::findTopic('TOPIC_GROUPE'));
+            $topicRepo = $entityManager->getRepository('\\'.\App\Entity\Topic::class);
+            $topic->setTopic($topicRepo->findOneByKey('TOPIC_GROUPE'));
 
             $groupe->setTopic($topic);
+            dump($groupe);
 
             $entityManager->persist($topic);
+            $entityManager->flush();
+            
             $entityManager->persist($groupe);
             $entityManager->flush();
 
@@ -1252,12 +1257,7 @@ class GroupeController extends AbstractController
     #[Route('/groupe/update/{groupe}', name: 'groupe.update')]
     public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
     {
-        $id = $request->get('index');
-
-        $groupe = $entityManager->find('\\'.\App\Entity\Groupe::class, $id);
-
         $originalGroupeClasses = new ArrayCollection();
-        $originalGns = new ArrayCollection();
         $originalTerritoires = new ArrayCollection();
 
         /*
@@ -1321,7 +1321,7 @@ class GroupeController extends AbstractController
                 $entityManager->flush();
                $this->addFlash('success', 'Le groupe a été mis à jour.');
 
-                return $this->redirectToRoute('groupe.detail', ['groupe' => $id]);
+                return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
             } elseif ($form->get('delete')->isClicked()) {
                 // supprime le lien entre les personnages et le groupe
                 foreach ($groupe->getPersonnages() as $personnage) {
