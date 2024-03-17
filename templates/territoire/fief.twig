@@ -1,55 +1,61 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Gn{% endblock title %}
+{% block title %}Fief{% endblock title %}
 
 {% block body %}
 
-	{% import "admin/filterMacros.html.twig" as macros %}
+	{% import "filterMacros.html.twig" as macros %}
 
-	<div class="well well-sm clearfix">
-		<ol class="breadcrumb">
-			<li><a href="{{ path('homepage')  }}">Accueil</a></li>
-			<li class="active">Liste des fiefs</li>
-		</ol>
-		
-		<blockquote>
-			Voici la liste des fiefs, des groupes les possédant, et des pays dont ils font partie.
-		</blockquote>
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li class="active">Liste des fiefs</li>
+	</ol>
 
+	<div class="well well-sm">
 
-		{% if paginator|length == 1 %}
-			<strong>1</strong> fief trouvé.
-		{% else %}
-			<strong>{{ paginator|length }}</strong> fiefs trouvés.
-		{% endif %}
-
-		Résultats affichés : <strong>{{ paginator.currentPageFirstItem }} - {{ paginator.currentPageLastItem }}</strong>.
+		<div class="header">
+			<h5>Liste des fiefs <small>( {{ paginator|length }} fiefs)</small></h5>
+			<blockquote>
+				Voici la liste des fiefs, des groupes les possédant, et des pays dont ils font partie.
+			</blockquote>
+		</div>
 
 		<div class="btn-toolbar" role="toolbar" aria-label="...">
 			<div class="btn-group" role="group" aria-label="...">
-				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter un territoire" href="{{ path('territoire.admin.add') }}"><i class="fa fa-plus"></i></a>
-				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Imprimer la liste de tous les fiefs" href="{{ path('territoire.admin.print') }}"><i class="fa fa-print"></i></a>
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un territoire" href="{{ path('territoire.admin.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimer la liste des fiefs" href="{{ path('territoire.admin.print') }}"><i class="fa fa-print"></i> Imprimer</a>
 			</div>
-			{{ form_start(form, {"attr": {"action": path('territoire.fief') }}) }}
-				<div class="form-group">
-					<div class="input-group">
-						{{ form_widget(form.value) }}
-					</div>
-					<div class="input-group">
-						{{ form_widget(form.type) }}
-						<div class="input-group-btn">
-							<button type="submit" class="btn btn-default" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
-							<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('territoire.fief') }}"><i class="fa fa-refresh"></i></a>
-						</div>
-					</div>
-				</div>
-				{{ form_rest(form) }}
-			</form>
 		</div>
 
+		<ul class="list-group">
+            <li class="list-group-item">
+                <div class="btn-toolbar" role="toolbar" aria-label="...">
 
-		{{ paginator|raw }}
+                    {{ form_start(form, {"action": path('territoire.fief')}) }}
+
+					<div class="form-group">
+						<div class="input-group">
+							{{ form_widget(form.value) }}
+							{{ form_widget(form.type) }}
+							{{ form_widget(form.pays) }}
+							{{ form_widget(form.province) }}
+							{{ form_widget(form.groupe) }}
+							<div class="input-group-btn">
+								<button type="submit" class="btn btn-default" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
+								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('territoire.fief') }}"><i class="fa fa-refresh"></i></a>
+							</div>
+						</div>
+					</div>
+			
+                    {{ form_end(form) }}
+
+                </div>
+            </li>
+
+        </ul>
 	</div>
+
+	{% include '_partials/pagination.html.twig' %}
 	
 	<table class="table table-condensed">
 		<thead>
@@ -75,8 +81,8 @@
 					</a>
 				</th>
 				<th>
-					<a href="{{ path('territoire.fief', {'order_by': 'groupe', 'order_dir': macros.getDirection(app,'groupe')|trim})~optionalParameters }}">
-						ID groupe {{ macros.getCaret(app,'groupe') }}
+					<a href="{{ path('territoire.fief', {'order_by': 'tgr.id', 'order_dir': macros.getDirection(app,'tgr.id')|trim})~optionalParameters }}">
+						ID groupe {{ macros.getCaret(app,'tgr.id') }}
 					</a>
 				</th>
 				<th>
@@ -87,7 +93,7 @@
 				<th>Nbr de joueurs</th>
 		</thead>
 		<tbody>
-		{% for fief in fiefs %}
+		{% for fief in paginator %}
 			<tr>
 				<td><a href="{{ path('territoire.admin.detail', {'territoire': fief.id}) }}">{{ fief.id }}</a></td>
 				<td><a href="{{ path('territoire.admin.detail', {'territoire': fief.id}) }}">{{ fief.nom }}</a></td>
@@ -107,10 +113,10 @@
 				</td>
 				<td>
 				{% if fief.groupe %}
-					<a href="{{ path('groupe.detail', {'index': fief.groupe.id}) }}">#{{ fief.groupe.numero }}</a></td>
+					<a href="{{ path('groupe.detail', {'groupe': fief.groupe.id}) }}">#{{ fief.groupe.numero }}</a></td>
 				</td>
 				<td>
-					<a href="{{ path('groupe.detail', {'index': fief.groupe.id}) }}">{{ fief.groupe.nom }}</a>
+					<a href="{{ path('groupe.detail', {'groupe': fief.groupe.id}) }}">{{ fief.groupe.nom }}</a>
 				{% else %}
 					-
 				</td>

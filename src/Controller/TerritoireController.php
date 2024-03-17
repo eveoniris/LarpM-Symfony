@@ -241,7 +241,7 @@ class TerritoireController extends AbstractController
      * Detail d'un territoire.
      */
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
-    #[Route('/admin/territoire/{territoire}/detail', name: 'territoire.detail')]
+    #[Route('/admin/territoire/{territoire}/detail', name: 'territoire.admin.detail')]
     public function detailAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
     {
         return $this->render('territoire/detail.twig', ['territoire' => $territoire]);
