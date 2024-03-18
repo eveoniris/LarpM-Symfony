@@ -35,7 +35,7 @@ class GroupeSecondaireNewMembreForm extends AbstractType
             'choice_label' => 'nom',
             'mapped' => false,
         ])
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter']);
+        ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter']);
     }
 
     /**

@@ -36,7 +36,7 @@ class GroupeSecondaireForm extends AbstractType
                     'class' => 'tinymce',
                     'help' => 'les secrets ne sont accessibles qu\'aux membres selectionnés par le scénariste'],
             ])
-            ->add('scenariste', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            /*->add('scenariste', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => 'Scénariste',
                 'class' => \App\Entity\User::class,
@@ -48,8 +48,28 @@ class GroupeSecondaireForm extends AbstractType
                     return $qb;
                 },
                 'choice_label' => 'etatCivil',
+            ])*/
+            /*->add('responsable', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+                'required' => false,
+                'label' => 'Chef du groupe',
+                'class' => \App\Entity\Personnage::class,
+                'query_builder' => static function (EntityRepository $er) {
+                    return $qb = $er->createQueryBuilder('p')->orderBy('p.nom', 'ASC');
+                },
+                'choice_label' => 'identity',
+                'mapped' => false,
+            ])*/
+            ->add('personnage', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+                'required' => false,
+                'label' => 'Chef du groupe',
+                'class' => \App\Entity\Personnage::class,
+                'query_builder' => static function (EntityRepository $er) {
+                    return $qb = $er->createQueryBuilder('p')->orderBy('p.nom', 'ASC');
+                },
+                'choice_label' => 'nom',
+                //'mapped' => false,
             ])
-            ->add('scenariste', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            /*->add('scenariste', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Scénariste',
                 'required' => false,
                 'class' => \App\Entity\User::class,
@@ -64,7 +84,7 @@ class GroupeSecondaireForm extends AbstractType
 
                     return $qb;
                 },
-            ])
+            ])*/
             ->add('secondaryGroupType', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Type',
                 'required' => true,

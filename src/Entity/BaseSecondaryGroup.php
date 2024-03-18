@@ -59,7 +59,7 @@ abstract class BaseSecondaryGroup
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'secondaryGroups')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Personnage $personnage;
+    protected ?Personnage $personnage = null;
 
     #[ManyToOne(targetEntity: Topic::class, inversedBy: 'secondaryGroups')]
     #[JoinColumn(name: 'topic_id', referencedColumnName: 'id', nullable: 'false')]
@@ -295,7 +295,7 @@ abstract class BaseSecondaryGroup
     /**
      * Get Personnage entity (many to one).
      */
-    public function getPersonnage(): Personnage
+    public function getPersonnage(): ?Personnage
     {
         return $this->personnage;
     }
