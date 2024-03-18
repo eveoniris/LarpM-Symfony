@@ -73,7 +73,7 @@
 			<ul class="list-group">
 				<li class="list-group-item"><a href="{{ path('world') }}">La carte</a></li>
 				<li class="list-group-item"><a href="{{ path('gn.groupes', {'gn': participant.gn.id}) }}">Les groupes</a></li>
-				<li class="list-group-item"><a href="{{ path('participant.groupeSecondaire.list', {'participant': participant.id}) }}">Les groupes secondaires</a></li>
+				<li class="list-group-item"><a href="{{ path('participant.groupeSecondaire.admin.list', {'participant': participant.id}) }}">Les groupes secondaires</a></li>
 				<li class="list-group-item"><a href="{{ path('participant.religion.list', {'participant': participant.id}) }}">Les religions</a></li>
 			</ul>			
 			

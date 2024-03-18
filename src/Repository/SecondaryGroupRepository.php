@@ -36,15 +36,14 @@ class SecondaryGroupRepository extends BaseRepository
         $qb->from(\App\Entity\SecondaryGroup::class, 'g');
 
         foreach ($criteria as $critere) {
-            $qb->andWhere('?1');
-            $qb->setParameter(1, $critere);
+            $qb->andWhere($critere);
         }
 
         $qb->setFirstResult($offset);
         $qb->setMaxResults($limit);
         $qb->orderBy('g.'.$order['by'], $order['dir']);
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 
     /**

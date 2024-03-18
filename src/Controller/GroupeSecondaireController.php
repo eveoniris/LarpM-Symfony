@@ -24,8 +24,8 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Liste des groupes secondaires (pour les orgas).
      */
-    #[Route('/groupeSecondaire', name: 'groupeSecondaire.list')]
-    public function adminListAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupeSecondaire', name: 'groupeSecondaire.admin.list')]
+    public function adminListAction(Request $request,  EntityManagerInterface $entityManager): Response
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -39,9 +39,7 @@ class GroupeSecondaireController extends AbstractController
             [
                 'method' => 'get',
                 'csrf_protection' => false,
-            ]
-        )
-            ->add('find', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Rechercher']);
+            ]);
 
         $form->handleRequest($request);
 
@@ -64,20 +62,20 @@ class GroupeSecondaireController extends AbstractController
         /* @var SecondaryGroupRepository $repo */
         $repo = $entityManager->getRepository('\\'.\App\Entity\SecondaryGroup::class);
         $groupeSecondaires = $repo->findList(
-            $criteria,
-            ['by' => $order_by, 'dir' => $order_dir],
             $limit,
-            $offset
+            $offset,
+            $criteria,
+            ['by' => $order_by, 'dir' => $order_dir]
         );
 
-        $numResults = $repo->findCount($criteria);
-
-        $paginator = new Paginator($numResults, $limit, $page,
-            $app['url_generator']->generate('groupeSecondaire.admin.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
+        $paginator = $repo->findPaginatedQuery(
+            $groupeSecondaires, 
+            $this->getRequestLimit(),
+            $this->getRequestPage()
         );
 
         return $this->render('groupeSecondaire/list.twig', [
-            'groupeSecondaires' => $groupeSecondaires,
+            //'groupeSecondaires' => $groupeSecondaires,
             'paginator' => $paginator,
             'form' => $form->createView(),
         ]);
@@ -86,7 +84,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Ajoute un groupe secondaire.
      */
-    #[Route('/groupeSecondaire/add', name: 'groupeSecondaire.add')]
+    #[Route('/groupeSecondaire/add', name: 'groupeSecondaire.admin.add')]
     public function adminAddAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $groupeSecondaire = new \App\Entity\SecondaryGroup();
@@ -192,7 +190,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Impression de toutes les enveloppes groupe secondaire.
      */
-    #[Route('/groupeSecondaire/printAll', name: 'groupeSecondaire.printAll')]
+    #[Route('/groupeSecondaire/printAll', name: 'groupeSecondaire.materiel.printAll')]
     public function materielPrintAllAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $groupeSecondaires = $entityManager->getRepository('\\'.\App\Entity\SecondaryGroup::class)->findAll();
@@ -205,7 +203,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Met à jour un de groupe secondaire.
      */
-    #[Route('/groupeSecondaire/{groupeSecondaire}/update', name: 'groupeSecondaire.update')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/update', name: 'groupeSecondaire.admin.update')]
     public function adminUpdateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] SecondaryGroup $groupeSecondaire)
     {
         $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)

@@ -2368,7 +2368,7 @@ class ParticipantController extends AbstractController
     /**
      * Liste des groupes secondaires public (pour les joueurs).
      */
-    #[Route('/participant/{participant}/groupeSecondaire/list', name: 'participant.groupeSecondaire.list')]
+    #[Route('/participant/{participant}/groupeSecondaire/list', name: 'participant.groupeSecondaire.admin.list')]
     public function groupeSecondaireListAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $repo = $entityManager->getRepository('\\'.SecondaryGroup::class);

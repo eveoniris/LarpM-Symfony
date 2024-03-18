@@ -4,7 +4,11 @@
 namespace App\Controller;
 
 use App\Form\Groupe\GroupeSecondaireTypeForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * LarpManager\Controllers\GroupeSecondaireTypeController.
@@ -27,7 +31,8 @@ class GroupeSecondaireTypeController extends AbstractController
     /**
      * Ajoute un type de groupe secondaire.
      */
-    public function adminAddAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/groupeSecondaireType/add', name: 'groupeSecondaireType.admin.add')]
+    public function adminAddAction(Request $request, EntityManagerInterface $entityManager)
     {
         $groupeSecondaireType = new \App\Entity\SecondaryGroupType();
 
@@ -48,7 +53,7 @@ class GroupeSecondaireTypeController extends AbstractController
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('groupeSecondaire.admin.list', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $this->redirectToRoute('groupeSecondaire.admin.type.add', [], 303);
+                return $this->redirectToRoute('groupeSecondaireType.admin.add', [], 303);
             }
         }
 
@@ -85,7 +90,7 @@ class GroupeSecondaireTypeController extends AbstractController
                $this->addFlash('success', 'Le type de groupe secondaire a été supprimé.');
             }
 
-            return $this->redirectToRoute('groupeSecondaire.admin.type.list');
+            return $this->redirectToRoute('groupeSecondaireType.admin.list');
         }
 
         return $this->render('groupeSecondaireType/update.twig', [
@@ -108,7 +113,7 @@ class GroupeSecondaireTypeController extends AbstractController
         } else {
            $this->addFlash('error', 'Le type de groupe secondaire n\'a pas été trouvé.');
 
-            return $this->redirectToRoute('groupeSecondaire.admin.type.list');
+            return $this->redirectToRoute('groupeSecondaireType.admin.list');
         }
     }
 }

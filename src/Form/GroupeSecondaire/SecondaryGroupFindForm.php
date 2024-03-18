@@ -21,14 +21,16 @@ class SecondaryGroupFindForm extends AbstractType
     {
         $builder->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
-            'label' => 'Valeur',
-        ])
+            'attr' => [
+                'placeholder' => 'Votre recherche',
+            ],
+            ])
             ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'label' => 'Type',
                 'choices' => [
-                    'id' => 'Numéro',
-                    'nom' => 'Nom du groupe secondaire',
+                    'Numéro' => 'id',
+                    'Nom du groupe secondaire' => 'nom',
                 ],
             ]);
     }

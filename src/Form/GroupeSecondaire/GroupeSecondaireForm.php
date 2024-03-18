@@ -20,7 +20,7 @@ class GroupeSecondaireForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', 'text')
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class)
             ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => true,
                 'label' => 'Description',
@@ -71,7 +71,7 @@ class GroupeSecondaireForm extends AbstractType
                 'class' => \App\Entity\SecondaryGroupType::class,
                 'choice_label' => 'label',
             ])
-            ->add('secret', 'checkbox', [
+            ->add('secret', \Symfony\Component\Form\Extension\Core\Type\CheckboxType::class, [
                 'label' => 'Cochez cette case pour rendre le groupe secret (visible uniquement par les joueurs membres)',
                 'required' => false,
             ]);
