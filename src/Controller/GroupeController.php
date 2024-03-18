@@ -1223,7 +1223,7 @@ class GroupeController extends AbstractController
             $topic->setTopic($topicRepo->findOneByKey('TOPIC_GROUPE'));
 
             $groupe->setTopic($topic);
-            dump($groupe);
+            //dump($groupe);
 
             $entityManager->persist($topic);
             $entityManager->flush();
