@@ -1134,7 +1134,7 @@ class BasePersonnage
     /**
      * Get User entity (many to one).
      */
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }

@@ -109,10 +109,15 @@ class GroupeSecondaireController extends AbstractController
             $topic->setTitle($groupeSecondaire->getLabel());
             $topic->setDescription($groupeSecondaire->getDescription());
             $topic->setUser($this->getUser());
-            $topic->setTopic($app['larp.manager']->findTopic('TOPIC_GROUPE_SECONDAIRE'));
+            
+            //$topic->setTopic($app['larp.manager']->findTopic('TOPIC_GROUPE_SECONDAIRE'));
+            $topicRepo = $entityManager->getRepository('\\'.\App\Entity\Topic::class);
+            $topic->setTopic($topicRepo->findOneByKey('TOPIC_GROUPE_SECONDAIRE'));
+
             $entityManager->persist($topic);
 
             $groupeSecondaire->setTopic($topic);
+            dump($groupeSecondaire);
             $entityManager->persist($groupeSecondaire);
             $entityManager->flush();
 
