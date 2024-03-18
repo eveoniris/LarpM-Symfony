@@ -8,14 +8,13 @@
 		<li class="active">Détail de {{ groupeSecondaire.label }}</li>
 	</ol>
 
-
 	<div class="well well-sm bs-component">
-		<h4>
-			{% if groupeSecondaire.secret %}<span style="color:red;">Secret</span> - {% endif %}{{ groupeSecondaire.label }}
-		</h4>
+		<div class="header">
+			<h5>{% if groupeSecondaire.secret %}<span style="color:red;">Secret</span> - {% endif %}{{ groupeSecondaire.label }}</h5>
+		</div>
 	</div>
 
-	<div class="panel panel-default">
+	<div class="well well-sm bs-component">
 		<div class="panel-heading">Informations</div>
 		<div class="panel-body">
 			<div class="list-group">
@@ -54,7 +53,7 @@
 						<ul>
 						<li>Personnage : {{ groupeSecondaire.responsable }}</li>
 						{% if groupeSecondaire.responsable.user %}
-						<li>Joueur : <a href="{{ path('user.view', {'id' : groupeSecondaire.responsable.user.id}) }}">{{ groupeSecondaire.responsable.user.username }}</a></li>
+						<li>Joueur : <a href="{{ path('user.view', {'user' : groupeSecondaire.responsable.user.id}) }}">{{ groupeSecondaire.responsable.user.username }}</a></li>
 						{% endif %}
 						</ul>
 					{%  else %}
@@ -66,7 +65,7 @@
 		</div>
 	</div>
 		
-	<div class="panel panel-default">
+	<div class="well well-sm bs-component">
 		<div class="panel-heading">Intrigues</div>
 		<div class="panel-body">
 			<div class="list-group">
@@ -79,7 +78,7 @@
 		</div>
 	</div>
 		
-	<div class="panel panel-default">
+	<div class="well well-sm bs-component">
 		<div class="panel-heading">Liste des postulants</div>
 		<div class="panel-body">
 		
@@ -103,7 +102,7 @@
 		</div>
 	</div>
 	
-	<div class="panel panel-default">
+	<div class="well well-sm bs-component">
 		<div class="panel-heading">Liste des membres ({{groupeSecondaire.getActifs(gn)}}/{{groupeSecondaire.membres|length}})</div>
 		
 		<div class="panel-body">					
@@ -122,18 +121,18 @@
 						<div class="list-group-item-text">
 							{% if membre.secret %}
 								<p class="text-danger">A accès aux secrets du groupe</p>
-								<a href="{{ path('groupeSecondaire.admin.secret.off', {'groupe': groupeSecondaire.id , 'membre':membre.id}) }}">
+								<a href="{{ path('groupeSecondaire.admin.secret.off', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
 									Retirer l'accès aux secrets
 								</a>
 							{% else %}
 								<p>N'a pas accès aux secrets du groupe</p>
-								<a href="{{ path('groupeSecondaire.admin.secret.on', {'groupe': groupeSecondaire.id , 'membre':membre.id}) }}">
+								<a href="{{ path('groupeSecondaire.admin.secret.on', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
 									Donner accès aux secrets
 								</a>
 							{% endif %}
 						</div>
 						<div class="list-group-item-text">
-							<a href="{{ path('groupeSecondaire.admin.member.remove', {'groupe': groupeSecondaire.id, 'membre': membre.id}) }}">
+							<a href="{{ path('groupeSecondaire.admin.member.remove', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}">
 								Retirer ce membre.
 							</a>
 						</div>
@@ -169,10 +168,8 @@
 				
 	<div class="list-group-item">
 		<div class="btn-group" role="group" aria-label="...">
-			<a  class="btn btn-primary" role="button" href="{{ path('groupeSecondaire.admin.update', {'groupe' : groupeSecondaire.id}) }}">Modifier</a>
+			<a  class="btn btn-primary" role="button" href="{{ path('groupeSecondaire.admin.update', {'groupeSecondaire' : groupeSecondaire.id}) }}">Modifier</a>
 		</div>
   	</div>
-	
-			
 
 {% endblock body %}
