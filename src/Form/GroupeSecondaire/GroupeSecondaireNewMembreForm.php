@@ -25,16 +25,13 @@ class GroupeSecondaireNewMembreForm extends AbstractType
             'label' => 'Choississez le personnage',
             'class' => \App\Entity\Personnage::class,
             'query_builder' => static function (EntityRepository $er) {
-                $qb = $er->createQueryBuilder('p');
-                $qb->orderBy('p.nom', 'ASC');
-
-                return $qb;
+                return $qb = $er->createQueryBuilder('p')->orderBy('p.nom', 'ASC');
             },
-            'attr' => [
-                'class' => 'selectpicker',
-                'data-live-search' => 'true',
-                'placeholder' => 'Personnage',
-            ],
+            //'attr' => [
+            //    'class' => 'selectpicker',
+            //    'data-live-search' => 'true',
+            //    'placeholder' => 'Personnage',
+            //],
             'choice_label' => 'nom',
             'mapped' => false,
         ])
