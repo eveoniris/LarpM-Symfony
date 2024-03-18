@@ -54,7 +54,7 @@ class BaseGroupe
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $materiel = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[Column(name:"`lock`", type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     protected bool $lock;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
