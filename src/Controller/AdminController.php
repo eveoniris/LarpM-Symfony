@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse as RedirectResponseAlias;
 use Symfony\Component\HttpFoundation\Request;
@@ -232,9 +233,27 @@ class AdminController extends AbstractController
     #[Route('/admin/rappels', name: 'admin.rappels')]
     public function rappelsAction(Request $request, UserRepository $repository): Response
     {
+        $alias = 'u';
+
+        $orderBy = $this->getRequestOrder(
+            defOrderBy: 'email',
+            alias: $alias,
+            allowedFields: $repository->getFieldNames()
+        );
+
+        $paginator = $repository->getPaginator(
+            limit: $this->getRequestLimit(25),
+            page: $this->getRequestPage(),
+            orderBy: $orderBy,
+            alias: $alias,
+            criterias: [Criteria::create()->where(
+                Criteria::expr()?->isNull($alias.'.etatCivil')
+            )]
+        );
+
         return $this->render(
             'admin/rappels.twig',
-            ['usersWithoutEtatCivil' => $repository->findWithoutEtatCivil()]
+            ['paginator' => $paginator, 'orderDir' => $this->getRequestOrderDir()]
         );
     }
 }
