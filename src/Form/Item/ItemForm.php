@@ -103,7 +103,7 @@ class ItemForm extends AbstractType
                     '23' => 'Objet sanctifié par la compétence Prêtrise - Asura',
                     '24' => 'Objet sanctifié par la compétence Prêtrise - Bel',
                     '25' => 'Objet sanctifié par la compétence Prêtrise - Bori',
-                    '26' => 'Objet sanctifié par la compétence Prêtrise - Crom/L''Éveillé',
+                    '26' => 'Objet sanctifié par la compétence Prêtrise - Crom/L\'Éveillé',
                     '27' => 'Objet sanctifié par la compétence Prêtrise - Derketo/Menaka',
                     '28' => 'Objet sanctifié par la compétence Prêtrise - Erlik',
                     '29' => 'Objet sanctifié par la compétence Prêtrise - Ishtar',
