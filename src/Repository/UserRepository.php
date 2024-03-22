@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use JetBrains\PhpStorm\Deprecated;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -67,6 +68,7 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         return !empty($result->getScalarResult());
     }
 
+    #[Deprecated]
     public function findWithoutEtatCivil()
     {
         $query = $this->getEntityManager()
