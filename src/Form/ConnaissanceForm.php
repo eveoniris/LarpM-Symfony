@@ -37,7 +37,7 @@ class ConnaissanceForm extends AbstractType
             ])
             ->add('contraintes', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
-                'label' => 'Contraintes',
+                'label' => 'Prérequis',
                 'attr' => [
                     'class' => 'tinymce',
                     'rows' => 5,
