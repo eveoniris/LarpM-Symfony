@@ -180,6 +180,7 @@ class CompetenceController extends AbstractController
      * Met à jour une compétence.
      */
     #[Route('/competence/{competence}/update', name: 'competence.update')]
+    #[IsGranted('ROLE_REGLE')]
     public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Competence $competence): RedirectResponse|Response
     {
         $attributeRepos = $entityManager->getRepository(AttributeType::class);
@@ -194,7 +195,7 @@ class CompetenceController extends AbstractController
 
             $files = $request->files->get($form->getName());
 
-            // si un document est fourni, l'enregistré
+            // si un document est fourni, l'enregistré TODO
             if (null != $files['document']) {
                 $path = __DIR__.'/../../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
@@ -214,7 +215,7 @@ class CompetenceController extends AbstractController
             }
 
             if ($form->get('update')->isClicked()) {
-                $competence->setCompetenceAttributesAsString($request->get('competenceAttributesAsString'), $app['orm.em'], $attributeRepos);
+                $competence->setCompetenceAttributesAsString($request->get('competenceAttributesAsString'), $entityManager, $attributeRepos);
                 $entityManager->persist($competence);
                 $entityManager->flush();
                 $this->addFlash('success', 'La compétence a été mise à jour.');
