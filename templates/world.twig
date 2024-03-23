@@ -4,12 +4,12 @@
        
 {% block style %}
 
-	    <link rel="stylesheet" href="{{ app.request.basepath }}/leaflet-1.0.3/leaflet.css" />
-        <link rel="stylesheet" href="{{ app.request.basepath }}/leaflet/L.Control.MousePosition.css" />
-        <link rel="stylesheet" href="{{ app.request.basepath }}/leaflet/L.Control.Window.css" />
-        <link rel="stylesheet" href="{{ app.request.basepath }}/leaflet.draw/leaflet.draw.css" />
-        <link rel="stylesheet" href="{{ app.request.basepath }}/leaflet/Control.MiniMap.min.css" />
-        <link rel="stylesheet" href="{{ app.request.basepath }}/leaflet-fullscreen/Control.FullScreen.css" />
+	    <link rel="stylesheet" href="{{ app.request.basepath }}/worldmap/leaflet-1.0.3/leaflet.css" />
+        <link rel="stylesheet" href="{{ app.request.basepath }}/worldmap/leaflet/L.Control.MousePosition.css" />
+        <link rel="stylesheet" href="{{ app.request.basepath }}/worldmap/leaflet/L.Control.Window.css" />
+        <link rel="stylesheet" href="{{ app.request.basepath }}/worldmap/leaflet.draw/leaflet.draw.css" />
+        <link rel="stylesheet" href="{{ app.request.basepath }}/worldmap/leaflet/Control.MiniMap.min.css" />
+        <link rel="stylesheet" href="{{ app.request.basepath }}/worldmap/leaflet-fullscreen/Control.FullScreen.css" />
         
 		<style>		
 		
@@ -126,6 +126,7 @@
 {% endblock %}
 
 {% block body %}
+	<div id="test">IIII</div>
 <div class="clearfix">
 	<div class="mapbox">
 		<div class="row-fluid some" id="map"></div>
@@ -135,32 +136,33 @@
 
 {% block javascript %}
 
-<script src="{{ app.request.basepath }}/leaflet-1.0.3/leaflet.js"></script>
-<script src="{{ app.request.basepath }}/leaflet/L.Control.MousePosition.js"></script>
-<script src="{{ app.request.basepath }}/leaflet/L.Control.Window.js"></script>
-<script src="{{ app.request.basepath }}/leaflet-fullscreen/Control.FullScreen.js"></script>
-<script src="{{ app.request.basepath }}/leaflet-pattern/leaflet-pattern.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet-1.0.3/leaflet.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet/L.Control.MousePosition.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet/L.Control.Window.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet-fullscreen/Control.FullScreen.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet-pattern/leaflet-pattern.js"></script>
 
-<script src="{{ app.request.basepath }}/leaflet.draw/Leaflet.draw.js"></script>
-<script src="{{ app.request.basepath }}/leaflet.draw/Leaflet.Draw.Event.js"></script>
-<script src="{{ app.request.basepath }}/leaflet.draw/Control.Draw.js"></script>
-<script src="{{ app.request.basepath }}/leaflet.draw/Toolbar.js"></script>
-<script src="{{ app.request.basepath }}/leaflet.draw/Tooltip.js"></script>
-<script src="{{ app.request.basepath }}/leaflet.draw/draw/handler/Draw.Feature.js"></script>
-<script src="{{ app.request.basepath }}/leaflet.draw/draw/handler/Draw.Marker.js"></script>
-<script src="{{ app.request.basepath }}/leaflet.draw/draw/handler/Draw.Polyline.js"></script>
-<script src="{{ app.request.basepath }}/leaflet.draw/draw/handler/Draw.Polygon.js"></script>
-<script src="{{ app.request.basepath }}/leaflet.draw/draw/DrawToolbar.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet.draw/Leaflet.draw.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet.draw/Leaflet.Draw.Event.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet.draw/Control.Draw.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet.draw/Toolbar.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet.draw/Tooltip.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet.draw/draw/handler/Draw.Feature.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet.draw/draw/handler/Draw.Marker.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet.draw/draw/handler/Draw.Polyline.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet.draw/draw/handler/Draw.Polygon.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet.draw/draw/DrawToolbar.js"></script>
 
-<script src="{{ app.request.basepath }}/leaflet/Control.MiniMap.min.js"></script>
-<script src="{{ app.request.basepath }}/leaflet/spin.min.js"></script>
-<script src="{{ app.request.basepath }}/leaflet/leaflet.spin.min.js"></script>
-<script src="{{ app.request.basepath }}/js/randomColor.min.js"></script>
-<script src="{{ app.request.basepath }}/turf/turf-3.0.11.min.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet/Control.MiniMap.min.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet/spin.min.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/leaflet/leaflet.spin.min.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/js/randomColor.min.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/turf/turf-3.0.11.min.js"></script>
 
 
 <script>
 
+	$(document).ready(function () {
 
 	var cartographie = {
 			// Url du tileset
@@ -287,7 +289,7 @@
 				this.map.spin(true);
 
 				this.ownGroupIcon = L.icon({
-					iconUrl: '{{ app.request.basepath }}/img/star_gold_48.png',
+					iconUrl: '{{ app.request.basepath }}/worldmap/img/star_gold_48.png',
 					iconSize:     [48, 48], // size of the icon
 				    iconAnchor:   [24, 24], // point of the icon which will correspond to marker's location
 				    popupAnchor:  [-48, 96] // point from which the popup should open relative to the iconAnchor
@@ -689,9 +691,9 @@
 			// Affichage des informations concernant le layer selectionné
 			displayInfoPanel: function(props)
 			{
-				var detailLink = "{{ app.request.basepath }}/territoire/"+props.id+"/joueur";
-				var editLink = "{{ app.request.basepath }}/territoire/"+props.id+"/update";
-			    var editStrategieLink = "{{ app.request.basepath }}/territoire/"+props.id+"/updateStrategie";
+				var detailLink = "{{ app.request.basepath }}/worldmap/territoire/"+props.id+"/joueur";
+				var editLink = "{{ app.request.basepath }}/worldmap/territoire/"+props.id+"/update";
+			    var editStrategieLink = "{{ app.request.basepath }}/worldmap/territoire/"+props.id+"/updateStrategie";
 			    			     			        
 				if ( props && ! props.description ) props.description = 'Aucune description';
 
@@ -1322,6 +1324,7 @@
 
 	cartographie.createLabel();
 
+	});
 </script>
 
 {% endblock %}
