@@ -42,18 +42,20 @@ class PersonnageFindForm extends AbstractType
                     'aria-label' => '...',
                 ],
             ])
-            /*->add('religion', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('religion', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => '	Par religion : ',
+                'placeholder' => 'Filtrer par religion',
                 'class' => \App\Entity\Religion::class,
                 'choice_label' => 'label',
                 'query_builder' => static function (ReligionRepository $er) {
                     return $er->createQueryBuilder('r')->orderBy('r.label', 'ASC');
                 },
-            ])*/
+            ])
             ->add('competence', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => '	Par compétence : ',
+                'placeholder' => 'Filtrer par compétence',
                 'class' => \App\Entity\Competence::class,
                 'choice_label' => 'label',
                 'query_builder' => static function (CompetenceRepository $cr) {
@@ -63,6 +65,7 @@ class PersonnageFindForm extends AbstractType
             ->add('classe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => '	Par classe : ',
+                'placeholder' => 'Filtrer par classe',
                 'class' => \App\Entity\Classe::class,
                 'choice_label' => 'label',
                 'query_builder' => static function (ClasseRepository $er) {
@@ -72,6 +75,7 @@ class PersonnageFindForm extends AbstractType
             ->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => '	Par groupe : ',
+                'placeholder' => 'Filtrer par groupe',
                 'class' => \App\Entity\Groupe::class,
                 'choice_label' => 'nom',
                 'query_builder' => static function (GroupeRepository $gr) {
