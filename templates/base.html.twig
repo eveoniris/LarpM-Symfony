@@ -31,7 +31,6 @@
 
 {# corps de la page #}
 <div id="content" class="container-fluid">
-
     {% for message in app.session.getFlashBag.get('info') %}
         <div class="alert alert-info d-flex align-items-center" role="alert">
             <div class="p-2 flex-grow-1"><i class="fa-solid fa-circle-info"></i> {{ message }}</div>
@@ -63,19 +62,11 @@
     {% block body %}{% endblock body %}
 
     {# Pied de page #}
-    <footer>
-        <div class="pull-left" style="margin-left: 50px;">
-            <ul>
-                <li><a href="http://www.fedegn.org/">FédéGN</a></li>
-                <li><a href="http://www.eveoniris.com/">Eve-oniris</a></li>
-            </ul>
-        </div>
-        <div class="pull-right" style="margin-right: 50px;">
-            <ul>
-                <li><a href="{{ path('legal') }}">Mentions légales</a></li>
-                <li><a href="{{ path('dev') }}">Développement</a></li>
-            </ul>
-        </div>
+    <footer class="d-flex justify-content-center">
+        <div class="p-2"><a href="http://www.fedegn.org/">FédéGN</a></div>
+        <div class="p-2"><a href="http://www.eveoniris.com/">Eve-oniris</a></div>
+        <div class="p-2"><a href="{{ path('legal') }}">Mentions légales</a></div>
+        <div class="p-2"><a href="{{ path('dev') }}">Développement</a></div>
     </footer>
 </div>
 </body>

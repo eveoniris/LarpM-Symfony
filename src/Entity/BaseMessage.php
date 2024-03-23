@@ -173,9 +173,9 @@ class BaseMessage
         return $this->userRelatedByAuteur;
     }
 
-    public function setUserRelatedByDestinataire(User $User = null): static
+    public function setUserRelatedByDestinataire(User $user = null): static
     {
-        $this->userRelatedByDestinataire = $User;
+        $this->userRelatedByDestinataire = $user;
 
         return $this;
     }
