@@ -2,13 +2,18 @@
 
 namespace App\Controller;
 
+use App\Entity\AttributeType;
 use App\Entity\Competence;
+use App\Entity\CompetenceFamily;
+use App\Entity\Level;
 use App\Form\CompetenceFindForm;
 use App\Form\CompetenceForm;
 use App\Form\Entity\BaseSearch;
 use App\Repository\CompetenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -63,6 +68,7 @@ class CompetenceController extends AbstractController
     /**
      * Liste des perso ayant cette compétence.
      */
+    #[Route('/competence/perso', name: 'competence.perso')]
     public function persoAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $competence = $request->get('competence');
@@ -73,6 +79,7 @@ class CompetenceController extends AbstractController
     /**
      * Liste du matériel necessaire par compétence.
      */
+    #[Route('/competence/materiel', name: 'competence.materiel')]
     public function materielAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $repo = $entityManager->getRepository('\\'.Competence::class);
@@ -86,7 +93,7 @@ class CompetenceController extends AbstractController
      */
     #[Route('/competence/add', name: 'competence.add')]
     #[IsGranted('ROLE_REGLE')]
-    public function addAction(Request $request, EntityManagerInterface $entityManager): \Symfony\Component\HttpFoundation\RedirectResponse|Response
+    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $competence = new Competence();
 
@@ -99,14 +106,14 @@ class CompetenceController extends AbstractController
         $levelIndex = $request->get('level');
 
         if ($competenceFamilyId) {
-            $competenceFamily = $entityManager->find('\\'.\App\Entity\CompetenceFamily::class, $competenceFamilyId);
+            $competenceFamily = $entityManager->find('\\'. CompetenceFamily::class, $competenceFamilyId);
             if ($competenceFamily) {
                 $competence->setCompetenceFamily($competenceFamily);
             }
         }
 
         if ($levelIndex) {
-            $repo = $entityManager->getRepository('\\'.\App\Entity\Level::class);
+            $repo = $entityManager->getRepository('\\'. Level::class);
             $level = $repo->findOneByIndex($levelIndex + 1);
             if ($level) {
                 $competence->setLevel($level);
@@ -114,8 +121,8 @@ class CompetenceController extends AbstractController
         }
 
         $form = $this->createForm(CompetenceForm::class, $competence)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -172,13 +179,14 @@ class CompetenceController extends AbstractController
     /**
      * Met à jour une compétence.
      */
-    public function updateAction(Request $request, EntityManagerInterface $entityManager): \Symfony\Component\HttpFoundation\RedirectResponse|Response
+    #[Route('/competence/{competence}/update', name: 'competence.update')]
+    #[IsGranted('ROLE_REGLE')]
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Competence $competence): RedirectResponse|Response
     {
-        $competence = $request->get('competence');
-        $attributeRepos = $entityManager->getRepository('\\'.\App\Entity\AttributeType::class);
+        $attributeRepos = $entityManager->getRepository(AttributeType::class);
         $form = $this->createForm(CompetenceForm::class, $competence)
-            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -187,7 +195,7 @@ class CompetenceController extends AbstractController
 
             $files = $request->files->get($form->getName());
 
-            // si un document est fourni, l'enregistré
+            // si un document est fourni, l'enregistré TODO
             if (null != $files['document']) {
                 $path = __DIR__.'/../../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
@@ -207,13 +215,14 @@ class CompetenceController extends AbstractController
             }
 
             if ($form->get('update')->isClicked()) {
-                $competence->setCompetenceAttributesAsString($request->get('competenceAttributesAsString'), $app['orm.em'], $attributeRepos);
+                $competence->setCompetenceAttributesAsString($request->get('competenceAttributesAsString'), $entityManager, $attributeRepos);
                 $entityManager->persist($competence);
                 $entityManager->flush();
                 $this->addFlash('success', 'La compétence a été mise à jour.');
 
                 return $this->redirectToRoute('competence.detail', ['competence' => $competence->getId()]);
-            } elseif ($form->get('delete')->isClicked()) {
+            }
+            if ($form->get('delete')->isClicked()) {
                 $entityManager->remove($competence);
                 $entityManager->flush();
                 $this->addFlash('success', 'La compétence a été supprimée.');
@@ -233,7 +242,8 @@ class CompetenceController extends AbstractController
      * Retire le document d'une competence.
      */
     #[IsGranted('ROLE_REGLE')]
-    public function removeDocumentAction(Request $request, EntityManagerInterface $entityManager, Competence $competence): \Symfony\Component\HttpFoundation\RedirectResponse
+    #[Route('/competence/remove-document', name: 'competence.list')]
+    public function removeDocumentAction(Request $request, EntityManagerInterface $entityManager, Competence $competence): RedirectResponse
     {
         $competence->setDocumentUrl(null);
 
@@ -247,6 +257,7 @@ class CompetenceController extends AbstractController
     /**
      * Téléchargement du document lié à une compétence.
      */
+    #[Route('/competence', name: 'competence.document')]
     public function getDocumentAction(Request $request, EntityManagerInterface $entityManager)
     {
         $document = $request->get('document');
