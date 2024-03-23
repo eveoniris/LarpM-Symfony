@@ -69,7 +69,7 @@ class PersonnageRepository extends BaseRepository
             }
         }
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 
     private function buildSearchFromJoinWhereQuery(QueryBuilder $qb, array $criteria, string $orderBy = null): void
