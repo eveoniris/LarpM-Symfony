@@ -19,10 +19,12 @@ use App\Entity\RenommeHistory;
 use App\Entity\Sort;
 use App\Entity\Technologie;
 use App\Form\Personnage\PersonnageChronologieForm;
+use App\Form\PersonnageFindForm;
 use App\Manager\GroupeManager;
+use App\Manager\PersonnageManager;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
-use JasonGrimes\Paginator;
 use App\Form\Personnage\PersonnageDocumentForm;
 use App\Form\Personnage\PersonnageIngredientForm;
 use App\Form\Personnage\PersonnageItemForm;
@@ -56,6 +58,171 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 class PersonnageController extends AbstractController
 {
+    // contient la liste des colonnes 
+    protected $columnDefinitions = array( 
+        'colId'=> [ 'label' => '#', 'fieldName' => 'id',  'sortFieldName' => 'id', 'tooltip' => 'Numéro d\'identifiant' ],
+        'colStatut' => [ 'label' => 'S', 'fieldName'=> 'status',  'sortFieldName'=> 'status', 'tooltip' => 'Statut' ],
+        'colNom'=> [ 'label' => 'Nom', 'fieldName'=> 'nom',  'sortFieldName'=> 'nom', 'tooltip' => 'Nom et surnom du personnage' ],
+        'colClasse' => [ 'label' => 'Classe', 'fieldName'=> 'classe',  'sortFieldName'=> 'classe', 'tooltip' => 'Classe du personnage' ],
+        'colGroupe'=> [ 'label' => 'Groupe', 'fieldName'=> 'groupe',  'sortFieldName'=> 'groupe', 'tooltip' => 'Dernier GN - Groupe participant' ],
+        'colRenommee' => [ 'label' => 'Renommée', 'fieldName'=> 'renomme',  'sortFieldName'=> 'renomme', 'tooltip' => 'Points de renommée' ],
+        'colPugilat' => [ 'label' => 'Pugilat', 'fieldName'=> 'pugilat',  'sortFieldName'=> 'pugilat', 'tooltip' => 'Points de pugilat' ],
+        'colHeroisme' => [ 'label' => 'Héroïsme', 'fieldName'=> 'heroisme',  'sortFieldName'=> 'heroisme', 'tooltip' => 'Points d\'héroisme' ],
+        'colUser' => [ 'label' => 'Utilisateur', 'fieldName'=> 'user',  'sortFieldName'=> 'user', 'tooltip' => 'Liste des utilisateurs (Nom et prénom) par GN' ],
+        'colXp' => [ 'label' => 'Points d\'expérience', 'fieldName'=> 'xp',  'sortFieldName'=> 'xp', 'tooltip' => 'Points d\'expérience actuels sur le total max possible' ],
+        'colHasAnomalie' => [ 'label' => 'Ano.', 'fieldName'=> 'hasAnomalie',  'sortFieldName'=> 'hasAnomalie', 'tooltip' => 'Une pastille orange indique une anomalie' ]
+	);
+
+	/**
+     * Retourne le tableau de paramètres à utiliser pour l'affichage de la recherche des personnages
+     * 
+     * @param Request $request
+     * @param string $routeName
+     * @param array $routeParams
+     * @param array $columnKeys
+     * @param array $additionalViewParams
+     * @param Collection|null $sourcePersonnages
+     * @return array
+     */
+    public function getSearchViewParameters(
+        Request $request, 
+		EntityManagerInterface $entityManager,
+        string $routeName)
+        : array
+    {
+        // récupère les filtres et tris de recherche + pagination renseignés dans le formulaire
+        $orderBy = $request->get('order_by') ?: 'id';
+        $orderDir = $request->get('order_dir') == 'DESC' ? 'DESC' : 'ASC';        
+        $isAsc = $orderDir == 'ASC';
+        $limit = (int)($request->get('limit') ?: 50);
+        $page = (int)($request->get('page') ?: 1);
+        $offset = ($page - 1) * $limit;
+        $criteria = [];
+        
+        $formData = $request->query->get('personnageFind');
+        $religion = isset($formData['religion']) ? $entityManager->find('LarpManager\Entities\Religion',$formData['religion']):null;
+        $competence = isset($formData['competence']) ? $entityManager->find('LarpManager\Entities\Competence',$formData['competence']):null;
+        $classe = isset($formData['classe']) ? $entityManager->find('LarpManager\Entities\Classe',$formData['classe']):null;
+        $groupe = isset($formData['groupe']) ? $entityManager->find('LarpManager\Entities\Groupe',$formData['groupe']):null;
+        $optionalParameters = "";
+
+		dump($formData);
+        
+        // construit le formulaire contenant les filtres de recherche
+		$form = $this->createForm(
+            PersonnageFindForm::class,
+            null,
+			array(
+                'data' => [
+                    'religion' => $religion,
+                    'classe' => $classe,
+                    'competence' => $competence,
+                    'groupe' => $groupe,
+                ],
+                'method' => 'get',
+                'csrf_protection' => false,
+            )
+        );
+        
+        $form->handleRequest($request);
+        
+        // récupère les nouveaux filtres de recherche
+        if ( $form->isSubmitted() && $form->isValid() )
+        {
+            $data = $form->getData();
+            $type = $data['type'];
+            $value = $data['value'];
+            $criteria[$type] = $value;
+        }
+        if($religion){
+            $criteria["religion"] = $religion->getId();
+            $optionalParameters .= "&personnageFind[religion]={$religion->getId()}";
+        }
+        if($competence){
+            $criteria["competence"] = $competence->getId();
+            $optionalParameters .= "&personnageFind[competence]={$competence->getId()}";
+        }
+        if($classe){
+            $criteria["classe"] = $classe->getId();
+            $optionalParameters .= "&personnageFind[classe]={$classe->getId()}";
+        }
+        if($groupe){
+            $criteria["groupe"] = $groupe->getId();
+            $optionalParameters .= "&personnageFind[groupe]={$groupe->getId()}";
+        }
+        
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Personnage::class);
+        
+        // attention, il y a des propriétés sur lesquelles on ne peut pas appliquer le order by
+        // car elles ne sont pas en base mais calculées, ça compliquerait trop le sql
+        $orderByCalculatedFields = new ArrayCollection(['pugilat', 'heroisme', 'user', 'hasAnomalie', 'status']);
+        if ($orderByCalculatedFields->contains($orderBy))
+        {
+            // recherche basée uniquement sur les filtres
+            $filteredPersonnages = $repo->findList($criteria);
+            // pour le nombre de résultats, pas besoin de refaire de requête, on l'a déjà
+            $numResults = count($filteredPersonnages);
+            // on applique le tri
+            PersonnageManager::sort($filteredPersonnages, $orderBy, $isAsc);
+            $personnagesCollection = new ArrayCollection($filteredPersonnages);
+            // on découpe suivant la pagination demandée
+            $personnages = $personnagesCollection->slice($offset, $limit);
+        }
+        else
+        {
+            // recherche et applique directement en sql filtres + tri + pagination
+            $personnages = $repo->findList(
+                $criteria,
+                ['by' =>  $orderBy, 'dir' => $orderDir],    
+                $limit,
+                $offset                         
+            );
+        }
+        
+        
+        $paginator = $repo->findPaginatedQuery(
+            $personnages, 
+            $this->getRequestLimit(),
+            $this->getRequestPage()
+        );
+        
+        /*$paginator = new Paginator(
+            $numResults, 
+            $limit, 
+            $page,
+            $this->app['url_generator']->generate($routeName, $routeParams) . '?page=(:num)&limit=' . $limit . '&order_by=' . $orderBy . '&order_dir=' . $orderDir . $optionalParameters
+            );*/
+        
+        // récupère les colonnes à afficher
+        if (empty($columnKeys))
+        {
+            // on prend l'ordre par défaut
+            $columnDefinitions = $this->columnDefinitions;
+        }
+        else 
+        {
+            // on reconstruit le tableau dans l'ordre demandé
+            $columnDefinitions = [];
+            foreach ($columnKeys as $columnKey)
+            {
+                if(array_key_exists($columnKey, $this->columnDefinitions))
+                {
+                    $columnDefinitions[] = $this->columnDefinitions[$columnKey];
+                }
+            }
+        }
+        
+        return array_merge(array(
+            'personnages' => $personnages,
+            'paginator' => $paginator,
+            'form' => $form->createView(),
+            'optionalParameters' => $optionalParameters,
+            'columnDefinitions' => $columnDefinitions,
+            'formPath' => $routeName
+            )
+        );
+    }
+
     /**
      * Selection du personnage courant.
      */
@@ -581,14 +748,13 @@ class PersonnageController extends AbstractController
      * Liste des personnages.
      */
     #[Route('/personnage/admin/list', name: 'personnage.admin.list')]
-    public function adminListAction(Request $request)
+    public function adminListAction(Request $request, EntityManagerInterface $entityManager)
     {
         $routeName = 'personnage.admin.list';
         $twigFilePath = 'admin/personnage/list.twig';
 
         // handle the request and return an array containing the parameters for the view
-        $personnageSearchHandler = $app['personnage.manager']->getSearchHandler();
-        $viewParams = $personnageSearchHandler->getSearchViewParameters($request, $routeName);
+        $viewParams = $this->getSearchViewParameters($request, $entityManager, $routeName);
 
         return $this->render($twigFilePath, $viewParams);
     }
@@ -671,7 +837,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajout d'un personnage (orga seulement).
      */
-    #[Route('/personnage/{personnage}/add', name: 'personnage.admin.add')]
+    #[Route('/personnage/add', name: 'personnage.admin.add')]
     public function adminAddAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $personnage = new Personnage();

@@ -3,10 +3,10 @@
 
 namespace App\Form;
 
-use Doctrine\ORM\EntityRepository;
-use LarpManager\Repository\ClasseRepository;
-use LarpManager\Repository\CompetenceRepository;
-use LarpManager\Repository\GroupeRepository;
+use App\Repository\ReligionRepository;
+use App\Repository\ClasseRepository;
+use App\Repository\CompetenceRepository;
+use App\Repository\GroupeRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -30,7 +30,7 @@ class PersonnageFindForm extends AbstractType
                 'placeholder' => 'Votre recherche',
                 'aria-label' => '...',
             ],
-        ])
+            ])
             ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => false,
                 'choices' => [
@@ -42,15 +42,15 @@ class PersonnageFindForm extends AbstractType
                     'aria-label' => '...',
                 ],
             ])
-            ->add('religion', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            /*->add('religion', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => '	Par religion : ',
                 'class' => \App\Entity\Religion::class,
                 'choice_label' => 'label',
-                'query_builder' => static function (EntityRepository $er) {
+                'query_builder' => static function (ReligionRepository $er) {
                     return $er->createQueryBuilder('r')->orderBy('r.label', 'ASC');
                 },
-            ])
+            ])*/
             ->add('competence', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'label' => '	Par compétence : ',
@@ -85,6 +85,9 @@ class PersonnageFindForm extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
+        $resolver->setDefaults([
+            'csrf_protection' => false,
+        ]);
     }
 
     /**
