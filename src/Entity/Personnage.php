@@ -561,8 +561,8 @@ class Personnage extends BasePersonnage implements \Stringable
             + $this->getCompetencePugilat('Stratégie')
             + $this->getCompetencePugilat('Survie');
 
-        // Armurerie au niveau Initié ajoute 5 points
-        if ($this->getCompetenceNiveau('Armurerie') >= 2) {
+        // Forge au niveau Initié ajoute 5 points
+        if ($this->getCompetenceNiveau('Forge') >= 2) {
             $pugilat += 5;
         }
 
@@ -636,10 +636,10 @@ class Personnage extends BasePersonnage implements \Stringable
             $pugilatHistories[] = $pugilatHistory;
         }
 
-        if ($this->getCompetenceNiveau('Armurerie') >= 2) {
+        if ($this->getCompetenceNiveau('Forge') >= 2) {
             $pugilatHistory = new \App\Entity\PugilatHistory();
             $pugilatHistory->setPugilat(5);
-            $pugilatHistory->setExplication('Compétence Armurerie niveau '.$this->getCompetenceNiveau('Armurerie'));
+            $pugilatHistory->setExplication('Compétence Forge niveau '.$this->getCompetenceNiveau('Forge'));
             $pugilatHistories[] = $pugilatHistory;
         }
 
@@ -712,7 +712,7 @@ class Personnage extends BasePersonnage implements \Stringable
             ++$heroisme;
         }
 
-        if ($this->getCompetenceNiveau('Armurerie') >= 4) {
+        if ($this->getCompetenceNiveau('Forge') >= 4) {
             ++$heroisme;
         }
 
@@ -765,10 +765,10 @@ class Personnage extends BasePersonnage implements \Stringable
             $heroismeHistories[] = $heroismeHistory;
         }
 
-        if ($this->getCompetenceNiveau('Armurerie') >= 4) {
+        if ($this->getCompetenceNiveau('Forge') >= 4) {
             $heroismeHistory = new \App\Entity\HeroismeHistory();
             $heroismeHistory->setHeroisme(1);
-            $heroismeHistory->setExplication('Compétence Armurerie niveau '.$this->getCompetenceNiveau('Armurerie'));
+            $heroismeHistory->setExplication('Compétence Forge niveau '.$this->getCompetenceNiveau('Forge'));
             $heroismeHistories[] = $heroismeHistory;
         }
 

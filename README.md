@@ -78,9 +78,10 @@ Import de la base de donnée (le fichier doit être dans le container)
 `docker exec -it larpm-symfony-database-1 /bin/sh -c "mariadb -uadmin -ppassword larpm < /tmp/backup.sql"`
 
 9) mise à jour
-Commande pour maj aller sur le container (voir point 6) puis faire :
 - docker compose build
 - docker compose pull
+- 
+Commande pour maj aller sur le container (voir point 6) puis faire :
 - composer install
 - composer recipes:install
 
