@@ -99,14 +99,19 @@ class PersonnageController extends AbstractController
         $offset = ($page - 1) * $limit;
         $criteria = [];
         
-        $formData = $request->query->get('personnageFind');
-        $religion = isset($formData['religion']) ? $entityManager->find('LarpManager\Entities\Religion',$formData['religion']):null;
-        $competence = isset($formData['competence']) ? $entityManager->find('LarpManager\Entities\Competence',$formData['competence']):null;
-        $classe = isset($formData['classe']) ? $entityManager->find('LarpManager\Entities\Classe',$formData['classe']):null;
-        $groupe = isset($formData['groupe']) ? $entityManager->find('LarpManager\Entities\Groupe',$formData['groupe']):null;
+        dump($request->query);
+
+        $formData = $request->query->all('personnage_find_form'); //get('personnage_find_form');
+
+        dump($formData);
+
+        $religion = isset($formData['religion']) ? $entityManager->find('App\Entity\Religion',$formData['religion']):null;
+        $competence = isset($formData['competence']) ? $entityManager->find('App\Entity\Competence',$formData['competence']):null;
+        $classe = isset($formData['classe']) ? $entityManager->find('App\Entity\Classe',$formData['classe']):null;
+        $groupe = isset($formData['groupe']) ? $entityManager->find('App\Entity\Groupe',$formData['groupe']):null;
         $optionalParameters = "";
 
-		dump($formData);
+		
         
         // construit le formulaire contenant les filtres de recherche
 		$form = $this->createForm(
