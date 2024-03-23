@@ -9,68 +9,70 @@
 		<li><a href="{{ path('messagerie') }}">Messagerie</a></li>
 		<li class="active">Archives</li>
 	</ol>
-			
-	<div class="well">
-		<div class="panel panel-conan">
-			<div class="panel-heading">
-				Messages archivés
+
+	<div class="well well-sm">
+		<div class="header">
+			<h5>Messages archivés</h5>
+		</div>
+
+		<div class="btn-toolbar mb-2" role="toolbar">
+			<div class="btn-group" role="group">
+				<a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Messages envoyés"
+				   class="btn btn-secondary" href="{{ path('message.envoye') }}"><i class="fa fa-paper-plane"
+																					aria-hidden="true"></i> Envoyé</a>
+				<a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mes Messages"
+				   class="btn btn-secondary" href="{{ path('messagerie') }}"><i class="fa fa-archive"
+																					  aria-hidden="true"></i>
+					Mes messages</a>
+				<a data-bs-toggle="tooltip" data-bs-placement="bottom" title="Nouveau message" class="btn btn-secondary"
+				   href="{{ path('message.new') }}"><i class="fa fa-plus" aria-hidden="true"></i> Nouveau</a>
+
 			</div>
-			<div class="panel-body">
-			
-				<div class="panel panel-group"  id="accordion" role="tablist" aria-multiselectable="true">
-					{% for message in user.messageRelatedByDestinataires if message.lu %}
-						<div class="panel panel-default">
-							<div class="panel-heading" role="tab" id="heading{{ loop.index }}">
-								<h4 class="panel-title">
-									<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
-										{{ message.userRelatedByAuteur.userName }} -- {{ message.creationDate|date('Y-m-d H:i:s') }} -- <strong>{{ message.title }}</strong>
-									</a>
-								</h4>
-							</div>
-							<div id="collapse{{ loop.index }}" class="panel-collapse collapse " role="tabpanel" aria-labelledby="heading{{ loop.index }}">
-								<div class="panel-body">
-									{{ message.text|markdown_to_html }}
+		</div>
+
+		<div class="accordion" id="messageList">
+			{% for message in user.messageRelatedByDestinataires|filter(message => message.lu == 1) %}
+				<div class="accordion-item">
+					<h2 class="accordion-header">
+						<button class="accordion-button d-flex justify-content-between collapsed" type="button"
+								data-bs-toggle="collapse"
+								data-bs-target="#collapse{{ loop.index }}" aria-expanded="true"
+								aria-controls="collapse{{ loop.index }}">
+							<span class="p-2">De {{ message.userRelatedByAuteur.userName }}</span>
+							<span class="p-2 flex-grow-1"><strong>{{ message.title }}</strong></span>
+							<span class="p-2">Le {{ message.creationDate|date('Y-m-d H:i:s') }}</span>
+						</button>
+					</h2>
+					<div id="collapse{{ loop.index }}" class="accordion-collapse collapse"
+						 data-bs-parent="#messageList">
+						<div class="accordion-body row">
+							{{ message.text|markdown_to_html }}
+							<div class="btn-toolbar justify-content-center my-2" role="toolbar">
+								<div class="btn-group" role="group">
+									<a href="{{ path('message.response', {'message': message.id}) }}"
+									   class="btn btn-secondary"
+									   data-bs-toggle="tooltip" data-bs-placement="bottom" title="Répondre"><i
+												class="fa fa-reply" aria-hidden="true"></i>
+										Répondre</a>
 								</div>
 							</div>
 						</div>
-					{% else %}
-						Aucun message non lu.
-					{% endfor %}
+					</div>
 				</div>
-				
-			</div>
+			{% else %}
+
+				<div class="card mb-3 border-info">
+					<div class="card-header"><i class="fa fa-info text-info"></i> Information</div>
+					<div class="card-body">
+						<p class="card-text">
+							Aucun message archivé.
+						</p>
+					</div>
+				</div>
+
+			{% endfor %}
 		</div>
 	</div>
 
 	
 {% endblock body %}
-
-{% block javascript %}
-
-{# ajax message.archiver #}
-<script>
-	$(document).ready(function() {
-		$('a.message_archiver').on('click', function() {
-			$(this).html('<i class="fa fa-spinner fa-spin fa-fw"></i>');
-			var url = $(this).attr('href');
-			var target = $(this).closest('div.panel-default');
-			
-			$.get(url).done(function(data) {
-
-				$(target).hide('slow', function(){ $(target).remove(); });
-				
-				new PNotify({
-        		    title: 'Message archivé',
-        		    text: 'Votre message est archivé',
-        		    type: 'success',
-        		    delay: 2000,
-        		    addclass: "stack-bottomleft",
-        	        stack: stack_bottomleft
-        		});
-			});
-			return false;
-		});
-	});
-</script>
-
-{% endblock javascript %}

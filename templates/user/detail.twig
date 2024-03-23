@@ -22,9 +22,6 @@
 		        <div class="text-muted">
 		            Enregistré.e le {{ user.creationDate|date('d/m/Y') }}
 		        </div>
-		        <div class="text-muted">
-		        	{{ user.coeur|default(0) }} coeur(s) reçu(s).
-		        </div>
 	        
 				{% if is_granted('ROLE_ADMIN', app.user) %}
 			        {% if not user.isEnabled %}

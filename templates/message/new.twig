@@ -11,22 +11,9 @@
 	</ol>
 
 	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('message.new') }}" 
-				method="POST" {{ form_enctype(form) }}
-				novalidate >
-						
-			<fieldset>
-				<legend>Envoi d'un message</legend>
-				
-				{{ form_label(form.title) }}
-				{{ form_widget(form.title) }}
-							
-				{{ form_label(form.userRelatedByDestinataire) }}
-				{{ form_widget(form.userRelatedByDestinataire) }}
-				
-				{{ form_rest(form) }}
-			</fieldset>
-		{{ form_end(form) }}
+		{{ include("_partials/form.twig",{
+			'title': 'Envoi d\'un message',
+			'form' : form}) }}
 	</div>
 
 {% endblock %}
