@@ -54,8 +54,6 @@ class AdminController extends AbstractController
 
     /**
      * Simplifie une taille en bytes et fourni le symbole adequat.
-     *
-     * @param unknown $bytes
      */
     private function getSymbolByQuantity($bytes): string
     {
@@ -96,10 +94,10 @@ class AdminController extends AbstractController
      * Page d'accueil de l'interface d'administration.
      */
     #[Route('/admin', name: 'admin')]
-    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
+    public function indexAction(): Response
     {
         $extensions = get_loaded_extensions();
-        $phpVersion = phpversion();
+        $phpVersion = PHP_VERSION;
         $zendVersion = zend_version();
         $uploadMaxSize = $this->file_upload_max_size();
 
@@ -113,8 +111,7 @@ class AdminController extends AbstractController
         $logTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../var/log'));
 
         // taille des documents
-        // TODO $docTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../private/doc'));
-        $docTotalSpace = 0;
+        $docTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../private/doc'));
 
         return $this->render('index.twig', [
             'phpVersion' => $phpVersion,
@@ -149,7 +146,7 @@ class AdminController extends AbstractController
             $lineCount = 0;
             while (!$logfile->eof()) {
                 $linetmp = $logfile->current();
-                if (1 === preg_match('/CRITICAL/', $linetmp)) {
+                if (str_contains($linetmp, 'CRITICAL')) {
                     $linesFatal[] = $linetmp;
                 }
 
@@ -168,7 +165,7 @@ class AdminController extends AbstractController
                 $logfile->next();
             }
         } else {
-            var_dump('impossible d\'ouvrir '.$filename);
+            echo 'impossible d\'ouvrir '.$filename;
         }
 
         $lines = array_reverse($lines);
@@ -181,32 +178,12 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Exporter la base de données.
-     */
-    #[Route('/admin/database/export', name: 'admin.database.export')]
-    public function databaseExportAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        // TODO ?
-        return $this->render('databaseExport.twig');
-    }
-
-    /**
-     * Mettre à jour la base de données.
-     */
-    #[Route('/admin/database/update', name: 'admin.database.update')]
-    public function databaseUpdateAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        // TODO ?
-        return $this->render('databaseUpdate.twig');
-    }
-
-    /**
      * Vider le cache.
      */
     #[Route('/admin/cache/empty', name: 'admin.cache.empty')]
-    public function cacheEmptyAction(Request $request, EntityManagerInterface $entityManager): RedirectResponseAlias
+    public function cacheEmptyAction(): RedirectResponseAlias
     {
-       dump( shell_exec('php -d memory_limit=-1 '.__DIR__.'/../../bin/console cache:clear'));
+        shell_exec('php -d memory_limit=-1 '.__DIR__.'/../../bin/console cache:clear');
 
         $this->addFlash('success', 'Le cache a été vidé.');
 
@@ -217,7 +194,7 @@ class AdminController extends AbstractController
      * Vider les logs.
      */
     #[Route('/admin/log/empty', name: 'admin.log.empty')]
-    public function logEmptyAction(Request $request, EntityManagerInterface $entityManager): RedirectResponseAlias
+    public function logEmptyAction(): RedirectResponseAlias
     {
         file_put_contents(__DIR__.'/../../var/log/prod.log', '');
         file_put_contents(__DIR__.'/../../var/log/dev.log', '');
