@@ -983,7 +983,7 @@
 						    cartographie.map.spin(false);
 					    });
 					}
-					}).error(function() {
+					}).fail(function() {
 						cartographie.map.spin(false);
 					});
 			},
@@ -1012,7 +1012,7 @@
 						    cartographie.regionsList[country.id] = country;
 					    });
 					}
-					}).error(function() {});
+					}).fail(function() {});
 			},
 
 			// Chargement des fiefs
@@ -1040,7 +1040,7 @@
 						    cartographie.fiefsList[country.id] = country;
 					    });
 					}
-					}).error(function() {});
+					}).fail(function() {});
 			},
 
 			// Chargement des groupes
@@ -1073,7 +1073,7 @@
 						});
 						
 					}
-				}).error(function() {});
+				}).fail(function() {});
 			},
 
 			/*loadLangues: function() {
@@ -1104,7 +1104,7 @@
 							L.control.layers(cartographie.languesOverlay).addTo(cartographie.map);
 							
 						}
-					}).error(function() {});
+					})fail(function() {});
 			},*/
 
 			// sauvegarde une geometrie de territoire en base de donnee
@@ -1124,7 +1124,7 @@
 				    	geom.properties.description = country.description;
 					    this.countriesGeom.addData(geom);
 					}
-					}).error(function() {
+					}).fail(function() {
 						alert("désolé, une erreur est survenue");
 					});
 				
@@ -1150,7 +1150,7 @@
 				    	geom.properties.description = country.description;
 					    this.regionsGeom.addData(geom);
 					}
-					}).error(function() {
+					}).fail(function() {
 						alert("désolé, une erreur est survenue");
 					});
 				
@@ -1176,7 +1176,7 @@
 				    	geom.properties.description = country.description;
 					    this.fiefsGeom.addData(geom);
 					}
-					}).error(function() {
+					}).fail(function() {
 						alert("désolé, une erreur est survenue");
 					});
 				

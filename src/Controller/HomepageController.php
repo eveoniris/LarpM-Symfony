@@ -1,14 +1,19 @@
 <?php
 
-
 namespace App\Controller;
 
+use App\Entity\Annonce;
 use App\Entity\EtatCivil;
+use App\Entity\Gn;
+use App\Entity\Langue;
 use App\Entity\Restriction;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Territoire;
 use App\Form\EtatCivilForm;
 use App\Form\UserRestrictionForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -31,7 +36,7 @@ class HomepageController extends AbstractController
             return $this->redirectToRoute('newUser.step1', [], 303);
         }
 
-        $repoAnnonce = $entityManager->getRepository(\App\Entity\Annonce::class);
+        $repoAnnonce = $entityManager->getRepository(Annonce::class);
         $annonces = $repoAnnonce->findBy(['archive' => false, 'gn' => null], ['update_date' => 'DESC']);
 
         return $this->render('homepage/index.twig', [
@@ -46,7 +51,7 @@ class HomepageController extends AbstractController
     public function newUserStep1Action(Request $request, EntityManagerInterface $entityManager)
     {
         if ($this->getUser()->getEtatCivil()) {
-            $repoAnnonce = $entityManager->getRepository(\App\Entity\Annonce::class);
+            $repoAnnonce = $entityManager->getRepository(Annonce::class);
             $annonces = $repoAnnonce->findBy(['archive' => false, 'gn' => null], ['update_date' => 'DESC']);
 
             return $this->render('homepage/index.twig', [
@@ -90,7 +95,7 @@ class HomepageController extends AbstractController
     /**
      * Troisième étape pour un nouvel utilisateur : les restrictions alimentaires.
      */
-    public function newUserStep3Action(Request $request,  EntityManagerInterface $entityManager)
+    public function newUserStep3Action(Request $request, EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(UserRestrictionForm::class, $this->getUser());
 
@@ -122,7 +127,7 @@ class HomepageController extends AbstractController
     /**
      * Quatrième étape pour un nouvel utilisateur : choisir un GN.
      */
-    public function newUserStep4Action(Request $request,  EntityManagerInterface $entityManager)
+    public function newUserStep4Action(Request $request, EntityManagerInterface $entityManager)
     {
         return $this->render('newUser/step4.twig');
     }
@@ -130,7 +135,7 @@ class HomepageController extends AbstractController
     /**
      * Page d'acceuil pour les utilisateurs non connecté.
      */
-    public function notConnectedIndexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function notConnectedIndexAction(Request $request, EntityManagerInterface $entityManager)
     {
         return $this->render('homepage/not_connected.twig');
     }
@@ -139,7 +144,7 @@ class HomepageController extends AbstractController
      * Affiche une carte du monde.
      */
     #[Route('/world', name: 'world')]
-    public function worldAction(Request $request,  EntityManagerInterface $entityManager)
+    public function worldAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         return $this->render('world.twig');
     }
@@ -147,9 +152,10 @@ class HomepageController extends AbstractController
     /**
      * Fourni la liste des pays, leur geographie et leur description.
      */
-    public function countriesAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/world/countries.json', name: 'world.countries.json')]
+    public function countriesAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $repoTerritoire = $entityManager->getRepository(\App\Entity\Territoire::class);
+        $repoTerritoire = $entityManager->getRepository(Territoire::class);
         $territoires = $repoTerritoire->findRoot();
 
         $countries = [];
@@ -166,15 +172,15 @@ class HomepageController extends AbstractController
             ];
         }
 
-        return $app->json($countries);
+        return new JsonResponse($countries);
     }
 
     /**
      * Fourni la liste des régions.
      */
-    public function regionsAction(Request $request,  EntityManagerInterface $entityManager)
+    public function regionsAction(Request $request, EntityManagerInterface $entityManager)
     {
-        $repoTerritoire = $entityManager->getRepository(\App\Entity\Territoire::class);
+        $repoTerritoire = $entityManager->getRepository(Territoire::class);
         $territoires = $repoTerritoire->findRegions();
 
         $regions = [];
@@ -197,9 +203,9 @@ class HomepageController extends AbstractController
     /**
      * Fourni la liste des fiefs.
      */
-    public function fiefsAction(Request $request,  EntityManagerInterface $entityManager)
+    public function fiefsAction(Request $request, EntityManagerInterface $entityManager)
     {
-        $repoTerritoire = $entityManager->getRepository(\App\Entity\Territoire::class);
+        $repoTerritoire = $entityManager->getRepository(Territoire::class);
         $territoires = $repoTerritoire->findFiefs();
 
         $fiefs = [];
@@ -222,9 +228,9 @@ class HomepageController extends AbstractController
     /**
      * Fourni la liste des langues.
      */
-    public function languesAction(Request $request,  EntityManagerInterface $entityManager)
+    public function languesAction(Request $request, EntityManagerInterface $entityManager)
     {
-        $langueList = $entityManager->getRepository('\\'.\App\Entity\Langue::class)->findAll();
+        $langueList = $entityManager->getRepository('\\'. Langue::class)->findAll();
 
         $langues = [];
         foreach ($langueList as $langue) {
@@ -293,10 +299,10 @@ class HomepageController extends AbstractController
     /**
      * Fourni la liste des groupes.
      */
-    public function groupesAction(Request $request,  EntityManagerInterface $entityManager)
+    public function groupesAction(Request $request, EntityManagerInterface $entityManager)
     {
         // recherche le prochain GN
-        $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
+        $gnRepo = $entityManager->getRepository('\\'. Gn::class);
         $gn = $gnRepo->findNext();
 
         $groupeGnList = $gn->getGroupeGns();
@@ -339,7 +345,7 @@ class HomepageController extends AbstractController
     /**
      * Met à jour la geographie d'un pays.
      */
-    public function updateCountryGeomAction(Request $request,  EntityManagerInterface $entityManager)
+    public function updateCountryGeomAction(Request $request, EntityManagerInterface $entityManager)
     {
         $territoire = $request->get('territoire');
         $geom = $request->get('geom');
@@ -365,7 +371,7 @@ class HomepageController extends AbstractController
     /**
      * Affiche une page récapitulatif des liens pour discuter.
      */
-    public function discuterAction(Request $request,  EntityManagerInterface $entityManager)
+    public function discuterAction(Request $request, EntityManagerInterface $entityManager)
     {
         return $this->render('discuter.twig');
     }
@@ -373,7 +379,7 @@ class HomepageController extends AbstractController
     /**
      * Affiche une page récapitulatif des événements.
      */
-    public function evenementAction(Request $request,  EntityManagerInterface $entityManager)
+    public function evenementAction(Request $request, EntityManagerInterface $entityManager)
     {
         return $this->render('evenement.twig');
     }
@@ -382,7 +388,7 @@ class HomepageController extends AbstractController
      * Affiche les mentions légales.
      */
     #[Route('/legal', name: 'legal')]
-    public function legalAction(Request $request,  EntityManagerInterface $entityManager)
+    public function legalAction(Request $request, EntityManagerInterface $entityManager)
     {
         return $this->render('homepage/legal.twig');
     }
@@ -391,7 +397,7 @@ class HomepageController extends AbstractController
      * Affiche les informations de dev.
      */
     #[Route('/dev', name: 'dev')]
-    public function devAction(Request $request,  EntityManagerInterface $entityManager)
+    public function devAction(Request $request, EntityManagerInterface $entityManager)
     {
         return $this->render('homepage/dev.twig');
     }
@@ -399,7 +405,7 @@ class HomepageController extends AbstractController
     /**
      * Statistiques du projet.
      */
-    public function metricsAction(Request $request,  EntityManagerInterface $entityManager)
+    public function metricsAction(Request $request, EntityManagerInterface $entityManager)
     {
         return $this->render('homepage/metrics/report.html');
     }

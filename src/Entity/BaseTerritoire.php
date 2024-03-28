@@ -12,6 +12,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -34,76 +35,76 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseTerritoire', 'extended' => 'Territoire'])]
 class BaseTerritoire
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
     protected string $nom = '';
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 180, unique: true)]
+    #[Column(type: Types::STRING, length: 180, unique: true)]
     protected ?string $description = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 180, unique: true)]
+    #[Column(type: Types::STRING, length: 180, unique: true)]
     protected ?string $capitale = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 180, unique: true)]
+    #[Column(type: Types::STRING, length: 180, unique: true)]
     protected ?string $politique = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 180, unique: true)]
+    #[Column(type: Types::STRING, length: 180, unique: true)]
     protected ?string $dirigeant = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $population = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $symbole = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $tech_level = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $type_racial = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $inspiration = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $armes_predilection = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $vetements = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $noms_masculin = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $noms_feminin = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $frontieres = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $geojson = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 7, nullable: true)]
+    #[Column(type: Types::STRING, length: 7, nullable: true)]
     protected ?string $color = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $tresor = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $resistance = 0;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $blason = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description_secrete = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, length: 45, nullable: true)]
+    #[Column(type: Types::TEXT, length: 45, nullable: true)]
     protected ?string $statut = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     protected int $ordre_social = 0;
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: Chronologie::class)]
@@ -135,32 +136,32 @@ class BaseTerritoire
     protected Collection $groupeGnOrdres;
 
     #[ORM\ManyToOne(targetEntity: Territoire::class, inversedBy: 'territoires')]
-    #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
     protected ?Territoire $territoire;
 
     #[ORM\OneToOne(mappedBy: 'territoire', targetEntity: TerritoireGuerre::class)]
-    #[ORM\JoinColumn(name: 'territoire_guerre_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'territoire_guerre_id', referencedColumnName: 'id')]
     protected TerritoireGuerre $territoireGuerre;
 
     #[ORM\ManyToOne(targetEntity: Appelation::class, inversedBy: 'territoires')]
-    #[ORM\JoinColumn(name: 'appelation_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'appelation_id', referencedColumnName: 'id')]
     protected Appelation $appelation;
 
     #[ORM\ManyToOne(targetEntity: Langue::class, inversedBy: 'territoires')]
-    #[ORM\JoinColumn(name: 'langue_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'langue_id', referencedColumnName: 'id')]
     protected ?Langue $langue;
 
     #[ORM\ManyToOne(targetEntity: Topic::class, inversedBy: 'territoires')]
-    #[ORM\JoinColumn(name: 'topic_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'topic_id', referencedColumnName: 'id')]
     protected Topic $topic;
 
     #[ORM\ManyToOne(targetEntity: Religion::class, inversedBy: 'territoires')]
-    #[ORM\JoinColumn(name: 'religion_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'religion_id', referencedColumnName: 'id')]
     protected ?Religion $religion;
 
     #[ORM\ManyToMany(targetEntity: Territoire::class, inversedBy: 'territoireStarts')]
     #[ORM\JoinTable(name: 'territoire_quete')]
-    #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'territoire_cible_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $territoireCibles;
 
@@ -168,56 +169,56 @@ class BaseTerritoire
     protected Collection $territoireStarts;
 
     #[ORM\ManyToOne(targetEntity: Groupe::class, inversedBy: 'territoires')]
-    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
     protected ?Groupe $groupe = null;
 
     #[ORM\ManyToOne(targetEntity: Culture::class, inversedBy: 'territoires')]
-    #[ORM\JoinColumn(name: 'culture_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'culture_id', referencedColumnName: 'id')]
     protected ?Culture $culture = null;
 
-    //#[ORM\JoinTable(name: 'territoire_has_construction')]
-    //#[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
-    //#[ORM\InverseJoinColumn(name: 'construction_id', referencedColumnName: 'id', nullable: false)]
-    //#[ORM\OrderBy(['label' => 'ASC'])]
-    //#[ORM\ManyToMany(targetEntity: Construction::class, mappedBy: 'territoires')]
+    // #[ORM\JoinTable(name: 'territoire_has_construction')]
+    // #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    // #[ORM\InverseJoinColumn(name: 'construction_id', referencedColumnName: 'id', nullable: false)]
+    // #[ORM\OrderBy(['label' => 'ASC'])]
+    // #[ORM\ManyToMany(targetEntity: Construction::class, mappedBy: 'territoires')]
     #[ORM\ManyToMany(targetEntity: Construction::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_has_construction')]
-    #[ORM\JoinColumn(name: 'territoire_id')]
+    #[JoinColumn(name: 'territoire_id')]
     protected Collection $constructions;
 
     #[ORM\ManyToMany(targetEntity: Loi::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_has_loi')]
-    #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'loi_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $lois;
 
     #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_ingredient')]
-    #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'ingredient_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $ingredients;
 
     #[ORM\ManyToMany(targetEntity: Ressource::class, inversedBy: 'importateurs')]
     #[ORM\JoinTable(name: 'territoire_importation')]
-    #[ORM\JoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $importations;
 
     #[ORM\ManyToMany(targetEntity: Ressource::class, inversedBy: 'exportateurs')]
     #[ORM\JoinTable(name: 'territoire_exportation')]
-    #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $exportations;
 
     #[ORM\ManyToMany(targetEntity: Langue::class, inversedBy: 'territoireSecondaires')]
     #[ORM\JoinTable(name: 'territoire_langue')]
-    #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $langues;
 
     #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'territoireSecondaires')]
     #[ORM\JoinTable(name: 'territoire_religion')]
-    #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $religions;
 
@@ -531,7 +532,7 @@ class BaseTerritoire
     /**
      * Set the value of geojson.
      */
-    public function setGeojson(string $geojson): static
+    public function setGeojson(?string $geojson): static
     {
         $this->geojson = $geojson;
 
@@ -541,7 +542,7 @@ class BaseTerritoire
     /**
      * Get the value of geojson.
      */
-    public function getGeojson(): string
+    public function getGeojson(): ?string
     {
         return $this->geojson;
     }
@@ -1138,7 +1139,6 @@ class BaseTerritoire
 
     /**
      * Add Langue entity to collection.
-     *
      */
     public function addLangue(Langue $langue): static
     {
@@ -1150,7 +1150,6 @@ class BaseTerritoire
 
     /**
      * Remove Langue entity from collection.
-     *
      */
     public function removeLangue(Langue $langue): static
     {
@@ -1162,7 +1161,6 @@ class BaseTerritoire
 
     /**
      * Get Langue entity collection.
-     *
      */
     public function getLangues(): Collection
     {
@@ -1171,7 +1169,6 @@ class BaseTerritoire
 
     /**
      * Ajoute une religion dans la collection de religion.
-
      */
     public function addReligion(Religion $religion): static
     {
@@ -1183,7 +1180,6 @@ class BaseTerritoire
 
     /**
      * Retire une religion de la collection de religion.
-     *
      */
     public function removeReligion(Religion $religion): static
     {
