@@ -1278,7 +1278,7 @@
 			createLabel: function() {
 				 var polygon = L.polygon([[[-81, 41], [-88, 36], [-84, 31], [-80, 33], [-77, 39], [-81, 41]]]);
 				 console.log(polygon);
-				 var center = polygon.getCenter();
+				 var center = polygon.getBounds().getCenter();
 				 console.log(center);
 				 this.countriesLabelLayer.addTo(this.map);
 				    	

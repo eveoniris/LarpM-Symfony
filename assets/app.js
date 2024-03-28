@@ -47,7 +47,7 @@ bsCustomFileInput.init();
 
 require('bootstrap');
 
-$(document).ready(function() {
+$(document).ready(function () {
     $("[data-toggle='tooltip']").tooltip();
     $("[data-bs-toggle='tooltip']").tooltip();
 
@@ -113,7 +113,7 @@ $(document).ready(function() {
         let activeEditor = tinymce.activeEditor;
 
         console.log(activeEditor);
-        if (! activeEditor) {
+        if (!activeEditor) {
             return;
         }
 
@@ -128,6 +128,7 @@ $(document).ready(function() {
             //tinymce.init(tinyMCEThemeLightFull);
         }
     }
+
     // END Editeur de text TinyMCE
 
     tinymce.init(tinyMCEThemeDark);
@@ -135,13 +136,16 @@ $(document).ready(function() {
     // End editeur de text
 
     // Switch de theme. TODO: En session || cookie
-    document.getElementById('btnSwitch').addEventListener('click',()=>{
-        if (document.documentElement.getAttribute('data-bs-theme') === 'dark') {
-            document.documentElement.setAttribute('data-bs-theme','light')
-            toggleTinyMCE('light');
-        } else {
-            document.documentElement.setAttribute('data-bs-theme','dark')
-            toggleTinyMCE('dark');
-        }
-    })
+    let btnSwitch = document.getElementById('btnSwitch');
+    if (btnSwitch !== null) {
+        document.getElementById('btnSwitch').addEventListener('click', () => {
+            if (document.documentElement.getAttribute('data-bs-theme') === 'dark') {
+                document.documentElement.setAttribute('data-bs-theme', 'light')
+                toggleTinyMCE('light');
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', 'dark')
+                toggleTinyMCE('dark');
+            }
+        })
+    }
 });
