@@ -12,24 +12,20 @@ use App\Form\EtatCivilForm;
 use App\Form\UserRestrictionForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * LarpManager\Controllers\HomepageController.
- *
- * @author kevin
- */
 class HomepageController extends AbstractController
 {
     /**
      * Choix de la page d'acceuil en fonction de l'état de l'utilisateur.
      */
-    public function indexAction(Request $request, EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         if (!$this->getUser()) {
-            return $this->notConnectedIndexAction($request);
+            return $this->notConnectedIndexAction();
         }
 
         if (!$this->getUser()->getEtatCivil()) {
@@ -46,11 +42,19 @@ class HomepageController extends AbstractController
     }
 
     /**
+     * Page d'acceuil pour les utilisateurs non connecté.
+     */
+    public function notConnectedIndexAction(): Response
+    {
+        return $this->render('homepage/not_connected.twig');
+    }
+
+    /**
      * Première étape pour un nouvel utilisateur.
      */
-    public function newUserStep1Action(Request $request, EntityManagerInterface $entityManager)
+    public function newUserStep1Action(Request $request, EntityManagerInterface $entityManager): Response
     {
-        if ($this->getUser()->getEtatCivil()) {
+        if ($this->getUser()?->getEtatCivil()) {
             $repoAnnonce = $entityManager->getRepository(Annonce::class);
             $annonces = $repoAnnonce->findBy(['archive' => false, 'gn' => null], ['update_date' => 'DESC']);
 
@@ -66,7 +70,7 @@ class HomepageController extends AbstractController
     /**
      * Seconde étape pour un nouvel utilisateur : enregistrer les informations administratives.
      */
-    public function newUserStep2Action(Request $request)
+    public function newUserStep2Action(Request $request): RedirectResponse|Response
     {
         $etatCivil = $this->getUser()?->getEtatCivil();
         if (!$etatCivil) {
@@ -81,8 +85,8 @@ class HomepageController extends AbstractController
             $etatCivil = $form->getData();
             $this->getUser()->setEtatCivil($etatCivil);
 
-            $entityManager->persist($this->getUser());
-            $entityManager->flush();
+            $this->entityManager->persist($this->getUser());
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('newUser.step3', [], 303);
         }
@@ -133,14 +137,6 @@ class HomepageController extends AbstractController
     }
 
     /**
-     * Page d'acceuil pour les utilisateurs non connecté.
-     */
-    public function notConnectedIndexAction(Request $request, EntityManagerInterface $entityManager)
-    {
-        return $this->render('homepage/not_connected.twig');
-    }
-
-    /**
      * Affiche une carte du monde.
      */
     #[Route('/world', name: 'world')]
@@ -155,74 +151,58 @@ class HomepageController extends AbstractController
     #[Route('/world/countries.json', name: 'world.countries.json')]
     public function countriesAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $repoTerritoire = $entityManager->getRepository(Territoire::class);
-        $territoires = $repoTerritoire->findRoot();
+        return $this->getWorldTerritoireGeoData('countries');
+    }
 
-        $countries = [];
+    private function getWorldTerritoireGeoData(string $type): JsonResponse
+    {
+        $repoTerritoire = $this->entityManager->getRepository(Territoire::class);
+
+        $territoires = match ($type) {
+            'fiefs' => $repoTerritoire->findFiefs(),
+            'countries' => $repoTerritoire->findRoot(),
+            'regions' => $repoTerritoire->findRegions(),
+            default => throw new \Exception('Unkonw territoire type : '.$type),
+        };
+
+        $data = [];
         foreach ($territoires as $territoire) {
-            $countries[] = [
-                'id' => $territoire->getId(),
-                'geom' => $territoire->getGeojson(),
-                'name' => $territoire->getNom(),
-                'color' => $territoire->getColor(),
-                'description' => strip_tags((string) $territoire->getDescription()),
-                'groupes' => array_values($territoire->getGroupesPj()),
-                'desordre' => $territoire->getStatutIndex(),
-                'langue' => $territoire->getLanguePrincipale(),
-            ];
+            $data[] = $this->addGeoData($territoire);
         }
 
-        return new JsonResponse($countries);
+        return new JsonResponse($data);
+    }
+
+    private function addGeoData($data): array
+    {
+        return [
+            'id' => $data->getId(),
+            'geom' => $data->getGeojson(),
+            'name' => $data->getNom(),
+            'color' => $data->getColor(),
+            'description' => strip_tags((string) $data->getDescription()),
+            'groupes' => array_values($data->getGroupesPj()),
+            'desordre' => $data->getStatutIndex(),
+            'langue' => $data->getLanguePrincipale(),
+        ];
     }
 
     /**
      * Fourni la liste des régions.
      */
-    public function regionsAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/world/regions.json', name: 'world.regions.json')]
+    public function regionsAction(EntityManagerInterface $entityManager)
     {
-        $repoTerritoire = $entityManager->getRepository(Territoire::class);
-        $territoires = $repoTerritoire->findRegions();
-
-        $regions = [];
-        foreach ($territoires as $territoire) {
-            $regions[] = [
-                'id' => $territoire->getId(),
-                'geom' => $territoire->getGeojson(),
-                'name' => $territoire->getNom(),
-                'color' => $territoire->getColor(),
-                'description' => strip_tags((string) $territoire->getDescription()),
-                'groupes' => array_values($territoire->getGroupesPj()),
-                'desordre' => $territoire->getStatutIndex(),
-                'langue' => $territoire->getLanguePrincipale(),
-            ];
-        }
-
-        return $app->json($regions);
+        return $this->getWorldTerritoireGeoData('regions');
     }
 
     /**
      * Fourni la liste des fiefs.
      */
-    public function fiefsAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/world/fiefs.json', name: 'world.fiefs.json')]
+    public function fiefsAction(): JsonResponse
     {
-        $repoTerritoire = $entityManager->getRepository(Territoire::class);
-        $territoires = $repoTerritoire->findFiefs();
-
-        $fiefs = [];
-        foreach ($territoires as $territoire) {
-            $fiefs[] = [
-                'id' => $territoire->getId(),
-                'geom' => $territoire->getGeojson(),
-                'name' => $territoire->getNom(),
-                'color' => $territoire->getColor(),
-                'description' => strip_tags((string) $territoire->getDescription()),
-                'groupes' => array_values($territoire->getGroupesPj()),
-                'desordre' => $territoire->getStatutIndex(),
-                'langue' => $territoire->getLanguePrincipale(),
-            ];
-        }
-
-        return $app->json($fiefs);
+        return $this->getWorldTerritoireGeoData('fiefs');
     }
 
     /**
@@ -230,7 +210,7 @@ class HomepageController extends AbstractController
      */
     public function languesAction(Request $request, EntityManagerInterface $entityManager)
     {
-        $langueList = $entityManager->getRepository('\\'. Langue::class)->findAll();
+        $langueList = $entityManager->getRepository(Langue::class)->findAll();
 
         $langues = [];
         foreach ($langueList as $langue) {
@@ -293,7 +273,7 @@ class HomepageController extends AbstractController
             ];
         }
 
-        return $app->json($langues);
+        return new JsonResponse($langues);
     }
 
     /**
@@ -302,7 +282,7 @@ class HomepageController extends AbstractController
     public function groupesAction(Request $request, EntityManagerInterface $entityManager)
     {
         // recherche le prochain GN
-        $gnRepo = $entityManager->getRepository('\\'. Gn::class);
+        $gnRepo = $entityManager->getRepository(Gn::class);
         $gn = $gnRepo->findNext();
 
         $groupeGnList = $gn->getGroupeGns();
@@ -339,7 +319,7 @@ class HomepageController extends AbstractController
             }
         }
 
-        return $app->json($groupes);
+        return new JsonResponse($groupes);
     }
 
     /**
@@ -365,7 +345,7 @@ class HomepageController extends AbstractController
             'groupes' => array_values($territoire->getGroupesPj()),
         ];
 
-        return $app->json($country);
+        return new JsonResponse($country);
     }
 
     /**
