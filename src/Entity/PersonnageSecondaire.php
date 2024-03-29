@@ -28,6 +28,6 @@ class PersonnageSecondaire extends BasePersonnageSecondaire
      */
     public function getLabel(): string
     {
-        return $this->getClasse()->getLabel();
+        return $this->getClasse()?->getLabel() ?? '';
     }
 }

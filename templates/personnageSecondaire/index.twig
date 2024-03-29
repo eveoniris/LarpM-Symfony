@@ -2,65 +2,70 @@
 
 {% block body %}
 
-<ol class="breadcrumb">
-  <li class="active">Personnages secondaires</li>
-</ol>
+    <ol class="breadcrumb">
+        <li class="active">Personnages secondaires</li>
+    </ol>
 
-<div class="well bs-component">	
-	<table class="table">
-		<caption >
-			<h5>Liste des personnages secondaires
-				<a 	href="{{ path('personnageSecondaire.add') }}" 
-					class="btn btn-default"
-					role="button"
-					data-toggle="tooltip" 
-					data-placement="bottom"
-					title="Ajouter un personnage secondaire">
-					<i class="fa fa-plus"></i>
-				</a>
-			</h5>
-		</caption>
-		<thead>
-			<tr>
-				<th>Label</th>
-				<th>Compétences</th>
-				<th></th>
-			</tr>
-		</thead>	
-		<tbody>
-			{%  for personnageSecondaire in personnageSecondaires %}
-				<tr>
-					{# Josef - 2010109 - Cette vue concernant l'ensemble des joueurs les libélés non genrés sont adoptés #}
-					<td>{{ personnageSecondaire.classe.label }}</td>
-					<td>
-						{{ personnageSecondaire.competences|join(' / ') }}
-					</td>
-					<td>
-						<div class="btn-group pull-right" role="group" aria-label="...">
-		
-							<a 	href="{{ path('personnageSecondaire.update', {'personnageSecondaire': personnageSecondaire.id}) }}" 
-								class="btn btn-default" 
-								role="button"
-								data-toggle="tooltip" 
-								data-placement="top"
-								title="Modifier">
-								<i class="fa fa-pencil"></i>
-							</a>
-							
-							<a 	href="{{ path('personnageSecondaire.delete', {'personnageSecondaire': personnageSecondaire.id}) }}" 
-								class="btn btn-danger" 
-								role="button"
-								data-toggle="tooltip" 
-								data-placement="top"
-								title="Supprimer">
-								<i class="fa fa-close"></i>
-							</a>
-						</div>
-						
-					</td>		
-				</tr>
-			{%  endfor %}
-		</tbody>
-	</table>
-</div>
+    <div class="well well-sm bs-component">
+
+        <div class="header">
+            <h5>Liste des personnages secondaires</h5>
+        </div>
+
+        <div class="btn-toolbar" role="toolbar" aria-label="...">
+            <div class="btn-group" role="group" aria-label="...">
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="Ajouter un personnage secondaire" href="{{ path('personnageSecondaire.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Label</th>
+            <th>Compétences</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for personnageSecondaire in personnageSecondaires %}
+            <tr>
+                {# Josef - 2010109 - Cette vue concernant l'ensemble des joueurs les libélés non genrés sont adoptés #}
+                <td>{{ personnageSecondaire.classe.label }}</td>
+                <td>
+                    {% for competenceFamily in personnageSecondaire.competences %}
+                        <a class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0"
+                           data-bs-toggle="tooltip" data-bs-title="{{ competenceFamily.description|striptags }}" data-bs-placement="bottom"
+                           href="{{ path('competenceFamily.detail', {'competenceFamily': competenceFamily.id }) }}">{{ competenceFamily.label }}</a>
+                    {% endfor %}
+                </td>
+                <td>
+                    <div class="btn-toolbar pull-right" role="toolbar">
+                        <div class="btn-group" role="group">
+                            <a href="{{ path('personnageSecondaire.update', {'personnageSecondaire': personnageSecondaire.id}) }}"
+                               class="btn btn-secondary"
+                               role="button"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="bottom"
+                               title="Modifier">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+
+                            <a href="{{ path('personnageSecondaire.delete', {'personnageSecondaire': personnageSecondaire.id}) }}"
+                               class="btn btn-secondary"
+                               role="button"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="bottom"
+                               title="Supprimer">
+                                <i class="fa fa-close"></i>
+                            </a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
 {% endblock %}
