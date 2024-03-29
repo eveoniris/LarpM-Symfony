@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\PersonnageSecondaire;
@@ -9,31 +8,33 @@ use App\Form\PersonnageSecondaireForm;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_REGLE')]
+#[IsGranted('ROLE_REGLE')]
 class PersonnageSecondaireController extends AbstractController
 {
     /**
      * affiche la liste des personnages secondaires.
      */
     #[Route('/personnageSecondaire', name: 'personnageSecondaire.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\PersonnageSecondaire::class);
-        $personnageSecondaires = $repo->findAll();
-
-        return $this->render('personnageSecondaire/index.twig', ['personnageSecondaires' => $personnageSecondaires]);
+        return $this->render(
+            'personnageSecondaire/index.twig',
+            ['personnageSecondaires' => $this->entityManager->getRepository(PersonnageSecondaire::class)->findAll()]
+        );
     }
 
     /**
      * Detail d'un personnage secondaire.
      */
     #[Route('/personnageSecondaire/detail/{id}', name: 'personnageSecondaire.detail')]
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] PersonnageSecondaire $personnageSecondaire)
+    public function detailAction(#[MapEntity] PersonnageSecondaire $personnageSecondaire): Response
     {
         return $this->render('personnageSecondaire/detail.twig', ['personnageSecondaire' => $personnageSecondaire]);
     }
@@ -42,10 +43,10 @@ class PersonnageSecondaireController extends AbstractController
      * Ajout d'un personnage secondaire.
      */
     #[Route('/personnageSecondaire/add', name: 'personnageSecondaire.add')]
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    public function addAction(Request $request): RedirectResponse|Response
     {
         $form = $this->createForm(PersonnageSecondaireForm::class, new PersonnageSecondaire())
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -59,10 +60,10 @@ class PersonnageSecondaireController extends AbstractController
                 $personnageSecondaireCompetence->setPersonnageSecondaire($personnageSecondaire);
             }
 
-            $entityManager->persist($personnageSecondaire);
-            $entityManager->flush();
+            $this->entityManager->persist($personnageSecondaire);
+            $this->entityManager->flush();
 
-           $this->addFlash('success', 'Le personnage secondaire été sauvegardé');
+            $this->addFlash('success', 'Le personnage secondaire été sauvegardé');
 
             return $this->redirectToRoute('personnageSecondaire.list', [], 303);
         }
@@ -75,8 +76,8 @@ class PersonnageSecondaireController extends AbstractController
     /**
      * Mise à jour d'un personnage secondaire.
      */
-    #[Route('/personnageSecondaire/update/{id}', name: 'personnageSecondaire.update')]
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] PersonnageSecondaire $personnageSecondaire)
+    #[Route('/personnageSecondaire/update/{personnageSecondaire}', name: 'personnageSecondaire.update')]
+    public function updateAction(Request $request, #[MapEntity] PersonnageSecondaire $personnageSecondaire): RedirectResponse|Response
     {
         /**
          *  Crée un tableau contenant les objets personnageSecondaireCompetences courants de la base de données.
@@ -87,7 +88,7 @@ class PersonnageSecondaireController extends AbstractController
         }
 
         $form = $this->createForm(PersonnageSecondaireForm::class, $personnageSecondaire)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -105,14 +106,14 @@ class PersonnageSecondaireController extends AbstractController
              *  supprime la relation entre le groupeClasse et le groupe
              */
             foreach ($originalPersonnageSecondaireComptences as $personnageSecondaireCompetence) {
-                if (false == $personnageSecondaire->getPersonnageSecondaireCompetences()->contains($personnageSecondaireCompetence)) {
-                    $entityManager->remove($personnageSecondaireCompetence);
+                if (false === $personnageSecondaire->getPersonnageSecondaireCompetences()->contains($personnageSecondaireCompetence)) {
+                    $this->entityManager->remove($personnageSecondaireCompetence);
                 }
             }
 
-            $entityManager->persist($personnageSecondaire);
-            $entityManager->flush();
-           $this->addFlash('success', 'Le personnage secondaire a été mis à jour.');
+            $this->entityManager->persist($personnageSecondaire);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Le personnage secondaire a été mis à jour.');
 
             return $this->redirectToRoute('personnageSecondaire.list');
         }
@@ -126,11 +127,11 @@ class PersonnageSecondaireController extends AbstractController
     /**
      * Suppression d'un personnage secondaire.
      */
-    #[Route('/personnageSecondaire/delete/{id}', name: 'personnageSecondaire.delete')]
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] PersonnageSecondaire $personnageSecondaire)
+    #[Route('/personnageSecondaire/delete/{personnageSecondaire}', name: 'personnageSecondaire.delete')]
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] PersonnageSecondaire $personnageSecondaire): RedirectResponse|Response
     {
         $form = $this->createForm(PersonnageSecondaireDeleteForm::class, $personnageSecondaire)
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -144,7 +145,7 @@ class PersonnageSecondaireController extends AbstractController
             $entityManager->remove($personnageSecondaire);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le personnage secondaire a été supprimé.');
+            $this->addFlash('success', 'Le personnage secondaire a été supprimé.');
 
             return $this->redirectToRoute('personnageSecondaire.list', [], 303);
         }
