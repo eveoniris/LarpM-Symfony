@@ -21,7 +21,7 @@ class PersonnageSecondaireController extends AbstractController
     /**
      * affiche la liste des personnages secondaires.
      */
-    #[Route('/personnageSecondaire', name: 'personnageSecondaire.index')]
+    #[Route('/personnageSecondaire', name: 'personnageSecondaire.list')]
     public function indexAction(): Response
     {
         return $this->render(
