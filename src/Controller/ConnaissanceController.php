@@ -1,17 +1,20 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Connaissance;
 use App\Form\ConnaissanceDeleteForm;
 use App\Form\ConnaissanceForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_REGLE')]
+#[IsGranted('ROLE_REGLE')]
 class ConnaissanceController extends AbstractController
 {
     // liste des colonnes à afficher par défaut sur les vues 'personnages' (l'ordre est pris en compte)
@@ -21,9 +24,9 @@ class ConnaissanceController extends AbstractController
      * Liste des connaissances.
      */
     #[Route('/connaissance', name: 'connaissance.list')]
-    public function listAction(Request $request,  EntityManagerInterface $entityManager)
+    public function listAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $connaissances = $entityManager->getRepository('\\'.\App\Entity\Connaissance::class)->findAllOrderedByLabel();
+        $connaissances = $entityManager->getRepository(Connaissance::class)->findAllOrderedByLabel();
 
         return $this->render('connaissance/list.twig', [
             'connaissances' => $connaissances,
@@ -33,10 +36,9 @@ class ConnaissanceController extends AbstractController
     /**
      * Detail d'une connaissance.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/connaissance/{connaissance}', name: 'connaissance.detail')]
+    public function detailAction(Request $request, #[MapEntity] Connaissance $connaissance): Response
     {
-        $connaissance = $request->get('connaissance');
-
         return $this->render('connaissance/detail.twig', [
             'connaissance' => $connaissance,
         ]);
@@ -45,12 +47,13 @@ class ConnaissanceController extends AbstractController
     /**
      * Ajoute une connaissance.
      */
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/connaissance/add', name: 'connaissance.add')]
+    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $connaissance = new Connaissance();
 
         $form = $this->createForm(ConnaissanceForm::class, $connaissance)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -65,7 +68,7 @@ class ConnaissanceController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                    $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
                     return $this->redirectToRoute('connaissance.list', [], 303);
                 }
@@ -80,7 +83,7 @@ class ConnaissanceController extends AbstractController
             $entityManager->persist($connaissance);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La connaissance a été ajoutée');
+            $this->addFlash('success', 'La connaissance a été ajoutée');
 
             return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], 303);
         }
@@ -94,12 +97,11 @@ class ConnaissanceController extends AbstractController
     /**
      * Met à jour une connaissance.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/connaissance/{connaissance}/update', name: 'connaissance.update')]
+    public function updateAction(Request $request, #[MapEntity] Connaissance $connaissance): RedirectResponse|Response
     {
-        $connaissance = $request->get('connaissance');
-
         $form = $this->createForm(ConnaissanceForm::class, $connaissance)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -115,7 +117,7 @@ class ConnaissanceController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                    $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
                     return $this->redirectToRoute('connaissance.list', [], 303);
                 }
@@ -127,10 +129,10 @@ class ConnaissanceController extends AbstractController
                 $connaissance->setDocumentUrl($documentFilename);
             }
 
-            $entityManager->persist($connaissance);
-            $entityManager->flush();
+            $this->entityManager->persist($connaissance);
+            $this->entityManager->flush();
 
-           $this->addFlash('success', 'La connaissance a été sauvegardée');
+            $this->addFlash('success', 'La connaissance a été sauvegardée');
 
             return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], 303);
         }
@@ -144,12 +146,11 @@ class ConnaissanceController extends AbstractController
     /**
      * Supprime une connaissance.
      */
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/connaissance/{connaissance}/delete', name: 'connaissance.delete')]
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Connaissance $connaissance): RedirectResponse|Response
     {
-        $connaissance = $request->get('connaissance');
-
         $form = $this->createForm(ConnaissanceDeleteForm::class, $connaissance)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -159,7 +160,7 @@ class ConnaissanceController extends AbstractController
             $entityManager->remove($connaissance);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La connaissance a été supprimée');
+            $this->addFlash('success', 'La connaissance a été supprimée');
 
             return $this->redirectToRoute('connaissance.list', [], 303);
         }
@@ -173,10 +174,10 @@ class ConnaissanceController extends AbstractController
     /**
      * Obtenir le document lié a une connaissance.
      */
-    public function getDocumentAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/connaissance/{connaissance}/document', name: 'connaissance.document')]
+    public function getDocumentAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Connaissance $connaissance)
     {
         $document = $request->get('document');
-        $connaissance = $request->get('connaissance');
 
         $file = __DIR__.'/../../../private/doc/'.$document;
 
@@ -196,7 +197,8 @@ class ConnaissanceController extends AbstractController
      *
      * @param Connaissance
      */
-    public function personnagesAction(Request $request,  EntityManagerInterface $entityManager, Connaissance $connaissance)
+    #[Route('/connaissance/{connaissance}/personnages', name: 'connaissance.personnages')]
+    public function personnagesAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Connaissance $connaissance): Response
     {
         $routeName = 'connaissance.personnages';
         $routeParams = ['connaissance' => $connaissance->getId()];
