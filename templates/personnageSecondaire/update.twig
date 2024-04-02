@@ -6,7 +6,7 @@
 	  <li class="active">Modifier</li>
 	</ol>
 
-	{{ include("admin/personnageSecondaire/fragment/form.twig",{
+	{{ include("personnageSecondaire/fragment/form.twig",{
 		'legend': 'Modification d\'un personnage secondaire',
 		'action': path('personnageSecondaire.update',{'personnageSecondaire': personnageSecondaire.id}),
 		'form' : form}) }}
