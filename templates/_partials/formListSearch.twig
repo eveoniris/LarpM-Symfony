@@ -1,0 +1,36 @@
+<div class="d-flex justify-content-center">
+    <ul class="list-group">
+        <li class="list-group-item">
+            <div class="btn-toolbar" role="toolbar">
+                {{ form_start(form, {"action": actionPath}) }}
+                <div class="form-group">
+                    <div class="input-group">
+                        {{ form_widget(form.value) }}
+                        {{ form_widget(form.type) }}
+                        {% if searchCriterias is defined %}
+                            // TODO
+                        {% endif %}
+                        <div class="input-group-btn">
+                            <button type="submit" class="btn btn-default"
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                    title="Lancer la recherche"><i class="fa fa-search"></i>
+                            </button>
+                            <a class="btn btn-default"
+                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="Reset"
+                               href="{{ actionPath }}"><i class="fa fa-refresh"></i>
+                            </a>
+                            {% if canAdd is defined %}
+                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                                   title="{{ canAdd.title }}" href="{{ canAdd.path }}">
+                                    <i class="fa fa-plus"></i> Ajouter
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {{ form_rest(form) }}
+                {{ form_end(form) }}
+            </div>
+        </li>
+    </ul>
+</div>

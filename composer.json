@@ -46,7 +46,8 @@
         "twig/extra-bundle": "*",
         "twig/intl-extra": "3.8.*",
         "twig/markdown-extra": "*",
-        "twig/twig": "3.8.*"
+        "twig/twig": "3.8.*",
+      "ext-http": "*"
     },
     "config": {
         "allow-plugins": {

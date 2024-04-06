@@ -1,0 +1,32 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :  breadcrumb} %}
+
+    <div class="well well-sm bs-component">
+        <div class="header">
+            <h5>{{ title }}</h5>
+        </div>
+
+        {% if entity.getLabel is defined  %}
+            <h3 class="border-bottom pb-2 ">{{ entity.getLabel }}</h3>
+        {% endif %}
+
+        {% if entity.getDescription is defined %}
+            <p>
+                {{ entity.getDescription|markdown_to_html }}
+            </p>
+        {% endif %}
+
+        {% if content is defined %}
+            <div>
+                {{ content|markdown_to_html }}
+            </div>
+        {% endif %}
+        {{ form(form) }}
+    </div>
+
+{% endblock body %}
