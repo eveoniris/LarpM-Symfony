@@ -1,0 +1,6 @@
+<a href="{{ path( route, {'order_by': field, 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')}) }}">
+    {{ name }}
+    {% if app.request.get('order_by') == field %}
+        <i class="fa-solid fa-caret-{{ orderDir == 'ASC' ? 'down' : 'up' }}"></i>
+    {% endif %}
+</a>

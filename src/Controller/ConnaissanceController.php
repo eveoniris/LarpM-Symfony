@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Connaissance;
-use App\Form\ConnaissanceDeleteForm;
 use App\Form\ConnaissanceForm;
+use App\Form\DeleteForm;
+use App\Form\Entity\ListSearch;
+use App\Form\ListFindForm;
+use App\Repository\ConnaissanceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -12,31 +15,79 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_REGLE')]
+#[Route('/connaissance', name: 'connaissance.')]
 class ConnaissanceController extends AbstractController
 {
+    // TODO : check this
     // liste des colonnes à afficher par défaut sur les vues 'personnages' (l'ordre est pris en compte)
     private array $defaultPersonnageListColumnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser'];
 
-    /**
-     * Liste des connaissances.
-     */
-    #[Route('/connaissance', name: 'connaissance.list')]
-    public function listAction(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route(name: 'list')]
+    public function listAction(Request $request): Response
     {
-        $connaissances = $entityManager->getRepository(Connaissance::class)->findAllOrderedByLabel();
+        $alias = ConnaissanceRepository::getEntityAlias();
+        $type = null;
+        $value = null;
+
+        $listSearch = new ListSearch();
+        $form = $this->createForm(type: ListFindForm::class, data: $listSearch);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $type = $data->getType();
+            $value = $data->getValue();
+        }
+
+        /** @var ConnaissanceRepository $connaissanceRepository */
+        $connaissanceRepository = $this->entityManager->getRepository(Connaissance::class);
+        $orderBy = $this->getRequestOrder(
+            defOrderBy: 'label',
+            alias: $alias,
+            allowedFields: $connaissanceRepository->getFieldNames()
+        );
+
+        $query = $connaissanceRepository->createQueryBuilder($alias)
+            ->orderBy(key($orderBy), current($orderBy));
+
+        if (!empty($value)) {
+            if (empty($type) || '*' === $type) {
+                $query->orWhere($alias.'.id LIKE :value');
+                $query->orWhere($alias.'.label LIKE :value');
+                $query->orWhere($alias.'.description LIKE :value');
+
+                $query->setParameter('value', '%'.$value.'%');
+            } elseif ('secret' === $type) {
+                $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+                $query->orWhere($alias.'.secret = :value');
+                $query->setParameter('value', $value);
+            } else {
+                // TODO debug when using this criteria
+                $query->where($query->expr()->like($alias.'.'.$type, "'%".$value."%'"));
+            }
+        }
+
+        $paginator = $connaissanceRepository->findPaginatedQuery(
+            $query->getQuery(), $this->getRequestLimit(), $this->getRequestPage()
+        );
 
         return $this->render('connaissance/list.twig', [
-            'connaissances' => $connaissances,
+            'searchValue' => $value,
+            'form' => $form->createView(),
+            'paginator' => $paginator,
+            'orderDir' => $this->getRequestOrderDir(),
         ]);
     }
 
     /**
      * Detail d'une connaissance.
      */
-    #[Route('/connaissance/{connaissance}', name: 'connaissance.detail')]
+    #[Route('/{connaissance}', name: 'detail', requirements: ['connaissance' => Requirement::DIGITS])]
     public function detailAction(Request $request, #[MapEntity] Connaissance $connaissance): Response
     {
         return $this->render('connaissance/detail.twig', [
@@ -47,7 +98,7 @@ class ConnaissanceController extends AbstractController
     /**
      * Ajoute une connaissance.
      */
-    #[Route('/connaissance/add', name: 'connaissance.add')]
+    #[Route('/add', name: 'add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $connaissance = new Connaissance();
@@ -97,7 +148,7 @@ class ConnaissanceController extends AbstractController
     /**
      * Met à jour une connaissance.
      */
-    #[Route('/connaissance/{connaissance}/update', name: 'connaissance.update')]
+    #[Route('/{connaissance}/update', name: 'update', requirements: ['connaissance' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Connaissance $connaissance): RedirectResponse|Response
     {
         $form = $this->createForm(ConnaissanceForm::class, $connaissance)
@@ -113,6 +164,7 @@ class ConnaissanceController extends AbstractController
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
                 $path = __DIR__.'/../../../private/doc/';
+                $filename = $files['document']->getClientOriginalName();
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -146,36 +198,27 @@ class ConnaissanceController extends AbstractController
     /**
      * Supprime une connaissance.
      */
-    #[Route('/connaissance/{connaissance}/delete', name: 'connaissance.delete')]
+    #[Route('/{connaissance}/delete', name: 'delete', requirements: ['connaissance' => Requirement::DIGITS], methods: ['DELETE', 'GET', 'POST'])]
     public function deleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Connaissance $connaissance): RedirectResponse|Response
     {
-        $form = $this->createForm(ConnaissanceDeleteForm::class, $connaissance)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $connaissance = $form->getData();
-
-            $entityManager->remove($connaissance);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La connaissance a été supprimée');
-
-            return $this->redirectToRoute('connaissance.list', [], 303);
-        }
-
-        return $this->render('connaissance/delete.twig', [
-            'connaissance' => $connaissance,
-            'form' => $form->createView(),
-        ]);
+        return $this->genericDelete(
+            $connaissance,
+            'Supprimer une connaissance',
+            'La connaissance a été supprimée',
+            'connaissance.list',
+            [
+                ['route' => $this->generateUrl('connaissance.list'), 'name' => 'Liste des connaissances'],
+                ['route' => 'connaissance.detail', 'connaissance' => $connaissance->getId(), 'name' => $connaissance->getLabel()],
+                ['name' => 'Supprimer une connaissance'],
+            ]
+        );
     }
 
     /**
      * Obtenir le document lié a une connaissance.
      */
-    #[Route('/connaissance/{connaissance}/document', name: 'connaissance.document')]
-    public function getDocumentAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Connaissance $connaissance)
+    #[Route('/{connaissance}/document', name: 'document', requirements: ['connaissance' => Requirement::DIGITS])]
+    public function getDocumentAction(Request $request, #[MapEntity] Connaissance $connaissance)
     {
         $document = $request->get('document');
 
@@ -192,13 +235,8 @@ class ConnaissanceController extends AbstractController
         ]);
     }
 
-    /**
-     * Liste des personnages ayant cette connaissance.
-     *
-     * @param Connaissance
-     */
-    #[Route('/connaissance/{connaissance}/personnages', name: 'connaissance.personnages')]
-    public function personnagesAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Connaissance $connaissance): Response
+    #[Route('/{connaissance}/personnages', name: 'personnages', requirements: ['connaissance' => Requirement::DIGITS])]
+    public function personnagesAction(Request $request, #[MapEntity] Connaissance $connaissance): Response
     {
         $routeName = 'connaissance.personnages';
         $routeParams = ['connaissance' => $connaissance->getId()];

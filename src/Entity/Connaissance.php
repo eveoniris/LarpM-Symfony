@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ConnaissanceRepository;
 use Doctrine\ORM\Mapping\Entity;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 #[Entity(repositoryClass: ConnaissanceRepository::class)]
 class Connaissance extends BaseConnaissance
@@ -15,6 +16,6 @@ class Connaissance extends BaseConnaissance
 
     public function getPrintLabel(): ?string
     {
-        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
+        return (new AsciiSlugger())->slug($this->getLabel());
     }
 }

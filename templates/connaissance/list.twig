@@ -4,41 +4,88 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des connaissances</li>
-	</ol>
-	
-	<div class="well well-sm">
-	
-		<a href="{{ path('connaissance.add') }}"><i class="fa fa-plus"></i> Ajouter une connaissance</a>
-		
-		<ul class="list-group">
-		{% for connaissance in connaissances %}
-		
-			<li class="list-group-item">
-				<div class="row">
-					<div class="col-md-8">
-						{% if connaissance.secret %}<span style="color:red;">Secret</span> - {% endif %}<strong>{{ connaissance.label }}</strong>
-						{{ connaissance.description|markdown_to_html }}
-						{% if connaissance.contraintes %}⚠️ <strong>Prérequis :</strong>{{ connaissance.contraintes|markdown_to_html }}{% endif %}
-						{% if connaissance.documentUrl %}
-							<a href="{{ path('connaissance.document', {'connaissance': connaissance.id, 'document': connaissance.documentUrl}) }}">Télécharger le pdf associé</a>
-						{% else %}
-							Pas de document lié.
-						{% endif %}
-					</div>
-					<div class="col-md-4">
-						<a href="{{ path('connaissance.update',{'connaissance':connaissance.id}) }}"><i class="fa fa-pencil"></i> Modifier</a>&nbsp;|&nbsp;
-						<a href="{{ path('connaissance.detail',{'connaissance':connaissance.id}) }}"><i class="fa fa-eye"></i> Detail</a>&nbsp;|&nbsp;
-						<a href="{{ path('connaissance.personnages',{'connaissance':connaissance.id}) }}"><i class="fa fa-users"></i> Personnages ({{ connaissance.personnages|length }})</a>&nbsp;|&nbsp;
-						<a href="{{ path('connaissance.delete',{'connaissance':connaissance.id}) }}"><i class="fa fa-eraser"></i> Supprimer</a>
-					</div>
-				</div>
-		    </li>
+    {% include '_partials/breadcrumb.twig'
+        with {
+        'items' : {
+            1 : {'name' : 'Liste des connaissances'},
+        }
+    } %}
 
-		{% endfor %}
-	 	</ul>
-	</div>
-	
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Liste des connaissances</h5>
+        </div>
+
+        {% include '_partials/formListSearch.twig' with
+            {
+                'canAdd': {'title': 'Ajouter une connaissance', 'path': path('connaissance.list')},
+                'actionPath' : path('connaissance.list')
+            }
+        %}
+    </div>
+
+    {% include '_partials/pagination.html.twig' %}
+
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>
+                {% include '_partials/orderby.twig' with {'name' : 'Secrète', 'field' : 'secret', 'route': 'connaissance.list' } %}
+            </th>
+            <th>
+                {% include '_partials/orderby.twig' with {'name' : 'Libellé', 'field' : 'label', 'route': 'connaissance.list' } %}
+            </th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for connaissance in paginator %}
+            <tr>
+                <td>
+                    {% if connaissance.secret %}<span class="text-danger">Oui</span>{% else %}<span class="text-info">Non</span>{% endif %}
+                </td>
+                <td>{{ connaissance.label }}</td>
+                <td>
+                    {{ connaissance.description|markdown_to_html }}
+
+                    {% if connaissance.contraintes %}
+                        {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'title': 'Prérequis !', 'content' : connaissance.contraintes } %}
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="btn-toolbar pull-right" role="toolbar">
+                        <div class="btn-group-vertical" role="group">
+                            {% if connaissance.documentUrl %}
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Télécharger le document associé"
+                                   href="{{ path('connaissance.document', {'connaissance': connaissance.id, 'document': connaissance.documentUrl}) }}"><i
+                                            class="fa-solid fa-download"></i> Télécharger</a>
+                            {% endif %}
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Modifier"
+                               href="{{ path('connaissance.update',{'connaissance':connaissance.id}) }}"><i
+                                        class="fa fa-pencil"></i> Modifier</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Détail" href="{{ path('connaissance.detail',{'connaissance':connaissance.id}) }}"><i
+                                        class="fa fa-eye"></i> Detail</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Personnages ayant cette connaissance"
+                               href="{{ path('connaissance.personnages',{'connaissance':connaissance.id}) }}"><i
+                                        class="fa fa-users"></i> Personnages ({{ connaissance.personnages|length }})</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Supprimer"
+                               href="{{ path('connaissance.delete',{'connaissance':connaissance.id}) }}"><i
+                                        class="fa fa-eraser"></i> Supprimer</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include '_partials/pagination.html.twig' %}
+
 {% endblock %}

@@ -4,19 +4,22 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('connaissance.list') }}">Liste des connaissances</a></li>
-		<li class="active">Modifier une connaissance</li>
-	</ol>
+    {% include '_partials/breadcrumb.twig'
+        with {
+        'items' : {
+            1 : {'route': path('connaissance.list'), 'name' : 'Liste des connaissances'},
+            2 : {'route': path('connaissance.detail', {'connaissance': connaissance.id} ), 'name' : connaissance.label },
+            3 : {'name' : 'Modifier une connaissance'}
+        }
+    } %}
 
 
-	<div class="well well-sm bs-component">
-		<div class="header">
-			<h5>Modification d'une connaissance</h5>
+    <div class="well well-sm bs-component">
+        <div class="header">
+            <h5>Modification d'une connaissance</h5>
 
-			{{ form(form) }}
-		</div>
-	</div>
-				
+            {{ form(form) }}
+        </div>
+    </div>
+
 {% endblock body %}

@@ -1,0 +1,38 @@
+
+{% if type == 'danger' %}
+<div class="card mb-3 border-danger">
+    <div class="card-header "><i class="fa fa-circle-xmark text-danger"></i> {% if title is defined %}{{ title }}{% else %}Erreur !{% endif %}</div>
+    <div class="card-body">
+        <p class="card-text">
+            {{ content|markdown_to_html }}
+        </p>
+    </div>
+</div>
+{% elseif type == 'warning' %}
+    <div class="card mb-3 border-warning">
+        <div class="card-header "><i class="fa fa-warning text-warning"></i> {% if title is defined %}{{ title }}{% else %}Attention !{% endif %}</div>
+        <div class="card-body">
+            <p class="card-text">
+                {{ content|markdown_to_html }}
+            </p>
+        </div>
+    </div>
+{% elseif type == 'info' %}
+    <div class="card mb-3 border-info">
+        <div class="card-header "><i class="fa-regular fa-circle-info text-info"></i> {% if title is defined %}{{ title }}{% else %}Information{% endif %}</div>
+        <div class="card-body">
+            <p class="card-text">
+                {{ content|markdown_to_html }}
+            </p>
+        </div>
+    </div>
+{% elseif type == 'success' %}
+    <div class="card mb-3 border-success">
+        <div class="card-header "><i class="fa-regular fa-circle-check text-success"></i> {% if title is defined %}{{ title }}{% else %}Confirmation{% endif %}</div>
+        <div class="card-body">
+            <p class="card-text">
+                {{ content|markdown_to_html }}
+            </p>
+        </div>
+    </div>
+{% endif %}

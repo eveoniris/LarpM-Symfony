@@ -2,10 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\Connaissance;
 use App\Enum\FolderType;
+use App\Form\DeleteForm;
 use App\Repository\BaseRepository;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Entity;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,8 +20,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     public function __construct(
         protected EntityManagerInterface $entityManager,
         protected RequestStack $requestStack,
-        protected FileUploader $fileUploader
-        // Cache $cache,
+        protected FileUploader $fileUploader,
+        // Cache $cache, // TODO : later
     ) {
     }
 
@@ -99,7 +104,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string $defOrderBy = 'id',
         string $defOrderDir = 'ASC',
         string $alias = null,
-        array $allowedFields = null
+        array $allowedFields = null // TODO: check SF security Form on Self Entity's attributes
     ): array {
         $request = $this->requestStack?->getCurrentRequest();
         if (!$request) {
@@ -120,22 +125,28 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return [$orderBy => $orderDir];
     }
 
-    protected function getPagninatorProperties(
-        BaseRepository $entityRepository,
-        string $defOrderBy = 'id',
-        int $defLimit = 50,
-        string $defOrderDir = 'ASC'
-    ): array {
-        $request = $this->requestStack?->getCurrentRequest();
+    protected function genericDelete($entity, string $title, string $successMsg, string $redirect, array $breadcrumb): RedirectResponse|Response
+    {
+        $form = $this->createForm(DeleteForm::class, $entity, ['class' => $entity::class]);
 
-        if (!$request) {
-            return [];
+        $form->handleRequest($this->requestStack->getCurrentRequest());
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
+            $this->entityManager->remove($data);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', $successMsg);
+
+            return $this->redirectToRoute($redirect, [], 303);
         }
 
-        return [
-            ...$this->getRequestOrder($defOrderBy, $defOrderDir),
-            $this->getRequestLimit($defLimit),
-            $this->getRequestPage(1),
-        ];
+        return $this->render('_partials/delete.twig', [
+            'title' => $title,
+            'form' => $form->createView(),
+            'entity' => $entity,
+            'breadcrumb' => $breadcrumb,
+        ]);
     }
 }

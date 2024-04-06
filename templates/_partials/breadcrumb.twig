@@ -1,0 +1,13 @@
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        {% for item in items %}
+            {% if not loop.last %}
+                <li><a href="{{ item.route }}">{{ item.name }}</a></li>
+            {% else %}
+                <li class="active" aria-current="page">{{ item.name }}</li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+</nav>
