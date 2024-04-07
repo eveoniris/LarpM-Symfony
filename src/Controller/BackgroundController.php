@@ -27,42 +27,35 @@ class BackgroundController extends AbstractController
         $limit = (int) ($request->get('limit') ?: 50);
         $page = (int) ($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
-        $criteria = [];
+        $type = null;
+        $value = null;
 
-        $form = $this->createForm(new BackgroundFindForm());
+        $form = $this->createForm(BackgroundFindForm::class);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // TODO
-            /*$data = $form->getData();
+            $data = $form->getData();
             $type = $data['type'];
             $value = $data['value'];
-            switch ($type){
-                case 'Auteur':
-                    $criteria[] = "g.nom LIKE '%$value%'";
-                    break;
-                case 'Groupe':
-                    $criteria[] = "u.name LIKE '%$value%'";
-                    break;
-            }*/
         }
 
         $repo = $entityManager->getRepository('\\'.Background::class);
-        $backgrounds = $repo->findBy(
-            $criteria,
-            [$order_by => $order_dir],
+        $backgrounds = $repo->findList(
+            $type,
+            $value,
+            ['by' => $order_by, 'dir' => $order_dir],
             $limit,
-            $offset);
-
-        $numResults = $repo->findCount($criteria);
-
-        $paginator = new Paginator($numResults, $limit, $page,
-            $app['url_generator']->generate('background.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
+            $offset
+        );
+        
+        $paginator = $repo->findPaginatedQuery(
+            $backgrounds, 
+            $this->getRequestLimit(),
+            $this->getRequestPage()
         );
 
         return $this->render('background/list.twig', [
-            'backgrounds' => $backgrounds,
             'paginator' => $paginator,
             'form' => $form->createView(),
         ]);
@@ -93,7 +86,7 @@ class BackgroundController extends AbstractController
     /**
      * Impression de tous les backgrounds de personnage.
      */
-    #[Route('/background/print/perso', name: 'background.print.perso')]
+    #[Route('/background/personnage/print', name: 'background.personnage.print')]
     public function personnagePrintAction(Request $request, EntityManagerInterface $entityManager)
     {
         $gns = $entityManager->getRepository('\\'.\App\Entity\Gn::class)->findActive();
@@ -115,17 +108,29 @@ class BackgroundController extends AbstractController
     /**
      * Ajout d'un background.
      */
-    #[Route('/background/add/{groupe}', name: 'background.add')]
-    public function addAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
+    #[Route('/background/add', name: 'background.add')]
+    public function addAction(Request $request, EntityManagerInterface $entityManager)
     {
+        /*$groupeId = $request->get('groupe');
         $background = new Background();
-        $background->setGroupe($groupe);
 
-        $form = $this->createForm(BackgroundForm::class, $background)
-            ->add('visibility', 'choice', [
+        if ( $groupeId )
+		{
+			$groupe = $entityManager->find('\LarpManager\Entities\Groupe', $groupeId);
+			if ( $groupe ) $background->setGroupe($groupe);
+		}*/
+
+        $form = $this->createForm(BackgroundForm::class, new Background)
+            ->add('visibility', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'label' => 'Visibilité',
-                'choices' => $app['larp.manager']->getVisibility(),
+                'choices' => array(
+                    'Seul les scénaristes peuvent voir ceci' => 'PRIVATE',
+                    'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
+                    'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
+                    'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
+                    'Seul l\'auteur peut voir ceci' => 'AUTHOR',
+                ),
             ])
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -140,11 +145,11 @@ class BackgroundController extends AbstractController
 
             $this->addFlash('success', 'Le background a été ajouté.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], 303);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $background->getGroupe()->getId()], 303);
         }
 
         return $this->render('background/add.twig', [
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
     }
 
@@ -182,10 +187,16 @@ class BackgroundController extends AbstractController
     public function updateAction(Request $request, EntityManagerInterface $entityManager, Background $background)
     {
         $form = $this->createForm(BackgroundForm::class, $background)
-            ->add('visibility', 'choice', [
+            ->add('visibility', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'label' => 'Visibilité',
-                'choices' => $app['larp.manager']->getVisibility(),
+                'choices' => array(
+                    'Seul les scénaristes peuvent voir ceci' => 'PRIVATE',
+                    'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
+                    'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
+                    'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
+                    'Seul l\'auteur peut voir ceci' => 'AUTHOR',
+                ),
             ])
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -200,7 +211,7 @@ class BackgroundController extends AbstractController
 
             $this->addFlash('success', 'Le background a été ajouté.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $background->getGroupe()->getId()], 303);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $background->getGroupe()->getId()], 303);
         }
 
         return $this->render('background/update.twig', [

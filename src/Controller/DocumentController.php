@@ -32,7 +32,6 @@ class DocumentController extends AbstractController
         $limit = (int) $request->get('limit', 50);
         $page = (int) $request->get('page', 1);
         $offset = (int) (($page - 1) * $limit);
-        $criteria = [];
         $type = null;
         $value = null;
 

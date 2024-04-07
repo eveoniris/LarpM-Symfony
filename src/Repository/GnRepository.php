@@ -34,7 +34,7 @@ class GnRepository extends BaseRepository
      *
      * @return ArrayCollection $gns
      */
-    public function findActive(): ArrayCollection
+    public function findActive(): Array
     {
         return $this->getEntityManager()
             ->createQuery('SELECT g FROM App\Entity\Gn g WHERE g.actif = true ORDER BY g.date_debut ASC')
