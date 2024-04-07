@@ -13,17 +13,16 @@
 	{% set iconPnj = '<span title="PNJ">🎭</span>' %}
 	{% set iconPjOld = '<span title="Ancien PJ ne participant pas au GN actif">➖</span>' %}
 	
-	<div class="well well-sm">
-			
-		{{ include('admin/personnage/searchHeader.twig') }}
-		{{ include('admin/personnage/searchResultsTable.twig',
-		 	{
-				extraData: extraData
-		  	}
-  			)
-		}}
+	
+	{{ include('admin/personnage/searchHeader.twig') }}
+	{{ include('admin/personnage/searchResultsTable.twig',
+		{
+			extraData: extraData
+		}
+		)
+	}}
 
-		{% include '_partials/pagination.html.twig' %}
-	</div>
+	{% include '_partials/pagination.html.twig' %}
+	
 
 {% endblock body %}

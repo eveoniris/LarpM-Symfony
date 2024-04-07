@@ -24,6 +24,7 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnage', 'extended' => 'Personnage'])]
+
 class BasePersonnage
 {
     public int $pugilat = 1;
@@ -196,7 +197,7 @@ class BasePersonnage
     protected Collection $religions;
 
     #[ORM\ManyToMany(targetEntity: Competence::class, mappedBy: 'personnages')]
-    #[ORM\OrderBy(['competenceFamily' => 'ASC', 'level' => 'ASC'])]
+    //#[ORM\OrderBy(['competenceFamily' => 'ASC', 'level' => 'ASC'])]
     protected Collection $competences;
 
     #[ORM\ManyToMany(targetEntity: Domaine::class, inversedBy: 'personnages')]

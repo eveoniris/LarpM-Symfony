@@ -7,6 +7,10 @@
 
 	<div class="well well-sm">
 
+		<div class="header">
+			<h5>Liste des personnages <small>( {{ paginator|length }} personnages )</small></h5>
+		</div>
+
 {% if displayAdminToolbar %}
 		<div class="btn-toolbar" role="toolbar" aria-label="...">
 			<div class="btn-group" role="group" aria-label="...">
@@ -45,13 +49,14 @@
         </ul>
 {% endif %}
 
+		<div class="paginator-container">
+			<div class="legend"><span class="legend-header">Légende Statut : </span>{{ iconPjConfirmed | raw }} = PJ Actif, {{ iconPnj | raw }} = PNJ, {{ iconPjOld | raw }} = PJ Non actif, {{ iconPjDead | raw }} = Mort</div>
+		</div>
 	</div>
 
 {% include '_partials/pagination.html.twig' %}
 
-<div class="paginator-container">
-	<div class="legend"><span class="legend-header">Légende Statut : </span>{{ iconPjConfirmed | raw }} = PJ Actif, {{ iconPnj | raw }} = PNJ, {{ iconPjOld | raw }} = PJ Non actif, {{ iconPjDead | raw }} = Mort</div>
-</div>
+
 			
 			
 {% endblock body %}
