@@ -12,10 +12,13 @@
 	
 	<div class="well well-sm bs-component">
 		<div class="header">
-			<h5>Ajout d'un document</h5>
-
-			{{ form(form) }}
+			<h5>Modification d'un document</h5>
 		</div>
+		{{ form_start(form, {"action": path('document.update', {'document': document.id})}) }}
+			<fieldset>
+				{{ form(form) }}
+			</fieldset>
+		{{ form_end(form) }}
 	</div>
 	
 {% endblock %}

@@ -10,12 +10,12 @@
 		<li class="active">Ajout d'un document</li>
 	</ol>
 	
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('document.add') }}" method="POST" {{ form_enctype(form) }}  novalidate>
+	<div class="well well-sm bs-component">
+		<div class="header">
+			<h5>Ajout d'un document</h5>
+		</div>
+		{{ form_start(form, {"action": path('document.add')}) }}
 			<fieldset>
-				<legend>Ajout d'un document</legend>
-				
-	
 				{{ form(form) }}
 			</fieldset>
 		{{ form_end(form) }}
