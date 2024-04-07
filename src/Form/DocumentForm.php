@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use App\Repository\LangueRepository;
 
 /**
  * LarpManager\Form\DocumentForm.
@@ -56,7 +57,7 @@ class DocumentForm extends AbstractType
             ])
             ->add('cryptage', ChoiceType::class, [
                 'required' => true,
-                'choices' => [false => 'Non crypté', true => 'Crypté'],
+                'choices' => ['Non crypté' =>false, 'Crypté' => true],
                 'label' => 'Indiquez si le document est crypté',
                 'attr' => [
                     'help' => 'Un document crypté est rédigé dans la langue indiqué, mais le joueur doit le décrypter de lui-même (p.e rédigé en aquilonien, mais utilisant un code type césar)',
@@ -78,13 +79,13 @@ class DocumentForm extends AbstractType
             ])
             ->add('impression', ChoiceType::class, [
                 'required' => false,
-                'choices' => [false => 'Non imprimé', true => 'Imprimé'],
+                'choices' => ['Non imprimé' =>false, 'Imprimé' => true],
                 'label' => 'Indiquez si le document a été imprimé',
                 'attr' => [
                     'help' => 'Le responsable des documents devra indiqué pour chacun des documents s\'ils ont été imprimés ou pas.',
                 ],
             ])
-            ->add('document', 'file', [
+            ->add('document', \Symfony\Component\Form\Extension\Core\Type\FileType::class, [
                 'label' => 'Choisissez votre fichier',
                 'required' => true,
                 'mapped' => false,
