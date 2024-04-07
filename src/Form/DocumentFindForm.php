@@ -40,18 +40,18 @@ class DocumentFindForm extends AbstractType
 	 */
 	public function buildForm(FormBuilderInterface $builder, array $options): void
 	{
-		$builder->add('value','text', array(
+		$builder->add('value',\Symfony\Component\Form\Extension\Core\Type\TextType::class, array(
 					'required' => true,	
 					'label' => 'Recherche',
 				))
-				->add('type','choice', array(
+				->add('type',\Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, array(
 					'required' => true,
 					'choices' => array(
-						'titre' => 'Titre',
-                        'code' => 'Code',
-                        'auteur' => 'Créateur',
-                        'description' => 'Description',
-						'id' => 'ID',
+						'Titre' => 'titre',
+                        'Code' => 'code',
+                        'Créateur' => 'auteur',
+                        'Description' => 'description',
+						'ID' => 'id',
 					),
 					'label' => 'Type',
 				));

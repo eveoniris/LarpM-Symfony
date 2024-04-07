@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 #[isGranted('ROLE_SCENARISTE')]
 class DocumentController extends AbstractController
@@ -54,16 +55,15 @@ class DocumentController extends AbstractController
             $offset
         );
 
-        $numResults = $repo->findCount($type, $value);
-
-        $paginator = new Paginator($numResults, $limit, $page,
-            $app['url_generator']->generate('document').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
+        $paginator = $repo->findPaginatedQuery(
+            $documents, 
+            $this->getRequestLimit(),
+            $this->getRequestPage()
         );
 
         return $this->render(
             'admin/document/index.twig',
             [
-                'documents' => $documents,
                 'paginator' => $paginator,
                 'form' => $form->createView(),
             ]
@@ -73,6 +73,7 @@ class DocumentController extends AbstractController
     /**
      * Imprimer la liste des documents.
      */
+    #[Route('/document/print', name: 'document.print')]
     public function printAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $documents = $entityManager->getRepository('\\'. Document::class)->findAllOrderedByCode();
@@ -83,6 +84,7 @@ class DocumentController extends AbstractController
     /**
      * Télécharger la liste des documents.
      */
+    #[Route('/document/download', name: 'document.download')]
     public function downloadAction(Request $request,  EntityManagerInterface $entityManager): void
     {
         $documents = $entityManager->getRepository('\\'. Document::class)->findAllOrderedByCode();
@@ -161,16 +163,19 @@ class DocumentController extends AbstractController
      *
      * @param unknown $document
      */
-    public function getAction(Request $request,  EntityManagerInterface $entityManager, $document)
+    #[Route('/document/get/{document}', name: 'document.get')]
+    public function getAction(Request $request,  EntityManagerInterface $entityManager, $document): BinaryFileResponse
     {
         $filename = __DIR__.'/../../../private/documents/'.$document;
 
-        return $app->sendFile($filename);
+        //return $app->sendFile($filename);
+        return new BinaryFileResponse($filename);
     }
 
     /**
      * Ajouter un document.
      */
+    #[Route('/document/add', name: 'document.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(DocumentForm::class, new Document())
@@ -207,7 +212,7 @@ class DocumentController extends AbstractController
            $this->addFlash('success', 'Le document a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('document', [], 303);
+                return $this->redirectToRoute('document.index', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('document.add', [], 303);
             }
@@ -230,6 +235,7 @@ class DocumentController extends AbstractController
     /**
      * Mise à jour d'un document.
      */
+    #[Route('/document/{document}/update', name: 'document.update')]
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Document $document)
     {
         $form = $this->createForm(DocumentForm::class, $document)
@@ -265,7 +271,7 @@ class DocumentController extends AbstractController
 
            $this->addFlash('success', 'Le document a été modifié.');
 
-            return $this->redirectToRoute('document', [], 303);
+            return $this->redirectToRoute('document.index', [], 303);
         }
 
         return $this->render('document/update.twig', [
@@ -277,6 +283,7 @@ class DocumentController extends AbstractController
     /**
      * Suppression d'un document.
      */
+    #[Route('/document/{document}/delete', name: 'document.delete')]
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Document $document)
     {
         $form = $this->createForm(DocumentDeleteForm::class, $document)
@@ -292,7 +299,7 @@ class DocumentController extends AbstractController
 
            $this->addFlash('success', 'Le document a été supprimé.');
 
-            return $this->redirectToRoute('document', [], 303);
+            return $this->redirectToRoute('document.index', [], 303);
         }
 
         return $this->render('document/delete.twig', [

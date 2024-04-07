@@ -249,10 +249,13 @@ class IntrigueController extends AbstractController
         }
 
         $form = $this->createForm(IntrigueForm::class, $intrigue)
-            ->add('state', 'choice', [
+            ->add('state', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'label' => 'Etat',
-                'choices' => $app['larp.manager']->getState(),
+                'choices' => [
+                    'L\'élément est actif' => 'ACTIF',
+                    'L\'élément est inactif' => 'INACTIF',
+                ],
             ])
             ->add('enregistrer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
