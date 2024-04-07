@@ -175,7 +175,7 @@ abstract class BaseDocument
         return $this;
     }
 
-    public function getAuteur(): string
+    public function getAuteur(): ?string
     {
         return $this->auteur;
     }

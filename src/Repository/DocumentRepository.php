@@ -48,7 +48,7 @@ class DocumentRepository extends BaseRepository
         $qb->setMaxResults($limit);
         $qb->orderBy('d.'.$order['by'], $order['dir']);
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 
     protected function getQueryBuilder(?string $type, $value): QueryBuilder
