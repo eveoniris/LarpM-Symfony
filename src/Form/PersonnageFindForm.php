@@ -34,8 +34,8 @@ class PersonnageFindForm extends AbstractType
             ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => false,
                 'choices' => [
-                    'id' => 'ID',
-                    'nom' => 'Nom',
+                    'ID' => 'id',
+                    'Nom' => 'nom',
                 ],
                 'label' => 'Type',
                 'attr' => [

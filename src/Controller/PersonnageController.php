@@ -56,6 +56,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+
 class PersonnageController extends AbstractController
 {
     // contient la liste des colonnes 
@@ -99,21 +100,14 @@ class PersonnageController extends AbstractController
         $offset = ($page - 1) * $limit;
         $criteria = [];
         
-        dump($request->query);
-
-        $formData = $request->query->all('personnage_find_form'); //get('personnage_find_form');
-
-        dump($formData);
-
+        $formData = $request->query->all('personnage_find_form');
         $religion = isset($formData['religion']) ? $entityManager->find('App\Entity\Religion',$formData['religion']):null;
         $competence = isset($formData['competence']) ? $entityManager->find('App\Entity\Competence',$formData['competence']):null;
         $classe = isset($formData['classe']) ? $entityManager->find('App\Entity\Classe',$formData['classe']):null;
         $groupe = isset($formData['groupe']) ? $entityManager->find('App\Entity\Groupe',$formData['groupe']):null;
         $optionalParameters = "";
 
-		
-        
-        // construit le formulaire contenant les filtres de recherche
+		// construit le formulaire contenant les filtres de recherche
 		$form = $this->createForm(
             PersonnageFindForm::class,
             null,
@@ -128,7 +122,7 @@ class PersonnageController extends AbstractController
                 'csrf_protection' => false,
             )
         );
-        
+
         $form->handleRequest($request);
         
         // récupère les nouveaux filtres de recherche
@@ -164,9 +158,7 @@ class PersonnageController extends AbstractController
         if ($orderByCalculatedFields->contains($orderBy))
         {
             // recherche basée uniquement sur les filtres
-            $filteredPersonnages = $repo->findList($criteria);
-            // pour le nombre de résultats, pas besoin de refaire de requête, on l'a déjà
-            $numResults = count($filteredPersonnages);
+            $filteredPersonnages = $repo->findList($criteria)->getResult();
             // on applique le tri
             PersonnageManager::sort($filteredPersonnages, $orderBy, $isAsc);
             $personnagesCollection = new ArrayCollection($filteredPersonnages);
@@ -191,13 +183,6 @@ class PersonnageController extends AbstractController
             $this->getRequestPage()
         );
         
-        /*$paginator = new Paginator(
-            $numResults, 
-            $limit, 
-            $page,
-            $this->app['url_generator']->generate($routeName, $routeParams) . '?page=(:num)&limit=' . $limit . '&order_by=' . $orderBy . '&order_dir=' . $orderDir . $optionalParameters
-            );*/
-        
         // récupère les colonnes à afficher
         if (empty($columnKeys))
         {
@@ -216,7 +201,7 @@ class PersonnageController extends AbstractController
                 }
             }
         }
-        
+
         return array_merge(array(
             'personnages' => $personnages,
             'paginator' => $paginator,

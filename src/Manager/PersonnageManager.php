@@ -450,9 +450,26 @@ final class PersonnageManager
             $sortByFunctionName = $sortByFunctionName.'Desc';
         }
         
-        Utilities::stable_uasort($personnages, array('\LarpManager\Services\Personnage\PersonnageSorter', $sortByFunctionName));       
+
+        //PersonnageManager::stable_uasort($personnages, array('\App\Manager\PersonnageManager', $sortByFunctionName)); 
         
+        //$sortByFunctionName = 'PersonnageManager::'.$sortByFunctionName;
+        
+        $index = 0;
+        foreach ($personnages as &$item) {
+            $item = array($index++, $item);
+        }
+        $result = uasort($personnages, function($a, $b) use($sortByFunctionName) {
+            $result = call_user_func(__NAMESPACE__ . '\PersonnageManager::' . $sortByFunctionName, $a[1], $b[1]);
+            return $result == 0 ? $a[0] - $b[0] : $result;
+        });
+        foreach ($personnages as &$item) {
+            $item = $item[1];
+        }
+        return $result;
     }
+
+    
     
     /**
      * Tri sur Id

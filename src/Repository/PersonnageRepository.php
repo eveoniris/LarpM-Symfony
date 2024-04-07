@@ -62,7 +62,7 @@ class PersonnageRepository extends BaseRepository
                 case 'classe':
                     $qb->addOrderBy('cl.label_feminin', $orderDir);
                     $qb->addOrderBy('cl.label_masculin', $orderDir);
-                    $qb->addOrderBy('p.genre', $orderDir);
+                    //$qb->addOrderBy('p.genre', $orderDir);
                     break;
                 default:
                     $qb->orderBy('p.'.$orderBy, $orderDir);
