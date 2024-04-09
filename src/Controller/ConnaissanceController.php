@@ -4,10 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Connaissance;
 use App\Form\ConnaissanceForm;
-use App\Form\DeleteForm;
 use App\Form\Entity\ListSearch;
 use App\Form\ListFindForm;
 use App\Repository\ConnaissanceRepository;
+use App\Service\PersonnageManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -29,7 +29,7 @@ class ConnaissanceController extends AbstractController
     #[Route(name: 'list')]
     public function listAction(Request $request): Response
     {
-        $alias = ConnaissanceRepository::getEntityAlias();
+        // TODO Factorize :
         $type = null;
         $value = null;
 
@@ -43,35 +43,14 @@ class ConnaissanceController extends AbstractController
             $type = $data->getType();
             $value = $data->getValue();
         }
+        // END TODO Factorize
 
         /** @var ConnaissanceRepository $connaissanceRepository */
         $connaissanceRepository = $this->entityManager->getRepository(Connaissance::class);
-        $orderBy = $this->getRequestOrder(
-            defOrderBy: 'label',
-            alias: $alias,
-            allowedFields: $connaissanceRepository->getFieldNames()
-        );
 
-        $query = $connaissanceRepository->createQueryBuilder($alias)
-            ->orderBy(key($orderBy), current($orderBy));
+        $query = $connaissanceRepository->search($value, $type);
 
-        if (!empty($value)) {
-            if (empty($type) || '*' === $type) {
-                $query->orWhere($alias.'.id LIKE :value');
-                $query->orWhere($alias.'.label LIKE :value');
-                $query->orWhere($alias.'.description LIKE :value');
-
-                $query->setParameter('value', '%'.$value.'%');
-            } elseif ('secret' === $type) {
-                $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
-                $query->orWhere($alias.'.secret = :value');
-                $query->setParameter('value', $value);
-            } else {
-                // TODO debug when using this criteria
-                $query->where($query->expr()->like($alias.'.'.$type, "'%".$value."%'"));
-            }
-        }
-
+        // Todo ->searchPaginated
         $paginator = $connaissanceRepository->findPaginatedQuery(
             $query->getQuery(), $this->getRequestLimit(), $this->getRequestPage()
         );
@@ -236,11 +215,12 @@ class ConnaissanceController extends AbstractController
     }
 
     #[Route('/{connaissance}/personnages', name: 'personnages', requirements: ['connaissance' => Requirement::DIGITS])]
-    public function personnagesAction(Request $request, #[MapEntity] Connaissance $connaissance): Response
+    // TODO autowire PersonnageManager
+    public function personnagesAction(Request $request, #[MapEntity] Connaissance $connaissance, PersonnageManager $personnageManager): Response
     {
         $routeName = 'connaissance.personnages';
         $routeParams = ['connaissance' => $connaissance->getId()];
-        $twigFilePath = 'admin/connaissance/personnages.twig';
+        $twigFilePath = 'connaissance/personnages.twig';
         $columnKeys = $this->defaultPersonnageListColumnKeys;
         $personnages = $connaissance->getPersonnages();
         $additionalViewParams = [
@@ -248,9 +228,7 @@ class ConnaissanceController extends AbstractController
         ];
 
         // handle the request and return an array containing the parameters for the view
-        $personnageSearchHandler = $app['personnage.manager']->getSearchHandler();
-
-        $viewParams = $personnageSearchHandler->getSearchViewParameters(
+        $viewParams = $personnageManager->getSearchViewParameters(
             $request,
             $routeName,
             $routeParams,

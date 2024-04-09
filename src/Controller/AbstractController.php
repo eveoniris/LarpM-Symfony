@@ -100,6 +100,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return $orderDir;
     }
 
+    // TODO change to orderBy service
     protected function getRequestOrder(
         string $defOrderBy = 'id',
         string $defOrderDir = 'ASC',

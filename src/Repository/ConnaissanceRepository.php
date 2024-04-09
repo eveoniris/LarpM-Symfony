@@ -2,14 +2,10 @@
 
 namespace App\Repository;
 
+use App\Service\OrderBy;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 
-/**
- * LarpManager\Repository\ConnaissanceRepository.
- *
- * @author Kevin F.
- */
 class ConnaissanceRepository extends BaseRepository
 {
     /**
@@ -23,9 +19,6 @@ class ConnaissanceRepository extends BaseRepository
             ->getResult();
     }
 
-    /**
-     * @return ArrayCollection $religions
-     */
     public function findAllOrderedByLabel()
     {
         return $this->getEntityManager()
@@ -41,5 +34,52 @@ class ConnaissanceRepository extends BaseRepository
         return $this->getEntityManager()
             ->createQuery('SELECT c FROM App\Entity\Connaissance c WHERE c.secret = 0 ORDER BY c.label ASC')
             ->getResult();
+    }
+
+    public function search(mixed $search, ?string $type, OrderBy $orderBy = null, string $alias = null): QueryBuilder
+    {
+        $alias ??= static::getEntityAlias();
+        $orderBy ??= $this->orderBy;
+
+        if ('secret' === $type) {
+            $query = $this->createQueryBuilder($alias)
+                ->orderBy($orderBy->getSort(), $orderBy->getOrderBy());
+
+            return $this->secret(
+                $query,
+                filter_var($search, FILTER_VALIDATE_BOOLEAN)
+            );
+        }
+
+        return parent::search($search, $type, $orderBy, $alias);
+    }
+
+    public function secret(QueryBuilder $query, bool $secret): QueryBuilder
+    {
+        $query->andWhere($this->alias.'.secret = :value');
+
+        return $query->setParameter('value', $secret);
+    }
+
+    public function searchAttributes(string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::searchAttributes($alias),
+            $alias.'.label',
+            $alias.'.description',
+        ];
+    }
+
+    public function sortAttributes(string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::sortAttributes($alias),
+            'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
+            'description' => [OrderBy::ASC => [$alias.'.description' => OrderBy::ASC], OrderBy::DESC => [$alias.'.description' => OrderBy::DESC]],
+        ];
     }
 }

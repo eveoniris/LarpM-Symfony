@@ -3,12 +3,14 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Service\OrderBy;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 /**
@@ -22,9 +24,18 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  */
 abstract class BaseRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public const SEARCH_ALL = '*';
+    public const SEARCH_NOONE = null;
+
+    protected string $alias;
+
+    public function __construct(
+        ManagerRegistry $registry,
+        protected OrderBy $orderBy,
+        protected readonly RequestStack $requestStack
+    ) {
         parent::__construct($registry, static::getEntityClass());
+        $this->alias = static::getEntityAlias();
     }
 
     public static function getEntityClass(): string
@@ -44,6 +55,13 @@ abstract class BaseRepository extends ServiceEntityRepository
         return $this->getEntityManager()
             ->getClassMetadata(static::getEntityClass())
             ->getFieldNames();
+    }
+
+    public function hasField(string $field): bool
+    {
+        return $this->getEntityManager()
+            ->getClassMetadata(static::getEntityClass())
+            ->hasField($field);
     }
 
     public static function getEntityAlias(): string
@@ -125,7 +143,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         }
 
         $qb->setFirstResult(($offset - 1) * $limit)
-        ->setMaxResults($limit);
+            ->setMaxResults($limit);
 
         if (!empty($criterias)) {
             foreach ($criterias as $criteria) {
@@ -150,5 +168,105 @@ abstract class BaseRepository extends ServiceEntityRepository
                 flush();
             }
         }
+    }
+
+    public function search(mixed $search, ?string $type, OrderBy $orderBy = null, string $alias = null): QueryBuilder
+    {
+        $orderBy ??= $this->orderBy;
+        $alias ??= static::getEntityAlias();
+        $query = $this->createQueryBuilder($alias);
+
+        // Order only if allowed
+        if (
+            $orderBy->getOrderBy()
+            && $this->isAllowedAttribute($orderBy->getOrderBy(), $this->sortAttributes($alias))
+        ) {
+            $query->orderBy($orderBy->getOrderBy(), $orderBy->getSort());
+        } else {
+            foreach ($this->sortAttributes($alias) as $sortDefinitions) {
+                $attributeSort = $sortDefinitions[$orderBy->getSort()];
+                $query->addOrderBy(key($attributeSort), current($attributeSort));
+            }
+        }
+
+        if (empty($search) || self::SEARCH_NOONE === $type) {
+            return $query;
+        }
+
+        if (empty($type) || self::SEARCH_ALL === $type) {
+            $searchAttributes = $this->searchAttributes($alias);
+            if (empty($searchAttributes)) {
+                return $query;
+            }
+
+            foreach ($searchAttributes as $attribute) {
+                $query->orWhere($attribute.' LIKE :value');
+            }
+            $query->setParameter('value', '%'.$search.'%');
+
+            return $query;
+        }
+
+        // if type searched is not allowed we let a generic query
+        if (!$this->isAllowedAttribute($type, $this->searchAttributes($alias))) {
+            return $query;
+        }
+
+        return $query->where($query->expr()->like($alias.'.'.$type, "'%".$search."%'"));
+    }
+
+    public function searchAttributes(string $alias = null): array
+    {
+        $alias ??= $this->alias;
+
+        return [
+            $alias.'.id',
+        ];
+    }
+
+    public function sortAttributes(string $alias = null): array
+    {
+        $alias ??= $this->alias;
+
+        return [
+            'id' => [OrderBy::ASC => [$alias.'.id' => OrderBy::ASC], OrderBy::DESC => [$alias.'.id' => OrderBy::DESC]],
+        ];
+    }
+
+    public function getAlias(): string
+    {
+        return $this->alias;
+    }
+
+    public function setAlias(string $alias): self
+    {
+        $this->alias = $alias;
+
+        return $this;
+    }
+
+    public function getAttributeName(string $aliased): string
+    {
+        return substr($aliased, strrpos($aliased, '.') + 1);
+    }
+
+    public function isAllowedAttribute(string $aliased, array $list): bool
+    {
+        $attribute = strtolower($this->getAttributeName($aliased));
+        foreach ($list as $keyAttribute => $item) {
+            if ($attribute === strtolower($keyAttribute)) {
+                return true;
+            }
+
+            if ($attribute === strtolower($this->getAttributeName(key($item[OrderBy::ASC])))) {
+                return true;
+            }
+
+            if ($attribute === strtolower($this->getAttributeName(key($item[OrderBy::DESC])))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
