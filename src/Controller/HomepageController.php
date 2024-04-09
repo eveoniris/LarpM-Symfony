@@ -11,6 +11,7 @@ use App\Entity\Territoire;
 use App\Form\EtatCivilForm;
 use App\Form\UserRestrictionForm;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -377,6 +378,7 @@ class HomepageController extends AbstractController
      * Affiche les informations de dev.
      */
     #[Route('/dev', name: 'dev')]
+    #[When(env: 'dev')]
     public function devAction(Request $request, EntityManagerInterface $entityManager)
     {
         return $this->render('homepage/dev.twig');
