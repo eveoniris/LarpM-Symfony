@@ -2,16 +2,18 @@
 
 namespace App\Controller;
 
-use App\Entity\Connaissance;
 use App\Enum\FolderType;
 use App\Form\DeleteForm;
-use App\Repository\BaseRepository;
+use App\Form\Entity\ListSearch;
+use App\Form\ListFindForm;
 use App\Service\FileUploader;
+use App\Service\PageRequest;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Entity;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
+use JetBrains\PhpStorm\Deprecated;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,6 +23,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected EntityManagerInterface $entityManager,
         protected RequestStack $requestStack,
         protected FileUploader $fileUploader,
+        protected PageRequest $pageRequest
         // Cache $cache, // TODO : later
     ) {
     }
@@ -50,57 +53,26 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
     protected function getRequestLimit(int $defLimit = 10): int
     {
-        $request = $this->requestStack?->getCurrentRequest();
-
-        if (!$request) {
-            return $defLimit;
-        }
-
-        $limit = $request->query->getInt('limit', $defLimit);
-
-        if (!is_numeric($limit)) {
-            return $defLimit;
-        }
-
-        // We limit between 1 and 100
-        return min(100, max(1, $limit));
+        return $this->pageRequest->getLimit($defLimit);
     }
 
     protected function getRequestPage(int $defPage = 1): int
     {
-        $request = $this->requestStack?->getCurrentRequest();
-
-        if (!$request) {
-            return $defPage;
-        }
-
-        $page = $request->query->getInt('page', $defPage);
-
-        if (!is_numeric($page)) {
-            $page = $defPage;
-        }
-
-        // Page can be lower than 1
-        return max(1, $page);
+        return $this->pageRequest->getPage($defPage);
     }
 
     protected function getRequestOrderDir(string $defOrderDir = 'ASC'): string
     {
-        $request = $this->requestStack?->getCurrentRequest();
-        if (!$request) {
-            return $defOrderDir;
-        }
+        return $this->pageRequest->getOrderBy()->setDefaultOrderDir($defOrderDir)->getSort();
+    }
 
-        $orderDir = $request->query->getString('order_dir', $defOrderDir);
-
-        if (!\in_array($orderDir, ['ASC', 'DESC'], true)) {
-            $orderDir = $defOrderDir;
-        }
-
-        return $orderDir;
+    protected function ListSearchForm(): FormInterface
+    {
+        return $this->pageRequest->getForm();
     }
 
     // TODO change to orderBy service
+    #[Deprecated]
     protected function getRequestOrder(
         string $defOrderBy = 'id',
         string $defOrderDir = 'ASC',

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use App\Service\OrderBy;
+use App\Service\PageRequest;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Query;
@@ -43,6 +44,11 @@ abstract class BaseRepository extends ServiceEntityRepository
         return str_replace(['Repository', '\\\\'], ['', '\Entity\\'], static::class);
     }
 
+    public static function getEntityAlias(): string
+    {
+        return strtolower(str_replace(['App\Repository\\', 'Repository'], ['', ''], static::class));
+    }
+
     public function getColumnNames(): array
     {
         return $this->getEntityManager()
@@ -64,13 +70,13 @@ abstract class BaseRepository extends ServiceEntityRepository
             ->hasField($field);
     }
 
-    public static function getEntityAlias(): string
-    {
-        return strtolower(str_replace(['App\Repository\\', 'Repository'], ['', ''], static::class));
-    }
-
-    public function findPaginated(int $page, int $limit = 10, string $orderby = 'id', string $orderdir = 'ASC', string $where = ''): Paginator
-    {
+    public function findPaginated(
+        int $page,
+        int $limit = 10,
+        string $orderby = 'id',
+        string $orderdir = 'ASC',
+        string $where = ''
+    ): Paginator {
         $limit = min(10, $limit);
         $page = max(1, $page);
         $alias = static::getEntityAlias();
@@ -102,20 +108,6 @@ abstract class BaseRepository extends ServiceEntityRepository
         if (!empty($orderBy)) {
             $query->orderBy($orderBy);
         }
-
-        return new Paginator($query);
-    }
-
-    public function findPaginatedQuery(
-        Query $query,
-        int $limit = null,
-        $offset = null
-    ): Paginator {
-        $limit = min(100, max(1, $limit));
-        $offset = max(1, $offset);
-
-        $query->setMaxResults($limit)
-            ->setFirstResult(($offset - 1) * $limit);
 
         return new Paginator($query);
     }
@@ -162,75 +154,12 @@ abstract class BaseRepository extends ServiceEntityRepository
         foreach ($query->toIterable() as $iterable) {
             yield method_exists($iterable::class, 'getExportValue')
                 ? $iterable->getExportValue()
-                : (array) $iterable;
+                : (array)$iterable;
 
             if (0 === ++$i % $batchSize) {
                 flush();
             }
         }
-    }
-
-    public function search(mixed $search, ?string $type, OrderBy $orderBy = null, string $alias = null): QueryBuilder
-    {
-        $orderBy ??= $this->orderBy;
-        $alias ??= static::getEntityAlias();
-        $query = $this->createQueryBuilder($alias);
-
-        // Order only if allowed
-        if (
-            $orderBy->getOrderBy()
-            && $this->isAllowedAttribute($orderBy->getOrderBy(), $this->sortAttributes($alias))
-        ) {
-            $query->orderBy($orderBy->getOrderBy(), $orderBy->getSort());
-        } else {
-            foreach ($this->sortAttributes($alias) as $sortDefinitions) {
-                $attributeSort = $sortDefinitions[$orderBy->getSort()];
-                $query->addOrderBy(key($attributeSort), current($attributeSort));
-            }
-        }
-
-        if (empty($search) || self::SEARCH_NOONE === $type) {
-            return $query;
-        }
-
-        if (empty($type) || self::SEARCH_ALL === $type) {
-            $searchAttributes = $this->searchAttributes($alias);
-            if (empty($searchAttributes)) {
-                return $query;
-            }
-
-            foreach ($searchAttributes as $attribute) {
-                $query->orWhere($attribute.' LIKE :value');
-            }
-            $query->setParameter('value', '%'.$search.'%');
-
-            return $query;
-        }
-
-        // if type searched is not allowed we let a generic query
-        if (!$this->isAllowedAttribute($type, $this->searchAttributes($alias))) {
-            return $query;
-        }
-
-        return $query->where($query->expr()->like($alias.'.'.$type, "'%".$search."%'"));
-    }
-
-    public function searchAttributes(string $alias = null): array
-    {
-        $alias ??= $this->alias;
-
-        return [
-            $alias.'.id',
-        ];
-    }
-
-    public function sortAttributes(string $alias = null): array
-    {
-        $alias ??= $this->alias;
-
-        return [
-            'id' => [OrderBy::ASC => [$alias.'.id' => OrderBy::ASC], OrderBy::DESC => [$alias.'.id' => OrderBy::DESC]],
-        ];
     }
 
     public function getAlias(): string
@@ -245,17 +174,128 @@ abstract class BaseRepository extends ServiceEntityRepository
         return $this;
     }
 
-    public function getAttributeName(string $aliased): string
+    public function searchPaginated(PageRequest $pageRequest): Paginator
     {
-        return substr($aliased, strrpos($aliased, '.') + 1);
+        $query = $this->search(
+            $pageRequest->getSearchValue(),
+            $pageRequest->getSearchType(),
+            $pageRequest->getOrderBy(),
+            $this->getAlias()
+        )->getQuery();
+
+        return $this->findPaginatedQuery(
+            $query,
+            $pageRequest->getLimit(),
+            $pageRequest->getPage()
+        );
+    }
+
+    public function findPaginatedQuery(
+        Query $query,
+        int $limit = null,
+        $offset = null
+    ): Paginator {
+        $limit = min(100, max(1, $limit));
+        $offset = max(1, $offset);
+
+        $query->setMaxResults($limit)
+            ->setFirstResult(($offset - 1) * $limit);
+
+        return new Paginator($query);
+    }
+
+    /**
+     * @param mixed $search a value to filter results who's "like" it
+     * @param string|array|null $attributes Entity's attributes to search on
+     * @param OrderBy|null $orderBy custom orderBy if not from the Request
+     * @param string|null $alias the query alias for a specific one
+     */
+    public function search(
+        mixed $search = null,
+        null|string|array $attributes = self::SEARCH_NOONE,
+        OrderBy $orderBy = null,
+        string $alias = null
+    ): QueryBuilder {
+        $orderBy ??= $this->orderBy;
+        $alias ??= static::getEntityAlias();
+        $query = $this->createQueryBuilder($alias);
+
+        // Order only if allowed and if exists
+        if (
+            $orderBy->getOrderBy()
+            && $this->isAllowedAttribute($orderBy->getOrderBy(), $this->sortAttributes($alias))
+        ) {
+            $by = $orderBy->getOrderBy();
+            if (!str_contains('.', $by)) {
+                $by = $alias.'.'.$by;
+            }
+            $query->orderBy($by, $orderBy->getSort());
+        } else {
+            foreach ($this->sortAttributes($alias) as $sortDefinitions) {
+                $attributeSort = $sortDefinitions[$orderBy->getSort()];
+                $query->addOrderBy(key($attributeSort), current($attributeSort));
+            }
+        }
+
+        // Any search to perform ?
+        if (empty($search) || self::SEARCH_NOONE === $attributes) {
+            return $query;
+        }
+
+        $searchAttributes = $this->searchAttributes($alias);
+        if (empty($attributes) || self::SEARCH_ALL === $attributes) {
+            if (empty($searchAttributes)) {
+                return $query;
+            }
+
+            $attributes = $searchAttributes;
+        }
+
+        // if type searched is not allowed we let a generic query
+        if (is_string($attributes)) {
+            $attributes = [$attributes];
+        }
+
+        $asOne = false;
+        foreach ($attributes as $attribute) {
+            if (!$this->isAllowedAttribute($attribute, $searchAttributes)) {
+
+                continue;
+            }
+
+            $asOne = true;
+
+            $query->orWhere($attribute.' LIKE :value');
+        }
+
+        return $asOne ? $query->setParameter('value', '%'.$search.'%') : $query;
     }
 
     public function isAllowedAttribute(string $aliased, array $list): bool
     {
         $attribute = strtolower($this->getAttributeName($aliased));
+
+        if (self::SEARCH_ALL === $attribute) {
+            return true;
+        }
+
         foreach ($list as $keyAttribute => $item) {
+            // From simple sort
             if ($attribute === strtolower($keyAttribute)) {
                 return true;
+            }
+
+            // From simple search
+            if (
+                $attribute === strtolower($item)
+                || $attribute === strtolower($this->getAttributeName($item))
+            ) {
+                return true;
+            }
+
+            // not from extended sort
+            if (!is_array($item)) {
+                continue;
             }
 
             if ($attribute === strtolower($this->getAttributeName(key($item[OrderBy::ASC])))) {
@@ -268,5 +308,35 @@ abstract class BaseRepository extends ServiceEntityRepository
         }
 
         return false;
+    }
+
+    public function getAttributeName(string $aliased): string
+    {
+        // If we use a custom name by using query select alias
+        $spliter = str_contains(strtoupper($aliased), ' AS ') ? ' AS ' : '.';
+
+        if (!str_contains(strtoupper($aliased), $spliter)) {
+            return $aliased;
+        }
+
+        return substr($aliased, strrpos($aliased, $spliter) + 1);
+    }
+
+    public function sortAttributes(string $alias = null): array
+    {
+        $alias ??= $this->alias;
+
+        return [
+            'id' => [OrderBy::ASC => [$alias.'.id' => OrderBy::ASC], OrderBy::DESC => [$alias.'.id' => OrderBy::DESC]],
+        ];
+    }
+
+    public function searchAttributes(string $alias = null): array
+    {
+        $alias ??= $this->alias;
+
+        return [
+            $alias.'.id',
+        ];
     }
 }

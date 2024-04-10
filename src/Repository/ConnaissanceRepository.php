@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Service\OrderBy;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\QueryBuilder;
+use Nette\Utils\Paginator;
 
 class ConnaissanceRepository extends BaseRepository
 {
@@ -36,12 +37,12 @@ class ConnaissanceRepository extends BaseRepository
             ->getResult();
     }
 
-    public function search(mixed $search, ?string $type, OrderBy $orderBy = null, string $alias = null): QueryBuilder
+    public function search(mixed $search = null, null|string|array $attributes = self::SEARCH_NOONE, OrderBy $orderBy = null, string $alias = null): QueryBuilder
     {
         $alias ??= static::getEntityAlias();
         $orderBy ??= $this->orderBy;
 
-        if ('secret' === $type) {
+        if ('secret' === $attributes) {
             $query = $this->createQueryBuilder($alias)
                 ->orderBy($orderBy->getSort(), $orderBy->getOrderBy());
 
@@ -51,7 +52,7 @@ class ConnaissanceRepository extends BaseRepository
             );
         }
 
-        return parent::search($search, $type, $orderBy, $alias);
+        return parent::search($search, $attributes, $orderBy, $alias);
     }
 
     public function secret(QueryBuilder $query, bool $secret): QueryBuilder

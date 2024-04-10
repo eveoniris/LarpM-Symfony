@@ -5,7 +5,7 @@ namespace App\Form\Entity;
 class ListSearch
 {
     protected ?string $type = '';
-    public ?string $value = '';
+    protected ?string $value = '';
 
     public function getType(): ?string
     {
