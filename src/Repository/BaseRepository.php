@@ -259,13 +259,17 @@ abstract class BaseRepository extends ServiceEntityRepository
         $asOne = false;
         foreach ($attributes as $attribute) {
             if (!$this->isAllowedAttribute($attribute, $searchAttributes)) {
-
                 continue;
             }
 
             $asOne = true;
 
-            $query->orWhere($attribute.' LIKE :value');
+            $attributeAliased = $attribute;
+            if (!str_contains('.', $attribute)) {
+                $attributeAliased = $alias. '.' .$attribute;
+            }
+
+            $query->orWhere($attributeAliased.' LIKE :value');
         }
 
         return $asOne ? $query->setParameter('value', '%'.$search.'%') : $query;
