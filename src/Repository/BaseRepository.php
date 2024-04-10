@@ -154,7 +154,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         foreach ($query->toIterable() as $iterable) {
             yield method_exists($iterable::class, 'getExportValue')
                 ? $iterable->getExportValue()
-                : (array)$iterable;
+                : (array) $iterable;
 
             if (0 === ++$i % $batchSize) {
                 flush();
@@ -205,10 +205,10 @@ abstract class BaseRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param mixed $search a value to filter results who's "like" it
+     * @param mixed             $search     a value to filter results who's "like" it
      * @param string|array|null $attributes Entity's attributes to search on
-     * @param OrderBy|null $orderBy custom orderBy if not from the Request
-     * @param string|null $alias the query alias for a specific one
+     * @param OrderBy|null      $orderBy    custom orderBy if not from the Request
+     * @param string|null       $alias      the query alias for a specific one
      */
     public function search(
         mixed $search = null,
@@ -226,7 +226,7 @@ abstract class BaseRepository extends ServiceEntityRepository
             && $this->isAllowedAttribute($orderBy->getOrderBy(), $this->sortAttributes($alias))
         ) {
             $by = $orderBy->getOrderBy();
-            if (!str_contains('.', $by)) {
+            if (!str_contains($by, '.')) {
                 $by = $alias.'.'.$by;
             }
             $query->orderBy($by, $orderBy->getSort());
@@ -265,8 +265,8 @@ abstract class BaseRepository extends ServiceEntityRepository
             $asOne = true;
 
             $attributeAliased = $attribute;
-            if (!str_contains('.', $attribute)) {
-                $attributeAliased = $alias. '.' .$attribute;
+            if (!str_contains($attribute, '.')) {
+                $attributeAliased = $alias.'.'.$attribute;
             }
 
             $query->orWhere($attributeAliased.' LIKE :value');
@@ -291,8 +291,10 @@ abstract class BaseRepository extends ServiceEntityRepository
 
             // From simple search
             if (
-                $attribute === strtolower($item)
+                is_string($item)
+                && ($attribute === strtolower($item)
                 || $attribute === strtolower($this->getAttributeName($item))
+                )
             ) {
                 return true;
             }

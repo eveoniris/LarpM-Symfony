@@ -21,8 +21,7 @@
             {
                 'canAdd': {'title': 'Ajouter une connaissance', 'path': path('connaissance.list')},
                 'actionPath' : path('connaissance.list')
-            }
-        %}
+            } %}
     </div>
 
     {% include '_partials/pagination.html.twig' %}
@@ -82,6 +81,8 @@
                     </div>
                 </td>
             </tr>
+        {% else %}
+            {% include '_partials/noResultTableRow.twig' %}
         {% endfor %}
         </tbody>
     </table>

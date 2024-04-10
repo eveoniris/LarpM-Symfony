@@ -1,0 +1,4 @@
+{% if css is not defined %}{% set css = 'w-50' %}{% endif %}
+<div class=" d-flex justify-content-center">
+    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : content, 'css' : css} %}
+</div>
