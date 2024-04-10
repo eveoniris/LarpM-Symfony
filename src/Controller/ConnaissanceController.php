@@ -7,6 +7,7 @@ use App\Form\ConnaissanceForm;
 use App\Form\Entity\ListSearch;
 use App\Form\ListFindForm;
 use App\Repository\ConnaissanceRepository;
+use App\Service\PageRequest;
 use App\Service\PersonnageManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -27,39 +28,15 @@ class ConnaissanceController extends AbstractController
     private array $defaultPersonnageListColumnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser'];
 
     #[Route(name: 'list')]
-    public function listAction(Request $request): Response
+    public function listAction(Request $request, PageRequest $pageRequest, ConnaissanceRepository $connaissanceRepository): Response
     {
-        // TODO Factorize :
-        $type = null;
-        $value = null;
-
-        $listSearch = new ListSearch();
-        $form = $this->createForm(type: ListFindForm::class, data: $listSearch);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $type = $data->getType();
-            $value = $data->getValue();
-        }
-        // END TODO Factorize
-
-        /** @var ConnaissanceRepository $connaissanceRepository */
-        $connaissanceRepository = $this->entityManager->getRepository(Connaissance::class);
-
-        $query = $connaissanceRepository->search($value, $type);
-
-        // Todo ->searchPaginated
-        $paginator = $connaissanceRepository->findPaginatedQuery(
-            $query->getQuery(), $this->getRequestLimit(), $this->getRequestPage()
-        );
+        $pageRequest->setRequest($request);
 
         return $this->render('connaissance/list.twig', [
-            'searchValue' => $value,
-            'form' => $form->createView(),
-            'paginator' => $paginator,
-            'orderDir' => $this->getRequestOrderDir(),
+            'searchValue' => $pageRequest->getSearchValue(),
+            'form' => $pageRequest->getForm(),
+            'paginator' => $connaissanceRepository->searchPaginated($pageRequest),
+            'orderDir' => $pageRequest->getOrderBy()->getSort(),
         ]);
     }
 
