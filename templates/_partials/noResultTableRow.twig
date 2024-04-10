@@ -1,0 +1,7 @@
+{% if css is not defined %}{% set css = 'w-50' %}{% endif %}
+{% if content is not defined %}{% set content = 'Aucun résultat' %}{% endif %}
+<tr>
+    <td colspan="100%" class="text-center">
+            {% include '_partials/noResult.twig' with {'content' : content, 'css' : css} %}
+    </td>
+</tr>
