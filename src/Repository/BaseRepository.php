@@ -83,12 +83,12 @@ abstract class BaseRepository extends ServiceEntityRepository
         $orderdir = 'ASC' === $orderdir ? 'ASC' : 'DESC';
 
         $queryBase = $this->createQueryBuilder($alias)
-            ->where($where)
+            //->where($where)
             ->orderBy($alias.'.'.$orderby.' '.$orderdir.','.$alias.'.id', 'ASC')
             ->setMaxResults($limit)
             ->setFirstResult(($page * $limit) - $limit);
 
-        if (!empty($where)) {
+        if (!empty($where) && $where != '') {
             $queryBase->where($where);
         }
         $query = $queryBase->getQuery();
@@ -96,10 +96,18 @@ abstract class BaseRepository extends ServiceEntityRepository
         return new Paginator($query);
     }
 
-    public function findPaginatedBy(array $criteria, array $orderBy = null, $limit = null, $offset = null): Paginator
+    public function findPaginatedBy(array $criteria, array $orderBy = null, $limit = null, $page = null): Paginator
     {
         $limit = min(10, $limit);
-        $page = max(1, $offset);
+        $page = max(1, $page);
+        $alias = static::getEntityAlias();
+        $orderdir = 'ASC' === $orderdir ? 'ASC' : 'DESC';
+
+        $query = $this->createQueryBuilder($alias)
+            ->where($where)
+            ->orderBy($alias.'.'.$orderby.' '.$orderdir.','.$alias.'.id', 'ASC')
+            ->setMaxResults($limit)
+            ->setFirstResult(($page * $limit) - $limit);
 
         $query = $this->findBy($criteria)
             ->setMaxResults($limit)

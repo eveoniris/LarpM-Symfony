@@ -63,7 +63,7 @@ class BaseDebriefing
 
     #[ManyToOne(targetEntity: 'Gn', inversedBy: 'debriefings')]
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id')]
-    protected Gn $gn;
+    protected ?Gn $gn;
 
 
     /**
@@ -297,7 +297,7 @@ class BaseDebriefing
      *
      * @return Gn
      */
-    public function getGn(): Gn
+    public function getGn(): ?Gn
     {
         return $this->gn;
     }

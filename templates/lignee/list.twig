@@ -37,10 +37,10 @@
                 </div>
             </li>
             <li class="list-group-item">
-                {% if paginator.totalItems == 1 %}
+                {% if paginator|length == 1 %}
                     <strong>1</strong> lignée trouvé.
                 {% else %}
-                    <strong>{{ paginator.totalItems }}</strong> lignées trouvées.
+                    <strong>{{ paginator|length }}</strong> lignées trouvées.
                 {% endif %}
                 Affiche <strong>{{ paginator.currentPageFirstItem }} - {{ paginator.currentPageLastItem }}</strong>.
 

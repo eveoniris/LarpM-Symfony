@@ -42,10 +42,10 @@
 		</li>
 
 		<li class="list-group-item">
-			{% if paginator.totalItems == 1 %}
+			{% if paginator|length == 1 %}
 		        <strong>1</strong> participant trouvée.
 		    {% else %}
-		        <strong>{{ paginator.totalItems }}</strong> participants trouvés.
+		        <strong>{{ paginator|length }}</strong> participants trouvés.
 		    {% endif %}
 		
 		    Montre <strong>{{ paginator.currentPageFirstItem }} - {{ paginator.currentPageLastItem }}</strong>.

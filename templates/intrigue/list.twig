@@ -40,10 +40,10 @@
 		   		<a href="{{ path('intrigue.add') }}">Ajouter une intrigue</a>
 		   	</li>		 
 			<li class="list-group-item">
-			    {% if paginator.totalItems == 1 %}
+			    {% if paginator|length == 1 %}
 			        <strong>1</strong> intrigue trouvée.
 			    {% else %}
-			        <strong>{{ paginator.totalItems }}</strong> intrigues trouvées.
+			        <strong>{{ paginator|length }}</strong> intrigues trouvées.
 			    {% endif %}
 			
 			    Montre <strong>{{ paginator.currentPageFirstItem }} - {{ paginator.currentPageLastItem }}</strong>.

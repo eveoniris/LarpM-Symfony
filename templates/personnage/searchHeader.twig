@@ -5,10 +5,10 @@
 
 {% block body %}
 
-{% if paginator.totalItems == 1 %}
+{% if paginator|length == 1 %}
 	<strong>1</strong> personnage trouvé.
 {% else %}
-	<strong>{{ paginator.totalItems }}</strong> personnages trouvés.
+	<strong>{{ paginator|length }}</strong> personnages trouvés.
 {% endif %}
 
 Résultats affichés : <strong>{{ paginator.currentPageFirstItem }} - {{ paginator.currentPageLastItem }}</strong>.
