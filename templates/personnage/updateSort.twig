@@ -43,10 +43,10 @@
             </li>
 
             <li class="list-group-item">
-                {% if paginator.totalItems == 1 %}
+                {% if paginator|length == 1 %}
                     <strong>1</strong> sort trouvé.
                 {% else %}
-                    <strong>{{ paginator.totalItems }}</strong> sorts trouvés.
+                    <strong>{{ paginator|length }}</strong> sorts trouvés.
                 {% endif %}
 
                 Montre <strong>{{ paginator.currentPageFirstItem }} - {{ paginator.currentPageLastItem }}</strong>.

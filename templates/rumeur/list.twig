@@ -40,10 +40,10 @@
 		   		<a href="{{ path('rumeur.add') }}">Ajouter une rumeur</a>
 		   	</li>		 
 			<li class="list-group-item">
-			    {% if paginator.totalItems == 1 %}
+			    {% if paginator|length == 1 %}
 			        <strong>1</strong> rumeur trouvée.
 			    {% else %}
-			        <strong>{{ paginator.totalItems }}</strong> rumeurs trouvées.
+			        <strong>{{ paginator|length }}</strong> rumeurs trouvées.
 			    {% endif %}
 			
 			    Montre <strong>{{ paginator.currentPageFirstItem }} - {{ paginator.currentPageLastItem }}</strong>.

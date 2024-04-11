@@ -12,7 +12,7 @@
 	</ol>
 	
 	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('groupeGn.jeudedomaine',{'groupe': groupe.id, 'groupeGn': groupeGn.id}) }}" method="POST">
+		{{ form_start(form, {"action": path('groupeGn.jeudedomaine',{'groupe': groupe.id, 'groupeGn': groupeGn.id})}) }}
 			
 			{{ form(form) }}
 		{{ form_end(form) }}

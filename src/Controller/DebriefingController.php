@@ -31,45 +31,40 @@ class DebriefingController extends AbstractController
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
-        $offset = ($page - 1) * $limit;
-        $criteria = [];
+        $limit = (int) $request->get('limit', 50);
+        $page = (int) $request->get('page', 1);
+        $offset = (int) (($page - 1) * $limit);
+        $type = null;
+        $value = null;
 
         $form = $this->createForm(DebriefingFindForm::class);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // TODO
-            /*$data = $form->getData();
+            $data = $form->getData();
             $type = $data['type'];
             $value = $data['value'];
-            switch ($type){
-                case 'Auteur':
-                    $criteria[] = "g.nom LIKE '%$value%'";
-                    break;
-                case 'Groupe':
-                    $criteria[] = "u.name LIKE '%$value%'";
-                    break;
-            }*/
         }
 
         $repo = $entityManager->getRepository('\\'.\App\Entity\Debriefing::class);
-        $debriefings = $repo->findBy(
-            $criteria,
-            [$order_by => $order_dir],
+        $debriefings = $repo->findList(
+            $type,
+            $value,
+            ['by' => $order_by, 'dir' => $order_dir],
             $limit,
-            $offset);
-
-        $numResults = $repo->findCount($criteria);
-
-        $paginator = new Paginator($numResults, $limit, $page,
-            $app['url_generator']->generate('debriefing.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
+            $offset
         );
 
+        $paginator = $repo->findPaginatedQuery(
+            $debriefings, 
+            $this->getRequestLimit(),
+            $this->getRequestPage()
+        );
+
+        dump($paginator);
+
         return $this->render('debriefing/list.twig', [
-            'debriefings' => $debriefings,
             'paginator' => $paginator,
             'form' => $form->createView(),
         ]);
@@ -78,17 +73,31 @@ class DebriefingController extends AbstractController
     /**
      * Ajout d'un debriefing.
      */
-    #[Route('/debriefing/add/{groupe}', name: 'debriefing.add')]
-    public function addAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
+    #[Route('/debriefing/add', name: 'debriefing.add')]
+    public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $debriefing = new Debriefing();
-        $debriefing->setGroupe($groupe);
+        $groupeId = $request->get('groupe');
+        if ( $groupeId )
+		{
+            $groupeRepository = $entityManager->getRepository(Groupe::class);
+            $groupe = $groupeRepository->find($groupeId);
+			if ( $groupe ) {
+                $debriefing->setGroupe($groupe);
+            }
+		}
 
         $form = $this->createForm(DebriefingForm::class, $debriefing)
-            ->add('visibility', 'choice', [
+            ->add('visibility', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'label' => 'Visibilité',
-                'choices' => $app['larp.manager']->getVisibility(),
+                'choices' => array(
+                    'Seul les scénaristes peuvent voir ceci' => 'PRIVATE',
+                    'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
+                    'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
+                    'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
+                    'Seul l\'auteur peut voir ceci' => 'AUTHOR',
+                ),
             ])
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -147,10 +156,16 @@ class DebriefingController extends AbstractController
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
         $form = $this->createForm(DebriefingForm::class, $debriefing)
-            ->add('visibility', 'choice', [
+            ->add('visibility', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'label' => 'Visibilité',
-                'choices' => $app['larp.manager']->getVisibility(),
+                'choices' => array(
+                    'Seul les scénaristes peuvent voir ceci' => 'PRIVATE',
+                    'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
+                    'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
+                    'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
+                    'Seul l\'auteur peut voir ceci' => 'AUTHOR',
+                ),
             ])
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 

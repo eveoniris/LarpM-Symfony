@@ -27,7 +27,7 @@ class DebriefingFindForm extends AbstractType
                 'choices' => [
                     'Groupe' => 'Groupe',
                     'Auteur' => 'Auteur',
-                    'Scenariste' => 'Scénariste',
+                    'Scénariste' => 'Scenariste',
                 ],
                 'label' => 'Type',
             ]);
