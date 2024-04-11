@@ -50,7 +50,7 @@ class GroupeGnOrdreForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    'class' => 'selectpicker',
+                    //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Responsable',
                 ],

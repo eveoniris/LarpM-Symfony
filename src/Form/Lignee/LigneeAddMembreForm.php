@@ -40,7 +40,7 @@ class LigneeAddMembreForm extends AbstractType
                 return $qb;
             },
             'attr' => [
-                'class' => 'selectpicker',
+                //'class' => 'selectpicker',
                 'data-live-search' => 'true',
                 'placeholder' => 'Nouveau membre',
             ],
@@ -58,7 +58,7 @@ class LigneeAddMembreForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    'class' => 'selectpicker',
+                    //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Parent (obligatoire)',
                 ],
@@ -76,7 +76,7 @@ class LigneeAddMembreForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    'class' => 'selectpicker',
+                    //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Second parent (facultatif)',
                 ],

@@ -28,7 +28,7 @@ class GroupeSecondaireNewMembreForm extends AbstractType
                 return $qb = $er->createQueryBuilder('p')->orderBy('p.nom', 'ASC');
             },
             //'attr' => [
-            //    'class' => 'selectpicker',
+            //    //'class' => 'selectpicker',
             //    'data-live-search' => 'true',
             //    'placeholder' => 'Personnage',
             //],

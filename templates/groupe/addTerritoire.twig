@@ -7,7 +7,7 @@
     <ol class="breadcrumb">
         <li><a href="{{ path('homepage') }}">Accueil</a></li>
         <li><a href="{{ path("groupe.admin.list") }}">Liste des groupes</a></li>
-        <li><a href="{{ path("groupe.detail", {'index': groupe.id}) }}">{{ groupe.nom }}</a></li>
+        <li><a href="{{ path("groupe.detail", {'groupe': groupe.id}) }}">{{ groupe.nom }}</a></li>
         <li class="active">Ajouter un territoire à un groupe</li>
     </ol>
 

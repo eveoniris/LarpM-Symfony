@@ -3,19 +3,23 @@
 {% block body %}
 
 	{% for groupeGn in groupeGns %}
-		{% for participant in groupeGn.participants if participant.personnage %}
+		{% for participant in groupeGn.participants %}
+			{% if participant.personnage %}
 		
-			{% set backgrounds = participant.personnage.personnageBackgrounds %}
-			{% for background in backgrounds if date(background.creationDate) < date('-8 month')%}
-				{% if groupeGn.gn.id == background.gn.id %}
-				<h2>#{{ groupeGn.groupe.numero }} {{ groupeGn.groupe.nom }} ({{ background.gn.label }})</h2>
-				<h3>#{{ background.personnage.id }} {{ background.personnage.nom }}{% if background.personnage.surnom %} ({{ background.personnage.surnom }}){% endif %}
-						
-				{{ background.text|markdown_to_html }}
-		
-				<hr class="print-page-break" />
-				{% endif %}
-			{% endfor %}
+				{% set backgrounds = participant.personnage.personnageBackgrounds %}
+				{% for background in backgrounds %}
+					{% if date(background.creationDate) < date('-8 month')%}
+						{% if groupeGn.gn.id == background.gn.id %}
+						<h2>#{{ groupeGn.groupe.numero }} {{ groupeGn.groupe.nom }} ({{ background.gn.label }})</h2>
+						<h3>#{{ background.personnage.id }} {{ background.personnage.nom }}{% if background.personnage.surnom %} ({{ background.personnage.surnom }}){% endif %}
+								
+						{{ background.text|markdown_to_html }}
+				
+						<hr class="print-page-break" />
+						{% endif %}
+					{% endif %}
+				{% endfor %}
+			{% endif %}
 		
 		{% endfor %}
 		

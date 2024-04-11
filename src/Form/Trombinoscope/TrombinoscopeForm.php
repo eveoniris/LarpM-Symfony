@@ -37,7 +37,7 @@ class TrombinoscopeForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    'class' => 'selectpicker',
+                    //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Territoire',
                 ],
@@ -55,7 +55,7 @@ class TrombinoscopeForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    'class' => 'selectpicker',
+                    //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Classe',
                 ],
@@ -73,7 +73,7 @@ class TrombinoscopeForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    'class' => 'selectpicker',
+                    //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Competence',
                 ],
@@ -91,7 +91,7 @@ class TrombinoscopeForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    'class' => 'selectpicker',
+                    //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Religion',
                 ],
@@ -109,7 +109,7 @@ class TrombinoscopeForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    'class' => 'selectpicker',
+                    //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Langue',
                 ],
@@ -127,7 +127,7 @@ class TrombinoscopeForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    'class' => 'selectpicker',
+                    //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Groupe',
                 ],
