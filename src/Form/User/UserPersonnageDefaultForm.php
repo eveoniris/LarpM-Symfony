@@ -31,7 +31,7 @@ class UserPersonnageDefaultForm extends AbstractType
             'empty_data' => null,
             'query_builder' => static function (EntityRepository $er) use ($options) {
                 return $er->createQueryBuilder('p')
-                    ->join('p.User', 'u')
+                    ->join('p.user', 'u')
                     ->where('u.id = :UserId')
                     ->setParameter('UserId', $options['User_id']);
             },

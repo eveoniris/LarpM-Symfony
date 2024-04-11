@@ -910,7 +910,7 @@ class PersonnageController extends AbstractController
 
            $this->addFlash('success', 'Votre personnage a été sauvegardé.');
             if ($participant && $participant->getGroupe()) {
-                return $this->redirectToRoute('groupe.detail', ['index' => $participant->getGroupe()->getId()], 303);
+                return $this->redirectToRoute('groupe.detail', ['groupe' => $participant->getGroupe()->getId()], 303);
             } else {
                 return $this->redirectToRoute('homepage', [], 303);
             }

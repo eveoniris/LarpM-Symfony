@@ -498,7 +498,7 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Votre modification a été enregistrée');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
         return $this->render('participant/personnage_remove.twig', [

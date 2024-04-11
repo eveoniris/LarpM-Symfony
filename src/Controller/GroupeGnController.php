@@ -11,7 +11,7 @@ use App\Form\GroupeGn\GroupeGnOrdreForm;
 use App\Form\GroupeGn\GroupeGnPlaceAvailableForm;
 use App\Form\GroupeGn\GroupeGnResponsableForm;
 use Doctrine\ORM\EntityManagerInterface;
-use LarpManager\Repository\ParticipantRepository;
+use App\Repository\ParticipantRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,7 +26,7 @@ class GroupeGnController extends AbstractController
     /**
      * Liste des sessions de jeu pour un groupe.
      */
-    #[Route('/groupeGn/list/{groupe}/', name: 'groupeGn.list')]
+    #[Route('/groupeGn/{groupe}/list/', name: 'groupeGn.list')]
     public function listAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
         return $this->render('groupeGn/list.twig', [
@@ -37,6 +37,7 @@ class GroupeGnController extends AbstractController
     /**
      * Ajout d'un groupe à un jeu.
      */
+    #[Route('/groupeGn/{groupe}/add/', name: 'groupeGn.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe)
     {
         $groupeGn = new GroupeGn();
@@ -63,7 +64,7 @@ class GroupeGnController extends AbstractController
 
            $this->addFlash('success', 'La participation au jeu a été enregistré.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
         return $this->render('groupeGn/add.twig', [
@@ -75,6 +76,7 @@ class GroupeGnController extends AbstractController
     /**
      * Modification de la participation à un jeu du groupe.
      */
+    #[Route('/groupeGn/{groupe}/update/{groupeGn}/', name: 'groupeGn.update')]
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe, GroupeGn $groupeGn)
     {
         $form = $this->createForm(GroupeGnForm::class, $groupeGn)
@@ -89,7 +91,7 @@ class GroupeGnController extends AbstractController
 
            $this->addFlash('success', 'La participation au jeu a été enregistré.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupe->getId()]);
         }
 
         return $this->render('groupeGn/update.twig', [
@@ -102,17 +104,18 @@ class GroupeGnController extends AbstractController
     /**
      * Choisir le responsable.
      */
+    #[Route('/groupeGn/{groupe}/responsable/{groupeGn}/', name: 'groupeGn.responsable')]
     public function responsableAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe, GroupeGn $groupeGn)
     {
         $form = $this->createForm(GroupeGnResponsableForm::class, $groupeGn)
-            ->add('responsable', 'entity', [
+            ->add('responsable', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Responsable',
                 'required' => false,
                 'class' => \App\Entity\Participant::class,
-                'choice_label' => 'User.etatCivil',
+                'choice_label' => 'user.etatCivil',
                 'query_builder' => static function (ParticipantRepository $er) use ($groupeGn) {
                     $qb = $er->createQueryBuilder('p');
-                    $qb->join('p.User', 'u');
+                    $qb->join('p.user', 'u');
                     $qb->join('p.groupeGn', 'gg');
                     $qb->join('u.etatCivil', 'ec');
                     $qb->orderBy('ec.nom', 'ASC');
@@ -122,7 +125,7 @@ class GroupeGnController extends AbstractController
                     return $qb;
                 },
                 'attr' => [
-                    'class' => 'selectpicker',
+                    //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Responsable',
                 ],
@@ -153,17 +156,21 @@ class GroupeGnController extends AbstractController
     /**
      * Ajoute un participant à un groupe.
      */
+    #[Route('/groupeGn/{groupeGn}/participants/add/', name: 'groupeGn.participants.add')]
     public function participantAddAction(Request $request,  EntityManagerInterface $entityManager, GroupeGn $groupeGn)
     {
-        $form = $this->createForm()
-            ->add('participant', 'entity', [
+        $form = $this->createForm(GroupeGnForm::class, $groupeGn)
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+
+        $form = $this->createFormBuilder()
+            ->add('participant', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Nouveau participant',
                 'required' => true,
                 'class' => \App\Entity\Participant::class,
-                'choice_label' => 'User.etatCivil',
+                'choice_label' => 'user.etatCivil',
                 'query_builder' => static function (ParticipantRepository $er) use ($groupeGn) {
                     $qb = $er->createQueryBuilder('p');
-                    $qb->join('p.User', 'u');
+                    $qb->join('p.user', 'u');
                     $qb->join('p.gn', 'gn');
                     $qb->join('u.etatCivil', 'ec');
                     $qb->where($qb->expr()->isNull('p.groupeGn'));
@@ -174,12 +181,13 @@ class GroupeGnController extends AbstractController
                     return $qb;
                 },
                 'attr' => [
-                    'class' => 'selectpicker',
+                    ////'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Participant',
                 ],
             ])
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -205,19 +213,20 @@ class GroupeGnController extends AbstractController
     /**
      * Ajoute un participant à un groupe (pour les chefs de groupe).
      */
+    #[Route('/groupeGn/{groupeGn}/joueur/add/', name: 'groupeGn.joueur.add')]
     public function joueurAddAction(Request $request,  EntityManagerInterface $entityManager, GroupeGn $groupeGn)
     {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
-        $form = $this->createForm()
-            ->add('participant', 'entity', [
+        $form = $this->createFormBuilder()
+            ->add('participant', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'label' => 'Choisissez le nouveau membre de votre groupe',
                 'required' => false,
                 'class' => \App\Entity\Participant::class,
-                'choice_label' => 'User.Username',
+                'choice_label' => 'user.Username',
                 'query_builder' => static function (ParticipantRepository $er) use ($groupeGn) {
                     $qb = $er->createQueryBuilder('p');
-                    $qb->join('p.User', 'u');
+                    $qb->join('p.user', 'u');
                     $qb->join('p.gn', 'gn');
                     $qb->join('u.etatCivil', 'ec');
                     $qb->where($qb->expr()->isNull('p.groupeGn'));
@@ -228,12 +237,13 @@ class GroupeGnController extends AbstractController
                     return $qb;
                 },
                 'attr' => [
-                    'class' => 'selectpicker',
+                    ////'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Participant',
                 ],
             ])
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter le joueur choisi']);
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter le joueur choisi'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -262,10 +272,12 @@ class GroupeGnController extends AbstractController
     /**
      * Retire un participant d'un groupe.
      */
+    #[Route('/groupeGn/{groupeGn}/participant/remove/{participant}', name: 'groupeGn.participants.remove')]
     public function participantRemoveAction(Request $request,  EntityManagerInterface $entityManager, GroupeGn $groupeGn, Participant $participant)
     {
-        $form = $this->createForm()
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Retirer']);
+        $form = $this->createFormBuilder()
+            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Retirer'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -279,7 +291,7 @@ class GroupeGnController extends AbstractController
             $entityManager->persist($participant);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le joueur a été retiré de cette session.');
+            $this->addFlash('success', 'Le joueur a été retiré de cette session.');
 
             return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
         }
@@ -294,6 +306,7 @@ class GroupeGnController extends AbstractController
     /**
      * Permet au chef de groupe de modifier le nombre de place disponible.
      */
+    #[Route('/groupeGn/{groupeGn}/placeAvailable', name: 'groupeGn.placeAvailable')]
     public function placeAvailableAction(Request $request,  EntityManagerInterface $entityManager, GroupeGn $groupeGn)
     {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
@@ -339,6 +352,7 @@ class GroupeGnController extends AbstractController
     /**
      * Modification du jeu de domaine du groupe.
      */
+    #[Route('/groupeGn/{groupe}/jeudedomaine/{groupeGn}', name: 'groupeGn.jeudedomaine')]
     public function jeudedomaineAction(Request $request,  EntityManagerInterface $entityManager, Groupe $groupe, GroupeGn $groupeGn)
     {
         $form = $this->createForm(GroupeGnOrdreForm::class, $groupeGn, ['groupeGnId' => $groupeGn->getId()])

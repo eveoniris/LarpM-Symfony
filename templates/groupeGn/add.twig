@@ -7,13 +7,12 @@
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
 		<li><a href="{{ path("groupe.admin.list") }}">Liste des groupes</a></li>
-		<li><a href="{{ path("groupe.detail", {'index': groupe.id}) }}">{{ groupe.nom }}</a></li>
+		<li><a href="{{ path("groupe.detail", {'groupe': groupe.id}) }}">{{ groupe.nom }}</a></li>
 		<li class="active">Faire participer le groupe à un jeu</li>
 	</ol>
 	
 	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('groupeGn.add',{'groupe': groupe.id}) }}" method="POST">
-			
+		{{ form_start(form, {"action": path('groupeGn.add',{'groupe': groupe.id})}) }}			
 			{{ form(form) }}
 		{{ form_end(form) }}
 	</div>

@@ -29,18 +29,18 @@ class GroupeGnForm extends AbstractType
                 'label' => 'Groupe disponible ou réservé ?',
                 'required' => false,
                 'choices' => [
-                    true => 'Groupe disponible',
-                    false => 'Groupe réservé',
+                    'Groupe disponible' => true,
+                    'Groupe réservé' => false,
                 ],
             ])
             ->add('code', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 'required' => false,
             ])
-            ->add('jeuStrategique', 'checkbox', [
+            ->add('jeuStrategique', \Symfony\Component\Form\Extension\Core\Type\CheckboxType::class, [
                 'label' => 'Participe au jeu stratégique',
                 'required' => false,
             ])
-            ->add('jeuMaritime', 'checkbox', [
+            ->add('jeuMaritime', \Symfony\Component\Form\Extension\Core\Type\CheckboxType::class, [
                 'label' => 'Participe au jeu maritime',
                 'required' => false,
             ]);

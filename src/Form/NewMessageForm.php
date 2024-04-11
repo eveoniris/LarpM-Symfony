@@ -32,7 +32,7 @@ class NewMessageForm extends AbstractType
                 'class' => User::class,
                 'choice_label' => 'UserName',
                 'attr' => [
-                    'class' => 'selectpicker',
+                    //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Destinataire',
                 ],
