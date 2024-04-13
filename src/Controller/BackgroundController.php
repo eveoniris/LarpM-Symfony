@@ -111,16 +111,16 @@ class BackgroundController extends AbstractController
     #[Route('/background/add', name: 'background.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager)
     {
-        /*$groupeId = $request->get('groupe');
+        $groupeId = $request->get('groupe');
         $background = new Background();
 
         if ( $groupeId )
 		{
-			$groupe = $entityManager->find('\LarpManager\Entities\Groupe', $groupeId);
+			$groupe = $entityManager->find('\App\Entity\Groupe', $groupeId);
 			if ( $groupe ) $background->setGroupe($groupe);
-		}*/
+		}
 
-        $form = $this->createForm(BackgroundForm::class, new Background)
+        $form = $this->createForm(BackgroundForm::class, $background, ['groupeId' => $groupeId])
             ->add('visibility', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'label' => 'Visibilité',

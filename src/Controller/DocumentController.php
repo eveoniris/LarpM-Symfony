@@ -165,7 +165,7 @@ class DocumentController extends AbstractController
     #[Route('/document/get/{document}', name: 'document.get')]
     public function getAction(Request $request,  EntityManagerInterface $entityManager, $document): BinaryFileResponse
     {
-        $filename = __DIR__.'/../../../private/documents/'.$document;
+        $filename = __DIR__.'/../../private/documents/'.$document;
 
         //return $app->sendFile($filename);
         return new BinaryFileResponse($filename);
@@ -189,7 +189,7 @@ class DocumentController extends AbstractController
 
             $files = $request->files->get($form->getName());
 
-            $path = __DIR__.'/../../../private/documents/';
+            $path = __DIR__.'/../../private/documents/';
             $filename = $files['document']->getClientOriginalName();
             $extension = $files['document']->guessExtension();
 
@@ -248,7 +248,7 @@ class DocumentController extends AbstractController
 
             $files = $request->files->get($form->getName());
             if ($files['document']) {
-                $path = __DIR__.'/../../../private/documents/';
+                $path = __DIR__.'/../../private/documents/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = $files['document']->guessExtension();
 

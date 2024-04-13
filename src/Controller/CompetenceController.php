@@ -133,7 +133,7 @@ class CompetenceController extends AbstractController
 
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -197,7 +197,7 @@ class CompetenceController extends AbstractController
 
             // si un document est fourni, l'enregistré TODO
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -270,7 +270,7 @@ class CompetenceController extends AbstractController
             }
         }
 
-        $file = __DIR__.'/../../../private/doc/'.$document;
+        $file = __DIR__.'/../../private/doc/'.$document;
 
         $stream = static function () use ($file): void {
             readfile($file);

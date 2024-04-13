@@ -27,9 +27,11 @@
 								<div class="input-group-btn">
 									<button type="submit" class="btn btn-default" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
 									<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('background.list') }}"><i class="fa fa-refresh"></i></a>
-									<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter un background" href="{{ path('background.add') }}"><i class="fa fa-plus"></i></a>
-									<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimer tous les backgrounds de groupe" href="{{ path('background.print') }}"><i class="fa fa-print"></i> Imprimer tous les backgrounds de groupe</a>
-									<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimer tous les backgrounds personnels" href="{{ path('background.personnage.print') }}"><i class="fa fa-print"></i> Imprimer tous les backgrounds personnels</a>
+									<div class="btn-group pull-right" role="group" aria-label="...">
+										<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un background" href="{{ path('background.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+										<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimer tous les backgrounds de groupe" href="{{ path('background.print') }}"><i class="fa fa-print"></i> Imprimer tous les backgrounds de groupe</a>
+										<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimer tous les backgrounds personnels" href="{{ path('background.personnage.print') }}"><i class="fa fa-print"></i> Imprimer tous les backgrounds personnels</a>
+									</div>
 								</div>
 							</div>
 						</div>						

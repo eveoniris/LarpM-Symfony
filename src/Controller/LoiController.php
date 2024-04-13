@@ -45,7 +45,7 @@ class LoiController extends AbstractController
 
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -103,7 +103,7 @@ class LoiController extends AbstractController
 
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -185,7 +185,7 @@ class LoiController extends AbstractController
     {
         $document = $loi->getDocumentUrl();
 
-        $file = __DIR__.'/../../../private/doc/'.$document;
+        $file = __DIR__.'/../../private/doc/'.$document;
 
         $stream = static function () use ($file): void {
             readfile($file);

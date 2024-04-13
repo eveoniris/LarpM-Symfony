@@ -36,7 +36,7 @@ class LigneeController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $type = $data['type'];
             $value = $data['search'];
@@ -100,7 +100,7 @@ class LigneeController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $lignee = $form->getData();
 
             $entityManager->persist($lignee);
@@ -138,7 +138,7 @@ class LigneeController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $lignee = $form->getData();
 
             /*
@@ -182,7 +182,7 @@ class LigneeController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form['personnage']->getData();
             $parent1 = $form['parent1']->getData();
             $parent2 = $form['parent2']->getData();
