@@ -103,11 +103,13 @@ abstract class BaseRepository extends ServiceEntityRepository
         $alias = static::getEntityAlias();
         $orderdir = 'ASC' === $orderdir ? 'ASC' : 'DESC';
 
+        /*
         $query = $this->createQueryBuilder($alias)
             ->where($where)
             ->orderBy($alias.'.'.$orderby.' '.$orderdir.','.$alias.'.id', 'ASC')
             ->setMaxResults($limit)
             ->setFirstResult(($page * $limit) - $limit);
+        */
 
         $query = $this->findBy($criteria)
             ->setMaxResults($limit)
