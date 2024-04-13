@@ -62,8 +62,6 @@ class DebriefingController extends AbstractController
             $this->getRequestPage()
         );
 
-        dump($paginator);
-
         return $this->render('debriefing/list.twig', [
             'paginator' => $paginator,
             'form' => $form->createView(),

@@ -209,7 +209,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         $query->setMaxResults($limit)
             ->setFirstResult(($offset - 1) * $limit);
 
-        return new Paginator($query);
+        return new Paginator($query, false);
     }
 
     /**
