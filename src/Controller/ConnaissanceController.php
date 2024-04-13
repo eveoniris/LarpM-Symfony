@@ -70,7 +70,7 @@ class ConnaissanceController extends AbstractController
 
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -119,7 +119,7 @@ class ConnaissanceController extends AbstractController
 
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
@@ -178,7 +178,7 @@ class ConnaissanceController extends AbstractController
     {
         $document = $request->get('document');
 
-        $file = __DIR__.'/../../../private/doc/'.$document;
+        $file = __DIR__.'/../../private/doc/'.$document;
 
         $stream = static function () use ($file): void {
             readfile($file);

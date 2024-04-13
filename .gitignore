@@ -50,3 +50,4 @@ yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 package-lock.json
 package.json
+private/doc/

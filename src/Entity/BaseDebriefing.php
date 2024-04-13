@@ -2,69 +2,64 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\DiscriminatorColumn;
-use Doctrine\ORM\Mapping\DiscriminatorMap;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Index;
-use Doctrine\ORM\Mapping\InheritanceType;
-use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * App\Entity\Debriefing.
  */
-#[Table(name: 'debriefing')]
-#[Index(columns: ['groupe_id'], name: 'fk_debriefing_groupe1_idx')]
-#[Index(columns: ['User_id'], name: 'fk_debriefing_User1_idx')]
-#[Index(columns: ['gn_id'], name: 'fk_debriefing_gn1_idx')]
-#[InheritanceType('SINGLE_TABLE')]
-#[DiscriminatorColumn(name: 'discr', type: 'string')]
-#[DiscriminatorMap(['base' => 'BaseDebriefing', 'extended' => 'Debriefing'])]
+#[ORM\Entity]
+#[ORM\Table(name: 'debriefing')]
+#[ORM\Index(columns: ['groupe_id'], name: 'fk_debriefing_groupe1_idx')]
+#[ORM\Index(columns: ['User_id'], name: 'fk_debriefing_User1_idx')]
+#[ORM\Index(columns: ['gn_id'], name: 'fk_debriefing_gn1_idx')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseDebriefing', 'extended' => 'Debriefing'])]
+
 class BaseDebriefing
 {
-    #[Id]
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
-    #[GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Id]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected ?string $titre = null;
 
-    #[Column(name: '`text`', type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[ORM\Column(name: '`text`', type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $text = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $visibility = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $update_date = null;
 
-    #[Column(name: 'documentUrl', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[ORM\Column(name: 'documentUrl', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
-    #[ManyToOne(targetEntity: 'Groupe', inversedBy: 'debriefings')]
-    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: 'Groupe', inversedBy: 'debriefings')]
+    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     protected Groupe $groupe;
 
-    #[ManyToOne(targetEntity: 'User', inversedBy: 'debriefings')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: 'User', inversedBy: 'debriefings')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected User $user;
 
-    #[ManyToOne(targetEntity: 'User', inversedBy: 'playerDebriefings')]
-    #[JoinColumn(name: 'player_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\ManyToOne(targetEntity: 'User', inversedBy: 'playerDebriefings')]
+    #[ORM\JoinColumn(name: 'player_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $player;
 
-    #[ManyToOne(targetEntity: 'Gn', inversedBy: 'debriefings')]
-    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: 'Gn', inversedBy: 'debriefings')]
+    #[ORM\JoinColumn(name: 'gn_id', referencedColumnName: 'id')]
     protected ?Gn $gn;
 
+    public function __construct()
+    {
+    }
 
     /**
      * Set the value of id.

@@ -16,7 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[isGranted('ROLE_SCENARISTE')]
 class LangueController extends AbstractController
 {
-    final public const DOC_PATH = __DIR__.'/../../../private/doc/';
+    final public const DOC_PATH = __DIR__.'/../../private/doc/';
 
     /**
      * affiche la liste des langues.

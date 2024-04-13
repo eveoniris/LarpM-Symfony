@@ -443,7 +443,7 @@ class ParticipantController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $files = $request->files->get($form->getName());
 
-            $path = __DIR__.'/../../../private/img/';
+            $path = __DIR__.'/../../private/img/';
             $filename = $files['trombine']->getClientOriginalName();
             $extension = $files['trombine']->guessExtension();
 
@@ -1085,7 +1085,7 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/regle/{rule}/document', name: 'participant.regle.document')]
     public function regleDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Rule $rule)
     {
-        $filename = __DIR__.'/../../../private/rules/'.$rule->getUrl();
+        $filename = __DIR__.'/../../private/rules/'.$rule->getUrl();
         $file = new File($filename);
 
         return $this->file($file);
@@ -1441,7 +1441,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $filename = __DIR__.'/../../../private/doc/'.$priere->getDocumentUrl();
+        $filename = __DIR__.'/../../private/doc/'.$priere->getDocumentUrl();
         $file = new File($filename);
 
         return $this->file($file, $priere->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
@@ -1467,7 +1467,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $filename = __DIR__.'/../../../private/doc/'.$technologie->getDocumentUrl();
+        $filename = __DIR__.'/../../private/doc/'.$technologie->getDocumentUrl();
         $file = new File($filename);
 
         return $this->file($file, $technologie->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
@@ -1520,7 +1520,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $filename = __DIR__.'/../../../private/doc/'.$potion->getDocumentUrl();
+        $filename = __DIR__.'/../../private/doc/'.$potion->getDocumentUrl();
         $file = new File($filename);
 
         return $this->file($file, $potion->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
@@ -1947,7 +1947,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $filename = __DIR__.'/../../../private/doc/'.$langue->getDocumentUrl();
+        $filename = __DIR__.'/../../private/doc/'.$langue->getDocumentUrl();
         $file = new File($filename);
 
         return $this->file($file, $langue->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
@@ -2150,7 +2150,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $filename = __DIR__.'/../../../private/doc/'.$sort->getDocumentUrl();
+        $filename = __DIR__.'/../../private/doc/'.$sort->getDocumentUrl();
         $file = new File($filename);
 
         return $this->file($file, $sort->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
@@ -2203,7 +2203,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $filename = __DIR__.'/../../../private/doc/'.$connaissance->getDocumentUrl();
+        $filename = __DIR__.'/../../private/doc/'.$connaissance->getDocumentUrl();
         $file = new File($filename);
 
         return $this->file($file, $connaissance->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
@@ -2333,7 +2333,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $filename = __DIR__.'/../../../private/doc/'.$competence->getDocumentUrl();
+        $filename = __DIR__.'/../../private/doc/'.$competence->getDocumentUrl();
         $file = new File($filename);
 
         return $this->file($file, $competence->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
@@ -2359,7 +2359,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $filename = __DIR__.'/../../../private/documents/'.$document->getDocumentUrl();
+        $filename = __DIR__.'/../../private/documents/'.$document->getDocumentUrl();
         $file = new File($filename);
 
         return $this->file($file, $document->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);

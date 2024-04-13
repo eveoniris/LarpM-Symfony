@@ -15,13 +15,14 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[isGranted('ROLE_SCENARISTE')]
 class DebriefingController extends AbstractController
 {
-    final public const DOC_PATH = __DIR__.'/../../../private/doc/';
+    final public const DOC_PATH = __DIR__.'/../../private/doc/';
 
     /**
      * Présentation des debriefings.
@@ -85,7 +86,7 @@ class DebriefingController extends AbstractController
             }
 		}
 
-        $form = $this->createForm(DebriefingForm::class, $debriefing)
+        $form = $this->createForm(DebriefingForm::class, $debriefing, ['groupeId' => $groupeId])
             ->add('visibility', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'label' => 'Visibilité',
@@ -101,11 +102,11 @@ class DebriefingController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $debriefing = $form->getData();
             $debriefing->setUser($this->getUser());
 
-            if ($this->handleDocument($request, $app, $form, $debriefing)) {
+            if ($this->handleDocument($request, $entityManager, $form, $debriefing)) {
                 $entityManager->persist($debriefing);
                 $entityManager->flush();
 
@@ -169,10 +170,10 @@ class DebriefingController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $debriefing = $form->getData();
 
-            if ($this->handleDocument($request, $app, $form, $debriefing)) {
+            if ($this->handleDocument($request, $entityManager, $form, $debriefing)) {
                 $entityManager->persist($debriefing);
                 $entityManager->flush();
 
@@ -249,19 +250,16 @@ class DebriefingController extends AbstractController
      * Afficher le document lié a un debriefing.
      */
     #[Route('/debriefing/{debriefing}/document', name: 'debriefing.document')]
-    public function documentAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
+    public function documentAction(Debriefing $debriefing): BinaryFileResponse
     {
         $document = $debriefing->getDocumentUrl();
         $file = self::DOC_PATH.$document;
 
-        $stream = static function () use ($file): void {
-            readfile($file);
-        };
+        $response = new BinaryFileResponse($file);
+        $response->headers->set('Content-Type', 'text/pdf');
+        $response->headers->set('Content-length', filesize($file));
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.$debriefing->getPrintTitre().'.pdf"');
 
-        return $app->stream($stream, 200, [
-            'Content-Type' => 'text/pdf',
-            'Content-length' => filesize($file),
-            'Content-Disposition' => 'attachment; filename="'.$debriefing->getPrintTitre().'.pdf"',
-        ]);
+        return $response;
     }
 }

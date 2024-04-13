@@ -182,7 +182,7 @@ class MagieController extends AbstractController
 
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -232,7 +232,7 @@ class MagieController extends AbstractController
 
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -312,7 +312,7 @@ class MagieController extends AbstractController
         }
         }*/
 
-        $file = __DIR__.'/../../../private/doc/'.$document;
+        $file = __DIR__.'/../../private/doc/'.$document;
 
         /*$stream = function () use ($file) {
             readfile($file);
@@ -435,7 +435,7 @@ class MagieController extends AbstractController
 
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -485,7 +485,7 @@ class MagieController extends AbstractController
 
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -553,7 +553,7 @@ class MagieController extends AbstractController
         $document = $request->get('document');
         $potion = $request->get('potion');
 
-        $file = __DIR__.'/../../../private/doc/'.$document;
+        $file = __DIR__.'/../../private/doc/'.$document;
 
         $stream = static function () use ($file): void {
             readfile($file);
@@ -720,7 +720,7 @@ class MagieController extends AbstractController
 
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -770,7 +770,7 @@ class MagieController extends AbstractController
 
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -850,7 +850,7 @@ class MagieController extends AbstractController
             }
         }*/
 
-        $file = __DIR__.'/../../../private/doc/'.$document;
+        $file = __DIR__.'/../../private/doc/'.$document;
 
         $stream = static function () use ($file): void {
             readfile($file);

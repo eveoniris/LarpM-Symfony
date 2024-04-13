@@ -6,6 +6,8 @@ use App\Entity\Debriefing;
 use App\Entity\Gn;
 use App\Entity\Groupe;
 use App\Entity\User;
+use App\Repository\GroupeRepository;
+use App\Repository\UserRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -56,7 +58,7 @@ class DebriefingForm extends AbstractType
                 'placeholder' => 'Choisissez le joueur qui vous a fourni ce debriefing',
                 'query_builder' => static function (UserRepository $p) {
                     $qb = $p->createQueryBuilder('p');
-                    $qb->orderBy('p.Username', 'ASC');
+                    $qb->orderBy('p.username', 'ASC');
 
                     return $qb;
                 },
@@ -69,8 +71,13 @@ class DebriefingForm extends AbstractType
                 'label' => 'Groupe',
                 'class' => Groupe::class,
                 'choice_label' => 'nom',
-                'query_builder' => static function (GroupeRepository $g) {
+                'query_builder' => static function (GroupeRepository $g) use ($options) {
                     $qb = $g->createQueryBuilder('g');
+                    if ($options['groupeId'])
+                    {
+                        $qb->where('g.id = :groupeId');
+                        $qb->setParameter('groupeId', $options['groupeId']);
+                    }
                     $qb->orderBy('g.nom', 'ASC');
 
                     return $qb;
@@ -98,6 +105,7 @@ class DebriefingForm extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Debriefing::class,
+            'groupeId' => null,
             // TinyMce Hide the text field. It's break the form Submit because autovalidate can't allow it
             // Reason : the user can't fill a hidden field, so it's couldn't be "required"
             'attr' => [

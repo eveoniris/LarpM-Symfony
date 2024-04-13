@@ -38,13 +38,13 @@ class TechnologieController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $technologie = $form->getData();
 
             $files = $request->files->get($form->getName());
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -98,7 +98,7 @@ class TechnologieController extends AbstractController
             $files = $request->files->get($form->getName());
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../../private/doc/';
+                $path = __DIR__.'/../../private/doc/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -203,7 +203,7 @@ class TechnologieController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $technologieRessource = $form->getData();
             $ressourceId = $technologieRessource->getRessource()->getId();
             $ressourceNom = $technologieRessource->getRessource()->getLabel();
@@ -264,7 +264,7 @@ class TechnologieController extends AbstractController
     {
         $technologie = $request->get('technologie');
         $document = $technologie->getDocumentUrl();
-        $file = __DIR__.'/../../../private/doc/'.$document;
+        $file = __DIR__.'/../../private/doc/'.$document;
 
         $stream = static function () use ($file): void {
             readfile($file);

@@ -68,7 +68,7 @@ class RuleController extends AbstractController
             $data = $form->getData();
             $files = $request->files->get($form->getName());
 
-            $path = __DIR__.'/../../../private/rules/';
+            $path = __DIR__.'/../../private/rules/';
             $filename = $files['rule']->getClientOriginalName();
             $extension = $files['rule']->guessExtension();
 
@@ -146,7 +146,7 @@ class RuleController extends AbstractController
             $entityManager->remove($rule);
             $entityManager->flush();
 
-            $filename = __DIR__.'/../../../private/rules/'.$rule->getUrl();
+            $filename = __DIR__.'/../../private/rules/'.$rule->getUrl();
 
             if (file_exists($filename)) {
                 unlink($filename);
@@ -169,7 +169,7 @@ class RuleController extends AbstractController
      */
     public function documentAction(Request $request,  EntityManagerInterface $entityManager, Rule $rule)
     {
-        $filename = __DIR__.'/../../../private/rules/'.$rule->getUrl();
+        $filename = __DIR__.'/../../private/rules/'.$rule->getUrl();
 
         return $app->sendFile($filename);
     }

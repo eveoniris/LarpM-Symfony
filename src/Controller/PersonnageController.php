@@ -240,7 +240,7 @@ class PersonnageController extends AbstractController
     public function getTrombineAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $trombine = $personnage->getTrombineUrl();
-        $filename = __DIR__.'/../../../private/img/'.$trombine;
+        $filename = __DIR__.'/../../private/img/'.$trombine;
 
         $stream = static function () use ($filename): void {
             readfile($filename);
@@ -266,7 +266,7 @@ class PersonnageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $files = $request->files->get($form->getName());
 
-            $path = __DIR__.'/../../../private/img/';
+            $path = __DIR__.'/../../private/img/';
             $filename = $files['trombine']->getClientOriginalName();
             $extension = $files['trombine']->guessExtension();
 
@@ -484,7 +484,7 @@ class PersonnageController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
 
             $entityManager->persist($personnage);
@@ -2295,7 +2295,7 @@ class PersonnageController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $cout = $app['personnage.manager']->getCompetenceCout($personnage, $lastCompetence);
             $xp = $personnage->getXp();
 
@@ -2393,7 +2393,7 @@ class PersonnageController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
             $competenceId = $data['competenceId'];
