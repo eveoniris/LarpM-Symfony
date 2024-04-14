@@ -1,4 +1,4 @@
-{% extends "layout.twig"  %}
+{% extends "base.html.twig" %}
 
 {% block title %}Modification d'un objet de jeu{% endblock %}
 
@@ -6,7 +6,7 @@
     
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('items') }}">Liste des objets de jeu</a></li>
+		<li><a href="{{ path('item.index') }}">Liste des objets de jeu</a></li>
 		<li><a href="{{ path('item.detail', {'item': item.id}) }}">{{ item.label }}</a></li>
 		<li class="active">Modification</li>
 	</ol>

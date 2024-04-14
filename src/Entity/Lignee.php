@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\LigneesRepository;
+use App\Repository\LigneeRepository;
 use Doctrine\ORM\Mapping\Entity;
 
-#[Entity(repositoryClass: LigneesRepository::class)]
+#[Entity(repositoryClass: LigneeRepository::class)]
 class Lignee extends BaseLignee implements \Stringable
 {
     public function __toString(): string

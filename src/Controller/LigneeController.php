@@ -47,14 +47,15 @@ class LigneeController extends AbstractController
         $lignees = $repo->findList(
             $type,
             $value,
-            ['by' => $order_by, 'dir' => $order_dir],
             $limit,
-            $offset);
+            $offset,
+            ['by' => $order_by, 'dir' => $order_dir]
+        );
 
-        $numResults = $repo->findCount($type, $value);
-
-        $paginator = new Paginator($numResults, $limit, $page,
-            $app['url_generator']->generate('lignee.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
+        $paginator = $repo->findPaginatedQuery(
+            $lignees, 
+            $this->getRequestLimit(),
+            $this->getRequestPage()
         );
 
         return $this->render('lignee/list.twig', [
