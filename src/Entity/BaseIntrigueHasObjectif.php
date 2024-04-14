@@ -28,6 +28,10 @@ abstract class BaseIntrigueHasObjectif
     #[ORM\JoinColumn(name: 'objectif_id', referencedColumnName: 'id', nullable: false)]
     protected Objectif $objectif;
 
+    public function __construct()
+    {
+    }
+    
     /**
      * Set the value of id.
      */

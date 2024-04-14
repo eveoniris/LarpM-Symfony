@@ -36,6 +36,10 @@ abstract class BaseIntrigueHasModification
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
 
+    public function __construct()
+    {
+    }
+
     /**
      * Set the value of id.
      */

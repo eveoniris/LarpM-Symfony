@@ -6,12 +6,12 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('document.index') }}">Liste des lieux</a></li>
+		<li><a href="{{ path('lieu.index') }}">Liste des lieux</a></li>
 		<li class="active">Modification d'un lieu</li>
 	</ol>
 	
 	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('lieu.update', {'lieu':lieu.id}) }}" method="POST" {{ form_enctype(form) }}  novalidate>
+		{{ form_start(form, {"attr": {"action": path('lieu.update', {'lieu':lieu.id}) }}) }}
 			<fieldset>
 				<legend>Modification d'un lieu</legend>
 				

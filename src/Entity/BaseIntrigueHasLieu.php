@@ -27,6 +27,10 @@ abstract class BaseIntrigueHasLieu
     #[ORM\JoinColumn(name: 'lieu_id', referencedColumnName: 'id', nullable: false)]
     protected Lieu $lieu;
 
+    public function __construct()
+    {
+    }
+    
     /**
      * Set the value of id.
      */

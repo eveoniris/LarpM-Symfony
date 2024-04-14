@@ -27,6 +27,10 @@ abstract class BaseIntrigueHasEvenement
     #[ORM\JoinColumn(name: 'evenement_id', referencedColumnName: 'id')]
     protected Evenement $evenement;
 
+    public function __construct()
+    {
+    }
+    
     /**
      * Set the value of id.
      */

@@ -27,6 +27,10 @@ abstract class BaseIntrigueHasDocument
     #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
     protected Document $document;
 
+    public function __construct()
+    {
+    }
+    
     /**
      * Set the value of id.
      */

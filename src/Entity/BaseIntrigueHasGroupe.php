@@ -27,6 +27,10 @@ abstract class BaseIntrigueHasGroupe
     #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
     protected Groupe $groupe;
 
+    public function __construct()
+    {
+    }
+    
     /**
      * Set the value of id.
      */
