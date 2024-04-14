@@ -5,6 +5,7 @@ namespace App\Form;
 
 use App\Entity\Chronologie;
 use App\Entity\Territoire;
+use App\Repository\TerritoireRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -25,6 +26,16 @@ class ChronologieForm extends AbstractType
                 'label' => 'Territoire',
                 'class' => Territoire::class,
                 'choice_label' => 'nom',
+                'query_builder' => static function (TerritoireRepository $t) use ($options) {
+                    $qb = $t->createQueryBuilder('t');
+                    if ($options['territoireId'])
+                    {
+                        $qb->where('t.id = :territoireId');
+                        $qb->setParameter('territoireId', $options['territoireId']);
+                    }
+                    $qb->orderBy('t.nom', 'ASC');
+                    return $qb;
+                },
             ])
             ->add('description', TextareaType::class, [
                 'required' => true,
@@ -52,6 +63,7 @@ class ChronologieForm extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Chronologie::class,
+            'territoireId' => null,
             // TinyMce Hide the text field. It's break the form Submit because autovalidate can't allow it
             // Reason : the user can't fill a hidden field, so it's couldn't be "required"
             'attr' => [
