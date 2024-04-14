@@ -36,13 +36,13 @@ class BaseChronologie
     #[Column(name: 'visibilite', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $visibilite = '';
 
-    #[ManyToOne(targetEntity: Territoire::class, cascade: ['persist', 'remove'], inversedBy: 'chronologies')]
+    #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'chronologies')]
     #[JoinColumn(name: 'zone_politique_id', referencedColumnName: 'id', nullable: 'false')]
     protected Territoire $territoire;
 
     public function __construct()
     {
-        $this->territoire = new Territoire();
+        //$this->territoire = new Territoire();
     }
 
     public function setId(int $id): static
