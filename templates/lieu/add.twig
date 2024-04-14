@@ -6,19 +6,16 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('lieu') }}">Liste des lieux</a></li>
+		<li><a href="{{ path('lieu.index') }}">Liste des lieux</a></li>
 		<li class="active">Ajout d'un lieu</li>
 	</ol>
 	
 	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('lieu.add') }}" method="POST" {{ form_enctype(form) }}  novalidate>
-			<fieldset>
-				<legend>Ajout d'un lieu</legend>
-				
-	
-				{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
+		<div class="header">
+			<h5>Ajout d'un lieu</h5>
+		</div>
+
+		{{ form(form) }}
 	</div>
 	
 {% endblock %}

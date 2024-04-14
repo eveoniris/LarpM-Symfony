@@ -7,6 +7,7 @@ use App\Entity\Lieu;
 use App\Form\LieuDeleteForm;
 use App\Form\LieuDocumentForm;
 use App\Form\LieuForm;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,14 +22,20 @@ class LieuController extends AbstractController
     #[Route('/lieu', name: 'lieu.index')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
-        $lieux = $entityManager->getRepository('\\'.\App\Entity\Lieu::class)->findAllOrderedByNom();
+        $repo = $entityManager->getRepository('\\'.\App\Entity\Lieu::class);
+        $lieux = $repo->findPaginated(
+            $this->getRequestPage(),
+            $this->getRequestLimit(),
+            'nom',
+        );
 
-        return $this->render('lieu/index.twig', ['lieux' => $lieux]);
+        return $this->render('lieu/index.twig', ['paginator' => $lieux]);
     }
 
     /**
      * Imprimer la liste des documents.
      */
+    #[Route('/lieu/print', name: 'lieu.print')]
     public function printAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $lieux = $entityManager->getRepository('\\'.\App\Entity\Lieu::class)->findAllOrderedByNom();
@@ -39,6 +46,7 @@ class LieuController extends AbstractController
     /**
      * Télécharger la liste des lieux.
      */
+    #[Route('/lieu/download', name: 'lieu.download')]
     public function downloadAction(Request $request,  EntityManagerInterface $entityManager): void
     {
         $lieux = $entityManager->getRepository('\\'.\App\Entity\Lieu::class)->findAllOrderedByNom();
@@ -97,7 +105,7 @@ class LieuController extends AbstractController
            $this->addFlash('success', 'Le lieu a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('lieu', [], 303);
+                return $this->redirectToRoute('lieu.index', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('lieu.add', [], 303);
             }
@@ -120,6 +128,7 @@ class LieuController extends AbstractController
     /**
      * Mise à jour d'un lieu.
      */
+    #[Route('/lieu/{lieu}/update', name: 'lieu.update')]
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Lieu $lieu)
     {
         $form = $this->createForm(LieuForm::class, $lieu)
@@ -134,7 +143,7 @@ class LieuController extends AbstractController
 
            $this->addFlash('success', 'Le lieu a été modifié.');
 
-            return $this->redirectToRoute('lieu', [], 303);
+            return $this->redirectToRoute('lieu.index', [], 303);
         }
 
         return $this->render('lieu/update.twig', [
@@ -146,6 +155,7 @@ class LieuController extends AbstractController
     /**
      * Suppression d'un lieu.
      */
+    #[Route('/lieu/{lieu}/delete', name: 'lieu.delete')]
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Lieu $lieu)
     {
         $form = $this->createForm(LieuDeleteForm::class, $lieu)
@@ -161,7 +171,7 @@ class LieuController extends AbstractController
 
            $this->addFlash('success', 'Le lieu a été supprimé.');
 
-            return $this->redirectToRoute('lieu', [], 303);
+            return $this->redirectToRoute('lieu.index', [], 303);
         }
 
         return $this->render('lieu/delete.twig', [
@@ -173,6 +183,7 @@ class LieuController extends AbstractController
     /**
      * Gestion de la liste des documents lié à un lieu.
      */
+    #[Route('/lieu/{lieu}/document', name: 'lieu.documents')]
     public function documentAction(Request $request,  EntityManagerInterface $entityManager, Lieu $lieu)
     {
         $form = $this->createForm(LieuDocumentForm::class, $lieu)

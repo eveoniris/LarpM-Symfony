@@ -49,7 +49,7 @@
 			<th>Auteur</th>
 			<th>Date de création</th>
 			<th>Date de mise à jour</th>
-			<th></th>
+			<th>Actions</th>
 		</thead>
 		<tbody>
 		{% for rumeur in paginator %}
@@ -64,8 +64,8 @@
 				<td>
 					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 						<div class="btn-group" role="group" aria-label="...">
-							<a class="btn btn-primary" href="{{ path('rumeur.detail', {'rumeur':rumeur.id}) }}"><i class="fa fa-eye"></i></a>
-							<a class="btn btn-danger" href="{{ path('rumeur.update', {'rumeur':rumeur.id}) }}"><i class="fa fa-pencil"></i></a>
+							<a class="btn btn-secondary" href="{{ path('rumeur.detail', {'rumeur':rumeur.id}) }}"><i class="fa fa-eye"></i></a>
+							<a class="btn btn-secondary" href="{{ path('rumeur.update', {'rumeur':rumeur.id}) }}"><i class="fa fa-pencil"></i></a>
 						</div>
 					</div>
 				</td>

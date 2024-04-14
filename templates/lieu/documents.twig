@@ -6,13 +6,13 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("lieu") }}">Liste des lieux</a></li>
+		<li><a href="{{ path("lieu.index") }}">Liste des lieux</a></li>
 		<li><a href="{{ path("lieu.detail", {'lieu': lieu.id}) }}">{{ lieu.nom }}</a></li>
 		<li class="active">Modifier la liste des documents</li>
 	</ol>
 	
 	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('lieu.documents',{'lieu': lieu.id}) }}" method="POST">
+		{{ form_start(form, {"attr": {"action": path('lieu.documents', {'lieu':lieu.id}) }}) }}
 					
 			{{ form(form) }}
 		{{ form_end(form) }}

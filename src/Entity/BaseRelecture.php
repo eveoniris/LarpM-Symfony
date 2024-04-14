@@ -48,6 +48,10 @@ class BaseRelecture
     #[JoinColumn(name: 'intrigue_id', referencedColumnName: 'id', nullable: 'false')]
     protected Intrigue $intrigue;
 
+    public function __construct()
+    {
+    }
+    
     /**
      * Set the value of id.
      */

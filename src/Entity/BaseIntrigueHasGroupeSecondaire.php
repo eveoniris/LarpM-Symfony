@@ -27,6 +27,10 @@ abstract class BaseIntrigueHasGroupeSecondaire
     #[ORM\JoinColumn(name: 'secondary_group_id', referencedColumnName: 'id', nullable: false)]
     protected SecondaryGroup $secondaryGroup;
 
+    public function __construct()
+    {
+    }
+    
     /**
      * Set the value of id.
      */

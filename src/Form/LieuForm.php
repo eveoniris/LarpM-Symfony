@@ -44,6 +44,9 @@ class LieuForm extends AbstractType
     {
         $resolver->setDefaults([
             'class' => \App\Entity\Lieu::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

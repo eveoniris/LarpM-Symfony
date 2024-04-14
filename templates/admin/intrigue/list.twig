@@ -55,7 +55,7 @@
 			<th>Groupes Secondaires concernés</th>
 			<th>Documents concernés</th>
 			<th>Instances concernées</th>
-			<th></th>
+			<th>Actions</th>
 		</thead>
 		<tbody>
 		{% for intrigue in paginator %}
@@ -104,8 +104,8 @@
 				<td>
 					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 						<div class="btn-group" role="group" aria-label="...">
-							<a class="btn btn-primary" href="{{ path('intrigue.detail', {'intrigue':intrigue.id}) }}"><i class="fa fa-eye"></i></a>
-							<a class="btn btn-danger" href="{{ path('intrigue.update', {'intrigue':intrigue.id}) }}"><i class="fa fa-pencil"></i></a>
+							<a class="btn btn-secondary" href="{{ path('intrigue.detail', {'intrigue':intrigue.id}) }}"><i class="fa fa-eye"></i></a>
+							<a class="btn btn-secondary" href="{{ path('intrigue.update', {'intrigue':intrigue.id}) }}"><i class="fa fa-pencil"></i></a>
 						</div>
 					</div>
 				</td>
