@@ -2,9 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Lignee;
 use Doctrine\ORM\EntityRepository;
 
-class LigneesRepository extends BaseRepository
+class LigneeRepository extends BaseRepository
 {
     /**
      * Trouve toutes les lignées.
@@ -14,7 +15,7 @@ class LigneesRepository extends BaseRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('l');
-        $qb->from(\App\Entity\Lignee::class, 'l');
+        $qb->from(Lignee::class, 'l');
         $qb->orderBy('l.id', 'ASC');
 
         return $qb->getQuery()->getResult();
@@ -33,7 +34,7 @@ class LigneesRepository extends BaseRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('l');
-        $qb->from(\App\Entity\Lignee::class, 'l');
+        $qb->from(Lignee::class, 'l');
         if ($type && $value) {
             switch ($type) {
                 case 'id':
@@ -51,7 +52,7 @@ class LigneesRepository extends BaseRepository
         $qb->setMaxResults($limit);
         $qb->orderBy('l.'.$order['by'], $order['dir']);
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 
     /**
@@ -62,7 +63,7 @@ class LigneesRepository extends BaseRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select($qb->expr()->count('l'));
-        $qb->from(\App\Entity\Lignee::class, 'l');
+        $qb->from(Lignee::class, 'l');
 
         if ($type && $value) {
             switch ($type) {
