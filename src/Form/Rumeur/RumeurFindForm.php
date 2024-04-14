@@ -28,8 +28,8 @@ class RumeurFindForm extends AbstractType
             ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [
-                    'text' => 'Texte',
-                    'territoire' => 'Territoire',
+                    'Contenu' => 'text',
+                    'Territoire' => 'territoire',
                 ],
             ]);
     }

@@ -4,10 +4,10 @@
 namespace App\Controller;
 
 use App\Entity\Rumeur;
-use JasonGrimes\Paginator;
 use App\Form\Rumeur\RumeurDeleteForm;
 use App\Form\Rumeur\RumeurFindForm;
 use App\Form\Rumeur\RumeurForm;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -40,7 +40,7 @@ class RumeurController extends AbstractController
             $value = $data['search'];
         }
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Rumeur::class);
+        $repo = $entityManager->getRepository(Rumeur::class);
 
         $rumeurs = $repo->findList(
             $type,
@@ -49,15 +49,14 @@ class RumeurController extends AbstractController
             $limit,
             $offset);
 
-        $numResults = $repo->findCount($type, $value);
-
-        $paginator = new Paginator($numResults, $limit, $page,
-            $app['url_generator']->generate('rumeur.list').'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
-        );
+            $paginator = $repo->findPaginatedQuery(
+                $rumeurs, 
+                $this->getRequestLimit(),
+                $this->getRequestPage()
+            );
 
         return $this->render('rumeur/list.twig', [
             'form' => $form->createView(),
-            'rumeurs' => $rumeurs,
             'paginator' => $paginator,
         ]);
     }
@@ -65,6 +64,7 @@ class RumeurController extends AbstractController
     /**
      * Lire une rumeur.
      */
+    #[Route('/rumeur/{rumeur}/detail', name: 'rumeur.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Rumeur $rumeur)
     {
         return $this->render('rumeur/detail.twig', [
@@ -75,6 +75,7 @@ class RumeurController extends AbstractController
     /**
      * Ajouter une rumeur.
      */
+    #[Route('/rumeur/add', name: 'rumeur.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $rumeur = new Rumeur();
@@ -86,12 +87,9 @@ class RumeurController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $rumeur = $form->getData();
             $rumeur->setUser($this->getUser());
-
             $entityManager->persist($rumeur);
             $entityManager->flush();
-
-           $this->addFlash('success', 'Votre rumeur a été ajoutée.');
-
+            $this->addFlash('success', 'Votre rumeur a été ajoutée.');
             return $this->redirectToRoute('rumeur.list', [], 303);
         }
 
@@ -103,6 +101,7 @@ class RumeurController extends AbstractController
     /**
      * Mettre à jour une rumeur.
      */
+    #[Route('/rumeur/{rumeur}/update', name: 'rumeur.update')]
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Rumeur $rumeur)
     {
         $form = $this->createForm(RumeurForm::class, $rumeur)
@@ -131,6 +130,7 @@ class RumeurController extends AbstractController
     /**
      * Supression d'une rumeur.
      */
+    #[Route('/rumeur/{rumeur}/delete', name: 'rumeur.delete')]
     public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Rumeur $rumeur)
     {
         $form = $this->createForm(RumeurDeleteForm::class, $rumeur)

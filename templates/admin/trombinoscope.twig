@@ -94,7 +94,7 @@ a {
 							Aucun groupe
 						{% endif %}
 						<br />
-						Joué par <a href="{{ path('user.view', {'id': participant.user.id}) }}">{{ participant.user.username }}</a>
+						Joué par <a href="{{ path('user.view', {'user': participant.user.id}) }}">{{ participant.user.username }}</a>
 		  			</li>
 	  			</ul>
 	    	</li>

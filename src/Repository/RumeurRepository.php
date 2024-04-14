@@ -21,14 +21,19 @@ class RumeurRepository extends BaseRepository
      * @param unknown $limit
      * @param unknown $offset
      */
-    public function findList($type, $value, $limit, $offset, array $order = [])
+    public function findList($type, $value, array $order = [], $limit, $offset)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('i');
         $qb->from(\App\Entity\Rumeur::class, 'i');
-        if ($type && $value && 'titre' === $type) {
-            $qb->andWhere('i.titre LIKE :value');
+        if ($type && $value && 'text' === $type) {
+            $qb->andWhere('i.text LIKE :value');
+            $qb->setParameter('value', '%'.$value.'%');
+        }
+        if ($type && $value && 'territoire' === $type) {
+            $qb->join('i.territoire', 't');
+            $qb->andWhere('t.nom LIKE :value');
             $qb->setParameter('value', '%'.$value.'%');
         }
 
@@ -36,7 +41,7 @@ class RumeurRepository extends BaseRepository
         $qb->setMaxResults($limit);
         $qb->orderBy('i.'.$order['by'], $order['dir']);
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 
     /**

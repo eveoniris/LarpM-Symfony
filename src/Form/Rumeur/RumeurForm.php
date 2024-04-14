@@ -3,9 +3,13 @@
 
 namespace App\Form\Rumeur;
 
+use App\Entity\Rumeur;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -20,7 +24,7 @@ class RumeurForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+        $builder->add('text', TextareaType::class, [
             'label' => 'Le contenu de votre rumeur',
             'required' => true,
             'attr' => [
@@ -29,7 +33,7 @@ class RumeurForm extends AbstractType
                 'help' => 'Votre rumeur. Ce texte sera disponibles aux joueurs membres du territoire dans lequel cours la rumeur.',
             ],
         ])
-            ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('territoire', EntityType::class, [
                 'label' => 'Territoire dans lequel cours la rumeur',
                 'required' => false,
                 'class' => \App\Entity\Territoire::class,
@@ -44,7 +48,7 @@ class RumeurForm extends AbstractType
                     'help' => 'Le territoire choisi donnera accès à la rumeur à tous les personnages membre de ce territoire. Remarque, si vous choisissez un territoire de type pays (ex : Aquilonnie), les territoires qui en dépendent (ex : bossonie du nord) auront aussi accès à la rumeur. Si vous ne choisissez pas de territoire, la rumeur sera accessible à tous.',
                 ],
             ])
-            ->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('gn', EntityType::class, [
                 'label' => 'GN référant',
                 'required' => true,
                 'class' => \App\Entity\Gn::class,
@@ -59,12 +63,12 @@ class RumeurForm extends AbstractType
                     'help' => 'Choisissez le GN dans lequel sera utilisé votre rumeur',
                 ],
             ])
-            ->add('visibility', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('visibility', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Visibilité',
                 'choices' => [
-                    'non_disponible' => 'Brouillon',
-                    'disponible' => 'Disponible pour les joueurs',
+                    'Brouillon' => 'non_disponible',
+                    'Disponible pour les joueurs' => 'disponible',
                 ],
                 'attr' => [
                     'La rumeur ne sera visible par les joueurs que lorsque sa visibilité sera "Disponible pour les joueurs".',
@@ -78,7 +82,10 @@ class RumeurForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Rumeur::class,
+            'data_class' => Rumeur::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 
