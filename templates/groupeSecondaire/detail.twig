@@ -90,7 +90,7 @@
 								<a href="{{ path('personnage.admin.detail', {'personnage':postulant.personnage.id}) }}">{{ postulant.personnage.publicname }}</a>
 							</h6>
 							{% if postulant.personnage.groupe %}<p class="list-group-item-text">Groupe : <a href="{{ path('groupe.detail', {'groupe': postulant.personnage.groupe.id}) }}">{{ postulant.personnage.groupe.nom }}</a></p>{% endif %}
-							{% if postulant.personnage.user %}<p class="list-group-item-text">Utilisateur : <a href="{{ path('user.view', {'id': postulant.personnage.user.id}) }}">{{ postulant.personnage.user.username }}</a></p>{% endif %}
+							{% if postulant.personnage.user %}<p class="list-group-item-text">Utilisateur : <a href="{{ path('user.view', {'user': postulant.personnage.user.id}) }}">{{ postulant.personnage.user.username }}</a></p>{% endif %}
 							<p class="list-group-item-text">Date de la demande : {{ postulant.date|date('Y-m-d') }}</p>
 							<p class="list-group-item-text">{{ postulant.explanation|markdown_to_html }}</p>
 							<p class="list-group-item-text"><a href="{{ path('groupeSecondaire.admin.postulant.accept', {'groupe': groupeSecondaire.id,'postulant': postulant.id}) }}">Accepter cette candidature</a></p>

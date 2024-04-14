@@ -30,7 +30,7 @@
 			</div>
 			<div class="col-md-6">
 				<h4>Auteur</h4>
-				<p>Cette rumeur a été créé par <strong><a href="{{ path('user.view', {'id': rumeur.user.id}) }}">{{ rumeur.user.username }}</a></strong> le <strong>{{ rumeur.creationDate|date('Y-m-d H:i:s') }}</strong></p>
+				<p>Cette rumeur a été créé par <strong><a href="{{ path('user.view', {'user': rumeur.user.id}) }}">{{ rumeur.user.username }}</a></strong> le <strong>{{ rumeur.creationDate|date('Y-m-d H:i:s') }}</strong></p>
 			</div>
 		</div>
 	</div>

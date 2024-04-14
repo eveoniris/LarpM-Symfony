@@ -22,7 +22,7 @@ class Rumeur extends BaseRumeur
     public function getVisibility(): string
     {
         return match (parent::getVisibility()) {
-            'disponible' => 'Non disponible',
+            'disponible' => 'Disponible pour les joueurs',
             default => 'Brouillon',
         };
     }
