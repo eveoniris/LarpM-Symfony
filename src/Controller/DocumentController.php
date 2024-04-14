@@ -5,7 +5,6 @@ namespace App\Controller;
 
 use App\Entity\Document;
 use DateTime;
-use JasonGrimes\Paginator;
 use App\Form\DocumentDeleteForm;
 use App\Form\DocumentFindForm;
 use App\Form\DocumentForm;

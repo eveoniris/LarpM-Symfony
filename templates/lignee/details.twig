@@ -19,18 +19,9 @@
     <div class="row">
         <div class="col-md-5">
             <div class="panel panel-default">
-                <nav class="navbar navbar-default" style="margin-bottom: 0;">
-                    <div class="container-fluid">
-                        <div class="navbar-header">
-                            <span class="navbar-brand">{{ lignee.nom }} (#{{ lignee.id }})</span>
-                        </div>
-                        <div class="collapse navbar-collapse">
-                            <ul class="nav navbar-nav navbar-right">
-                                    <li><a href="{{ path('lignee.update', {'lignee':lignee.id}) }}">Modifier/Supprimer</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
+                <div class="input-group-btn">
+                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier/Supprimer" href="{{ path('lignee.update', {'lignee':lignee.id}) }}"><i class="fa fa-edit"></i> Modifier/Supprimer</a>
+                </div>
                 <div class="panel-body">
                     <p>{{ lignee.description }}</p>
                 </div>
@@ -39,18 +30,9 @@
 
         <div class="col-md-7">
             <div class="panel panel-default">
-                <nav class="navbar navbar-default" style="margin-bottom: 0;">
-                    <div class="container-fluid">
-                        <div class="navbar-header">
-                            <span class="navbar-brand">Membres</span>
-                        </div>
-                        <div class="collapse navbar-collapse">
-                            <ul class="nav navbar-nav navbar-right">
-                                <li><a href="{{ path('lignee.addMembre', {'lignee':lignee.id} ) }}">Ajouter un membre</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
+                <div class="input-group-btn">
+                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un membre" href="{{ path('lignee.addMembre', {'lignee':lignee.id}) }}"><i class="fa fa-plus"></i> Ajouter membre</a>
+                </div>
 
                 {% set iconPjConfirmed = '<span title="PJ participant au GN actif">✅</span>' %}
                 {% set iconPjDead = '<span title="Personnage mort">💀</span>' %}
@@ -89,7 +71,7 @@
                                 {% if personnageLignee.personnage.groupe == NULL %}
                                 <td> - </td>
                                 {% else %}
-                                <td><a href="{{ path('groupe.detail',{'index':personnageLignee.personnage.groupe.id}) }}">{{ personnageLignee.personnage.groupe.nom }}</a> </td>
+                                <td><a href="{{ path('groupe.detail',{'groupe':personnageLignee.personnage.groupe.id}) }}">{{ personnageLignee.personnage.groupe.nom }}</a> </td>
                                 {% endif %}
 
                                 <td>{{ personnageLignee.personnage.ageReel }} ans</td>
@@ -106,7 +88,7 @@
 
                                 <td>
                                     <a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Retirer ce membre"
-                                    href="{{ path('lignee.membre.remove',{'membre':personnageLignee.id, 'lignee':lignee.id, 'membreNom':personnageLignee.personnage.nom}) }}"
+                                    href="{{ path('lignee.removeMembre',{'membre':personnageLignee.id, 'lignee':lignee.id, 'membreNom':personnageLignee.personnage.nom}) }}"
                                         onclick="return confirm('Vous vous apprétez à retirer {{ personnageLignee.personnage.nom }} de cette lignée. Confirmer ?')">
                                         <i class="fa fa-unlink"></i></a>
                                 </td>

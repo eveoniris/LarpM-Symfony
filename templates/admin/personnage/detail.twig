@@ -616,7 +616,7 @@
 								{% if personnage.personnageLignee|length > 0 %}
 									{% for lignage in personnage.personnageLignee %}
 										{% if lignage.lignee %}<div class="list-group-item">
-											Lignée :<a href="{{ path('lignee.detail', {'id':lignage.lignee.id}) }}"> {{ lignage.lignee.nom }}</a></div>
+											Lignée :<a href="{{ path('lignee.detail', {'lignee':lignage.lignee.id}) }}"> {{ lignage.lignee.nom }}</a></div>
 										{% endif %}
 										<li class="list-group-item">
 											<strong>Parents :</strong>

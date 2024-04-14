@@ -29,8 +29,8 @@ class LigneeFindForm extends AbstractType
             ->add('type', ChoiceType::class, [
                 'required' => true,
                 'choices' => [
-                    'nom' => 'Nom de la lignée',
-                    'id' => 'ID de la lignée',
+                    'Nom de la lignée' => 'nom',
+                    'ID de la lignée' => 'id',
                 ],
             ]);
     }

@@ -144,7 +144,7 @@ class BasePersonnage
     
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'personnages')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Groupe $groupe;
+    protected ?Groupe $groupe;
 
     #[ManyToOne(targetEntity: Classe::class, inversedBy: 'personnages')]
     #[JoinColumn(name: 'classe_id', referencedColumnName: 'id', nullable: 'false')]
@@ -1045,7 +1045,7 @@ class BasePersonnage
     /**
      * Get Groupe entity (many to one).
      */
-    public function getGroupe(): Groupe
+    public function getGroupe(): ?Groupe
     {
         return $this->groupe;
     }

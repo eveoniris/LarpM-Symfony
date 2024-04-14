@@ -10,7 +10,6 @@ use App\Entity\GroupeHasRessource;
 use App\Entity\Personnage;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use JasonGrimes\Paginator;
 use App\Form\BackgroundForm;
 use App\Form\Groupe\GroupeCompositionForm;
 use App\Form\Groupe\GroupeDescriptionForm;

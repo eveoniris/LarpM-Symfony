@@ -9,7 +9,6 @@ use App\Entity\Relecture;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
-use JasonGrimes\Paginator;
 use App\Form\Intrigue\IntrigueDeleteForm;
 use App\Form\Intrigue\IntrigueFindForm;
 use App\Form\Intrigue\IntrigueForm;

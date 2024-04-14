@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Lignee;
 use App\Entity\PersonnageLignee;
-use JasonGrimes\Paginator;
 use App\Form\Lignee\LigneeAddMembreForm;
 use App\Form\Lignee\LigneeFindForm;
 use App\Form\Lignee\LigneeForm;
@@ -60,7 +59,6 @@ class LigneeController extends AbstractController
 
         return $this->render('lignee/list.twig', [
             'form' => $form->createView(),
-            'lignees' => $lignees,
             'paginator' => $paginator,
         ]);
     }
@@ -68,7 +66,7 @@ class LigneeController extends AbstractController
     /**
      * Affiche le détail d'une lignée.
      */
-    #[Route('/lignee/{id}', name: 'lignee.detail')]
+    #[Route('/lignee/{lignee}', name: 'lignee.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Lignee $lignee)
     {
         $id = $request->get('lignee');
@@ -91,6 +89,7 @@ class LigneeController extends AbstractController
     /**
      * Ajout d'une lignée.
      */
+    #[Route('/lignee/add', name: 'lignee.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $lignee = new Lignee();
@@ -125,12 +124,9 @@ class LigneeController extends AbstractController
     /**
      * Modification d'une lignée.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/lignee/{lignee}/update', name: 'lignee.update')]
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Lignee $lignee)
     {
-        $id = $request->get('lignee');
-
-        $lignee = $entityManager->find(Lignee::class, $id);
-
         $form = $this->createForm(LigneeForm::class, $lignee)
             ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
             ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
@@ -151,7 +147,7 @@ class LigneeController extends AbstractController
                 $entityManager->flush();
                $this->addFlash('success', 'La lignée a été mise à jour.');
 
-                return $this->redirectToRoute('lignee.details', ['lignee' => $id]);
+                return $this->redirectToRoute('lignee.detail', ['lignee' => $lignee->getId()]);
             } elseif ($form->get('delete')->isClicked()) {
                 // supprime le lien entre les personnages et le groupe
                 foreach ($lignee->getPersonnageLignees() as $personnage) {
@@ -174,11 +170,9 @@ class LigneeController extends AbstractController
     /**
      * Ajoute un nouveau membre à la lignée.
      */
-    public function addMembreAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/lignee/{lignee}/addMembre', name: 'lignee.addMembre')]
+    public function addMembreAction(Request $request,  EntityManagerInterface $entityManager, Lignee $lignee)
     {
-        $id = $request->get('lignee');
-        $lignee = $entityManager->find(Lignee::class, $id);
-
         $form = $this->createForm(LigneeAddMembreForm::class);
 
         $form->handleRequest($request);
@@ -199,7 +193,7 @@ class LigneeController extends AbstractController
 
            $this->addFlash('success', 'le personnage a été ajouté à la lignée.');
 
-            return $this->redirectToRoute('lignee.details', ['lignee' => $lignee->getId()], 303);
+            return $this->redirectToRoute('lignee.detail', ['lignee' => $lignee->getId()], 303);
         }
 
         return $this->render('lignee/addMembre.twig', [
@@ -211,6 +205,7 @@ class LigneeController extends AbstractController
     /**
      * Retire un membre à la lignée.
      */
+    #[Route('/lignee/{lignee}/removeMembre', name: 'lignee.removeMembre')]
     public function removeMembreAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $lignee = $request->get('lignee');
@@ -224,6 +219,6 @@ class LigneeController extends AbstractController
 
        $this->addFlash('success', $membreNom.' a été retiré de la lignée.');
 
-        return $this->redirectToRoute('lignee.details', ['lignee' => $lignee, 303]);
+        return $this->redirectToRoute('lignee.detail', ['lignee' => $lignee, 303]);
     }
 }
