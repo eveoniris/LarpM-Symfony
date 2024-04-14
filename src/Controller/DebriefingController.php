@@ -5,7 +5,6 @@ namespace App\Controller;
 
 use App\Entity\Debriefing;
 use App\Entity\Groupe;
-use JasonGrimes\Paginator;
 use App\Form\Debriefing\DebriefingDeleteForm;
 use App\Form\Debriefing\DebriefingFindForm;
 use App\Form\Debriefing\DebriefingForm;

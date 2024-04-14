@@ -6,7 +6,6 @@ namespace App\Controller;
 use App\Entity\SecondaryGroup;
 use App\Entity\Groupe;
 use App\Entity\Membre;
-use JasonGrimes\Paginator;
 use App\Form\GroupeSecondaire\GroupeSecondaireForm;
 use App\Form\GroupeSecondaire\GroupeSecondaireMaterielForm;
 use App\Form\GroupeSecondaire\GroupeSecondaireNewMembreForm;
