@@ -4,12 +4,9 @@ namespace App\Controller;
 
 use App\Enum\FolderType;
 use App\Form\DeleteForm;
-use App\Form\Entity\ListSearch;
-use App\Form\ListFindForm;
 use App\Service\FileUploader;
-use App\Service\PageRequest;
+use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Entity;
 use JetBrains\PhpStorm\Deprecated;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -23,7 +20,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected EntityManagerInterface $entityManager,
         protected RequestStack $requestStack,
         protected FileUploader $fileUploader,
-        protected PageRequest $pageRequest
+        protected PagerService $pageRequest
         // Cache $cache, // TODO : later
     ) {
     }
@@ -43,7 +40,6 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
     protected function render(string $view, array $parameters = [], Response $response = null): Response
     {
-        // dump($this->container->get('twig')->getLoader()->exists('admin/' . $view));
         if ($this->isGranted('ROLE_ADMIN') && $this->container->get('twig')->getLoader()->exists('admin/'.$view)) {
             return parent::render('admin/'.$view, $parameters, $response);
         }

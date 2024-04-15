@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use App\Service\OrderBy;
-use App\Service\PageRequest;
+use App\Service\PagerService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Query;
@@ -184,7 +184,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         return $this;
     }
 
-    public function searchPaginated(PageRequest $pageRequest): Paginator
+    public function searchPaginated(PagerService $pageRequest): Paginator
     {
         $query = $this->search(
             $pageRequest->getSearchValue(),

@@ -45,9 +45,9 @@
                 <td>
                     {% if connaissance.secret %}<span class="text-danger">Oui</span>{% else %}<span class="text-info">Non</span>{% endif %}
                 </td>
-                <td>{{ connaissance.label }}</td>
+                <td>{{ connaissance.label|highlight(pagerService.searchValue) }}</td>
                 <td>
-                    {{ connaissance.description|markdown_to_html }}
+                    {{ connaissance.description|markdown_to_html|highlight(pagerService.searchValue) }}
 
                     {% if connaissance.contraintes %}
                         {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'title': 'Prérequis !', 'content' : connaissance.contraintes } %}

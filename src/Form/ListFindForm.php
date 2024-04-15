@@ -11,7 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ListFindForm extends AbstractType
 {
-    public function __construct(protected readonly EntityManagerInterface $entityManager)
+    public function __construct(protected readonly ?EntityManagerInterface $entityManager = null)
     {
     }
 
@@ -22,8 +22,8 @@ class ListFindForm extends AbstractType
             'label' => 'Recherche',
         ]);
 
-        if ($options['choices'] ?? false) {
-            $builder->add('type', ChoiceType::class, $options['choices']);
+        if ($options['type_choices'] ?? false) {
+            $builder->add('type', ChoiceType::class, $options['type_choices']);
         }
     }
 
@@ -32,8 +32,10 @@ class ListFindForm extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
+        // TODO add default from data_class SeachAttributes
+
         $resolver->setDefaults([
-            'choices' => [
+            'type_choices' => [
                 'required' => true,
                 'choices' => [
                     '*',
@@ -49,6 +51,8 @@ class ListFindForm extends AbstractType
                 },
             ],
         ]);
+
+        $resolver->setAllowedTypes('type_choices', 'array');
     }
 
     /**

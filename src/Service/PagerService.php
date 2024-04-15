@@ -9,7 +9,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-final class PageRequest
+final class PagerService
 {
     protected int $limit;
     protected int $page;
@@ -25,16 +25,27 @@ final class PageRequest
     ) {
     }
 
-    public function getForm(): FormInterface
+    public function getForm(string $type = null, ListSearch $data = null, array $options = []): FormInterface
     {
         if (isset($this->form)) {
             return $this->form;
         }
 
-        $listSearch = new ListSearch();
-        $this->form = $this->formFactory->create(type: ListFindForm::class, data: $listSearch);
-        $request = $this->getRequest();
-        if ($request) {
+        $data ??= $data ?? new ListSearch();
+
+        // may from GET
+        if (empty($data->getValue()) && $search = $this->getRequest()?->get('search')) {
+            $data->setValue($search);
+            $this->searchValue = $search;
+        }
+
+        $this->form = $this->formFactory->create(
+            type: $type ?? ListFindForm::class,
+            data: $data,
+            options: $options
+        );
+
+        if ($request = $this->getRequest()) {
             $this->form->handleRequest($request);
         }
 
@@ -67,19 +78,18 @@ final class PageRequest
 
     protected function loadForm(): void
     {
-        if (isset($this->form)) {
-            return;
-        }
-
         $form = $this->getForm();
+
         if (!new ($form->getConfig()->getDataClass()) instanceof ListSearch) {
             return;
         }
 
+        // handle Get search
+
         /** @var $data ListSearch */
         if ($form->isSubmitted() && $form->isValid() && $data = $form->getData()) {
             $this->searchType = $data->getType();
-            $this->searchValue = $data->getValue();
+            $this->searchValue = $data->getValue() ?? $this->getRequest()?->get('search');
         }
     }
 
@@ -101,7 +111,6 @@ final class PageRequest
 
         $this->limit = $defLimit;
         if (!is_numeric($limit)) {
-
             return $this->limit;
         }
 
@@ -147,7 +156,7 @@ final class PageRequest
         return $this->orderBy;
     }
 
-    public function setRequest(Request $request): PageRequest
+    public function setRequest(Request $request): PagerService
     {
         $this->request = $request;
 
