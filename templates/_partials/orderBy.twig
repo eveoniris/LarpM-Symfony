@@ -1,4 +1,27 @@
-<a href="{{ path( route, {'order_by': field, 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')}) }}">
+{% if orderDir is not defined %}
+    {% if pagerService is defined %}
+        {% set orderDir = pagerService.getOrderBy.getSort() %}
+        {% set routeOptions = {'order_by': field, 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')} %}
+    {% else %}
+        {% set orderDir = 'ASC' %}
+    {% endif %}
+{% endif %}
+
+{% set routeOptions = {'order_by': field, 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')} %}
+{% if pagerService is defined %}
+    {% set routeOptions = routeOptions|merge({"search":pagerService.getSearchValue}) %}
+{% endif %}
+
+{% if pagerService is not defined %}
+{% endif %}
+
+{% if path is not defined and route is defined %}
+    {% set path = path( route, routeOptions ) %}
+{% elseif path is not defined %}
+    {% set path = '#' %}
+{% endif %}
+
+<a href="{{ path }}">
     {{ name }}
     {% if app.request.get('order_by') == field %}
         <i class="fa-solid fa-caret-{{ orderDir == 'ASC' ? 'down' : 'up' }}"></i>

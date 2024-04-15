@@ -8,7 +8,9 @@
                         {{ form_widget(form.value) }}
                         {{ form_widget(form.type) }}
                         {% if searchCriterias is defined %}
-                            // TODO
+                            {% for searchCriteria in searchCriterias %}
+                                // TODO add form inputs from searchCriterias
+                            {% endfor %}
                         {% endif %}
                         <div class="input-group-btn">
                             <button type="submit" class="btn btn-default"

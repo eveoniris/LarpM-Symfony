@@ -7,7 +7,7 @@ use App\Form\ConnaissanceForm;
 use App\Form\Entity\ListSearch;
 use App\Form\ListFindForm;
 use App\Repository\ConnaissanceRepository;
-use App\Service\PageRequest;
+use App\Service\PagerService;
 use App\Service\PersonnageManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -28,15 +28,14 @@ class ConnaissanceController extends AbstractController
     private array $defaultPersonnageListColumnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser'];
 
     #[Route(name: 'list')]
-    public function listAction(Request $request, PageRequest $pageRequest, ConnaissanceRepository $connaissanceRepository): Response
+    public function listAction(Request $request, PagerService $pagerService, ConnaissanceRepository $connaissanceRepository): Response
     {
-        $pageRequest->setRequest($request);
+        $pagerService->setRequest($request);
 
         return $this->render('connaissance/list.twig', [
-            'searchValue' => $pageRequest->getSearchValue(),
-            'form' => $pageRequest->getForm(),
-            'paginator' => $connaissanceRepository->searchPaginated($pageRequest),
-            'orderDir' => $pageRequest->getOrderBy()->getSort(),
+            'form' => $pagerService->getForm(), // If I put this before I have no searhc, but if I put after I have no custom form
+            'pagerService' => $pagerService,
+            'paginator' => $connaissanceRepository->searchPaginated($pagerService),
         ]);
     }
 
