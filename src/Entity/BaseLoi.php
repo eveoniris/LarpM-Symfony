@@ -75,7 +75,7 @@ abstract class BaseLoi
     /**
      * Set the value of documentUrl.
      */
-    public function setDocumentUrl(string $documentUrl): static
+    public function setDocumentUrl(?string $documentUrl): static
     {
         $this->documentUrl = $documentUrl;
 
