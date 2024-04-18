@@ -4,6 +4,7 @@
 namespace App\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -37,46 +38,47 @@ class EconomieController extends AbstractController
         $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
         $gn = $gnRepo->findNext();
 
-        $groupeRepo = $entityManager->getRepository('\\'.\App\Entity\Groupe::class);
-        $groupes = $groupeRepo->findAll();
+        // Liste les groupes participants au prochain GN
+        $groupeGnRepo = $entityManager->getRepository('\\'.\App\Entity\GroupeGn::class);
+        $groupesGn = $groupeGnRepo->findByGn($gn->getId());
 
         $masseMonetaire = 0;
 
-        foreach ($groupes as $groupe) {
-            //  les groupes doivent participer au prochain GN
-            if ($groupe->getGroupeGnById($gn->getId())) {
-                foreach ($groupe->getTerritoires() as $territoire) {
-                    $territoires[] = $territoire;
-                }
+        foreach ($groupesGn as $groupeGn) {
 
-                if ($groupe->getRichesse()) {
-                    $masseMonetaire += $groupe->getRichesse();
-                }
+            $groupe = $groupeGn->getGroupe();
 
-                foreach ($groupe->getGroupeHasRessources() as $groupeHasRessource) {
-                    if ($ressources->containsKey($groupeHasRessource->getRessource()->getId())) {
-                        $value = $ressources->get($groupeHasRessource->getRessource()->getId());
-                        $value['nombre'] += $groupeHasRessource->getQuantite();
-                    } else {
-                        $ressources->set($groupeHasRessource->getRessource()->getId(), [
-                            'label' => $groupeHasRessource->getRessource()->getLabel(),
-                            'nombre' => $groupeHasRessource->getQuantite(),
-                            'territoires' => [],
-                        ]);
-                    }
-                }
+            foreach ($groupe->getTerritoires() as $territoire) {
+                $territoires[] = $territoire;
+            }
 
-                foreach ($groupe->getGroupeHasIngredients() as $groupeHasIngredient) {
-                    if ($ingredients->containsKey($groupeHasIngredient->getIngredient()->getId())) {
-                        $value = $ingredients->get($groupeHasIngredient->getIngredient()->getId());
-                        $value['nombre'] += $groupeHasIngredient->getQuantite();
-                    } else {
-                        $ingredients->set($groupeHasIngredient->getIngredient()->getId(), [
-                            'label' => $groupeHasIngredient->getIngredient()->getLabel(),
-                            'nombre' => $groupeHasIngredient->getQuantite(),
-                            'territoires' => [],
-                        ]);
-                    }
+            if ($groupe->getRichesse()) {
+                $masseMonetaire += $groupe->getRichesse();
+            }
+
+            foreach ($groupe->getGroupeHasRessources() as $groupeHasRessource) {
+                if ($ressources->containsKey($groupeHasRessource->getRessource()->getId())) {
+                    $value = $ressources->get($groupeHasRessource->getRessource()->getId());
+                    $value['nombre'] += $groupeHasRessource->getQuantite();
+                } else {
+                    $ressources->set($groupeHasRessource->getRessource()->getId(), [
+                        'label' => $groupeHasRessource->getRessource()->getLabel(),
+                        'nombre' => $groupeHasRessource->getQuantite(),
+                        'territoires' => [],
+                    ]);
+                }
+            }
+
+            foreach ($groupe->getGroupeHasIngredients() as $groupeHasIngredient) {
+                if ($ingredients->containsKey($groupeHasIngredient->getIngredient()->getId())) {
+                    $value = $ingredients->get($groupeHasIngredient->getIngredient()->getId());
+                    $value['nombre'] += $groupeHasIngredient->getQuantite();
+                } else {
+                    $ingredients->set($groupeHasIngredient->getIngredient()->getId(), [
+                        'label' => $groupeHasIngredient->getIngredient()->getLabel(),
+                        'nombre' => $groupeHasIngredient->getQuantite(),
+                        'territoires' => [],
+                    ]);
                 }
             }
         }
@@ -169,9 +171,16 @@ class EconomieController extends AbstractController
     /**
      * Sortie du fichier pour le jeu économique.
      */
+    #[Route('/economie/csv', name: 'economie.csv')]
     public function csvAction(Request $request,  EntityManagerInterface $entityManager): void
     {
-        $territoires = $entityManager->getRepository('\\'.\App\Entity\Territoire::class)->findFiefs();
+        // recherche le prochain GN
+        $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
+        $gn = $gnRepo->findNext();
+
+        // Liste les groupes participants au prochain GN
+        $groupeGnRepo = $entityManager->getRepository('\\'.\App\Entity\GroupeGn::class);
+        $groupesGn = $groupeGnRepo->findByGn($gn->getId());
 
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename=eveoniris_economie_'.date('Ymd').'.csv');
@@ -193,21 +202,24 @@ class EconomieController extends AbstractController
                 mb_convert_encoding('Distribution', 'ISO-8859-1'),
             ], ';');
 
-        foreach ($territoires as $territoire) {
-            $line = [];
-            $line[] = mb_convert_encoding((string) $territoire->getNom(), 'ISO-8859-1');
-            $groupe = $territoire->getGroupe();
-            $line[] = $groupe ? mb_convert_encoding('#'.$groupe->getNumero().' '.$groupe->getNom(), 'ISO-8859-1') : mb_convert_encoding('Aucun', 'ISO-8859-1');
+        foreach ($groupesGn as $groupeGn) {
+            $groupe = $groupeGn->getGroupe();
+            foreach ($groupe->getTerritoires() as $territoire) {
+                $line = [];
+                $line[] = mb_convert_encoding((string) $territoire->getNom(), 'ISO-8859-1');
+                $groupe = $territoire->getGroupe();
+                $line[] = $groupe ? mb_convert_encoding('#'.$groupe->getNumero().' '.$groupe->getNom(), 'ISO-8859-1') : mb_convert_encoding('Aucun', 'ISO-8859-1');
 
-            $line[] = mb_convert_encoding((string) $territoire->getStatut(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding(implode(' - ', $territoire->getConstructions()->toArray()), 'ISO-8859-1');
-            $line[] = '';
-            $line[] = mb_convert_encoding(implode(' - ', $territoire->getExportations()->toArray()), 'ISO-8859-1');
-            $line[] = mb_convert_encoding(implode(' - ', $territoire->getIngredients()->toArray()), 'ISO-8859-1');
-            $line[] = mb_convert_encoding($territoire->getRichesse().' ('.$territoire->getTresor().')', 'ISO-8859-1');
-            $line[] = '';
+                $line[] = mb_convert_encoding((string) $territoire->getStatut(), 'ISO-8859-1');
+                $line[] = mb_convert_encoding(implode(' - ', $territoire->getConstructions()->toArray()), 'ISO-8859-1');
+                $line[] = '';
+                $line[] = mb_convert_encoding(implode(' - ', $territoire->getExportations()->toArray()), 'ISO-8859-1');
+                $line[] = mb_convert_encoding(implode(' - ', $territoire->getIngredients()->toArray()), 'ISO-8859-1');
+                $line[] = mb_convert_encoding($territoire->getRichesse().' ('.$territoire->getTresor().')', 'ISO-8859-1');
+                $line[] = '';
 
-            fputcsv($output, $line, ';');
+                fputcsv($output, $line, ';');
+            }
         }
 
         fclose($output);
