@@ -1,0 +1,37 @@
+{% for row in rows %}
+    {% if loop.first %}
+        <thead>
+    {% endif %}
+
+    {% set options = {} %}
+
+    {% if route is defined and row.route is not defined and row.field is defined %}
+        {% set options = options|merge({"route":route}) %}
+    {% endif %}
+
+    {% if row.field is defined %}
+        {% set options = options|merge({"field":row.field}) %}
+    {% endif %}
+
+    {% if row.name is not defined and row.field is defined %}
+        {% set row = row|merge({"name":row.field|trans}) %}
+    {% endif %}
+
+    {% if row.name is defined %}
+        {% set options = options|merge({"name":row.name}) %}
+    {% endif %}
+
+    {% if row.route is defined %}
+        {% set options = options|merge({"route":row.route}) %}
+    {% endif %}
+
+    {% if options.field is defined %}
+        <th>{% include '_partials/orderby.twig' with options %}</th>
+    {% elseif row.name is defined %}
+        <th>{{ row.name }}</th>
+    {% endif %}
+
+    {% if loop.last %}
+        </thead>
+    {% endif %}
+{% endfor %}

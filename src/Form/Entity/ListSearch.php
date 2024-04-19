@@ -26,4 +26,12 @@ class ListSearch
     {
         $this->value = $value;
     }
+
+    /*
+     * If class is extended it's can be used to define type_choices
+     */
+    public function getTypeChoices(): array
+    {
+        return [];
+    }
 }

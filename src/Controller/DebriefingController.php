@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Debriefing;
@@ -8,17 +7,20 @@ use App\Entity\Groupe;
 use App\Form\Debriefing\DebriefingDeleteForm;
 use App\Form\Debriefing\DebriefingFindForm;
 use App\Form\Debriefing\DebriefingForm;
+use App\Repository\DebriefingRepository;
+use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Form;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_SCENARISTE')]
 class DebriefingController extends AbstractController
 {
     final public const DOC_PATH = __DIR__.'/../../private/doc/';
@@ -27,44 +29,13 @@ class DebriefingController extends AbstractController
      * Présentation des debriefings.
      */
     #[Route('/debriefing', name: 'debriefing.list')]
-    public function listAction(Request $request,  EntityManagerInterface $entityManager)
+    public function listAction(Request $request, PagerService $pagerService, DebriefingRepository $debriefingRepository): Response
     {
-        $order_by = $request->get('order_by') ?: 'id';
-        $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) $request->get('limit', 50);
-        $page = (int) $request->get('page', 1);
-        $offset = (int) (($page - 1) * $limit);
-        $type = null;
-        $value = null;
-
-        $form = $this->createForm(DebriefingFindForm::class);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $type = $data['type'];
-            $value = $data['value'];
-        }
-
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Debriefing::class);
-        $debriefings = $repo->findList(
-            $type,
-            $value,
-            ['by' => $order_by, 'dir' => $order_dir],
-            $limit,
-            $offset
-        );
-
-        $paginator = $repo->findPaginatedQuery(
-            $debriefings, 
-            $this->getRequestLimit(),
-            $this->getRequestPage()
-        );
+        $pagerService->setRequest($request)->setRepository($debriefingRepository)->setLimit(25);
 
         return $this->render('debriefing/list.twig', [
-            'paginator' => $paginator,
-            'form' => $form->createView(),
+            'pagerService' => $pagerService,
+            'paginator' => $debriefingRepository->searchPaginated($pagerService),
         ]);
     }
 
@@ -72,32 +43,31 @@ class DebriefingController extends AbstractController
      * Ajout d'un debriefing.
      */
     #[Route('/debriefing/add', name: 'debriefing.add')]
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    public function addAction(Request $request, EntityManagerInterface $entityManager)
     {
         $debriefing = new Debriefing();
         $groupeId = $request->get('groupe');
-        if ( $groupeId )
-		{
+        if ($groupeId) {
             $groupeRepository = $entityManager->getRepository(Groupe::class);
             $groupe = $groupeRepository->find($groupeId);
-			if ( $groupe ) {
+            if ($groupe) {
                 $debriefing->setGroupe($groupe);
             }
-		}
+        }
 
         $form = $this->createForm(DebriefingForm::class, $debriefing, ['groupeId' => $groupeId])
-            ->add('visibility', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('visibility', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Visibilité',
-                'choices' => array(
+                'choices' => [
                     'Seul les scénaristes peuvent voir ceci' => 'PRIVATE',
                     'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
                     'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
                     'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
                     'Seul l\'auteur peut voir ceci' => 'AUTHOR',
-                ),
+                ],
             ])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -109,7 +79,7 @@ class DebriefingController extends AbstractController
                 $entityManager->persist($debriefing);
                 $entityManager->flush();
 
-               $this->addFlash('success', 'Le debriefing a été ajouté.');
+                $this->addFlash('success', 'Le debriefing a été ajouté.');
             }
 
             return $this->redirectToRoute('groupe.detail', ['groupe' => $debriefing->getGroupe()->getId()], 303);
@@ -124,10 +94,10 @@ class DebriefingController extends AbstractController
      * Suppression d'un debriefing.
      */
     #[Route('/debriefing/{debriefing}/delete', name: 'debriefing.delete')]
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
         $form = $this->createForm(DebriefingDeleteForm::class, $debriefing)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -136,7 +106,7 @@ class DebriefingController extends AbstractController
             $entityManager->remove($debriefing);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le debriefing a été supprimé.');
+            $this->addFlash('success', 'Le debriefing a été supprimé.');
 
             return $this->redirectToRoute('groupe.detail', ['groupe' => $debriefing->getGroupe()->getId()], 303);
         }
@@ -151,21 +121,21 @@ class DebriefingController extends AbstractController
      * Mise à jour d'un debriefing.
      */
     #[Route('/debriefing/{debriefing}/update', name: 'debriefing.update')]
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
         $form = $this->createForm(DebriefingForm::class, $debriefing)
-            ->add('visibility', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('visibility', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Visibilité',
-                'choices' => array(
+                'choices' => [
                     'Seul les scénaristes peuvent voir ceci' => 'PRIVATE',
                     'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
                     'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
                     'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
                     'Seul l\'auteur peut voir ceci' => 'AUTHOR',
-                ),
+                ],
             ])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -176,7 +146,7 @@ class DebriefingController extends AbstractController
                 $entityManager->persist($debriefing);
                 $entityManager->flush();
 
-               $this->addFlash('success', 'Le debriefing a été modifié.');
+                $this->addFlash('success', 'Le debriefing a été modifié.');
 
                 return $this->redirectToRoute('groupe.detail', ['groupe' => $debriefing->getGroupe()->getId()], 303);
             }
@@ -192,7 +162,7 @@ class DebriefingController extends AbstractController
      * Détail d'un debriefing.
      */
     #[Route('/debriefing/{debriefing}', name: 'debriefing.detail')]
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Debriefing $debriefing)
+    public function detailAction(Request $request, EntityManagerInterface $entityManager, Debriefing $debriefing)
     {
         return $this->render('debriefing/detail.twig', [
             'debriefing' => $debriefing,
@@ -202,7 +172,7 @@ class DebriefingController extends AbstractController
     /**
      * Gère le document uploadé et renvoie true si il est valide, false sinon.
      */
-    private function handleDocument(Request $request,  EntityManagerInterface $entityManager, Form $form, Debriefing $debriefing): bool
+    private function handleDocument(Request $request, EntityManagerInterface $entityManager, Form $form, Debriefing $debriefing): bool
     {
         $files = $request->files->get($form->getName());
         $documentFile = $files['document'];
@@ -212,7 +182,7 @@ class DebriefingController extends AbstractController
             $extension = pathinfo((string) $filename, PATHINFO_EXTENSION);
 
             if ('pdf' !== $extension) {
-               $this->addFlash('error', 'Désolé, votre document n\'est pas valide. Vérifiez le format de votre document ('.$extension.'), seuls les .pdf sont acceptés.');
+                $this->addFlash('error', 'Désolé, votre document n\'est pas valide. Vérifiez le format de votre document ('.$extension.'), seuls les .pdf sont acceptés.');
 
                 return false;
             }

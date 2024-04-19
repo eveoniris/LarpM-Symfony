@@ -32,23 +32,15 @@ class ListFindForm extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
-        // TODO add default from data_class SeachAttributes
-
         $resolver->setDefaults([
             'type_choices' => [
                 'required' => true,
                 'choices' => [
-                    '*',
-                    'id',
-                    'label',
-                    'description',
+                    'Tout critère' => '*',
+                    'Id' => 'id',
+                    'Libellé' => 'label',
+                    'Description' => 'description',
                 ],
-                'choice_label' => static fn ($value) => match ($value) {
-                    '*' => 'Tout critère',
-                    'label' => 'Libellé',
-                    'description' => 'Description',
-                    'id' => 'ID',
-                },
             ],
         ]);
 

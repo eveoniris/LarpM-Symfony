@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Service\OrderBy;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\QueryBuilder;
-use Nette\Utils\Paginator;
 
 class ConnaissanceRepository extends BaseRepository
 {
@@ -37,8 +36,13 @@ class ConnaissanceRepository extends BaseRepository
             ->getResult();
     }
 
-    public function search(mixed $search = null, null|string|array $attributes = self::SEARCH_NOONE, OrderBy $orderBy = null, string $alias = null): QueryBuilder
-    {
+    public function search(
+        mixed $search = null,
+        null|string|array $attributes = self::SEARCH_NOONE,
+        OrderBy $orderBy = null,
+        string $alias = null,
+        QueryBuilder $query = null
+    ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $orderBy ??= $this->orderBy;
 
@@ -68,8 +72,9 @@ class ConnaissanceRepository extends BaseRepository
 
         return [
             ...parent::searchAttributes($alias),
-            $alias.'.label',
-            $alias.'.description',
+            $alias.'.label',// => 'Libellé',
+            $alias.'.description', // => 'Description',
+            $alias.'.contraintes', // => 'Prérequis',
         ];
     }
 
@@ -81,6 +86,7 @@ class ConnaissanceRepository extends BaseRepository
             ...parent::sortAttributes($alias),
             'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
             'description' => [OrderBy::ASC => [$alias.'.description' => OrderBy::ASC], OrderBy::DESC => [$alias.'.description' => OrderBy::DESC]],
+            'secret' => [OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC], OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC]],
         ];
     }
 }

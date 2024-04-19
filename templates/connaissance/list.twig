@@ -19,7 +19,7 @@
 
         {% include '_partials/formListSearch.twig' with
             {
-                'canAdd': {'title': 'Ajouter une connaissance', 'path': path('connaissance.list')},
+                'canAdd': {'title': 'Ajouter une connaissance', 'path': path('connaissance.add')},
                 'actionPath' : path('connaissance.list')
             } %}
     </div>
@@ -50,7 +50,7 @@
                     {{ connaissance.description|markdown_to_html|highlight(pagerService.searchValue) }}
 
                     {% if connaissance.contraintes %}
-                        {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'title': 'Prérequis !', 'content' : connaissance.contraintes } %}
+                        {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'title': 'Prérequis !', 'content' : connaissance.contraintes|markdown_to_html|highlight(pagerService.searchValue) } %}
                     {% endif %}
                 </td>
                 <td>
