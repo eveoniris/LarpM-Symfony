@@ -2,27 +2,22 @@
 
 namespace App\Form\Debriefing;
 
-use Symfony\Component\Form\AbstractType;
+use App\Form\ListFindForm;
+use JetBrains\PhpStorm\Deprecated;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\DebriefingFindForm.
- *
- * @author kevin
- */
-class DebriefingFindForm extends AbstractType
+#[deprecated]
+class DebriefingFindForm extends ListFindForm
 {
     /**
      * Construction du formulaire.
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
-            'required' => true,
-            'label' => 'Recherche',
-        ])
-            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+        parent::buildForm($builder, $options);
+
+        $builder->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'choices' => [
                     'Groupe' => 'Groupe',

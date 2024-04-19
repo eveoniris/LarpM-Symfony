@@ -33,7 +33,6 @@ class ConnaissanceController extends AbstractController
         $pagerService->setRequest($request);
 
         return $this->render('connaissance/list.twig', [
-            'form' => $pagerService->getForm(), // If I put this before I have no searhc, but if I put after I have no custom form
             'pagerService' => $pagerService,
             'paginator' => $connaissanceRepository->searchPaginated($pagerService),
         ]);

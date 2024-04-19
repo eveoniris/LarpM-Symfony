@@ -1,3 +1,9 @@
+{# pagerService must be defined if form is not #}
+{% if form is not defined %}
+    {% set form = pagerService.getForm.createView %}
+{% endif %}
+
+
 <div class="d-flex justify-content-center">
     <ul class="list-group">
         <li class="list-group-item">
