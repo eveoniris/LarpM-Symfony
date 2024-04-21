@@ -166,7 +166,6 @@ final class PagerService
             }
         }
         $data ??= new ListSearch();
-
         if (empty($options)) {
             $typeChoicesOverride = $data->getTypeChoices();
 

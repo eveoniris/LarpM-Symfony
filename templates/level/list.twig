@@ -1,0 +1,66 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Gestion des niveaux{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' : {1 : {'name' : 'Gestion des niveaux'}}} %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Gestion des niveaux <small>({{ paginator|length }} niveaux)</small></h5>
+        </div>
+
+        {% include '_partials/formListSearch.twig' with
+            {
+                'canAdd': {'title': 'Ajouter un niveau', 'path': path('level.add')},
+                'actionPath' : path('level.list')
+            } %}
+    </div>
+
+    {% include '_partials/pagination.html.twig' %}
+    <table class="table table-striped table-bordered table-condensed table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'level.list', 'rows': [
+            {'name' : 'Id', 'field' : 'id'},
+            {'name' : 'Niveau', 'field' : 'index'},
+            {'name' : 'Libellé', 'field' : 'label'},
+            {'name' : 'cout XP favori', 'field' : 'coutFavori'},
+            {'name' : 'cout XP', 'field' : 'cout'},
+            {'name' : 'cout XP méconnu', 'field': 'coutMeconu'},
+            {'name' : 'Actions'},
+        ]} %}
+        <tbody>
+        {% for level in paginator %}
+            <tr>
+                <td><a href="{{ path('level.detail', {'level':level.id}) }}">{{ level.id }}</a></td>
+                <td>{{ level.index }}</td>
+                <td>{{ level.label|highlight(pagerService.searchValue) }}</td>
+                <td>{{ level.coutFavori }}</td>
+                <td>{{ level.cout }}</td>
+                <td>{{ level.coutMeconu }}</td>
+                <td>
+                    <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
+                        <div class="btn-group" role="group">
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Modifier"
+                               href="{{ path('level.update',{'level':level.id}) }}"><i
+                                        class="fa fa-pencil"></i> Modifier</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Détail"
+                               href="{{ path('level.detail',{'level':level.id}) }}"><i
+                                        class="fa fa-eye"></i> Detail</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Supprimer"
+                               href="{{ path('level.delete',{'level':level.id}) }}"><i
+                                        class="fa fa-eraser"></i> Supprimer</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% include '_partials/pagination.html.twig' %}
+
+{% endblock body %}

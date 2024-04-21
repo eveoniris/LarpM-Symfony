@@ -1,0 +1,22 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Billets{% endblock title %}
+
+{% block body %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'name' : 'Liste des niveaux', 'route': path('level.list') },
+			{'name' : 'Ajout d\'un niveau' },
+		]
+	} %}
+	
+	<div class="well well-sm bs-component">
+
+		<div class="header">
+			<h5>Ajout d'un niveau</h5>
+		</div>
+
+		{{ form(form) }}
+	</div>
+{% endblock %}
