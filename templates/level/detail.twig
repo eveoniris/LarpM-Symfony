@@ -1,0 +1,52 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Niveau{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des niveaux', 'route': path('level.list') },
+            {'name' : 'Détail d\'un niveaux' },
+        ]
+    } %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Détail d'un niveau</h5>
+        </div>
+
+        <div class="list-group">
+            <div class="list-group-item">
+                Libellé : {{ level.label }}
+            </div>
+            <div class="list-group-item">
+                Niveau : {{ level.index }}
+            </div>
+            <div class="list-group-item">
+                Cout XP : {{ level.cout }}
+            </div>
+            <div class="list-group-item">
+                Cout XP favori : {{ level.coutFavori }}
+            </div>
+            <div class="list-group-item">
+                Cout XP meconu : {{ level.coutMeconu }}
+            </div>
+        </div>
+
+        <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
+            <div class="btn-group" role="group">
+                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                   title="Modifier"
+                   href="{{ path('level.update',{'level':level.id}) }}"><i
+                            class="fa fa-pencil"></i> Modifier</a>
+                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                   title="Supprimer"
+                   href="{{ path('level.delete',{'level':level.id}) }}"><i
+                            class="fa fa-eraser"></i> Supprimer</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
