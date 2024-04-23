@@ -29,9 +29,6 @@ class LevelRepository extends BaseRepository
             ...parent::sortAttributes($alias),
             'index' => [OrderBy::ASC => [$alias.'.index' => OrderBy::ASC], OrderBy::DESC => [$alias.'.index' => OrderBy::DESC]],
             'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
-            'cout' => [OrderBy::ASC => [$alias.'.cout' => OrderBy::ASC], OrderBy::DESC => [$alias.'.cout' => OrderBy::DESC]],
-            'cout_favori' => [OrderBy::ASC => [$alias.'.cout_favori' => OrderBy::ASC], OrderBy::DESC => [$alias.'.cout_favori' => OrderBy::DESC]],
-            'cout_meconu' => [OrderBy::ASC => [$alias.'.cout_meconu' => OrderBy::ASC], OrderBy::DESC => [$alias.'.cout_meconu' => OrderBy::DESC]],
        ];
     }
 
