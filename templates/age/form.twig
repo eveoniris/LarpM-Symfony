@@ -1,17 +1,17 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Niveau{% endblock title %}
+{% block title %}Age{% endblock title %}
 
 {% block body %}
 
-    {% set title = 'Ajout d\'un niveau' %}
+    {% set title = 'Ajout d\'un age' %}
     {% if level.id is defined %}
-        {% set title = 'Mise à jour d\'un niveau' %}
+        {% set title = 'Mise à jour d\'un age' %}
     {% endif %}
 
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
-            {'name' : 'Liste des niveaux', 'route': path('level.list') },
+            {'name' : 'Liste des ages', 'route': path('age.list') },
             {'name' : title },
         ]
     } %}

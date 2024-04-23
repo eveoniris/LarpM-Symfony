@@ -7,6 +7,7 @@ use App\Form\LevelForm;
 use App\Repository\LevelRepository;
 use App\Service\PagerService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,10 +61,17 @@ class LevelController extends AbstractController
 
         if ($isNew) {
             $form->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-                ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+                ->add('delete', ButtonType::class, [
+                    'label' => 'Supprimer',
+                    'attr' => [
+                        'value' => 'Submit',
+                        'data-toggle' => 'modal',
+                        'data-target' => '#confirm-submit',
+                        'class' => 'btn btn-default',
+                    ],
+                ]);
         } else {
-            $form = $this->createForm(LevelForm::class, $level)
-                ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            $form->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
                 ->add(
                     'save_continue',
                     SubmitType::class,
@@ -129,12 +137,12 @@ class LevelController extends AbstractController
     {
         return $this->genericDelete(
             $level,
-            'Supprimer un niveau',
-            'Le niveau a été supprimée',
-            'level.list',
-            [
+            title: 'Supprimer un niveau',
+            successMsg: 'Le niveau a été supprimée',
+            redirect: 'level.list',
+            breadcrumb: [
                 ['route' => $this->generateUrl('level.list'), 'name' => 'Liste des niveaux'],
-                ['route' => 'level.detail', 'level' => $level->getId(), 'name' => $level->getLabel()],
+                ['route' => 'level.detail', 'name' => $level->getIndexLabel()],
                 ['name' => 'Supprimer un niveau'],
             ]
         );

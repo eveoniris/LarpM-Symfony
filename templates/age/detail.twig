@@ -3,53 +3,54 @@
 {% block title %}Ages{% endblock title %}
 
 {% block body %}
-	
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-xs-12 col-md-8">
-		
-			<a href="{{ path("age") }}">Retour à la liste des ages</a>
-			<div class="well well-sm bs-component">
-				<h4>
-					{{ age.label }}
-				</h4>
-			</div>
-			
-  			<div class="list-group">
-		    		
-		    	<div class="list-group-item">
-			    	<h4 class="list-group-item-heading">Description</h4>
-	    			<p class="list-group-item-text">
 
-						<p>	    			
-		    			{% if not age.enableCreation %}
-		    				Cet age n'est pas disponible lors de la création d'un personnage.
-		    			{% else %}
-		    				Cet age est disponible lors de la création d'un personnage.
-		    			{% endif %}
-		    			</p>
-	    			
-	    				<p>
-		    			{% if not age.description %}
-	    				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-	    					Attention, cet age n'a pas de description.
-	    				{% else %}
-	    					{{ age.description }}
-	    				{% endif %}
-	    				</p>
-    				</p>
-	    		</div>
-	    		
-	    		<div class="list-group-item">
-	    			<h4 class="list-group-item-heading">XP en bonus</h4>
-	    			<p class="list-group-item-text">
-	    				{{ age.bonus|default(0) }}
-	    			</p>
-	    		</div>	    		
-			</div>
-		</div>
-	</div>
-</div>
-	
-			
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des ages', 'route': path('age.list') },
+            {'name' : age.label, 'route': path('age.list', {'age':age.id})  },
+            {'name' : 'Détail' },
+        ]
+    } %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Détail d'un age</h5>
+        </div>
+
+        {% if age.enableCreation %}
+            {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Cet age n'est pas disponible lors de la création d'un personnage."} %}
+        {% else %}
+            {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Cet age est disponible lors de la création d'un personnage."} %}
+        {% endif %}
+
+        <h4>{{ age.label }}</h4>
+
+        <div class="panel panel-default">
+            <p>XP en bonus: <span class="badge text-bg-secondary rounded-pill">{{ age.bonus|default(0) }}</span></p>
+
+            <div class="panel-body">
+                {% if not age.description %}
+                    {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Attention, cet age n'a pas de description."} %}
+                {% else %}
+                    {{ age.description|markdown_to_html }}
+                {% endif %}
+            </div>
+        </div>
+
+
+        <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
+            <div class="btn-group" role="group">
+                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                   title="Modifier"
+                   href="{{ path('age.update',{'age':age.id}) }}"><i
+                            class="fa fa-pencil"></i> Modifier</a>
+                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                   title="Supprimer"
+                   href="{{ path('age.delete',{'age':age.id}) }}"><i
+                            class="fa fa-eraser"></i> Supprimer</a>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

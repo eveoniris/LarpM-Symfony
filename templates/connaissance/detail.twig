@@ -25,14 +25,14 @@
 
         <div class="d-flex justify-content-between">
 
-        <h4>{{ connaissance.label }}</h4>
+            <h4>{{ connaissance.label }}</h4>
 
-        {% if not connaissance.documentUrl %}
-        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-            title="Télécharger le document associé"
-            href="{{ path('connaissance.document', {'connaissance': connaissance.id, 'document': connaissance.documentUrl}) }}"><i
-                    class="fa-solid fa-download"></i> Télécharger</a>
-        {% endif %}
+            {% if not connaissance.documentUrl %}
+                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                   title="Télécharger le document associé"
+                   href="{{ path('connaissance.document', {'connaissance': connaissance.id, 'document': connaissance.documentUrl}) }}"><i
+                            class="fa-solid fa-download"></i> Télécharger</a>
+            {% endif %}
         </div>
 
         <div class="panel panel-default">

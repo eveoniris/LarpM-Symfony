@@ -1,0 +1,69 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Ages{% endblock title %}
+
+{% block body %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Gestion des ages'}]} %}
+
+	<div class="well well-sm">
+
+		<div class="header">
+			<h5>Gestion des ages <small>({{ paginator|length }} ages)</small></h5>
+		</div>
+
+		{% include '_partials/formListSearch.twig' with
+			{
+				'canAdd': {'title': 'Ajouter un age', 'path': path('age.add')},
+				'actionPath' : path('age.list')
+			} %}
+	</div>
+
+	{% include '_partials/pagination.html.twig' %}
+	<table class="table table-striped table-bordered table-condensed table-hover">
+		{% include '_partials/thead.twig' with  { 'route': 'age.list', 'rows': [
+			{'name' : 'Id', 'field' : 'id'},
+			{'name' : 'Libellé', 'field' : 'label'},
+			{'name' : 'Description', 'field' : 'description'},
+			{'name' : 'Age minimum', 'field' : 'minimumValue'},
+			{'name' : 'Autorisé en création', 'field' : 'enableCreation'},
+			{'name' : 'Bonus', 'field' : 'bonus'},
+			{'name' : 'Actions'},
+		]} %}
+		<tbody>
+		{% for age in paginator %}
+			<tr>
+				<td><a href="{{ path('age.detail', {'age':age.id}) }}">{{ age.id }}</a></td>
+				<td>{{ age.label|highlight(pagerService.searchValue) }}</td>
+				<td>{{ age.description|highlight(pagerService.searchValue) }}</td>
+				<td>{{ age.minimumValue|highlight(pagerService.searchValue) }}</td>
+				<td>{{ age.enableCreation }}</td>
+				<td>{{ age.bonus }}</td>
+				<td>
+					<div class="btn-toolbar d-flex justify-content-center" role="toolbar">
+						<div class="btn-group" role="group">
+							<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+							   title="Modifier"
+							   href="{{ path('age.update',{'age':age.id}) }}"><i
+										class="fa fa-pencil"></i> Modifier</a>
+							<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+							   title="Détail"
+							   href="{{ path('age.detail',{'age':age.id}) }}"><i
+										class="fa fa-eye"></i> Detail</a>
+							<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+							   title="Supprimer"
+							   href="{{ path('age.delete',{'age':age.id}) }}"><i
+										class="fa fa-eraser"></i> Supprimer</a>
+						</div>
+					</div>
+				</td>
+			</tr>
+		{% else %}
+			{% include '_partials/noResultTableRow.twig' %}
+		{% endfor %}
+		</tbody>
+	</table>
+	{% include '_partials/pagination.html.twig' %}
+
+	
+{% endblock %}
