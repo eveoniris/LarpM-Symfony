@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Entity\Appelation;
 use App\Form\AppelationForm;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,7 +21,8 @@ class AppelationController extends AbstractController
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $appelations = $entityManager->getRepository('\\'.\App\Entity\Appelation::class)->findAll();
-        $appelations = $app['larp.manager']->sortAppelation($appelations);
+        $appelations = $this->sortAppelation($appelations);
+        dump($appelations);
 
         return $this->render('appelation/index.twig', ['appelations' => $appelations]);
     }
@@ -28,6 +30,7 @@ class AppelationController extends AbstractController
     /**
      * Detail d'une appelation.
      */
+    #[Route('/appelation/{appelation}/detail', name: 'appelation.detail')]
     public function detailAction(Request $request,  EntityManagerInterface $entityManager, Appelation $appelation)
     {
         return $this->render('appelation/detail.twig', ['appelation' => $appelation]);
@@ -36,6 +39,7 @@ class AppelationController extends AbstractController
     /**
      * Ajoute une appelation.
      */
+    #[Route('/appelation/add', name: 'appelation.add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(AppelationForm::class, new Appelation())
@@ -52,7 +56,7 @@ class AppelationController extends AbstractController
            $this->addFlash('success', 'L\'appelation a été ajoutée.');
 
             if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('appelation', [], 303);
+                return $this->redirectToRoute('appelation.index', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('appelation.add', [], 303);
             }
@@ -66,6 +70,7 @@ class AppelationController extends AbstractController
     /**
      * Modifie une appelation.
      */
+    #[Route('/appelation/{appelation}/update', name: 'appelation.update')]
     public function updateAction(Request $request,  EntityManagerInterface $entityManager, Appelation $appelation)
     {
         $form = $this->createForm(AppelationForm::class, $appelation)
@@ -97,4 +102,45 @@ class AppelationController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    /**
+	 * Classement des appelations par groupe
+	 *
+	 * @param Array $appelations
+	 * @return Array $appelations
+	 */
+	public function sortAppelation( Array $appelations)
+	{
+		$root = array();
+		$result = array();
+	
+		// recherche des racines ( appelations n'ayant pas de parent
+		// dans la liste des appelations fournis)
+		foreach ( $appelations as $appelation)
+		{
+			if ( ! in_array($appelation->getAppelation(),$appelations) )
+			{
+				$root[] = $appelation;
+			}
+		}
+	
+		foreach ( $root as $appelation)
+		{
+			if ( count($appelation->getAppelations()) > 0 )
+			{
+				$childs = array_merge(
+						array($appelation),
+						$this->sortAppelation($appelation->getAppelations()->toArray())
+						);
+	
+				$result = array_merge($result, $childs);
+			}
+			else
+			{
+				$result[] = $appelation;
+			}
+		}
+	
+		return $result;
+	}
 }

@@ -15,6 +15,7 @@ class Appelation extends BaseAppelation implements \Stringable
 
     public function stepCount(int $count = 0): int
     {
+        dump("ux");
         if ($this->getAppelation()) {
             return $this->getAppelation()->stepCount($count + 1);
         }
