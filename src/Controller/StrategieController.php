@@ -4,6 +4,7 @@
 namespace App\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -62,12 +63,13 @@ class StrategieController extends AbstractController
      *  case vide (pour gérer les changements)
      *  case vide (pour mettre les horaires d'attaque ou de défense)
      */
+    #[Route('/strategie/csv', name: 'strategie.csv')]
     public function csvAction(Request $request,  EntityManagerInterface $entityManager): void
     {
         $territoires = $entityManager->getRepository('\\'.\App\Entity\Territoire::class)->findFiefs();
 
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_economie_'.date('Ymd').'.csv');
+        header('Content-Disposition: attachment; filename=eveoniris_strategie_'.date('Ymd').'.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
 

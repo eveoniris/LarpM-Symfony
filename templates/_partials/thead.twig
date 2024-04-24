@@ -26,7 +26,7 @@
     {% endif %}
 
     {% if options.field is defined %}
-        <th>{% include '_partials/orderby.twig' with options %}</th>
+        <th>{% include '_partials/orderBy.twig' with options %}</th>
     {% elseif row.name is defined %}
         <th>{{ row.name }}</th>
     {% endif %}
