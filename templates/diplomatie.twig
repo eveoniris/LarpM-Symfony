@@ -40,7 +40,22 @@
 {% endblock style %}
 
 {% block body %}
-<a href="{{ path('groupe.diplomatie.print') }}">Impression</a>
+
+	{% include '_partials/breadcrumb.twig' with {'items' : {1 : {'name' : 'Diplomatie'}}} %}
+
+	<div class="well well-sm">
+		<div class="header">
+			<h5>Diplomatie</h5>
+		</div>
+
+		<div class="btn-toolbar" role="toolbar" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Export CSV" href="{{ path('groupe.diplomatie.print') }}"><i class="fa fa-file-csv"></i> Impression</a>
+			</div>
+		</div>
+	</div>
+
+
 <table class="diplo">
 	<thead>
 		<tr>
