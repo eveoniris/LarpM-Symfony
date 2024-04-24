@@ -29,7 +29,7 @@ class TrombinoscopeForm extends AbstractType
                 'choice_label' => 'nomComplet',
                 'label' => 'Par territoire',
                 'expanded' => false,
-                'query_builder' => static function (\LarpManager\Repository\TerritoireRepository $er) {
+                'query_builder' => static function (\App\Repository\TerritoireRepository $er) {
                     $qb = $er->createQueryBuilder('t');
                     $qb->andWhere($qb->expr()->isNull('t.territoire'));
                     $qb->orderBy('t.nom', 'ASC');
@@ -48,7 +48,7 @@ class TrombinoscopeForm extends AbstractType
                 'choice_label' => 'label',
                 'label' => 'Par classe',
                 'expanded' => false,
-                'query_builder' => static function (\LarpManager\Repository\ClasseRepository $er) {
+                'query_builder' => static function (\App\Repository\ClasseRepository $er) {
                     $qb = $er->createQueryBuilder('c');
                     $qb->orderBy('c.label_masculin', 'ASC');
 
@@ -66,7 +66,7 @@ class TrombinoscopeForm extends AbstractType
                 'choice_label' => 'label',
                 'label' => 'Par competence',
                 'expanded' => false,
-                'query_builder' => static function (\LarpManager\Repository\CompetenceRepository $er) {
+                'query_builder' => static function (\App\Repository\CompetenceRepository $er) {
                     $qb = $er->createQueryBuilder('c');
                     $qb->orderBy('c.id', 'ASC');
 
@@ -84,7 +84,7 @@ class TrombinoscopeForm extends AbstractType
                 'choice_label' => 'label',
                 'label' => 'Par religion',
                 'expanded' => false,
-                'query_builder' => static function (\LarpManager\Repository\ReligionRepository $er) {
+                'query_builder' => static function (\App\Repository\ReligionRepository $er) {
                     $qb = $er->createQueryBuilder('r');
                     $qb->orderBy('r.label', 'ASC');
 
@@ -102,7 +102,7 @@ class TrombinoscopeForm extends AbstractType
                 'choice_label' => 'label',
                 'label' => 'Par langue',
                 'expanded' => false,
-                'query_builder' => static function (\LarpManager\Repository\LangueRepository $er) {
+                'query_builder' => static function (\App\Repository\LangueRepository $er) {
                     $qb = $er->createQueryBuilder('l');
                     $qb->orderBy('l.label', 'ASC');
 
@@ -120,7 +120,7 @@ class TrombinoscopeForm extends AbstractType
                 'choice_label' => 'nom',
                 'label' => 'Par groupe',
                 'expanded' => false,
-                'query_builder' => static function (\LarpManager\Repository\GroupeRepository $er) {
+                'query_builder' => static function (\App\Repository\GroupeRepository $er) {
                     $qb = $er->createQueryBuilder('g');
                     $qb->orderBy('g.nom', 'ASC');
 

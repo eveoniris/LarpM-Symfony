@@ -4,6 +4,7 @@
 namespace App\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Form\Trombinoscope\TrombinoscopeForm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,12 +18,12 @@ class TrombinoscopeController extends AbstractController
      * Le trombinoscope général.
      */
     #[Route('/trombinoscope', name: 'trombinoscope.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager): Response
     {
         $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
         $gn = $gnRepo->findNext();
 
-        $form = $this->createForm(new TrombinoscopeForm());
+        $form = $this->createForm(TrombinoscopeForm::class);
 
         $form->handleRequest($request);
 
@@ -97,7 +98,8 @@ class TrombinoscopeController extends AbstractController
     /**
      * Permet de selectionner des personnages pour faire un trombinoscope.
      */
-    public function persoAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/trombinoscope/perso', name: 'trombinoscope.perso')]
+    public function persoAction(Request $request,  EntityManagerInterface $entityManager): Response
     {
         $personnages = null;
         $titre = null;

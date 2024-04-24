@@ -26,7 +26,7 @@ class BaseAppelation
     protected string $label = '';
 
     #[Column(name: 'description', type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
-    protected string $description;
+    protected ?string $description;
 
     #[Column(name: 'titre', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $titre = '';
@@ -47,7 +47,7 @@ class BaseAppelation
 
     #[ManyToOne(targetEntity: Appelation::class, inversedBy: 'appelations')]
     #[JoinColumn(name: 'appelation_id', referencedColumnName: 'id')]
-    protected Appelation $appelation;
+    protected ?Appelation $appelation;
 
     public function __construct()
     {
@@ -67,7 +67,7 @@ class BaseAppelation
         return $this->id;
     }
 
-    public function setLabel(string $label): string
+    public function setLabel(string $label): self
     {
         $this->label = $label;
 
@@ -79,14 +79,14 @@ class BaseAppelation
         return $this->label ?? '';
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
         return $this;
     }
 
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -148,7 +148,7 @@ class BaseAppelation
         return $this;
     }
 
-    public function getAppelation(): self
+    public function getAppelation(): ?self
     {
         return $this->appelation;
     }
