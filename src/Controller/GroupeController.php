@@ -892,6 +892,7 @@ class GroupeController extends AbstractController
     /**
      * Impression des liens entre groupes.
      */
+    #[Route('/groupe/diplomatie/print', name: 'groupe.diplomatie.print')]
     public function diplomatiePrintAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository('\\'.\App\Entity\GroupeAllie::class);
