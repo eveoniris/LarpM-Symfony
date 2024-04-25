@@ -3,11 +3,18 @@
 
 namespace App\Form;
 
+use App\Entity\Classe;
+use App\Entity\Competence;
+use App\Entity\Groupe;
+use App\Entity\Religion;
 use App\Repository\ReligionRepository;
 use App\Repository\ClasseRepository;
 use App\Repository\CompetenceRepository;
 use App\Repository\GroupeRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -23,7 +30,7 @@ class PersonnageFindForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('value', TextType::class, [
             'required' => false,
             'label' => 'Recherche',
             'attr' => [
@@ -31,7 +38,7 @@ class PersonnageFindForm extends AbstractType
                 'aria-label' => '...',
             ],
             ])
-            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('type', ChoiceType::class, [
                 'required' => false,
                 'choices' => [
                     'ID' => 'id',
@@ -42,41 +49,41 @@ class PersonnageFindForm extends AbstractType
                     'aria-label' => '...',
                 ],
             ])
-            ->add('religion', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('religion', EntityType::class, [
                 'required' => false,
                 'label' => '	Par religion : ',
                 'placeholder' => 'Filtrer par religion',
-                'class' => \App\Entity\Religion::class,
+                'class' => Religion::class,
                 'choice_label' => 'label',
                 'query_builder' => static function (ReligionRepository $er) {
                     return $er->createQueryBuilder('r')->orderBy('r.label', 'ASC');
                 },
             ])
-            ->add('competence', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('competence', EntityType::class, [
                 'required' => false,
                 'label' => '	Par compétence : ',
                 'placeholder' => 'Filtrer par compétence',
-                'class' => \App\Entity\Competence::class,
+                'class' => Competence::class,
                 'choice_label' => 'label',
                 'query_builder' => static function (CompetenceRepository $cr) {
                     return $cr->getQueryBuilderFindAllOrderedByLabel();
                 },
             ])
-            ->add('classe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('classe', EntityType::class, [
                 'required' => false,
                 'label' => '	Par classe : ',
                 'placeholder' => 'Filtrer par classe',
-                'class' => \App\Entity\Classe::class,
+                'class' => Classe::class,
                 'choice_label' => 'label',
                 'query_builder' => static function (ClasseRepository $er) {
                     return $er->getQueryBuilderFindAllOrderedByLabel();
                 },
             ])
-            ->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('groupe', EntityType::class, [
                 'required' => false,
                 'label' => '	Par groupe : ',
                 'placeholder' => 'Filtrer par groupe',
-                'class' => \App\Entity\Groupe::class,
+                'class' => Groupe::class,
                 'choice_label' => 'nom',
                 'query_builder' => static function (GroupeRepository $gr) {
                     return $gr->createQueryBuilder('gr')->orderBy('gr.nom', 'ASC');

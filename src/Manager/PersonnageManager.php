@@ -11,388 +11,351 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 
+// TODO Split and migrate in Service/PersonnageManager
 final class PersonnageManager
 {
-	
+
 
     /**
-	 * Stock le personnage courant de la session
-	 * 
-	 * @param Personnage $personnage
-	 */
-	public function setCurrentPersonnage($personnageId)
-	{
-		$this->app['session']->set('personnageId',$personnageId);
-	}
-	
-	/**
-	 * Récupére le personnage courant de la session
-	 * @return Personnage $personnage
-	 */
-	public function getCurrentPersonnage()
-	{
-		$personnageId = $this->app['session']->get('personnageId');
-		if ( $personnageId )
-		{
-			return $this->app['converter.personnage']->convert($personnageId);
-		}
-		return null;
-	}
-	
-	/**
-	 * Reset le personnage courant
-	 */
-	public function resetCurrentPersonnage()
-	{
-		$this->app['session']->set('personnageId', null);
-	}
-	
-	/**
-	 * Calcul le cout d'une compétence en fonction de la classe du personnage
-	 *
-	 * @param Personnage $personnage
-	 * @param Competence $competence
-	 */
-	public function getCompetenceCout(Personnage $personnage, Competence $competence)
-	{
-		$classe = $personnage->getClasse();
-		if ($classe->getCompetenceFamilyFavorites()->contains($competence->getCompetenceFamily()))
-		{
-			return $competence->getLevel()->getCoutFavori();
-		}
-		else if ($classe->getCompetenceFamilyNormales()->contains($competence->getCompetenceFamily()))
-		{
-			return $competence->getLevel()->getCout();
-		}
-	
-		return $competence->getLevel()->getCoutMeconu();
-	
-	}
-	
-	/**
-	 * Fourni le titre du personnage en fonction de sa renommée
-	 *
-	 * @param Personnage $personnage
-	 */
-	public function titre(Personnage $personnage, EntityManagerInterface $entityManager)
-	{
-	
-		$result = null;
-		$repo = $entityManager->getRepository('\\'.\App\Entity\Titre::class);
-		$titres = $repo->findByRenomme();
-		foreach ($titres as $titre )
-		{
-			if ( $personnage->getRenomme() >= $titre->getRenomme() )
-			{
-				$result = $titre;
-			}
-		}
-	
-		return $result;
-	}
-		
-	/**
-	 * Indique si un personnage connait une famille de competence
-	 *
-	 * @param Personnage $personnage
-	 * @param CompetenceFamily $competenceFamily
-	 * @return boolean
-	 */
-	public function knownCompetenceFamily(Personnage $personnage, CompetenceFamily $competenceFamily)
-	{
-		$competences = $personnage->getCompetences();
-	
-		foreach ( $competences as $competence)
-		{
-			if ( $competence->getCompetenceFamily() === $competenceFamily)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * Indique si un personnage connait une religion
-	 *
-	 * @param Personnage $personnage
-	 * @param Religion $religion
-	 */
-	public function knownReligion(Personnage $personnage, Religion $religion)
-	{
-		$personnageReligions = $personnage->getPersonnagesReligions();
-	
-		foreach ( $personnageReligions as $personnageReligion )
-		{
-			if ( $personnageReligion->getReligion() === $religion)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * Fourni la liste des compétences inconnues d'un personnage
-	 *
-	 * @param Personnage $personnage
-	 * @return Collection $competences
-	 */
-	public function getUnknownCompetences(Personnage $personnage, EntityManagerInterface $entityManager)
-	{
-		$unknownCompetences = new ArrayCollection();
-	
-		$repo = $entityManager->getRepository('\\'.\App\Entity\CompetenceFamily::class);
-		$competenceFamilies = $repo->findAll();
-	
-		foreach ( $competenceFamilies as $competenceFamily)
-		{
-			if ( ! $this->knownCompetenceFamily($personnage, $competenceFamily))
-			{
-				$competence = $competenceFamily->getFirstCompetence();
-				if ( $competence )
-				{
-					$unknownCompetences->add($competence);
-				}
-			}
-		}
-	
-		return $unknownCompetences;
-	}
-	
-	/**
-	 * Retourne la liste des toutes les religions inconnues d'un personnage
-	 * @param Personnage $personnage
-	 */
-	public function getAvailableDescriptionReligion(Personnage $personnage, EntityManagerInterface $entityManager)
-	{
-		$availableDescriptionReligions = new ArrayCollection();
-		
-		$repo = $entityManager->getRepository('\\'.\App\Entity\Religion::class);
-		$religions = $repo->findAll();
-		
-		foreach ( $religions as $religion)
-		{
-			if ( ! $personnage->getReligions()->contains($religion)) $availableDescriptionReligions[] = $religion;	
-		}
-		
-		return $availableDescriptionReligions; 
-	}
-	
-	/**
-	 * Récupére la liste des toutes les compétences accessibles pour un personnage
-	 *
-	 * @param Personnage $personnage
-	 * @return Collection $competenceNiveaux
-	 */
-	public function getAvailableCompetences(Personnage $personnage, EntityManagerInterface $entityManager)
-	{
-		$availableCompetences = new ArrayCollection();
-	
-		// les compétences de niveau supérieur sont disponibles
-		$competences = $personnage->getCompetences();
-		foreach ( $competences as $competence )
-		{
-			$nextCompetence = $competence->getNext();
-			if ( $nextCompetence &&  ! $personnage->getCompetences()->contains($nextCompetence) )
-			{
-				$availableCompetences->add($nextCompetence);
-			}
-		}
-	
-		// les compétences inconnues du personnage sont disponibles au niveau 1
-		$competences = $this->getUnknownCompetences($personnage, $entityManager);
-	
-		foreach ($competences as $competence )
-		{
-			$availableCompetences->add($competence);
-		}
-	
-		// trie des competences disponibles
-		$iterator = $availableCompetences->getIterator();
-		$iterator->uasort(function ($a, $b) {
-			return ($a->getLabel() < $b->getLabel()) ? -1 : 1;
-		});
-	
-		return  new ArrayCollection(iterator_to_array($iterator));
-	}
-	
-	/**
-	 * Trouve toutes les langues non connues d'un personnages en fonction du niveau de diffusion voulu
-	 * @param Personnage $langue
-	 * @param unknown $diffusion
-	 */
-	public function getAvailableLangues(Personnage $personnage, $diffusion, EntityManagerInterface $entityManager)
-	{
-		$availableLangues = new ArrayCollection();
-	
-		$repo = $entityManager->getRepository('\\'.\App\Entity\Langue::class);
-		$langues = $repo->findBy(array(),array('label' => 'ASC'));
-	
-		foreach ( $langues as $langue)
-		{
-			if ( $langue->getSecret() == 0)
-			{
-				if ( $diffusion == 0 )
-				{
-					if ( $langue->getDiffusion() == $diffusion
-					&& ! $personnage->isKnownLanguage($langue) )
-					{
-						$availableLangues[] = $langue;
-					}
-				}
-				else if ( $langue->getDiffusion() >= $diffusion
-						&& ! $personnage->isKnownLanguage($langue) )
-				{
-					$availableLangues[] = $langue;
-				}
-			}
-		}
-		return $availableLangues;
-	}
+     * Stock le personnage courant de la session
+     *
+     * @param Personnage $personnage
+     */
+    public function setCurrentPersonnage($personnageId)
+    {
+        $this->app['session']->set('personnageId', $personnageId);
+    }
 
-	/**
-	 * Trouve tous les sorts non connus d'un personnage en fonction du niveau du sort
-	 * @param Personnage $personnage
-	 * @param unknown $diffusion
-	 */
-	public function getAvailableSorts(Personnage $personnage, $niveau, EntityManagerInterface $entityManager)
-	{
-		$availableSorts = new ArrayCollection();
-	
-		$repo = $entityManager->getRepository('\\'.\App\Entity\Sort::class);
-		$sorts = $repo->findByNiveau($niveau);
-			
-		foreach ( $sorts as $sort)
-		{
-			if ( ! $personnage->isKnownSort($sort) )
-			{
-				$availableSorts[] = $sort;
-			}
-		}
-		return $availableSorts;
-	}
-	
-	/**
-	 * Trouve tous les domaines de magie non connus d'un personnage 
-	 * @param Personnage $personnage
-	 */
-	public function getAvailableDomaines(Personnage $personnage, EntityManagerInterface $entityManager)
-	{
-		$availableDomaines = new ArrayCollection();
-	
-		$repo = $entityManager->getRepository('\\'.\App\Entity\Domaine::class);
-		$domaines = $repo->findAll();
-	
-		foreach ( $domaines as $domaine)
-		{
-			if ( ! $personnage->isKnownDomaine($domaine) )
-			{
-				$availableDomaines[] = $domaine;
-			}
-		}
-		return $availableDomaines;
-	}
-	
-	/**
-	 * Récupére la liste de toutes les religions non connues du personnage
-	 * @param Personnage $personnage
-	 */
-	public function getAvailableReligions(Personnage $personnage, EntityManagerInterface $entityManager)
-	{
-		$availableReligions = new ArrayCollection();
-	
-		$repo = $entityManager->getRepository('\\'.\App\Entity\Religion::class);
-		$religions = $repo->findAllPublicOrderedByLabel();
-	
-		foreach ( $religions as $religion)
-		{
-			if ( ! $this->knownReligion($personnage, $religion))
-			{
-				$availableReligions->add($religion);
-			}
-		}
-	
-		return $availableReligions;
-	}
+    /**
+     * Récupére le personnage courant de la session
+     * @return Personnage $personnage
+     */
+    public function getCurrentPersonnage()
+    {
+        $personnageId = $this->app['session']->get('personnageId');
+        if ($personnageId) {
+            return $this->app['converter.personnage']->convert($personnageId);
+        }
+        return null;
+    }
 
-	/**
-	 * Récupére la liste de toutes les religions non connue du personnage, vue admin
-	 * @param Personnage $personnage
-	 */
-	public function getAdminAvailableReligions(Personnage $personnage, EntityManagerInterface $entityManager)
-	{
-		$availableReligions = new ArrayCollection();
-		
-		$repo = $entityManager->getRepository('\\'.\App\Entity\Religion::class);
-		$religions = $repo->findAllOrderedByLabel();
-		
-		foreach ( $religions as $religion)
-		{
-			if ( ! $this->knownReligion($personnage, $religion))
-			{
-				$availableReligions->add($religion);
-			}
-		}
-		
-		return $availableReligions;
-	}
-	
-	/**
-	 * Fourni la dernière compétence acquise par un presonnage
-	 *
-	 * @param Personnage $personnage
-	 */
-	public function getLastCompetence(Personnage $personnage)
-	{
-		$competence = null;
-		$operationDate = null;
-	
-		foreach ( $personnage->getExperienceUsages() as $experienceUsage)
-		{
-			if ( $personnage->getCompetences()->contains($experienceUsage->getCompetence()) )
-			{
-				if ( ! $operationDate )
-				{
-					$operationDate = $experienceUsage->getOperationDate();
-					$competence = $experienceUsage->getCompetence();
-				}
-				else if ( $operationDate <  $experienceUsage->getOperationDate() )
-				{
-					$operationDate = $experienceUsage->getOperationDate();
-					$competence = $experienceUsage->getCompetence();
-				}
-			}
-		}
-	
-		return $competence;	
-	}
+    /**
+     * Reset le personnage courant
+     */
+    public function resetCurrentPersonnage()
+    {
+        $this->app['session']->set('personnageId', null);
+    }
 
-	/**
-	 * Trouve toutes les technologies non connues d'un personnage
-	 * @param Personnage $personnage
-	 * @param unknown $diffusion
-	 */
-	public function getAvailableTechnologies(Personnage $personnage, EntityManagerInterface $entityManager)
-	{
-		$availableTechnologies = new ArrayCollection();
-	
-		$repo = $entityManager->getRepository('\\'.\App\Entity\Technologie::class);
-		$technologies = $repo->findPublicOrderedByLabel();
-			
-		foreach ( $technologies as $technologie)
-		{
-			if ( ! $personnage->isKnownTechnologie($technologie) )
-			{
-				$availableTechnologies[] = $technologie;
-			}
-		}
-		return $availableTechnologies;
-	}    
+    /**
+     * Calcul le cout d'une compétence en fonction de la classe du personnage
+     *
+     * @param Personnage $personnage
+     * @param Competence $competence
+     */
+    public function getCompetenceCout(Personnage $personnage, Competence $competence)
+    {
+        $classe = $personnage->getClasse();
+        if ($classe->getCompetenceFamilyFavorites()->contains($competence->getCompetenceFamily())) {
+            return $competence->getLevel()->getCoutFavori();
+        } elseif ($classe->getCompetenceFamilyNormales()->contains($competence->getCompetenceFamily())) {
+            return $competence->getLevel()->getCout();
+        }
 
-	/*********************************************** */
+        return $competence->getLevel()->getCoutMeconu();
 
-	/**
+    }
+
+    /**
+     * Fourni le titre du personnage en fonction de sa renommée
+     *
+     * @param Personnage $personnage
+     */
+    public function titre(Personnage $personnage, EntityManagerInterface $entityManager)
+    {
+
+        $result = null;
+        $repo = $entityManager->getRepository('\\' . \App\Entity\Titre::class);
+        $titres = $repo->findByRenomme();
+        foreach ($titres as $titre) {
+            if ($personnage->getRenomme() >= $titre->getRenomme()) {
+                $result = $titre;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Indique si un personnage connait une famille de competence
+     *
+     * @param Personnage $personnage
+     * @param CompetenceFamily $competenceFamily
+     * @return boolean
+     */
+    public function knownCompetenceFamily(Personnage $personnage, CompetenceFamily $competenceFamily)
+    {
+        $competences = $personnage->getCompetences();
+
+        foreach ($competences as $competence) {
+            if ($competence->getCompetenceFamily() === $competenceFamily) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Indique si un personnage connait une religion
+     *
+     * @param Personnage $personnage
+     * @param Religion $religion
+     */
+    public function knownReligion(Personnage $personnage, Religion $religion)
+    {
+        $personnageReligions = $personnage->getPersonnagesReligions();
+
+        foreach ($personnageReligions as $personnageReligion) {
+            if ($personnageReligion->getReligion() === $religion) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Fourni la liste des compétences inconnues d'un personnage
+     *
+     * @param Personnage $personnage
+     * @return Collection $competences
+     */
+    public function getUnknownCompetences(Personnage $personnage, EntityManagerInterface $entityManager)
+    {
+        $unknownCompetences = new ArrayCollection();
+
+        $repo = $entityManager->getRepository('\\' . \App\Entity\CompetenceFamily::class);
+        $competenceFamilies = $repo->findAll();
+
+        foreach ($competenceFamilies as $competenceFamily) {
+            if (!$this->knownCompetenceFamily($personnage, $competenceFamily)) {
+                $competence = $competenceFamily->getFirstCompetence();
+                if ($competence) {
+                    $unknownCompetences->add($competence);
+                }
+            }
+        }
+
+        return $unknownCompetences;
+    }
+
+    /**
+     * Retourne la liste des toutes les religions inconnues d'un personnage
+     * @param Personnage $personnage
+     */
+    public function getAvailableDescriptionReligion(Personnage $personnage, EntityManagerInterface $entityManager)
+    {
+        $availableDescriptionReligions = new ArrayCollection();
+
+        $repo = $entityManager->getRepository('\\' . \App\Entity\Religion::class);
+        $religions = $repo->findAll();
+
+        foreach ($religions as $religion) {
+            if (!$personnage->getReligions()->contains($religion)) $availableDescriptionReligions[] = $religion;
+        }
+
+        return $availableDescriptionReligions;
+    }
+
+    /**
+     * Récupére la liste des toutes les compétences accessibles pour un personnage
+     *
+     * @param Personnage $personnage
+     * @return Collection $competenceNiveaux
+     */
+    public function getAvailableCompetences(Personnage $personnage, EntityManagerInterface $entityManager)
+    {
+        $availableCompetences = new ArrayCollection();
+
+        // les compétences de niveau supérieur sont disponibles
+        $competences = $personnage->getCompetences();
+        foreach ($competences as $competence) {
+            $nextCompetence = $competence->getNext();
+            if ($nextCompetence && !$personnage->getCompetences()->contains($nextCompetence)) {
+                $availableCompetences->add($nextCompetence);
+            }
+        }
+
+        // les compétences inconnues du personnage sont disponibles au niveau 1
+        $competences = $this->getUnknownCompetences($personnage, $entityManager);
+
+        foreach ($competences as $competence) {
+            $availableCompetences->add($competence);
+        }
+
+        // trie des competences disponibles
+        $iterator = $availableCompetences->getIterator();
+        $iterator->uasort(function ($a, $b) {
+            return ($a->getLabel() < $b->getLabel()) ? -1 : 1;
+        });
+
+        return new ArrayCollection(iterator_to_array($iterator));
+    }
+
+    /**
+     * Trouve toutes les langues non connues d'un personnages en fonction du niveau de diffusion voulu
+     * @param Personnage $langue
+     * @param unknown $diffusion
+     */
+    public function getAvailableLangues(Personnage $personnage, $diffusion, EntityManagerInterface $entityManager)
+    {
+        $availableLangues = new ArrayCollection();
+
+        $repo = $entityManager->getRepository('\\' . \App\Entity\Langue::class);
+        $langues = $repo->findBy([], ['label' => 'ASC']);
+
+        foreach ($langues as $langue) {
+            if ($langue->getSecret() == 0) {
+                if ($diffusion == 0) {
+                    if ($langue->getDiffusion() == $diffusion
+                        && !$personnage->isKnownLanguage($langue)) {
+                        $availableLangues[] = $langue;
+                    }
+                } elseif ($langue->getDiffusion() >= $diffusion
+                    && !$personnage->isKnownLanguage($langue)) {
+                    $availableLangues[] = $langue;
+                }
+            }
+        }
+        return $availableLangues;
+    }
+
+    /**
+     * Trouve tous les sorts non connus d'un personnage en fonction du niveau du sort
+     * @param Personnage $personnage
+     * @param unknown $diffusion
+     */
+    public function getAvailableSorts(Personnage $personnage, $niveau, EntityManagerInterface $entityManager)
+    {
+        $availableSorts = new ArrayCollection();
+
+        $repo = $entityManager->getRepository('\\' . \App\Entity\Sort::class);
+        $sorts = $repo->findByNiveau($niveau);
+
+        foreach ($sorts as $sort) {
+            if (!$personnage->isKnownSort($sort)) {
+                $availableSorts[] = $sort;
+            }
+        }
+        return $availableSorts;
+    }
+
+    /**
+     * Trouve tous les domaines de magie non connus d'un personnage
+     * @param Personnage $personnage
+     */
+    public function getAvailableDomaines(Personnage $personnage, EntityManagerInterface $entityManager)
+    {
+        $availableDomaines = new ArrayCollection();
+
+        $repo = $entityManager->getRepository('\\' . \App\Entity\Domaine::class);
+        $domaines = $repo->findAll();
+
+        foreach ($domaines as $domaine) {
+            if (!$personnage->isKnownDomaine($domaine)) {
+                $availableDomaines[] = $domaine;
+            }
+        }
+        return $availableDomaines;
+    }
+
+    /**
+     * Récupére la liste de toutes les religions non connues du personnage
+     * @param Personnage $personnage
+     */
+    public function getAvailableReligions(Personnage $personnage, EntityManagerInterface $entityManager)
+    {
+        $availableReligions = new ArrayCollection();
+
+        $repo = $entityManager->getRepository('\\' . \App\Entity\Religion::class);
+        $religions = $repo->findAllPublicOrderedByLabel();
+
+        foreach ($religions as $religion) {
+            if (!$this->knownReligion($personnage, $religion)) {
+                $availableReligions->add($religion);
+            }
+        }
+
+        return $availableReligions;
+    }
+
+    /**
+     * Récupére la liste de toutes les religions non connue du personnage, vue admin
+     * @param Personnage $personnage
+     */
+    public function getAdminAvailableReligions(Personnage $personnage, EntityManagerInterface $entityManager)
+    {
+        $availableReligions = new ArrayCollection();
+
+        $repo = $entityManager->getRepository('\\' . \App\Entity\Religion::class);
+        $religions = $repo->findAllOrderedByLabel();
+
+        foreach ($religions as $religion) {
+            if (!$this->knownReligion($personnage, $religion)) {
+                $availableReligions->add($religion);
+            }
+        }
+
+        return $availableReligions;
+    }
+
+    /**
+     * Fourni la dernière compétence acquise par un presonnage
+     *
+     * @param Personnage $personnage
+     */
+    public function getLastCompetence(Personnage $personnage)
+    {
+        $competence = null;
+        $operationDate = null;
+
+        foreach ($personnage->getExperienceUsages() as $experienceUsage) {
+            if ($personnage->getCompetences()->contains($experienceUsage->getCompetence())) {
+                if (!$operationDate) {
+                    $operationDate = $experienceUsage->getOperationDate();
+                    $competence = $experienceUsage->getCompetence();
+                } elseif ($operationDate < $experienceUsage->getOperationDate()) {
+                    $operationDate = $experienceUsage->getOperationDate();
+                    $competence = $experienceUsage->getCompetence();
+                }
+            }
+        }
+
+        return $competence;
+    }
+
+    /**
+     * Trouve toutes les technologies non connues d'un personnage
+     * @param Personnage $personnage
+     * @param unknown $diffusion
+     */
+    public function getAvailableTechnologies(Personnage $personnage, EntityManagerInterface $entityManager)
+    {
+        $availableTechnologies = new ArrayCollection();
+
+        $repo = $entityManager->getRepository('\\' . \App\Entity\Technologie::class);
+        $technologies = $repo->findPublicOrderedByLabel();
+
+        foreach ($technologies as $technologie) {
+            if (!$personnage->isKnownTechnologie($technologie)) {
+                $availableTechnologies[] = $technologie;
+            }
+        }
+        return $availableTechnologies;
+    }
+
+    /*********************************************** */
+
+    /**
      * Tri du tableau personnages suivant le sortFieldName spécifié, asc ou desc.
      * Le tableau passé en paramètre est directement modifié.
      * Valeurs de nom de tri supportées :
@@ -407,8 +370,7 @@ final class PersonnageManager
      */
     public static function sort(array &$personnages, string $sortFieldName, bool $isAsc)
     {
-        switch ($sortFieldName)
-        {
+        switch ($sortFieldName) {
             case 'id':
                 $sortByFunctionName = 'sortById';
                 break;
@@ -443,18 +405,17 @@ final class PersonnageManager
                 $sortByFunctionName = 'sortByHasAnomalie';
                 break;
             default:
-                throw new \Exception('Le champ de tri '.$sortFieldName.' n\'a pas été implémenté');
+                throw new \Exception('Le champ de tri ' . $sortFieldName . ' n\'a pas été implémenté');
         }
-        if (!$isAsc)
-        {
-            $sortByFunctionName = $sortByFunctionName.'Desc';
+        if (!$isAsc) {
+            $sortByFunctionName = $sortByFunctionName . 'Desc';
         }
         
 
-        //PersonnageManager::stable_uasort($personnages, array('\App\Manager\PersonnageManager', $sortByFunctionName)); 
-        
+        //PersonnageManager::stable_uasort($personnages, array('\App\Manager\PersonnageManager', $sortByFunctionName));
+
         //$sortByFunctionName = 'PersonnageManager::'.$sortByFunctionName;
-        
+
         $index = 0;
         foreach ($personnages as &$item) {
             $item = array($index++, $item);
@@ -468,8 +429,6 @@ final class PersonnageManager
         }
         return $result;
     }
-
-    
     
     /**
      * Tri sur Id
@@ -481,7 +440,7 @@ final class PersonnageManager
     {
         return Utilities::sortBy($a->getId(), $b->getId());
     }
-    
+
     /**
      * Tri sur Id Desc
      * @param Personnage $a
@@ -492,7 +451,7 @@ final class PersonnageManager
     {
         return self::sortById($b, $a);
     }
-    
+
     /**
      * Tri sur Classe
      * @param Personnage $a
@@ -503,7 +462,7 @@ final class PersonnageManager
     {
         return Utilities::sortBy($a->getClasseName(), $b->getClasseName());
     }
-    
+
     /**
      * Tri sur Classe Desc
      * @param Personnage $a
@@ -514,7 +473,7 @@ final class PersonnageManager
     {
         return self::sortByClasse($b, $a);
     }
-    
+
     /**
      * Tri sur Groupe
      * @param Personnage $a
@@ -525,7 +484,7 @@ final class PersonnageManager
     {
         return Utilities::sortBy($a->getLastParticipantGnGroupeNom(), $b->getLastParticipantGnGroupeNom());
     }
-    
+
     /**
      * Tri sur Groupe Desc
      * @param Personnage $a
@@ -536,7 +495,7 @@ final class PersonnageManager
     {
         return self::sortByGroupe($b, $a);
     }
-    
+
     /**
      * Tri sur Renommée
      * @param Personnage $a
@@ -547,7 +506,7 @@ final class PersonnageManager
     {
         return Utilities::sortBy($a->getRenomme(), $b->getRenomme());
     }
-    
+
     /**
      * Tri sur Groupe Desc
      * @param Personnage $a
@@ -558,7 +517,7 @@ final class PersonnageManager
     {
         return self::sortByRenomme($b, $a);
     }
-    
+
     /**
      * Tri sur points d'expérience
      * @param Personnage $a
@@ -569,7 +528,7 @@ final class PersonnageManager
     {
         return Utilities::sortBy($a->getXp(), $b->getXp());
     }
-    
+
     /**
      * Tri sur points d'expérience Desc
      * @param Personnage $a
@@ -580,7 +539,7 @@ final class PersonnageManager
     {
         return self::sortByXp($b, $a);
     }
-    
+
     /**
      * Tri sur Pugilat
      * @param Personnage $a
@@ -591,7 +550,7 @@ final class PersonnageManager
     {
         return Utilities::sortBy($a->getPugilat(), $b->getPugilat());
     }
-    
+
     /**
      * Tri sur Pugilat Desc
      * @param Personnage $a
@@ -602,7 +561,7 @@ final class PersonnageManager
     {
         return self::sortByPugilat($b, $a);
     }
-    
+
     /**
      * Tri sur Heroisme
      * @param Personnage $a
@@ -613,7 +572,7 @@ final class PersonnageManager
     {
         return Utilities::sortBy($a->getHeroisme(), $b->getHeroisme());
     }
-    
+
     /**
      * Tri sur Heroisme Desc
      * @param Personnage $a
@@ -624,7 +583,7 @@ final class PersonnageManager
     {
         return self::sortByHeroisme($b, $a);
     }
-    
+
     /**
      * Tri sur User Full Name
      * @param Personnage $a
@@ -635,7 +594,7 @@ final class PersonnageManager
     {
         return Utilities::sortBy($a->getUserFullName(), $b->getUserFullName());
     }
-    
+
     /**
      * Tri sur User Full Name Desc
      * @param Personnage $a
@@ -646,7 +605,7 @@ final class PersonnageManager
     {
         return self::sortByUser($b, $a);
     }
-    
+
     /**
      * Tri sur HasAnomalie
      * @param Personnage $a
@@ -657,7 +616,7 @@ final class PersonnageManager
     {
         return Utilities::sortBy($a->hasAnomalie(), $b->hasAnomalie());
     }
-    
+
     /**
      * Tri sur HasAnomalieDesc
      * @param Personnage $a
@@ -668,7 +627,7 @@ final class PersonnageManager
     {
         return self::sortByHasAnomalie($b, $a);
     }
-    
+
     /**
      * Tri sur Status Code
      * @param Personnage $a
@@ -679,7 +638,7 @@ final class PersonnageManager
     {
         return Utilities::sortBy($a->getStatusCode(), $b->getStatusCode());
     }
-    
+
     /**
      * Tri sur Status Code Desc
      * @param Personnage $a
@@ -690,7 +649,7 @@ final class PersonnageManager
     {
         return self::sortByStatus($b, $a);
     }
-    
+
     /**
      * Tri sur Status On Active GN
      * @param Personnage $a
@@ -701,7 +660,7 @@ final class PersonnageManager
     {
         return Utilities::sortBy($a->getStatusOnActiveGnCode(), $b->getStatusOnActiveGnCode());
     }
-    
+
     /**
      * Tri sur Status On Active GN Desc
      * @param Personnage $a
@@ -712,7 +671,7 @@ final class PersonnageManager
     {
         return self::sortByStatusOnActiveGn($b, $a);
     }
-    
+
     /**
      * Tri sur Nom
      * @param Personnage $a
@@ -723,7 +682,7 @@ final class PersonnageManager
     {
         return Utilities::sortBy($a->getNom(), $b->getNom());
     }
-    
+
     /**
      * Tri sur Nom Desc
      * @param Personnage $a
@@ -734,7 +693,7 @@ final class PersonnageManager
     {
         return self::sortByNom($b, $a);
     }
-    
+
     /**
      * Tri sur Status GN, du + récent (+ grand) au - récent (+ petit) puis par nom ASC
      * @param Personnage $a
@@ -751,7 +710,7 @@ final class PersonnageManager
         // on prend le statut à l'envers, ici 0 = mort donc on veut plutôt du + grand au + petit
         return ($aStatus > $bStatus) ? -1 : 1;
     }
-    
+
     /**
      * Tri sur Status GN DESC, du - récent (+ petit) au + récent (+ grand) puis par nom DESC
      * @param Personnage $a
@@ -762,7 +721,7 @@ final class PersonnageManager
     {
         return self::sortByStatusGn($b, $a);
     }
-    
+
     /**
      * Tri sur Last Participant GN Number, du + récent (+ grand) au - récent (+ petit) puis par nom ASC
      * @param Personnage $a
@@ -779,7 +738,7 @@ final class PersonnageManager
         // on prend le statut à l'envers, ici 0 = mort donc on veut plutôt du + grand au + petit
         return ($aStatus > $bStatus) ? -1 : 1;
     }
-    
+
     /**
      * Tri sur Last Participant GN Number DESC, du - récent (+ petit) au + récent (+ grand) puis par nom DESC
      * @param Personnage $a
@@ -790,7 +749,7 @@ final class PersonnageManager
     {
         return self::sortByLastParticipantGnNumber($b, $a);
     }
-    
+
     /**
      * Tri sur Status :
      * - d'abord les PJs vivants sur le GN actif,
@@ -806,10 +765,9 @@ final class PersonnageManager
     {
         $aStatus = $a->getStatusOnActiveGnCode();
         $bStatus = $b->getStatusOnActiveGnCode();
-        
+
         // si les 2 sont pnj ou les 2 sont morts, on se base sur le gn
-        if ($a->isPnj() && $b->isPnj() || !$a->getVivant() && !$b->getVivant())
-        {
+        if ($a->isPnj() && $b->isPnj() || !$a->getVivant() && !$b->getVivant()) {
             return self::sortByLastParticipantGnNumber($a, $b);
         }
         if ($aStatus == $bStatus) {
@@ -818,7 +776,7 @@ final class PersonnageManager
         // on prend le statut à l'envers, ici 0 = mort donc on veut plutôt du + grand au + petit
         return ($aStatus > $bStatus) ? -1 : 1;
     }
-    
+
     /**
      * Tri sur Status DESC:
      * - d'abord les morts,
@@ -832,6 +790,7 @@ final class PersonnageManager
      */
     public static function sortByStatusDesc(Personnage $a, Personnage $b)
     {
-        return self::sortByStatus($b,$a);
+        return self::sortByStatus($b, $a);
     }
+
 }
