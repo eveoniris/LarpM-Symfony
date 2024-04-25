@@ -27,7 +27,8 @@
 			{'name' : 'Description', 'field' : 'description'},
 			{'name' : 'Age minimum', 'field' : 'minimumValue'},
 			{'name' : 'Autorisé en création', 'field' : 'enableCreation'},
-			{'name' : 'Bonus', 'field' : 'bonus'},
+			{'name' : 'Bonus XP', 'field' : 'bonus'},
+			{'name' : 'Nombre de personnages'},
 			{'name' : 'Actions'},
 		]} %}
 		<tbody>
@@ -39,6 +40,7 @@
 				<td>{{ age.minimumValue|highlight(pagerService.searchValue) }}</td>
 				<td>{{ age.enableCreation }}</td>
 				<td>{{ age.bonus }}</td>
+				<td>{{ age.personnages|length }}</td>
 				<td>
 					<div class="btn-toolbar d-flex justify-content-center" role="toolbar">
 						<div class="btn-group" role="group">
@@ -50,6 +52,10 @@
 							   title="Détail"
 							   href="{{ path('age.detail',{'age':age.id}) }}"><i
 										class="fa fa-eye"></i> Detail</a>
+							<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+							   title="Personnages ayant cet age"
+							   href="{{ path('age.perso',{'age':age.id}) }}"><i
+										class="fa fa-users"></i> Personnages</a>
 							<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
 							   title="Supprimer"
 							   href="{{ path('age.delete',{'age':age.id}) }}"><i
@@ -64,6 +70,5 @@
 		</tbody>
 	</table>
 	{% include '_partials/pagination.html.twig' %}
-
 	
 {% endblock %}

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Age;
 use App\Form\AgeForm;
 use App\Repository\AgeRepository;
+use App\Repository\PersonnageRepository;
 use App\Service\PagerService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
@@ -27,6 +28,7 @@ class AgeController extends AbstractController
         AgeRepository $ageRepository
     ): Response {
         $pagerService->setRequest($request)->setRepository($ageRepository);
+
 // Todo voir si dans le list.twig pour le Thead on peut utiliser les Reposity->translateAttribute
         return $this->render('age/list.twig', [
             'pagerService' => $pagerService,
@@ -34,12 +36,20 @@ class AgeController extends AbstractController
         ]);
     }
 
-    /**
-     * TODO Liste des perso ayant cet age.
-     */
-    public function persoAction(Request $request, EntityManagerInterface $entityManager, Age $age)
-    {
-        return $this->render('age/perso.twig', ['age' => $age]);
+    #[Route('/{age}/perso', name: 'perso', requirements: ['age' => Requirement::DIGITS], methods: ['GET'])]
+    public function persoAction(
+        #[MapEntity] Age $age,
+        Request $request,
+        PagerService $pagerService,
+        PersonnageRepository $personnageRepository
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($personnageRepository);
+
+        return $this->render('age/perso.twig', [
+            'age' => $age,
+            'pagerService' => $pagerService,
+            'paginator' => $personnageRepository->searchPaginated($pagerService),
+        ]);
     }
 
     #[Route('/{age}/detail', name: 'detail', requirements: ['age' => Requirement::DIGITS], methods: ['GET'])]
@@ -76,17 +86,17 @@ class AgeController extends AbstractController
         if ($isNew) {
             $form->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
                 ->add('delete', SubmitType::class, ['label' => 'Supprimer']
-                    /* TODO un confirm sur tous les delete
-                    ButtonType::class, [
-                    'label' => 'Supprimer',
-                    'attr' => [
-                        'value' => 'Submit',
-                        'data-toggle' => 'modal',
-                        'data-target' => '#confirm-submit',
-                        'class' => 'btn btn-default',
-                    ],
-                ]*/
-        );
+                /* TODO un confirm sur tous les delete
+                ButtonType::class, [
+                'label' => 'Supprimer',
+                'attr' => [
+                    'value' => 'Submit',
+                    'data-toggle' => 'modal',
+                    'data-target' => '#confirm-submit',
+                    'class' => 'btn btn-default',
+                ],
+            ]*/
+                );
         } else {
             $form->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
                 ->add(

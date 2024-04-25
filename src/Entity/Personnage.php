@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
+use App\Repository\PersonnageRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
-use App\Repository\PersonnageRepository;
 
 #[Entity(repositoryClass: PersonnageRepository::class)]
 class Personnage extends BasePersonnage implements \Stringable
@@ -22,8 +22,6 @@ class Personnage extends BasePersonnage implements \Stringable
 
     /**
      * Vérifie si un personnage connait une priere.
-     *
-     * @param unknown $priere
      */
     public function hasPriere(Priere $priere): bool
     {
@@ -585,7 +583,7 @@ class Personnage extends BasePersonnage implements \Stringable
     {
         $pugilatHistories = [];
 
-        $pugilatHistory = new \App\Entity\PugilatHistory();
+        $pugilatHistory = new PugilatHistory();
         $pugilatHistory->setPugilat(1);
         $pugilatHistory->setExplication('Score de base');
         $pugilatHistories[] = $pugilatHistory;
@@ -595,77 +593,77 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         if ($this->getCompetencePugilat('Agilité') > 0) {
-            $pugilatHistory = new \App\Entity\PugilatHistory();
+            $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Agilité'));
             $pugilatHistory->setExplication('Compétence Agilité niveau '.$this->getCompetenceNiveau('Agilité'));
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetencePugilat('Armes à distance') > 0) {
-            $pugilatHistory = new \App\Entity\PugilatHistory();
+            $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Armes à distance'));
             $pugilatHistory->setExplication('Compétence Armes à distance niveau '.$this->getCompetenceNiveau('Armes à distance'));
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetencePugilat('Armes à 1 main') > 0) {
-            $pugilatHistory = new \App\Entity\PugilatHistory();
+            $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Armes à 1 main'));
             $pugilatHistory->setExplication('Compétence Armes à 1 main niveau '.$this->getCompetenceNiveau('Armes à 1 main'));
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetencePugilat('Armes à 2 mains') > 0) {
-            $pugilatHistory = new \App\Entity\PugilatHistory();
+            $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Armes à 2 mains'));
             $pugilatHistory->setExplication('Compétence Armes à 2 mains niveau '.$this->getCompetenceNiveau('Armes à 2 mains'));
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetencePugilat("Armes d'hast") > 0) {
-            $pugilatHistory = new \App\Entity\PugilatHistory();
+            $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat("Armes d'hast"));
             $pugilatHistory->setExplication('Compétence Armes d\'hast niveau '.$this->getCompetenceNiveau("Armes d'hast"));
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetencePugilat('Armure') > 0) {
-            $pugilatHistory = new \App\Entity\PugilatHistory();
+            $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Armure'));
             $pugilatHistory->setExplication('Compétence Armure niveau '.$this->getCompetenceNiveau('Armure'));
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetenceNiveau('Forge') >= 2) {
-            $pugilatHistory = new \App\Entity\PugilatHistory();
+            $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat(5);
             $pugilatHistory->setExplication('Compétence Forge niveau '.$this->getCompetenceNiveau('Forge'));
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetencePugilat('Attaque sournoise') > 0) {
-            $pugilatHistory = new \App\Entity\PugilatHistory();
+            $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Attaque sournoise'));
             $pugilatHistory->setExplication('Compétence Attaque sournoise niveau '.$this->getCompetenceNiveau('Attaque sournoise'));
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetencePugilat('Protection') > 0) {
-            $pugilatHistory = new \App\Entity\PugilatHistory();
+            $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Protection'));
             $pugilatHistory->setExplication('Compétence Protection niveau '.$this->getCompetenceNiveau('Protection'));
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetencePugilat('Résistance') > 0) {
-            $pugilatHistory = new \App\Entity\PugilatHistory();
+            $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Résistance'));
             $pugilatHistory->setExplication('Compétence Résistance niveau '.$this->getCompetenceNiveau('Résistance'));
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetencePugilat('Sauvagerie') > 0) {
-            $pugilatHistory = new \App\Entity\PugilatHistory();
+            $pugilatHistory = new PugilatHistory();
             $extra = 0;
             if ($this->getCompetenceNiveau('Sauvagerie') >= 2) {
                 $extra = 5;
@@ -677,14 +675,14 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         if ($this->getCompetencePugilat('Stratégie') > 0) {
-            $pugilatHistory = new \App\Entity\PugilatHistory();
+            $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Stratégie'));
             $pugilatHistory->setExplication('Compétence Stratégie niveau '.$this->getCompetenceNiveau('Stratégie'));
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetencePugilat('Survie') > 0) {
-            $pugilatHistory = new \App\Entity\PugilatHistory();
+            $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Survie'));
             $pugilatHistory->setExplication('Compétence Survie niveau '.$this->getCompetenceNiveau('Survie'));
             $pugilatHistories[] = $pugilatHistory;
@@ -745,42 +743,42 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         if ($this->getCompetenceNiveau('Agilité') >= 2) {
-            $heroismeHistory = new \App\Entity\HeroismeHistory();
+            $heroismeHistory = new HeroismeHistory();
             $heroismeHistory->setHeroisme(1);
             $heroismeHistory->setExplication('Compétence Agilité niveau '.$this->getCompetenceNiveau('Agilité'));
             $heroismeHistories[] = $heroismeHistory;
         }
 
         if ($this->getCompetenceNiveau('Armes à 1 main') >= 3) {
-            $heroismeHistory = new \App\Entity\HeroismeHistory();
+            $heroismeHistory = new HeroismeHistory();
             $heroismeHistory->setHeroisme(1);
             $heroismeHistory->setExplication('Compétence Armes à 1 main niveau '.$this->getCompetenceNiveau('Armes à 1 main'));
             $heroismeHistories[] = $heroismeHistory;
         }
 
         if ($this->getCompetenceNiveau('Armes à 2 mains') >= 2) {
-            $heroismeHistory = new \App\Entity\HeroismeHistory();
+            $heroismeHistory = new HeroismeHistory();
             $heroismeHistory->setHeroisme(1);
             $heroismeHistory->setExplication('Compétence Armes à 2 mains niveau '.$this->getCompetenceNiveau('Armes à 2 mains'));
             $heroismeHistories[] = $heroismeHistory;
         }
 
         if ($this->getCompetenceNiveau('Forge') >= 4) {
-            $heroismeHistory = new \App\Entity\HeroismeHistory();
+            $heroismeHistory = new HeroismeHistory();
             $heroismeHistory->setHeroisme(1);
             $heroismeHistory->setExplication('Compétence Forge niveau '.$this->getCompetenceNiveau('Forge'));
             $heroismeHistories[] = $heroismeHistory;
         }
 
         if ($this->getCompetenceNiveau('Protection') >= 4) {
-            $heroismeHistory = new \App\Entity\HeroismeHistory();
+            $heroismeHistory = new HeroismeHistory();
             $heroismeHistory->setHeroisme(1);
             $heroismeHistory->setExplication('Compétence Protection niveau '.$this->getCompetenceNiveau('Protection'));
             $heroismeHistories[] = $heroismeHistory;
         }
 
         if ($this->getCompetenceNiveau('Sauvagerie') >= 1) {
-            $heroismeHistory = new \App\Entity\HeroismeHistory();
+            $heroismeHistory = new HeroismeHistory();
             $heroismeHistory->setHeroisme(1);
             $heroismeHistory->setExplication('Compétence Sauvagerie niveau '.$this->getCompetenceNiveau('Sauvagerie'));
             $heroismeHistories[] = $heroismeHistory;
@@ -843,15 +841,15 @@ class Personnage extends BasePersonnage implements \Stringable
         $groupeLabel = null;
         $nomGn = '???';
         if ($this->getUser()) {
-            dump("User = ".$this->getUser()->getUsername());
+            dump('User = '.$this->getUser()->getUsername());
             foreach ($this->getUser()->getParticipants() as $participant) {
                 if ($participant->getPersonnage() == $this) {
                     $nomGn = $participant->getGn()->getLabel();
-                    dump("NomGn = ".$nomGn);
+                    dump('NomGn = '.$nomGn);
                     $groupeGn = $participant->getGroupeGn();
                     if (null != $groupeGn) {
-                        dump("groupeGnId = ".$groupeGn->getId());
-                        dump("groupeGnCode = ".$groupeGn->getCode());
+                        dump('groupeGnId = '.$groupeGn->getId());
+                        dump('groupeGnCode = '.$groupeGn->getCode());
                         $groupeLabel = $groupeGn->getGroupe()->getNom();
                     }
                 }
@@ -1203,7 +1201,7 @@ class Personnage extends BasePersonnage implements \Stringable
     public function getLastParticipantGn(): ?Gn
     {
         $lastParticipant = $this->getLastParticipant();
-        if ($lastParticipant instanceof \App\Entity\Participant) {
+        if ($lastParticipant instanceof Participant) {
             return $lastParticipant->getGn();
         }
 
@@ -1216,7 +1214,7 @@ class Personnage extends BasePersonnage implements \Stringable
     public function getLastParticipantGnNumber(): int
     {
         $lastParticipantGn = $this->getLastParticipantGn();
-        if ($lastParticipantGn instanceof \App\Entity\Gn) {
+        if ($lastParticipantGn instanceof Gn) {
             return $lastParticipantGn->getNumber();
         }
 
@@ -1229,7 +1227,7 @@ class Personnage extends BasePersonnage implements \Stringable
     public function getLastParticipantGnGroupe(): ?Groupe
     {
         $lastParticipant = $this->getLastParticipant();
-        if ($lastParticipant instanceof \App\Entity\Participant) {
+        if ($lastParticipant instanceof Participant) {
             $lastParticipantGn = $lastParticipant->getGn();
             $lastParticipantGroupeGn = $lastParticipant->getGroupeGn();
             if (!empty($lastParticipantGroupeGn)
@@ -1249,7 +1247,7 @@ class Personnage extends BasePersonnage implements \Stringable
     {
         $lastParticipantGnGroupe = $this->getLastParticipantGnGroupe();
 
-        return $lastParticipantGnGroupe instanceof \App\Entity\Groupe
+        return $lastParticipantGnGroupe instanceof Groupe
             ? $lastParticipantGnGroupe->getNom()
             : 'N\'est pas lié à un groupe';
     }
@@ -1260,7 +1258,7 @@ class Personnage extends BasePersonnage implements \Stringable
     public function isPnj(): bool
     {
         $lastParticipant = $this->getLastParticipant();
-        if ($lastParticipant instanceof \App\Entity\Participant) {
+        if ($lastParticipant instanceof Participant) {
             return $lastParticipant->isPnj();
         }
 

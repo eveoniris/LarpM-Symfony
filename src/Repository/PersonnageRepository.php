@@ -6,17 +6,14 @@ namespace App\Repository;
 use App\Entity\PersonnageLignee;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
+use JetBrains\PhpStorm\Deprecated;
 
-/**
- * LarpManager\Repository\PersonnageRepository.
- *
- * @author kevin
- */
 class PersonnageRepository extends BaseRepository
 {
     /**
      * Trouve le nombre de personnages correspondant aux critères de recherche.
      */
+    #[Deprecated]
     public function findCount(array $criteria = [])
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
@@ -27,9 +24,7 @@ class PersonnageRepository extends BaseRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    /**
-     * Trouve les personnages correspondant aux critères de recherche.
-     */
+
     public function findList(array $criteria = [], ?array $order = [], int $limit = null, int $offset = null)
     {
         $orderBy = '';
@@ -130,6 +125,7 @@ LEFT JOIN p2.participants pa2
     /**
      * Find multiple personnage.
      */
+    #[Deprecated]
     public function findByIds(array $ids)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();

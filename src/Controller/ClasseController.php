@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class ClasseController extends AbstractController
@@ -113,14 +114,12 @@ class ClasseController extends AbstractController
     }
 
     /**
-     * Détail d'une classe.
+     * TODO admin or REGLE acces ?
      */
-    #[Route('/classe/{id}', name: 'classe.detail')]
+    #[Route('/classe/{classe}', name: 'classe.detail', requirements: ['classe' => Requirement::DIGITS])]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
-    public function detailAction(EntityManagerInterface $entityManager, int $id)
+    public function detailAction(#[MapEntity] Classe $classe): Response
     {
-        $classe = $entityManager->getRepository(Classe::class)->find($id);
-
         return $this->render('classe/detail.twig', ['classe' => $classe]);
     }
 
