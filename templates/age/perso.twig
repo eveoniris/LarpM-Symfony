@@ -38,8 +38,14 @@
                     <td class="text-center">
                         <a href="{{ path('personnage.admin.detail', {'personnage':personnage.id}) }}">{{ personnage.id }}</a>
                     </td>
-                    <td class="text-center">{% if personnage.vivant %}<i class="fa fa-heart-pulse"></i>{% else %}<i
-                                class="fa fa-skull"></i>{% endif %}</td>
+                    <td class="text-center">
+                        {% if personnage.vivant %}
+                            <i class="fa fa-heart-pulse" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Vivant"></i>
+                        {% else %}
+                            <i class="fa fa-skull" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mort"></i>
+                        {% endif %}
+                    </td>
                     <td>{{ personnage.nom|highlight(pagerService.searchValue) }}</td>
                     <td>{{ personnage.surnom|highlight(pagerService.searchValue) }}</td>
                     <td>

@@ -9,14 +9,14 @@
             {% if is_granted('ROLE_REGLE', app.user) %}
                 <div class="d-flex flex-row-reverse">
                     <div class="btn-group pull-right" role="group" aria-label="...">
-                        <a href="{{ path('classe.perso', {'id': classe.id}) }}" class="btn btn-secondary"
+                        <a href="{{ path('classe.perso', {'classe': classe.id}) }}" class="btn btn-secondary"
                            data-bs-toggle="tooltip" data-bs-placement="bottom"
                            title="Voir les personnages de cette classe" role="button"><i
                                     class="fa fa-link"></i> {{ classe.personnages|length }} personnages</a>
-                        <a href="{{ path('classe.detail', {'id': classe.id}) }}" class="btn btn-secondary"
+                        <a href="{{ path('classe.detail', {'classe': classe.id}) }}" class="btn btn-secondary"
                            data-bs-toggle="tooltip" data-bs-placement="bottom"
                            title="Détail" role="button"><i class="fa fa-eye"></i> Voir</a>
-                        <a href="{{ path('classe.update', {'id': classe.id}) }}" class="btn btn-secondary"
+                        <a href="{{ path('classe.update', {'classe': classe.id}) }}" class="btn btn-secondary"
                            data-bs-toggle="tooltip" data-bs-placement="bottom"
                            title="Modifier" role="button"><i class="fa fa-pencil"></i> Modifier</a>
                     </div>
