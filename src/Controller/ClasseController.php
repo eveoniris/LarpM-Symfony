@@ -8,6 +8,7 @@ use App\Repository\ClasseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -32,7 +33,9 @@ class ClasseController extends AbstractController
             ->orderBy(key($orderBy), current($orderBy));
 
         $classes = $classeRepository->findPaginatedQuery(
-            $query->getQuery(), $this->getRequestLimit(100), $this->getRequestPage()
+            $query->getQuery(),
+            $this->getRequestLimit(100),
+            $this->getRequestPage()
         );
 
         return $this->render(
@@ -47,8 +50,11 @@ class ClasseController extends AbstractController
      * Ajout d'une classe.
      */
     #[Route('/classe/add', name: 'classe.add')]
-    public function addAction(EntityManagerInterface $entityManager, Request $request, ClasseRepository $classeRepository): Response
-    {
+    public function addAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        ClasseRepository $classeRepository
+    ): Response {
         $classe = new Classe();
 
         $form = $this->createForm(ClasseForm::class, $classe)
@@ -80,13 +86,15 @@ class ClasseController extends AbstractController
     /**
      * Mise à jour d'une classe.
      */
-    #[Route('/classe/{id}/update', name: 'classe.update')]
-    public function updateAction(EntityManagerInterface $entityManager, Request $request, #[MapEntity] Classe $classe)
-    {
+    #[Route('/classe/{classe}/update', name: 'classe.update')]
+    public function updateAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        #[MapEntity] Classe $classe
+    ): RedirectResponse|Response {
         $form = $this->createForm(ClasseForm::class, $classe)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer'])
-        ;
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -114,7 +122,7 @@ class ClasseController extends AbstractController
     }
 
     /**
-     * TODO admin or REGLE acces ?
+     * TODO admin OR REGLE acces ?
      */
     #[Route('/classe/{classe}', name: 'classe.detail', requirements: ['classe' => Requirement::DIGITS])]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
@@ -126,7 +134,7 @@ class ClasseController extends AbstractController
     /**
      * Liste des persos d'une classe.
      */
-    #[Route('/classe/{id}/perso', name: 'classe.perso')]
+    #[Route('/classe/{classe}/perso', name: 'classe.perso')]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     public function persoAction(EntityManagerInterface $entityManager, int $id)
     {
@@ -139,16 +147,18 @@ class ClasseController extends AbstractController
      * Récupération de l'image d'une classe en fonction du sexe.
      */
     #[Route('/classe/{classe}/image/{sexe}', name: 'classe.image', methods: ['GET'])]
-    public function imagrAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Classe $classe, string $sexe): Response
-    {
-        if ('F' == $sexe) {
+    public function imagrAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Classe $classe,
+        string $sexe
+    ): Response {
+        $image = $classe->getImageM();
+        if ('F' === $sexe) {
             $image = $classe->getImageF();
-        } else {
-            $image = $classe->getImageM();
         }
 
         $filename = __DIR__.'/../../assets/img/'.$image;
-        // var_dump($filename);
 
         $response = new Response(file_get_contents($filename));
         $response->headers->set('Content-Type', 'image/png');
