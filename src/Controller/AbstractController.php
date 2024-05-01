@@ -4,15 +4,20 @@ namespace App\Controller;
 
 use App\Enum\FolderType;
 use App\Form\DeleteForm;
+use App\Repository\BaseRepository;
 use App\Service\FileUploader;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use JetBrains\PhpStorm\Deprecated;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
 {
@@ -20,6 +25,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected EntityManagerInterface $entityManager,
         protected RequestStack $requestStack,
         protected FileUploader $fileUploader,
+        protected readonly TranslatorInterface $translator,
         protected PagerService $pageRequest
         // Cache $cache, // TODO : later
     ) {
@@ -94,16 +100,27 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return [$orderBy => $orderDir];
     }
 
-    protected function genericDelete($entity, string $title, string $successMsg, string $redirect, array $breadcrumb): RedirectResponse|Response
-    {
+    protected function genericDelete(
+        $entity,
+        string $title,
+        string $successMsg,
+        string $redirect,
+        array $breadcrumb
+    ): RedirectResponse|Response {
+        $request = $this->requestStack->getCurrentRequest();
         $form = $this->createForm(DeleteForm::class, $entity, ['class' => $entity::class]);
+        $form->handleRequest($request);
 
-        $form->handleRequest($this->requestStack->getCurrentRequest());
-
+        $entityToDelete = null;
+        if ($request && 'DELETE' === $request->getMethod()) {
+            $entityToDelete = $entity;
+        }
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
+            $entityToDelete = $form->getData();
+        }
 
-            $this->entityManager->remove($data);
+        if ($entityToDelete) {
+            $this->entityManager->remove($entityToDelete);
             $this->entityManager->flush();
 
             $this->addFlash('success', $successMsg);
@@ -118,4 +135,123 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             'breadcrumb' => $breadcrumb,
         ]);
     }
+
+    protected function handleCreateorUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = []
+    ): RedirectResponse|Response {
+        $repository = $this->entityManager->getRepository($entity::class);
+        if (!$repository instanceof BaseRepository || !$repository->isEntity($entity)) {
+            throw new \RuntimeException('Entity must be a doctrine entity and have a repository');
+        }
+
+        $form = $this->createForm($formClass, $entity);
+        $isNew = !$this->entityManager->getUnitOfWork()->isInIdentityMap($entity);
+
+        $root = (new \ReflectionClass(static::class))
+            ?->getAttributes(Route::class)[0]
+            ?->getArguments()['name'] ?? '';
+
+        $routes['add'] ??= $root.'add';
+        $routes['list'] ??= ($routes['index'] ?? $root.'list');
+        $routes['delete'] ??= $root.'delete';
+        $routes['update'] ??= $root.'update';
+        $routes['detail'] ??= ($routes['view'] ?? $root.'detail');
+        $routes['entityAlias'] ??= $root ? trim($root, ".\n\r\t\v\0") : $repository::getEntityAlias();
+
+        $msg['entity'] ??= $this->translator->trans('donnée', domain: 'controller');
+        $msg['entity_added'] ??= $this->translator->trans('La donnée a été ajoutée', domain: 'controller');
+        $msg['entity_deleted'] ??= $this->translator->trans('La donnée a été supprimée', domain: 'controller');
+        $msg['entity_updated'] ??= $this->translator->trans('La donnée a été mise à jour', domain: 'controller');
+        $msg['entity_list'] ??= $this->translator->trans('Liste des données', domain: 'controller');
+        $msg['save'] ??= $this->translator->trans('Sauvegarder', domain: 'controller');
+        $msg['save_continue'] ??= $this->translator->trans('Sauvegarder & continuer', domain: 'controller');
+        $msg['delete'] ??= $this->translator->trans('Supprimer', domain: 'controller');
+        $msg['title_add'] ??= $this->translator->trans('Ajouter une donnée', domain: 'controller');
+        $msg['title_update'] ??= $this->translator->trans('Modifier la donnée', domain: 'controller');
+        $msg['title'] ??= $isNew ? $msg['title_add'] : $msg['title_update'];
+
+        if (empty($breadcrumb)) {
+            if (!empty($routes['list'])) {
+                $breadcrumb[] = ['name' => $msg['entity_list'], 'route' => $this->generateUrl($routes['list'])];
+            }
+            if (!$isNew) {
+                $label = method_exists($entity, 'getLabel') ? $entity->getLabel() : $msg['entity'];
+                $breadcrumb[] = ['name' => $label, 'route' => $this->generateUrl($routes['detail'], [$routes['entityAlias'] => $entity->getId()])];
+            }
+            $breadcrumb[] = ['name' => $msg['title']];
+        }
+
+        // Todo add an action LOG (who/when/what)
+
+        if ($isNew) {
+            $form->add('save', SubmitType::class, ['label' => $msg['save']])
+                ->add('save_continue', SubmitType::class, ['label' => $msg['save_continue']]);
+        } else {
+            $form->add('update', SubmitType::class, ['label' => $msg['save']])
+                ->add('delete', SubmitType::class, ['label' => $msg['delete']]);
+        }
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entity = $form->getData();
+
+            if ($form->has('save_continue') && $form->get('save_continue')->isClicked()) {
+                $this->addFlash('success', $msg['entity_added']);
+                $this->entityManager->persist($entity);
+                $this->entityManager->flush();
+
+                return $this->redirectToRoute($routes['add']);
+            }
+
+            if ($form->has('delete') && $form->get('delete')->isClicked()) {
+                $this->entityManager->remove($entity);
+                $this->addFlash('success', $msg['entity_deleted']);
+            } else {
+                $this->entityManager->persist($entity);
+
+                if ($form->has('update') && $form->get('update')->isClicked()) {
+                    $this->addFlash('success', $msg['entity_updated']);
+                }
+
+                if ($form->has('save') && $form->get('save')->isClicked()) {
+                    $this->addFlash('success', $msg['entity_added']);
+                }
+            }
+
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute($routes['list']);
+        }
+
+        return $this->render('_partials/addOrUpdateForm.twig', [
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'msg' => $msg,
+            'breadcrumb' => $breadcrumb,
+        ]);
+    }
+    /*
+     * Sample
+     *
+     * For a modal confirm button :
+     * ->add('delete', ButtonType::class, [
+     *     'label' => 'Supprimer',
+     *     'attr' => [
+     *         'value' => 'Submit',
+     *         'data-bs-toggle' => 'modal',
+     *         'data-bs-target' => '#mainModal',
+     *         'data-bs-title' => 'Confirmation',
+     *         'data-bs-body' => 'Confirmez-vous vouloir supprimer cette entrée ?',
+     *         'data-bs-action' => $this->generateUrl('age.delete', ['age' => $age->getId()]),
+     *         'class' => 'btn btn-secondary btn-confirm-conf',
+     *     ],
+     * ]
+     * );
+     */
 }

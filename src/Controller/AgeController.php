@@ -8,8 +8,6 @@ use App\Repository\AgeRepository;
 use App\Repository\PersonnageRepository;
 use App\Service\PagerService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\ButtonType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,7 +27,6 @@ class AgeController extends AbstractController
     ): Response {
         $pagerService->setRequest($request)->setRepository($ageRepository);
 
-// Todo voir si dans le list.twig pour le Thead on peut utiliser les Reposity->translateAttribute
         return $this->render('age/list.twig', [
             'pagerService' => $pagerService,
             'paginator' => $ageRepository->searchPaginated($pagerService),
@@ -63,7 +60,7 @@ class AgeController extends AbstractController
     {
         $age = new Age();
 
-        return $this->handleCreateorUpdate($request, $age);
+        return $this->handleCreateorUpdate($request, $age, AgeForm::class);
     }
 
     #[Route('/{age}/update', name: 'update', requirements: ['age' => Requirement::DIGITS], methods: [
@@ -75,78 +72,34 @@ class AgeController extends AbstractController
         Request $request,
         #[MapEntity] Age $age
     ): RedirectResponse|Response {
-        return $this->handleCreateorUpdate($request, $age);
+        return $this->handleCreateorUpdate($request, $age, AgeForm::class);
     }
 
-    protected function handleCreateorUpdate(Request $request, Age $age): RedirectResponse|Response
-    {
-        $form = $this->createForm(AgeForm::class, $age);
-        $isNew = $this->entityManager->getUnitOfWork()->isInIdentityMap($age);
-
-        if ($isNew) {
-            $form->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-                ->add('delete', SubmitType::class, ['label' => 'Supprimer']
-                /* TODO un confirm sur tous les delete
-                ButtonType::class, [
-                'label' => 'Supprimer',
-                'attr' => [
-                    'value' => 'Submit',
-                    'data-toggle' => 'modal',
-                    'data-target' => '#confirm-submit',
-                    'class' => 'btn btn-default',
-                ],
-            ]*/
-                );
-        } else {
-            $form->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-                ->add(
-                    'save_continue',
-                    SubmitType::class,
-                    ['label' => 'Sauvegarder & continuer']
-                );
-        }
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var Age $age */
-            $age = $form->getData();
-
-            if ($form->has('save_continue') && $form->get('save_continue')->isClicked()) {
-                $this->addFlash(
-                    'success',
-                    sprintf('L\'age %s a été ajouté.', $age->getLabel())
-                );
-                $this->entityManager->persist($age);
-                $this->entityManager->flush();
-
-                return $this->redirectToRoute('age.add');
-            }
-
-            if ($form->has('delete') && $form->get('delete')->isClicked()) {
-                $this->entityManager->remove($age);
-                $this->addFlash('success', 'L\'age a été supprimé.');
-            } else {
-                $this->entityManager->persist($age);
-
-                if ($form->has('update') && $form->get('update')->isClicked()) {
-                    $this->addFlash('success', 'L\'age niveau a été mis à jour.');
-                }
-
-                if ($form->has('save') && $form->get('save')->isClicked()) {
-                    $this->addFlash('success', 'L\'age niveau a été ajouté.');
-                }
-            }
-
-            $this->entityManager->flush();
-
-            return $this->redirectToRoute('age.list');
-        }
-
-        return $this->render('age/form.twig', [
-            'age' => $age,
-            'form' => $form->createView(),
-        ]);
+    protected function handleCreateorUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = []
+    ): RedirectResponse|Response {
+        return parent::handleCreateorUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                ...$msg,
+                'entity' => $this->translator->trans('age'),
+                'entity_added' => $this->translator->trans("L'age a été ajouté"),
+                'entity_updated' => $this->translator->trans("L'age a été mis à jour"),
+                'entity_deleted' => $this->translator->trans("L'age a été supprimé"),
+                'entity_list' => $this->translator->trans('Liste des ages'),
+                'title_add' => $this->translator->trans('Ajouter un age'),
+                'title_update' => $this->translator->trans('Modifier un age'),
+            ]
+        );
     }
 
     #[Route('/{age}/delete', name: 'delete', requirements: ['age' => Requirement::DIGITS], methods: [
@@ -163,7 +116,7 @@ class AgeController extends AbstractController
             'age.list',
             [
                 ['route' => $this->generateUrl('age.list'), 'name' => 'Liste des ages'],
-                ['route' => 'age.detail', 'name' => $age->getLabel()],
+                ['route' => $this->generateUrl('age.detail', ['age' => $age->getId()]), 'name' => $age->getLabel()],
                 ['name' => 'Supprimer un age'],
             ]
         );

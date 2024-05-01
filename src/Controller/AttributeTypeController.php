@@ -1,113 +1,113 @@
 <?php
 
-
 namespace App\Controller;
 
+use App\Entity\AttributeType;
 use App\Form\AttributeTypeForm;
+use App\Repository\AttributeTypeRepository;
+use App\Service\PagerService;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_REGLE')]class AttributeTypeController extends AbstractController
+#[IsGranted('ROLE_REGLE')]
+#[Route('/attributType', name: 'attributeType.')]
+class AttributeTypeController extends AbstractController
 {
-    /**
-     * Liste des types d'attribut.
-     */
-    #[Route('/attributeType', name: 'attributeType.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\AttributeType::class);
-        $attributes = $repo->findAllOrderedByLabel();
+    #[Route('/', name: 'list')]
+    #[Route('/', name: 'index')]
+    public function indexAction(
+        Request $request,
+        PagerService $pagerService,
+        AttributeTypeRepository $attributeTypeRepository
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($attributeTypeRepository);
 
-        return $this->render('attributeType/index.twig', ['attributes' => $attributes]);
-    }
-
-    /**
-     * Ajoute d'un attribut.
-     */
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $attributeType = new \App\Entity\AttributeType();
-
-        $form = $this->createForm(AttributeTypeForm::class, $attributeType)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $attributeType = $form->getData();
-
-            $entityManager->persist($attributeType);
-            $entityManager->flush();
-
-           $this->addFlash('success', 'Le type d\'attribut a été ajoutée.');
-
-            if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('attribute.type', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
-                return $this->redirectToRoute('attribute.type.add', [], 303);
-            }
-        }
-
-        return $this->render('attributeType/add.twig', [
-            'form' => $form->createView(),
+        return $this->render('attributeType/list.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $attributeTypeRepository->searchPaginated($pagerService),
         ]);
     }
 
-    /**
-     * Met à jour un attribut.
-     */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/add', name: 'add')]
+    public function addAction(Request $request): RedirectResponse|Response
     {
-        $id = $request->get('index');
+        $attributeType = new AttributeType();
 
-        $attributeType = $entityManager->find('\\'.\App\Entity\AttributeType::class, $id);
+        return $this->handleCreateorUpdate($request, $attributeType, AttributeTypeForm::class);
+    }
 
-        $form = $this->createForm(AttributeTypeForm::class, $attributeType)
-            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+    #[Route('/{attributeType}/update', name: 'update', requirements: ['attributeType' => Requirement::DIGITS])]
+    public function updateAction(Request $request, #[MapEntity] AttributeType $attributeType): RedirectResponse|Response
+    {
+        return $this->handleCreateorUpdate(
+            $request,
+            $attributeType,
+            AttributeTypeForm::class
+        );
+    }
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $attributeType = $form->getData();
-
-            if ($form->get('update')->isClicked()) {
-                $entityManager->persist($attributeType);
-                $entityManager->flush();
-               $this->addFlash('success', 'La type d\'attribut a été mis à jour.');
-            } elseif ($form->get('delete')->isClicked()) {
-                $entityManager->remove($attributeType);
-                $entityManager->flush();
-               $this->addFlash('success', 'Le type d\'attribut a été supprimé.');
-            }
-
-            return $this->redirectToRoute('attribute.type');
-        }
-
-        return $this->render('attributeType/update.twig', [
-            'attributeType' => $attributeType,
-            'form' => $form->createView(),
-        ]);
+    #[Route('/{attributeType}/delete', name: 'delete', requirements: ['attributeType' => Requirement::DIGITS], methods: [
+        'DELETE',
+        'GET',
+        'POST',
+    ])]
+    public function deleteAction(#[MapEntity] AttributeType $attributeType): RedirectResponse|Response
+    {
+        return $this->genericDelete(
+            $attributeType,
+            title: 'Supprimer un type d\'attribut',
+            successMsg: 'Le type d\'attribut a été supprimée',
+            redirect: 'attributeType.list',
+            breadcrumb: [
+                ['route' => $this->generateUrl('attributeType.list'), 'name' => 'Liste des types d\'attributs'],
+                [
+                    'route' => $this->generateUrl('attributeType.detail', ['attributeType' => $attributeType->getId()]),
+                    'name' => $attributeType->getLabel(),
+                ],
+                ['name' => 'Supprimer un type d\'attribut'],
+            ]
+        );
     }
 
     /**
      * Detail d'un attribut.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/{attributeType}', name: 'view', requirements: ['attributeType' => Requirement::DIGITS])]
+    #[Route('/{attributeType}', name: 'detail', requirements: ['attributeType' => Requirement::DIGITS])]
+    public function detailAction(#[MapEntity] AttributeType $attributeType): RedirectResponse|Response
     {
-        $id = $request->get('index');
+        return $this->render('attributeType/detail.twig', ['attributeType' => $attributeType]);
+    }
 
-        $attributeType = $entityManager->find('\\'.\App\Entity\AttributeType::class, $id);
-
-        if ($attributeType) {
-            return $this->render('attributeType/detail.twig', ['attributeType' => $attributeType]);
-        } else {
-           $this->addFlash('error', 'La attribute type n\'a pas été trouvé.');
-
-            return $this->redirectToRoute('attribute.type');
-        }
+    protected function handleCreateorUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = []
+    ): RedirectResponse|Response {
+        return parent::handleCreateorUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                ...$msg,
+                'entity' => $this->translator->trans("type d'attribut"),
+                'entity_added' => $this->translator->trans("Le type d'attribut a été ajouté"),
+                'entity_updated' => $this->translator->trans("Le type d'attribut a été mis à jour"),
+                'entity_deleted' => $this->translator->trans("Le type d'attribut a été supprimé"),
+                'entity_list' => $this->translator->trans("Liste des types d'attributs"),
+                'title_add' => $this->translator->trans("Ajouter un type d'attribut"),
+                'title_update' => $this->translator->trans("Modifier un type d'attribut"),
+            ]
+        );
     }
 }

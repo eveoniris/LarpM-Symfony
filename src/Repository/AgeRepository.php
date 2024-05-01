@@ -70,11 +70,11 @@ class AgeRepository extends BaseRepository
     {
         return [
             ...parent::translateAttributes(),
-            'description' => $this->translator->trans('Description'),
-            'label' => $this->translator->trans('Libellé'),
-            'bonus' => $this->translator->trans('Bonus'),
-            'enableCreation' => $this->translator->trans('Autorisé à la création'),
-            'minimumValue' => $this->translator->trans('Age minimum de la tranche'),
+            'description' => $this->translator->trans('Description', domain: 'repository'),
+            'label' => $this->translator->trans('Libellé', domain: 'repository'),
+            'bonus' => $this->translator->trans('Bonus', domain: 'repository'),
+            'enableCreation' => $this->translator->trans('Autorisé à la création', domain: 'repository'),
+            'minimumValue' => $this->translator->trans('Age minimum de la tranche', domain: 'repository'),
         ];
     }
 }

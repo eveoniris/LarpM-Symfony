@@ -61,6 +61,25 @@
 
     {% block body %}{% endblock body %}
 
+    {# Modal #}
+    <div class="modal fade" id="mainModal" tabindex="-1" aria-labelledby="mainModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="mainModalTitle">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="mainModalContent">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="footer-close-mainmodal">Fermer</button>
+                    <form method="POST" id="mainModalFooterForm"><button type="button" class="btn btn-secondary btn-modal-confirm" id="footer-confirm-mainmodal">Confirmer</button></form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {# Pied de page #}
     <footer class="d-flex justify-content-center">
         <div class="p-2"><a href="http://www.fedegn.org/">FédéGN</a></div>

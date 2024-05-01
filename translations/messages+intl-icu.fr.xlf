@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="fr" target-language="fr" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="TyG7uHn" resname="Tout critère">
+        <source>Tout critère</source>
+        <target>Tout critère</target>
+      </trans-unit>
+      <trans-unit id="RnmzsS3" resname="Aucun">
+        <source>Aucun</source>
+        <target>Aucun</target>
+      </trans-unit>
+      <trans-unit id="EhVukhv" resname="Id">
+        <source>Id</source>
+        <target>Id</target>
+      </trans-unit>
+      <trans-unit id="K1EE9fw" resname="Niveau">
+        <source>Niveau</source>
+        <target>Niveau</target>
+      </trans-unit>
+      <trans-unit id="zVuDKsX" resname="Libellé">
+        <source>Libellé</source>
+        <target>Libellé</target>
+      </trans-unit>
+      <trans-unit id="5sV7nJi" resname="cout XP">
+        <source>cout XP</source>
+        <target>cout XP</target>
+      </trans-unit>
+      <trans-unit id="7MtRSNs" resname="cout XP favori">
+        <source>cout XP favori</source>
+        <target>cout XP favori</target>
+      </trans-unit>
+      <trans-unit id="GsjM0dr" resname="cout XP méconnu">
+        <source>cout XP méconnu</source>
+        <target>cout XP méconnu</target>
+      </trans-unit>
+      <trans-unit id="eOeSABC" resname="Titre">
+        <source>Titre</source>
+        <target>Titre</target>
+      </trans-unit>
+      <trans-unit id="xSSk9I3" resname="Groupe">
+        <source>Groupe</source>
+        <target>Groupe</target>
+      </trans-unit>
+      <trans-unit id="kofiwlo" resname="Scénariste">
+        <source>Scénariste</source>
+        <target>Scénariste</target>
+      </trans-unit>
+      <trans-unit id="WIDlngw" resname="Auteur">
+        <source>Auteur</source>
+        <target>Auteur</target>
+      </trans-unit>
+      <trans-unit id="Um4Ah8w" resname="Description">
+        <source>Description</source>
+        <target>Description</target>
+      </trans-unit>
+      <trans-unit id="1YdiLSd" resname="Bonus">
+        <source>Bonus</source>
+        <target>Bonus</target>
+      </trans-unit>
+      <trans-unit id="kJ.ULi2" resname="Autorisé à la création">
+        <source>Autorisé à la création</source>
+        <target>Autorisé à la création</target>
+      </trans-unit>
+      <trans-unit id="qUVsdwR" resname="Age minimum de la tranche">
+        <source>Age minimum de la tranche</source>
+        <target>Age minimum de la tranche</target>
+      </trans-unit>
+      <trans-unit id="WOJkMwc" resname="donnée">
+        <source>donnée</source>
+        <target>donnée</target>
+      </trans-unit>
+      <trans-unit id="2kH9CWZ" resname="La donnée a été ajoutée">
+        <source>La donnée a été ajoutée</source>
+        <target>La donnée a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="WoHIaAe" resname="La donnée a été supprimée">
+        <source>La donnée a été supprimée</source>
+        <target>La donnée a été supprimée</target>
+      </trans-unit>
+      <trans-unit id="8aGnLRx" resname="La donnée a été mise à jour">
+        <source>La donnée a été mise à jour</source>
+        <target>La donnée a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="QAzfTEE" resname="Sauvegarder">
+        <source>Sauvegarder</source>
+        <target>Sauvegarder</target>
+      </trans-unit>
+      <trans-unit id="QnNE34f" resname="Sauvegarder &amp; continuer">
+        <source>Sauvegarder &amp; continuer</source>
+        <target><![CDATA[Sauvegarder & continuer]]></target>
+      </trans-unit>
+      <trans-unit id="Xl0CFs4" resname="Supprimer">
+        <source>Supprimer</source>
+        <target>Supprimer</target>
+      </trans-unit>
+      <trans-unit id="VkVKLpy" resname="Ajouter une donnée">
+        <source>Ajouter une donnée</source>
+        <target>Ajouter une donnée</target>
+      </trans-unit>
+      <trans-unit id="mOOhzhK" resname="Modifier la donnée">
+        <source>Modifier la donnée</source>
+        <target>Modifier la donnée</target>
+      </trans-unit>
+      <trans-unit id=".SAugjN" resname="type d'attribut">
+        <source>type d'attribut</source>
+        <target>type d'attribut</target>
+      </trans-unit>
+      <trans-unit id="F_EwJGk" resname="Le type d'attribut a été ajouté">
+        <source>Le type d'attribut a été ajouté</source>
+        <target>Le type d'attribut a été ajouté</target>
+      </trans-unit>
+      <trans-unit id="R4s3YCl" resname="Le type d'attribut a été mis à jour">
+        <source>Le type d'attribut a été mis à jour</source>
+        <target>Le type d'attribut a été mis à jour</target>
+      </trans-unit>
+      <trans-unit id="XG7Qw_6" resname="Le type d'attribut a été supprimé">
+        <source>Le type d'attribut a été supprimé</source>
+        <target>Le type d'attribut a été supprimé</target>
+      </trans-unit>
+      <trans-unit id="CYch357" resname="Ajouter un type d'attribut">
+        <source>Ajouter un type d'attribut</source>
+        <target>Ajouter un type d'attribut</target>
+      </trans-unit>
+      <trans-unit id="PiOqzFM" resname="Modifier un type d'attribut">
+        <source>Modifier un type d'attribut</source>
+        <target>Modifier un type d'attribut</target>
+      </trans-unit>
+      <trans-unit id="AT9UQAy" resname="age">
+        <source>age</source>
+        <target>age</target>
+      </trans-unit>
+      <trans-unit id="9czwnL0" resname="L'age a été ajouté">
+        <source>L'age a été ajouté</source>
+        <target>L'age a été ajouté</target>
+      </trans-unit>
+      <trans-unit id=".T4wBgc" resname="L'age a été mis à jour">
+        <source>L'age a été mis à jour</source>
+        <target>L'age a été mis à jour</target>
+      </trans-unit>
+      <trans-unit id="ZXSzHSF" resname="L'age a été supprimé">
+        <source>L'age a été supprimé</source>
+        <target>L'age a été supprimé</target>
+      </trans-unit>
+      <trans-unit id="8GI6nYb" resname="Liste des ages">
+        <source>Liste des ages</source>
+        <target>Liste des ages</target>
+      </trans-unit>
+      <trans-unit id="rEMy1dT" resname="Ajouter un age">
+        <source>Ajouter un age</source>
+        <target>Ajouter un age</target>
+      </trans-unit>
+      <trans-unit id="QX6pqD2" resname="Modifier un age">
+        <source>Modifier un age</source>
+        <target>Modifier un age</target>
+      </trans-unit>
+      <trans-unit id="rxX9vY3" resname="niveau">
+        <source>niveau</source>
+        <target>niveau</target>
+      </trans-unit>
+      <trans-unit id="3nXcK1e" resname="Le niveau a été ajouté">
+        <source>Le niveau a été ajouté</source>
+        <target>Le niveau a été ajouté</target>
+      </trans-unit>
+      <trans-unit id="smngbtE" resname="Le niveau a été mis à jour">
+        <source>Le niveau a été mis à jour</source>
+        <target>Le niveau a été mis à jour</target>
+      </trans-unit>
+      <trans-unit id="P.oXpNd" resname="Le niveau a été supprimé">
+        <source>Le niveau a été supprimé</source>
+        <target>Le niveau a été supprimé</target>
+      </trans-unit>
+      <trans-unit id="hT5r4.0" resname="Liste des niveaux">
+        <source>Liste des niveaux</source>
+        <target>Liste des niveaux</target>
+      </trans-unit>
+      <trans-unit id="I6CYrcB" resname="Ajouter un niveau">
+        <source>Ajouter un niveau</source>
+        <target>Ajouter un niveau</target>
+      </trans-unit>
+      <trans-unit id="fJYI4Gc" resname="Modifier un niveau">
+        <source>Modifier un niveau</source>
+        <target>Modifier un niveau</target>
+      </trans-unit>
+      <trans-unit id="XtYpWP8" resname="Liste des types d'attributs">
+        <source>Liste des types d'attributs</source>
+        <target>Liste des types d'attributs</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

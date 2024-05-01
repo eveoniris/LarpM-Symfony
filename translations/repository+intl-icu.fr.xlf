@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="fr" target-language="fr" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="zVuDKsX" resname="Libellé">
+        <source>Libellé</source>
+        <target>Libellé</target>
+      </trans-unit>
+      <trans-unit id="TyG7uHn" resname="Tout critère">
+        <source>Tout critère</source>
+        <target>Tout critère</target>
+      </trans-unit>
+      <trans-unit id="RnmzsS3" resname="Aucun">
+        <source>Aucun</source>
+        <target>Aucun</target>
+      </trans-unit>
+      <trans-unit id="EhVukhv" resname="Id">
+        <source>Id</source>
+        <target>Id</target>
+      </trans-unit>
+      <trans-unit id="K1EE9fw" resname="Niveau">
+        <source>Niveau</source>
+        <target>Niveau</target>
+      </trans-unit>
+      <trans-unit id="5sV7nJi" resname="cout XP">
+        <source>cout XP</source>
+        <target>cout XP</target>
+      </trans-unit>
+      <trans-unit id="7MtRSNs" resname="cout XP favori">
+        <source>cout XP favori</source>
+        <target>cout XP favori</target>
+      </trans-unit>
+      <trans-unit id="GsjM0dr" resname="cout XP méconnu">
+        <source>cout XP méconnu</source>
+        <target>cout XP méconnu</target>
+      </trans-unit>
+      <trans-unit id="Um4Ah8w" resname="Description">
+        <source>Description</source>
+        <target>Description</target>
+      </trans-unit>
+      <trans-unit id="1YdiLSd" resname="Bonus">
+        <source>Bonus</source>
+        <target>Bonus</target>
+      </trans-unit>
+      <trans-unit id="kJ.ULi2" resname="Autorisé à la création">
+        <source>Autorisé à la création</source>
+        <target>Autorisé à la création</target>
+      </trans-unit>
+      <trans-unit id="qUVsdwR" resname="Age minimum de la tranche">
+        <source>Age minimum de la tranche</source>
+        <target>Age minimum de la tranche</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -7,8 +7,6 @@ use App\Form\LevelForm;
 use App\Repository\LevelRepository;
 use App\Service\PagerService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\ButtonType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,7 +37,7 @@ class LevelController extends AbstractController
     {
         $level = new Level();
 
-        return $this->handleCreateorUpdate($request, $level);
+        return $this->handleCreateorUpdate($request, $level, LevelForm::class);
     }
 
     #[Route('/{level}/update', name: 'update', requirements: ['level' => Requirement::DIGITS], methods: [
@@ -51,75 +49,7 @@ class LevelController extends AbstractController
         Request $request,
         #[MapEntity] Level $level
     ): RedirectResponse|Response {
-        return $this->handleCreateorUpdate($request, $level);
-    }
-
-    protected function handleCreateorUpdate(Request $request, Level $level): RedirectResponse|Response
-    {
-        $form = $this->createForm(LevelForm::class, $level);
-        $isNew = $this->entityManager->getUnitOfWork()->isInIdentityMap($level);
-
-        if ($isNew) {
-            $form->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-                ->add('delete', ButtonType::class, [
-                    'label' => 'Supprimer',
-                    'attr' => [
-                        'value' => 'Submit',
-                        'data-toggle' => 'modal',
-                        'data-target' => '#confirm-submit',
-                        'class' => 'btn btn-default',
-                    ],
-                ]);
-        } else {
-            $form->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-                ->add(
-                    'save_continue',
-                    SubmitType::class,
-                    ['label' => 'Sauvegarder & continuer']
-                );
-        }
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var Level $level */
-            $level = $form->getData();
-
-            if ($form->has('save_continue') && $form->get('save_continue')->isClicked()) {
-                $this->addFlash(
-                    'success',
-                    sprintf('Le niveau %s a été ajouté.', $level->getIndexLabel())
-                );
-                $this->entityManager->persist($level);
-                $this->entityManager->flush();
-
-                return $this->redirectToRoute('level.add');
-            }
-
-            if ($form->has('delete') && $form->get('delete')->isClicked()) {
-                $this->entityManager->remove($level);
-                $this->addFlash('success', 'Le niveau a été supprimé.');
-            } else {
-                $this->entityManager->persist($level);
-
-                if ($form->has('update') && $form->get('update')->isClicked()) {
-                    $this->addFlash('success', 'Le niveau a été mis à jour.');
-                }
-
-                if ($form->has('save') && $form->get('save')->isClicked()) {
-                    $this->addFlash('success', 'Le niveau a été ajouté.');
-                }
-            }
-
-            $this->entityManager->flush();
-
-            return $this->redirectToRoute('level.list');
-        }
-
-        return $this->render('level/form.twig', [
-            'level' => $level,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateorUpdate($request, $level, LevelForm::class);
     }
 
     #[Route('/{level}/detail', name: 'detail', requirements: ['level' => Requirement::DIGITS], methods: ['GET'])]
@@ -144,6 +74,33 @@ class LevelController extends AbstractController
                 ['route' => $this->generateUrl('level.list'), 'name' => 'Liste des niveaux'],
                 ['route' => 'level.detail', 'name' => $level->getIndexLabel()],
                 ['name' => 'Supprimer un niveau'],
+            ]
+        );
+    }
+
+    protected function handleCreateorUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = []
+    ): RedirectResponse|Response {
+        return parent::handleCreateorUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                ...$msg,
+                'entity' => $this->translator->trans('niveau'),
+                'entity_added' => $this->translator->trans('Le niveau a été ajouté'),
+                'entity_updated' => $this->translator->trans('Le niveau a été mis à jour'),
+                'entity_deleted' => $this->translator->trans('Le niveau a été supprimé'),
+                'entity_list' => $this->translator->trans('Liste des niveaux'),
+                'title_add' => $this->translator->trans('Ajouter un niveau'),
+                'title_update' => $this->translator->trans('Modifier un niveau'),
             ]
         );
     }
