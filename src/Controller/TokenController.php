@@ -1,36 +1,44 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Token;
-use App\Form\TokenDeleteForm;
 use App\Form\TokenForm;
+use App\Repository\TokenRepository;
+use App\Service\PagerService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_REGLE')]
+#[IsGranted('ROLE_REGLE')]
+#[Route('/token', name: 'token.')]
 class TokenController extends AbstractController
 {
-    /**
-     * Liste des tokens.
-     */
-    #[Route('/token', name: 'token.list')]
-    public function listAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $tokens = $entityManager->getRepository('\\'.\App\Entity\Token::class)->findAllOrderedByLabel();
+    #[Route('/', name: 'list')]
+    #[Route('/', name: 'index')]
+    public function indexAction(
+        Request $request,
+        PagerService $pagerService,
+        TokenRepository $tokenRepository
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($tokenRepository);
 
-        return $this->render('token/list.twig', ['tokens' => $tokens]);
+        return $this->render('token/list.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $tokenRepository->searchPaginated($pagerService),
+        ]);
     }
 
-    /**
-     * Impression des tokens.
-     */
-    public function printAction(Request $request,  EntityManagerInterface $entityManager)
+    // TODO
+    #[Route('/print', name: 'print')]
+    public function printAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $tokens = $entityManager->getRepository('\\'.\App\Entity\Token::class)->findAllOrderedByLabel();
+        $tokens = $entityManager->getRepository('\\'.Token::class)->findAllOrderedByLabel();
 
         return $this->render('token/print.twig', ['tokens' => $tokens]);
     }
@@ -38,9 +46,11 @@ class TokenController extends AbstractController
     /**
      * Téléchargement des tokens.
      */
-    public function downloadAction(Request $request,  EntityManagerInterface $entityManager): void
+    // TODO
+    #[Route('/download', name: 'download')]
+    public function downloadAction(Request $request, EntityManagerInterface $entityManager): void
     {
-        $tokens = $entityManager->getRepository('\\'.\App\Entity\Token::class)->findAllOrderedByLabel();
+        $tokens = $entityManager->getRepository('\\'.Token::class)->findAllOrderedByLabel();
 
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename=eveoniris_tokens_'.date('Ymd').'.csv');
@@ -65,16 +75,20 @@ class TokenController extends AbstractController
         exit;
     }
 
-    /**
-     * Ajouter un token.
-     */
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/add', name: 'add')]
+    public function addAction(Request $request): RedirectResponse|Response
+    {
+        $token = new Token();
+
+        return $this->handleCreateorUpdate($request, $token, TokenForm::class);
+    }
+    /*public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $token = new Token();
 
         $form = $this->createForm(TokenForm::class, $token)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -84,7 +98,7 @@ class TokenController extends AbstractController
             $entityManager->persist($token);
             $entityManager->flush($token);
 
-           $this->addFlash('success', 'Le jeton a été ajouté.');
+            $this->addFlash('success', 'Le jeton a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('token.list', [], 303);
@@ -97,23 +111,32 @@ class TokenController extends AbstractController
             'token' => $token,
             'form' => $form->createView(),
         ]);
-    }
+    }*/
 
-    /**
-     * Détail d'un token.
-     */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Token $token)
+    #[Route('/{token}', name: 'view', requirements: ['token' => Requirement::DIGITS])]
+    #[Route('/{token}', name: 'detail', requirements: ['token' => Requirement::DIGITS])]
+    public function detailAction(#[MapEntity] Token $token): RedirectResponse|Response
     {
         return $this->render('token/detail.twig', ['token' => $token]);
     }
+    /*public function detailAction(Request $request, EntityManagerInterface $entityManager, Token $token): Response
+    {
+        return $this->render('token/detail.twig', ['token' => $token]);
+    }*/
 
-    /**
-     * Mise à jour d'un token.
-     */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Token $token)
+    #[Route('/{token}/update', name: 'update', requirements: ['token' => Requirement::DIGITS])]
+    public function updateAction(Request $request, #[MapEntity] Token $token): RedirectResponse|Response
+    {
+        return $this->handleCreateorUpdate(
+            $request,
+            $token,
+            TokenForm::class
+        );
+    }
+    /*public function updateAction(Request $request, EntityManagerInterface $entityManager, Token $token): RedirectResponse|Response
     {
         $form = $this->createForm(TokenForm::class, $token)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -123,7 +146,7 @@ class TokenController extends AbstractController
             $entityManager->persist($token);
             $entityManager->flush($token);
 
-           $this->addFlash('success', 'Le jeton a été modifié.');
+            $this->addFlash('success', 'Le jeton a été modifié.');
 
             return $this->redirectToRoute('token.list', [], 303);
         }
@@ -132,15 +155,35 @@ class TokenController extends AbstractController
             'token' => $token,
             'form' => $form->createView(),
         ]);
-    }
+    }*/
 
-    /**
-     * Suppression d'un token.
-     */
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Token $token)
+    // Todo translate all delete message
+    #[Route('/{token}/delete', name: 'delete', requirements: ['token' => Requirement::DIGITS], methods: [
+        'DELETE',
+        'GET',
+        'POST',
+    ])]
+    public function deleteAction(#[MapEntity] Token $token): RedirectResponse|Response
+    {
+        return $this->genericDelete(
+            $token,
+            title: $this->translator->trans('Supprimer un jeton'),
+            successMsg: $this->translator->trans('Le jeton a été supprimé'),
+            redirect: 'token.list',
+            breadcrumb: [
+                ['route' => $this->generateUrl('token.list'), 'name' => $this->translator->trans('Liste des jetons')],
+                [
+                    'route' => $this->generateUrl('token.detail', ['token' => $token->getId()]),
+                    'name' => $token->getLabel(),
+                ],
+                ['name' => $this->translator->trans('Supprimer un jeton')],
+            ]
+        );
+    }
+    /*public function deleteAction(Request $request, EntityManagerInterface $entityManager, Token $token): RedirectResponse|Response
     {
         $form = $this->createForm(TokenDeleteForm::class, $token)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer', 'attr' => ['class' => 'btn-danger']]);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer', 'attr' => ['class' => 'btn-danger']]);
 
         $form->handleRequest($request);
 
@@ -148,7 +191,7 @@ class TokenController extends AbstractController
             $entityManager->remove($token);
             $entityManager->flush($token);
 
-           $this->addFlash('success', 'Le jeton a été supprimé.');
+            $this->addFlash('success', 'Le jeton a été supprimé.');
 
             return $this->redirectToRoute('token.list', [], 303);
         }
@@ -157,5 +200,32 @@ class TokenController extends AbstractController
             'token' => $token,
             'form' => $form->createView(),
         ]);
+    }*/
+
+    protected function handleCreateorUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = []
+    ): RedirectResponse|Response {
+        return parent::handleCreateorUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                ...$msg,
+                'entity' => $this->translator->trans('jeton'),
+                'entity_added' => $this->translator->trans('Le jeton a été ajouté'),
+                'entity_updated' => $this->translator->trans('Le jeton a été mis à jour'),
+                'entity_deleted' => $this->translator->trans('Le jeton a été supprimé'),
+                'entity_list' => $this->translator->trans('Liste des jetons'),
+                'title_add' => $this->translator->trans('Ajouter un jeton'),
+                'title_update' => $this->translator->trans('Modifier un jeton'),
+            ]
+        );
     }
 }

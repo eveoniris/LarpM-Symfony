@@ -53,6 +53,10 @@
         <source>Age minimum de la tranche</source>
         <target>Age minimum de la tranche</target>
       </trans-unit>
+      <trans-unit id="FQORaiq" resname="Tag">
+        <source>Tag</source>
+        <target>Tag</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
