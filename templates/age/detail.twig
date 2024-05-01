@@ -7,7 +7,7 @@
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
             {'name' : 'Liste des ages', 'route': path('age.list') },
-            {'name' : age.label, 'route': path('age.list', {'age':age.id})  },
+            {'name' : age.label, 'route': path('age.detail', {'age':age.id})  },
             {'name' : 'Détail' },
         ]
     } %}

@@ -36,29 +36,32 @@
                    href="{{ path('token.download') }}"><i class="fa fa-download"></i></a>
             </div>
         </div>
-
-        <div class="list-group">
-            {% for token in paginator %}
-
-                <div class="list-group-item">
-                    <div class="list-group-item-heading">
-                        <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
-                            <div class="btn-group" role="group" aria-label="...">
-                                <a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier"
-                                   href="{{ path('token.update',{'token':token.id}) }}"><i class="fa fa-pencil"></i></a>
-                                <a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Détail"
-                                   href="{{ path('token.detail',{'token':token.id}) }}"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Supprimer"
-                                   href="{{ path('token.delete',{'token':token.id}) }}"><i class="fa fa-eraser"></i></a>
-                            </div>
-                        </div>
-                        <h5>#{{ token.id }} {{ token.label }} -- {{ token.tag }}</h5>
-                    </div>
-                    <div class="list-group-item-text">{{ token.description|markdown_to_html }}</div>
-                </div>
-
-            {% endfor %}
-        </div>
     </div>
+
+    {% include '_partials/pagination.html.twig' %}
+    <div class="list-group">
+        {% for token in paginator %}
+            <div class="list-group-item">
+                <div class="list-group-item-heading">
+                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                        <div class="btn-group" role="group" aria-label="...">
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom" title="Modifier"
+                               href="{{ path('token.update',{'token':token.id}) }}"><i class="fa fa-pencil"></i></a>
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom" title="Détail"
+                               href="{{ path('token.detail',{'token':token.id}) }}"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom" title="Supprimer"
+                               href="{{ path('token.delete',{'token':token.id}) }}"><i class="fa fa-eraser"></i></a>
+                        </div>
+                    </div>
+                    <h5>#{{ token.id }} {{ token.label|highlight(pagerService.searchValue) }} -- {{ token.tag|highlight(pagerService.searchValue) }}</h5>
+                </div>
+                <div class="list-group-item-text">{{ token.description|markdown_to_html|highlight(pagerService.searchValue) }}</div>
+            </div>
+        {% else %}
+            {% include '_partials/noResultTableRow.twig' %}
+        {% endfor %}
+    </div>
+    {% include '_partials/pagination.html.twig' %}
+
 
 {% endblock body %}
