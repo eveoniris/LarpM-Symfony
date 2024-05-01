@@ -1,39 +1,52 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use App\Service\OrderBy;
+use JetBrains\PhpStorm\Deprecated;
 
-/**
- * LarpManager\Repository\TokenRepository
- * 
- * @author kevin
- */
 class TokenRepository extends BaseRepository
 {
-	/**
-	 * Fourni tous les tokens classé par ordre alphabétique
-	 */
-	public function findAllOrderedByLabel()
-	{
-		return $this->findBy(array(), array('label' => 'ASC'));
-	}
+    /**
+     * Fourni tous les tokens classé par ordre alphabétique.
+     */
+    #[Deprecated]
+    public function findAllOrderedByLabel()
+    {
+        return $this->findBy([], ['label' => 'ASC']);
+    }
+
+    public function searchAttributes(string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::searchAttributes($alias),
+            $alias.'.label',
+            $alias.'.tag',
+            $alias.'.description',
+        ];
+    }
+
+    public function sortAttributes(string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::sortAttributes($alias),
+            'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
+            'tag' => [OrderBy::ASC => [$alias.'.tag' => OrderBy::ASC], OrderBy::DESC => [$alias.'.tag' => OrderBy::DESC]],
+            'description' => [OrderBy::ASC => [$alias.'.description' => OrderBy::ASC], OrderBy::DESC => [$alias.'.description' => OrderBy::DESC]],
+        ];
+    }
+
+    public function translateAttributes(): array
+    {
+        return [
+            ...parent::translateAttributes(),
+            'label' => $this->translator->trans('Libellé', domain: 'repository'),
+            'tag' => $this->translator->trans('Tag', domain: 'repository'),
+            'description' => $this->translator->trans('Description', domain: 'repository'),
+        ];
+    }
 }

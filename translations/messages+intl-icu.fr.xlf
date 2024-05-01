@@ -189,6 +189,38 @@
         <source>Liste des types d'attributs</source>
         <target>Liste des types d'attributs</target>
       </trans-unit>
+      <trans-unit id="__I2J.0" resname="Supprimer un jeton">
+        <source>Supprimer un jeton</source>
+        <target>Supprimer un jeton</target>
+      </trans-unit>
+      <trans-unit id=".LTJkBP" resname="Le jeton a été supprimé">
+        <source>Le jeton a été supprimé</source>
+        <target>Le jeton a été supprimé</target>
+      </trans-unit>
+      <trans-unit id="qFOARux" resname="Liste des jetons">
+        <source>Liste des jetons</source>
+        <target>Liste des jetons</target>
+      </trans-unit>
+      <trans-unit id="kdKxBqO" resname="jeton">
+        <source>jeton</source>
+        <target>jeton</target>
+      </trans-unit>
+      <trans-unit id="Qn5B_ji" resname="Le jeton a été ajouté">
+        <source>Le jeton a été ajouté</source>
+        <target>Le jeton a été ajouté</target>
+      </trans-unit>
+      <trans-unit id="aTDF8qB" resname="Le jeton a été mis à jour">
+        <source>Le jeton a été mis à jour</source>
+        <target>Le jeton a été mis à jour</target>
+      </trans-unit>
+      <trans-unit id=".B30uu_" resname="Ajouter un jeton">
+        <source>Ajouter un jeton</source>
+        <target>Ajouter un jeton</target>
+      </trans-unit>
+      <trans-unit id="VSlJL6F" resname="Modifier un jeton">
+        <source>Modifier un jeton</source>
+        <target>Modifier un jeton</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
