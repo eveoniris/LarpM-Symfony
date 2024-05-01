@@ -1,0 +1,19 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ msg.entity }}{% endblock title %}
+
+{% block body %}
+
+    {% if breadcrumb|length > 0 %}
+        {% include '_partials/breadcrumb.twig' with {'items' : breadcrumb } %}
+    {% endif %}
+
+    <div class="well well-sm bs-component">
+
+        <div class="header">
+            <h5>{{ msg.title }}</h5>
+        </div>
+
+        {{ form(form) }}
+    </div>
+{% endblock %}

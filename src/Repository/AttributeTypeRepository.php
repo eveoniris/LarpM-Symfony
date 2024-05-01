@@ -1,26 +1,10 @@
 <?php
 
-/**
- * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 namespace App\Repository;
 
+use App\Service\OrderBy;
 use Doctrine\ORM\EntityRepository;
+use JetBrains\PhpStorm\Deprecated;
 
 /**
  * LarpManager\Repository\AttributeTypeRepository
@@ -33,10 +17,39 @@ class AttributeTypeRepository extends BaseRepository
      * Find all classes ordered by label
      * @return ArrayCollection $attributes
      */
+    #[Deprecated]
     public function findAllOrderedByLabel()
     {
         return $this->getEntityManager()
         ->createQuery('SELECT cf FROM App\Entity\AttributeType cf ORDER BY cf.label ASC')
         ->getResult();
+    }
+
+    public function searchAttributes(string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::searchAttributes($alias),
+            $alias.'.label',
+        ];
+    }
+
+    public function sortAttributes(string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::sortAttributes($alias),
+            'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
+        ];
+    }
+
+    public function translateAttributes(): array
+    {
+        return [
+            ...parent::translateAttributes(),
+            'label' => $this->translator->trans('Libellé', domain: 'repository'),
+        ];
     }
 }

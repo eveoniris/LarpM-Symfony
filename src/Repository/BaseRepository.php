@@ -7,6 +7,7 @@ use App\Service\OrderBy;
 use App\Service\PagerService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Proxy\Proxy;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
@@ -484,9 +485,9 @@ abstract class BaseRepository extends ServiceEntityRepository
     public function translateAttributes(): array
     {
         return [
-            self::SEARCH_ALL => $this->translator->trans('Tout critère'),
-            self::SEARCH_NOONE => $this->translator->trans('Aucun'),
-            'id' => $this->translator->trans('Id'),
+            self::SEARCH_ALL => $this->translator->trans('Tout critère', domain: 'repository'),
+            self::SEARCH_NOONE => $this->translator->trans('Aucun', domain: 'repository'),
+            'id' => $this->translator->trans('Id', domain: 'repository'),
         ];
     }
 

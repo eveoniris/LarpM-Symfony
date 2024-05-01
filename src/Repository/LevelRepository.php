@@ -36,11 +36,11 @@ class LevelRepository extends BaseRepository
     {
         return [
             ...parent::translateAttributes(),
-            'index' => $this->translator->trans('Niveau'),
-            'label' => $this->translator->trans('Libellé'),
-            'cout' => $this->translator->trans('cout XP'),
-            'cout_favori' => $this->translator->trans('cout XP favori'),
-            'cout_meconu' => $this->translator->trans('cout XP méconnu'),
+            'index' => $this->translator->trans('Niveau', domain: 'repository'),
+            'label' => $this->translator->trans('Libellé', domain: 'repository'),
+            'cout' => $this->translator->trans('cout XP', domain: 'repository'),
+            'cout_favori' => $this->translator->trans('cout XP favori', domain: 'repository'),
+            'cout_meconu' => $this->translator->trans('cout XP méconnu', domain: 'repository'),
         ];
     }
 }
