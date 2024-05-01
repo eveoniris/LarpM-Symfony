@@ -22,7 +22,6 @@ class AppelationController extends AbstractController
     {
         $appelations = $entityManager->getRepository('\\'.\App\Entity\Appelation::class)->findAll();
         $appelations = $this->sortAppelation($appelations);
-        dump($appelations);
 
         return $this->render('appelation/index.twig', ['appelations' => $appelations]);
     }

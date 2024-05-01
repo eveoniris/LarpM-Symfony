@@ -4,32 +4,42 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des titres</li>
-	</ol>
-	
-	<div class="well well-sm">
-	
-		<a href="{{ path('titre.admin.add') }}"><i class="fa fa-plus"></i> Ajouter un titre</a>
-		
-		<ul class="list-group">
-		{% for titre in titres %}
-			<li class="list-group-item">
-				<div class="row">
-					<div class="col-md-8">
-						{{ titre.label }} -- {{ titre.renomme }} points de renommé necessaires						
-					</div>
-					<div class="col-md-4">
-						<a href="{{ path('titre.admin.update',{'titre':titre.id}) }}"><i class="fa fa-pencil"></i> Modifier</a>&nbsp;|&nbsp;
-						<a href="{{ path('titre.admin.detail',{'titre':titre.id}) }}"><i class="fa fa-eye"></i> Detail</a>&nbsp;|&nbsp;
-						<a href="{{ path('titre.admin.delete',{'titre':titre.id}) }}"><i class="fa fa-eraser"></i> Supprimer</a>
-					</div>
-				</div>
-		    </li>
+	{% include '_partials/breadcrumb.twig' with {'items' : {1 : {'name' : 'Liste des titres'}}} %}
 
-		{% endfor %}
-	 	</ul>
+	<div class="well well-sm">
+		<div class="header">
+			<h5>Liste des titres <small>( {{ paginator|length }} titres)</small></h5>
+		</div>
+
+		<div class="btn-toolbar" role="toolbar" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un titre" href="{{ path('titre.admin.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+			</div>
+		</div>
 	</div>
+
+	<table class="table table-striped table-bordered table-condensed table-hover">
+		{% include '_partials/thead.twig' with  { 'route': 'titre.list', 'rows': [
+            {'name' : 'Titre', 'field' : 'label'},
+            {'name' : 'Renommée nécessaire', 'field' : 'renomme'},
+            {'name' : 'Actions'},
+        ]} %}
+		<tbody>
+		{% for titre in paginator %}
+			<tr>
+				<td>{{ titre.label }}</td>
+				<td>{{ titre.renomme }}</td>
+				<td>
+					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+						<div class="btn-group" role="group" aria-label="...">
+							<a class="btn btn-secondary" href="{{ path('titre.admin.detail',{'titre':titre.id}) }}"><i class="fa fa-eye"></i></a>
+							<a class="btn btn-secondary" href="{{ path('titre.admin.update',{'titre':titre.id}) }}"><i class="fa fa-pencil"></i></a>
+							<a class="btn btn-secondary" href="{{ path('titre.admin.delete',{'titre':titre.id}) }}"><i class="fa fa-eraser"></i></a>
+						</div>
+					</div>
+				</td>
+		{% endfor %}
+	 	</tbody>
+	</table>
 	
 {% endblock %}
