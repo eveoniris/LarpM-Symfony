@@ -384,7 +384,7 @@ class ReligionController extends AbstractController
      * Si l'utilisateur clique sur "supprimer", le niveau religion est supprimée et l'utilisateur est
      * redirigé vers la liste de niveaux de religions.
      */
-    #[Route('/religion/level/{religionLevel}/detail', name: 'religion.level.detail')]
+    #[Route('/religion/level/{religionLevel}/update', name: 'religion.level.update')]
     public function levelUpdateAction(Request $request,  EntityManagerInterface $entityManager, ReligionLevel $religionLevel)
     {
         $form = $this->createForm(ReligionLevelForm::class, $religionLevel)
@@ -401,7 +401,7 @@ class ReligionController extends AbstractController
                 $entityManager->flush();
                 $this->addFlash('success', 'Le niveau de religion a été mise à jour.');
 
-                return $this->redirectToRoute('religion.level.detail', ['index' => $id], 303);
+                return $this->redirectToRoute('religion.level.detail', ['religionLevel' => $religionLevel->getId()], 303);
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($religionLevel);
                 $entityManager->flush();
