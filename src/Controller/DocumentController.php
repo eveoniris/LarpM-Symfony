@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 #[isGranted('ROLE_SCENARISTE')]
 class DocumentController extends AbstractController
@@ -24,7 +25,7 @@ class DocumentController extends AbstractController
      * Liste des documents.
      */
     #[Route('/document', name: 'document.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request,  EntityManagerInterface $entityManager): Response
     {
         $order_by = $request->get('order_by', 'titre');
         $order_dir = 'DESC' === $request->get('order_dir', 'ASC') ? 'DESC' : 'ASC';
@@ -72,7 +73,7 @@ class DocumentController extends AbstractController
      * Imprimer la liste des documents.
      */
     #[Route('/document/print', name: 'document.print')]
-    public function printAction(Request $request,  EntityManagerInterface $entityManager)
+    public function printAction(Request $request,  EntityManagerInterface $entityManager): Response
     {
         $documents = $entityManager->getRepository('\\'. Document::class)->findAllOrderedByCode();
 
@@ -174,7 +175,7 @@ class DocumentController extends AbstractController
      * Ajouter un document.
      */
     #[Route('/document/add', name: 'document.add')]
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    public function addAction(Request $request,  EntityManagerInterface $entityManager): Response|RedirectResponse
     {
         $form = $this->createForm(DocumentForm::class, new Document())
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
@@ -225,7 +226,7 @@ class DocumentController extends AbstractController
      * Détail d'un document.
      */
     #[Route('/document/{document}', name: 'document.detail')]
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Document $document)
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Document $document): Response
     {
         return $this->render('document/detail.twig', ['document' => $document]);
     }
@@ -234,7 +235,7 @@ class DocumentController extends AbstractController
      * Mise à jour d'un document.
      */
     #[Route('/document/{document}/update', name: 'document.update')]
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Document $document)
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Document $document): Response|RedirectResponse
     {
         $form = $this->createForm(DocumentForm::class, $document)
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -282,7 +283,7 @@ class DocumentController extends AbstractController
      * Suppression d'un document.
      */
     #[Route('/document/{document}/delete', name: 'document.delete')]
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Document $document)
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Document $document): Response|RedirectResponse
     {
         $form = $this->createForm(DocumentDeleteForm::class, $document)
             ->add('save', SubmitType::class, ['label' => 'Supprimer']);

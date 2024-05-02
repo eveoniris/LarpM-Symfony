@@ -421,7 +421,6 @@ class GnController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            dump($data);
             switch ($data['type']) {
                 case 'Nom':
                     $qb->andWhere('ec.nom LIKE :value');

@@ -116,7 +116,6 @@ class GroupeSecondaireController extends AbstractController
             $entityManager->persist($topic);
 
             $groupeSecondaire->setTopic($topic);
-            dump($groupeSecondaire);
             $entityManager->persist($groupeSecondaire);
             $entityManager->flush();
 

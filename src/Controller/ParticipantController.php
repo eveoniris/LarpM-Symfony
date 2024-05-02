@@ -325,8 +325,6 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        dump($form->createView());
-
         return $this->render('participant/restauration.twig', [
             'participant' => $participant,
             'form' => $form->createView(),

@@ -1,0 +1,19 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Langues{% endblock title %}
+
+{% block body %}
+
+{% include '_partials/breadcrumb.twig' with {'items' : {
+	1 : {'route' : path('langue.index'), 'name' : 'Gestion des langues'},
+	2 : {'name' : 'Modifier un groupe de langues'}
+}} 
+%}
+
+{{ include("langue/fragment/form.twig",{
+	'legend': 'Modification d\'un groupe de langue',
+	'action': path('langue.updateGroup',{'groupeLangue': groupeLangue.id}),
+	'form' : form}) }}
+
+	
+{% endblock body %}

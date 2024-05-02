@@ -43,7 +43,6 @@ class IntrigueController extends AbstractController
         }
         
         $alias = IntrigueRepository::getEntityAlias();
-        dump($type);
 
         $criterias = [];
         if (!empty($value)) {

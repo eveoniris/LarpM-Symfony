@@ -216,8 +216,6 @@ class StockObjetController extends AbstractController
             try {
                 $image = (new Imagine())->open($filename);
             } catch (\RuntimeException $e) {
-                dump($e);
-
                 return $this->sendNoImageAvailable();
             }
 

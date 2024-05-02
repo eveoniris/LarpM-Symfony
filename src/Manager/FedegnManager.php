@@ -57,9 +57,7 @@ final class FedegnManager
 		$birthdate = $etatCivil->getDateNaissance()->format('Y-m-d');
 		$year = new \Datetime('NOW');
 		$year = $year->format('Y'); 
-	
-		dump($url.'?password='.$password.'&cleanname='.$cleanname.'&birthdate='.$birthdate.'&year='.$year);
-		
+			
 		$file_content = @file_get_contents($url.'?password='.$password.'&cleanname='.$cleanname.'&birthdate='.$birthdate.'&year='.$year);
 		if ( false === $file_content ) {
 			return false;

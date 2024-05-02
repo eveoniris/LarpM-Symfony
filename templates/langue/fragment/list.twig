@@ -1,0 +1,29 @@
+<ul class="list-group">
+	{%  if add != false %}
+		<a href="{{ path('langue.add') }}" class="list-group-item active">
+			<span class="badge"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
+			<h4 class="list-group-item-heading">Ajouter une langue</h4>
+		</a>
+	{%  endif %}
+
+	{# ajout de la liste de langues courantes #}
+	{%  for langue in langues %}
+		{% if langue.groupeLangue.id !=0 %}
+			{{ include("langue/fragment/listDetail.twig") }}
+		{%endif%}
+	{% endfor %}
+
+	{# ajout de la liste de langues secrètes #}
+	{%  for langue in langues %}
+		{% if langue.secret %}
+			{{ include("langue/fragment/listDetail.twig") }}
+		{%endif%}
+	{% endfor %}
+
+	{# ajout de la liste de langues anciennes #}
+	{%  for langue in langues %}
+		 {% if langue.secret == false and langue.groupeLangue.id ==0 %}
+			 {{ include("langue/fragment/listDetail.twig") }}
+		{%endif%}
+	{% endfor %}
+</ul>
