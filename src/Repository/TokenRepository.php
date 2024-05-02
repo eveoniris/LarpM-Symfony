@@ -10,7 +10,7 @@ class TokenRepository extends BaseRepository
     /**
      * Fourni tous les tokens classé par ordre alphabétique.
      */
-    #[Deprecated]
+    // TODO use sortAttributes on a findAll()
     public function findAllOrderedByLabel()
     {
         return $this->findBy([], ['label' => 'ASC']);
