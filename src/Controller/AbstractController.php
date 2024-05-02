@@ -16,7 +16,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
@@ -26,9 +28,11 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected RequestStack $requestStack,
         protected FileUploader $fileUploader,
         protected readonly TranslatorInterface $translator,
+        protected readonly SluggerInterface $slugger,
         protected PagerService $pageRequest
         // Cache $cache, // TODO : later
-    ) {
+    )
+    {
     }
 
     protected function sendNoImageAvailable(): BinaryFileResponse
@@ -80,7 +84,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string $defOrderDir = 'ASC',
         string $alias = null,
         array $allowedFields = null // TODO: check SF security Form on Self Entity's attributes
-    ): array {
+    ): array
+    {
         $request = $this->requestStack?->getCurrentRequest();
         if (!$request) {
             return [];
@@ -181,7 +186,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             }
             if (!$isNew) {
                 $label = method_exists($entity, 'getLabel') ? $entity->getLabel() : $msg['entity'];
-                $breadcrumb[] = ['name' => $label, 'route' => $this->generateUrl($routes['detail'], [$routes['entityAlias'] => $entity->getId()])];
+                $breadcrumb[] = [
+                    'name' => $label,
+                    'route' => $this->generateUrl($routes['detail'], [$routes['entityAlias'] => $entity->getId()]),
+                ];
             }
             $breadcrumb[] = ['name' => $msg['title']];
         }
@@ -235,6 +243,45 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             'msg' => $msg,
             'breadcrumb' => $breadcrumb,
         ]);
+    }
+
+    protected function sendCsv(
+        string $title,
+        BaseRepository $repository = null,
+        array $header = [],
+        callable $content = null
+    ): StreamedResponse {
+        if (!$repository && !$content) {
+            throw new \Exception('Method need a repository or a callable content');
+        }
+
+        $response = new StreamedResponse();
+        $response->headers->set('Content-Control', 'private');
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename='.$this->slugger->slug($title).'.csv');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+
+        if (null === $content) {
+            $content = static function () use ($repository, $header) {
+                $output = fopen('php://output', 'wb');
+
+                $iterateMode = $repository::ITERATE_EXPORT_HEADER;
+                if ($header) {
+                    $iterateMode = $repository::ITERATE_EXPORT;
+                    fputcsv($output, $header, ';');
+                }
+
+                foreach ($repository->findIterable(iterableMode: $iterateMode) as $data) {
+                    fputcsv($output, $data, ';');
+                }
+                fclose($output);
+            };
+        }
+
+        $response->setCallback($content);
+
+        return $response;
     }
     /*
      * Sample

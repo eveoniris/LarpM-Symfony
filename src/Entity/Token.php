@@ -17,13 +17,14 @@ class Token extends BaseToken
         return html_entity_decode(strip_tags($this->getDescription()));
     }
 
+    // Todo check encoding
     public function getExportValue(): array
     {
         return [
-            $this->getId(),
-            $this->getLabel(),
-            $this->getTag(),
-            mb_convert_encoding((string) $this->getDescriptionRaw(), 'ISO-8859-1'),
+            'id' => $this->getId(),
+            'label' => $this->getLabel(),
+            'tag' => $this->getTag(),
+            'description' => mb_convert_encoding((string) $this->getDescriptionRaw(), 'ISO-8859-1'),
         ];
     }
 }

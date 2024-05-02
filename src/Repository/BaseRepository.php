@@ -7,6 +7,7 @@ use App\Service\OrderBy;
 use App\Service\PagerService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Proxy\Proxy;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Query;
@@ -32,6 +33,11 @@ abstract class BaseRepository extends ServiceEntityRepository
     public const SEARCH_ALL = '*';
     public const SEARCH_NOONE = null;
 
+    public const ITERATE_EXPORT = 'export';
+    public const ITERATE_EXPORT_HEADER = 'export_header';
+    public const ITERATE_OBJECT = 'object';
+    public const ITERATE_ARRAY = 'array';
+
     protected string $alias;
 
     public function __construct(
@@ -39,6 +45,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         protected OrderBy $orderBy,
         protected readonly RequestStack $requestStack,
         protected readonly TranslatorInterface $translator,
+        protected readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($registry, static::getEntityClass());
         $this->alias = static::getEntityAlias();
@@ -73,6 +80,11 @@ abstract class BaseRepository extends ServiceEntityRepository
         return $this->getEntityManager()
             ->getClassMetadata(static::getEntityClass())
             ->hasField($field);
+    }
+
+    public function findAll(): array
+    {
+        return $this->findBy([], ['label' => 'ASC']);
     }
 
     #[Deprecated]
@@ -129,9 +141,6 @@ abstract class BaseRepository extends ServiceEntityRepository
         return new Paginator($query);
     }
 
-    /**
-     * Be sure to control orderBy allowed fields.
-     */
     public function getPaginator(
         QueryBuilder $qb = null,
         int $limit = 25,
@@ -163,20 +172,46 @@ abstract class BaseRepository extends ServiceEntityRepository
         return new Paginator($qb);
     }
 
-    public function findIterable(Query $query = null, int $batchSize = 100): \Generator
-    {
-        $query ??= $this->createQueryBuilder(static::getEntityAlias())->getQuery();
+    public function findIterable(
+        Query|QueryBuilder $query = null,
+        int $batchSize = 100,
+        string $alias = null,
+        string $iterableMode = self::ITERATE_EXPORT_HEADER
+    ): \Generator {
+        $alias ??= static::getEntityAlias();
+        $query ??= $this->createQueryBuilder($alias);
+        $this->addOrderBy($query);
+        if ($query instanceof QueryBuilder) {
+            $query = $query->getQuery();
+        }
+
         $i = 0;
+        $hydratationMode = static::ITERATE_ARRAY === $iterableMode ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT;
         /** @var Entity $iterable */
-        foreach ($query->toIterable() as $iterable) {
-            yield method_exists($iterable::class, 'getExportValue')
-                ? $iterable->getExportValue()
-                : (array) $iterable;
+        foreach ($query->toIterable(hydrationMode: $hydratationMode) as $iterable) {
+            if (
+                \in_array($iterableMode, [static::ITERATE_EXPORT, static::ITERATE_EXPORT_HEADER], true)
+                && method_exists($iterable, 'getExportValue')
+            ) {
+                if (static::ITERATE_EXPORT_HEADER === $iterableMode)  {
+                    yield array_keys($iterable->getExportValue());
+                }
+                yield $iterable->getExportValue();
+                continue;
+            }
+
+            yield $iterable;
 
             if (0 === ++$i % $batchSize) {
                 flush();
+                $this->entityManager->flush();
+                $this->entityManager->clear();
             }
         }
+
+        flush();
+        $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 
     public function getAlias(): string
@@ -236,10 +271,10 @@ abstract class BaseRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param mixed             $search     a value to filter results who's "like" it
+     * @param mixed $search a value to filter results who's "like" it
      * @param string|array|null $attributes Entity's attributes to search on
-     * @param OrderBy|null      $orderBy    custom orderBy if not from the Request
-     * @param string|null       $alias      the query alias for a specific one
+     * @param OrderBy|null $orderBy custom orderBy if not from the Request
+     * @param string|null $alias the query alias for a specific one
      */
     public function search(
         mixed $search = null,
@@ -253,29 +288,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         $query ??= $this->createQueryBuilder($alias);
 
         // Order only if allowed and if exists
-        if (
-            $orderBy->getOrderBy()
-            && $this->isAllowedAttribute($orderBy->getOrderBy(), $this->sortAttributes($alias))
-        ) {
-            $by = $orderBy->getOrderBy();
-            if (!str_contains($by, '.')) {
-                $by = $alias.'.'.$by;
-            }
-            $query->orderBy($by, $orderBy->getSort());
-        } else {
-            $asAttributes = $this->searchAttributesAs($alias);
-            foreach ($this->sortAttributes($alias) as $sortDefinitions) {
-                $attributeSort = $sortDefinitions[$orderBy->getSort()];
-                $query->addOrderBy(key($attributeSort), current($attributeSort));
-
-                // handle aliased fields
-                if (isset($asAttributes[key($attributeSort)])) {
-                    $query->addSelect(
-                        $asAttributes[key($attributeSort)].' AS '.key($attributeSort)
-                    );
-                }
-            }
-        }
+        $this->addOrderBy($query, $orderBy, $alias);
 
         // Any search to perform ?
         if (empty($search) || self::SEARCH_NOONE === $attributes) {
@@ -331,6 +344,42 @@ abstract class BaseRepository extends ServiceEntityRepository
         }
 
         return $asOne ? $query->setParameter('value', '%'.$search.'%') : $query;
+    }
+
+    public function addOrderBy(
+        Query|QueryBuilder $query = null,
+        OrderBy $orderBy = null,
+        string $alias = null
+    ): Query|QueryBuilder {
+        $orderBy ??= $this->orderBy;
+        $alias ??= static::getEntityAlias();
+        $query ??= $this->createQueryBuilder($alias);
+
+        if (
+            $orderBy->getOrderBy()
+            && $this->isAllowedAttribute($orderBy->getOrderBy(), $this->sortAttributes($alias))
+        ) {
+            $by = $orderBy->getOrderBy();
+            if (!str_contains($by, '.')) {
+                $by = $alias.'.'.$by;
+            }
+            $query->orderBy($by, $orderBy->getSort());
+        } else {
+            $asAttributes = $this->searchAttributesAs($alias);
+            foreach ($this->sortAttributes($alias) as $sortDefinitions) {
+                $attributeSort = $sortDefinitions[$orderBy->getSort()];
+                $query->addOrderBy(key($attributeSort), current($attributeSort));
+
+                // handle aliased fields
+                if (isset($asAttributes[key($attributeSort)])) {
+                    $query->addSelect(
+                        $asAttributes[key($attributeSort)].' AS '.key($attributeSort)
+                    );
+                }
+            }
+        }
+
+        return $query;
     }
 
     public function isAs(string $attribute): bool
