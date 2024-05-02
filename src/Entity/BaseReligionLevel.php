@@ -24,7 +24,7 @@ abstract class BaseReligionLevel
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $label = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, name: 'index')]
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, name: "`index`")]
     protected int $index = 0;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
