@@ -299,10 +299,6 @@ class TerritoireController extends AbstractController
     #[Route('/territoire/{territoire}/constructionRemove/{construction}', name: 'territoire.constructionRemove')]
     public function constructionRemoveAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire, #[MapEntity] Construction $construction): RedirectResponse|Response
     {
-        //$construction = $request->get('construction');
-
-        //dump($construction);
-
         $form = $this->createFormBuilder($territoire)
             ->add('save', SubmitType::class, ['label' => 'Retirer la construction'])
             ->getForm();

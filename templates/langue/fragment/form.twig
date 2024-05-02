@@ -1,0 +1,9 @@
+<div class="well bs-component">
+	<a href="{{ path('langue.index') }}">Retour à la liste des langues</a>
+	{{ form_start(form, {"attr": {"action": action }}) }}
+		<fieldset>
+			<legend>{{ legend }}</legend>
+			{{ form(form) }}
+		</fieldset>
+	{{ form_end(form) }}
+</div>

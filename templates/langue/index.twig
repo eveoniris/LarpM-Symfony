@@ -1,0 +1,123 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Langues{% endblock title %}
+
+{% block body %}
+
+{% include '_partials/breadcrumb.twig' with {'items' : {1 : {'name' : 'Gestion des langues'}}} %}
+
+	<div class="well well-sm">
+		<div class="header">
+			<h5>Liste des groupes de langues <small>( {{ groupeLangues|length }} groupes de langues)</small></h5>
+		</div>
+
+		<div class="btn-toolbar" role="toolbar" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un groupe de langues" href="{{ path('langue.addGroup') }}"><i class="fa fa-plus"></i> Ajouter</a>
+			</div>
+		</div>
+	</div>
+
+	<table class="table table-striped table-bordered table-condensed table-hover">
+		{% include '_partials/thead.twig' with  { 'route': 'langue.index', 'rows': [
+            {'name' : 'Titre'},
+            {'name' : 'Couleur'},
+            {'name' : 'Actions'},
+        ]} %}
+		<tbody>
+		{% for groupeLangue in groupeLangues %}
+			<tr>
+				<td>{{ groupeLangue.label }}</td>
+				<td>{{ groupeLangue.couleur }}</td>
+				<td>
+					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+						<div class="btn-group" role="group" aria-label="...">
+							<a class="btn btn-secondary" href="{{ path('langue.detailGroup', {groupeLangue: groupeLangue.id}) }}"><i class="fa fa-eye"></i></a>
+							<a class="btn btn-secondary" href="{{ path('langue.updateGroup', {groupeLangue: groupeLangue.id}) }}"><i class="fa fa-pencil"></i></a>
+						</div>
+					</div>
+				</td>
+		{% endfor %}
+	 	</tbody>
+	</table>
+
+
+
+
+	<div class="well well-sm">
+		<div class="header">
+			<h5>Liste des langues <small>( {{ langues|length }} langues)</small></h5>
+		</div>
+
+		<div class="btn-toolbar" role="toolbar" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter une langue" href="{{ path('langue.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+			</div>
+		</div>
+	</div>
+	
+	<ul class="list-group">
+	{%  for langue in langues %}
+	
+		<li class="list-group-item">
+			<div class="row">
+				<div class="col-md-8">
+					<h4 class="list-group-item-heading">
+						{{ langue.label }} -- <small>{% if langue.groupeLangue.id != 0 %} {{ langue.groupeLangue.label | slice (7) | trim ('s') }}{% endif %}
+							({% if langue.secret %}Secrète{% else %}{{ langue.categorie }}{% endif %})</small>
+					</h4>
+					<p class="list-group-item-text">
+						{% if langue.description %}
+					<p class="text-default">{{ langue.description|slice(0,500) }} ...</p>
+					{% else %}
+						<p class="text-warning">Attention, cette langue n'a pas de description</p>
+							{% endif %}
+
+					<p class="list-group-item-text">
+						{% if langue.territoires|length > 0 %}
+							Cette langue est la langue principale des territoires suivants : {{ langue.territoires|join(', ') }}.
+						{% else %}
+							Cette langue n'est la langue principale d'aucun territoire.
+						{% endif %}
+					</p>
+
+					<p class="list-group-item-text">
+						{% if langue.territoireSecondaires|length > 0 %}
+							Cette langue est parlée dans les territoires suivants : {{ langue.territoireSecondaires|join(', ') }}.
+						{% else %}
+							Cette langue n'est la langue secondaire d'aucun territoire.
+						{% endif %}
+					</p>
+
+					<p class="list-group-item-text">
+						{% if langue.documents|length > 0 %}
+							Cette langue est utilisée dans {{ langue.documents|length }}
+							document{% if langue.documents|length > 1 %}s{% endif %}.
+						{% else %}
+							Cette langue n'est utilisée dans aucun document.
+						{% endif %}
+					</p>
+
+					<p class="list-group-item-text">
+						{% if langue.documentUrl %}
+							<strong>Abécédaire : </strong><a href="{{ path('langue.admin.document',{'langue': langue.id}) }}">Téléchargez</a>
+						{% else %}
+							Aucun abécédaire n'est disponible.
+						{% endif %}
+					</p>
+				</div>
+				<div class="col-md-4">
+					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+						<div class="btn-group" role="group" aria-label="...">
+							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('langue.detail',{'langue':langue.id}) }}"><i class="fa fa-eye"></i></a>
+							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('langue.update',{'langue':langue.id}) }}"><i class="fa fa-pencil"></i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</li>
+
+	{% endfor %}
+	</ul>
+	
+{% endblock %}

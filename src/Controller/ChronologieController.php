@@ -92,18 +92,14 @@ class ChronologieController extends AbstractController
     {
         $chronologie = new Chronologie();
 
-        dump(1);
-
         // Un territoire peut avoir été passé en paramètre
         $territoireId = $request->get('territoire');
-        dump(2);
         if ($territoireId) {
             $territoire = $entityManager->find(Territoire::class, $territoireId);
             if ($territoire) {
                 $chronologie->setTerritoire($territoire);
             }
         }
-        dump(3);
 
         $form = $this->createForm(ChronologieForm::class, $chronologie, ['territoireId' => $territoireId])
             ->add('visibilite', ChoiceType::class, [
@@ -116,7 +112,6 @@ class ChronologieController extends AbstractController
                 ),
             ])
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-            dump(4);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

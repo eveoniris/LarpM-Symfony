@@ -279,7 +279,7 @@ abstract class BaseLangue
         return $this->documentUrl ?? '';
     }
 
-    public function getTerritoireSecondaires(): ArrayCollection
+    public function getTerritoireSecondaires(): Collection
     {
         return $this->territoireSecondaires;
     }

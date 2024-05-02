@@ -3,13 +3,20 @@
 
 namespace App\Controller;
 
+use App\Entity\GroupeLangue;
 use App\Entity\Langue;
-use App\Form\Groupe\GroupeLangueForm;
 use App\Form\LangueForm;
+use App\Form\Groupe\GroupeLangueForm;
+use App\Repository\LangueRepository;
+use App\Service\PagerService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -22,7 +29,7 @@ class LangueController extends AbstractController
      * affiche la liste des langues.
      */
     #[Route('/langue', name: 'langue.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $langues = $entityManager->getRepository('\\'.\App\Entity\Langue::class)->findAllOrderedByLabel();
         $groupeLangues = $entityManager->getRepository('\\'.\App\Entity\GroupeLangue::class)->findAllOrderedByLabel();
@@ -33,21 +40,19 @@ class LangueController extends AbstractController
     /**
      * Detail d'une langue.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/langue/{langue}/detail', name: 'langue.detail')]
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Langue $langue): Response
     {
-        $id = $request->get('index');
-
-        $langue = $entityManager->find('\\'.\App\Entity\Langue::class, $id);
-
         return $this->render('langue/detail.twig', ['langue' => $langue]);
     }
 
     /**
      * Ajoute une langue.
      */
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/langue/add', name: 'langue.add')]
+    public function addAction(Request $request,  EntityManagerInterface $entityManager): Response|RedirectResponse
     {
-        $langue = new \App\Entity\Langue();
+        $langue = new Langue();
 
         $form = $this->createForm(LangueForm::class, $langue)
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
@@ -58,7 +63,7 @@ class LangueController extends AbstractController
         // si l'utilisateur soumet une nouvelle langue
         if ($form->isSubmitted() && $form->isValid()) {
             $langue = $form->getData();
-            if (self::handleDocument($request, $app, $form, $langue)) {
+            if (self::handleDocument($request, $entityManager, $form, $langue)) {
                 $entityManager->persist($langue);
                 $entityManager->flush();
 
@@ -67,7 +72,7 @@ class LangueController extends AbstractController
                 // l'utilisateur est redirigé soit vers la liste des langues, soit vers de nouveau
                 // vers le formulaire d'ajout d'une langue
                 if ($form->get('save')->isClicked()) {
-                    return $this->redirectToRoute('langue', [], 303);
+                    return $this->redirectToRoute('langue.index', [], 303);
                 } elseif ($form->get('save_continue')->isClicked()) {
                     return $this->redirectToRoute('langue.add', [], 303);
                 }
@@ -85,11 +90,9 @@ class LangueController extends AbstractController
      * Si l'utilisateur clique sur "supprimer", la langue est supprimée et l'utilisateur est
      * redirigé vers la liste des langues.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/langue/{langue}/update', name: 'langue.update')]
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Langue $langue): Response|RedirectResponse
     {
-        $id = $request->get('index');
-
-        $langue = $entityManager->find('\\'.\App\Entity\Langue::class, $id);
         $hasDocumentUrl = !empty($langue->getDocumentUrl());
         $canBeDeleted = $langue->getPersonnageLangues()->isEmpty()
             && $langue->getTerritoires()->isEmpty()
@@ -109,12 +112,12 @@ class LangueController extends AbstractController
             $langue = $form->getData();
 
             if ($form->get('update')->isClicked()) {
-                if (self::handleDocument($request, $app, $form, $langue)) {
+                if (self::handleDocument($request, $entityManager, $form, $langue)) {
                     $entityManager->persist($langue);
                     $entityManager->flush();
-                   $this->addFlash('success', 'La langue a été mise à jour.');
+                    $this->addFlash('success', 'La langue a été mise à jour.');
 
-                    return $this->redirectToRoute('langue.detail', ['index' => $id], 303);
+                    return $this->redirectToRoute('langue.detail', ['langue' => $langue->getId()], 303);
                 }
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($langue);
@@ -123,7 +126,7 @@ class LangueController extends AbstractController
                 self::tryDeleteDocument($langue);
                $this->addFlash('success', 'La langue a été supprimée.');
 
-                return $this->redirectToRoute('langue', [], 303);
+                return $this->redirectToRoute('langue.index', [], 303);
             }
         }
 
@@ -184,19 +187,17 @@ class LangueController extends AbstractController
     /**
      * Detail d'un groupe de langue.
      */
-    public function detailGroupAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/langue/groupe/{groupeLangue}/detail', name: 'langue.detailGroup')]
+    public function detailGroupAction(Request $request,  EntityManagerInterface $entityManager, GroupeLangue $groupeLangue): Response
     {
-        $id = $request->get('index');
-
-        $groupeLangue = $entityManager->find('\\'.\App\Entity\GroupeLangue::class, $id);
-
         return $this->render('langue/detailGroup.twig', ['groupeLangue' => $groupeLangue]);
     }
 
     /**
      * Ajoute un groupe de langue.
      */
-    public function addGroupAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/langue/groupe/add', name: 'langue.addGroup')]
+    public function addGroupAction(Request $request,  EntityManagerInterface $entityManager): Response|RedirectResponse
     {
         $groupeLangue = new \App\Entity\GroupeLangue();
 
@@ -217,7 +218,7 @@ class LangueController extends AbstractController
             // l'utilisateur est redirigé soit vers la liste des langues, soit vers de nouveau
             // vers le formulaire d'ajout d'une langue
             if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('langue', [], 303);
+                return $this->redirectToRoute('langue.index', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('langue.addGroup', [], 303);
             }
@@ -233,12 +234,9 @@ class LangueController extends AbstractController
      * Si l'utilisateur clique sur "supprimer", le groupe de langue est supprimé et l'utilisateur est
      * redirigé vers la liste des langues.
      */
-    public function updateGroupAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/langue/groupe/{groupeLangue}/update', name: 'langue.updateGroup')]
+    public function updateGroupAction(Request $request,  EntityManagerInterface $entityManager, GroupeLangue $groupeLangue): Response|RedirectResponse
     {
-        $id = $request->get('index');
-
-        $groupeLangue = $entityManager->find('\\'.\App\Entity\GroupeLangue::class, $id);
-
         $canBeDeleted = $groupeLangue->getLangues()->isEmpty();
         $deleteTooltip = $canBeDeleted ? '' : 'Ce groupe est référencé par '.$groupeLangue->getLangues()->count().' langues et ne peut pas être supprimé';
 
@@ -258,13 +256,13 @@ class LangueController extends AbstractController
                 $entityManager->flush();
                $this->addFlash('success', 'Le groupe de langue a été mis à jour.');
 
-                return $this->redirectToRoute('langue.detailGroup', ['index' => $id], 303);
+                return $this->redirectToRoute('langue.detailGroup', ['groupeLangue' => $groupeLangue->getId()], 303);
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($groupeLangue);
                 $entityManager->flush();
                $this->addFlash('success', 'Le groupe de langue a été supprimé.');
 
-                return $this->redirectToRoute('langue', [], 303);
+                return $this->redirectToRoute('langue.index', [], 303);
             }
         }
 
@@ -277,20 +275,18 @@ class LangueController extends AbstractController
     /**
      * Obtenir le document lié a une langue.
      */
-    public function adminDocumentAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/langue/{langue}/document', name: 'langue.admin.document')]
+    public function adminDocumentAction(Request $request, Langue $langue): BinaryFileResponse
     {
-        $langue = $request->get('langue');
         $document = $langue->getDocumentUrl();
         $file = self::DOC_PATH.$document;
 
-        $stream = static function () use ($file): void {
-            readfile($file);
-        };
+        $response = new BinaryFileResponse($file);
+        $response->headers->set('Content-Control', 'private');
+        $response->headers->set('Content-Type', 'text/pdf');
+        $response->headers->set('Content-length', filesize($file));
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.$langue->getPrintLabel().'.pdf"');
 
-        return $app->stream($stream, 200, [
-            'Content-Type' => 'text/pdf',
-            'Content-length' => filesize($file),
-            'Content-Disposition' => 'attachment; filename="'.$langue->getPrintLabel().'.pdf"',
-        ]);
+        return $response;
     }
 }

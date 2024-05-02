@@ -236,8 +236,6 @@ class GroupeController extends AbstractController
         $ressourceCommunes = new ArrayCollection($entityManager->getRepository('\\'.\App\Entity\Ressource::class)->findCommun());
         $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
 
-        dump($quete);
-
         return $this->render('groupe/quete.twig', [
             'groupe' => $groupe,
             'needs' => $quete['needs'],
@@ -1223,7 +1221,6 @@ class GroupeController extends AbstractController
             $topic->setTopic($topicRepo->findOneByKey('TOPIC_GROUPE'));
 
             $groupe->setTopic($topic);
-            //dump($groupe);
 
             $entityManager->persist($topic);
             $entityManager->flush();
