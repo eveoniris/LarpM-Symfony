@@ -1,0 +1,60 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Ressources{% endblock title %}
+
+{% block body %}
+
+{% include '_partials/breadcrumb.twig' with {'items' : {1 : {'name' : 'Gestion des ressources'}}} %}
+
+<div class="well well-sm">
+	<div class="header">
+		<h5>Gestion des ressources <small>( {{ ressources|length }} ressources)</small></h5>
+	</div>
+
+	<div class="btn-toolbar" role="toolbar" aria-label="...">
+		<div class="btn-group" role="group" aria-label="...">
+			<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter une ressource" href="{{ path('ressource.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+		</div>
+	</div>
+</div>
+			
+<ul class="list-group">
+	{%  for ressource in ressources %}
+	<li class="list-group-item">
+		<div class="row">
+			<div class="col-md-8">
+				<h4 class="list-group-item-heading">
+					{{ ressource.label }} 
+				</h4>
+				<p class="list-group-item-text">
+					<p>Rareté : {{ ressource.rarete.label }}</p>			
+				</p>
+				<p class="list-group-item-text">
+					{%  if ressource.importateurs|length > 0 %}
+						{{ ressource.label }} est importé par : {{ ressource.importateurs|join(', ') }}	
+					{% else %}
+						Personne n'importe de {{ ressource.label }}.	
+					{% endif %}
+				</p>
+				<p class="list-group-item-text">
+					{%  if ressource.exportateurs|length > 0 %}
+						{{ ressource.label }} est exporté par : {{ ressource.exportateurs|join(', ') }}	
+					{% else %}
+						Personne n'exporte de {{ ressource.label }}.	
+					{% endif %}
+				</p>
+			</div>
+			<div class="col-md-4">
+				<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+					<div class="btn-group" role="group" aria-label="...">
+						<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('ressource.detail', {ressource: ressource.id}) }}"><i class="fa fa-eye"></i></a>
+						<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('ressource.update', {ressource: ressource.id}) }}"><i class="fa fa-pencil"></i></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</li>
+	{% endfor %}
+</ul>
+	
+{% endblock %}
