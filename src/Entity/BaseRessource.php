@@ -6,8 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\DiscriminatorColumn;
-use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
@@ -20,8 +18,8 @@ use Doctrine\ORM\Mapping\Table;
 #[Table(name: 'ressource')]
 #[Index(columns: ['rarete_id'], name: 'fk_ressource_rarete1_idx')]
 #[InheritanceType('SINGLE_TABLE')]
-#[DiscriminatorColumn(name: 'discr', type: 'string')]
-#[DiscriminatorMap(['base' => 'BaseRessource', 'extended' => 'Ressource'])]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseRessource', 'extended' => 'Ressource'])]
 class BaseRessource
 {
     #[Id]
