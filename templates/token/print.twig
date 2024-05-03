@@ -4,9 +4,21 @@
     <meta charset="utf-8">
     <title>LarpManager - Impression des jetons</title>
     <style>
+        @page {
+            size: A4; /*or: landscaoe*/
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
         table {
             width: 100%;
+            border-collapse: collapse;
         }
+        table th, table td {
+            border: 1px dotted #777;
+            padding:0.5rem;
+        }
+        thead {display: table-header-group;}
     </style>
 </head>
 <body>
@@ -25,7 +37,7 @@
     <tbody>
     {% for token in tokens %}
         <tr>
-            <td>{{ token.id }}</td>
+            <td style="text-align: center">{{ token.id }}</td>
             <td>{{ token.label }}</td>
             <td>{{ token.tag }}</td>
             <td>{{ token.descriptionRaw }}</td>
