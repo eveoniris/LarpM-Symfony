@@ -197,11 +197,35 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         // Todo add an action LOG (who/when/what)
 
         if ($isNew) {
-            $form->add('save', SubmitType::class, ['label' => $msg['save']])
-                ->add('save_continue', SubmitType::class, ['label' => $msg['save_continue']]);
+            $form->add(
+                'save',
+                SubmitType::class,
+                [
+                    'label' => $msg['save'],
+                    'attr' => [
+                        'class' => 'btn btn-secondary',
+                    ],
+                ]
+            )
+                ->add('save_continue', SubmitType::class, [
+                    'label' => $msg['save_continue'],
+                    'attr' => [
+                        'class' => 'btn btn-secondary',
+                    ],
+                ]);
         } else {
-            $form->add('update', SubmitType::class, ['label' => $msg['save']])
-                ->add('delete', SubmitType::class, ['label' => $msg['delete']]);
+            $form->add('update', SubmitType::class, [
+                'label' => $msg['save'],
+                'attr' => [
+                    'class' => 'btn btn-secondary',
+                ],
+            ])
+                ->add('delete', SubmitType::class, [
+                    'label' => $msg['delete'],
+                    'attr' => [
+                        'class' => 'btn btn-secondary',
+                    ],
+                ]);
         }
 
         $form->handleRequest($request);

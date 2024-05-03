@@ -22,29 +22,34 @@
 
         {% include '_partials/formListSearch.twig' with {
             'canAdd': {'title': 'Ajouter un jeton', 'path': path('token.add')},
-            'actionPath' : path('token.list')
+            'actionPath' : path('token.list'),
+            'buttons' : [
+                {'title': "Voir pour faire vieillir les personnages", 'route': path('personnage.vieillir'), 'icon': 'fa fa-users'},
+                {'title': "Imprimer la liste", 'route': path('token.print'), 'icon': 'fa-print', 'target':'_blank'},
+                {'title': "Télécharger la liste (CSV)", 'route': path('token.download'), 'icon': 'fa-download'}
+            ]
         } %}
-
-        <div class="btn-toolbar" role="toolbar" aria-label="...">
-            <div class="btn-group" role="group" aria-label="...">
-                <a class="btn btn-default" data-toggle="tooltip" data-placement="top"
-                   title="Faire vieillir les personnages"
-                   href="{{ path('personnage.vieillir') }}"><i class="fa fa-users"></i></a>
-                <a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Imprimer la liste"
-                   href="{{ path('token.print') }}"><i class="fa fa-print"></i></a>
-                <a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Télécharger la liste (CSV)"
-                   href="{{ path('token.download') }}"><i class="fa fa-download"></i></a>
-            </div>
-        </div>
     </div>
 
     {% include '_partials/pagination.html.twig' %}
-    <div class="list-group">
+    <table class="table table-striped table-bordered table-condensed table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'level.list', 'rows': [
+            {'name' : 'Id', 'field' : 'id'},
+            {'name' : 'Libellé', 'field' : 'label'},
+            {'name' : 'Jeton', 'field' : 'tag'},
+            {'name' : 'Description', 'field' : 'description'},
+            {'name' : 'Actions'},
+        ]} %}
+        <tbody>
         {% for token in paginator %}
-            <div class="list-group-item">
-                <div class="list-group-item-heading">
-                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
-                        <div class="btn-group" role="group" aria-label="...">
+            <tr>
+                <td><a href="{{ path('token.detail', {'token':token.id}) }}">{{ token.id }}</a></td>
+                <td>{{ token.label|highlight(pagerService.searchValue) }}</td>
+                <td>{{ token.tag|highlight(pagerService.searchValue) }}</td>
+                <td>{{ token.description|markdown_to_html|highlight(pagerService.searchValue) }}</td>
+                <td>
+                    <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
+                        <div class="btn-group" role="group">
                             <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom" title="Modifier"
                                href="{{ path('token.update',{'token':token.id}) }}"><i class="fa fa-pencil"></i></a>
                             <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom" title="Détail"
@@ -53,14 +58,11 @@
                                href="{{ path('token.delete',{'token':token.id}) }}"><i class="fa fa-eraser"></i></a>
                         </div>
                     </div>
-                    <h5>#{{ token.id }} {{ token.label|highlight(pagerService.searchValue) }} -- {{ token.tag|highlight(pagerService.searchValue) }}</h5>
-                </div>
-                <div class="list-group-item-text">{{ token.description|markdown_to_html|highlight(pagerService.searchValue) }}</div>
-            </div>
-        {% else %}
-            {% include '_partials/noResultTableRow.twig' %}
+                </td>
+            </tr>
         {% endfor %}
-    </div>
+        </tbody>
+    </table>
     {% include '_partials/pagination.html.twig' %}
 
 
