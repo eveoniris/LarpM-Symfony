@@ -53,6 +53,7 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -542,8 +543,8 @@ class ParticipantController extends AbstractController
         $groupe = $groupeGn->getGroupe();
         $gn = $groupeGn->getGn();
 
-        $default = $participant->getUser()->getPersonnages()->toArray()[0];
-        $lastPersonnage = $participant->getUser()->getLastPersonnage();
+        $default = $participant->getUser()?->getPersonnages()->toArray()[0] ?? null;
+        $lastPersonnage = $participant->getUser()?->getLastPersonnage();
         if (null != $lastPersonnage) {
             $default = $lastPersonnage;
         }
@@ -551,7 +552,7 @@ class ParticipantController extends AbstractController
         // error_log($default->getNom());
 
         $form = $this->createFormBuilder($participant)
-            ->add('personnage', 'entity', [
+            ->add('personnage', EntityType::class, [
                 'label' => 'Choisissez votre personnage',
                 'choice_label' => 'resumeParticipations',
                 'class' => Personnage::class,

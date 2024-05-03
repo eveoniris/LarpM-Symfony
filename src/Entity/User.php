@@ -532,7 +532,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
             }
         }
 
-        return $last->getPersonnage();
+        return $last?->getPersonnage();
     }
 
     /**

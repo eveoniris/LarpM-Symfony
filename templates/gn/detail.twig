@@ -221,7 +221,7 @@
 							{{ question.text|markdown }}
 							<ul>
 							{% for reponse in question.choix|split(';') %}
-								<li><a href="{{ path('participant.question.reponse', {'participant':participant.id,'question': question.id, 'reponse':reponse}) }}">{{ reponse }}</a></li>
+								<li><a href="{{ path('participant.reponse', {'participant':participant.id,'question': question.id, 'reponse':reponse}) }}">{{ reponse }}</a></li>
 							{% endfor %}
 							</ul>
 						</div>
