@@ -21,11 +21,21 @@ class StrategieController extends AbstractController
     {
         $territoires = new ArrayCollection();
 
-        // recherche le prochain GN
+        // Recherche le prochain GN
         $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
         $gn = $gnRepo->findNext();
 
+        // Récupère les territoires associés aux groupes inscrits au GN
         $groupeRepo = $entityManager->getRepository('\\'.\App\Entity\Groupe::class);
+        $territoires = $groupeRepo->findByGn($gn->getId(), "", "", ['by' => 'nom', 'dir' => 'ASC']);
+
+        $paginator = $groupeRepo->findPaginatedQuery(
+            $territoires, 
+            25,
+            $this->getRequestPage()
+        );
+
+        /*$groupeRepo = $entityManager->getRepository('\\'.\App\Entity\Groupe::class);
         $groupes = $groupeRepo->findAll();
 
         foreach ($groupes as $groupe) {
@@ -43,10 +53,11 @@ class StrategieController extends AbstractController
             return strcmp((string) $first->getNom(), (string) $second->getNom());
         });
         $territoires = new ArrayCollection(iterator_to_array($iterator));
+        dump($territoires);*/
 
         return $this->render('strategie/index.twig', [
             'gn' => $gn,
-            'territoires' => $territoires,
+            'paginator' => $paginator,
         ]);
     }
 

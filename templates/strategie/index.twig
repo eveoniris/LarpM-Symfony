@@ -18,7 +18,7 @@
 		</div>
 	</div>
 	
-
+	{% include '_partials/pagination.html.twig' %}
 			
 	<table class="table table-bordered table-striped">
 		<thead>
@@ -31,7 +31,7 @@
 			<th>Constructions</th>
 		</thead>
 		<tbody>
-	{% for territoire in territoires %}
+	{% for territoire in paginator %}
 		<tr>
 			<th>{{ territoire.nom }}</th>
 			<td>{{ territoire.root }}</td>
@@ -50,5 +50,7 @@
 	{% endfor %}
 		</tbody>
 	</table>
+
+	{% include '_partials/pagination.html.twig' %}
 	
 {% endblock body %}
