@@ -2,7 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\GroupeGn;
 use App\Entity\Groupe;
+use App\Entity\Territoire;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\EntityRepository;
 
 class GroupeRepository extends BaseRepository
@@ -113,5 +116,23 @@ class GroupeRepository extends BaseRepository
             ->getResult();
 
         return reset($groupes);
+    }
+
+    public function findByGn(int $gn, ?string $type = "", ?string $value = "", ?array $order = [])
+    {
+        // Liste des groupes du GN en paramètre
+        $qbGroupes = $this->getEntityManager()
+            ->createQuery('SELECT IDENTITY(g.groupe) FROM App\Entity\GroupeGn g WHERE g.gn = :code')
+            ->setParameter('code', $gn)
+            ->getResult();
+        $listeGroupes = array_column($qbGroupes, 1);
+           
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('t');
+        $qb->from(Territoire::class, 't');
+        $qb->andWhere($qb->expr()->in('t.groupe', $listeGroupes));
+        $qb->orderBy('t.'.$order['by'], $order['dir']);
+        
+        return $qb->getQuery();
     }
 }
