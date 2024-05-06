@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseReligionLevel', 'extended' => 'ReligionLevel'])]
+
 abstract class BaseReligionLevel
 {
     #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
