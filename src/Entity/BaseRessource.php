@@ -15,13 +15,15 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
+#[ORM\Entity]
 #[Table(name: 'ressource')]
 #[Index(columns: ['rarete_id'], name: 'fk_ressource_rarete1_idx')]
 #[InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseRessource', 'extended' => 'Ressource'])]
+
 class BaseRessource
-{
+{   
     #[Id]
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     #[GeneratedValue(strategy: 'AUTO')]
