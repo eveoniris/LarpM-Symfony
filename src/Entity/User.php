@@ -55,11 +55,11 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     public function validatePasswordStrength(string $password): ?string
     {
         if (empty($password)) {
-            return "Pas de mot de pass, pas d'accés";
+            return "Pas de mot de passe, pas d'accès";
         }
 
         if (strlen($password) < 5) {
-            return 'Mot de pass de moins de 5 caractères ? Même un Cimérien fait mieux !';
+            return 'Mot de passe de moins de 5 caractères ? Même un Cimérien fait mieux !';
         }
 
         return null;
