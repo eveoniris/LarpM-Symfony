@@ -46,14 +46,14 @@ class ReligionController extends AbstractController
     public function indexAction(Request $request, ReligionRepository $religionRepository): Response
     {
         $page = $request->query->getInt('page', 1);
-        $orderBy = $request->query->getString('order_by', 'id');
+        $orderBy = $request->query->getString('order_by', 'label');
         $orderDir = $request->query->getString('order_dir', 'ASC');
         $limit = 10;
         
         if ($this->isGranted('ROLE_REGLE')) {
             $where = '1=1';
         } else {
-            $where = 'r.secret = 0';
+            $where = 'religion.secret = 0';
         }
         
         $paginator = $religionRepository->findPaginated($page, $limit, $orderBy, $orderDir, $where);
