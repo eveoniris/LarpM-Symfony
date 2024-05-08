@@ -698,7 +698,10 @@
 				if ( props && ! props.description ) props.description = 'Aucune description';
 
 				this.descriptionWin.title(props.name);
-				var content = '<a href="'+detailLink+'">Voir le descriptif détaillé</a><hr />' + props.description ;
+				var content = props.description;
+				{% if is_granted('ROLE_USER', app.user) %}
+					content = '<a href="'+detailLink+'">Voir le descriptif détaillé</a><hr />' + content;
+				{% endif %}
 				{% if is_granted('ROLE_ORGA', app.user) %}
 					content = content + '<br /><a href="'+editLink+'">Modifier</a>'
 				        		+'<br /><a href="'+editStrategieLink+'">Jeu stratégique</a>';

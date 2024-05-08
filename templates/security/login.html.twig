@@ -23,14 +23,14 @@
             <label for="inputUsername">Email</label>
             <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control"
                    autocomplete="email" required autofocus>
-            <label for="inputPassword">Mot de pass</label>
+            <label for="inputPassword">Mot de passe</label>
             <input type="password" name="password" id="inputPassword" class="form-control"
                    autocomplete="current-password" required>
 
             <input type="hidden" name="_csrf_token"
                    value="{{ csrf_token('authenticate') }}"
             >
-
+            <br />
             <button class="btn btn-lg btn-primary" type="submit">
                 Se connecter
             </button>
