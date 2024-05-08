@@ -242,7 +242,7 @@ class CompetenceController extends AbstractController
      * Retire le document d'une competence.
      */
     #[IsGranted('ROLE_REGLE')]
-    #[Route('/competence/remove-document', name: 'competence.list')]
+    #[Route('/competence/remove-document', name: 'competence.remove')]
     public function removeDocumentAction(Request $request, EntityManagerInterface $entityManager, Competence $competence): RedirectResponse
     {
         $competence->setDocumentUrl(null);
@@ -251,18 +251,18 @@ class CompetenceController extends AbstractController
         $entityManager->flush();
         $this->addFlash('success', 'La compétence a été mise à jour.');
 
-        return $this->redirectToRoute('competence');
+        return $this->redirectToRoute('competence.list', [], 303);
     }
 
     /**
      * Téléchargement du document lié à une compétence.
      */
-    #[Route('/competence', name: 'competence.document')]
+    #[Route('/competence/{competence}/document', name: 'competence.document')]
     public function getDocumentAction(Request $request, EntityManagerInterface $entityManager)
     {
         $document = $request->get('document');
         $competence = $request->get('competence');
-
+    
         // on ne peux télécharger que les documents des compétences que l'on connait
         if (!$app['security.authorization_checker']->isGranted('ROLE_REGLE') && $this->getUser()->getPersonnage()) {
             if (!$this->getUser()->getPersonnage()->getCompetences()->contains($competence)) {
