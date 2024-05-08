@@ -31,13 +31,13 @@
                 </li>
 
                 {# Menus reservé aux admins #}
+                {% if is_granted('ROLE_REDACTEUR', app.user) %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                        aria-expanded="false">
                         Admin
                     </a>
                     <ul class="dropdown-menu">
-
                         <li><a class="dropdown-item" href="{{ path('gn.list') }}">Grandeurs natures</a></li>
                         {% if is_granted('ROLE_ADMIN', app.user) %}
                             <li><a class="dropdown-item" href="{{ path('billet.list') }}">Billets</a></li>
@@ -54,15 +54,14 @@
                             <li><a class="dropdown-item" href="{{ path('admin.rappels') }}">Rappels</a></li>
                             <li><a class="dropdown-item" href="{{ path('question') }}">Questions</a></li>
                         {% endif %}
-                        {% if is_granted('ROLE_REDACTEUR', app.user) %}
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li><a class="dropdown-item" href="{{ path('annonce.list') }}">Annonces</a>
-                            </li>{% endif %}
-
+                            </li>
                     </ul>
                 </li>
+                {% endif %}
 
                 {# Menus reservé à la cohérence monde et univers #}
                 <li class="nav-item dropdown">
@@ -161,10 +160,10 @@
                         <li><a class="dropdown-item" href="{{ path('rules.list') }}">Règles</a></li>
                         <li><a class="dropdown-item" href="{{ path('competence.list') }}">Compétences</a></li>
                         <li><a class="dropdown-item" href="{{ path('classe.index') }}">Classes</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
                         {% if is_granted('ROLE_REGLE', app.user) %}
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item" href="{{ path('competenceFamily.index') }}">Famille de
                                     compétences</a></li>
                             <li><a class="dropdown-item" href="{{ path('attributeType.index') }}">Attributs de
