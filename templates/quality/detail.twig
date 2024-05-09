@@ -4,13 +4,11 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('quality') }}">Liste des qualité</a></li>
-		<li class="active">{{ quality.label }}</li>
-	</ol>
-	
-	
+{% include '_partials/breadcrumb.twig' with {'items' : {
+	1 : {'route' : path('quality.list'), 'name' : 'Liste des qualités'},
+	2 : {'name' : quality.label}
+}} 
+%}
 		
 	<div class="well well-sm">
 		<h4>{{ quality.label }}</h4>

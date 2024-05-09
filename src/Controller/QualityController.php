@@ -7,6 +7,7 @@ use App\Entity\Quality;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Form\Quality\QualityDeleteForm;
 use App\Form\Quality\QualityForm;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -31,6 +32,7 @@ class QualityController extends AbstractController
     /**
      * Ajoute une quality.
      */
+    #[Route('/quality/add', name: 'quality.add')]
     public function addAction( EntityManagerInterface $entityManager, Request $request)
     {
         $form = $this->createForm(QualityForm::class, new Quality())
@@ -53,7 +55,7 @@ class QualityController extends AbstractController
 
            $this->addFlash('success', 'La quality a été enregistrée.');
 
-            return $this->redirectToRoute('quality', [], 303);
+            return $this->redirectToRoute('quality.list', [], 303);
         }
 
         return $this->render('quality/add.twig', [
@@ -64,6 +66,7 @@ class QualityController extends AbstractController
     /**
      * Met à jour une quality.
      */
+    #[Route('/quality/{quality}/update', name: 'quality.update')]
     public function updateAction( EntityManagerInterface $entityManager, Request $request, Quality $quality)
     {
         $originalQualityValeurs = new ArrayCollection();
@@ -104,7 +107,7 @@ class QualityController extends AbstractController
 
            $this->addFlash('success', 'La quality a été enregistrée.');
 
-            return $this->redirectToRoute('quality', [], 303);
+            return $this->redirectToRoute('quality.list', [], 303);
         }
 
         return $this->render('quality/update.twig', [
@@ -116,6 +119,7 @@ class QualityController extends AbstractController
     /**
      * Supprime une quality.
      */
+    #[Route('/quality/{quality}/delete', name: 'quality.delete')]
     public function deleteAction( EntityManagerInterface $entityManager, Request $request, Quality $quality)
     {
         $form = $this->createForm(QualityDeleteForm::class, $quality)
@@ -130,7 +134,7 @@ class QualityController extends AbstractController
 
            $this->addFlash('success', 'La quality a été supprimée.');
 
-            return $this->redirectToRoute('quality', [], 303);
+            return $this->redirectToRoute('quality.list', [], 303);
         }
 
         return $this->render('quality/delete.twig', [
@@ -142,6 +146,7 @@ class QualityController extends AbstractController
     /**
      * Fourni le détail d'une quality.
      */
+    #[Route('/quality/{quality}/detail', name: 'quality.detail')]
     public function detailAction( EntityManagerInterface $entityManager, Request $request, Quality $quality)
     {
         return $this->render('quality/detail.twig', [
