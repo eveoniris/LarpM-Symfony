@@ -15,6 +15,7 @@
                     <ul class="dropdown-menu">
                         {% if app.user %}
                             <li><a class="dropdown-item" href="{{ path('user.self') }}">Mon compte</a></li>
+                            <li><a class="dropdown-item" href="{{ path('gn.list') }}">Mes Grandeurs natures</a></li>
                             <li><a class="dropdown-item" href="{{ path('messagerie') }}">Ma messagerie</a></li>
                             <li>
                                 <hr class="dropdown-divider">
@@ -31,15 +32,15 @@
                 </li>
 
                 {# Menus reservé aux admins #}
-                {% if is_granted('ROLE_REDACTEUR', app.user) %}
+                {% if is_granted('ROLE_REDACTEUR', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                        aria-expanded="false">
                         Admin
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ path('gn.list') }}">Grandeurs natures</a></li>
                         {% if is_granted('ROLE_ADMIN', app.user) %}
+                            <li><a class="dropdown-item" href="{{ path('gn.list') }}">Grandeurs natures</a></li>
                             <li><a class="dropdown-item" href="{{ path('billet.list') }}">Billets</a></li>
                             <li><a class="dropdown-item" href="{{ path('user.admin.list') }}">Utilisateurs</a>
                             </li>
@@ -53,10 +54,10 @@
                             <li><a class="dropdown-item" href="{{ path('admin') }}">Administration</a></li>
                             <li><a class="dropdown-item" href="{{ path('admin.rappels') }}">Rappels</a></li>
                             <li><a class="dropdown-item" href="{{ path('question') }}">Questions</a></li>
-                        {% endif %}
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
+                        {% endif %}
                             <li><a class="dropdown-item" href="{{ path('annonce.list') }}">Annonces</a>
                             </li>
                     </ul>
@@ -70,7 +71,7 @@
                         Univers
                     </a>
                     <ul class="dropdown-menu">
-                        {% if is_granted('ROLE_CARTOGRAPHE', app.user) %}
+                        {% if is_granted('ROLE_CARTOGRAPHE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                             <li><a class="dropdown-item" href="{{ path('territoire.list') }}">Territoires</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ path('territoire.fief') }}">Fiefs</a>
@@ -87,7 +88,7 @@
                 </li>
 
                 {# Menus reservé aux scénaristes #}
-                {% if is_granted('ROLE_SCENARISTE', app.user) %}
+                {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
@@ -119,7 +120,7 @@
                 {% endif %}
 
                 {# Menus reservé aux scénaristes #}
-                {% if is_granted('ROLE_SCENARISTE', app.user) %}
+                {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
@@ -160,7 +161,7 @@
                         <li><a class="dropdown-item" href="{{ path('rules.list') }}">Règles</a></li>
                         <li><a class="dropdown-item" href="{{ path('competence.list') }}">Compétences</a></li>
                         <li><a class="dropdown-item" href="{{ path('classe.index') }}">Classes</a></li>
-                        {% if is_granted('ROLE_REGLE', app.user) %}
+                        {% if is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -184,15 +185,15 @@
                             <li><a class="dropdown-item" href="{{ path('magiePriere.list') }}">Prières</a></li>
                             <li><a class="dropdown-item"
                                    href="{{ path('connaissance.list') }}">Connaissances</a></li>
-                            <li><a class="dropdown-item" href="{{ path('personnageSecondaire.list') }}">Personnage
-                                    secondaire</a>
+                            <li><a class="dropdown-item" href="{{ path('personnageSecondaire.list') }}">Personnages
+                                    secondaires</a>
                             </li>
                         {% endif %}
                     </ul>
                 </li>
 
                 {# Menus reservé au stock #}
-                {% if is_granted('ROLE_STOCK', app.user) %}
+                {% if is_granted('ROLE_STOCK', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
@@ -219,7 +220,7 @@
                     </li>
                 {% endif %}
 
-                {% if is_granted('ADMIN_USER', app.user) %}
+                {% if is_granted('ROLE_ADMIN', app.user) %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
