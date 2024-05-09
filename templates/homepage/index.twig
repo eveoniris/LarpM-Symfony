@@ -15,7 +15,7 @@
 			{# affichage des événements passé et futur #}
 			<div class="well well-sm">
 				<div class="header">
-					<h5>Vos jeux</h5>
+					<h5>Vos inscriptions</h5>
 				</div>
 
 				{% if not user or not user.participants %}
@@ -24,7 +24,7 @@
 
 				<ul class="list-group">
 					<li class="list-group-item">
-						<a href="{{ path('gn.list') }}">Voir la liste des jeux</a>
+						<a href="{{ path('gn.list') }}">Voir la liste des Grandeurs natures</a>
 					</li>
 				{% for participant in user.participants %}
 					<li class="list-group-item">
