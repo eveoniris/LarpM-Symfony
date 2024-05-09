@@ -4,11 +4,11 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('ingredient.admin.list') }}">Liste des titres</a></li>
-		<li class="active">Supprimer un ingredient</li>
-	</ol>
+{% include '_partials/breadcrumb.twig' with {'items' : {
+	1 : {'route' : path('ingredient.list'), 'name' : 'Liste des ingredients'},
+	2 : {'name' : 'Supression d\'un ingredient'}
+}} 
+%}
 	
 	
 	<div class="well bs-component">

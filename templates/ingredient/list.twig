@@ -4,33 +4,58 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des ingredients</li>
-	</ol>
-	
+	{% include '_partials/breadcrumb.twig' with {'items' : {1 : {'name' : 'Liste des ingredients'}}} %}
+
 	<div class="well well-sm">
+		<div class="header">
+			<h5>Ingredients <small>({{ paginator|length }} ingredients)</small></h5>
+		</div>
+
+		<div class="btn-toolbar" role="toolbar" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un ingrédient" href="{{ path('ingredient.admin.add') }}"><i class="fa fa-add"></i> Ajouter</a>
+			</div>
+		</div>
+	</div>
+
+	{% include '_partials/pagination.html.twig' %}
 	
-		<a href="{{ path('ingredient.admin.add') }}"><i class="fa fa-plus"></i> Ajouter un ingrédient</a>
-		
-		<ul class="list-group">
-		{% for ingredient in ingredients %}
-			<li class="list-group-item">
-				<div class="row">
-					<div class="col-md-8">
-						<strong>{{ ingredient.label }} - {{ ingredient.color }} (Niveau {{ ingredient.niveau }}) : {{ ingredient.dose }}</strong>
-						{{ ingredient.description|markdown_to_html }}
-					</div>
-					<div class="col-md-4">
-						<a href="{{ path('ingredient.admin.update',{'ingredient':ingredient.id}) }}"><i class="fa fa-pencil"></i> Modifier</a>&nbsp;|&nbsp;
-						<a href="{{ path('ingredient.admin.detail',{'ingredient':ingredient.id}) }}"><i class="fa fa-eye"></i> Detail</a>&nbsp;|&nbsp;
-						<a href="{{ path('ingredient.admin.delete',{'ingredient':ingredient.id}) }}"><i class="fa fa-eraser"></i> Supprimer</a>
+	<table class="table table-bordered table-striped">
+		{% include '_partials/thead.twig' with  { 'route': 'ingredient.list', 'rows': [
+            {'name' : 'Nom', 'field' : 'label'},
+            {'name' : 'Couleur', 'field' : 'niveau'},
+            {'name' : 'Niveau', 'field' : 'niveau'},
+            {'name' : 'Dose', 'field' : 'dose'},
+            {'name' : 'Description'},
+            {'name' : 'Actions'},
+        ]} %}
+		<tbody>
+		{% for ingredient in paginator %}
+		<tr>
+			<th>{{ ingredient.label }}</th>
+			<th>{{ ingredient.color }}</th>
+			<th>{{ ingredient.niveau }}</th>
+			<th>{{ ingredient.dose }}</th>
+			<th>	
+				{% if ingredient.description %}
+					{{ ingredient.description|markdown_to_html }}
+				{% else %}
+					Aucune description
+				{% endif %}
+			</th>
+			<th>
+				<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+					<div class="btn-group" role="group" aria-label="...">
+						<a class="btn btn-secondary" href="{{ path('ingredient.admin.detail',{'ingredient':ingredient.id}) }}"><i class="fa fa-eye"></i></a>
+						<a class="btn btn-secondary" href="{{ path('ingredient.admin.update',{'ingredient':ingredient.id}) }}"><i class="fa fa-pencil"></i></a>
+						<a class="btn btn-secondary" href="{{ path('ingredient.admin.delete',{'ingredient':ingredient.id}) }}"><i class="fa fa-eraser"></i></a>
 					</div>
 				</div>
-		    </li>
-
+			</th>
 		{% endfor %}
-	 	</ul>
-	</div>
+		</tbody>
+	</table>
+
+	{% include '_partials/pagination.html.twig' %}
 	
 {% endblock %}

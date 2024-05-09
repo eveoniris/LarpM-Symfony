@@ -4,21 +4,18 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('ingredient.admin.list') }}">Liste des ingredients</a></li>
-		<li class="active">Ajouter un ingredient</li>
-	</ol>
-	
-	
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('ingredient.admin.add') }}) }}
-			<fieldset>
-				<legend>Ajout d'un ingredient</legend>
-					
-					{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
+{% include '_partials/breadcrumb.twig' with {'items' : {
+	1 : {'route' : path('ingredient.list'), 'name' : 'Liste des ingredients'},
+	2 : {'name' : 'Ajout d\'un ingredient'}
+}} 
+%}
+
+	<div class="well well-sm bs-component">
+		<div class="header">
+			<h5>Ajout d'un ingredient</h5>
+		</div>
+
+		{{ form(form) }}
 	</div>
-				
+	
 {% endblock body %}

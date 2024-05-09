@@ -4,11 +4,11 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('ingredient.admin.list') }}">Liste des ingredients</a></li>
-		<li class="active">Détail d'un ingredient</li>
-	</ol>
+{% include '_partials/breadcrumb.twig' with {'items' : {
+	1 : {'route' : path('ingredient.list'), 'name' : 'Liste des ingredients'},
+	2 : {'name' : 'Détail d\'un ingredient'}
+}} 
+%}
 
 	<div class="list-group">
 		<div class="list-group-item">
@@ -29,7 +29,13 @@
 		</div>
 		<div class="list-group-item">
 			<div class="list-group-item-heading"><h6>Description</h6></div>
-			<div class="list-group-item-text">{{ ingredient.description|markdown_to_html }}</div>
+			<div class="list-group-item-text">
+				{% if ingredient.description %}
+					{{ ingredient.description|markdown_to_html }}
+				{% else %}
+					Aucune description
+				{% endif %}
+			</div>
 		</div>
 	</div>
 			
