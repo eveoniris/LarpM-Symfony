@@ -539,15 +539,16 @@ class PersonnageController extends AbstractController
     {
         $langueMateriel = [];
         foreach ($personnage->getPersonnageLangues() as $langue) {
-            if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel) && (0 != $langue->getLangue()->getGroupeLangue()->getId() && 6 != $langue->getLangue()->getGroupeLangue()->getId())) {
-                $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
+            if ($langue->getLangue()->getGroupeLangue()->getId() > 0 && $langue->getLangue()->getGroupeLangue()->getId() < 6) {
+                if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel) ) {
+                    $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
+                }
             }
 
             if (0 === $langue->getLangue()->getDiffusion()) {
                 $langueMateriel[] = 'Alphabet '.$langue->getLangue()->getLabel();
             }
         }
-
         sort($langueMateriel);
 
         return $langueMateriel;
