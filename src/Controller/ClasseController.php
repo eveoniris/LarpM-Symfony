@@ -30,6 +30,7 @@ class ClasseController extends AbstractController
         );
 
         $query = $classeRepository->createQueryBuilder('c')
+            ->where('c.creation is not null')
             ->orderBy(key($orderBy), current($orderBy));
 
         $classes = $classeRepository->findPaginatedQuery(
