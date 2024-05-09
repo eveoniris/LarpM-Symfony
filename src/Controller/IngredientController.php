@@ -3,8 +3,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Ingredient;
 use App\Form\IngredientDeleteForm;
 use App\Form\IngredientForm;
+use App\Repository\IngredientRepository;
+use App\Service\PagerService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,21 +21,22 @@ class IngredientController extends AbstractController
      * Liste des ingrédients.
      */
     #[Route('/ingredient', name: 'ingredient.list')]
-    public function adminListAction(Request $request,  EntityManagerInterface $entityManager)
+    public function adminListAction(Request $request, PagerService $pagerService, IngredientRepository $ingredientRepository)
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Ingredient::class);
-        $ingredients = $repo->findAllOrderedByLabel();
+        $pagerService->setRequest($request)->setRepository($ingredientRepository)->setLimit(50);
 
-        return $this->render('ingredient/list.twig', ['ingredients' => $ingredients]);
+        return $this->render('ingredient/list.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $ingredientRepository->searchPaginated($pagerService),
+        ]);
     }
 
     /**
      * Detail d'un ingredient.
      */
-    public function adminDetailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/ingredient/{ingredient}/detail', name: 'ingredient.admin.detail')]
+    public function adminDetailAction(Request $request, Ingredient $ingredient)
     {
-        $ingredient = $request->get('ingredient');
-
         return $this->render('ingredient/detail.twig', [
             'ingredient' => $ingredient,
         ]);
@@ -40,6 +45,7 @@ class IngredientController extends AbstractController
     /**
      * Ajoute un ingredient.
      */
+    #[Route('/ingredient/add', name: 'ingredient.admin.add')]
     public function adminAddAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $ingredient = new \App\Entity\Ingredient();
@@ -69,10 +75,9 @@ class IngredientController extends AbstractController
     /**
      * Met à jour un ingredient.
      */
-    public function adminUpdateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/ingredient/{ingredient}/update', name: 'ingredient.admin.update')]
+    public function adminUpdateAction(Request $request,  EntityManagerInterface $entityManager, Ingredient $ingredient)
     {
-        $ingredient = $request->get('ingredient');
-
         $form = $this->createForm(IngredientForm::class, $ingredient)
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -98,10 +103,9 @@ class IngredientController extends AbstractController
     /**
      * Supprime un ingredient.
      */
-    public function adminDeleteAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/ingredient/{ingredient}/delete', name: 'ingredient.admin.delete')]
+    public function adminDeleteAction(Request $request,  EntityManagerInterface $entityManager, Ingredient $ingredient)
     {
-        $ingredient = $request->get('ingredient');
-
         $form = $this->createForm(IngredientDeleteForm::class, $ingredient)
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
@@ -115,7 +119,7 @@ class IngredientController extends AbstractController
 
            $this->addFlash('success', 'L\'ingredient a été suprimé');
 
-            return $this->redirectToRoute('ingredient.admin.list', [], 303);
+            return $this->redirectToRoute('ingredient.list', [], 303);
         }
 
         return $this->render('ingredient/delete.twig', [
