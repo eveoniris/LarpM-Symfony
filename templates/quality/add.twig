@@ -4,18 +4,18 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('quality') }}">Liste des qualités</a></li>
-		<li class="active">Ajout d'une qualité</li>
-	</ol>
+{% include '_partials/breadcrumb.twig' with {'items' : {
+	1 : {'route' : path('quality.list'), 'name' : 'Liste des qualités'},
+	2 : {'name' : 'Ajout d\'une qualité'}
+}} 
+%}
+
 	
 	<div class="well well-sm">
-		<form data-toggle="validator" action="{{ path('quality.add') }}" method="POST" {{ form_enctype(form) }}  novalidate>
+		{{ form_start(form, {"attr": {"action": path('quality.add') }}) }}
 			<fieldset>
 				<legend>Ajout d'une qualité</legend>
 				
-	
 				{{ form_label(form.label) }}
 				{{ form_widget(form.label) }}
 				

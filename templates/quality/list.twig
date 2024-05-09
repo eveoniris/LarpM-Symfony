@@ -4,27 +4,27 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des qualités</li>
-		
-	</ol>
-	
+	{% include '_partials/breadcrumb.twig' with {'items' : {1 : {'name' : 'Liste des qualités'}}} %}
+
 	<div class="well well-sm">
+		<div class="header">
+			<h5>Qualités <small>({{ qualities|length }} qualités)</small></h5>
+		</div>
+
 		<div class="btn-toolbar" role="toolbar" aria-label="...">
 			<div class="btn-group" role="group" aria-label="...">
-				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter une qualité" href="{{ path('quality.add') }}"><i class="fa fa-plus"></i></a>
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter une qualité" href="{{ path('quality.add') }}"><i class="fa fa-add"></i> Ajouter</a>
 			</div>
 		</div>
 	</div>	
 	
-	<table class="table table-condensed table-striped table-bordered">
+	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>
 				<th>Label</th>
 				<th>Numéro</th>
 				<th>Valeur</th>
-				<th />
+				<th>Actions</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -42,9 +42,9 @@
 				<td>
 					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 						<div class="btn-group" role="group" aria-label="...">
-							<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('quality.update',{'quality':quality.id}) }}"><i class="fa fa-pencil"></i></a>
-							<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('quality.detail',{'quality':quality.id}) }}"><i class="fa fa-eye"></i></a>
-							<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('quality.delete',{'quality':quality.id}) }}"><i class="fa fa-eraser"></i></a>
+							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('quality.detail',{'quality':quality.id}) }}"><i class="fa fa-eye"></i></a>
+							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('quality.update',{'quality':quality.id}) }}"><i class="fa fa-pencil"></i></a>
+							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('quality.delete',{'quality':quality.id}) }}"><i class="fa fa-eraser"></i></a>
 						</div>
 					</div>
 				</td>
