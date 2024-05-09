@@ -4,18 +4,16 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('lieu') }}">Liste des monnaie</a></li>
-		<li class="active">Mise à jour d'une monnaie</li>
-	</ol>
+{% include '_partials/breadcrumb.twig' with {'items' : {
+	1 : {'route' : path('monnaie.list'), 'name' : 'Liste des monnaies'},
+	2 : {'name' : 'Mise à jour d\'une monnaie'}
+}} 
+%}
 	
 	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('monnaie.update', {'monnaie': monnaie.id}) }}" method="POST" {{ form_enctype(form) }}  novalidate>
+		{{ form_start(form, {"attr": {"action": path('monnaie.update', {'monnaie': monnaie.id}) }}) }}
 			<fieldset>
 				<legend>Mise à jour d'une monnaie</legend>
-				
-	
 				{{ form(form) }}
 			</fieldset>
 		{{ form_end(form) }}
