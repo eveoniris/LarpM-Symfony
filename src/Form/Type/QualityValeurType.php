@@ -3,7 +3,11 @@
 
 namespace App\Form\Type;
 
+use App\Entity\Monnaie;
+use App\Entity\QualityValeur;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -16,13 +20,14 @@ class QualityValeurType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('monnaie', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+        $builder
+            ->add('monnaie', EntityType::class, [
             'label' => 'Choisissez la monnaie',
             'required' => true,
-            'class' => \App\Entity\Monnaie::class,
+            'class' => Monnaie::class,
             'choice_label' => 'label',
-        ])
-            ->add('nombre', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            ])
+            ->add('nombre', IntegerType::class, [
                 'label' => 'Quantité',
                 'required' => true,
             ]);
@@ -31,7 +36,7 @@ class QualityValeurType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\QualityValeur::class,
+            'data_class' => QualityValeur::class,
         ]);
     }
 
