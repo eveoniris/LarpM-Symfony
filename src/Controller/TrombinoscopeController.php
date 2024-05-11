@@ -6,6 +6,8 @@ namespace App\Controller;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\Trombinoscope\TrombinoscopeForm;
+use App\Repository\ParticipantRepository;
+use App\Service\PagerService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,10 +20,23 @@ class TrombinoscopeController extends AbstractController
      * Le trombinoscope général.
      */
     #[Route('/trombinoscope', name: 'trombinoscope.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager): Response
+    public function indexAction(Request $request, PagerService $pagerService, ParticipantRepository $participantRepository, EntityManagerInterface $entityManager): Response
     {
         $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
         $gn = $gnRepo->findNext();
+
+        $pagerService->setRequest($request)->setRepository($participantRepository)->setLimit(50);
+        //$paginator = $participantRepository->searchPaginatedByGn($pagerService, $gn->getId());
+        //dump($paginator);
+
+        return $this->render('trombinoscope.twig', [
+            'gn' => $gn,
+            'pagerService' => $pagerService,
+            'paginator' => $participantRepository->searchPaginatedByGn($pagerService, $gn->getId()),
+        ]);
+
+        /*
+
 
         $form = $this->createForm(TrombinoscopeForm::class);
 
@@ -92,7 +107,7 @@ class TrombinoscopeController extends AbstractController
             'religion' => $religion,
             'language' => $language,
             'groupe' => $groupe,
-        ]);
+        ]);*/
     }
 
     /**

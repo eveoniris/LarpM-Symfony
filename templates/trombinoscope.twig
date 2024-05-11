@@ -33,72 +33,57 @@ a {
 
 {% block body %}
 
-<div class="well well-sm">
-	<div class="header"><h5>Personnages participants à {{ gn.label }}</h5></div>
-	<a class="btn btn-primary" role="button" data-toggle="collapse" href="#filtres" aria-expanded="false" aria-controls="filtres">
-  		Filtres ...
-	</a>
-	<div class="collapse" id="filtres">
-		
-			{{ form_start(form, {"attr": {"action": path('trombinoscope') }}) }}
-				
-				<div class="row" style="overflow:visible">
-					<div class="col-md-6">
-						{{ form_row(form.renomme) }}
-						{{ form_row(form.territoire) }}
-						{{ form_row(form.classe) }}
-						{{ form_row(form.competence) }}
-					</div>
-					<div class="col-md-6">
-						{{ form_row(form.religion) }}
-						{{ form_row(form.language) }}
-						{{ form_row(form.groupe) }}
-					</div>
-				</div>			
-				{{ form_rest(form) }}	
-			{{ form_end(form) }}
-		
+{% include '_partials/breadcrumb.twig' with {'items' : {1 : {'name' : 'Trombinoscope'}}} %}
+
+	<div class="well well-sm">
+		<div class="header">
+			<h5>Personnages participants à {{ gn.label }} <small>({{ paginator|length }} personnages trouvés)</small></h5>
+		</div>
+
+		{% include '_partials/formListSearch.twig' with
+            {
+                'actionPath' : path('trombinoscope.index')
+            } 
+        %}
 	</div>
-	
-	<h6>{{ participants|length }} personnage(s) trouvé(s).</h6>
-	{%  if renomme or territoire or competence or classe or religion or language or groupe %}
-	Filtres actifs :
-		<ul>
-			{% if renomme %}<li>Renomme >= {{ renomme }}</li>{% endif %}
-			{% if territoire %}<li>Territoire : {{ territoire }}</li>{% endif %}
-			{% if competence %}<li>Competence : {{ competence }}</li>{% endif %}
-			{% if classe %}<li>Classe : {{ classe }}</li>{% endif %}
-			{% if religion %}<li>Religion : {{ religion }}</li>{% endif %}
-			{% if language %}<li>Language : {{ language }}</li>{% endif %}
-			{% if groupe %}<li>Groupe : {{ groupe }}</li>{% endif %}
-		</ul>
-	{% endif %}
-	<ul class="waterfall center-block">
-    	{% for participant in participants %}
-    		<li class="pin">
-    			<ul class="list-group">
-    				<li class="list-group-item">
-    					<center><h5>{{ participant.personnage.nom }}</h5></center>
-    					<a href="{{ path('personnage.admin.detail', {'personnage': participant.personnage.id}) }}">
-	    					{% if participant.personnage.trombineUrl %}
-			  					<img src="{{ path('personnage.trombine', {'personnage' : participant.personnage.id }) }}" alt="{{ participant.personnage.nom }}" />
-			  				{% else %}
-			  					<img width="160" src="{{ app.request.basepath }}/img/no_trombine.png" />
-			  				{% endif %}
-		  				</a>
-		  			</li>
-		  			<li class="list-group-item">
-						{% if participant.groupeGn %}
-							Groupe : <a href="{{ path('groupe.detail', {'groupe': participant.groupeGn.groupe.id} ) }}">{{ participant.groupeGn.groupe.nom }}</a>
+
+	{% include '_partials/pagination.html.twig' %}
+
+	<table class="table table-striped table-bordered table-condensed table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'trombinoscope.index', 'rows': [
+            {'name' : 'Nom', 'field' : 'nom'},
+            {'name' : 'Tromine'},
+            {'name' : 'Groupe', 'field' : 'groupe'},
+            {'name' : 'Joueur', 'field' : 'joueur'},
+        ]} %}
+        <tbody>
+		{% for participant in paginator %}
+			<tr>
+				<td>{{ participant.personnage.nom }}</td>
+				<td>
+					<a href="{{ path('personnage.admin.detail', {'personnage': participant.personnage.id}) }}">
+						{% if participant.personnage.trombineUrl %}
+							<img src="{{ path('personnage.trombine', {'personnage' : participant.personnage.id }) }}" alt="{{ participant.personnage.nom }}" />
 						{% else %}
-							Aucun groupe
+							<img width="160" src="{{ app.request.basepath }}/img/no_trombine.png" />
 						{% endif %}
-						<br />
-						Joué par <a href="{{ path('user.view', {'user': participant.user.id}) }}">{{ participant.user.username }}</a>
-		  			</li>
-	  			</ul>
-	    	</li>
-  		{% endfor %}
-  	</ul>
-</div>
+					</a>
+				</td>
+				<td>
+					{% if participant.groupeGn %}
+						<a href="{{ path('groupe.detail', {'groupe': participant.groupeGn.groupe.id} ) }}">{{ participant.groupeGn.groupe.nom }}</a>
+					{% else %}
+						Groupe
+					{% endif %}
+				</td>
+				<td>
+					<a href="{{ path('user.view', {'user': participant.user.id}) }}">{{ participant.user.username }}</a>
+				</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+
+	{% include '_partials/pagination.html.twig' %}
+
 {% endblock body %}
