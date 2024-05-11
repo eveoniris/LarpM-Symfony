@@ -3,8 +3,12 @@
 
 namespace App\Form\Quality;
 
+use App\Entity\Quality;
 use App\Form\Type\QualityValeurType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,15 +24,15 @@ class QualityForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('label', TextType::class, [
             'label' => 'Label',
             'required' => true,
         ])
-            ->add('numero', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            ->add('numero', IntegerType::class, [
                 'required' => true,
                 'label' => 'Numéro',
             ])
-            ->add('qualityValeurs', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+            ->add('qualityValeurs', CollectionType::class, [
                 'label' => 'Valeur',
                 'required' => true,
                 'allow_add' => true,
@@ -44,7 +48,7 @@ class QualityForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'class' => \App\Entity\Quality::class,
+            'class' => Quality::class,
         ]);
     }
 

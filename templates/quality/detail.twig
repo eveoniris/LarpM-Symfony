@@ -15,6 +15,11 @@
 		<div class="list-group">
 			<div class="list-group-item">
 				Numéro : {{ quality.numero }}
+				<ul>
+				{% for qualityValeur in quality.qualityValeurs %}
+					<li>{{ qualityValeur.nombre }} {{ qualityValeur.monnaie.label }}</li>
+				{% endfor %}
+				</ul>
 			</div>
 		</div>
 	</div>

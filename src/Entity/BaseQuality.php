@@ -39,6 +39,7 @@ abstract class BaseQuality
     {
         $this->items = new ArrayCollection();
         $this->qualityValeurs = new ArrayCollection();
+        $this->addQualityValeur(new QualityValeur());
     }
 
     /**
