@@ -396,6 +396,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         }
 
         foreach ($list as $keyAttribute => $item) {
+
             // From simple sort
             if (strtolower($attribute) === strtolower($keyAttribute)) {
                 return true;
@@ -406,10 +407,12 @@ abstract class BaseRepository extends ServiceEntityRepository
                 is_string($item)
                 && (strtolower($attribute) === strtolower($item)
                     || strtolower($attribute) === strtolower($this->getAttributeName($item))
+                    || (str_contains(strtolower($item), strtolower($attribute)) && str_contains(strtolower($item), strtolower($this->getAttributeName($item))))
                 )
             ) {
                 return true;
             }
+            //isAllowedAttribute(foreach) > keyAttribute:5/item:classe.nom as classe/attribute:nom/aliased:classe.nom/getAttributeName:nom as classe
 
             // from aliased
             if (strtolower($aliased) === strtolower($keyAttribute)) {

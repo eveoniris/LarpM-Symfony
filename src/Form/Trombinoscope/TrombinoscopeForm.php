@@ -20,7 +20,7 @@ class TrombinoscopeForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('renomme', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
-            'label' => 'Renommé supérieur ou égale à',
+            'label' => 'Renommé >=',
             'required' => false,
         ])
             ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
@@ -132,7 +132,8 @@ class TrombinoscopeForm extends AbstractType
                     'placeholder' => 'Groupe',
                 ],
             ])
-            ->add('find', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Filtrer']);
+            //->add('find', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Filtrer'])
+            ;
     }
 
     /**
