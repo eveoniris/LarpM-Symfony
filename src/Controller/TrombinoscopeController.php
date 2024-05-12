@@ -26,8 +26,6 @@ class TrombinoscopeController extends AbstractController
         $gn = $gnRepo->findNext();
 
         $pagerService->setRequest($request)->setRepository($participantRepository)->setLimit(50);
-        //$paginator = $participantRepository->searchPaginatedByGn($pagerService, $gn->getId());
-        //dump($paginator);
 
         return $this->render('trombinoscope.twig', [
             'gn' => $gn,
