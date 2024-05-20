@@ -3,6 +3,7 @@
 
 namespace App\Repository;
 
+use App\Service\OrderBy;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -22,5 +23,17 @@ class CompetenceFamilyRepository extends BaseRepository
         return $this->getEntityManager()
             ->createQuery('SELECT cf FROM App\Entity\CompetenceFamily cf ORDER BY cf.label ASC')
             ->getResult();
+    }
+
+    public function sortAttributes(string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            'label' => [
+                OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
+            ],
+        ];
     }
 }
