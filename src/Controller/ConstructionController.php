@@ -6,6 +6,10 @@ namespace App\Controller;
 use App\Entity\Construction;
 use App\Form\ConstructionDeleteForm;
 use App\Form\ConstructionForm;
+use App\Repository\ConstructionRepository;
+use App\Service\PagerService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,19 +22,21 @@ class ConstructionController extends AbstractController
      * Présentation des constructions.
      */
     #[Route('/construction', name: 'construction.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, PagerService $pagerService, ConstructionRepository $constructionRepository): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Construction::class);
-        $constructions = $repo->findAllOrderedByLabel();
+        $pagerService->setRequest($request)->setRepository($constructionRepository)->setLimit(25);
 
         return $this->render('construction/index.twig', [
-            'constructions' => $constructions]);
+            'pagerService' => $pagerService,
+            'paginator' => $constructionRepository->searchPaginated($pagerService),
+        ]);
     }
 
     /**
      * Ajoute une construction.
      */
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/construction/add', name: 'construction.add')]
+    public function addAction(Request $request,  EntityManagerInterface $entityManager): Response|RedirectResponse
     {
         $construction = new \App\Entity\Construction();
 
@@ -59,10 +65,9 @@ class ConstructionController extends AbstractController
     /**
      * Modifie une construction.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/construction/{construction}/update', name: 'construction.update')]
+    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Construction $construction): Response|RedirectResponse
     {
-        $construction = $request->get('construction');
-
         $form = $this->createForm(ConstructionForm::class, $construction)
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -88,10 +93,9 @@ class ConstructionController extends AbstractController
     /**
      * Supprime une construction.
      */
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/construction/{construction}/delete', name: 'construction.delete')]
+    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Construction $construction): Response|RedirectResponse
     {
-        $construction = $request->get('construction');
-
         $form = $this->createForm(ConstructionDeleteForm::class, $construction)
             ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
@@ -105,7 +109,7 @@ class ConstructionController extends AbstractController
 
            $this->addFlash('success', 'La construction a été supprimée.');
 
-            return $this->redirectToRoute('construction', [], 303);
+            return $this->redirectToRoute('construction.index', [], 303);
         }
 
         return $this->render('construction/delete.twig', [
@@ -117,10 +121,9 @@ class ConstructionController extends AbstractController
     /**
      * Détail d'une construction.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/construction/{construction}/detail', name: 'construction.detail')]
+    public function detailAction(Construction $construction): Response
     {
-        $construction = $request->get('construction');
-
         return $this->render('construction/detail.twig', [
             'construction' => $construction]);
     }
@@ -128,7 +131,8 @@ class ConstructionController extends AbstractController
     /**
      * Liste des territoires ayant cette construction.
      */
-    public function personnagesAction(Request $request,  EntityManagerInterface $entityManager, Construction $construction)
+    #[Route('/construction/{construction}/territoires', name: 'construction.territoires')]
+    public function territoiresAction(Construction $construction): Response
     {
         return $this->render('construction/territoires.twig', [
             'construction' => $construction,

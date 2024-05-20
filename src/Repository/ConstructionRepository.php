@@ -3,6 +3,7 @@
 
 namespace App\Repository;
 
+use App\Service\OrderBy;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -34,5 +35,21 @@ class ConstructionRepository extends BaseRepository
         return $this->getEntityManager()
             ->createQuery('SELECT r FROM App\Entity\Construction r ORDER BY r.label ASC')
             ->getResult();
+    }
+
+    public function sortAttributes(string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            'label' => [
+                OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
+            ],
+            'defense' => [
+                OrderBy::ASC => [$alias.'.defense' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.defense' => OrderBy::DESC],
+            ],
+        ];
     }
 }
