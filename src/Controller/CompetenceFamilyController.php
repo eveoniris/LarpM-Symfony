@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\CompetenceFamily;
 use App\Form\CompetenceFamilyForm;
+use App\Repository\CompetenceFamilyRepository;
+use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -20,12 +22,14 @@ class CompetenceFamilyController extends AbstractController
      */
     #[Route('/competenceFamily', name: 'competenceFamily.index')]
     #[IsGranted('ROLE_REGLE')]
-    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
+    public function indexAction(Request $request, PagerService $pagerService, CompetenceFamilyRepository $competenceFamilyRepository): Response
     {
-        $repo = $entityManager->getRepository(CompetenceFamily::class);
-        $competenceFamilies = $repo->findAllOrderedByLabel();
+        $pagerService->setRequest($request)->setRepository($competenceFamilyRepository)->setLimit(25);
 
-        return $this->render('competenceFamily/index.twig', ['competenceFamilies' => $competenceFamilies]);
+        return $this->render('competenceFamily/index.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $competenceFamilyRepository->searchPaginated($pagerService),
+        ]);
     }
 
     /**
