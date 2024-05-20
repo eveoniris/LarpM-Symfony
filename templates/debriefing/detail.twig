@@ -49,7 +49,7 @@
 		<div class="panel-heading">
 			<h4>{{ debriefing.titre|default('Pas de titre') }}
 				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('debriefing.update', {'debriefing': debriefing.id}) }}"><i class="fa fa-pencil"></i></a>
-				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('debriefing.delete', {'debriefing': debriefing.id}) }}"><i class="fa fa-eraser"></i></a>
+				<a class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('debriefing.delete', {'debriefing': debriefing.id}) }}"><i class="fa fa-eraser"></i></a>
 			</h4>
 		</div>
 		<div class="panel-body">

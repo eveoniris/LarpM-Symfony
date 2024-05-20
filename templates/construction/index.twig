@@ -4,35 +4,50 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des constructions</li>
-	</ol>
+	{% include '_partials/breadcrumb.twig' with {'items' : {1 : {'name' : 'Liste des constructions'}}} %}
 
 	<div class="well well-sm">
-	
-		<a href="{{ path('construction.add') }}"><i class="fa fa-plus"></i> Ajouter une construction</a>
-		
-		<ul class="list-group">
-		{% for construction in constructions %}
-		
-			<li class="list-group-item">
-				<div class="row">
-					<div class="col-md-8">
-						{{ construction.label }} -- {{ construction.defense }}
-						{{ construction.description|markdown_to_html }}
-					</div>
-					<div class="col-md-4">
-						<a href="{{ path('construction.update',{'construction':construction.id}) }}"><i class="fa fa-pencil"></i> Modifier</a>&nbsp;|&nbsp;
-						<a href="{{ path('construction.detail',{'construction':construction.id}) }}"><i class="fa fa-eye"></i> Detail</a>&nbsp;|&nbsp;
-						<a href="{{ path('construction.territoires',{'construction':construction.id}) }}"><i class="fa fa-eye"></i> Territoires ({{ construction.territoires|length }})</a>&nbsp;|&nbsp;
-						<a href="{{ path('construction.delete',{'construction':construction.id}) }}"><i class="fa fa-eraser"></i> Supprimer</a>
-					</div>
-				</div>
-		    </li>
+		<div class="header">
+			<h5>Liste des constructions <small>( {{ paginator|length }} constructions)</small></h5>
+		</div>
 
-		{% endfor %}
-	 	</ul>
+		<div class="btn-toolbar" role="toolbar" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter une construction" href="{{ path('construction.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+			</div>
+		</div>
 	</div>
+
+	{% include '_partials/pagination.html.twig' %}
+
+	<table class="table table-striped table-bordered table-condensed table-hover">
+		{% include '_partials/thead.twig' with  { 'route': 'construction.index', 'rows': [
+            {'name' : 'Construction', 'field' : 'label'},
+			{'name' : 'Défense', 'field' : 'defense'},
+            {'name' : 'Description'},
+            {'name' : 'Actions'},
+        ]} %}
+		<tbody>
+		{% for construction in paginator %}
+			<tr>
+				<td>{{ construction.label }}</td>
+				<td>{{ construction.defense }}</td>
+				<td>{{ construction.description|markdown_to_html }}</td>
+				<td>
+					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+						<div class="btn-group" role="group" aria-label="...">
+							<a class="btn btn-secondary" href="{{ path('construction.detail',{'construction':construction.id}) }}"><i class="fa fa-eye"></i></a>
+							<a class="btn btn-secondary" href="{{ path('construction.update',{'construction':construction.id}) }}"><i class="fa fa-pencil"></i></a>
+							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Liste des territoires avec cette construction" href="{{ path('construction.territoires',{'construction':construction.id}) }}"><i class="fa fa-map"></i></a>
+							<a class="btn btn-danger" href="{{ path('construction.delete',{'construction':construction.id}) }}"><i class="fa fa-eraser"></i></a>
+						</div>
+					</div>
+				</td>
+			</tr>
+		{% endfor %}
+	 	</tbody>
+	</table>
+
+    {% include '_partials/pagination.html.twig' %}
 	
 {% endblock %}

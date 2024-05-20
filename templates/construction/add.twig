@@ -4,19 +4,19 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('construction') }}">Liste des constructions</a></li>
-		<li class="active">Ajouter une construction</li>
-	</ol>
-	
-	
+	{% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des constructions', 'route': path('construction.index') },
+            {'name' : 'Ajouter une construction' },
+        ]
+    } %}
+
 	<div class="well well-sm bs-component">
 		<div class="header">
 			<h5>Ajout d'une construction</h5>
-
-			{{ form(form) }}
 		</div>
+		{{ form(form) }}
+		
 	</div>
 				
 {% endblock body %}
