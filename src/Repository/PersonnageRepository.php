@@ -4,6 +4,7 @@
 namespace App\Repository;
 
 use App\Entity\PersonnageLignee;
+use App\Entity\Titre;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Deprecated;
@@ -169,6 +170,23 @@ LEFT JOIN p2.participants pa2
         $qb->where('(d.parent1 = :parent OR d.parent2 = :parent)');
         $qb->orderBy('d.personnage', 'DESC');
         $qb->setParameter('parent', $personnage_id);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Fourni la liste des descendants directs.
+     */
+    public function findTitre($renommee)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select('t');
+        $qb->from(Titre::class, 't');
+        $qb->where('t.renomme >= :renommee');
+        $qb->orderBy('t.renomme', 'ASC');
+        $qb->setParameter('renommee', $renommee);
+        $qb->setMaxResults(1);
 
         return $qb->getQuery()->getResult();
     }

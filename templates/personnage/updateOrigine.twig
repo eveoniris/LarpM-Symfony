@@ -13,7 +13,7 @@
 	</ol>
 	
 	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('personnage.admin.origine.update',{'personnage':personnage.id}) }}) }}
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.update.origine',{'personnage':personnage.id}) }}) }}
 			<fieldset>
 				<legend>{{ personnage.publicName }} - <small>Choix d'une origine</small></legend>
 				<p>Choisissez l'origine du personnage, en général, les personnages sont issus du même pays que celui de leur groupe !</p>

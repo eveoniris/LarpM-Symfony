@@ -128,12 +128,16 @@ class GnController extends AbstractController
 
         $lois = $entityManager->getRepository(Loi::class)->findAll();
         $descendants = $entityManager->getRepository(Personnage::class)->findDescendants($personnage);
+        $titre = $entityManager->getRepository(Personnage::class)->findTitre($personnage->getRenomme());
+
+        dump($titre);
 
         return $this->render('personnage/detail.twig', [
             'personnage' => $personnage,
             'participant' => $participant,
             'lois' => $lois,
             'descendants' => $descendants,
+            'titre' => $titre,
         ]);
     }
 

@@ -395,7 +395,7 @@ class ParticipantController extends AbstractController
     /**
      * Modification de quelques informations concernant le personnage.
      */
-    #[Route('/participant/{participant}/personnageEdit', name: 'participant.personnageEdit')]
+    #[Route('/participant/{participant}/personnageEdit', name: 'participant.personnage.edit')]
     public function personnageEditAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $personnage = $participant->getPersonnage();
@@ -2019,8 +2019,8 @@ class ParticipantController extends AbstractController
     /**
      * Choix d'un nouveau sortilège.
      */
-    #[Route('/participant/{participant}/sort', name: 'participant.sort')]
-    public function sortAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
+    #[Route('/participant/{participant}/sort/{sort}', name: 'participant.sort')]
+    public function sortAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Sort $sort)
     {
         $personnage = $participant->getPersonnage();
 
@@ -2030,7 +2030,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $niveau = $request->get('niveau');
+        $niveau = $request->get('sort');
 
         if (!$personnage->hasTrigger('SORT APPRENTI')
             && !$personnage->hasTrigger('SORT INITIE')
@@ -2367,7 +2367,7 @@ class ParticipantController extends AbstractController
     /**
      * Liste des groupes secondaires public (pour les joueurs).
      */
-    #[Route('/participant/{participant}/groupeSecondaire/list', name: 'participant.groupeSecondaire.admin.list')]
+    #[Route('/participant/{participant}/groupeSecondaire/list', name: 'participant.groupeSecondaire.list')]
     public function groupeSecondaireListAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
         $repo = $entityManager->getRepository('\\'.SecondaryGroup::class);

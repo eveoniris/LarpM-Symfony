@@ -326,8 +326,8 @@
 								      			<span class="caret"></span>
 								    		</a>
 											<ul class="dropdown-menu">
-												<!-- <li><a href="{{ path('personnage.admin.add.token', {'personnage': personnage.id, 'token': 'VIEILLESSE'}) }}">Ajouter un jeton vieillesse</a></li>-->
-												<li><a href="{{ path('personnage.admin.add.trigger', {'personnage': personnage.id}) }}">Ajouter un déclencheur de compétences</a></li>
+												<!-- <li><a href="{{ path('personnage.admin.token.add', {'personnage': personnage.id, 'token': 'VIEILLESSE'}) }}">Ajouter un jeton vieillesse</a></li>-->
+												<li><a href="{{ path('personnage.admin.trigger.add', {'personnage': personnage.id}) }}">Ajouter un déclencheur de compétences</a></li>
 											</ul>
 										</li>
 	  								</ul>
@@ -341,7 +341,7 @@
 								{% for personnageToken in personnage.personnageHasTokens %}
 									<div class="list-group-item">
 										{{ personnageToken.token.label }}
-										-- <a href="{{ path('personnage.admin.delete.token', {'personnage': personnage.id, 'personnageHasToken': personnageToken.id}) }}">Supprimer</a>
+										-- <a href="{{ path('personnage.admin.token.delete', {'personnage': personnage.id, 'personnageHasToken': personnageToken.id}) }}">Supprimer</a>
 									</div>
 								{% else %}
 									<div class="list-group-item">La liste est vide</div>
@@ -353,7 +353,7 @@
 								{% for trigger in personnage.personnageTriggers %}
 									<div class="list-group-item">
 										{{ trigger.tag }}
-										-- <a href="{{ path('personnage.admin.delete.trigger', {'personnage': personnage.id, 'trigger': trigger.id}) }}">Supprimer</a>
+										-- <a href="{{ path('personnage.admin.trigger.delete', {'personnage': personnage.id, 'trigger': trigger.id}) }}">Supprimer</a>
 									</div>
 								{% else %}
 									<div class="list-group-item">La liste est vide</div>

@@ -11,7 +11,7 @@
 	</ol>
 
 	<div class="well bs-component">	
-		{{ form_start(form, {"attr": {"action": path('personnage.admin.background.add', {'personnage': personnage.id,'background': background.id}) }}) }}
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.add.background', {'personnage': personnage.id,'background': background.id}) }}) }}
 			<fieldset>
 				<legend>Modification de {{ personnage.publicName }}</legend>
 				

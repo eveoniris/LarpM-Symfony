@@ -1197,7 +1197,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute un jeton vieillesse au personnage.
      */
-    #[Route('/{personnage}/addToken', name: 'admin.add.token')]
+    #[Route('/{personnage}/addToken', name: 'admin.token.add')]
     public function adminTokenAddAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $token = $request->get('token');
@@ -1244,7 +1244,7 @@ class PersonnageController extends AbstractController
     /**
      * Retire un jeton d'un personnage.
      */
-    #[Route('/{personnage}/deleteToken', name: 'admin.delete.token')]
+    #[Route('/{personnage}/deleteToken', name: 'admin.token.delete')]
     public function adminTokenDeleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage, PersonnageHasToken $personnageHasToken)
     {
         $personnage->removePersonnageHasToken($personnageHasToken);
@@ -1281,7 +1281,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute un trigger.
      */
-    #[Route('/{personnage}/addTrigger', name: 'admin.add.trigger')]
+    #[Route('/{personnage}/addTrigger', name: 'admin.trigger.add')]
     public function adminTriggerAddAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $trigger = new \App\Entity\PersonnageTrigger();
@@ -1312,7 +1312,7 @@ class PersonnageController extends AbstractController
     /**
      * Supprime un trigger.
      */
-    #[Route('/{personnage}/deleteTrigger', name: 'admin.delete.trigger')]
+    #[Route('/{personnage}/deleteTrigger', name: 'admin.trigger.delete')]
     public function adminTriggerDeleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
         $trigger = $request->get('trigger');

@@ -12,7 +12,7 @@
 	</ol>
 
 	<div class="well bs-component">	
-		{{ form_start(form, {"attr": {"action": path('personnage.competence.remove', {'personnage': personnage.id}) }}) }}
+		{{ form_start(form, {"attr": {"action": path('personnage.admin.delete.competence', {'personnage': personnage.id}) }}) }}
 			<fieldset>
 				<legend>Retrait d'une compétence</legend>
 				
