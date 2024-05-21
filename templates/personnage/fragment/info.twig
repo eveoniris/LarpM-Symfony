@@ -105,9 +105,9 @@
 		
 		<div class="pull-right">
 			{% if personnage.genre == 'Masculin' %}
-				<img width="216" height="300" alt="{{ personnage.classe.labelMasculin }}" src="{{ app.request.basepath }}/img/{{ personnage.classe.imageM }}" />
+				<img width="216" height="300" alt="{{ personnage.classe.labelMasculin }}" src="{{ path('classe.image', {'classe' : personnage.classe.id, 'sexe' : 'F' }) }}" />
 			{% else %}
-				<img width="216" height="200" alt="{{ personnage.classe.labelFeminin }}" src="{{ app.request.basepath }}/img/{{ personnage.classe.imageF }}" />
+				<img width="216" height="200" alt="{{ personnage.classe.labelFeminin }}" src="{{ path('classe.image', {'classe' : personnage.classe.id, 'sexe' : 'F' }) }}" />
 			{% endif %}
 		</div>
 

@@ -14,7 +14,7 @@
 	</ol>
 	
 	<div class="well bs-component">
-	<form action="{{ path('participant.personnage.sort',{'participant':participant.id, 'niveau': niveau}) }}" method="POST" {{ form_enctype(form) }}>
+	<form action="{{ path('participant.sort.detail',{'participant':participant.id, 'niveau': niveau}) }}" method="POST" {{ form_enctype(form) }}>
 		<fieldset>
 			<blockquote>Votre compétence vous permet de choisir un nouveau sort.</blockquote>
 			<blockquote>Attention ! Un sort dans un domaine que vous ne maitrisez pas necessitera plus de Perles pour le lancer (la description complète des sorts est disponible en bas de cette page)</blockquote>
