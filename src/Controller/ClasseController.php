@@ -148,7 +148,7 @@ class ClasseController extends AbstractController
      * Récupération de l'image d'une classe en fonction du sexe.
      */
     #[Route('/classe/{classe}/image/{sexe}', name: 'classe.image', methods: ['GET'])]
-    public function imagrAction(
+    public function imageAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Classe $classe,
