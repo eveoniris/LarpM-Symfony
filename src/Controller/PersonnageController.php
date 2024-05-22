@@ -52,6 +52,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/personnage', name: 'personnage.')]
@@ -216,19 +217,16 @@ class PersonnageController extends AbstractController
      * Obtenir une image protégée.
      */
     #[Route('/{personnage}/trombine', name: 'trombine')]
-    public function getTrombineAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
+    public function getTrombineAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage): Response
     {
         $trombine = $personnage->getTrombineUrl();
-        $filename = __DIR__.'/../../private/img/'.$trombine;
+        $filename = __DIR__.'/../../assets/img/'.$trombine;
 
-        $stream = static function () use ($filename): void {
-            readfile($filename);
-        };
+        $response = new Response(file_get_contents($filename));
+        $response->headers->set('Content-Type', 'image/png');
+        $response->headers->set('cache-control', 'private');
 
-        return $app->stream($stream, 200, [
-            'Content-Type' => 'image/jpeg',
-            'cache-control' => 'private',
-        ]);
+        return $response;
     }
 
     /**
@@ -245,7 +243,7 @@ class PersonnageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $files = $request->files->get($form->getName());
 
-            $path = __DIR__.'/../../private/img/';
+            $path = __DIR__.'/../../assets/img/';
             $filename = $files['trombine']->getClientOriginalName();
             $extension = $files['trombine']->guessExtension();
 

@@ -212,7 +212,7 @@ $(document).ready(function () {
 
     // Switch de theme. TODO: En session || cookie
     let btnSwitch = document.getElementById('btnSwitch');
-    if (btnSwitch !== null) {
+    if (btnSwitch) {
         document.getElementById('btnSwitch').addEventListener('click', () => {
             if (document.documentElement.getAttribute('data-bs-theme') === 'dark') {
                 document.documentElement.setAttribute('data-bs-theme', 'light')
