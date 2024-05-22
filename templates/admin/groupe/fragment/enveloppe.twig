@@ -141,7 +141,7 @@ TOTAL : {{ groupe.richesseTotale|default(0) }} pièces d'argent
 				Sorts :
 				<a href="{{ path('personnage.admin.update.sort', {'personnage': participant.personnage.id}) }}">Modifier la liste des sorts</a>
 				<ul>
-				{% for sort in participant.sort.details %}
+				{% for sort in participant.personnage.sorts %}
 					<li>{{ sort.label }} - {{ sort.domaine.label }} Niveau {{ sort.niveau }}</li>
 				{% else %}
 					<li>Aucun</li>	
@@ -151,7 +151,7 @@ TOTAL : {{ groupe.richesseTotale|default(0) }} pièces d'argent
 				Potions :
 				<a href="{{ path('personnage.admin.update.potion', {'personnage': participant.personnage.id}) }}">Modifier la liste des potions</a>
 				<ul>
-				{% for potion in participant.potion.details %}
+				{% for potion in participant.personnage.potions %}
 					<li>{{ potion.label }} - Niveau {{ potion.niveau }}</li>
 				{% else %}
 					<li>Aucune</li>

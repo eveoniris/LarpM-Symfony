@@ -8,7 +8,7 @@
 	<div class="row">
 		<div class="col-xs-12 col-md-8">
 		
-			<a href="{{ path("groupe") }}">Retour à la liste des groupes</a>			
+			<a href="{{ path("groupe.admin.list") }}">Retour à la liste des groupes</a>			
 			<div class="well well-sm bs-component">
 				<h4>
 					{{ groupe.numero|default('?') }} - {{ groupe.nom }}
@@ -62,8 +62,8 @@
 	    			<h4 class="list-group-item-heading">Membres du groupe</h4>
 	    			<p class="list-group-item-text">
 	    				<ul>
-	    				{% if groupe.responsable %}<li><strong>{{ groupe.responsable.username }}</strong>&nbsp;(Responsable du groupe)</li>{% endif %}
-						{% for joueur in groupe.joueurs %}
+	    				{% if groupe.userRelatedByResponsableId %}<li><strong>{{ groupe.userRelatedByResponsableId.username }}</strong>&nbsp;(Responsable du groupe)</li>{% endif %}
+						{% for joueur in groupe.personnages %}
 						<li>
 							<strong>{{ joueur }} </strong>: {{ joueur.user.email }}
 						</li>
