@@ -28,6 +28,6 @@
     },
     "dependencies": {
         "file-loader": "^6.2.0",
-        "tinymce": "^6.8.2"
+        "tinymce": "^7.1.1"
     }
 }
