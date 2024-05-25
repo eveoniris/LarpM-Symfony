@@ -86,9 +86,9 @@ abstract class BaseBillet
         return $this->label ?? '';
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(?string $description): self
     {
-        $this->description = $description;
+        $this->description = (string) $description;
 
         return $this;
     }

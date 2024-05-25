@@ -2,43 +2,6 @@
 
 {% block title %}Diplomatie{% endblock title %}
 
-{% block style %}
-<style>
-	table.diplo {
-		border-collapse: collapse;
-		background-color: #fff;
-	}
-	table.diplo, table.diplo th, table.diplo td {
-    	border: 1px solid black;
-	}
-	
-	table.diplo tr:hover {background-color: #f5f5f5}
-	table.diplo tr:nth-child(even) {background-color: #f2f2f2}
-	
-	table.diplo th {
-		background-color: #4CAF50;
-    	color: white;
-    }
-	
-	th.rotate {
-	  /* Something you can count on */
-	  height: 140px;
-	  white-space: nowrap;
-	}
-	th.rotate > div {
-	  transform: 
-	    /* Magic Numbers */
-	    translate(0px, 51px)
-	    /* 45 is really 360 - 45 */
-	    rotate(270deg);
-	  width: 30px;
-	}
-	th.rotate > div > span {
-	  padding: 5px 10px;
-	}
-</style>
-{% endblock style %}
-
 {% block body %}
 
 	{% include '_partials/breadcrumb.twig' with {'items' : {1 : {'name' : 'Diplomatie'}}} %}
