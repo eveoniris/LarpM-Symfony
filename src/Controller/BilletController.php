@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Billet;
+use App\Entity\Gn;
 use App\Form\BilletDeleteForm;
 use App\Form\BilletForm;
 use App\Repository\BilletRepository;
@@ -54,7 +55,7 @@ class BilletController extends AbstractController
         $gnId = $request->get('gn');
 
         if ($gnId) {
-            $gn = $repository->find($gnId);
+            $gn = $this->entityManager->getRepository(Gn::class)->find($gnId);
             $billet->setGn($gn);
         }
 

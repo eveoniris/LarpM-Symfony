@@ -36,11 +36,11 @@ class TokenController extends AbstractController
         ]);
     }
 
-    // TODO
+    // TODO as global for printing
     #[Route('/print', name: 'print')]
     public function printAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $tokens = $entityManager->getRepository('\\'.Token::class)->findAllOrderedByLabel();
+        $tokens = $entityManager->getRepository(Token::class)->findAllOrderedByLabel();
 
         return $this->render('token/print.twig', ['tokens' => $tokens]);
     }

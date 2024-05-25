@@ -1,47 +1,28 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>LarpManager - Impression des jetons</title>
-    <style>
-        @page {
-            size: A4; /*or: landscaoe*/
-        }
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table th, table td {
-            border: 1px dotted #777;
-            padding:0.5rem;
-        }
-        thead {display: table-header-group;}
-    </style>
-</head>
-<body>
+{% extends "base.print.A4.twig" %}
 
-<h2>Liste des jetons</h2>
+{% block title %}Impression des jetons{% endblock title %}
 
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Label</th>
-        <th>Tag</th>
-        <th>Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for token in tokens %}
+{% block layout %}
+    <h2>Liste des jetons</h2>
+
+    <table>
+        <thead>
         <tr>
-            <td style="text-align: center">{{ token.id }}</td>
-            <td>{{ token.label }}</td>
-            <td>{{ token.tag }}</td>
-            <td>{{ token.descriptionRaw }}</td>
+            <th>ID</th>
+            <th>Label</th>
+            <th>Tag</th>
+            <th>Description</th>
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        {% for token in tokens %}
+            <tr>
+                <td style="text-align: center">{{ token.id }}</td>
+                <td>{{ token.label }}</td>
+                <td>{{ token.tag }}</td>
+                <td>{{ token.descriptionRaw }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock layout %}
