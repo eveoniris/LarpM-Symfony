@@ -7,6 +7,8 @@ use App\Repository\AnnonceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -16,9 +18,9 @@ class IndexController extends AbstractController
     public function index(Request $request, AnnonceRepository $annonceRepository): Response
     {
         return $this->render('index/index.html.twig', [
-           'controller_name' => 'IndexController',
-           'user' => $this->getUser(),
-           'annonces' => $annonceRepository->findBy([], ['id' => 'DESC']),
+            'controller_name' => 'IndexController',
+            'user' => $this->getUser(),
+            'annonces' => $annonceRepository->findBy([], ['id' => 'DESC']),
         ]);
     }
 
@@ -28,6 +30,34 @@ class IndexController extends AbstractController
         return $this->render('index/design.twig', ['user' => $this->getUser()]);
     }
 
+    /** Testing mail send */
+    #[Route('/mail', name: 'mail')]
+    public function mail(MailerInterface $mailer)
+    {
+        $email = (new Email())
+            ->from('gestion@eveoniris.com')
+            ->to('gectou4@gmail.com')
+            // ->cc('cc@example.com')
+            // ->bcc('bcc@example.com')
+            // ->replyTo('fabien@example.com')
+            // ->priority(Email::PRIORITY_HIGH)
+            // -> htmlTemplate('emails/test.twig')
+            // ->context([]) // twig parameter
+            ->subject('Test')
+            ->text('Sending emails is fun again!')
+            ->html('<p>See Twig integration for better HTML integration!</p>');
+
+        try {
+            $mailer->send($email);
+                echo 'ok';
+
+        } catch (\Exception $e) {
+            dump($e);
+            echo 'KO';
+        }
+
+        dd('test');
+    }
 
     #[Route('/setpwd', name: 'setpwd')]
     public function pwd(
