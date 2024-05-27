@@ -26,15 +26,6 @@
             "migrations/.gitignore"
         ]
     },
-    "easycorp/easyadmin-bundle": {
-        "version": "4.7",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "3.0",
-            "ref": "b131e6cbfe1b898a508987851963fff485986285"
-        }
-    },
     "friendsofphp/php-cs-fixer": {
         "version": "3.35",
         "recipe": {
@@ -263,16 +254,6 @@
             "config/packages/twig.yaml",
             "templates/base.html.twig"
         ]
-    },
-    "symfony/uid": {
-        "version": "7.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "7.0",
-            "ref": "0df5844274d871b37fc3816c57a768ffc60a43a5"
-        },
-        "files": []
     },
     "symfony/validator": {
         "version": "7.0",
