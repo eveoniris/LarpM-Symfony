@@ -22,6 +22,11 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     public const ROLE_STOCK = 'ROLE_STOCK';
     public const ROLE_USER = 'ROLE_USER';
 
+    public function generateToken(): string
+    {
+        return bin2hex(random_bytes(18));
+    }
+
     public static function getAvailableRoles(): array
     {
         return [
@@ -46,7 +51,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
             self::ROLE_ORGA => 'Organisateur',
             self::ROLE_REDACTEUR => 'Droit de modification des annonces',
             self::ROLE_REGLE => 'Droit de modification sur les règles',
-            self::ROLE_SCENARISTE => "Droit de modification sur le scénario, les groupes et le background",
+            self::ROLE_SCENARISTE => 'Droit de modification sur le scénario, les groupes et le background',
             self::ROLE_STOCK => 'Droit de modification sur le stock',
             self::ROLE_USER => 'Utilisateur de larpManager',
         ];
@@ -397,7 +402,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     /**
      * @param int $ttl password reset request TTL, in seconds
      */
-    public function isPasswordResetRequestExpired($ttl): bool
+    public function isPasswordResetRequestExpired(int $ttl): bool
     {
         $timeRequested = $this->getTimePasswordResetRequested();
         if (0 === $timeRequested) {

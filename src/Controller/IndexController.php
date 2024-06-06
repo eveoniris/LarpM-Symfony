@@ -67,7 +67,7 @@ class IndexController extends AbstractController
     ): Response {
         // Only in dev
         if ('dev' !== $this->getParameter('kernel.environment')) {
-            $this->addFlash('error', 'Do not challange the dark gods');
+            $this->addFlash('error', 'Do not challenge the dark gods');
 
             return $this->redirectToRoute('homepage');
         }

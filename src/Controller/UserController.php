@@ -8,22 +8,33 @@ use App\Entity\Restriction;
 use App\Entity\User;
 use App\Form\Entity\ListSearch;
 use App\Form\EtatCivilForm;
+use App\Form\User\UserForgotPasswordForm;
 use App\Form\User\UserNewForm;
+use App\Form\User\UserNewPasswordForm;
 use App\Form\UserFindForm;
 use App\Form\UserPersonnageDefaultForm;
 use App\Form\UserRestrictionForm;
 use App\Manager\FedegnManager;
 use App\Repository\UserRepository;
+use Carbon\Carbon;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Core\Exception\DisabledException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -151,6 +162,117 @@ class UserController extends AbstractController
         ]);
     }
 
+    #[Route('/user/forgot', name: 'user.forgot-password')]
+    public function forgotPasswordAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        MailerInterface $mailer,
+        ContainerBagInterface $params
+    ): RedirectResponse|Response {
+        if ($this->getUser()?->getId() !== null && $this->isGranted('ROLE_USER') !== false) {
+            $this->addFlash(
+                'alert',
+                'Vous êtes déjà connecté'
+            );
+
+            return $this->redirectToRoute('user.view', ['user' => $this->getUser()?->getId()]);
+        }
+
+        if (!$this->isPasswordResetEnabled) {
+            throw new NotFoundHttpException('Password resetting is not enabled.');
+        }
+
+        $form = $this->createForm(UserForgotPasswordForm::class, [])
+            ->add(
+                'save',
+                SubmitType::class,
+                [
+                    'label' => 'Envoyer une réinitialisation de votre mot de passe',
+                    'attr' => [
+                        'class' => 'btn btn-secondary',
+                    ],
+                ]
+            );
+
+        $form->handleRequest($request);
+
+        $email = $request->request->get(
+            'email',
+            $request->query->get(
+                'email',
+                $request->getSession()->get('_security.last_username')
+            )
+        );
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $email = '';
+        }
+
+        $error = null;
+        if ($form->isSubmitted() && $form->isValid()) {
+            $email = $form->getData();
+
+            $repo = $entityManager->getRepository(User::class);
+            $user = $repo->findOneBy(['email' => $email]);
+
+            if ($user) {
+                // Initialize and send the password reset request.
+                $user->setTimePasswordResetRequested(time());
+                if (!$user->getConfirmationToken()) {
+                    $user->setConfirmationToken($user->generateToken());
+                }
+
+                $entityManager->persist($user);
+                $entityManager->flush();
+
+                $url = $this->generateUrl(
+                    'user.reset-password',
+                    ['token' => $user->getConfirmationToken()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+                $resetExpireAt = Carbon::createFromTimestamp($user->getTimePasswordResetRequested())
+                    ->addSeconds($params->get('passwordTokenTTL'))
+                    ->format('Y-m-d H:i:s');
+                $context = [
+                    'resetUrl' => $url,
+                    'resetExpireAt' => $resetExpireAt,
+                ];
+                $subject = $this->renderBlock(
+                    'user/email/forgotPassword.twig',
+                    'subject',
+                    $context
+                ) ?: 'Mot de passe oublié';
+                $textBody = $this->renderBlock('user/email/forgotPassword.twig', 'body_text', $context);
+                $context['subject'] = $subject;
+
+                $email = (new TemplatedEmail())
+                    ->to($user->getEmail())
+                    ->subject($subject->getContent())
+                    // TODo ->locale($user->getLocal())
+                    ->text($textBody->getContent())
+                    ->htmlTemplate('user/email/forgotPassword.twig')
+                    ->context($context);
+                $mailer->send($email);
+
+                $this->addFlash(
+                    'alert',
+                    'Les instructions pour enregistrer votre mot de passe ont été envoyé par mail.'
+                );
+                $request->getSession()->get('_security.last_username', $email);
+
+                return $this->redirectToRoute('app_login');
+            }
+
+            $error = 'No user account was found with that email address.';
+        }
+
+        return $this->render('user/forgot-password.twig', [
+            'email' => $email,
+            'fromAddress' => $params->get('fromEmailAddress'),
+            'error' => $error,
+            'form' => $form,
+        ]);
+    }
+
     /**
      * Choix des restrictions alimentaires par l'utilisateur.
      */
@@ -198,7 +320,8 @@ class UserController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid() && (!$gn->getBesoinValidationCi() || 'ok' == $request->request->get('acceptCi'))) {
+        if ($form->isSubmitted() && $form->isValid() && (!$gn->getBesoinValidationCi(
+        ) || 'ok' == $request->request->get('acceptCi'))) {
             $participant = new Participant();
             $participant->setUser($this->getUser());
             $participant->setGn($gn);
@@ -252,8 +375,11 @@ class UserController extends AbstractController
     /**
      * Affiche le détail d'un billet d'un utilisateur.
      */
-    public function UserHasBilletDetailAction(EntityManagerInterface $entityManager, Request $request, UserHasBillet $UserHasBillet)
-    {
+    public function UserHasBilletDetailAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        UserHasBillet $UserHasBillet
+    ) {
         if ($UserHasBillet->getUser() != $this->getUser()) {
             $this->addFlash('error', 'Vous ne pouvez pas acceder à cette information');
 
@@ -344,7 +470,8 @@ class UserController extends AbstractController
             $request->request->get('email'),
             $request->request->get('password'),
             $request->request->get('name') ?: null,
-            ['ROLE_USER']);
+            ['ROLE_USER']
+        );
 
         if ($Username = $request->request->get('Username')) {
             $User->setUsername($Username);
@@ -385,7 +512,7 @@ class UserController extends AbstractController
      *
      * @throws NotFoundHttpException if no User is found with that ID
      */
-    #[Route('/user/{user}', name: 'user.view')]
+    #[Route('/user/{user}', name: 'user.view', requirements: ['user' => Requirement::DIGITS])]
     public function viewAction(Request $request, #[MapEntity] User $user): Response
     {
         if (!$user) {
@@ -403,7 +530,10 @@ class UserController extends AbstractController
     public function likeAction(EntityManagerInterface $entityManager, Request $request, User $User)
     {
         if ($User == $this->getUser()) {
-            $this->addFlash('error', 'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !');
+            $this->addFlash(
+                'error',
+                'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !'
+            );
         } else {
             $User->addCoeur();
             $entityManager->persist($User);
@@ -421,8 +551,12 @@ class UserController extends AbstractController
      * @throws NotFoundHttpException if no User is found with that ID
      */
     #[Route('/user/{user}/edit', name: 'user.edit')]
-    public function editAction(Request $request, #[MapEntity] ?User $user, UserPasswordHasherInterface $passwordHasher, UserRepository $repository): Response
-    {
+    public function editAction(
+        Request $request,
+        #[MapEntity] ?User $user,
+        UserPasswordHasherInterface $passwordHasher,
+        UserRepository $repository
+    ): Response {
         $errors = [];
 
         if (!$user) {
@@ -605,7 +739,10 @@ class UserController extends AbstractController
             try {
                 $User = $this->createUserFromRequest($app, $request);
 
-                if ($error = $app['User.manager']->validatePasswordStrength($User, $request->request->get('password'))) {
+                if ($error = $app['User.manager']->validatePasswordStrength(
+                    $User,
+                    $request->request->get('password')
+                )) {
                     throw new \InvalidArgumentException($error);
                 }
 
@@ -628,7 +765,10 @@ class UserController extends AbstractController
                     // Log the User in to the new account.
                     $app['User.manager']->loginAsUser($User);
 
-                    $this->addFlash('success', 'Votre compte a été créé ! vous pouvez maintenant rejoindre un groupe et créer votre personnage');
+                    $this->addFlash(
+                        'success',
+                        'Votre compte a été créé ! vous pouvez maintenant rejoindre un groupe et créer votre personnage'
+                    );
 
                     return $this->redirectToRoute('homepage');
                 }
@@ -705,107 +845,83 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/user', name: 'user.forgot-password')]
-    public function forgotPasswordAction(EntityManagerInterface $entityManager, Request $request)
-    {
+    #[Route('/user/reset-password/{token}', name: 'user.reset-password', requirements: ['token' => Requirement::ASCII_SLUG])]
+    public function resetPasswordAction(
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
+        Request $request,
+        string $token,
+        ContainerBagInterface $params,
+        UserPasswordHasherInterface $passwordHasher,
+        Security $security
+    ): Response {
         if (!$this->isPasswordResetEnabled) {
             throw new NotFoundHttpException('Password resetting is not enabled.');
         }
 
-        $error = null;
-        if ($request->isMethod('POST')) {
-            $email = $request->request->get('email');
+        $form = $this->createForm(UserNewPasswordForm::class, [])
+            ->add(
+                'save',
+                SubmitType::class,
+                [
+                    'label' => 'Modifier',
+                    'attr' => [
+                        'class' => 'btn btn-secondary',
+                    ],
+                ]
+            );
 
-            $repo = $entityManager->getRepository('\\'.User::class);
-            $User = $repo->findOneByEmail($email);
+        $form->handleRequest($request);
 
-            if ($User) {
-                // Initialize and send the password reset request.
-                $User->setTimePasswordResetRequested(time());
-                if (!$User->getConfirmationToken()) {
-                    $User->setConfirmationToken($app['User.tokenGenerator']->generateToken());
-                }
+        $user = $userRepository->findOneByConfirmationToken($token);
 
-                $entityManager->persist($User);
-                $entityManager->flush();
-
-                $app['User.mailer']->sendResetMessage($User);
-                $this->addFlash('alert', 'Les instructions pour enregistrer votre mot de passe ont été envoyé par mail.');
-                $app['session']->set('_security.last_Username', $email);
-
-                return $this->redirectToRoute('User.login');
-            }
-
-            $error = 'No User account was found with that email address.';
-        } else {
-            $email = $request->request->get('email') ?: ($request->query->get('email') ?: $app['session']->get('_security.last_Username'));
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $email = '';
-            }
-        }
-
-        return $this->render('user/forgot-password.twig', [
-            'email' => $email,
-            'fromAddress' => $app['User.mailer']->getFromAddress(),
-            'error' => $error,
-        ]);
-    }
-
-    /**
-     * @param string $token
-     *
-     * @return RedirectResponse
-     *
-     * @throws NotFoundHttpException
-     */
-    public function resetPasswordAction(EntityManagerInterface $entityManager, Request $request, $token)
-    {
-        if (!$this->isPasswordResetEnabled) {
-            throw new NotFoundHttpException('Password resetting is not enabled.');
-        }
-
-        $tokenExpired = false;
-
-        $repo = $entityManager->getRepository('\\'.User::class);
-        $User = $repo->findOneByConfirmationToken($token);
-
-        if (!$User) {
-            $tokenExpired = true;
-        } elseif ($User->isPasswordResetRequestExpired($app['config']['User']['passwordReset']['tokenTTL'])) {
-            $tokenExpired = true;
-        }
-
-        if ($tokenExpired) {
+        if (!$user || $user->isPasswordResetRequestExpired((int) $params->get('passwordTokenTTL'))) {
             $this->addFlash('alert', 'Sorry, your password reset link has expired.');
 
-            return $this->redirectToRoute('User.login');
+            // throw new GoneHttpException('This action is expired');
+
+            return $this->redirectToRoute('app_login');
         }
 
         $error = '';
-        if ($request->isMethod('POST')) {
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
             // Validate the password
-            $password = $request->request->get('password');
-            if ($password != $request->request->get('confirm_password')) {
+            $password = $data['password'];
+            if ($password !== $data['confirm_password']) {
                 $error = "Passwords don't match.";
-            } elseif ($error = $app['User.manager']->validatePasswordStrength($User, $password)) {
-            } else {
+            }
+
+            $error ??= $user->validatePasswordStrength($password);
+
+            if (!$error) {
                 // Set the password and log in.
-                $app['User.manager']->setUserPassword($User, $password);
-                $User->setConfirmationToken(null);
-                $User->setEnabled(true);
-                $entityManager->persist($User);
+                $hashedPassword = $passwordHasher->hashPassword(
+                    $user,
+                    $password
+                );
+                $user->setPassword($hashedPassword);
+                $user->setConfirmationToken(null);
+                $user->setEnabled(true);
+                $entityManager->persist($user);
                 $entityManager->flush();
-                $app['User.manager']->loginAsUser($User);
+                /*
+                 * TODO :
+                 Too many authenticators were found for the current firewall "main". You must provide an instance of "Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface" to login programmatically. The available authenticators for the firewall "main" are "App\Security\AppAuthenticator" ,"security.authenticator.form_login.main" ,"security.authenticator.remember_me.main".
+                 */
+                $security->login($user); // TODO may need usage of Passport
                 $this->addFlash('alert', 'Your password has been reset and you are now signed in.');
 
-                return $this->redirectToRoute('User.view', ['id' => $User->getId()]);
+                return $this->redirectToRoute('user.view', ['id' => $user->getId()]);
             }
         }
 
         return $this->render('user/reset-password.twig', [
-            'User' => $User,
+            'user' => $user,
             'token' => $token,
             'error' => $error,
+            'form' => $form,
         ]);
     }
 
@@ -829,8 +945,9 @@ class UserController extends AbstractController
 
         // trouve tous les rôles
         return $this->render('user/right.twig', [
-                'Users' => $Users,
-                'roles' => $app['larp.manager']->getAvailableRoles()]
+            'Users' => $Users,
+            'roles' => $app['larp.manager']->getAvailableRoles(),
+        ]
         );
     }
 }

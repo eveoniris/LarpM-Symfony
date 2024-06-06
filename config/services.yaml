@@ -7,6 +7,9 @@ parameters:
     fedegn.url: 'http://api.fedegn.org/creagn.php'
     fedegn.password: 33fe9b242877621f81adb912b9a3705e
     projectDir: "%kernel.project_dir%/"
+    fromEmailAddress : "no-reply@eveoniris.com"
+    fromEmailName : "Eve-oniris"
+    passwordTokenTTL : 600
 
 services:
     # default configuration for services in *this* file

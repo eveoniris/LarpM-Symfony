@@ -33,9 +33,16 @@ class PersonnageSecondaireController extends AbstractController
     /**
      * Detail d'un personnage secondaire.
      */
-    #[Route('/personnageSecondaire/detail/{id}', name: 'personnageSecondaire.detail')]
+    #[Route('/personnageSecondaire/{personnageSecondaire}/detail/', name: 'personnageSecondaire.detail')]
     public function detailAction(#[MapEntity] PersonnageSecondaire $personnageSecondaire): Response
     {
+        return $this->render('personnageSecondaire/detail.twig', ['personnageSecondaire' => $personnageSecondaire]);
+    }
+
+    #[Route('/personnageSecondaire/{personnageSecondaire}/print/', name: 'personnageSecondaire.print')]
+    public function printAction(#[MapEntity] PersonnageSecondaire $personnageSecondaire): Response
+    {
+        // TODO PRINT
         return $this->render('personnageSecondaire/detail.twig', ['personnageSecondaire' => $personnageSecondaire]);
     }
 
