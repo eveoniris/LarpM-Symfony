@@ -6,9 +6,13 @@ when@dev:
     framework:
         mailer:
             envelope:
-                recipients: ['gectou4@eveoniris.com'] # change by yours
+                sender: '%fromEmailAddress%'
+                #recipients: ['gectou4@eveoniris.com'] # change by yours
                 # Add your dev email bellow to allow your email to be delivered
                 # In Symfony 7.1 will be able to :
                 #allowed_recipients:
                 #    - 'gectou4@gmail.com'
                 #    - '.*@eveoniris.com' # All Eveoniris mails
+            headers:
+                From: '%fromEmailName% <%fromEmailAddress%>'
+                #Reply-To: '%fromEmailName% <%fromEmailAddress%>'

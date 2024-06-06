@@ -79,6 +79,15 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         return $query->getResult();
     }
 
+    public function findOneByConfirmationToken(string $token): ?User
+    {
+        return $this->createQueryBuilder('u')
+                ->andWhere('u.confirmationToken = :val')
+                ->setParameter('val', $token)
+                ->getQuery()
+                ->getOneOrNullResult();
+    }
+
 
     //    /**
     //     * @return User[] Returns an array of User objects

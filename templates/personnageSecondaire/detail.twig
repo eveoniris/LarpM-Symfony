@@ -1,0 +1,56 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Detail d'un personnage secondaire{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des personnages secondaires', 'route': path('personnageSecondaire.list') },
+            {'name' : "Détail du perssonage secondaire #{personnageSecondaire.label}" },
+        ]
+    } %}
+
+    <div class="well bs-component">
+        <div class="header">
+            <h5>Détail d'un personnage secondaire</h5>
+        </div>
+
+        <table class="table table-striped table-bordered table-condensed table-hover">
+            <tr>
+                <th>Libellé</th>
+                <td>{{ personnageSecondaire.label }}</td>
+            </tr>
+        </table>
+        <h3>Competences</h3>
+        <table class="table table-striped table-bordered table-condensed table-hover">
+            {# Todo all level of each competence ? #}
+            {% for competenceFamily in personnageSecondaire.competences %}
+            <tr>
+                <th>
+                    <a class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0"
+                       data-bs-toggle="tooltip" data-bs-title="Voir" data-bs-placement="bottom"
+                       href="{{ path('competenceFamily.detail', {'competenceFamily': competenceFamily.id }) }}">{{ competenceFamily.label }}</a>
+                </th>
+                <td>
+                    {{ competenceFamily.description|striptags }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
+            <div class="btn-group" role="group">
+                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                   title="Modifier"
+                   href="{{ path('personnageSecondaire.update',{'personnageSecondaire':personnageSecondaire.id}) }}"><i
+                            class="fa fa-pencil"></i> Modifier</a>
+                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                   title="Supprimer"
+                   href="{{ path('personnageSecondaire.delete',{'personnageSecondaire':personnageSecondaire.id}) }}"><i
+                            class="fa fa-eraser"></i> Supprimer</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock body %}
