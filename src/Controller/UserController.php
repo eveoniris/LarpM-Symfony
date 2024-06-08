@@ -37,6 +37,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Core\Exception\DisabledException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 
 class UserController extends AbstractController
 {
@@ -906,14 +907,10 @@ class UserController extends AbstractController
                 $user->setEnabled(true);
                 $entityManager->persist($user);
                 $entityManager->flush();
-                /*
-                 * TODO :
-                 Too many authenticators were found for the current firewall "main". You must provide an instance of "Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface" to login programmatically. The available authenticators for the firewall "main" are "App\Security\AppAuthenticator" ,"security.authenticator.form_login.main" ,"security.authenticator.remember_me.main".
-                 */
-                $security->login($user); // TODO may need usage of Passport
+                $security->login($user, 'form_login', 'main', [(new RememberMeBadge())->enable()]); // TODO may need usage of Passport
                 $this->addFlash('alert', 'Your password has been reset and you are now signed in.');
 
-                return $this->redirectToRoute('user.view', ['id' => $user->getId()]);
+                return $this->redirectToRoute('user.view', ['user' => $user->getId()]);
             }
         }
 
