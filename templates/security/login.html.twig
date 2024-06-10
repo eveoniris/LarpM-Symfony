@@ -11,7 +11,7 @@
 
         <form method="post">
             {% if error %}
-                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : error.messageKey|trans(error.messageData, 'security') } %}
             {% endif %}
 
             {% if app.user %}

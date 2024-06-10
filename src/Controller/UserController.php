@@ -170,7 +170,7 @@ class UserController extends AbstractController
         MailerInterface $mailer,
         ContainerBagInterface $params
     ): RedirectResponse|Response {
-        if ($this->getUser()?->getId() !== null && $this->isGranted('ROLE_USER') !== false) {
+        if (false !== $this->isGranted('ROLE_USER') && null !== $this->getUser()?->getId()) {
             $this->addFlash(
                 'alert',
                 'Vous êtes déjà connecté'
