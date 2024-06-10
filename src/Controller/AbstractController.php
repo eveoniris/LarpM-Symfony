@@ -6,6 +6,7 @@ use App\Enum\FolderType;
 use App\Form\DeleteForm;
 use App\Repository\BaseRepository;
 use App\Service\FileUploader;
+use App\Service\MailService;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use JetBrains\PhpStorm\Deprecated;
@@ -29,7 +30,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected FileUploader $fileUploader,
         protected readonly TranslatorInterface $translator,
         protected readonly SluggerInterface $slugger,
-        protected PagerService $pageRequest
+        protected PagerService $pageRequest,
+        protected MailService $mailer
         // Cache $cache, // TODO : later
     )
     {

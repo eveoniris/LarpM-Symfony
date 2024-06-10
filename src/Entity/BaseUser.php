@@ -5,12 +5,14 @@ namespace App\Entity;
 use App\Repository\BaseUserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[Entity(repositoryClass: BaseUserRepository::class)]
@@ -24,58 +26,57 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseUser', 'extended' => 'User'])]
+#[UniqueEntity(['email', 'username'])]
 abstract class BaseUser
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    #[Assert\NotBlank]
+    #[Column]
     protected ?int $id = null;
 
-    #[Column(name: 'email', type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
+    #[Column(name: 'email', type: Types::STRING, length: 100)]
     #[Assert\NotBlank]
     protected string $email = '';
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255)]
-    #[Assert\NotBlank]
+    #[Column(type: Types::STRING, length: 255)]
     protected ?string $password = '';
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255)]
+    #[Column(type: Types::STRING, length: 255)]
     #[Assert\NotBlank]
     protected ?string $pwd = '';
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 180, unique: true)]
+    #[Column(type: Types::STRING, length: 180, unique: true)]
     #[Assert\NotBlank]
-    //#[Assert\Required]
+    // #[Assert\Required]
     protected ?string $username = null;
 
-    #[ORM\Column(type: 'json')]
+    #[Column(type: 'json')]
     protected ?array $roles = [];
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255, nullable: true)]
+    #[Column(type: Types::STRING, length: 255, nullable: true)]
     protected ?string $salt = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 255)]
+    #[Column(type: Types::STRING, length: 255)]
     protected string $rights = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date = null;
 
-    #[Column(name: 'isEnabled', type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[Column(name: 'isEnabled', type: Types::BOOLEAN)]
     protected ?bool $isEnabled = false;
 
-    #[ORM\Column(name: 'confirmationToken', type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
+    #[Column(name: 'confirmationToken', type: Types::STRING, length: 100, nullable: true)]
     protected ?string $confirmationToken = null;
 
-    #[ORM\Column(name: 'timePasswordResetRequested', type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true, options: ['unsigned' => true])]
+    #[Column(name: 'timePasswordResetRequested', type: Types::INTEGER, nullable: true, options: ['unsigned' => true])]
     protected ?int $timePasswordResetRequested = null;
 
     protected ?string $trombineUrl = null;
 
-    #[Column(name: 'lastConnectionDate', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(name: 'lastConnectionDate', type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $lastConnectionDate = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $coeur = 0;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Background::class)]
@@ -172,20 +173,20 @@ abstract class BaseUser
     protected Collection $topics;
 
     #[ORM\OneToOne(inversedBy: 'user', targetEntity: EtatCivil::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'etat_civil_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'etat_civil_id', referencedColumnName: 'id')]
     protected ?EtatCivil $etatCivil = null;
 
     #[ORM\ManyToOne(targetEntity: PersonnageSecondaire::class, cascade: ['persist', 'remove'], inversedBy: 'users')]
-    #[ORM\JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id')]
     protected ?PersonnageSecondaire $personnageSecondaire = null;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class, cascade: ['persist', 'remove'], inversedBy: 'users')]
-    #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
     protected ?Personnage $personnage = null;
 
     #[ORM\ManyToMany(targetEntity: Restriction::class, inversedBy: 'users')]
     #[ORM\JoinTable(name: 'user_has_restriction')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'restriction_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $restrictions;
 
@@ -539,7 +540,7 @@ abstract class BaseUser
     /**
      * Get Background entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getBackgrounds()
     {
@@ -569,7 +570,7 @@ abstract class BaseUser
     /**
      * Get Billet entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getBillets()
     {
@@ -599,7 +600,7 @@ abstract class BaseUser
     /**
      * Get Debriefing entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getDebriefings()
     {
@@ -629,7 +630,7 @@ abstract class BaseUser
     /**
      * Get Document entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getDocuments()
     {
@@ -659,7 +660,7 @@ abstract class BaseUser
     /**
      * Get Groupe entity related by `scenariste_id` collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getGroupeRelatedByScenaristeIds()
     {
@@ -689,7 +690,7 @@ abstract class BaseUser
     /**
      * Get Groupe entity related by `responsable_id` collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getGroupeRelatedByResponsableIds()
     {
@@ -719,7 +720,7 @@ abstract class BaseUser
     /**
      * Get Intrigue entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getIntrigues()
     {
@@ -749,7 +750,7 @@ abstract class BaseUser
     /**
      * Get IntrigueHasModification entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getIntrigueHasModifications()
     {
@@ -779,7 +780,7 @@ abstract class BaseUser
     /**
      * Get Message entity related by `auteur` collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getMessageRelatedByAuteurs()
     {
@@ -809,7 +810,7 @@ abstract class BaseUser
     /**
      * Get Message entity related by `destinataire` collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getMessageRelatedByDestinataires()
     {
@@ -839,7 +840,7 @@ abstract class BaseUser
     /**
      * Get Notification entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getNotifications()
     {
@@ -869,7 +870,7 @@ abstract class BaseUser
     /**
      * Get Objet entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getObjets()
     {
@@ -899,7 +900,7 @@ abstract class BaseUser
     /**
      * Get Participant entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getParticipants()
     {
@@ -929,7 +930,7 @@ abstract class BaseUser
     /**
      * Get Personnage entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getPersonnages()
     {
@@ -959,7 +960,7 @@ abstract class BaseUser
     /**
      * Get PersonnageBackground entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getPersonnageBackgrounds()
     {
@@ -989,7 +990,7 @@ abstract class BaseUser
     /**
      * Get Post entity related by `user_id` collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getPostRelatedByUserIds()
     {
@@ -1018,8 +1019,6 @@ abstract class BaseUser
 
     /**
      * Get PostView entity collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
     public function getPostViews(): Collection
     {
@@ -1049,7 +1048,7 @@ abstract class BaseUser
     /**
      * Get Question entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getQuestions()
     {
@@ -1079,7 +1078,7 @@ abstract class BaseUser
     /**
      * Get Relecture entity collection (one to many).
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getRelectures()
     {
@@ -1108,8 +1107,6 @@ abstract class BaseUser
 
     /**
      * Get Restriction entity related by `auteur_id` collection (one to many).
-     *
-     * @return \Doctrine\Common\Collections\Collection
      */
     public function getRestrictionRelatedByAuteurIds(): Collection
     {
@@ -1172,7 +1169,7 @@ abstract class BaseUser
     /**
      * Set PersonnageSecondaire entity (many to one).
      */
-    public function setPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire = null): static
+    public function setPersonnageSecondaire(?PersonnageSecondaire $personnageSecondaire = null): static
     {
         $this->personnageSecondaire = $personnageSecondaire;
 
@@ -1187,7 +1184,7 @@ abstract class BaseUser
         return $this->personnageSecondaire;
     }
 
-    public function setPersonnage(Personnage $personnage = null): static
+    public function setPersonnage(?Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 

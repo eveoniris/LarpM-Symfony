@@ -24,7 +24,7 @@ class UserForm extends AbstractType
             'label' => 'Adresse email',
             'required' => true,
         ])
-            ->add('name', TextType::class, [
+            ->add('username', TextType::class, [
                 'label' => 'Nom ou pseudo',
                 'required' => true,
             ]);
@@ -32,6 +32,6 @@ class UserForm extends AbstractType
 
     public function getName(): string
     {
-        return 'user';
+        return 'userRegister';
     }
 }
