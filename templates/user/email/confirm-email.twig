@@ -13,10 +13,11 @@ Variables passed to this template:
 {# The plain text message. #}
 {%- block body_text -%}{%- autoescape false -%}
 
-Merci de rejoindre eveOniris ! une grande aventure vous attends !
+    Merci de rejoindre eveOniris ! une grande aventure vous attends !
 
-S'il vous plait, cliquez sur le lien ci-dessous pour confirmer votre adresse mail :
-{{ confirmationUrl }}
+    S'il vous plait, cliquez sur le lien ci-dessous pour confirmer votre adresse mail :
+    {% include 'emails/button.twig' with {'linkHref': confirmationUrl, 'linkText': 'Confirmer'} %}
+
 
 {%- endautoescape -%}{%- endblock -%}
 
