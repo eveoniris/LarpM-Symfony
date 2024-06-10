@@ -95,8 +95,8 @@ class SecurityController extends AbstractController
             'user/email/renewPassword.twig',
             'subject',
             $context
-        ) ?: 'Mot de passe oublié';
-        $textBody = $this->renderBlock('user/email/forgotPassword.twig', 'body_text', $context);
+        ) ?: 'Renouvellement de mot de passe';
+        $textBody = $this->renderBlock('user/email/renewPassword.twig', 'body_text', $context);
         $context['subject'] = $subject;
 
         $email = (new TemplatedEmail())
@@ -104,7 +104,7 @@ class SecurityController extends AbstractController
             ->subject($subject->getContent())
             // TODo ->locale($user->getLocal())
             ->text($textBody->getContent())
-            ->htmlTemplate('user/email/forgotPassword.twig')
+            ->htmlTemplate('user/email/renewPassword.twig')
             ->context($context);
         $mailer->send($email);
     }
