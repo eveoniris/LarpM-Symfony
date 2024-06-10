@@ -882,6 +882,24 @@
 					case "6": // infanterie forcée 5km/h
 						heure = Math.round(distance / 5);
 						break;
+					case "7": // Bateau rame 10km/h
+						heure = Math.round(distance / 10);
+						break;
+					case "8": // Bateau voile 15km/h
+						heure = Math.round(distance / 15);
+						break;
+					case "9": // Nage 4km/h
+						heure = Math.round(distance / 4);
+						break;
+					case "10": // Nage Profond/Sirène (56 : vitesse moyenne d'un Orque de 77 kilo, 60: dauphin)
+						heure = Math.round(distance / 56);
+						break;
+					case "11": // Vol (migratoire)
+						heure = Math.round(distance / 70);
+						break;
+					case "12": // Vol moyen d'oiseau
+						heure = Math.round(distance / 90);
+						break;
 				}
 
 				if ( heure > heureParJour ) {
@@ -913,6 +931,12 @@
 					+ '<option value="4">Cavalerie (Bagages)</option>'
 					+ '<option value="5">Infanterie (Marche normale)</option>'
 					+ '<option value="6">Infanterie (Marche forcée)</option>'
+					+ '<option value="7">Bateau avec rame</option>'
+					+ '<option value="8">Bateau avec voile</option>'
+					+ '<option value="9">Nage</option>'
+					+ '<option value="10">Nage (Profond/Sirène)</option>'
+					+ '<option value="10">Vol (migratoire)</option>'
+					+ '<option value="11">Vol d\'oiseau moyen</option>'
 					+ '</select>'
 					+ '<label>Durée de la journée</label>'
 					+ '<input type="number" id="heureParJour" value="8" size="2"></input><br />'
