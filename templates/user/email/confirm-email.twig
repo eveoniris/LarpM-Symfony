@@ -1,3 +1,5 @@
+{% extends "base.email.html.twig" %}
+
 {#
 Template for an email message sent to confirm an email address.
 Variables passed to this template:
@@ -16,8 +18,7 @@ Variables passed to this template:
     Merci de rejoindre eveOniris ! une grande aventure vous attends !
 
     S'il vous plait, cliquez sur le lien ci-dessous pour confirmer votre adresse mail :
-    {% include 'emails/button.twig' with {'linkHref': confirmationUrl, 'linkText': 'Confirmer'} %}
-
+    confirmationUrl
 
 {%- endautoescape -%}{%- endblock -%}
 
@@ -25,10 +26,9 @@ Variables passed to this template:
 {%- block body_html -%}
 
     <h1>Merci de rejoindre eveOniris !</h1>
-    <p>une grande aventure vous attends !</p>
+    <p>Une grande aventure vous attends !<br />>
+    Merci de cliquer sur le lien ci-dessous pour confirmer votre adresse e-mail</p>
 
-    <p>
-        S'il vous plait, <a href="{{ confirmationUrl }}">suivez ce lien pour confirmer votre adresse mail</a>.
-    </p>
+    {% include 'emails/button.twig' with {'linkHref': confirmationUrl, 'linkText': 'Confirmer mon adresse e-mail'} %}
 
 {%- endblock -%}

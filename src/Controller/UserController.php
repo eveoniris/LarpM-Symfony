@@ -12,8 +12,8 @@ use App\Form\User\UserForgotPasswordForm;
 use App\Form\User\UserNewForm;
 use App\Form\User\UserNewPasswordForm;
 use App\Form\UserFindForm;
-use App\Form\UserForm;
 use App\Form\UserPersonnageDefaultForm;
+use App\Form\UserRegisterForm;
 use App\Form\UserRestrictionForm;
 use App\Manager\FedegnManager;
 use App\Repository\UserRepository;
@@ -25,6 +25,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -468,6 +469,19 @@ class UserController extends AbstractController
             throw new \InvalidArgumentException("Passwords don't match.");
         }
 
+        $user = new User();
+        if (!empty($plainPassword)) {
+            $this->setUserPassword($user, $plainPassword);
+        }
+
+        if (null !== $name) {
+            $user->setUsername($name);
+        }
+
+        if (!empty($roles)) {
+            $user->setRoles($roles);
+        }
+
         $User = $app['User.manager']->createUser(
             $request->request->get('email'),
             $request->request->get('password'),
@@ -734,7 +748,7 @@ class UserController extends AbstractController
         );
     }
 
-    #[Route('/user', name: 'user.register')]
+    #[Route('/user/register ', name: 'user.register')]
     public function registerAction(
         EntityManagerInterface $entityManager,
         Request $request,
@@ -743,81 +757,63 @@ class UserController extends AbstractController
         Security $security,
         MailerInterface $mailer,
     ): RedirectResponse|Response {
-        $form = $this->createForm(UserForm::class);
+        $form = $this->createForm(UserRegisterForm::class);
+
+        // add password and confirm and ADD
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $data = $form->getData();
-                $user = $this->createUserFromRequest($app, $request); // TODO
+                // $data = $form->getData();
+                /** @var User $user */
+                $user = $form->getData();
 
                 // Validate the password
-                $password = $data['password'];
-                if ($password !== $data['confirm_password']) {
-                    $error = "Passwords don't match.";
+                $password = $user->getPassword();
+                if ($password !== $form->get('confirm_password')->getData()) {
+                    $form->get('confirm_password')
+                        ->addError(new FormError("Passwords don't match."));
                 }
 
-                $error ??= $user->validatePasswordStrength($password);
+                if ($error = $user->validatePasswordStrength($password)) {
+                    $form->get('pwd')
+                        ->addError(new FormError($error));
+                }
 
-                if (!$error) {
+                if ($form->isValid()) {
                     $hashedPassword = $passwordHasher->hashPassword(
                         $user,
                         $password
                     );
                     $user->setPassword($hashedPassword);
-                }
 
-                if ($this->isEmailConfirmationRequired) {
-                    $user->setEnabled(false);
-                    $user->setConfirmationToken($app['User.tokenGenerator']->generateToken());
-                }
+                    if ($this->isEmailConfirmationRequired) {
+                        $user->setEnabled(false);
+                        $user->setConfirmationToken($user->generateToken());
+                    }
 
-                $entityManager->persist($user);
-                $entityManager->flush();
+                    $entityManager->persist($user);
+                    $entityManager->flush();
 
-                if ($this->isEmailConfirmationRequired) {
-                    // Send email confirmation. TODO use a class method for each mail
-                    $url = $this->generateUrl(
-                        'user.reset-password',
-                        ['token' => $user->getConfirmationToken()],
-                        UrlGeneratorInterface::ABSOLUTE_URL
-                    );
-                    $context = ['confirmationUrl' => $url];
-                    $subject = $this->renderBlock(
-                        'user/email/confirm-email.twig',
-                        'subject',
-                        $context
-                    ) ?: 'Bienvenue ! Merci de confirmer votre adresse email.';
-                    $textBody = $this->renderBlock('user/email/confirm-email.twig', 'body_text', $context);
-                    $context['subject'] = $subject;
+                    if ($this->isEmailConfirmationRequired) {
+                        $this->mailer->sendConfirmEmail($user);
 
-                    $email = (new TemplatedEmail())
-                        ->to($user->getEmail())
-                        ->subject($subject->getContent())
-                        // TODo ->locale($user->getLocal())
-                        ->text($textBody->getContent())
-                        ->htmlTemplate('user/email/confirm-email.twig')
-                        ->context($context);
-                    $mailer->send($email);
-                    // end SEND
-                    $app['user.mailer']->sendConfirmationMessage($user);
+                        // Render the "go check your email" page.
+                        return $this->render('user/register-confirmation-sent.twig', [
+                            'email' => $user->getEmail(),
+                        ]);
+                    }
 
-                    // Render the "go check your email" page. TODO
-                    return $this->render('user/register-confirmation-sent.twig', [
-                        'email' => $user->getEmail(),
-                    ]);
-                }
-
-                if (!$error) {
                     $security->login($user, 'form_login', 'main', [(new RememberMeBadge())->enable()]
                     );
                     $this->addFlash(
                         'success',
                         'Votre compte a été créé ! vous pouvez maintenant rejoindre un groupe et créer votre personnage'
                     );
+                    return $this->redirectToRoute('homepage');
                 }
 
-                return $this->redirectToRoute('homepage');
             } catch (\InvalidArgumentException $e) {
                 $error = $e->getMessage();
             }
@@ -825,6 +821,7 @@ class UserController extends AbstractController
 
         return $this->render('user/register.twig', [
             'error' => $error ?? null,
+            'form' => $form,
             'name' => $request->request->get('name'),
             'email' => $request->request->get('email'),
             'username' => $request->request->get('username'),

@@ -6,8 +6,10 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserInterface, \Stringable
@@ -21,6 +23,15 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     public const ROLE_SCENARISTE = 'ROLE_SCENARISTE';
     public const ROLE_STOCK = 'ROLE_STOCK';
     public const ROLE_USER = 'ROLE_USER';
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata): void
+    {
+        $metadata->addConstraint(new UniqueEntity([
+            'fields' => ['email'],
+        ]));
+
+        // ...
+    }
 
     public function generateToken(): string
     {
