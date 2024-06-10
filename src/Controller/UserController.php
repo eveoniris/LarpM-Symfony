@@ -12,6 +12,7 @@ use App\Form\User\UserForgotPasswordForm;
 use App\Form\User\UserNewForm;
 use App\Form\User\UserNewPasswordForm;
 use App\Form\UserFindForm;
+use App\Form\UserForm;
 use App\Form\UserPersonnageDefaultForm;
 use App\Form\UserRestrictionForm;
 use App\Manager\FedegnManager;
@@ -734,87 +735,130 @@ class UserController extends AbstractController
     }
 
     #[Route('/user', name: 'user.register')]
-    public function registerAction(EntityManagerInterface $entityManager, Request $request)
-    {
-        if ($request->isMethod('POST')) {
+    public function registerAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        ContainerBagInterface $params,
+        UserPasswordHasherInterface $passwordHasher,
+        Security $security,
+        MailerInterface $mailer,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(UserForm::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $User = $this->createUserFromRequest($app, $request);
+                $data = $form->getData();
+                $user = $this->createUserFromRequest($app, $request); // TODO
 
-                if ($error = $app['User.manager']->validatePasswordStrength(
-                    $User,
-                    $request->request->get('password')
-                )) {
-                    throw new \InvalidArgumentException($error);
+                // Validate the password
+                $password = $data['password'];
+                if ($password !== $data['confirm_password']) {
+                    $error = "Passwords don't match.";
+                }
+
+                $error ??= $user->validatePasswordStrength($password);
+
+                if (!$error) {
+                    $hashedPassword = $passwordHasher->hashPassword(
+                        $user,
+                        $password
+                    );
+                    $user->setPassword($hashedPassword);
                 }
 
                 if ($this->isEmailConfirmationRequired) {
-                    $User->setEnabled(false);
-                    $User->setConfirmationToken($app['User.tokenGenerator']->generateToken());
+                    $user->setEnabled(false);
+                    $user->setConfirmationToken($app['User.tokenGenerator']->generateToken());
                 }
 
-                $app['User.manager']->insert($User);
+                $entityManager->persist($user);
+                $entityManager->flush();
 
                 if ($this->isEmailConfirmationRequired) {
-                    // Send email confirmation.
-                    $app['User.mailer']->sendConfirmationMessage($User);
+                    // Send email confirmation. TODO use a class method for each mail
+                    $url = $this->generateUrl(
+                        'user.reset-password',
+                        ['token' => $user->getConfirmationToken()],
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    );
+                    $context = ['confirmationUrl' => $url];
+                    $subject = $this->renderBlock(
+                        'user/email/confirm-email.twig',
+                        'subject',
+                        $context
+                    ) ?: 'Bienvenue ! Merci de confirmer votre adresse email.';
+                    $textBody = $this->renderBlock('user/email/confirm-email.twig', 'body_text', $context);
+                    $context['subject'] = $subject;
 
-                    // Render the "go check your email" page.
+                    $email = (new TemplatedEmail())
+                        ->to($user->getEmail())
+                        ->subject($subject->getContent())
+                        // TODo ->locale($user->getLocal())
+                        ->text($textBody->getContent())
+                        ->htmlTemplate('user/email/confirm-email.twig')
+                        ->context($context);
+                    $mailer->send($email);
+                    // end SEND
+                    $app['user.mailer']->sendConfirmationMessage($user);
+
+                    // Render the "go check your email" page. TODO
                     return $this->render('user/register-confirmation-sent.twig', [
-                        'email' => $User->getEmail(),
+                        'email' => $user->getEmail(),
                     ]);
-                } else {
-                    // Log the User in to the new account.
-                    $app['User.manager']->loginAsUser($User);
+                }
 
+                if (!$error) {
+                    $security->login($user, 'form_login', 'main', [(new RememberMeBadge())->enable()]
+                    );
                     $this->addFlash(
                         'success',
                         'Votre compte a été créé ! vous pouvez maintenant rejoindre un groupe et créer votre personnage'
                     );
-
-                    return $this->redirectToRoute('homepage');
                 }
+
+                return $this->redirectToRoute('homepage');
             } catch (\InvalidArgumentException $e) {
                 $error = $e->getMessage();
             }
         }
 
         return $this->render('user/register.twig', [
-            'error' => isset($error) ? $error : null,
+            'error' => $error ?? null,
             'name' => $request->request->get('name'),
             'email' => $request->request->get('email'),
-            'Username' => $request->request->get('Username'),
+            'username' => $request->request->get('username'),
         ]);
     }
 
-    /**
-     * Confirmation de l'adresse email.
-     *
-     * @param string $token
-     *
-     * @return RedirectResponse
-     *
-     * @throws NotFoundHttpException
-     */
-    public function confirmEmailAction(EntityManagerInterface $entityManager, Request $request, $token)
-    {
-        $repo = $entityManager->getRepository('\\'.User::class);
-        $User = $repo->findOneByConfirmationToken($token);
-
-        if (!$User) {
+    #[Route('/user/{user}/confirm', name: 'user.confirm-email')]
+    public function confirmEmailAction(
+        EntityManagerInterface $entityManager,
+        $token,
+        #[MapEntity] User $user,
+        Security $security
+    ): RedirectResponse {
+        if ($user->getConfirmationToken() !== $token) {
             $this->addFlash('alert', 'Désolé, votre lien de confirmation a expiré.');
 
-            return $this->redirectToRoute('User.login');
+            return $this->redirectToRoute('app_login');
         }
 
-        $User->setConfirmationToken(null);
-        $User->setEnabled(true);
-        $entityManager->persist($User);
+        $user->setConfirmationToken(null);
+        $user->setEnabled(true);
+        $entityManager->persist($user);
         $entityManager->flush();
 
-        $app['User.manager']->loginAsUser($User);
+        $security->login(
+            $user,
+            'form_login',
+            'main',
+            [(new RememberMeBadge())->enable()]
+        );
+
         $this->addFlash('alert', 'Merci ! Votre compte a été activé.');
 
-        return $this->redirectToRoute('newUser.step1', ['id' => $User->getId()]);
+        return $this->redirectToRoute('newUser.step1', ['id' => $user->getId()]);
     }
 
     /**
@@ -907,7 +951,12 @@ class UserController extends AbstractController
                 $user->setEnabled(true);
                 $entityManager->persist($user);
                 $entityManager->flush();
-                $security->login($user, 'form_login', 'main', [(new RememberMeBadge())->enable()]); // TODO may need usage of Passport
+                $security->login(
+                    $user,
+                    'form_login',
+                    'main',
+                    [(new RememberMeBadge())->enable()]
+                );
                 $this->addFlash('alert', 'Your password has been reset and you are now signed in.');
 
                 return $this->redirectToRoute('user.view', ['user' => $user->getId()]);
