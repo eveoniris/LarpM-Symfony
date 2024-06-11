@@ -3,15 +3,16 @@
 {% block title %}S'enregistrer{% endblock %}
 
 {% block body %}
+    <div class="well well-sm">
+    <div class="header">
+        <h5>Création d'un compte LarpManager</h5>
+    </div>
 
     {% if app.user %}
         <p>Hello, {{ app.user.displayName }}. You are already registered and signed in.</p>
-        <p><a href="{{ path('user.logout') }}">Sign out</a></p>
+        <p><a href="{{ path('app_logout') }}">Sign out</a></p>
     {% else %}
-        <div class="well well-sm">
-            <div class="header">
-                <h5>Création d'un compte LarpManager</h5>
-            </div>
+
 
 
             {% if error %}

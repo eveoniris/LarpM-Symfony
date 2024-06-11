@@ -30,8 +30,11 @@ final class MailService
     {
         $context = [
             'confirmationUrl' => $this->router->generate(
-                'user.reset-password',
-                ['token' => $user->getConfirmationToken()],
+                'user.confirm-email',
+                [
+                    'token' => $user->getConfirmationToken(),
+                    'user' => $user->getId(),
+                ],
                 UrlGeneratorInterface::ABSOLUTE_URL
             ),
         ];

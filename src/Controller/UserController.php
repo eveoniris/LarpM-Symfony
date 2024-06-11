@@ -752,20 +752,15 @@ class UserController extends AbstractController
     public function registerAction(
         EntityManagerInterface $entityManager,
         Request $request,
-        ContainerBagInterface $params,
         UserPasswordHasherInterface $passwordHasher,
         Security $security,
-        MailerInterface $mailer,
     ): RedirectResponse|Response {
         $form = $this->createForm(UserRegisterForm::class);
-
-        // add password and confirm and ADD
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                // $data = $form->getData();
                 /** @var User $user */
                 $user = $form->getData();
 
@@ -828,7 +823,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/user/{user}/confirm', name: 'user.confirm-email')]
+    #[Route('/user/{user}/confirm/{token}', name: 'user.confirm-email')]
     public function confirmEmailAction(
         EntityManagerInterface $entityManager,
         $token,
@@ -855,7 +850,7 @@ class UserController extends AbstractController
 
         $this->addFlash('alert', 'Merci ! Votre compte a été activé.');
 
-        return $this->redirectToRoute('newUser.step1', ['id' => $user->getId()]);
+        return $this->redirectToRoute('user.new-step1', ['user' => $user->getId()]);
     }
 
     /**

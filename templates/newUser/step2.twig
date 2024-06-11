@@ -3,8 +3,10 @@
 {% block title %}Configuration du compte - Etape 2{% endblock title %}
 
 {% block body %}
-<div class="jumbotron">
-  <h1><i class="fa fa-ambulance " aria-hidden="true"></i> Vos informations personnelles</h1>
+	<div class="well well-sm">
+		<div class="header">
+			<h1>Vos informations personnelles</h1>
+		</div>
   <hr />
   <div class="row">
   	<div class="col-md-6">
@@ -13,23 +15,10 @@
   		<p>Les champs marqués d'un astérix rouge sont obligatoires</p>
   	</div>
   	<div class="col-md-6">
-		  <form class="form" action="{{ path('newUser.step2') }}) }}
-			{% form_theme form 'Form/bootstrap_3_horizontal_layout.html.twig' %}
-			{{ form_widget(form) }}
-			 <div class="clearfix">
-			  	<div class="pull-right">
-			  		<p>
-			  			<a class="btn btn-primary btn-lg" href="{{ path('newUser.step1') }}" role="button"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Etape précédente</a>
-			  			<button type="submit" class="btn btn-primary btn-lg" >Etape suivante <i class="fa fa-angle-double-right" aria-hidden="true"></i></button>
-			  		</p>
-			  	</div>
-			  </div>
-			  {{ form_rest(form) }}
-		  {{ form_end(form) }}
+		  {{ form(form) }}
 	</div>
   </div>
   
- 
-</div>
+
 
 {% endblock body %}

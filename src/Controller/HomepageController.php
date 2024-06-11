@@ -11,6 +11,7 @@ use App\Entity\Territoire;
 use App\Form\EtatCivilForm;
 use App\Form\UserRestrictionForm;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -20,9 +21,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomepageController extends AbstractController
 {
-    /**
-     * Choix de la page d'acceuil en fonction de l'état de l'utilisateur.
-     */
     public function indexAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         if (!$this->getUser()) {
@@ -53,7 +51,9 @@ class HomepageController extends AbstractController
     /**
      * Première étape pour un nouvel utilisateur.
      */
-    public function newUserStep1Action(Request $request, EntityManagerInterface $entityManager): Response
+    // TODO : migrate to UserController?
+    #[Route('/user/new/step1', name: 'user.new-step1')]
+    public function newUserStep1Action(EntityManagerInterface $entityManager): Response
     {
         if ($this->getUser()?->getEtatCivil()) {
             $repoAnnonce = $entityManager->getRepository(Annonce::class);
@@ -61,16 +61,18 @@ class HomepageController extends AbstractController
 
             return $this->render('homepage/index.twig', [
                 'annonces' => $annonces,
-                'User' => $this->getUser(),
+                'user' => $this->getUser(),
             ]);
         }
 
+        // Todo : in homepage/new-user/step1 or in user/new/step
         return $this->render('newUser/step1.twig', []);
     }
 
     /**
      * Seconde étape pour un nouvel utilisateur : enregistrer les informations administratives.
      */
+    #[Route('/user/new/step2', name: 'user.new-step2')]
     public function newUserStep2Action(Request $request): RedirectResponse|Response
     {
         $etatCivil = $this->getUser()?->getEtatCivil();
