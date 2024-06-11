@@ -6,10 +6,18 @@ use App\Repository\ReligionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Entity(repositoryClass: ReligionRepository::class)]
 class Religion extends BaseReligion implements \Stringable
 {
+    public function __construct(
+        private UrlGeneratorInterface $router,
+    )
+    {
+        parent::__construct();
+    }
+
     public function __toString(): string
     {
         return $this->getLabel();
@@ -21,5 +29,11 @@ class Religion extends BaseReligion implements \Stringable
     public function getTerritoirePrincipaux()
     {
         return $this->getTerritoires();
+    }
+
+    public function getBlasonFileUrl()
+    {
+        // TODO params ?
+        return 'img/religions/'.$this->getBlason();
     }
 }

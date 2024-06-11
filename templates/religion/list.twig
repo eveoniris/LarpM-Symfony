@@ -26,7 +26,7 @@
 				<tr>
 					<td>{{ religion.label }}</td>
 					<td>{% if religion.blason %}
-		      				<img width="160" src="{{religion.blason}}" />
+		      				<img width="160" src="{{ path('religion.blason', {'religion' : religion.getId }) }}" />
 		      			{% endif %}
 					</td>
 					<td>{{ religion.description|markdown_to_html }}</td>
