@@ -3,15 +3,14 @@
 
 namespace App\Form;
 
+use App\Entity\EtatCivil;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\JoueurForm.
- *
- * @author kevin
- */
 class EtatCivilForm extends AbstractType
 {
     /**
@@ -19,61 +18,61 @@ class EtatCivilForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('nom', TextType::class, [
             'label' => 'Nom civil',
             'required' => true,
             'attr' => [
                 'placeholder' => 'Nom civil',
             ],
         ])
-            ->add('prenom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('prenom', TextType::class, [
                 'label' => 'Prénom civil',
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'Prénom civil',
                 ],
             ])
-            ->add('prenom_usage', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('prenom_usage', TextType::class, [
                 'label' => "Nom d'usage",
                 'required' => false,
                 'attr' => [
                     'placeholder' => "Nom d'usage",
                 ],
             ])
-            ->add('date_naissance', \Symfony\Component\Form\Extension\Core\Type\DateType::class, [
+            ->add('date_naissance', DateType::class, [
                 'label' => 'Date de naissance',
                 'required' => true,
                 'years' => range(1900, 2020),
             ])
-            ->add('telephone', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('telephone', TextType::class, [
                 'label' => 'Numéro de téléphone',
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'Numéro de téléphone',
                 ],
             ])
-            ->add('probleme_medicaux', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('probleme_medicaux', TextareaType::class, [
                 'label' => 'Problèmes médicaux',
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'Indiquez içi les problèmes médicaux qui vous semblent pertinants',
                 ],
             ])
-            ->add('personne_a_prevenir', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('personne_a_prevenir', TextType::class, [
                 'label' => 'Personne à prévenir en cas d\'urgence',
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'Nom et prénom',
                 ],
             ])
-            ->add('tel_pap', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('tel_pap', TextType::class, [
                 'label' => 'Numéro de téléphone de la personne à prévenir',
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'Numéro de téléphone',
                 ],
             ])
-            ->add('fedegn', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('fedegn', TextType::class, [
                 'label' => 'Numéro de carte FédéGN',
                 'required' => false,
                 'attr' => [
@@ -88,7 +87,7 @@ class EtatCivilForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'class' => \App\Entity\EtatCivil::class,
+            'class' => EtatCivil::class,
         ]);
     }
 
