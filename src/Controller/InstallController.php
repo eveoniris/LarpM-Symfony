@@ -98,7 +98,9 @@ class InstallController extends AbstractController
             $entityManager->flush();
 
             // supprimer le fichier de cache pour lancer larpmanager en mode normal
-            unlink(__DIR__.'/../../../cache/maintenance.tag');
+            if (file_exists(__DIR__.'/../../../cache/maintenance.tag')) {
+                unlink(__DIR__.'/../../../cache/maintenance.tag');
+            }
 
             $this->addFlash('success', 'L\'installation c\'est déroulée avec succès.');
 
