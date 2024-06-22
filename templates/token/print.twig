@@ -1,8 +1,8 @@
-{% extends "base.print.A4.twig" %}
+{% extends "base.print.twig" %}
 
 {% block title %}Impression des jetons{% endblock title %}
 
-{% block layout %}
+{% block content %}
     <h2>Liste des jetons</h2>
 
     <table>
@@ -25,4 +25,4 @@
         {% endfor %}
         </tbody>
     </table>
-{% endblock layout %}
+{% endblock content %}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+
+    <title>LarpManager - {% block title %}{% endblock title %}</title>
+
+    <style media="all">
+        @page {
+            {# Can be "landscape" instead #}
+            size: {% block size %}A4{% endblock size %};
+        }
+
+        body {
+            background-color: #fff;
+            font-family: serif;
+            font-size: 12pt;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            border: 1px dotted #777;
+            padding: 0.5rem;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        #info {
+            border: 1px solid #000;
+            margin: 50px 50px 50px 50px;
+            padding: 50px 50px 50px 50px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            background-color: lightgreen;
+        }
+    </style>
+
+    <style media="print">
+        #info {
+            display: none;
+        }
+
+        #content {
+            width: auto;
+            border: 0;
+            margin: 0 5%;
+            padding: 0;
+            float: none !important;
+        }
+
+        .print-center {
+            text-align: center;
+        }
+
+        .print-page-break {
+            page-break-before: always
+        }
+
+        table {
+            width: 100%;
+            border: 1px solid #000;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        table td {
+            text-align: center;
+        }
+    </style>
+
+    {% block style %}
+    {% endblock style %}
+</head>
+<body>
+<div id="info">
+    Utilisez la fonction "Imprimer" de votre navigateur (Ctrl+p).
+</div>
+<div class="content">
+    {% block content %}
+    {% endblock content %}
+</div>
+</body>
+</html>

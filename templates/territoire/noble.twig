@@ -1,29 +1,26 @@
-<!DOCTYPE html>
-<html>
-    <head>
-    	<meta charset="utf-8">
-    	<title>LarpManager - Impression des pays</title>
-    </head>
-    <body>
-<h2>Liste des pays</h2>
+{% extends "base.print.twig" %}
 
-<table border="1" style="width:100%; border-collapse:collapse">
-<thead>
-	<tr>
-		<td><strong>Nom</strong></td>
-		<td><strong>Groupes</strong></td>
-		<td><strong>Nombre de noble</strong></td>
-	</tr>
-</thead>
-<tbody>
-	{% for territoire in territoires %}
-		<tr>
-			<td>{{ territoire.nom }}</td>
-			<td>{{ territoire.groupes|join(', ') }}</td>
-			<td>{{ territoire.nbrNoble|length|default(0) }}</td>
-		</tr>
-	{% endfor %}
-</tbody>
-</table>
-</body>
-</html>
+{% block title %}Liste des pays{% endblock title %}
+
+{% block content %}
+    <h2>Liste des pays</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Groupes</th>
+            <th>Nombre de noble</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for territoire in territoires %}
+            <tr>
+                <td>{{ territoire.nom }}</td>
+                <td>{{ territoire.groupes|join(', ') }}</td>
+                <td>{{ territoire.nbrNoble|length|default(0) }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}
