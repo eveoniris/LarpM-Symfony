@@ -222,7 +222,7 @@ class TerritoireController extends AbstractController
     #[Route('/admin/territoire/noble', name: 'territoire.admin.noble')]
     public function nobleAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $territoires = $entityManager->getRepository('\\'.Territoire::class)->findRoot();
+        $territoires = $entityManager->getRepository(Territoire::class)->findRoot();
 
         return $this->render('territoire/noble.twig', ['territoires' => $territoires]);
     }

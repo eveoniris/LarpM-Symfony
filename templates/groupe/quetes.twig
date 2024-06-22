@@ -1,5 +1,6 @@
-{% extends "layout_print.twig" %}
-{% block body %}
+{% extends "base.print.twig" %}
+
+{% block content %}
 
 	{% for quete in quetes %}
 		<div>
@@ -17,4 +18,4 @@
 		<hr class="print-page-break" />
 	{% endfor %}
 
-{% endblock body %}
+{% endblock content %}
