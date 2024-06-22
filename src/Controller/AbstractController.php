@@ -273,9 +273,9 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
     protected function sendCsv(
         string $title,
-        BaseRepository $repository = null,
+        ?BaseRepository $repository = null,
         array $header = [],
-        callable $content = null
+        ?callable $content = null
     ): StreamedResponse {
         if (!$repository && !$content) {
             throw new \Exception('Method need a repository or a callable content');

@@ -37,6 +37,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[IsGranted('ROLE_SCENARISTE')]
 class GroupeController extends AbstractController
@@ -152,7 +153,7 @@ class GroupeController extends AbstractController
      * fourni le tableau de quête pour tous les groupes.
      */
     #[Route('/groupe/quetes', name: 'groupe.quetes')]
-    public function quetesAction(Request $request, EntityManagerInterface $entityManager)
+    public function quetesAction(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer)
     {
         $repo = $entityManager->getRepository(Groupe::class);
         $groupes = $repo->findAllOrderByNumero();
@@ -178,33 +179,33 @@ class GroupeController extends AbstractController
         }
 
         if ($request->get('csv')) {
+            $header = [
+                'nom',
+                'pays',
+                'res 1',
+                'res 2',
+                'res 3',
+                'res 4',
+                'res 5',
+                'res 6',
+                'res 7',
+                'Départ',
+                'Arrivée',
+                'recompense 1',
+                'recompense 2',
+                'recompense 3',
+                'recompense 4',
+                'recompense 5',
+                'description'];
+
             header('Content-Type: text/csv');
             header('Content-Disposition: attachment; filename=eveoniris_quetes_'.date('Ymd').'.csv');
             header('Pragma: no-cache');
             header('Expires: 0');
 
-            $output = fopen('php://output', 'w');
+            $output = fopen('php://output', 'wb');
 
-            // header
-            fputcsv($output,
-                [
-                    'nom',
-                    'pays',
-                    'res 1',
-                    'res 2',
-                    'res 3',
-                    'res 4',
-                    'res 5',
-                    'res 6',
-                    'res 7',
-                    'Départ',
-                    'Arrivée',
-                    'recompense 1',
-                    'recompense 2',
-                    'recompense 3',
-                    'recompense 4',
-                    'recompense 5',
-                    'description'], ';');
+            fputcsv($output, $header, ';');
 
             foreach ($quetes as $quete) {
                 $line = [];
