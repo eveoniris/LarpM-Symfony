@@ -1,0 +1,63 @@
+<script type="text/javascript">
+
+	function addCompetenceForm(collectionHolder, $newLinkLi) {
+		// Récupère l'élément ayant l'attribut data-prototype comme expliqué plus tôt
+		let prototype = collectionHolder.attr('data-prototype');
+
+		// Remplace '__name__' dans le HTML du prototype par un nombre basé sur
+		// la longueur de la collection courante
+		let newForm = prototype.replace(/__name__/g, collectionHolder.children().length);
+
+		// Affiche le formulaire dans la page dans un li, avant le lien "ajouter un tag"
+		let $newFormLi = $('<li class="list-group-item"></li>').append(newForm);
+		$newLinkLi.before($newFormLi);
+
+		// ajoute un lien de suppression au nouveau formulaire
+		addCompetenceFormDeleteLink($newFormLi);
+	}
+
+	function addCompetenceFormDeleteLink($competenceFormLi) {
+		let $removeFormA = $('<span class="input-group-btn"><a class="btn btn-link" href="#"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></a></span>');
+		$('select',$competenceFormLi).wrap('<div class="input-group"></div>');
+		$('select',$competenceFormLi).after($removeFormA);
+
+		$removeFormA.on('click', function(e) {
+			// empêche le lien de créer un « # » dans l'URL
+			e.preventDefault();
+
+			// supprime l'élément li pour le formulaire de tag
+			$competenceFormLi.remove();
+		});
+	}
+
+
+	jQuery(document).ready(function() {
+
+		// Récupère le div qui contient la collection de tags
+		let collectionHolder = $('ul.competences');
+
+		// ajoute un lien « add a tag »
+		let $addCompetenceLink = $('<a href="#" class="add_competence_link">Ajouter une competence</a>');
+		let $newLinkLi = $('<li class="list-group-item"></li>').append($addCompetenceLink);
+
+
+		// ajoute un lien de suppression à tous les éléments li de
+		// formulaires de tag existants
+		collectionHolder.find('li').each(function() {
+			addCompetenceFormDeleteLink($(this));
+		});
+
+		// ajoute l'ancre « ajouter un tag » et li à la balise ul
+		collectionHolder.append($newLinkLi);
+
+		$addCompetenceLink.on('click', function(e) {
+			// empêche le lien de créer un « # » dans l'URL
+			e.preventDefault();
+
+			// ajoute un nouveau formulaire tag (voir le prochain bloc de code)
+			addCompetenceForm(collectionHolder, $newLinkLi);
+		});
+
+		console.log(collectionHolder.html());
+	});
+</script>
