@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -13,13 +14,13 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\Table(name: 'personnages_religions')]
 #[ORM\Index(columns: ['religion_id'], name: 'fk_personnage_religion_religion1_idx')]
 #[ORM\Index(columns: ['religion_level_id'], name: 'fk_personnage_religion_religion_level1_idx')]
-#[ORM\Index(columns: ['"personnage_id"'], name: 'fk_personnages_religions_personnage1_idx')]
+#[ORM\Index(columns: ['personnage_id'], name: 'fk_personnages_religions_personnage1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnagesReligions', 'extended' => 'PersonnagesReligions'])]
 abstract class BasePersonnagesReligions
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[ManyToOne(targetEntity: Religion::class, inversedBy: 'personnagesReligions')]

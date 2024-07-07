@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Religion;
 use App\Entity\ReligionLevel;
+use App\Entity\Topic;
 use App\Form\Religion\ReligionBlasonForm;
 use App\Form\Religion\ReligionDeleteForm;
 use App\Form\Religion\ReligionForm;
@@ -12,10 +13,15 @@ use App\Repository\ReligionRepository;
 use App\Repository\TopicRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Imagine\Gd\Imagine;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class ReligionController extends AbstractController
 {
@@ -66,14 +72,14 @@ class ReligionController extends AbstractController
      * affiche la liste des religions.
      */
     #[Route('/religion/mail', name: 'religion.mail')]
-    public function mailAction(Request $request, ReligionRepository $religionRepository): Response
-    {
-        $religions = $religionRepository->findAllOrderedByLabel();
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
 
+    public function mailAction(ReligionRepository $religionRepository): Response
+    {
         return $this->render(
             'admin/religion/mail.twig',
             [
-                'religions' => $religions,
+                'religions' => $religionRepository->getUserEmailsByReligions(),
             ]
         );
     }
@@ -101,8 +107,8 @@ class ReligionController extends AbstractController
         $religion = new Religion();
 
         $form = $this->createForm(ReligionForm::class, $religion)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer'])
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer'])
         ;
 
         $form->handleRequest($request);
@@ -115,9 +121,9 @@ class ReligionController extends AbstractController
              * Création du topic associés à cette religion
              * Ce topic doit être placé dans le topic "culte".
              *
-             * @var \App\Entity\Topic $topic
+             * @var Topic $topic
              */
-            $topic = new \App\Entity\Topic();
+            $topic = new Topic();
             $topic->setTitle($religion->getLabel());
             $topic->setDescription($religion->getDescription());
             $topic->setUser($this->getUser());
@@ -165,8 +171,8 @@ class ReligionController extends AbstractController
     public function updateAction(EntityManagerInterface $entityManager, Request $request, Religion $religion)
     {
         $form = $this->createForm(ReligionForm::class, $religion)
-            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer'])
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer'])
         ;
 
         $originalSpheres = new ArrayCollection();
@@ -217,10 +223,10 @@ class ReligionController extends AbstractController
      * Supression d'une religion.
      */
     #[Route('/religion/{religion}/delete', name: 'religion.delete')]
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Religion $religion)
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Religion $religion): RedirectResponse|Response
     {
         $form = $this->createForm(ReligionDeleteForm::class, $religion)
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -275,7 +281,7 @@ class ReligionController extends AbstractController
     public function updateBlasonAction(Request $request, EntityManagerInterface $entityManager, Religion $religion)
     {
         $form = $this->createForm(ReligionBlasonForm::class, $religion)
-            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -294,7 +300,7 @@ class ReligionController extends AbstractController
 
             $blasonFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
 
-            $imagine = new \Imagine\Gd\Imagine();
+            $imagine = new Imagine();
             $image = $imagine->open($files['blason']->getPathname());
             $image->resize($image->getSize()->widen(160));
             $image->save($path.$blasonFilename);
@@ -344,8 +350,8 @@ class ReligionController extends AbstractController
         $religionLevel = new ReligionLevel();
 
         $form = $this->createForm(ReligionLevelForm::class, $religionLevel)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -382,8 +388,8 @@ class ReligionController extends AbstractController
     public function levelUpdateAction(Request $request, EntityManagerInterface $entityManager, ReligionLevel $religionLevel)
     {
         $form = $this->createForm(ReligionLevelForm::class, $religionLevel)
-            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

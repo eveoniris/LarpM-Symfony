@@ -71,11 +71,6 @@ class TokenController extends AbstractController
         return $this->render('token/detail.twig', ['token' => $token]);
     }
 
-    /*public function detailAction(Request $request, EntityManagerInterface $entityManager, Token $token): Response
-    {
-        return $this->render('token/detail.twig', ['token' => $token]);
-    }*/
-
     #[Route('/{token}/update', name: 'update', requirements: ['token' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Token $token): RedirectResponse|Response
     {
