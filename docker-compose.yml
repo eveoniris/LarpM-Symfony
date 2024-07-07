@@ -1,7 +1,7 @@
 services:
 ###> doctrine/doctrine-bundle ###
   database:
-    image: mariadb:11.3.2
+    image: mariadb:11.4.2
     ports:
       - "30202:3306"
     restart: unless-stopped
