@@ -66,7 +66,7 @@ class ObjetRepository extends BaseRepository
         return $qb;
     }
 
-    public function addTagCriteriaToQueryBuilder(null|string|int|Tag $criter, QueryBuilder $qb): QueryBuilder
+    public function addTagCriteriaToQueryBuilder(string|int|Tag|null $criter, QueryBuilder $qb): QueryBuilder
     {
         $alias = $qb->getRootAliases()[0] ?? 'o';
         if (null === $criter) {
@@ -103,7 +103,7 @@ class ObjetRepository extends BaseRepository
         return $qb;
     }
 
-    public function addRangementCriteriaToQueryBuilder(null|string|int|Rangement $criter, QueryBuilder $qb): QueryBuilder
+    public function addRangementCriteriaToQueryBuilder(string|int|Rangement|null $criter, QueryBuilder $qb): QueryBuilder
     {
         $alias = $qb->getRootAliases()[0] ?? 'o';
         if (null === $criter) {
