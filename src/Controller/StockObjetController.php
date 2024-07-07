@@ -97,7 +97,7 @@ class StockObjetController extends AbstractController
 
                 $query->setParameter('value', '%'.$value.'%');
             } else {
-                $query->where($query->expr()->like($alias.'.'.$type, "'%".$value."%'"));
+                $query->orWhere($query->expr()->like($alias.'.'.$type, "'%".$value."%'"));
             }
         }
 
