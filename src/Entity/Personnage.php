@@ -710,10 +710,6 @@ class Personnage extends BasePersonnage implements \Stringable
             ++$heroisme;
         }
 
-        if ($this->getCompetenceNiveau('Forge') >= 4) {
-            ++$heroisme;
-        }
-
         if ($this->getCompetenceNiveau('Protection') >= 4) {
             ++$heroisme;
         }
