@@ -1,8 +1,9 @@
 <?php
 
-
 namespace App\Controller;
 
+use App\Entity\Document;
+use App\Entity\Domaine;
 use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\Sort;
@@ -18,24 +19,35 @@ use App\Form\SortForm;
 use App\Form\SphereDeleteForm;
 use App\Form\SphereForm;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_REGLE')]
+#[IsGranted('ROLE_REGLE')]
 class MagieController extends AbstractController
 {
     // liste des colonnes à afficher par défaut sur les vues 'personnages' (l'ordre est pris en compte)
-    private array $defaultPersonnageListColumnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser'];
+    private array $defaultPersonnageListColumnKeys = [
+        'colId',
+        'colStatut',
+        'colNom',
+        'colClasse',
+        'colGroupe',
+        'colUser',
+    ];
 
     /**
      * Liste des sphere.
      */
     #[Route('/magie/sphere', name: 'magieSphere.list')]
-    public function sphereListAction(Request $request,  EntityManagerInterface $entityManager)
+    public function sphereListAction(EntityManagerInterface $entityManager): Response
     {
-        $spheres = $entityManager->getRepository('\\'.\App\Entity\Sphere::class)->findAll();
+        $spheres = $entityManager->getRepository(Sphere::class)->findAll();
 
         return $this->render('sphere/list.twig', [
             'spheres' => $spheres,
@@ -46,7 +58,7 @@ class MagieController extends AbstractController
      * Detail d'une sphere.
      */
     #[Route('/magie/sphere/{sphere}', name: 'magie.sphere.detail')]
-    public function sphereDetailAction(Request $request,  EntityManagerInterface $entityManager, Sphere $sphere)
+    public function sphereDetailAction(Sphere $sphere): Response
     {
         return $this->render('sphere/detail.twig', [
             'sphere' => $sphere,
@@ -56,12 +68,13 @@ class MagieController extends AbstractController
     /**
      * Ajoute une sphere.
      */
-    public function sphereAddAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/sphere', name: 'magie.sphere.add')]
+    public function sphereAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $sphere = new \App\Entity\Sphere();
+        $sphere = new Sphere();
 
         $form = $this->createForm(SphereForm::class, $sphere)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -71,7 +84,7 @@ class MagieController extends AbstractController
             $entityManager->persist($sphere);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La sphere a été ajouté');
+            $this->addFlash('success', 'La sphere a été ajouté');
 
             return $this->redirectToRoute('magie.sphere.detail', ['sphere' => $sphere->getId()], 303);
         }
@@ -85,12 +98,14 @@ class MagieController extends AbstractController
     /**
      * Met à jour une sphere.
      */
-    public function sphereUpdateAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $sphere = $request->get('sphere');
-
+    #[Route('/magie/sphere/{sphere}/update', name: 'magie.sphere.update', requirements: ['sphere' => Requirement::DIGITS])]
+    public function sphereUpdateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Sphere $sphere
+    ): RedirectResponse|Response {
         $form = $this->createForm(SphereForm::class, $sphere)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -100,7 +115,7 @@ class MagieController extends AbstractController
             $entityManager->persist($sphere);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La sphere a été sauvegardé');
+            $this->addFlash('success', 'La sphere a été sauvegardé');
 
             return $this->redirectToRoute('magie.sphere.detail', ['sphere' => $sphere->getId()], 303);
         }
@@ -111,15 +126,15 @@ class MagieController extends AbstractController
         ]);
     }
 
-    /**
-     * Supprime une sphère.
-     */
-    public function sphereDeleteAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $sphere = $request->get('sphere');
 
+    #[Route('/magie/sphere/{sphere}/delete', name: 'magie.sphere.delete', requirements: ['sphere' => Requirement::DIGITS])]
+    public function sphereDeleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Sphere $sphere
+    ): RedirectResponse|Response {
         $form = $this->createForm(SphereDeleteForm::class, $sphere)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -129,7 +144,7 @@ class MagieController extends AbstractController
             $entityManager->remove($sphere);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La sphere a été suprimé');
+            $this->addFlash('success', 'La sphere a été suprimé');
 
             return $this->redirectToRoute('magie.sphere.list', [], 303);
         }
@@ -144,36 +159,31 @@ class MagieController extends AbstractController
      * Liste des prieres.
      */
     #[Route('/magie/priere', name: 'magiePriere.list')]
-    public function priereListAction(Request $request,  EntityManagerInterface $entityManager)
+    public function priereListAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $prieres = $entityManager->getRepository('\\'.\App\Entity\Priere::class)->findAll();
+        $prieres = $entityManager->getRepository('\\'.Priere::class)->findAll();
 
         return $this->render('priere/list.twig', [
             'prieres' => $prieres,
         ]);
     }
 
-    /**
-     * Detail d'une priere.
-     */
-    public function priereDetailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/priere/{priere}', name: 'magie.priere.detail', requirements: ['priere' => Requirement::DIGITS])]
+    public function priereDetailAction(#[MapEntity] Priere $priere): Response
     {
-        $priere = $request->get('priere');
-
-        return $this->render('priere/detail.twig', [
-            'priere' => $priere,
-        ]);
+        return $this->render('priere/detail.twig', ['priere' => $priere]);
     }
 
     /**
      * Ajoute une priere.
      */
-    public function priereAddAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/priere/add', name: 'magie.priere.add')]
+    public function priereAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $priere = new \App\Entity\Priere();
+        $priere = new Priere();
 
         $form = $this->createForm(PriereForm::class, $priere)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -187,7 +197,10 @@ class MagieController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                    $this->addFlash(
+                        'error',
+                        'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
+                    );
 
                     return $this->redirectToRoute('magie.priere.list', [], 303);
                 }
@@ -202,7 +215,7 @@ class MagieController extends AbstractController
             $entityManager->persist($priere);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La priere a été ajouté');
+            $this->addFlash('success', 'La priere a été ajouté');
 
             return $this->redirectToRoute('magie.priere.detail', ['priere' => $priere->getId()], 303);
         }
@@ -216,12 +229,15 @@ class MagieController extends AbstractController
     /**
      * Met à jour une priere.
      */
-    public function priereUpdateAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $priere = $request->get('priere');
+    #[Route('/magie/priere/{priere}/update', name: 'magie.priere.update')]
+    public function priereUpdateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Priere $priere
+    ): RedirectResponse|Response {
 
         $form = $this->createForm(PriereForm::class, $priere)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -237,7 +253,10 @@ class MagieController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                    $this->addFlash(
+                        'error',
+                        'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
+                    );
 
                     return $this->redirectToRoute('magie.priere.list', [], 303);
                 }
@@ -252,7 +271,7 @@ class MagieController extends AbstractController
             $entityManager->persist($priere);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La priere a été sauvegardé');
+            $this->addFlash('success', 'La priere a été sauvegardé');
 
             return $this->redirectToRoute('magie.priere.detail', ['priere' => $priere->getId()], 303);
         }
@@ -266,12 +285,15 @@ class MagieController extends AbstractController
     /**
      * Supprime une priere.
      */
-    public function priereDeleteAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $priere = $request->get('priere');
+    #[Route('/magie/priere/{priere}/delete', name: 'magie.priere.delete')]
+    public function priereDeleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Priere $priere
+    ): RedirectResponse|Response {
 
         $form = $this->createForm(PriereDeleteForm::class, $priere)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -281,7 +303,7 @@ class MagieController extends AbstractController
             $entityManager->remove($priere);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La priere a été suprimé');
+            $this->addFlash('success', 'La priere a été suprimé');
 
             return $this->redirectToRoute('magie.priere.list', [], 303);
         }
@@ -295,7 +317,8 @@ class MagieController extends AbstractController
     /**
      * Obtenir le document lié a une priere.
      */
-    public function getPriereDocumentAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/priere/document', name: 'magie.priere.document')]
+    public function getPriereDocumentAction(Request $request, EntityManagerInterface $entityManager)
     {
         $document = $request->get('document');
         $priere = $request->get('priere');
@@ -330,8 +353,11 @@ class MagieController extends AbstractController
     /**
      * Liste des personnages ayant cette prière.
      */
-    public function prierePersonnagesAction(Request $request,  EntityManagerInterface $entityManager, Priere $priere)
-    {
+    #[Route('/magie/priere/personnages', name: 'magie.priere.personnages')]
+    public function prierePersonnagesAction(
+        Request $request,
+        Priere $priere
+    ): Response {
         $routeName = 'magie.priere.personnages';
         $routeParams = ['priere' => $priere->getId()];
         $twigFilePath = 'admin/priere/personnages.twig';
@@ -363,9 +389,9 @@ class MagieController extends AbstractController
      * Liste des potions.
      */
     #[Route('/magie/potion', name: 'magiePotion.list')]
-    public function potionListAction(Request $request,  EntityManagerInterface $entityManager)
+    public function potionListAction(EntityManagerInterface $entityManager): Response
     {
-        $potions = $entityManager->getRepository('\\'.\App\Entity\Potion::class)->findAll();
+        $potions = $entityManager->getRepository(Potion::class)->findAll();
 
         return $this->render('potion/list.twig', [
             'potions' => $potions,
@@ -375,10 +401,9 @@ class MagieController extends AbstractController
     /**
      * Detail d'une potion.
      */
-    public function potionDetailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/potion/{potion}', name: 'magie.potion.detail', requirements: ['potion' => Requirement::DIGITS])]
+    public function potionDetailAction(#[MapEntity] Potion $potion): Response
     {
-        $potion = $request->get('potion');
-
         return $this->render('potion/detail.twig', [
             'potion' => $potion,
         ]);
@@ -389,8 +414,11 @@ class MagieController extends AbstractController
      *
      * @param Potion
      */
-    public function potionPersonnagesAction(Request $request,  EntityManagerInterface $entityManager, Potion $potion)
-    {
+    #[Route('/magie/potion/{potion}/personnages', name: 'magie.potion.personnages', requirements: ['potion' => Requirement::DIGITS])]
+    public function potionPersonnagesAction(
+        Request $request,
+        #[MapEntity] Potion $potion
+    ): Response {
         $routeName = 'magie.potion.personnages';
         $routeParams = ['potion' => $potion->getId()];
         $twigFilePath = 'admin/potion/personnages.twig';
@@ -421,12 +449,13 @@ class MagieController extends AbstractController
     /**
      * Ajoute une potion.
      */
-    public function potionAddAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/potion/add', name: 'magie.potion.add')]
+    public function potionAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $potion = new \App\Entity\Potion();
+        $potion = new Potion();
 
         $form = $this->createForm(PotionForm::class, $potion)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -440,7 +469,10 @@ class MagieController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                    $this->addFlash(
+                        'error',
+                        'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
+                    );
 
                     return $this->redirectToRoute('magie.potion.list', [], 303);
                 }
@@ -455,7 +487,7 @@ class MagieController extends AbstractController
             $entityManager->persist($potion);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La potion a été ajouté');
+            $this->addFlash('success', 'La potion a été ajouté');
 
             return $this->redirectToRoute('magie.potion.detail', ['potion' => $potion->getId()], 303);
         }
@@ -469,12 +501,15 @@ class MagieController extends AbstractController
     /**
      * Met à jour une potion.
      */
-    public function potionUpdateAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $potion = $request->get('potion');
+    #[Route('/magie/potion/{potion}/update', name: 'magie.potion.update', requirements: ['potion' => Requirement::DIGITS])]
+    public function potionUpdateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Potion $potion
+    ): RedirectResponse|Response {
 
         $form = $this->createForm(PotionForm::class, $potion)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -490,7 +525,10 @@ class MagieController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                    $this->addFlash(
+                        'error',
+                        'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
+                    );
 
                     return $this->redirectToRoute('magie.potion.list', [], 303);
                 }
@@ -505,7 +543,7 @@ class MagieController extends AbstractController
             $entityManager->persist($potion);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La potion a été sauvegardé');
+            $this->addFlash('success', 'La potion a été sauvegardé');
 
             return $this->redirectToRoute('magie.potion.detail', ['potion' => $potion->getId()], 303);
         }
@@ -519,12 +557,14 @@ class MagieController extends AbstractController
     /**
      * Supprime une potion.
      */
-    public function potionDeleteAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $potion = $request->get('potion');
-
+    #[Route('/magie/potion/{potion}/delete', name: 'magie.potion.delete', requirements: ['potion' => Requirement::DIGITS])]
+    public function potionDeleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Potion $potion
+    ): RedirectResponse|Response {
         $form = $this->createForm(PotionDeleteForm::class, $potion)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -534,7 +574,7 @@ class MagieController extends AbstractController
             $entityManager->remove($potion);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La potion a été suprimé');
+            $this->addFlash('success', 'La potion a été suprimé');
 
             return $this->redirectToRoute('magie.potion.list', [], 303);
         }
@@ -548,11 +588,9 @@ class MagieController extends AbstractController
     /**
      * Obtenir le document lié a une potion.
      */
-    public function getPotionDocumentAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/potion/{potion}/document/{document}', name: 'magie.potion.document', requirements: ['potion' => Requirement::DIGITS, 'document' => Requirement::DIGITS])]
+    public function getPotionDocumentAction(Request $request, #[MapEntity] Potion $potion, #[MapEntity] Document $document): Response
     {
-        $document = $request->get('document');
-        $potion = $request->get('potion');
-
         $file = __DIR__.'/../../private/doc/'.$document;
 
         $stream = static function () use ($file): void {
@@ -570,9 +608,9 @@ class MagieController extends AbstractController
      * Liste des domaines de magie.
      */
     #[Route('/magie/domaine', name: 'magieDomaine.list')]
-    public function domaineListAction(Request $request,  EntityManagerInterface $entityManager)
+    public function domaineListAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $domaines = $entityManager->getRepository('\\'.\App\Entity\Domaine::class)->findAll();
+        $domaines = $entityManager->getRepository('\\'.Domaine::class)->findAll();
 
         return $this->render('domaine/list.twig', [
             'domaines' => $domaines,
@@ -582,10 +620,9 @@ class MagieController extends AbstractController
     /**
      * Detail d'un domaine de magie.
      */
-    public function domaineDetailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/domaine/{domaine}/detail', name: 'magie.domaine.detail', requirements: ['domaine' => Requirement::DIGITS])]
+    public function domaineDetailAction(#[MapEntity] Domaine $domaine): Response
     {
-        $domaine = $request->get('domaine');
-
         return $this->render('domaine/detail.twig', [
             'domaine' => $domaine,
         ]);
@@ -594,12 +631,13 @@ class MagieController extends AbstractController
     /**
      * Ajoute un domaine de magie.
      */
-    public function domaineAddAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/domaine/add', name: 'magie.domaine.add')]
+    public function domaineAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $domaine = new \App\Entity\Domaine();
+        $domaine = new Domaine();
 
         $form = $this->createForm(DomaineForm::class, $domaine)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -609,7 +647,7 @@ class MagieController extends AbstractController
             $entityManager->persist($domaine);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le domaine de magie a été ajouté');
+            $this->addFlash('success', 'Le domaine de magie a été ajouté');
 
             return $this->redirectToRoute('magie.domaine.detail', ['domaine' => $domaine->getId()], 303);
         }
@@ -623,12 +661,15 @@ class MagieController extends AbstractController
     /**
      * Met à jour un domaine de magie.
      */
-    public function domaineUpdateAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $domaine = $request->get('domaine');
+    #[Route('/magie/domaine/{domaine}/update', name: 'magie.domaine.update', requirements: ['domaine' => Requirement::DIGITS])]
+    public function domaineUpdateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Domaine $domaine
+    ): RedirectResponse|Response {
 
         $form = $this->createForm(DomaineForm::class, $domaine)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -638,7 +679,7 @@ class MagieController extends AbstractController
             $entityManager->persist($domaine);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le domaine de magie a été sauvegardé');
+            $this->addFlash('success', 'Le domaine de magie a été sauvegardé');
 
             return $this->redirectToRoute('magie.domaine.detail', ['domaine' => $domaine->getId()], 303);
         }
@@ -652,12 +693,15 @@ class MagieController extends AbstractController
     /**
      * Supprime un domaine de magie.
      */
-    public function domaineDeleteAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $domaine = $request->get('domaine');
+    #[Route('/magie/domaine/{domaine}', name: 'magie.domaine.delete', requirements: ['domaine' => Requirement::DIGITS])]
+    public function domaineDeleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Domaine $domaine
+    ): RedirectResponse|Response {
 
         $form = $this->createForm(DomaineDeleteForm::class, $domaine)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -667,7 +711,7 @@ class MagieController extends AbstractController
             $entityManager->remove($domaine);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le domaine de magie a été suprimé');
+            $this->addFlash('success', 'Le domaine de magie a été suprimé');
 
             return $this->redirectToRoute('magie.domaine.list', [], 303);
         }
@@ -682,9 +726,9 @@ class MagieController extends AbstractController
      * Liste des sorts.
      */
     #[Route('/magie/sort', name: 'magieSort.list')]
-    public function sortListAction(Request $request,  EntityManagerInterface $entityManager)
+    public function sortListAction(EntityManagerInterface $entityManager): Response
     {
-        $sorts = $entityManager->getRepository('\\'.\App\Entity\Sort::class)->findAll();
+        $sorts = $entityManager->getRepository(Sort::class)->findAll();
 
         return $this->render('sort/list.twig', [
             'sorts' => $sorts,
@@ -694,10 +738,9 @@ class MagieController extends AbstractController
     /**
      * Detail d'un sort.
      */
-    public function sortDetailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/sort/{sort}/detail', name: 'magie.sort.detail', requirements: ['sort' => Requirement::DIGITS])]
+    public function sortDetailAction(#[MapEntity] Sort $sort): Response
     {
-        $sort = $request->get('sort');
-
         return $this->render('sort/detail.twig', [
             'sort' => $sort,
         ]);
@@ -706,12 +749,13 @@ class MagieController extends AbstractController
     /**
      * Ajoute un sort.
      */
-    public function sortAddAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/sort/add', name: 'magie.sort.add', requirements: ['sort' => Requirement::DIGITS])]
+    public function sortAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $sort = new \App\Entity\Sort();
+        $sort = new Sort();
 
         $form = $this->createForm(SortForm::class, $sort)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -725,7 +769,10 @@ class MagieController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                    $this->addFlash(
+                        'error',
+                        'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
+                    );
 
                     return $this->redirectToRoute('magie.sort.list', [], 303);
                 }
@@ -740,7 +787,7 @@ class MagieController extends AbstractController
             $entityManager->persist($sort);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le sort a été ajouté');
+            $this->addFlash('success', 'Le sort a été ajouté');
 
             return $this->redirectToRoute('magie.sort.detail', ['sort' => $sort->getId()], 303);
         }
@@ -754,12 +801,11 @@ class MagieController extends AbstractController
     /**
      * Met à jour un sort.
      */
-    public function sortUpdateAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/sort/{sort}/update', name: 'magie.sort.update', requirements: ['sort' => Requirement::DIGITS])]
+    public function sortUpdateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Sort $sort): RedirectResponse|Response
     {
-        $sort = $request->get('sort');
-
         $form = $this->createForm(SortForm::class, $sort)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -775,7 +821,10 @@ class MagieController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                    $this->addFlash(
+                        'error',
+                        'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
+                    );
 
                     return $this->redirectToRoute('magie.sort.list', [], 303);
                 }
@@ -790,7 +839,7 @@ class MagieController extends AbstractController
             $entityManager->persist($sort);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le sort a été sauvegardé');
+            $this->addFlash('success', 'Le sort a été sauvegardé');
 
             return $this->redirectToRoute('magie.sort.detail', ['sort' => $sort->getId()], 303);
         }
@@ -804,12 +853,11 @@ class MagieController extends AbstractController
     /**
      * Supprime un sortilège.
      */
-    public function sortDeleteAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/sort/{sort}/delete', name: 'magie.sort.delete', requirements: ['sort' => Requirement::DIGITS])]
+    public function sortDeleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Sort $sort): RedirectResponse|Response
     {
-        $sort = $request->get('sort');
-
         $form = $this->createForm(SortDeleteForm::class, $sort)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -819,7 +867,7 @@ class MagieController extends AbstractController
             $entityManager->remove($sort);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le sort a été supprimé');
+            $this->addFlash('success', 'Le sort a été supprimé');
 
             return $this->redirectToRoute('magie.sort.list', [], 303);
         }
@@ -833,11 +881,9 @@ class MagieController extends AbstractController
     /**
      * Obtenir le document lié a un sort.
      */
-    public function getSortDocumentAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/magie/sort/{sort}/document/{document}', name: 'magie.sort.document', requirements: ['sort' => Requirement::DIGITS])]
+    public function getSortDocumentAction(#[MapEntity] Sort $sort, #[MapEntity] Document $document)
     {
-        $document = $request->get('document');
-        $sort = $request->get('sort');
-
         // on ne peux télécharger que les documents des compétences que l'on connait
         /*if  ( ! $app['security.authorization_checker']->isGranted('ROLE_REGLE') )
         {
@@ -863,12 +909,8 @@ class MagieController extends AbstractController
         ]);
     }
 
-    /**
-     * Liste des personnages ayant ce sort.
-     *
-     * @param Sort
-     */
-    public function sortPersonnagesAction(Request $request,  EntityManagerInterface $entityManager, Sort $sort)
+    #[Route('/magie/sort/{sort}/personnages', name: 'magie.sort.personnages', requirements: ['sort' => Requirement::DIGITS])]
+    public function sortPersonnagesAction(Request $request, #[MapEntity] Sort $sort): Response
     {
         $routeName = 'magie.sort.personnages';
         $routeParams = ['sort' => $sort->getId()];
