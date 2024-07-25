@@ -16,6 +16,8 @@
 		<tbody>
 			{% for territoire in construction.territoires %}
 			<tr><td><a class="list-group-item" href="{{ path('territoire.detail', {'territoire': territoire.id}) }}">{{ territoire.tree }}</a></td></tr>
+			{% else %}
+				{% include '_partials/noResultTableRow.twig' %}
 			{% endfor %}
 	 	</tbody>
 	</table>

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Form\Technologie;
 
 use App\Entity\CompetenceFamily;
@@ -8,6 +7,7 @@ use App\Entity\Technologie;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -40,7 +40,7 @@ class TechnologieForm extends AbstractType
                 'label' => 'Compétence Expert requise',
                 'choice_label' => 'label',
             ])
-            ->add('document', 'file', [
+            ->add('document', FileType::class, [
                 'label' => 'Téléversez un document',
                 'required' => true,
                 'mapped' => false,
@@ -48,7 +48,7 @@ class TechnologieForm extends AbstractType
             ->add('secret', CheckboxType::class, [
                 'label' => 'Technologie secrète ?',
             ])
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', SubmitType::class, ['label' => 'Valider']);
     }
 
     /**

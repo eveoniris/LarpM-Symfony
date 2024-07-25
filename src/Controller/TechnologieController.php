@@ -8,6 +8,7 @@ use App\Form\Technologie\TechnologieDeleteForm;
 use App\Form\Technologie\TechnologieForm;
 use App\Form\Technologie\TechnologiesRessourcesForm;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,6 +35,7 @@ class TechnologieController extends AbstractController
     /**
      * Ajout d'une technologie.
      */
+    #[Route('/technologie/add', name: 'technologie.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(TechnologieForm::class, new Technologie());
@@ -78,7 +80,8 @@ class TechnologieController extends AbstractController
     /**
      * Détail d'une technologie.
      */
-    public function detailAction(Request $request, EntityManagerInterface $entityManager, Technologie $technologie): Response
+    #[Route('/technologie/{technologie}/detail', name: 'technologie.detail')]
+    public function detailAction(#[MapEntity] Technologie $technologie): Response
     {
         return $this->render('admin\technologie\detail.twig', [
             'technologie' => $technologie,
@@ -88,7 +91,8 @@ class TechnologieController extends AbstractController
     /**
      * Mise à jour d'une technologie.
      */
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, Technologie $technologie)
+    #[Route('/technologie/{technologie}/udpate', name: 'technologie.update')]
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Technologie $technologie)
     {
         $form = $this->createForm(TechnologieForm::class, $technologie);
 
@@ -134,7 +138,8 @@ class TechnologieController extends AbstractController
     /**
      * Suppression d'une technologie.
      */
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Technologie $technologie)
+    #[Route('/technologie/{technologie}/delete', name: 'technologie.delete')]
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Technologie $technologie)
     {
         $form = $this->createForm(TechnologieDeleteForm::class, $technologie)
             ->add('submit', SubmitType::class, ['label' => 'Supprimer']);
@@ -163,7 +168,8 @@ class TechnologieController extends AbstractController
      *
      * @param Technologie
      */
-    public function personnagesAction(Request $request, EntityManagerInterface $entityManager, Technologie $technologie): Response
+    #[Route('/technologie/{technologie}/personnages', name: 'technologie.personnages')]
+    public function personnagesAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Technologie $technologie): Response
     {
         $routeName = 'technologie.personnages';
         $routeParams = ['technologie' => $technologie->getId()];
@@ -195,7 +201,8 @@ class TechnologieController extends AbstractController
     /**
      * Ajout d'une ressource à une technologie.
      */
-    public function addRessourceAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/technologie/{technologie}/ressource', name: 'technologie.ressource')]
+    public function addRessourceAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $technologieId = $request->get('technologie');
         $technologie = $entityManager->find(Technologie::class, $technologieId);
@@ -240,16 +247,15 @@ class TechnologieController extends AbstractController
     /**
      * Retrait d'une ressource à une technologie.
      */
-    public function removeRessourceAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse
+    #[Route('/technologie/{technologie}/ressource/delete', name: 'technologie.ressource.delete')]
+    public function removeRessourceAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Technologie $technologie): RedirectResponse
     {
-        $technologieId = $request->get('technologie');
-        $technologie = $entityManager->find(Technologie::class, $technologieId);
         $technologieNom = $technologie->getLabel();
         $ressourceNom = $request->get('ressourceNom');
         $ressource = $request->get('ressource');
 
         $technologieRessource = $entityManager->getRepository(TechnologiesRessources::class)
-            ->findOneBy(['technologie' => $technologieId, 'ressource' => $ressource]);
+            ->findOneBy(['technologie' => $technologie->getId(), 'ressource' => $ressource]);
 
         $entityManager->remove($technologieRessource);
         $entityManager->flush();
@@ -262,9 +268,9 @@ class TechnologieController extends AbstractController
     /**
      * Obtenir le document lié a une technologie.
      */
-    public function getTechnologieDocumentAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/technologie/{technologie}/document', name: 'technologie.index')]
+    public function getTechnologieDocumentAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Technologie $technologie)
     {
-        $technologie = $request->get('technologie');
         $document = $technologie->getDocumentUrl();
         $file = __DIR__.'/../../private/doc/'.$document;
 
