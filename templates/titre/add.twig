@@ -4,23 +4,22 @@
 
 {% block body %}
 
-	{% include '_partials/breadcrumb.twig' 
-		with {
-			'items' : {
-				1 : {'route': path('titre.list'), 'name' : 'Liste des titres'},
-				2 : {'name' : 'Ajouter un titre' }
-			}
-		} 
-	%}	
-	
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('titre.admin.add') }}) }}
-			<fieldset>
-				<legend>Ajout d'un titre</legend>
-					
-					{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
-	</div>
-				
+    {% include '_partials/breadcrumb.twig'
+        with {
+        'items' : [
+            {'route': path('titre.list'), 'name' : 'Liste des titres'},
+            {'name' : 'Ajouter un titre' }
+        ]
+    } %}
+
+    <div class="well bs-component">
+        {{ form_start(form, {"attr": {"action": path('titre.admin.add') }}) }}
+        <fieldset>
+            <legend>Ajout d'un titre</legend>
+
+            {{ form(form) }}
+        </fieldset>
+        {{ form_end(form) }}
+    </div>
+
 {% endblock body %}

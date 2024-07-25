@@ -4,24 +4,23 @@
 
 {% block body %}
 
-	{% include '_partials/breadcrumb.twig' 
-		with {
-			'items' : {
-				1 : {'route': path('titre.list'), 'name' : 'Liste des titres'},
-				2 : {'name' : titre.label }
-			}
-		} 
-	%}
+    {% include '_partials/breadcrumb.twig'
+        with {
+        'items' : [
+            {'route': path('titre.list'), 'name' : 'Liste des titres'},
+            {'name' : titre.label }
+        ]
+    } %}
 
-	<div class="list-group">
-		<div class="list-group-item">
-			<div class="list-group-item-heading"><h6>Label</h6></div>
-			<div class="list-group-item-text">{{ titre.label }}</div>
-		</div>
-		<div class="list-group-item">
-			<div class="list-group-item-heading"><h6>Renommé</h6></div>
-			<div class="list-group-item-text">{{ titre.renomme }}</div>
-		</div>
-	</div>
-			
+    <div class="list-group">
+        <div class="list-group-item">
+            <div class="list-group-item-heading"><h6>Label</h6></div>
+            <div class="list-group-item-text">{{ titre.label }}</div>
+        </div>
+        <div class="list-group-item">
+            <div class="list-group-item-heading"><h6>Renommé</h6></div>
+            <div class="list-group-item-text">{{ titre.renomme }}</div>
+        </div>
+    </div>
+
 {% endblock body %}

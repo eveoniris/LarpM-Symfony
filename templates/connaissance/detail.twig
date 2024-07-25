@@ -6,11 +6,11 @@
 
     {% include '_partials/breadcrumb.twig'
         with {
-        'items' : {
-            1 : {'route': path('connaissance.list'), 'name' : 'Liste des connaissances'},
-            2 : {'name' : connaissance.label },
-            3 : {'Détail d\'une connaissance'}
-        }
+        'items' : [
+            {'route': path('connaissance.list'), 'name' : 'Liste des connaissances'},
+            {'name' : connaissance.label, 'route': path('connaissance.detail', {'connaissance': connaissance.id}) },
+            {'name' : 'Détail d\'une connaissance'}
+        ]
     } %}
 
     <div class="well well-sm">

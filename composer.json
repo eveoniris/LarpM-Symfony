@@ -42,7 +42,7 @@
         "symfony/ux-autocomplete": "^2.18",
         "symfony/validator": "7.0.*",
         "symfony/web-link": "7.0.*",
-        "symfony/webpack-encore-bundle": "^2.1",
+        "symfony/webpack-encore-bundle": "*",
         "symfony/yaml": "7.0.*",
         "twig/extra-bundle": "*",
         "twig/intl-extra": "3.8.*",
