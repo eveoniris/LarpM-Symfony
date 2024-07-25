@@ -4,17 +4,18 @@
 
 {% block body %}
 
-{% include '_partials/breadcrumb.twig' with {'items' : {
-	1 : {'route' : path('religion.level'), 'name' : 'Gestion des niveaux de religion'},
-	2 : {'name' : 'Ajouter un niveau'}
-}} 
-%}
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'route' : path('religion.level'), 'name' : 'Gestion des niveaux de religion'},
+            {'name' : 'Ajouter un niveau'}
+        ]
+    } %}
 
-	<div class="well bs-component">
-		{{ include("admin/religion/fragment/form.twig",{
-			'legend' : 'Ajout d\'un niveau de religion',
-			'action': path('religion.level.add'), 
-			'form' : form}) }}
-	</div>
-	
+    <div class="well bs-component">
+        {{ include("admin/religion/fragment/form.twig",{
+            'legend' : 'Ajout d\'un niveau de religion',
+            'action': path('religion.level.add'),
+            'form' : form}) }}
+    </div>
+
 {% endblock body %}

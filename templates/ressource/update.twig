@@ -4,21 +4,22 @@
 
 {% block body %}
 
-{% include '_partials/breadcrumb.twig' with {'items' : {
-	1 : {'route' : path('ressource.index'), 'name' : 'Gestion des ressources'},
-	2 : {'name' : ressource.label}
-}} 
-%}
-	
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-xs-12 col-md-8">
-				{{ include("ressource/fragment/form.twig",{
-					'legend': 'Modification d\'une ressource',
-					'action': path('ressource.update',{'ressource': ressource.id}),
-					'form' : form}) }}
-			</div>
-		</div>
-	</div>
-		
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'route' : path('ressource.index'), 'name' : 'Gestion des ressources'},
+            {'name' : ressource.label}
+        ]
+    } %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                {{ include("ressource/fragment/form.twig",{
+                    'legend': 'Modification d\'une ressource',
+                    'action': path('ressource.update',{'ressource': ressource.id}),
+                    'form' : form}) }}
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

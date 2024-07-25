@@ -6,10 +6,10 @@
 
 	{% include '_partials/breadcrumb.twig' 
 		with {
-			'items' : {
-				1 : {'route': path('titre.list'), 'name' : 'Liste des titres'},
-				2 : {'name' : 'Supprimer un titre' }
-			}
+			'items' : [
+				{'route': path('titre.list'), 'name' : 'Liste des titres'},
+				{'name' : 'Supprimer un titre' }
+			]
 		} 
 	%}	
 	

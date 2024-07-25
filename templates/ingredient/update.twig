@@ -4,21 +4,22 @@
 
 {% block body %}
 
-{% include '_partials/breadcrumb.twig' with {'items' : {
-	1 : {'route' : path('ingredient.list'), 'name' : 'Liste des ingredients'},
-	2 : {'name' : 'Modification d\'un ingredient'}
-}} 
-%}
-	
-	
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('ingredient.admin.update', {'ingredient': ingredient.id}) }}) }}
-			<fieldset>
-				<legend>Modification d'un ingredient</legend>
-					
-					{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
-	</div>
-				
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'route' : path('ingredient.list'), 'name' : 'Liste des ingredients'},
+            {'name' : 'Modification d\'un ingredient'}
+        ]
+    } %}
+
+
+    <div class="well bs-component">
+        {{ form_start(form, {"attr": {"action": path('ingredient.admin.update', {'ingredient': ingredient.id}) }}) }}
+        <fieldset>
+            <legend>Modification d'un ingredient</legend>
+
+            {{ form(form) }}
+        </fieldset>
+        {{ form_end(form) }}
+    </div>
+
 {% endblock body %}

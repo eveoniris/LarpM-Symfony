@@ -4,10 +4,12 @@
 
 {% block body %}
 
-{% include '_partials/breadcrumb.twig' with {'items' : {
-	1 : {'route' : path('langue.index'), 'name' : 'Gestion des langues'},
-	2 : {'name' : 'Modifier un groupe de langues'}
-}} 
+{% include '_partials/breadcrumb.twig' with {'items' :
+	[
+	 {'route' : path('langue.index'), 'name' : 'Gestion des langues'},
+	 {'name' : 'Modifier un groupe de langues'}
+]
+}
 %}
 
 {{ include("langue/fragment/form.twig",{

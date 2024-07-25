@@ -4,19 +4,20 @@
 
 {% block body %}
 
-{% include '_partials/breadcrumb.twig' with {'items' : {
-	1 : {'route' : path('quality.list'), 'name' : 'Liste des qualités'},
-	2 : {'name' : 'Suppression d\'une monnaie'}
-}} 
-%}
-	
-	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('quality.delete', {'quality': quality.id}) }}) }}
-			<fieldset>
-				<legend>Suppression d'une qualité</legend>
-				{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
-	</div>
-	
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'route' : path('quality.list'), 'name' : 'Liste des qualités'},
+            {'name' : 'Suppression d\'une monnaie'}
+        ]
+    } %}
+
+    <div class="well well-sm">
+        {{ form_start(form, {"attr": {"action": path('quality.delete', {'quality': quality.id}) }}) }}
+        <fieldset>
+            <legend>Suppression d'une qualité</legend>
+            {{ form(form) }}
+        </fieldset>
+        {{ form_end(form) }}
+    </div>
+
 {% endblock %}

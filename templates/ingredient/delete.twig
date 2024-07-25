@@ -4,22 +4,23 @@
 
 {% block body %}
 
-{% include '_partials/breadcrumb.twig' with {'items' : {
-	1 : {'route' : path('ingredient.list'), 'name' : 'Liste des ingredients'},
-	2 : {'name' : 'Supression d\'un ingredient'}
-}} 
-%}
-	
-	
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('ingredient.admin.delete', {'ingredient': ingredient.id}) }}) }}
-			<fieldset>
-				<legend>Supression d'un ingredient</legend>
-					{{ ingredient.label }} -- Niveau {{ ingredient.niveau }}
-					
-					{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
-	</div>
-				
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'route' : path('ingredient.list'), 'name' : 'Liste des ingredients'},
+            {'name' : 'Supression d\'un ingredient'}
+        ]
+    } %}
+
+
+    <div class="well bs-component">
+        {{ form_start(form, {"attr": {"action": path('ingredient.admin.delete', {'ingredient': ingredient.id}) }}) }}
+        <fieldset>
+            <legend>Supression d'un ingredient</legend>
+            {{ ingredient.label }} -- Niveau {{ ingredient.niveau }}
+
+            {{ form(form) }}
+        </fieldset>
+        {{ form_end(form) }}
+    </div>
+
 {% endblock body %}

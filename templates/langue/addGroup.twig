@@ -4,21 +4,22 @@
 
 {% block body %}
 
-{% include '_partials/breadcrumb.twig' with {'items' : {
-	1 : {'route' : path('langue.index'), 'name' : 'Gestion des langues'},
-	2 : {'name' : 'Ajouter un groupe de langues'}
-}} 
-%}
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'route' : path('langue.index'), 'name' : 'Gestion des langues'},
+            {'name' : 'Ajouter un groupe de langues'}
+        ]
+    } %}
 
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-xs-12 col-md-8">
-				{{ include("langue/fragment/form.twig",{
-					'legend' : 'Ajout d\'un groupe de langue',
-					'action': path('langue.addGroup'), 
-					'form' : form}) }}
-			</div>
-		</div>
-	</div>
-	
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                {{ include("langue/fragment/form.twig",{
+                    'legend' : 'Ajout d\'un groupe de langue',
+                    'action': path('langue.addGroup'),
+                    'form' : form}) }}
+            </div>
+        </div>
+    </div>
+
 {% endblock body %}

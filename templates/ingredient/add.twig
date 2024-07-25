@@ -4,18 +4,19 @@
 
 {% block body %}
 
-{% include '_partials/breadcrumb.twig' with {'items' : {
-	1 : {'route' : path('ingredient.list'), 'name' : 'Liste des ingredients'},
-	2 : {'name' : 'Ajout d\'un ingredient'}
-}} 
-%}
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'route' : path('ingredient.list'), 'name' : 'Liste des ingredients'},
+            {'name' : 'Ajout d\'un ingredient'}
+        ]
+    } %}
 
-	<div class="well well-sm bs-component">
-		<div class="header">
-			<h5>Ajout d'un ingredient</h5>
-		</div>
+    <div class="well well-sm bs-component">
+        <div class="header">
+            <h5>Ajout d'un ingredient</h5>
+        </div>
 
-		{{ form(form) }}
-	</div>
-	
+        {{ form(form) }}
+    </div>
+
 {% endblock body %}

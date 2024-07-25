@@ -4,10 +4,11 @@
 
 {% block body %}
 
-{% include '_partials/breadcrumb.twig' with {'items' : {
-	1 : {'route' : path('monnaie.list'), 'name' : 'Liste des monnaies'},
-	2 : {'name' : 'Ajout d\'une monnaie'}
-}} 
+{% include '_partials/breadcrumb.twig' with {'items' : [
+	{'route' : path('monnaie.list'), 'name' : 'Liste des monnaies'},
+	{'name' : 'Ajout d\'une monnaie'}
+]
+	}
 %}
 
 	<div class="well well-sm bs-component">

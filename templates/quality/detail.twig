@@ -4,25 +4,26 @@
 
 {% block body %}
 
-{% include '_partials/breadcrumb.twig' with {'items' : {
-	1 : {'route' : path('quality.list'), 'name' : 'Liste des qualités'},
-	2 : {'name' : quality.label}
-}} 
-%}
-		
-	<div class="well well-sm">
-		<h4>{{ quality.label }}</h4>
-		<div class="list-group">
-			<div class="list-group-item">
-				Numéro : {{ quality.numero }}
-				<ul>
-				{% for qualityValeur in quality.qualityValeurs %}
-					<li>{{ qualityValeur.nombre }} {{ qualityValeur.monnaie.label }}</li>
-				{% endfor %}
-				</ul>
-			</div>
-		</div>
-	</div>
-	
-	
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'route' : path('quality.list'), 'name' : 'Liste des qualités'},
+            {'name' : quality.label}
+        ]
+    } %}
+
+    <div class="well well-sm">
+        <h4>{{ quality.label }}</h4>
+        <div class="list-group">
+            <div class="list-group-item">
+                Numéro : {{ quality.numero }}
+                <ul>
+                    {% for qualityValeur in quality.qualityValeurs %}
+                        <li>{{ qualityValeur.nombre }} {{ qualityValeur.monnaie.label }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
 {% endblock %}
