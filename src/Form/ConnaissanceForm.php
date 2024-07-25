@@ -2,7 +2,11 @@
 
 namespace App\Form;
 
+use App\Entity\Connaissance;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -18,7 +22,7 @@ class ConnaissanceForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('label', TextType::class, [
             'required' => true,
             'label' => 'Label',
         ])
@@ -27,7 +31,7 @@ class ConnaissanceForm extends AbstractType
                 'required' => true,
                 'mapped' => false,
             ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
@@ -35,7 +39,7 @@ class ConnaissanceForm extends AbstractType
                     'rows' => 5,
                 ],
             ])
-            ->add('contraintes', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('contraintes', TextareaType::class, [
                 'required' => false,
                 'label' => 'Prérequis',
                 'attr' => [
@@ -43,7 +47,7 @@ class ConnaissanceForm extends AbstractType
                     'rows' => 5,
                 ],
             ])
-            ->add('secret', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('secret', ChoiceType::class, [
                 'required' => true,
                 'choices' => [
                     false => 'Connaissance visible',
@@ -59,7 +63,12 @@ class ConnaissanceForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Connaissance::class,
+            'data_class' => Connaissance::class,
+            // TinyMce Hide the text field. It's break the form Submit because autovalidate can't allow it
+            // Reason : the user can't fill a hidden field, so it's couldn't be "required"
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

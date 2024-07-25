@@ -3,7 +3,10 @@
 
 namespace App\Form;
 
+use App\Entity\Rule;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -23,11 +26,11 @@ class RuleForm extends AbstractType
             'label' => 'Choisissez votre fichier',
             'required' => true,
         ])
-            ->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('label', TextType::class, [
                 'label' => 'Choisissez un titre',
                 'required' => true,
             ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'label' => 'Ecrivez une petite description',
                 'required' => true,
                 'attr' => [
@@ -42,6 +45,12 @@ class RuleForm extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
+        $resolver->setDefaults([
+            'data_class' => Rule::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
+        ]);
     }
 
     /**

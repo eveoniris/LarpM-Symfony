@@ -3,7 +3,13 @@
 
 namespace App\Form;
 
+use App\Entity\Priere;
+use App\Entity\Sphere;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -19,18 +25,18 @@ class PriereForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('sphere', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+        $builder->add('sphere', EntityType::class, [
             'required' => true,
             'label' => 'Sphère',
-            'class' => \App\Entity\Sphere::class,
+            'class' => Sphere::class,
             'choice_label' => 'label',
         ])
-            ->add('niveau', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('niveau', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['1' => 1, '2' => 2, '3' => 3, '4' => 4],
                 'label' => 'Niveau',
             ])
-            ->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('label', TextType::class, [
                 'required' => true,
                 'label' => 'Label',
             ])
@@ -39,14 +45,14 @@ class PriereForm extends AbstractType
                 'required' => true,
                 'mapped' => false,
             ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
                     'class' => 'tinymce',
                     'rows' => 9],
             ])
-            ->add('annonce', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('annonce', TextareaType::class, [
                 'required' => false,
                 'label' => 'Annonce',
                 'attr' => [
@@ -61,7 +67,10 @@ class PriereForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Priere::class,
+            'data_class' => Priere::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

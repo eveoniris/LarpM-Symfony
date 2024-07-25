@@ -3,6 +3,7 @@
 
 namespace App\Form\Rule;
 
+use App\Entity\Restauration;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -42,6 +43,12 @@ class RuleForm extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
+        $resolver->setDefaults([
+            'data_class' => Restauration::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
+        ]);
     }
 
     /**

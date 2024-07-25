@@ -48,6 +48,9 @@ class LoiForm extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Loi::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

@@ -3,8 +3,14 @@
 
 namespace App\Form\Groupe;
 
+use App\Entity\Personnage;
+use App\Entity\SecondaryGroup;
+use App\Entity\SecondaryGroupType;
+use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -21,14 +27,14 @@ class GroupeSecondaireForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('label', 'text')
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'required' => true,
                 'label' => 'Description',
                 'attr' => [
                     'rows' => 9,
                     'class' => 'tinymce'],
             ])
-            ->add('description_secrete', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description_secrete', TextareaType::class, [
                 'required' => true,
                 'label' => 'Description des secrets',
                 'attr' => [
@@ -36,10 +42,10 @@ class GroupeSecondaireForm extends AbstractType
                     'class' => 'tinymce',
                     'help' => 'les secrets ne sont accessibles qu\'aux membres selectionnés par le scénariste'],
             ])
-            ->add('scenariste', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('scenariste', EntityType::class, [
                 'label' => 'Scénariste',
                 'required' => false,
-                'class' => \App\Entity\User::class,
+                'class' => User::class,
                 'choice_label' => 'name',
                 'query_builder' => static function (EntityRepository $er) {
                     $qb = $er->createQueryBuilder('u');
@@ -52,10 +58,10 @@ class GroupeSecondaireForm extends AbstractType
                     return $qb;
                 },
             ])
-            ->add('responsable', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('responsable', EntityType::class, [
                 'required' => false,
                 'label' => 'Chef du groupe',
-                'class' => \App\Entity\Personnage::class,
+                'class' => Personnage::class,
                 'query_builder' => static function (EntityRepository $er) {
                     $qb = $er->createQueryBuilder('u');
                     $qb->orderBy('u.nom', 'ASC');
@@ -65,10 +71,10 @@ class GroupeSecondaireForm extends AbstractType
                 },
                 'choice_label' => 'identity',
             ])
-            ->add('secondaryGroupType', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('secondaryGroupType', EntityType::class, [
                 'label' => 'Type',
                 'required' => true,
-                'class' => \App\Entity\SecondaryGroupType::class,
+                'class' => SecondaryGroupType::class,
                 'choice_label' => 'label',
             ])
             ->add('secret', 'checkbox', [
@@ -83,7 +89,12 @@ class GroupeSecondaireForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\SecondaryGroup::class,
+            'data_class' => SecondaryGroup::class,
+            // TinyMce Hide the text field. It's break the form Submit because autovalidate can't allow it
+            // Reason : the user can't fill a hidden field, so it's couldn't be "required"
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

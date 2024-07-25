@@ -3,7 +3,11 @@
 
 namespace App\Form\Potion;
 
+use App\Entity\Potion;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -19,20 +23,20 @@ class PotionForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('label', TextType::class, [
             'required' => true,
             'label' => 'Label',
         ])
-            ->add('numero', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('numero', TextType::class, [
                 'required' => true,
                 'label' => 'Numéro',
             ])
-            ->add('niveau', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('niveau', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['1' => 1, '2' => 2, '3' => 3, '4' => 4],
                 'label' => 'Niveau',
             ])
-            ->add('secret', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('secret', ChoiceType::class, [
                 'required' => true,
                 'choices' => [
                     false => 'Potion non secrète',
@@ -45,7 +49,7 @@ class PotionForm extends AbstractType
                 'required' => true,
                 'mapped' => false,
             ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
@@ -60,7 +64,10 @@ class PotionForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Potion::class,
+            'data_class' => Potion::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

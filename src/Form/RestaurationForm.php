@@ -36,6 +36,9 @@ class RestaurationForm extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Restauration::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

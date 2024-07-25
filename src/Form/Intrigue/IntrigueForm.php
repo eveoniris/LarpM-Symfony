@@ -3,6 +3,7 @@
 
 namespace App\Form\Intrigue;
 
+use App\Entity\Intrigue;
 use App\Form\Type\IntrigueHasDocumentType;
 use App\Form\Type\IntrigueHasEvenementType;
 use App\Form\Type\IntrigueHasGroupeSecondaireType;
@@ -112,7 +113,10 @@ class IntrigueForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Intrigue::class,
+            'data_class' => Intrigue::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 
