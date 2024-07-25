@@ -3,7 +3,10 @@
 
 namespace App\Form;
 
+use App\Entity\Message;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -19,11 +22,11 @@ class MessageForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('title', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('title', TextType::class, [
             'required' => true,
             'label' => 'Titre',
         ])
-            ->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('text', TextareaType::class, [
                 'required' => true,
                 'label' => 'Message',
                 'attr' => [
@@ -39,7 +42,10 @@ class MessageForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'class' => \App\Entity\Message::class,
+            'class' => Message::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

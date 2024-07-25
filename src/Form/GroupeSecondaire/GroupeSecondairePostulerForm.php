@@ -3,6 +3,7 @@
 
 namespace App\Form\GroupeSecondaire;
 
+use App\Entity\SecondaryGroup;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -34,6 +35,11 @@ class GroupeSecondairePostulerForm extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
+        $resolver->setDefaults([
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
+        ]);
     }
 
     /**

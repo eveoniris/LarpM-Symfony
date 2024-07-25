@@ -3,6 +3,7 @@
 
 namespace App\Form\Intrigue;
 
+use App\Entity\Relecture;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -44,7 +45,10 @@ class IntrigueRelectureForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Relecture::class,
+            'data_class' => Relecture::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

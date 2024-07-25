@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Construction;
@@ -9,13 +8,14 @@ use App\Form\ConstructionForm;
 use App\Repository\ConstructionRepository;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_REGLE')]
+#[IsGranted('ROLE_REGLE')]
 class ConstructionController extends AbstractController
 {
     /**
@@ -36,12 +36,12 @@ class ConstructionController extends AbstractController
      * Ajoute une construction.
      */
     #[Route('/construction/add', name: 'construction.add')]
-    public function addAction(Request $request,  EntityManagerInterface $entityManager): Response|RedirectResponse
+    public function addAction(Request $request, EntityManagerInterface $entityManager): Response|RedirectResponse
     {
-        $construction = new \App\Entity\Construction();
+        $construction = new Construction();
 
         $form = $this->createForm(ConstructionForm::class, $construction)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -51,7 +51,7 @@ class ConstructionController extends AbstractController
             $entityManager->persist($construction);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La construction a été ajoutée.');
+            $this->addFlash('success', 'La construction a été ajoutée.');
 
             return $this->redirectToRoute('construction.detail', ['construction' => $construction->getId()], 303);
         }
@@ -66,10 +66,10 @@ class ConstructionController extends AbstractController
      * Modifie une construction.
      */
     #[Route('/construction/{construction}/update', name: 'construction.update')]
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Construction $construction): Response|RedirectResponse
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, Construction $construction): Response|RedirectResponse
     {
         $form = $this->createForm(ConstructionForm::class, $construction)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -79,7 +79,7 @@ class ConstructionController extends AbstractController
             $entityManager->persist($construction);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La construction a été modifié.');
+            $this->addFlash('success', 'La construction a été modifié.');
 
             return $this->redirectToRoute('construction.detail', ['construction' => $construction->getId()], 303);
         }
@@ -94,10 +94,10 @@ class ConstructionController extends AbstractController
      * Supprime une construction.
      */
     #[Route('/construction/{construction}/delete', name: 'construction.delete')]
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Construction $construction): Response|RedirectResponse
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Construction $construction): Response|RedirectResponse
     {
         $form = $this->createForm(ConstructionDeleteForm::class, $construction)
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -107,7 +107,7 @@ class ConstructionController extends AbstractController
             $entityManager->remove($construction);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La construction a été supprimée.');
+            $this->addFlash('success', 'La construction a été supprimée.');
 
             return $this->redirectToRoute('construction.index', [], 303);
         }

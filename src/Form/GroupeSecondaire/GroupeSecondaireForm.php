@@ -3,6 +3,7 @@
 
 namespace App\Form\GroupeSecondaire;
 
+use App\Entity\SecondaryGroup;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -103,7 +104,10 @@ class GroupeSecondaireForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\SecondaryGroup::class,
+            'data_class' => SecondaryGroup::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

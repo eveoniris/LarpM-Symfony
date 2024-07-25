@@ -3,6 +3,7 @@
 
 namespace App\Form\Groupe;
 
+use App\Entity\Groupe;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -35,7 +36,12 @@ class GroupeDescriptionForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Groupe::class,
+            'data_class' => Groupe::class,
+            // TinyMce Hide the text field. It's break the form Submit because autovalidate can't allow it
+            // Reason : the user can't fill a hidden field, so it's couldn't be "required"
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

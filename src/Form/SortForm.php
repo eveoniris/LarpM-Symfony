@@ -3,7 +3,13 @@
 
 namespace App\Form;
 
+use App\Entity\Domaine;
+use App\Entity\Sort;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -19,19 +25,19 @@ class SortForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('label', TextType::class, [
             'required' => true,
             'label' => 'Label',
         ])
-            ->add('niveau', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('niveau', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['1' => 1, '2' => 2, '3' => 3, '4' => 4],
                 'label' => 'Niveau',
             ])
-            ->add('domaine', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('domaine', EntityType::class, [
                 'required' => true,
                 'label' => 'Domaine',
-                'class' => \App\Entity\Domaine::class,
+                'class' => Domaine::class,
                 'choice_label' => 'label',
             ])
             ->add('document', 'file', [
@@ -39,7 +45,7 @@ class SortForm extends AbstractType
                 'required' => true,
                 'mapped' => false,
             ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
@@ -47,7 +53,7 @@ class SortForm extends AbstractType
                     'rows' => 9,
                 ],
             ])
-            ->add('secret', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('secret', ChoiceType::class, [
                 'required' => true,
                 'choices' => [
                     false => 'Sort visible',
@@ -63,7 +69,10 @@ class SortForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Sort::class,
+            'data_class' => Sort::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

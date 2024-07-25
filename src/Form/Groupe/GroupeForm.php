@@ -3,8 +3,15 @@
 
 namespace App\Form\Groupe;
 
+use App\Entity\Groupe;
+use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,11 +27,11 @@ class GroupeForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class)
-            ->add('numero', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+        $builder->add('nom', TextType::class)
+            ->add('numero', IntegerType::class, [
                 'required' => true,
             ])
-            ->add('pj', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('pj', ChoiceType::class, [
                 'label' => 'Type de groupe',
                 'required' => true,
                 'choices' => [
@@ -33,17 +40,17 @@ class GroupeForm extends AbstractType
                 ],
                 'expanded' => true,
             ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
                     'row' => 9,
                 ],
             ])
-            ->add('scenariste', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('scenariste', EntityType::class, [
                 'label' => 'Scénariste',
                 'required' => false,
-                'class' => \App\Entity\User::class,
+                'class' => User::class,
                 'choice_label' => 'name',
                 'query_builder' => static function (EntityRepository $er) {
                     $qb = $er->createQueryBuilder('u');
@@ -62,7 +69,12 @@ class GroupeForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Groupe::class,
+            'data_class' => Groupe::class,
+            // TinyMce Hide the text field. It's break the form Submit because autovalidate can't allow it
+            // Reason : the user can't fill a hidden field, so it's couldn't be "required"
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 
