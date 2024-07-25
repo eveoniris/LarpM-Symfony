@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Technologie;
@@ -8,19 +7,22 @@ use App\Entity\TechnologiesRessources;
 use App\Form\Technologie\TechnologieDeleteForm;
 use App\Form\Technologie\TechnologieForm;
 use App\Form\Technologie\TechnologiesRessourcesForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_REGLE')]
+#[IsGranted('ROLE_REGLE')]
 class TechnologieController extends AbstractController
 {
     /**
      * Liste des technologie.
      */
     #[Route('/technologie', name: 'technologie.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $technologies = $entityManager->getRepository(Technologie::class)->findAllOrderedByLabel();
 
@@ -32,7 +34,7 @@ class TechnologieController extends AbstractController
     /**
      * Ajout d'une technologie.
      */
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    public function addAction(Request $request, EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(TechnologieForm::class, new Technologie());
 
@@ -49,7 +51,7 @@ class TechnologieController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                    $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
                     return $this->redirectToRoute('technologie', [], 303);
                 }
@@ -63,7 +65,7 @@ class TechnologieController extends AbstractController
 
             $entityManager->persist($technologie);
             $entityManager->flush();
-           $this->addFlash('success', 'La technologie a été ajoutée.');
+            $this->addFlash('success', 'La technologie a été ajoutée.');
 
             return $this->redirectToRoute('technologie', [], 303);
         }
@@ -76,7 +78,7 @@ class TechnologieController extends AbstractController
     /**
      * Détail d'une technologie.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Technologie $technologie)
+    public function detailAction(Request $request, EntityManagerInterface $entityManager, Technologie $technologie): Response
     {
         return $this->render('admin\technologie\detail.twig', [
             'technologie' => $technologie,
@@ -86,7 +88,7 @@ class TechnologieController extends AbstractController
     /**
      * Mise à jour d'une technologie.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Technologie $technologie)
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, Technologie $technologie)
     {
         $form = $this->createForm(TechnologieForm::class, $technologie);
 
@@ -103,7 +105,7 @@ class TechnologieController extends AbstractController
                 $extension = 'pdf';
 
                 if (!$extension || 'pdf' !== $extension) {
-                   $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
+                    $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
 
                     return $this->redirectToRoute('technologie', [], 303);
                 }
@@ -118,7 +120,7 @@ class TechnologieController extends AbstractController
             $entityManager->persist($technologie);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La technologie a été mise à jour.');
+            $this->addFlash('success', 'La technologie a été mise à jour.');
 
             return $this->redirectToRoute('technologie', [], 303);
         }
@@ -132,10 +134,10 @@ class TechnologieController extends AbstractController
     /**
      * Suppression d'une technologie.
      */
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Technologie $technologie)
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Technologie $technologie)
     {
         $form = $this->createForm(TechnologieDeleteForm::class, $technologie)
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('submit', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -145,7 +147,7 @@ class TechnologieController extends AbstractController
             $entityManager->remove($technologie);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La technologie a été supprimée.');
+            $this->addFlash('success', 'La technologie a été supprimée.');
 
             return $this->redirectToRoute('technologie', [], 303);
         }
@@ -161,7 +163,7 @@ class TechnologieController extends AbstractController
      *
      * @param Technologie
      */
-    public function personnagesAction(Request $request,  EntityManagerInterface $entityManager, Technologie $technologie)
+    public function personnagesAction(Request $request, EntityManagerInterface $entityManager, Technologie $technologie): Response
     {
         $routeName = 'technologie.personnages';
         $routeParams = ['technologie' => $technologie->getId()];
@@ -193,7 +195,7 @@ class TechnologieController extends AbstractController
     /**
      * Ajout d'une ressource à une technologie.
      */
-    public function addRessourceAction(Request $request,  EntityManagerInterface $entityManager)
+    public function addRessourceAction(Request $request, EntityManagerInterface $entityManager)
     {
         $technologieId = $request->get('technologie');
         $technologie = $entityManager->find(Technologie::class, $technologieId);
@@ -224,7 +226,7 @@ class TechnologieController extends AbstractController
             }
 
             $entityManager->flush();
-           $this->addFlash('success', $technologieNom.' requiert désormais '.$newQuantite.' '.$ressourceNom);
+            $this->addFlash('success', $technologieNom.' requiert désormais '.$newQuantite.' '.$ressourceNom);
 
             return $this->redirectToRoute('technologie', [], 303);
         }
@@ -238,7 +240,7 @@ class TechnologieController extends AbstractController
     /**
      * Retrait d'une ressource à une technologie.
      */
-    public function removeRessourceAction(Request $request,  EntityManagerInterface $entityManager)
+    public function removeRessourceAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse
     {
         $technologieId = $request->get('technologie');
         $technologie = $entityManager->find(Technologie::class, $technologieId);
@@ -252,7 +254,7 @@ class TechnologieController extends AbstractController
         $entityManager->remove($technologieRessource);
         $entityManager->flush();
 
-       $this->addFlash('success', $technologieNom.' ne requiert plus de '.$ressourceNom.'.');
+        $this->addFlash('success', $technologieNom.' ne requiert plus de '.$ressourceNom.'.');
 
         return $this->redirectToRoute('technologie', [], 303);
     }
@@ -260,7 +262,7 @@ class TechnologieController extends AbstractController
     /**
      * Obtenir le document lié a une technologie.
      */
-    public function getTechnologieDocumentAction(Request $request,  EntityManagerInterface $entityManager)
+    public function getTechnologieDocumentAction(Request $request, EntityManagerInterface $entityManager)
     {
         $technologie = $request->get('technologie');
         $document = $technologie->getDocumentUrl();
