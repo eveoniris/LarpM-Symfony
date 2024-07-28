@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Entity\Connaissance;
+use App\Entity\Personnage;
 use App\Service\OrderBy;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\QueryBuilder;
@@ -38,10 +40,10 @@ class ConnaissanceRepository extends BaseRepository
 
     public function search(
         mixed $search = null,
-        null|string|array $attributes = self::SEARCH_NOONE,
-        OrderBy $orderBy = null,
-        string $alias = null,
-        QueryBuilder $query = null
+        string|array|null $attributes = self::SEARCH_NOONE,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $orderBy ??= $this->orderBy;
@@ -66,19 +68,19 @@ class ConnaissanceRepository extends BaseRepository
         return $query->setParameter('value', $secret);
     }
 
-    public function searchAttributes(string $alias = null): array
+    public function searchAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::searchAttributes($alias),
-            $alias.'.label',// => 'Libellé',
+            $alias.'.label', // => 'Libellé',
             $alias.'.description', // => 'Description',
             $alias.'.contraintes', // => 'Prérequis',
         ];
     }
 
-    public function sortAttributes(string $alias = null): array
+    public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
@@ -88,5 +90,15 @@ class ConnaissanceRepository extends BaseRepository
             'description' => [OrderBy::ASC => [$alias.'.description' => OrderBy::ASC], OrderBy::DESC => [$alias.'.description' => OrderBy::DESC]],
             'secret' => [OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC], OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC]],
         ];
+    }
+
+    public function getPersonnages(Connaissance $connaissance): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+        return $personnageRepository->createQueryBuilder('p')
+            ->innerJoin(Connaissance::class, 'c')
+            ->where('c.id = :cid')
+            ->setParameter('cid', $connaissance->getId());
     }
 }

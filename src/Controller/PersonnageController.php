@@ -139,7 +139,7 @@ class PersonnageController extends AbstractController
             $optionalParameters .= "&personnageFind[groupe]={$groupe->getId()}";
         }
 
-        $repo = $entityManager->getRepository('\\'.Personnage::class);
+        $repo = $entityManager->getRepository(Personnage::class);
 
         // attention, il y a des propriétés sur lesquelles on ne peut pas appliquer le order by
         // car elles ne sont pas en base mais calculées, ça compliquerait trop le sql

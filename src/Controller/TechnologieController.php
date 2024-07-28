@@ -27,7 +27,7 @@ class TechnologieController extends AbstractController
     {
         $technologies = $entityManager->getRepository(Technologie::class)->findAllOrderedByLabel();
 
-        return $this->render('admin\technologie\index.twig', [
+        return $this->render('technologie\index.twig', [
             'technologies' => $technologies,
         ]);
     }
@@ -201,7 +201,7 @@ class TechnologieController extends AbstractController
     /**
      * Ajout d'une ressource à une technologie.
      */
-    #[Route('/technologie/{technologie}/ressource', name: 'technologie.ressource')]
+    #[Route('/technologie/{technologie}/ressource/add', name: 'technologie.ressource.add')]
     public function addRessourceAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $technologieId = $request->get('technologie');
@@ -268,7 +268,7 @@ class TechnologieController extends AbstractController
     /**
      * Obtenir le document lié a une technologie.
      */
-    #[Route('/technologie/{technologie}/document', name: 'technologie.index')]
+    #[Route('/technologie/{technologie}/document', name: 'technologie.document')]
     public function getTechnologieDocumentAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Technologie $technologie)
     {
         $document = $technologie->getDocumentUrl();

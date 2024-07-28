@@ -4,11 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Connaissance;
 use App\Form\ConnaissanceForm;
-use App\Form\Entity\ListSearch;
-use App\Form\ListFindForm;
 use App\Repository\ConnaissanceRepository;
 use App\Service\PagerService;
-use App\Service\PersonnageManager;
+use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -23,10 +21,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/connaissance', name: 'connaissance.')]
 class ConnaissanceController extends AbstractController
 {
-    // TODO : check this
-    // liste des colonnes à afficher par défaut sur les vues 'personnages' (l'ordre est pris en compte)
-    private array $defaultPersonnageListColumnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser'];
-
     #[Route(name: 'list')]
     public function listAction(Request $request, PagerService $pagerService, ConnaissanceRepository $connaissanceRepository): Response
     {
@@ -190,26 +184,30 @@ class ConnaissanceController extends AbstractController
     }
 
     #[Route('/{connaissance}/personnages', name: 'personnages', requirements: ['connaissance' => Requirement::DIGITS])]
-    // TODO autowire PersonnageManager
-    public function personnagesAction(Request $request, #[MapEntity] Connaissance $connaissance, PersonnageManager $personnageManager): Response
-    {
+    public function personnagesAction(
+        Request $request,
+        #[MapEntity] Connaissance $connaissance,
+        PersonnageService $personnageService,
+        ConnaissanceRepository $connaissanceRepository
+    ): Response {
         $routeName = 'connaissance.personnages';
         $routeParams = ['connaissance' => $connaissance->getId()];
         $twigFilePath = 'connaissance/personnages.twig';
-        $columnKeys = $this->defaultPersonnageListColumnKeys;
+        $columnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser']; // check if it's better in PersonnageService
         $personnages = $connaissance->getPersonnages();
         $additionalViewParams = [
             'connaissance' => $connaissance,
         ];
 
         // handle the request and return an array containing the parameters for the view
-        $viewParams = $personnageManager->getSearchViewParameters(
+        $viewParams = $personnageService->getSearchViewParameters(
             $request,
             $routeName,
             $routeParams,
             $columnKeys,
             $additionalViewParams,
-            $personnages
+            $personnages,
+            $connaissanceRepository->getPersonnages($connaissance)
         );
 
         return $this->render(
