@@ -7,17 +7,36 @@ use App\Form\PersonnageFindForm;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Psr\Container\ContainerInterface;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class PersonnageManager
+class PersonnageService
 {
-    public array $columnDefinitions = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser'];
+    public array $columnDefinitions = [
+        'colId' => ['label' => '#', 'fieldName' => 'id',  'sortFieldName' => 'id', 'tooltip' => 'Numéro d\'identifiant'],
+        'colStatut' => ['label' => 'S', 'fieldName' => 'status',  'sortFieldName' => 'status', 'tooltip' => 'Statut'],
+        'colNom' => ['label' => 'Nom', 'fieldName' => 'nom',  'sortFieldName' => 'nom', 'tooltip' => 'Nom et surnom du personnage'],
+        'colClasse' => ['label' => 'Classe', 'fieldName' => 'classe',  'sortFieldName' => 'classe', 'tooltip' => 'Classe du personnage'],
+        'colGroupe' => ['label' => 'Groupe', 'fieldName' => 'groupe',  'sortFieldName' => 'groupe', 'tooltip' => 'Dernier GN - Groupe participant'],
+        'colRenommee' => ['label' => 'Renommée', 'fieldName' => 'renomme',  'sortFieldName' => 'renomme', 'tooltip' => 'Points de renommée'],
+        'colPugilat' => ['label' => 'Pugilat', 'fieldName' => 'pugilat',  'sortFieldName' => 'pugilat', 'tooltip' => 'Points de pugilat'],
+        'colHeroisme' => ['label' => 'Héroïsme', 'fieldName' => 'heroisme',  'sortFieldName' => 'heroisme', 'tooltip' => 'Points d\'héroisme'],
+        'colUser' => ['label' => 'Utilisateur', 'fieldName' => 'user',  'sortFieldName' => 'user', 'tooltip' => 'Liste des utilisateurs (Nom et prénom) par GN'],
+        'colXp' => ['label' => 'Points d\'expérience', 'fieldName' => 'xp',  'sortFieldName' => 'xp', 'tooltip' => 'Points d\'expérience actuels sur le total max possible'],
+        'colHasAnomalie' => ['label' => 'Ano.', 'fieldName' => 'hasAnomalie',  'sortFieldName' => 'hasAnomalie', 'tooltip' => 'Une pastille orange indique une anomalie'],
+    ];
+
     public function __construct(
-        protected readonly ContainerInterface $container,
-        protected readonly EntityManagerInterface $entityManager
-    )    {
+        protected readonly EntityManagerInterface $entityManager,
+        protected readonly ValidatorInterface $validator,
+        protected readonly FormFactoryInterface $formFactory,
+        protected readonly UrlGeneratorInterface $urlGenerator,
+    ) {
     }
 
     /**
@@ -29,28 +48,41 @@ class PersonnageManager
         array $routeParams = [],
         array $columnKeys = [],
         array $additionalViewParams = [],
-        Collection $sourcePersonnages = null): array
-    {
+        ?Collection $sourcePersonnages = null,
+        QueryBuilder $query = null,
+    ): array {
         // récupère les filtres et tris de recherche + pagination renseignés dans le formulaire
         $orderBy = $request->get('order_by') ?: 'id';
         $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
-        $isAsc = 'ASC' == $orderDir;
+        $isAsc = 'ASC' === $orderDir;
         $limit = (int) ($request->get('limit') ?: 50);
         $page = (int) ($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
         $formData = $request->query->get('personnageFind');
-        $religion = isset($formData['religion']) ? $this->entityManager->find('LarpManager\Entities\Religion', $formData['religion']) : null;
-        $competence = isset($formData['competence']) ? $this->entityManager->find('LarpManager\Entities\Competence', $formData['competence']) : null;
-        $classe = isset($formData['classe']) ? $this->entityManager->find('LarpManager\Entities\Classe', $formData['classe']) : null;
-        $groupe = isset($formData['groupe']) ? $this->entityManager->find('LarpManager\Entities\Groupe', $formData['groupe']) : null;
+        $religion = isset($formData['religion']) ? $this->entityManager->find(
+            'LarpManager\Entities\Religion',
+            $formData['religion']
+        ) : null;
+        $competence = isset($formData['competence']) ? $this->entityManager->find(
+            'LarpManager\Entities\Competence',
+            $formData['competence']
+        ) : null;
+        $classe = isset($formData['classe']) ? $this->entityManager->find(
+            'LarpManager\Entities\Classe',
+            $formData['classe']
+        ) : null;
+        $groupe = isset($formData['groupe']) ? $this->entityManager->find(
+            'LarpManager\Entities\Groupe',
+            $formData['groupe']
+        ) : null;
         $optionalParameters = '';
 
         // construit le formulaire contenant les filtres de recherche
 
-        $form = $this->container->get('form.factory')->create(
-            new PersonnageFindForm(),
+        $form = $this->formFactory->create(
+            PersonnageFindForm::class,
             null,
             [
                 'data' => [
@@ -62,12 +94,12 @@ class PersonnageManager
                 'method' => 'get',
                 'csrf_protection' => false,
             ]
-        )->getForm();
+        );
 
         $form->handleRequest($request);
 
         // récupère les nouveaux filtres de recherche
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $type = $data['type'];
             $value = $data['value'];
@@ -94,9 +126,8 @@ class PersonnageManager
         // 2 choix possibles :
         // - on a déjà fourni la valeur de sourcePersonnages, dans ce cas, on effectue les filtre/tri dessus direct
         // - sourcePersonnages est vide, dans ce cas, on effectue la recherche en base, via le repository
-        if (!$sourcePersonnages || empty($sourcePersonnages)) {
-            $repo = $this->entityManager->getRepository(Personnage::class);
-
+        $repo = $this->entityManager->getRepository(Personnage::class);
+        if (null === $sourcePersonnages) {
             // attention, il y a des propriétés sur lesquelles on ne peut pas appliquer le order by
             // car elles ne sont pas en base mais calculées, ça compliquerait trop le sql
             $orderByCalculatedFields = new ArrayCollection(['pugilat', 'heroisme', 'user', 'hasAnomalie', 'status']);
@@ -106,7 +137,7 @@ class PersonnageManager
                 // pour le nombre de résultats, pas besoin de refaire de requête, on l'a déjà
                 $numResults = count($filteredPersonnages);
                 // on applique le tri
-                // TODO PersonnageSorter::sort($filteredPersonnages, $orderBy, $isAsc);
+                // TODO PersonnageSorter::sort($filteredPersonnages, $orderBy, $isAsc); voir PersonnageManager::sort()
                 $personnagesCollection = new ArrayCollection($filteredPersonnages);
                 // on découpe suivant la pagination demandée
                 $personnages = $personnagesCollection->slice($offset, $limit);
@@ -121,6 +152,9 @@ class PersonnageManager
                 // refait une requete pour récupérer le nombre de résultats suivant les critères
                 $numResults = $repo->findCount($criteria);
             }
+        } elseif ($query) {
+            $personnages = $query->orderBy('p.'.$orderBy, $orderDir)->getQuery();
+
         } else {
             // on effectue d'abord le filtre
             // TODO: pour le moment, finalement il n'y a plus besoin de filtre car le composant n'est plus affiché
@@ -141,11 +175,10 @@ class PersonnageManager
                 : $personnagesCollection->toArray();
         }
 
-        $paginator = new Paginator(
-            $numResults,
-            $limit,
-            $page,
-            $this->app['url_generator']->generate($routeName, $routeParams).'?page=(:num)&limit='.$limit.'&order_by='.$orderBy.'&order_dir='.$orderDir.$optionalParameters
+        $paginator = $repo->findPaginatedQuery(
+            $personnages,
+            $limit,  // $this->getRequestLimit(),
+            $page // $this->getRequestPage()
         );
 
         // récupère les colonnes à afficher
@@ -163,14 +196,14 @@ class PersonnageManager
         }
 
         return array_merge($additionalViewParams, [
-                'personnages' => $personnages,
-                'paginator' => $paginator,
-                'form' => $form->createView(),
-                'optionalParameters' => $optionalParameters,
-                'columnDefinitions' => $columnDefinitions,
-                'formPath' => $routeName,
-                'formParams' => $routeParams,
-            ]
+            'personnages' => $personnages,
+            'paginator' => $paginator,
+            'form' => $form->createView(),
+            'optionalParameters' => $optionalParameters,
+            'columnDefinitions' => $columnDefinitions,
+            'formPath' => $routeName,
+            'formParams' => $routeParams,
+        ]
         );
     }
 }

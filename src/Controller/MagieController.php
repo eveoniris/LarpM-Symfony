@@ -44,7 +44,7 @@ class MagieController extends AbstractController
     /**
      * Liste des sphere.
      */
-    #[Route('/magie/sphere', name: 'magieSphere.list')]
+    #[Route('/magie/sphere', name: 'magie.sphere.list')]
     public function sphereListAction(EntityManagerInterface $entityManager): Response
     {
         $spheres = $entityManager->getRepository(Sphere::class)->findAll();
@@ -158,7 +158,7 @@ class MagieController extends AbstractController
     /**
      * Liste des prieres.
      */
-    #[Route('/magie/priere', name: 'magiePriere.list')]
+    #[Route('/magie/priere', name: 'magie.priere.list')]
     public function priereListAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $prieres = $entityManager->getRepository('\\'.Priere::class)->findAll();
@@ -388,7 +388,7 @@ class MagieController extends AbstractController
     /**
      * Liste des potions.
      */
-    #[Route('/magie/potion', name: 'magiePotion.list')]
+    #[Route('/magie/potion', name: 'magie.potion.list')]
     public function potionListAction(EntityManagerInterface $entityManager): Response
     {
         $potions = $entityManager->getRepository(Potion::class)->findAll();
@@ -607,10 +607,10 @@ class MagieController extends AbstractController
     /**
      * Liste des domaines de magie.
      */
-    #[Route('/magie/domaine', name: 'magieDomaine.list')]
-    public function domaineListAction(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/magie/domaine', name: 'magie.domaine.list')]
+    public function domaineListAction(EntityManagerInterface $entityManager): Response
     {
-        $domaines = $entityManager->getRepository('\\'.Domaine::class)->findAll();
+        $domaines = $entityManager->getRepository(Domaine::class)->findAll();
 
         return $this->render('domaine/list.twig', [
             'domaines' => $domaines,
@@ -725,7 +725,7 @@ class MagieController extends AbstractController
     /**
      * Liste des sorts.
      */
-    #[Route('/magie/sort', name: 'magieSort.list')]
+    #[Route('/magie/sort', name: 'magie.sort.list')]
     public function sortListAction(EntityManagerInterface $entityManager): Response
     {
         $sorts = $entityManager->getRepository(Sort::class)->findAll();
