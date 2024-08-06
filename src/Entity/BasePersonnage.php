@@ -1283,6 +1283,10 @@ class BasePersonnage
     /**
      * Get Competence entity collection.
      */
+    /**
+     * @return Collection<Competence>
+     * @throws \Exception
+     */
     public function getCompetences(): Collection
     {
         $iterator = $this->competences->getIterator();

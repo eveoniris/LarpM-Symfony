@@ -4,13 +4,19 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('personnage.admin.list') }}">Liste des personnages</a></li>
-		<li class="active">Détail de {{ personnage.nom }}</li>
-	</ol>
+	{# TODO : IF ADMIN : DO NOT ADD PERSONNAGE LIST !  #}
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'name' : 'Liste des personnages', 'route': path('personnage.list') },
+			{'name' : "Detail de #{personnage.nom}" },
+		]
+	} %}
 		
-	<div class="well well-sm">
+	<div class="well well-sm bs-component">
+		<div class="header">
+			<h5>Fiche de personnage</h5>
+		</div>
+
 		<h3>{% if personnage.isPnj() %}🎭 PNJ - {% endif %}
 			{{ personnage.nom }}{% if personnage.surnom %} <small>({{ personnage.surnom }})</small>{% endif %}
 			
@@ -32,122 +38,23 @@
 		</h3>
 
 			<div class="row">
-				<div class="col-md-4">		
+				<div class="col-md-4">
+
 					<div class="panel panel-default">
-						<nav class="navbar navbar-default" style="margin-bottom: 0;">
-	  						<div class="container-fluid">
-	  							<div class="navbar-header">
-	  								<span class="navbar-brand">Informations</span>
-	  							</div>
-	  							<div class="collapse navbar-collapse">
-	  								<ul class="nav navbar-nav navbar-right">
-		  								<li class="dropdown">
-		  								 	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-								      			Action
-								      			<span class="caret"></span>
-								    		</a>
-											<ul class="dropdown-menu">
-												<li><a href="{{ path('personnage.admin.statut', {'personnage':personnage.id}) }}">Modifier le statut (vivant/mort)</a></li>
-												<li><a href="{{ path('personnage.admin.update.age',{'personnage': personnage.id}) }}">Modifier l'age</a></li>
-												<li><a href="{{ path('personnage.admin.update', {'personnage':personnage.id}) }}">Modifier (nom/surnom/etc ...)</a></li>
-												<li><a href="{{ path('personnage.admin.transfert', {'personnage':personnage.id}) }}">Transférer à un autre joueur</a></li>
-												<li><a href="{{ path('personnage.export', {'personnage':personnage.id}) }}">Imprimer</a></li>
-												<li><a href="{{ path('personnage.admin.delete', {'personnage':personnage.id}) }}">Supprimer</a></li>
-											</ul>
-										</li>
-	  								</ul>
-	  							</div>
-	  						</div>
-	  					</nav>
-	  					
-	  					<div class="panel-body">
-						  	<p><strong>Numéro : </strong>{{ personnage.id }}</p> 
-	  						<p><strong>Joueur : </strong>{% if personnage.user %}<a href="{{path('user.view',{'user': personnage.user.id}) }}"> {{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}</a>{% else %}Ce personnage n'est pas lié à un joueur</p>{% endif %}
-		  					<p>Ce personnage {% if personnage.intrigue %}<strong class="text-success">participe aux intrigues</strong>{% else %}<strong class="text-danger">ne participe pas aux intrigues{% endif %}</strong>.</p>
-							{% if personnage.isSensible %}<p>Ce personnage est <strong class="text-success">sensible</strong>.
-							<a role="button" data-toggle="collapse" href="#sensibility" aria-expanded="false" aria-controls="collapseExample">
-								<i class="fa fa-info-circle" aria-hidden="true"></i>
-							</a>
-							<div class="collapse" id="sensibility">
-								<div class="list-group">
-									<strong>Pas de violence excessive dans les gestes ou les mots, pas de drague, de propositions d'alcool, etc.</strong>
-								</div>
-							</div>
-							</p>{% endif %}
-							<p><strong>Scénariste :</strong>
-							{% if personnage.user %}
-								{% set participant = personnage.user.participants|last %}
-								{% if participant.personnage %}
-									{% if participant.groupeGn %}
-										{% if participant.groupeGn.groupe %}
-											{% if not participant.groupeGn.groupe.scenariste %}
-												<span class="fa fa-exclamation-triangle" aria-hidden="true"></span>&nbsp;Attention, ce personnage n'a pas de scénariste.
-											{% else %}
-												{{ participant.groupeGn.groupe.scenariste.etatCivil }}&nbsp;({{ participant.groupeGn.groupe.scenariste.email }})
-											{% endif %}
-										{% endif %}
-									{% endif %}
-								{% endif %}
-							{% endif %}
-							</p>
-		  					{# Liste des groupes auxquels fait partie ce personnage #}
-							<h6>Historique des participations</h6>
-							<div class="list-group">									
-								{% if personnage.user %}
-									{% for participant in personnage.user.participants %}
-										{% if participant.personnage %}
-											{% if participant.groupeGn %}
-												{% if participant.groupeGn.groupe %}
-													<a class="list-group-item" href="{{ path('groupe.detail', {'groupe': participant.groupeGn.groupe.id}) }}">#{{ participant.personnage.id}} {{ participant.personnage.nom }} - {{ participant.gn }} - #{{ participant.groupeGn.groupe.numero }} {{ participant.groupeGn.groupe.nom }}</a>
-												{% else %}
-													<a class="list-group-item">{{ participant.personnage.nom }} - {{ participant.gn }} - N'est pas lié à un groupe</a>
-												{% endif %}
-											{% else %}
-												<a class="list-group-item">#{{ participant.personnage.id}} {{ participant.personnage.nom }} - {{ participant.gn }} - N'est pas lié à un groupe</a>
-											{% endif %}
-										{% else %}
-											{% if participant.groupeGn %}
-												<a class="list-group-item">Personnage #{{ personnage.id }} {{ personnage.nom }} non récupéré - {{ participant.gn }} - #{{ participant.groupeGn.groupe.numero }} {{ participant.groupeGn.groupe.nom }}</a>
-											{% else %}
-												<a class="list-group-item">Personnage #{{ personnage.id }} {{ personnage.nom }} non récupéré - {{ participant.gn }} - N'est pas lié à un groupe</a>
-											{% endif %}
-										{% endif %}
-									{% endfor %}
-								{% else %}
-									<li class="list-group-item">Ce personnage ne fait pas partie d'un groupe.</li>
-								{% endif %}
-							</div>
-
-							<h6>Groupes secondaires</h6>
-							<ul class="list-group">
-								{% for groupeSecondaire in personnage.secondaryGroups %}
-									<li class="list-group-item">{% if groupeSecondaire.secret %}<span style="color:red;">Secret</span> - {% endif %}{{ groupeSecondaire.label }} (Chef)</li>
-								{% endfor %}
-								{% for membre in personnage.membres %}
-									<a class="list-group-item" href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire': membre.secondaryGroup.id}) }}">{% if membre.secondaryGroup.secret %}<span style="color:red;">Secret</span> - {% endif %}{{ membre.secondaryGroup.label }}</a>
-								{% endfor %}
-								{% if personnage.secondaryGroups|length <= 0 and personnage.membres|length <= 0 %}
-									<li class="list-group-item">Ce personnage ne fait pas partie d'un groupe secondaire.</li>
-								{% endif %}
-							</ul>
-
-							{% if personnage.postulants|length > 0 %}
-								<h6>Postulation(s)</h6>
-								<ul class="list-group">
-								{% for postulant in personnage.postulants %}
-									<a class="list-group-item" href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire': postulant.secondaryGroup.id}) }}">{{ postulant.secondaryGroup.label }} en attente de validation.</a>
-								{% endfor %}
-								</ul>
-							{% endif %}
-						</div>
+						<small>(admin)</small>
+						{% include 'personnage/fragment/information.twig' %}
+					</div>
+					<div class="panel panel-default">
+						<small>(player)</small>
+						{% include 'personnage/fragment/info.twig' %}
 					</div>
 
 					<div class="panel panel-default">
+						<div class="header">
+							<h5>Informations de jey</h5>
+						</div>
 						<nav class="navbar navbar-default" style="margin-bottom: 0;">
 	  						<div class="container-fluid">
-	  							<div class="navbar-header">
-	  								<span class="navbar-brand">Informations de jeu</span>
-	  							</div>
 	  							<div class="collapse navbar-collapse">
 	  								<ul class="nav navbar-nav navbar-right">
 		  								<li class="dropdown">
@@ -313,11 +220,11 @@
 					</div>
 					
 					<div class="panel panel-default">
+						<div class="header">
+							<h5>Technique</h5>
+						</div>
 						<nav class="navbar navbar-default" style="margin-bottom: 0;">
 	  						<div class="container-fluid">
-	  							<div class="navbar-header">
-	  								<span class="navbar-brand">Technique</span>
-	  							</div>
 	  							<div class="collapse navbar-collapse">
 	  								<ul class="nav navbar-nav navbar-right">
 		  								<li class="dropdown">
@@ -363,14 +270,14 @@
 					</div>
 				</div>
 				<div class="col-md-4">
-				
-				
+
+
 					<div class="panel panel-default">
+						<div class="header">
+							<h5>Photo</h5>
+						</div>
 						<nav class="navbar navbar-default" style="margin-bottom: 0;">
 	  						<div class="container-fluid">
-	  							<div class="navbar-header">
-	  								<span class="navbar-brand">Photo</span>
-	  							</div>
 	  							<div class="collapse navbar-collapse">
 	  								<ul class="nav navbar-nav navbar-right">
 		  								<li class="dropdown">
@@ -397,11 +304,11 @@
 					</div>
 				
 					<div class="panel panel-default">
+						<div class="header">
+							<h5>Enveloppe</h5> {# TODO ADMIN #}
+						</div>
 						<nav class="navbar navbar-default" style="margin-bottom: 0;">
 	  						<div class="container-fluid">
-	  							<div class="navbar-header">
-	  								<span class="navbar-brand">Enveloppe</span>
-	  							</div>
 	  							<div class="collapse navbar-collapse">
 	  								<ul class="nav navbar-nav navbar-right">
 		  								<li class="dropdown">
@@ -518,15 +425,20 @@
 							</div>
 						</div>
 					</div>
+
+					<div class="panel panel-default">
+						{% include 'personnage/fragment/religion.twig' with {'personnage' : personnage} %}
+					</div>
 				</div>
 				<div class="col-md-4">
 				
 					<div class="panel panel-default">
+						<div class="header">
+							<h5>Compétences <small>({{ personnage.xp|default(0) }} / {{ personnage.xpTotal }} xp)</small></h5>
+						</div>
+
 						<nav class="navbar navbar-default" style="margin-bottom: 0;">
 	  						<div class="container-fluid">
-	  							<div class="navbar-header">
-	  								<span class="navbar-brand">Compétences <small>({{ personnage.xp|default(0) }} / {{ personnage.xpTotal }} xp)</small></span>
-	  							</div>
 	  							<div class="collapse navbar-collapse">
 	  								<a class="btn btn-default navbar-btn" role="button" data-toggle="collapse" href="c#xpHistory" aria-expanded="false" aria-controls="collapseExample">
 										<i class="fa fa-history" aria-hidden="true"></i>
@@ -572,11 +484,11 @@
 
 					{% if personnage.personnageLignee %}
 					<div class="panel panel-default">
+						<div class="header">
+							<h5>Lignée & Généalogie</h5>
+						</div>
 						<nav class="navbar navbar-default" style="margin-bottom: 0;">
 	  						<div class="container-fluid">
-	  							<div class="navbar-header">
-	  								<span class="navbar-brand">Lignée & Généalogie</span>
-	  							</div>
 								{% if personnage.personnageLignee|length == 0 %}
 	  							<div class="collapse navbar-collapse">
 	  								<ul class="nav navbar-nav navbar-right">
@@ -656,11 +568,11 @@
 					{% endif %}
 
 					<div class="panel panel-default">
+						<div class="header">
+							<h5>Chronologie</h5>
+						</div>
 						<nav class="navbar navbar-default" style="margin-bottom: 0;">
 	  						<div class="container-fluid">
-	  							<div class="navbar-header">
-	  								<span class="navbar-brand">Chronologie</span>
-	  							</div>
 	  							<div class="collapse navbar-collapse">
 	  								<ul class="nav navbar-nav navbar-right">
 		  								<li class="dropdown">
@@ -693,11 +605,11 @@
 					</div>
 					
 					<div class="panel panel-default">
+						<div class="header">
+							<h5>Background</h5>
+						</div>
 						<nav class="navbar navbar-default" style="margin-bottom: 0;">
 	  						<div class="container-fluid">
-	  							<div class="navbar-header">
-	  								<span class="navbar-brand">Background</span>
-	  							</div>
 	  							<div class="collapse navbar-collapse">
 	  								<ul class="nav navbar-nav navbar-right">
 		  								<li class="dropdown">

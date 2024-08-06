@@ -50,10 +50,22 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return $response->send();
     }
 
-    protected function render(string $view, array $parameters = [], Response $response = null): Response
+    protected function render(string $view, array $parameters = [], ?Response $response = null): Response
     {
+        // TODO enhance
+        $request = $this->requestStack?->getCurrentRequest();
         if ($this->isGranted('ROLE_ADMIN') && $this->container->get('twig')->getLoader()->exists('admin/'.$view)) {
-            return parent::render('admin/'.$view, $parameters, $response);
+            $currentParameters = $request->attributes->get('_route_params');
+            $currentParameters['playerView'] = !$request->get('playerView');
+
+            $parameters['playerViewToggleUrl'] = $this->generateUrl(
+                $request->attributes->get('_route'),
+                $currentParameters
+            );
+
+            if ((false !== (bool) $request->get('playerView'))) {
+                return parent::render('admin/'.$view, $parameters, $response);
+            }
         }
 
         return parent::render($view, $parameters, $response);
@@ -84,8 +96,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     protected function getRequestOrder(
         string $defOrderBy = 'id',
         string $defOrderDir = 'ASC',
-        string $alias = null,
-        array $allowedFields = null // TODO: check SF security Form on Self Entity's attributes
+        ?string $alias = null,
+        ?array $allowedFields = null // TODO: check SF security Form on Self Entity's attributes
     ): array
     {
         $request = $this->requestStack?->getCurrentRequest();

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Enum\CompetenceFamilyType;
+use App\Enum\LevelType;
 use App\Repository\PersonnageRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -401,7 +403,7 @@ class Personnage extends BasePersonnage implements \Stringable
     /**
      * Retourne les anomalies entre le nombre de langues autorisées et le nombre de langues affectées.
      *
-     * @return \Doctrine\Common\Collections\Collection|null
+     * @return Collection|null
      */
     public function getLanguesAnomaliesMessage(): string
     {
@@ -494,13 +496,55 @@ class Personnage extends BasePersonnage implements \Stringable
 
     /**
      * Vérifie si le personnage dispose d'une compétence (quelque soit son niveau).
-     *
-     * @param unknown $label
      */
-    public function hasCompetence($label): bool
+    public function hasCompetence(string|CompetenceFamilyType $type): bool
     {
-        foreach ($this->getCompetences() as $competence) {
-            if ($competence->getCompetenceFamily()->getLabel() == $label) {
+        if (!$type instanceof CompetenceFamilyType) {
+            $type = CompetenceFamilyType::getFromLabel($type);
+        }
+
+        if (!$type) {
+            return false;
+        }
+
+        return null !== $this->getCompetencesFromFamilyType($type);
+    }
+
+    /**
+     * @return Competence[]
+     */
+    public function getCompetencesFromFamilyType(CompetenceFamilyType $type): array
+    {
+        $competences = [];
+        try {
+            foreach ($this->getCompetences() as $competence) {
+                if ($competence->getCompetenceFamily()?->getId() === $type->getId()) {
+                    $competences[] = $competence;
+                }
+            }
+        } catch (\Exception $e) {
+            // LOG $e ?
+        }
+
+        return $competences;
+    }
+
+    public function isPriest(): bool
+    {
+        return $this->hasCompetence(CompetenceFamilyType::PRIESTHOOD);
+    }
+
+    public function getCompetenceLevel(Competence $competence): Level
+    {
+        return $competence->getLevel();
+    }
+
+    public function hasCompetenceLevel(CompetenceFamilyType $type, Level|LevelType $level): bool
+    {
+        $index = $level->getIndex();
+
+        foreach ($this->getCompetencesFromFamilyType($type) as $competence) {
+            if ($competence?->getLevel()?->getIndex() === $index) {
                 return true;
             }
         }
@@ -508,16 +552,50 @@ class Personnage extends BasePersonnage implements \Stringable
         return false;
     }
 
+    public function getCompetencesByFamilyLabel(string $label): array
+    {
+        $competences = [];
+        try {
+            foreach ($this->getCompetences() as $competence) {
+                if ($competence->getLabel() === $label) {
+                    $competences[] = $competence;
+                }
+            }
+        } catch (\Exception $e) {
+            // LOG $e ?
+        }
+
+        return $competences;
+    }
+
     /**
      * Fourni le niveau d'une compétence d'un personnage.
      */
     public function getCompetenceNiveau(string $label): int
     {
+        if ($type = CompetenceFamilyType::tryFrom($label)) {
+            $competences = $this->getCompetencesFromFamilyType($type);
+        } else {
+            $competences = $this->getCompetencesByFamilyLabel($label);
+        }
+
         $niveau = 0;
-        foreach ($this->getCompetences() as $competence) {
-            if ($competence->getCompetenceFamily()->getLabel() === $label && $niveau < $competence->getLevel()->getIndex()) {
-                $niveau = $competence->getLevel()->getIndex();
-            }
+        foreach ($competences as $competence) {
+            $niveau = max($niveau, $competence->getLevel()?->getIndex());
+        }
+
+        return $niveau;
+    }
+
+    public function getCompetenceTypeLevel(string $type): int
+    {
+        if (!$famillyType = CompetenceFamilyType::tryFrom($type)) {
+            return 0;
+        }
+
+        $niveau = 0;
+        foreach ($this->getCompetencesFromFamilyType($famillyType) as $competence) {
+            $niveau = max($niveau, $competence->getLevel()?->getIndex());
         }
 
         return $niveau;
@@ -602,28 +680,36 @@ class Personnage extends BasePersonnage implements \Stringable
         if ($this->getCompetencePugilat('Armes à distance') > 0) {
             $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Armes à distance'));
-            $pugilatHistory->setExplication('Compétence Armes à distance niveau '.$this->getCompetenceNiveau('Armes à distance'));
+            $pugilatHistory->setExplication(
+                'Compétence Armes à distance niveau '.$this->getCompetenceNiveau('Armes à distance')
+            );
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetencePugilat('Armes à 1 main') > 0) {
             $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Armes à 1 main'));
-            $pugilatHistory->setExplication('Compétence Armes à 1 main niveau '.$this->getCompetenceNiveau('Armes à 1 main'));
+            $pugilatHistory->setExplication(
+                'Compétence Armes à 1 main niveau '.$this->getCompetenceNiveau('Armes à 1 main')
+            );
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetencePugilat('Armes à 2 mains') > 0) {
             $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Armes à 2 mains'));
-            $pugilatHistory->setExplication('Compétence Armes à 2 mains niveau '.$this->getCompetenceNiveau('Armes à 2 mains'));
+            $pugilatHistory->setExplication(
+                'Compétence Armes à 2 mains niveau '.$this->getCompetenceNiveau('Armes à 2 mains')
+            );
             $pugilatHistories[] = $pugilatHistory;
         }
 
         if ($this->getCompetencePugilat("Armes d'hast") > 0) {
             $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat("Armes d'hast"));
-            $pugilatHistory->setExplication('Compétence Armes d\'hast niveau '.$this->getCompetenceNiveau("Armes d'hast"));
+            $pugilatHistory->setExplication(
+                'Compétence Armes d\'hast niveau '.$this->getCompetenceNiveau("Armes d'hast")
+            );
             $pugilatHistories[] = $pugilatHistory;
         }
 
@@ -644,7 +730,9 @@ class Personnage extends BasePersonnage implements \Stringable
         if ($this->getCompetencePugilat('Attaque sournoise') > 0) {
             $pugilatHistory = new PugilatHistory();
             $pugilatHistory->setPugilat($this->getCompetencePugilat('Attaque sournoise'));
-            $pugilatHistory->setExplication('Compétence Attaque sournoise niveau '.$this->getCompetenceNiveau('Attaque sournoise'));
+            $pugilatHistory->setExplication(
+                'Compétence Attaque sournoise niveau '.$this->getCompetenceNiveau('Attaque sournoise')
+            );
             $pugilatHistories[] = $pugilatHistory;
         }
 
@@ -748,14 +836,18 @@ class Personnage extends BasePersonnage implements \Stringable
         if ($this->getCompetenceNiveau('Armes à 1 main') >= 3) {
             $heroismeHistory = new HeroismeHistory();
             $heroismeHistory->setHeroisme(1);
-            $heroismeHistory->setExplication('Compétence Armes à 1 main niveau '.$this->getCompetenceNiveau('Armes à 1 main'));
+            $heroismeHistory->setExplication(
+                'Compétence Armes à 1 main niveau '.$this->getCompetenceNiveau('Armes à 1 main')
+            );
             $heroismeHistories[] = $heroismeHistory;
         }
 
         if ($this->getCompetenceNiveau('Armes à 2 mains') >= 2) {
             $heroismeHistory = new HeroismeHistory();
             $heroismeHistory->setHeroisme(1);
-            $heroismeHistory->setExplication('Compétence Armes à 2 mains niveau '.$this->getCompetenceNiveau('Armes à 2 mains'));
+            $heroismeHistory->setExplication(
+                'Compétence Armes à 2 mains niveau '.$this->getCompetenceNiveau('Armes à 2 mains')
+            );
             $heroismeHistories[] = $heroismeHistory;
         }
 
