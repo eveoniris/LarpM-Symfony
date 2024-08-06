@@ -52,6 +52,7 @@ class GroupeForm extends AbstractType
                 'required' => false,
                 'class' => User::class,
                 'choice_label' => 'name',
+                'autocomplete' => true,
                 'query_builder' => static function (EntityRepository $er) {
                     $qb = $er->createQueryBuilder('u');
                     $qb->where($qb->expr()->orX(
@@ -75,6 +76,16 @@ class GroupeForm extends AbstractType
             'attr' => [
                 'novalidate' => 'novalidate',
             ],
+            'searchable_fields' => ['username'],
+            'security' => ['ROLE_ADMIN', 'ROLE_SCENARISTE', 'ROLE_ORGA'],
+            'query_builder' => static function (EntityRepository $er) {
+                $qb = $er->createQueryBuilder('u');
+                $qb->where($qb->expr()->orX(
+                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
+                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%'))));
+
+                return $qb;
+            },
         ]);
     }
 

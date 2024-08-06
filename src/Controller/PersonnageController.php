@@ -718,6 +718,7 @@ class PersonnageController extends AbstractController
      * Liste des personnages.
      */
     #[Route('/admin/list', name: 'admin.list')]
+    #[Route('/list', name: 'list')]
     public function adminListAction(Request $request, EntityManagerInterface $entityManager)
     {
         $routeName = 'personnage.admin.list';

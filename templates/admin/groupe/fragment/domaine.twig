@@ -100,13 +100,13 @@
                     <div class="media-center">
 		    			<h6>Ordres</h6>
                         <div class="list-group">
-                        {% if session.getGroupeGnOrdres|length > 0 %}
+                        {#% if session.getGroupeGnOrdres|length > 0 %}
                             {% for ordre in session.getGroupeGnOrdres %}
                                 <p class="list-group-item"><strong>{{ ordre.ordre }}</strong> => {{ ordre.cible.nomComplet }} {% if ordre.ordre == 'CONSTRUCTION' or ordre.ordre == 'DESTRUCTION' %} => <strong>{{ ordre.extra }}</strong>{% endif %}</p>
                             {% endfor %}
                         {% else %}
                             <p class="list-group-item">Pas d'ordres passés ou historisés pour le {{ session.gn }}.</p>
-                        {% endif %}
+                        {% endif %#}
                         </div>
                     </div>
                 </li>

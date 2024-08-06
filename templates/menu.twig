@@ -33,35 +33,35 @@
 
                 {# Menus reservé aux admins #}
                 {% if is_granted('ROLE_REDACTEUR', app.user) or is_granted('ROLE_ADMIN', app.user) %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                       aria-expanded="false">
-                        Admin
-                    </a>
-                    <ul class="dropdown-menu">
-                        {% if is_granted('ROLE_ADMIN', app.user) %}
-                            <li><a class="dropdown-item" href="{{ path('gn.list') }}">Grandeurs natures</a></li>
-                            <li><a class="dropdown-item" href="{{ path('billet.list') }}">Billets</a></li>
-                            <li><a class="dropdown-item" href="{{ path('user.admin.list') }}">Utilisateurs</a>
-                            </li>
-                            <li><a class="dropdown-item" href="{{ path('restriction.list') }}">Restrictions
-                                    alimentaires</a></li>
-                            <li><a class="dropdown-item" href="{{ path('restauration.list') }}">Lieux de
-                                    restauration</a></li>
-                            <li><a class="dropdown-item" href="{{ path('right.admin.list') }}">Liste des
-                                    droits</a></li>
-                            <li><a class="dropdown-item" href="{{ path('statistique') }}">Statistiques</a></li>
-                            <li><a class="dropdown-item" href="{{ path('admin') }}">Administration</a></li>
-                            <li><a class="dropdown-item" href="{{ path('admin.rappels') }}">Rappels</a></li>
-                            <li><a class="dropdown-item" href="{{ path('question') }}">Questions</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                        {% endif %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Admin
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% if is_granted('ROLE_ADMIN', app.user) %}
+                                <li><a class="dropdown-item" href="{{ path('gn.list') }}">Grandeurs natures</a></li>
+                                <li><a class="dropdown-item" href="{{ path('billet.list') }}">Billets</a></li>
+                                <li><a class="dropdown-item" href="{{ path('user.admin.list') }}">Utilisateurs</a>
+                                </li>
+                                <li><a class="dropdown-item" href="{{ path('restriction.list') }}">Restrictions
+                                        alimentaires</a></li>
+                                <li><a class="dropdown-item" href="{{ path('restauration.list') }}">Lieux de
+                                        restauration</a></li>
+                                <li><a class="dropdown-item" href="{{ path('right.admin.list') }}">Liste des
+                                        droits</a></li>
+                                <li><a class="dropdown-item" href="{{ path('statistique') }}">Statistiques</a></li>
+                                <li><a class="dropdown-item" href="{{ path('admin') }}">Administration</a></li>
+                                <li><a class="dropdown-item" href="{{ path('admin.rappels') }}">Rappels</a></li>
+                                <li><a class="dropdown-item" href="{{ path('question') }}">Questions</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                            {% endif %}
                             <li><a class="dropdown-item" href="{{ path('annonce.list') }}">Annonces</a>
                             </li>
-                    </ul>
-                </li>
+                        </ul>
+                    </li>
                 {% endif %}
 
                 {# Menus reservé à la cohérence monde et univers #}
@@ -240,6 +240,21 @@
                 {% endblock module_menu %}
 
             </ul>
+            {% if is_granted('ROLE_ADMIN', app.user) and playerViewToggleUrl is defined %}
+                <div class="d-flex">
+                    {% if app.request.get('playerView') == true %}
+                        <a href="{{ playerViewToggleUrl }}" class="btn btn-secondary" data-toggle="tooltip"
+                           data-placement="top" title="Voir en tant que joueur">
+                            <i class="fa-regular fa-eye"></i>
+                        </a>
+                    {% else %}
+                        <a href="{{ playerViewToggleUrl }}" class="btn btn-secondary" data-toggle="tooltip"
+                           data-placement="top" title="Voir en tant qu'admin">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
             <!-- form class="d-flex" role="search">
                 <input class="form-control me-2" type="search" placeholder="Rechercher" aria-label="Rechercher">
                 <button type="submit" class="btn btn-outline-secondary" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>

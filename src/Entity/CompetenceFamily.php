@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
+use App\Repository\CompetenceFamilyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
-use App\Repository\CompetenceFamilyRepository;
 
 #[Entity(repositoryClass: CompetenceFamilyRepository::class)]
 class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
@@ -104,7 +104,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     /**
      * Add Classe entity to collection.
      *
-     * @return \App\Entity\CompetenceFamily
+     * @return CompetenceFamily
      */
     public function addClasseFavorite(Classe $classe): static
     {
@@ -116,7 +116,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     /**
      * Remove Classe entity from collection.
      *
-     * @return \App\Entity\CompetenceFamily
+     * @return CompetenceFamily
      */
     public function removeClasseFavorite(Classe $classe): static
     {
@@ -128,7 +128,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     /**
      * Get Objet entity collection.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getClasseFavorites()
     {
@@ -138,7 +138,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     /**
      * Add Classe entity to collection.
      *
-     * @return \App\Entity\CompetenceFamily
+     * @return CompetenceFamily
      */
     public function addClasseNormale(Classe $classe): static
     {
@@ -150,7 +150,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     /**
      * Remove Classe entity from collection.
      *
-     * @return \App\Entity\CompetenceFamily
+     * @return CompetenceFamily
      */
     public function removeClasseNormale(Classe $classe): static
     {
@@ -162,7 +162,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     /**
      * Get Objet entity collection.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getClasseNormales()
     {
@@ -172,7 +172,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     /**
      * Add Classe entity to collection.
      *
-     * @return \App\Entity\CompetenceFamily
+     * @return CompetenceFamily
      */
     public function addClasseCreation(Classe $classe): static
     {
@@ -184,7 +184,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     /**
      * Remove Classe entity from collection.
      *
-     * @return \App\Entity\CompetenceFamily
+     * @return CompetenceFamily
      */
     public function removeClasseCreation(Classe $classe): static
     {
@@ -196,7 +196,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     /**
      * Get Objet entity collection.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getClasseCreations()
     {
