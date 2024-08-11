@@ -5,16 +5,12 @@ namespace App\Form;
 use App\Entity\Connaissance;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\ConnaissanceForm.
- *
- * @author Kevin F.
- */
 class ConnaissanceForm extends AbstractType
 {
     /**
@@ -26,10 +22,9 @@ class ConnaissanceForm extends AbstractType
             'required' => true,
             'label' => 'Label',
         ])
-            ->add('document', 'file', [
+            ->add('file', FileType::class, [
                 'label' => 'Téléversez un document',
-                'required' => true,
-                'mapped' => false,
+                'required' => true,//on create only?
             ])
             ->add('description', TextareaType::class, [
                 'required' => false,
@@ -50,9 +45,13 @@ class ConnaissanceForm extends AbstractType
             ->add('secret', ChoiceType::class, [
                 'required' => true,
                 'choices' => [
+                    false,
+                    true,
+                ],
+                'choice_label' => static fn ($value) => match ($value) {
                     false => 'Connaissance visible',
                     true => 'Connaissance secrète',
-                ],
+                },
                 'label' => 'Secret',
             ]);
     }

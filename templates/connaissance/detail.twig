@@ -27,12 +27,28 @@
 
             <h4>{{ connaissance.label }}</h4>
 
-            {% if not connaissance.documentUrl %}
-                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                   title="Télécharger le document associé"
-                   href="{{ path('connaissance.document', {'connaissance': connaissance.id, 'document': connaissance.documentUrl}) }}"><i
-                            class="fa-solid fa-download"></i> Télécharger</a>
-            {% endif %}
+            <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Personnages ayant cette connaissance"
+                       href="{{ path('connaissance.personnages',{'connaissance':connaissance.id}) }}"><i
+                                class="fa fa-users"></i> Personnages</a>
+                    {% if connaissance.documentUrl %}
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Télécharger le document associé à cette connaissance"
+                           href="{{ path('connaissance.document',{'connaissance':connaissance.id}) }}"><i
+                                    class="fa fa-download"></i> Document</a>
+                    {% endif %}
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier"
+                       href="{{ path('connaissance.update',{'connaissance':connaissance.id}) }}"><i
+                                class="fa fa-pencil"></i> Modifier</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Supprimer"
+                       href="{{ path('connaissance.delete',{'connaissance':connaissance.id}) }}"><i
+                                class="fa fa-eraser"></i> Supprimer</a>
+                </div>
+            </div>
         </div>
 
         <div class="panel panel-default">
@@ -44,5 +60,7 @@
         {% if connaissance.contraintes %}
             {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'title': 'Prérequis !', 'content' : connaissance.contraintes } %}
         {% endif %}
+
+
     </div>
 {% endblock body %}

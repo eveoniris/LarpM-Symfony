@@ -61,7 +61,7 @@ class TokenController extends AbstractController
     {
         $token = new Token();
 
-        return $this->handleCreateorUpdate($request, $token, TokenForm::class);
+        return $this->handleCreateOrUpdate($request, $token, TokenForm::class);
     }
 
     #[Route('/{token}', name: 'view', requirements: ['token' => Requirement::DIGITS])]
@@ -74,7 +74,7 @@ class TokenController extends AbstractController
     #[Route('/{token}/update', name: 'update', requirements: ['token' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Token $token): RedirectResponse|Response
     {
-        return $this->handleCreateorUpdate(
+        return $this->handleCreateOrUpdate(
             $request,
             $token,
             TokenForm::class
@@ -105,15 +105,16 @@ class TokenController extends AbstractController
         );
     }
 
-    protected function handleCreateorUpdate(
+    protected function handleCreateOrUpdate(
         Request $request,
         $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
-        array $msg = []
+        array $msg = [],
+        ?callable $entityCallback = null
     ): RedirectResponse|Response {
-        return parent::handleCreateorUpdate(
+        return parent::handleCreateOrUpdate(
             request: $request,
             entity: $entity,
             formClass: $formClass,
@@ -128,7 +129,8 @@ class TokenController extends AbstractController
                 'entity_list' => $this->translator->trans('Liste des jetons'),
                 'title_add' => $this->translator->trans('Ajouter un jeton'),
                 'title_update' => $this->translator->trans('Modifier un jeton'),
-            ]
+            ],
+            entityCallback: $entityCallback
         );
     }
 }

@@ -37,7 +37,7 @@ class LevelController extends AbstractController
     {
         $level = new Level();
 
-        return $this->handleCreateorUpdate($request, $level, LevelForm::class);
+        return $this->handleCreateOrUpdate($request, $level, LevelForm::class);
     }
 
     #[Route('/{level}/update', name: 'update', requirements: ['level' => Requirement::DIGITS], methods: [
@@ -49,7 +49,7 @@ class LevelController extends AbstractController
         Request $request,
         #[MapEntity] Level $level
     ): RedirectResponse|Response {
-        return $this->handleCreateorUpdate($request, $level, LevelForm::class);
+        return $this->handleCreateOrUpdate($request, $level, LevelForm::class);
     }
 
     #[Route('/{level}/detail', name: 'detail', requirements: ['level' => Requirement::DIGITS], methods: ['GET'])]
@@ -78,15 +78,16 @@ class LevelController extends AbstractController
         );
     }
 
-    protected function handleCreateorUpdate(
+    protected function handleCreateOrUpdate(
         Request $request,
         $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
-        array $msg = []
+        array $msg = [],
+        ?callable $entityCallback = null
     ): RedirectResponse|Response {
-        return parent::handleCreateorUpdate(
+        return parent::handleCreateOrUpdate(
             request: $request,
             entity: $entity,
             formClass: $formClass,
@@ -101,7 +102,8 @@ class LevelController extends AbstractController
                 'entity_list' => $this->translator->trans('Liste des niveaux'),
                 'title_add' => $this->translator->trans('Ajouter un niveau'),
                 'title_update' => $this->translator->trans('Modifier un niveau'),
-            ]
+            ],
+            entityCallback: $entityCallback
         );
     }
 }
