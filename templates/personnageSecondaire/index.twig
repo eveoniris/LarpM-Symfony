@@ -2,9 +2,7 @@
 
 {% block body %}
 
-    <ol class="breadcrumb">
-        <li class="active">Personnages secondaires</li>
-    </ol>
+	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Personnages secondaires'}]} %}
 
     <div class="well well-sm bs-component">
 

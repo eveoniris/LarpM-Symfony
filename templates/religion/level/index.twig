@@ -1,23 +1,26 @@
 {% extends "base.html.twig" %}
 
+{% block title %}Fanatisme{% endblock title %}
+
 {% block body %}
 
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-xs-12 col-md-12">
-			<div class="well well-sm">
-				<h4>
-					Gestion des niveaux de religion
-					<small>
-						( {{ religionLevels|length }} niveaux )
-					</small>
-				</h4>
-			</div>
-			
-			{{ include("admin/religion/fragment/list_level.twig", {'religionLevels' : religionLevels, 'add' : true}) }}
-		</div>
-	</div>
+{% include '_partials/breadcrumb.twig' with {'items' :  [{'name' : 'Niveaux de religion'}]} %}
 
-</div>
+<ul class="list-group">
+	{%  for religionLevel in religionLevels %}
+	<li class="list-group-item">
+		<div class="row">
+			<div class="col-md-8">
+				<h4 class="list-group-item-heading">
+					{{ religionLevel.label }} 
+				</h4>
+				<p class="list-group-item-text">		
+					<p class="text-default">{{ religionLevel.description }} ...</p>
+				</p>
+			</div>
+		</div>
+	</li>
+	{% endfor %}
+</ul>
 	
 {% endblock %}
