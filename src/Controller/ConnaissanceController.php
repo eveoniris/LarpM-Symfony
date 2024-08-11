@@ -3,16 +3,21 @@
 namespace App\Controller;
 
 use App\Entity\Connaissance;
+use App\Enum\DocumentType;
+use App\Enum\FolderType;
 use App\Form\ConnaissanceForm;
 use App\Repository\ConnaissanceRepository;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -22,8 +27,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ConnaissanceController extends AbstractController
 {
     #[Route(name: 'list')]
-    public function listAction(Request $request, PagerService $pagerService, ConnaissanceRepository $connaissanceRepository): Response
-    {
+    public function listAction(
+        Request $request,
+        PagerService $pagerService,
+        ConnaissanceRepository $connaissanceRepository
+    ): Response {
         $pagerService->setRequest($request);
 
         return $this->render('connaissance/list.twig', [
@@ -51,46 +59,11 @@ class ConnaissanceController extends AbstractController
     {
         $connaissance = new Connaissance();
 
-        $form = $this->createForm(ConnaissanceForm::class, $connaissance)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $connaissance = $form->getData();
-            $connaissance->setNiveau(1);
-
-            // Si un document est fourni, l'enregistrer
-            if (null != $files['document']) {
-                $path = __DIR__.'/../../private/doc/';
-                $filename = $files['document']->getClientOriginalName();
-                $extension = 'pdf';
-
-                if (!$extension || 'pdf' !== $extension) {
-                    $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
-
-                    return $this->redirectToRoute('connaissance.list', [], 303);
-                }
-
-                $documentFilename = hash('md5', $connaissance->getLabel().$filename.time()).'.'.$extension;
-
-                $files['document']->move($path, $documentFilename);
-
-                $connaissance->setDocumentUrl($documentFilename);
-            }
-
-            $entityManager->persist($connaissance);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La connaissance a été ajoutée');
-
-            return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], 303);
-        }
-
-        return $this->render('connaissance/add.twig', [
-            'connaissance' => $connaissance,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            $connaissance,
+            ConnaissanceForm::class
+        );
     }
 
     /**
@@ -99,56 +72,26 @@ class ConnaissanceController extends AbstractController
     #[Route('/{connaissance}/update', name: 'update', requirements: ['connaissance' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Connaissance $connaissance): RedirectResponse|Response
     {
-        $form = $this->createForm(ConnaissanceForm::class, $connaissance)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $connaissance = $form->getData();
-
-            $files = $request->files->get($form->getName());
-
-            // Si un document est fourni, l'enregistrer
-            if (null != $files['document']) {
-                $path = __DIR__.'/../../private/doc/';
-                $filename = $files['document']->getClientOriginalName();
-                $filename = $files['document']->getClientOriginalName();
-                $extension = 'pdf';
-
-                if (!$extension || 'pdf' !== $extension) {
-                    $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
-
-                    return $this->redirectToRoute('connaissance.list', [], 303);
-                }
-
-                $documentFilename = hash('md5', $connaissance->getLabel().$filename.time()).'.'.$extension;
-
-                $files['document']->move($path, $documentFilename);
-
-                $connaissance->setDocumentUrl($documentFilename);
-            }
-
-            $this->entityManager->persist($connaissance);
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'La connaissance a été sauvegardée');
-
-            return $this->redirectToRoute('connaissance.detail', ['connaissance' => $connaissance->getId()], 303);
-        }
-
-        return $this->render('connaissance/update.twig', [
-            'connaissance' => $connaissance,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            $connaissance,
+            ConnaissanceForm::class
+        );
     }
 
     /**
      * Supprime une connaissance.
      */
-    #[Route('/{connaissance}/delete', name: 'delete', requirements: ['connaissance' => Requirement::DIGITS], methods: ['DELETE', 'GET', 'POST'])]
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Connaissance $connaissance): RedirectResponse|Response
-    {
+    #[Route('/{connaissance}/delete', name: 'delete', requirements: ['connaissance' => Requirement::DIGITS], methods: [
+        'DELETE',
+        'GET',
+        'POST',
+    ])]
+    public function deleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Connaissance $connaissance
+    ): RedirectResponse|Response {
         return $this->genericDelete(
             $connaissance,
             'Supprimer une connaissance',
@@ -156,7 +99,11 @@ class ConnaissanceController extends AbstractController
             'connaissance.list',
             [
                 ['route' => $this->generateUrl('connaissance.list'), 'name' => 'Liste des connaissances'],
-                ['route' => 'connaissance.detail', 'connaissance' => $connaissance->getId(), 'name' => $connaissance->getLabel()],
+                [
+                    'route' => 'connaissance.detail',
+                    'connaissance' => $connaissance->getId(),
+                    'name' => $connaissance->getLabel(),
+                ],
                 ['name' => 'Supprimer une connaissance'],
             ]
         );
@@ -166,21 +113,24 @@ class ConnaissanceController extends AbstractController
      * Obtenir le document lié a une connaissance.
      */
     #[Route('/{connaissance}/document', name: 'document', requirements: ['connaissance' => Requirement::DIGITS])]
-    public function getDocumentAction(Request $request, #[MapEntity] Connaissance $connaissance)
+    public function getDocumentAction(#[MapEntity] Connaissance $connaissance): BinaryFileResponse
     {
-        $document = $request->get('document');
 
-        $file = __DIR__.'/../../private/doc/'.$document;
+        $filename = $connaissance->getDocument($this->fileUploader->getProjectDirectory());
+        if (!$connaissance->getDocumentUrl() || !file_exists($filename)) {
+            throw new NotFoundHttpException("Le document n'existe pas");
+        }
 
-        $stream = static function () use ($file): void {
-            readfile($file);
-        };
+        $response = (new BinaryFileResponse($filename, Response::HTTP_OK))
+            ->setContentDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                $connaissance->getPrintLabel().'.pdf');
 
-        return $app->stream($stream, 200, [
-            'Content-Type' => 'text/pdf',
-            'Content-length' => filesize($file),
-            'Content-Disposition' => 'attachment; filename="'.$connaissance->getPrintLabel().'.pdf"',
-        ]);
+        $response->headers->set('Content-Control', 'private');
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Type', 'application/pdf');
+
+        return $response;
     }
 
     #[Route('/{connaissance}/personnages', name: 'personnages', requirements: ['connaissance' => Requirement::DIGITS])]
@@ -193,7 +143,14 @@ class ConnaissanceController extends AbstractController
         $routeName = 'connaissance.personnages';
         $routeParams = ['connaissance' => $connaissance->getId()];
         $twigFilePath = 'connaissance/personnages.twig';
-        $columnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser']; // check if it's better in PersonnageService
+        $columnKeys = [
+            'colId',
+            'colStatut',
+            'colNom',
+            'colClasse',
+            'colGroupe',
+            'colUser',
+        ]; // check if it's better in PersonnageService
         $personnages = $connaissance->getPersonnages();
         $additionalViewParams = [
             'connaissance' => $connaissance,
@@ -213,6 +170,48 @@ class ConnaissanceController extends AbstractController
         return $this->render(
             $twigFilePath,
             $viewParams
+        );
+    }
+
+    protected function handleCreateOrUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
+        ?callable $entityCallback = null
+    ): RedirectResponse|Response {
+        if (!$entityCallback) {
+            /** @var Connaissance $connaissance */
+            $entityCallback = function (mixed $connaissance, FormInterface $form): ?Connaissance {
+                $connaissance->handleUpload(
+                    $this->fileUploader,
+                    DocumentType::Documents,
+                    FolderType::Private
+                );
+
+                return $connaissance;
+            };
+        }
+
+        return parent::handleCreateOrUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                ...$msg,
+                'entity' => $this->translator->trans('connaissance'),
+                'entity_added' => $this->translator->trans('La connaissance a été ajoutée'),
+                'entity_updated' => $this->translator->trans('La connaissance a été mise à jour'),
+                'entity_deleted' => $this->translator->trans('La connaissance a été supprimée'),
+                'entity_list' => $this->translator->trans('Liste des connaissance'),
+                'title_add' => $this->translator->trans('Ajouter une connaissance'),
+                'title_update' => $this->translator->trans('Modifier une connaissance   '),
+            ],
+            entityCallback: $entityCallback
         );
     }
 }

@@ -60,7 +60,7 @@ class AgeController extends AbstractController
     {
         $age = new Age();
 
-        return $this->handleCreateorUpdate($request, $age, AgeForm::class);
+        return $this->handleCreateOrUpdate($request, $age, AgeForm::class);
     }
 
     #[Route('/{age}/update', name: 'update', requirements: ['age' => Requirement::DIGITS], methods: [
@@ -72,18 +72,19 @@ class AgeController extends AbstractController
         Request $request,
         #[MapEntity] Age $age
     ): RedirectResponse|Response {
-        return $this->handleCreateorUpdate($request, $age, AgeForm::class);
+        return $this->handleCreateOrUpdate($request, $age, AgeForm::class);
     }
 
-    protected function handleCreateorUpdate(
+    protected function handleCreateOrUpdate(
         Request $request,
         $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
-        array $msg = []
+        array $msg = [],
+        ?callable $entityCallback = null
     ): RedirectResponse|Response {
-        return parent::handleCreateorUpdate(
+        return parent::handleCreateOrUpdate(
             request: $request,
             entity: $entity,
             formClass: $formClass,
@@ -98,7 +99,8 @@ class AgeController extends AbstractController
                 'entity_list' => $this->translator->trans('Liste des ages'),
                 'title_add' => $this->translator->trans('Ajouter un age'),
                 'title_update' => $this->translator->trans('Modifier un age'),
-            ]
+            ],
+        entityCallback:  $entityCallback
         );
     }
 

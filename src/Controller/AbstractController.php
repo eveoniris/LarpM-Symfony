@@ -155,13 +155,14 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         ]);
     }
 
-    protected function handleCreateorUpdate(
+    protected function handleCreateOrUpdate(
         Request $request,
         $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
-        array $msg = []
+        array $msg = [],
+        ?callable $entityCallback = null
     ): RedirectResponse|Response {
         $repository = $this->entityManager->getRepository($entity::class);
         if (!$repository instanceof BaseRepository || !$repository->isEntity($entity)) {
@@ -246,6 +247,9 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entity = $form->getData();
+            if (is_callable($entityCallback)) {
+                $entity = $entityCallback($entity, $form);
+            }
 
             if ($form->has('save_continue') && $form->get('save_continue')->isClicked()) {
                 $this->addFlash('success', $msg['entity_added']);
