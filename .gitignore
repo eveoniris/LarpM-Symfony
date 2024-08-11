@@ -51,3 +51,4 @@ yarn-error.log
 package-lock.json
 package.json
 private/doc/
+docker/mailpit/
