@@ -207,9 +207,9 @@ class ConnaissanceController extends AbstractController
                 'entity_added' => $this->translator->trans('La connaissance a été ajoutée'),
                 'entity_updated' => $this->translator->trans('La connaissance a été mise à jour'),
                 'entity_deleted' => $this->translator->trans('La connaissance a été supprimée'),
-                'entity_list' => $this->translator->trans('Liste des connaissance'),
+                'entity_list' => $this->translator->trans('Liste des connaissances'),
                 'title_add' => $this->translator->trans('Ajouter une connaissance'),
-                'title_update' => $this->translator->trans('Modifier une connaissance   '),
+                'title_update' => $this->translator->trans('Modifier une connaissance'),
             ],
             entityCallback: $entityCallback
         );

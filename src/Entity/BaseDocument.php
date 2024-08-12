@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -20,46 +21,46 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseDocument', 'extended' => 'Document'])]
 abstract class BaseDocument
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
     protected string $code = '';
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
     protected string $titre = '';
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
-    #[ORM\Column(name: 'documentUrl', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(name: 'documentUrl', type: Types::STRING, length: 45)]
     protected string $documentUrl = '';
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[Column(type: Types::BOOLEAN)]
     protected bool $cryptage = false;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $statut = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $auteur = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $update_date = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[Column(type: Types::BOOLEAN)]
     protected bool $impression;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'documents')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'documents')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
 
     #[ORM\ManyToMany(targetEntity: Langue::class, inversedBy: 'documents')]
     #[ORM\JoinTable(name: 'document_has_langue')]
-    #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $langues;
 
@@ -73,7 +74,7 @@ abstract class BaseDocument
     protected Collection $personnages;
 
     #[ORM\OneToMany(targetEntity: IntrigueHasDocument::class, mappedBy: 'document')]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'document_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'document_id', nullable: 'false')]
     protected Collection $intrigueHasDocuments;
 
     public function __construct()
@@ -216,7 +217,7 @@ abstract class BaseDocument
         return $this->impression;
     }
 
-    public function setUser(User $User = null): static
+    public function setUser(?User $User = null): static
     {
         $this->user = $User;
 
