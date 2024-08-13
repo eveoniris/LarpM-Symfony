@@ -83,6 +83,7 @@ class MagieController extends AbstractController
             $request,
             new Sphere(),
             SphereForm::class,
+            routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'],
             msg: $this->getSphereMsg(),
             entityCallback: $this->getDocumentCallBack()
         );
@@ -100,6 +101,7 @@ class MagieController extends AbstractController
             $request,
             $sphere,
             SphereForm::class,
+            routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'],
             msg: $this->getSphereMsg(),
             entityCallback: $this->getDocumentCallBack()
         );
@@ -162,6 +164,7 @@ class MagieController extends AbstractController
             $request,
             new Priere(),
             PriereForm::class,
+            routes: ['root' => 'magie.priere.', 'entityAlias' => 'priere'],
             msg: $this->getPriereMsg(),
             entityCallback: $this->getDocumentCallBack()
         );
@@ -255,6 +258,7 @@ class MagieController extends AbstractController
             $request,
             $priere,
             PriereForm::class,
+            routes: ['root' => 'magie.priere.', 'entityAlias' => 'priere'],
             msg: $this->getPriereMsg(),
             entityCallback: $this->getDocumentCallBack()
         );
@@ -293,6 +297,7 @@ class MagieController extends AbstractController
 
     /**
      * Obtenir le document lié a une priere.
+     * Todo voir pour un autre Ctrl pour autoriser les DL des User ou modifier le ROlE pour utiliser un VOTER
      */
     #[Route('/priere/{priere}/document', name: 'priere.document', requirements: ['priere' => Requirement::DIGITS])]
     public function getPriereDocumentAction(Request $request, #[MapEntity] Priere $priere)
@@ -437,6 +442,7 @@ class MagieController extends AbstractController
             $request,
             new Potion(),
             PotionForm::class,
+            routes: ['root' => 'magie.potion.', 'entityAlias' => 'potion'],
             msg: $this->getPotionMsg(),
             entityCallback: $this->getDocumentCallBack()
         );
@@ -454,6 +460,7 @@ class MagieController extends AbstractController
             $request,
             $potion,
             PotionForm::class,
+            routes: ['root' => 'magie.potion.', 'entityAlias' => 'potion'],
             msg: $this->getPotionMsg(),
             entityCallback: $this->getDocumentCallBack()
         );
@@ -539,6 +546,7 @@ class MagieController extends AbstractController
             $request,
             new Domaine(),
             DomaineForm::class,
+            routes: ['root' => 'magie.domaine.', 'entityAlias' => 'domaine'],
             msg: $this->getDomaineMsg()
         );
     }
@@ -555,6 +563,7 @@ class MagieController extends AbstractController
             $request,
             $domaine,
             DomaineForm::class,
+            routes: ['root' => 'magie.domaine.', 'entityAlias' => 'domaine'],
             msg: $this->getDomaineMsg()
         );
     }
@@ -624,6 +633,7 @@ class MagieController extends AbstractController
             $request,
             new Sort(),
             SortForm::class,
+            routes: ['root' => 'magie.sort.', 'entityAlias' => 'sort'],
             msg: $this->getSortMsg(),
             entityCallback: $this->getDocumentCallBack()
         );
@@ -641,6 +651,7 @@ class MagieController extends AbstractController
             $request,
             $sort,
             SortForm::class,
+            routes: ['root' => 'magie.sort.', 'entityAlias' => 'sort'],
             msg: $this->getSortMsg(),
             entityCallback: $this->getDocumentCallBack()
         );

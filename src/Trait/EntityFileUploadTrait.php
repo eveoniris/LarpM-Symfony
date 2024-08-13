@@ -15,9 +15,10 @@ trait EntityFileUploadTrait
         [
             'maxSize' => 6000000,
             'extensions' => [
-                'pdf' => ['application/pdf', 'application/x-pdf', 'groups' => ['pdf', 'file']],
+                'pdf' => ['application/pdf', 'application/x-pdf'],
             ],
-            'mimeTypes' => ['application/pdf', 'application/x-pdf', 'groups' => ['pdf', 'file']],
+            'mimeTypes' => ['application/pdf', 'application/x-pdf'],
+            'groups' => ['pdf', 'file'],
         ]
     )]
     protected ?UploadedFile $file;
@@ -99,7 +100,7 @@ trait EntityFileUploadTrait
 
     public function getFilename(): ?string
     {
-        return $this->filename;
+        return $this->filename ?? null;
     }
 
     public function setFilename(?string $filename): static

@@ -33,8 +33,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected PagerService $pageRequest,
         protected MailService $mailer
         // Cache $cache, // TODO : later
-    )
-    {
+    ) {
     }
 
     protected function sendNoImageAvailable(): BinaryFileResponse
@@ -63,7 +62,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 $currentParameters
             );
 
-            if ((false !== (bool) $request->get('playerView'))) {
+            if (false !== (bool) $request->get('playerView')) {
                 return parent::render('admin/'.$view, $parameters, $response);
             }
         }
@@ -98,8 +97,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string $defOrderDir = 'ASC',
         ?string $alias = null,
         ?array $allowedFields = null // TODO: check SF security Form on Self Entity's attributes
-    ): array
-    {
+    ): array {
         $request = $this->requestStack?->getCurrentRequest();
         if (!$request) {
             return [];
@@ -172,7 +170,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $form = $this->createForm($formClass, $entity);
         $isNew = !$this->entityManager->getUnitOfWork()->isInIdentityMap($entity);
 
-        $root = (new \ReflectionClass(static::class))
+        $root = $routes['root']
+            ?? (new \ReflectionClass(static::class))
             ?->getAttributes(Route::class)[0]
             ?->getArguments()['name'] ?? '';
 
