@@ -20,7 +20,7 @@ class Priere extends BasePriere
         $this->setDocumentType(DocumentType::Documents)
             ->setFolderType(FolderType::Private)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
-            ->setFilenameMaxLength(45 - 23 - 4);
+            ->setFilenameMaxLength(45 - 24 - 4);
     }
 
     public function getFullLabel(): string
