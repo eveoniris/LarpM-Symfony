@@ -10,6 +10,11 @@ class Level extends BaseLevel
 {
     public function getIndexLabel(): string
     {
-        return $this->getIndex() . ' - ' . $this->getLabel();
+        return $this->getIndex().' - '.$this->getLabel();
+    }
+
+    public function __toString(): string
+    {
+        return $this->getIndexLabel();
     }
 }
