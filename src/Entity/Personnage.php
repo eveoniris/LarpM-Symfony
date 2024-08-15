@@ -573,7 +573,7 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function getCompetenceNiveau(string $label): int
     {
-        if ($type = CompetenceFamilyType::tryFrom($label)) {
+        if ($type = CompetenceFamilyType::getFromLabel($label)) {
             $competences = $this->getCompetencesFromFamilyType($type);
         } else {
             $competences = $this->getCompetencesByFamilyLabel($label);
@@ -587,18 +587,23 @@ class Personnage extends BasePersonnage implements \Stringable
         return $niveau;
     }
 
-    public function getCompetenceTypeLevel(string $type): int
+    public function getCompetenceTypeLevel(string $type): ?Level
     {
-        if (!$famillyType = CompetenceFamilyType::tryFrom($type)) {
-            return 0;
+        $level = null;
+
+        if (!$famillyType = CompetenceFamilyType::getFromLabel($type)) {
+            return $level;
         }
 
         $niveau = 0;
         foreach ($this->getCompetencesFromFamilyType($famillyType) as $competence) {
-            $niveau = max($niveau, $competence->getLevel()?->getIndex());
+            $index = $competence->getLevel()?->getIndex();
+            if (null === $level || $niveau < (int) $index) {
+                $level = $competence->getLevel();
+            }
         }
 
-        return $niveau;
+        return $level;
     }
 
     /**

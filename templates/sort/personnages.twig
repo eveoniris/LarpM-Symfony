@@ -4,17 +4,21 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('magie.sort.list') }}">Liste des sorts</a></li>
-		<li class="active">Personnages ayant {{ sort.label }} - Niveau {{ sort.niveau }}</li>
-	</ol>
-	
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'name' : 'Liste des sort', 'route': path('magie.sort.list') },
+			{'name' : sort.label ~ ' - Niveau ' ~ sort.niveau , 'route': path('magie.sort.detail', {'sort': sort.id}) },
+			{'name' : 'Personnages ayant ce sort' },
+		]
+	} %}
+
+	{# TODO admin/player view #}
 	{{ include('admin/personnage/search.twig',
 		 	{
 			 displayAdminToolbar: false, 
 			 displaySearchFilter: false,
-			 extraData: 'Magie'
+			 extraData: 'Magie',
+			 extraDataTitle: 'Niveau de magie',
 		  	}
   		)
 	}}
