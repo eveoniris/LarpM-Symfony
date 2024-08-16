@@ -4,46 +4,81 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('magie.sort.list') }}">Liste des sorts</a></li>
-		<li class="active">Détail d'un sort</li>
-	</ol>
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des sorts', 'route': path('magie.sort.list') },
+            {'name' : "Détail du sort #{sort.label} - Niveau #{sort.niveau}" },
+        ]
+    } %}
 
-	<div class="list-group">
-		{% if sort.secret %}
-		<div class="list-group-item">
-			<div class="list-group-item-heading"><h6><span style="color:red;">Sort secret</span></h6></div>
-		</div>
-		{% endif %}
-		<div class="list-group-item">
-			<div class="list-group-item-heading"><h6>Label</h6></div>
-			<div class="list-group-item-text">{{ sort.label }}</div>
-		</div>
-		<div class="list-group-item">
-			<div class="list-group-item-heading"><h6>Niveau</h6></div>
-			<div class="list-group-item-text">{{ sort.niveau }}</div>
-		</div>
-		<div class="list-group-item">
-			<div class="list-group-item-heading"><h6>Domaine</h6></div>
-			<div class="list-group-item-text">{{ sort.domaine.label }}</div>
-		</div>
-		<div class="list-group-item">
-			<h4 class="list-group-item-heading">Document</h4>
-			<p class="list-group-item-text">
-				{% if not sort.documentUrl %}
-					Aucun document n'est disponible
-				{% else %}
-					<a href="{{ path('magie.sort.document',{'sort' : sort.id, 'document':sort.documentUrl}) }}">Téléchargez le document</a>
-				{% endif %}
-	    	</p>
-    	</div>
-	</div>
-	<div class="panel panel-default">
-		<div class="panel-heading"><h4>Description</h4></div>
-		<div class="panel-body">
-			<p>{{ sort.description|markdown_to_html }}</p>
-		</div>
-	</div>
-		
+    <div class="well bs-component">
+
+        <div class="header">
+            <h5>Détail d'un sort</h5>
+        </div>
+
+        {% if sort.secret %}
+            {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : '<i class="fa fa-user-secret" aria-hidden="true"></i> Ce sort est secrète'} %}
+        {% endif %}
+
+        <div class="d-flex justify-content-between">
+
+            <h4>{{ sort.label }} - Niveau {{ sort.niveau }}</h4>
+
+            <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Personnages ayant cette sort"
+                       href="{{ path('magie.sort.personnages',{'sort':sort.id}) }}"><i
+                                class="fa fa-users"></i> Personnages</a>
+                    {% if sort.documentUrl %}
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Télécharger le document associé à cette sort"
+                           href="{{ path('magie.sort.document',{'sort':sort.id, 'document':sort.documentUrl}) }}"><i
+                                    class="fa fa-download"></i> Document</a>
+                    {% endif %}
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier"
+                       href="{{ path('magie.sort.update',{'sort':sort.id}) }}"><i
+                                class="fa fa-pencil"></i> Modifier</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Supprimer"
+                       href="{{ path('magie.sort.delete',{'sort':sort.id}) }}"><i
+                                class="fa fa-eraser"></i> Supprimer</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+                <div class="list-group">
+                    {% if sort.secret %}
+                        <div class="list-group-item">
+                            <div class="list-group-item-heading"><h6><span style="color:red;">Sort secret</span></h6>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading"><h6>Label</h6></div>
+                        <div class="list-group-item-text">{{ sort.label }}</div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading"><h6>Niveau</h6></div>
+                        <div class="list-group-item-text">{{ sort.niveau }}</div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading"><h6>Domaine</h6></div>
+                        <div class="list-group-item-text">{{ sort.domaine.label }}</div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading"><h6>Description</h6></div>
+                        <div class="list-group-item-text">{{ sort.description|markdown_to_html }}</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 {% endblock body %}
