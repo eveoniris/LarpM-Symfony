@@ -4,12 +4,17 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Page d'accueil</a></li>
-		<li><a href="{{ path('gn.detail', {'gn' : participant.gn.id}) }}">{{ participant.gn.label }}</a></li>
-		<li class="active">{{ personnage.nom }}</li>
-	</ol>
+	{% set breadcrumb = [] %}
+	{% if is_granted('ROLE_REGLE', app.user) %}
+		{% set breadcrumb = breadcrumb|merge([{'name' : 'Liste des personnages', 'route': path('personnage.list') }]) %}
+	{% elseif participant is defined %}
+		{% set breadcrumb = breadcrumb|merge([{'name' : participant.gn.label, 'route': path('gn.detail', {'gn' : participant.gn.id}) }]) %}
+	{% endif %}
+	{% set breadcrumb = breadcrumb|merge([{'name' : "Detail de #{personnage.nom}" }]) %}
 
+	{% include '_partials/breadcrumb.twig' with {'items' : breadcrumb}  %}
+
+	{% if participant is defined %}
 	<div class="well well-sm">
 		<div class="btn-toolbar" role="toolbar" aria-label="...">
 			<div class="btn-group" role="group" aria-label="...">
@@ -23,8 +28,8 @@
 				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Imprimer votre personnage" href="{{ path('personnage.export', {'personnage':participant.personnage.id}) }}"><i class="fa fa-print" aria-hidden="true"></i></a>
 			</div>
 		</div>
-	</div>	
-		
+	</div>
+
 		<div class="row">
 			<div class="col-sm-6">
 				<div class="well well-sm">
@@ -84,7 +89,7 @@
 							{% endif %}
 						</ul>
 					{% endif %}
-						
+
 					{% include 'personnage/fragment/info.twig' with {'personnage': personnage, 'participant' : participant} %}
 					{% include 'personnage/fragment/origine.twig' with {'personnage': personnage, 'participant': participant} %}
 					{% include 'personnage/fragment/lignee.twig'%}
@@ -92,9 +97,9 @@
 					{% include 'personnage/fragment/pugilat.twig' with {'personnage': personnage} %}
 					{% include 'personnage/fragment/competence.twig' with {'personnage': personnage, 'participant': participant} %}
 				</div>
-				
+
 			</div>
-			
+
 			<div class="col-sm-6">
 				<div class="well well-sm">
 					{% include 'personnage/fragment/trombinoscope.twig' with {'personnage': personnage, 'participant': participant} %}
@@ -116,5 +121,8 @@
 			</div>
 
 		</div>
+	{% else %}
+		{% include '_partials/cardNotif.twig' with {'type' : 'warning', 'title': 'Prérequis !', 'content' : "Le personnage ne dispose d'aucune participation à un GN" } %}
+	{% endif %}
 
 {% endblock body %}

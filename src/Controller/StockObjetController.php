@@ -185,7 +185,6 @@ class StockObjetController extends AbstractController
     #[Route('/stock/objet/{objet}/photo', name: 'stockObjet.photo')]
     public function photoAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Objet $objet,
         ImageOptimizer $imageOptimizer,
     ): BinaryFileResponse|StreamedResponse {

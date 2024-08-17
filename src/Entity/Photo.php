@@ -26,7 +26,7 @@ class Photo extends BasePhoto
             return;
         }
 
-        $fileUploader->upload($this->file, $folderType, $docType);
+        $fileUploader->upload($this->file, $folderType, $docType, null, 70);
 
         // Try Rezise
         try {

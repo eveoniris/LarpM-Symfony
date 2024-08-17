@@ -8,6 +8,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
 #[Entity]
@@ -17,7 +18,7 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseConnaissance', 'extended' => 'Connaissance'])]
 abstract class BaseConnaissance
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true], columnDefinition: 'INT AUTO_INCREMENT')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -82,7 +83,7 @@ abstract class BaseConnaissance
         return $this->description ?? '';
     }
 
-    public function setContraintesstring($contraintes): static
+    public function setContraintes(string $contraintes): static
     {
         $this->contraintes = $contraintes;
 

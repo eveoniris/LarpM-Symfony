@@ -4,43 +4,89 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des sorts</li>
-	</ol>
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'name' : 'Liste des sorts', 'route': path('magie.sort.list') },
+		]
+	} %}
 	
 	<div class="well well-sm">
-	
-		<a href="{{ path('magie.sort.add') }}"><i class="fa fa-plus"></i> Ajouter un sort</a>
-		
-		<ul class="list-group">
-		{% for sort in sorts %}
-		
-			<li class="list-group-item">
-				<div class="row">
-					<div class="col-md-8">
-						{% if sort.secret %}
-						<span style="color:red;">Sort secret</span><br />
-						{% endif %}
-						{{ sort.label }} -- {{ sort.niveau }}
-						{{ sort.description|markdown_to_html }}
-						{% if sort.documentUrl %}
-							<a href="{{ path('magie.sort.document', {'sort': sort.id, 'document': sort.documentUrl}) }}">Télécharger le pdf associé</a>
-						{% else %}
-							Pas de document lié.
-						{% endif %}
-					</div>
-					<div class="col-md-4">
-						<a href="{{ path('magie.sort.update',{'sort':sort.id}) }}"><i class="fa fa-pencil"></i> Modifier</a>&nbsp;|&nbsp;
-						<a href="{{ path('magie.sort.detail',{'sort':sort.id}) }}"><i class="fa fa-eye"></i> Detail</a>&nbsp;|&nbsp;
-						<a href="{{ path('magie.sort.personnages',{'sort':sort.id}) }}"><i class="fa fa-users"></i> Personnages ({{ sort.personnages|length }})</a>&nbsp;|&nbsp;
-						<a href="{{ path('magie.sort.delete',{'sort':sort.id}) }}"><i class="fa fa-eraser"></i> Supprimer</a>
-					</div>
-				</div>
-		    </li>
 
-		{% endfor %}
-	 	</ul>
+		<div class="header">
+			<h5>Liste des sorts</h5>
+		</div>
+
+		{% include '_partials/formListSearch.twig' with
+			{
+				'canAdd': {'title': 'Ajouter un sort', 'path': path('magie.sort.add')},
+				'actionPath' : path('magie.sort.list')
+			} %}
+
+		{% include '_partials/pagination.html.twig' %}
+
+		<table class="table table-condensed table-striped table-bordered table-hover">
+			<thead>
+			<tr>
+				<th>
+					{% include '_partials/orderby.twig' with {'name' : 'Secrète', 'field' : 'secret', 'route': 'magie.sort.list' } %}
+				</th>
+				<th>
+					{% include '_partials/orderby.twig' with {'name' : 'Niveau', 'field' : 'niveau', 'route': 'magie.sort.list' } %}
+				</th>
+				<th>
+					{% include '_partials/orderby.twig' with {'name' : 'Libellé', 'field' : 'label', 'route': 'magie.sort.list' } %}
+				</th>
+				<th>Description</th>
+				<th>Actions</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for sort in paginator %}
+				<tr>
+					<td>
+						{% if sort.secret %}<span class="text-danger">Oui</span>{% else %}<span class="text-info">Non</span>{% endif %}
+					</td>
+					<td>{{ sort.niveau }}</td>
+					<td>{{ sort.label|highlight(pagerService.searchValue) }}</td>
+					<td>
+						{{ sort.description|markdown_to_html|highlight(pagerService.searchValue) }}
+					</td>
+					<td>
+						<div class="btn-toolbar pull-right" role="toolbar">
+							<div class="btn-group-vertical" role="group">
+								{% if sort.documentUrl %}
+									<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+									   title="Télécharger le document associé"
+									   href="{{ path('magie.sort.document', {'sort': sort.id, 'document': sort.documentUrl}) }}"><i
+												class="fa-solid fa-download"></i> Télécharger</a>
+								{% endif %}
+								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+								   title="Modifier"
+								   href="{{ path('magie.sort.update',{'sort':sort.id}) }}"><i
+											class="fa fa-pencil"></i> Modifier</a>
+								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+								   title="Détail" href="{{ path('magie.sort.detail',{'sort':sort.id}) }}"><i
+											class="fa fa-eye"></i> Detail</a>
+								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+								   title="Personnages ayant ce sort"
+								   href="{{ path('magie.sort.personnages',{'sort':sort.id}) }}"><i
+											class="fa fa-users"></i> Personnages ({{ sort.personnages|length }})</a>
+								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+								   title="Supprimer"
+								   href="{{ path('magie.sort.delete',{'sort':sort.id}) }}"><i
+											class="fa fa-eraser"></i> Supprimer</a>
+							</div>
+						</div>
+					</td>
+				</tr>
+			{% else %}
+				{% include '_partials/noResultTableRow.twig' %}
+			{% endfor %}
+			</tbody>
+		</table>
+
+		{% include '_partials/pagination.html.twig' %}
+
 	</div>
 	
 {% endblock %}

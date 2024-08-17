@@ -27,13 +27,21 @@ final class FileUploader
         $this->slugger = $slugger;
     }
 
-    public function upload(UploadedFile $file, FolderType $folderType, DocumentType $docType): self
-    {
+    public function upload(
+        UploadedFile $file,
+        FolderType $folderType,
+        DocumentType $docType,
+        ?string $filename = null,
+        ?int $filenameMaxLength = null,
+        bool $useUniqueId = true
+    ): self {
         $this->extension = $file->guessExtension();
+        $filenameMaxLength ??= mb_strlen($this->getOriginalFilename($file));
+
         $this->storedFileName = sprintf(
-            '%s-%s.%s',
-            substr($this->getOriginalFilename($file), 0, 70),
-            str_replace('.', '-', uniqid('', true)),
+            '%s%s.%s',
+            $filename ?? mb_substr($this->getOriginalFilename($file), 0, $filenameMaxLength),
+            $useUniqueId ? str_replace('.', '-', '-'.uniqid('', true)) : '',
             $this->extension
         );
 
@@ -61,7 +69,7 @@ final class FileUploader
         return $this->fileName;
     }
 
-    public function getDirectory(?FolderType $folderType, DocumentType $docType = null): string
+    public function getDirectory(?FolderType $folderType, ?DocumentType $docType = null): string
     {
         return $this->getProjectDirectory().($folderType->value ?? '').($docType->value ?? '');
     }
@@ -100,5 +108,4 @@ final class FileUploader
     {
         return $this->extension;
     }
-
 }

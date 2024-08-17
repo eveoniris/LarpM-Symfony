@@ -248,7 +248,7 @@ class BaseGroupe
      */
     public function getCode(): string
     {
-        return $this->code;
+        return $this->code ?? '';
     }
 
     /**
@@ -266,7 +266,7 @@ class BaseGroupe
      */
     public function getJeuMaritime(): bool
     {
-        return $this->jeu_maritime;
+        return $this->jeu_maritime ?? false;
     }
 
     /**
@@ -284,7 +284,7 @@ class BaseGroupe
      */
     public function getJeuStrategique(): bool
     {
-        return $this->jeu_strategique;
+        return $this->jeu_strategique ?? false;
     }
 
     /**
