@@ -8,30 +8,35 @@ use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\Sort;
 use App\Entity\Sphere;
-use App\Form\DomaineDeleteForm;
+use App\Enum\DocumentType;
+use App\Enum\FolderType;
 use App\Form\DomaineForm;
-use App\Form\Potion\PotionDeleteForm;
 use App\Form\Potion\PotionForm;
-use App\Form\PriereDeleteForm;
 use App\Form\PriereForm;
-use App\Form\SortDeleteForm;
 use App\Form\SortForm;
-use App\Form\SphereDeleteForm;
 use App\Form\SphereForm;
+use App\Repository\SortRepository;
+use App\Service\PagerService;
+use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_REGLE')]
+#[IsGranted('ROLE_REGLE')] // TODO some action may be allowed to player
+#[Route('/magie', name: 'magie.')]
 class MagieController extends AbstractController
 {
     // liste des colonnes à afficher par défaut sur les vues 'personnages' (l'ordre est pris en compte)
+    // TODO
     private array $defaultPersonnageListColumnKeys = [
         'colId',
         'colStatut',
@@ -44,7 +49,7 @@ class MagieController extends AbstractController
     /**
      * Liste des sphere.
      */
-    #[Route('/magie/sphere', name: 'magie.sphere.list')]
+    #[Route('/sphere', name: 'sphere.list')]
     public function sphereListAction(EntityManagerInterface $entityManager): Response
     {
         $spheres = $entityManager->getRepository(Sphere::class)->findAll();
@@ -57,7 +62,7 @@ class MagieController extends AbstractController
     /**
      * Detail d'une sphere.
      */
-    #[Route('/magie/sphere/{sphere}', name: 'magie.sphere.detail')]
+    #[Route('/sphere/{sphere}', name: 'sphere.detail')]
     public function sphereDetailAction(Sphere $sphere): Response
     {
         return $this->render('sphere/detail.twig', [
@@ -68,107 +73,71 @@ class MagieController extends AbstractController
     /**
      * Ajoute une sphere.
      */
-    #[Route('/magie/sphere', name: 'magie.sphere.add')]
-    public function sphereAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    #[Route('/sphere', name: 'magie.sphere.add')]
+    public function sphereAddAction(Request $request): RedirectResponse|Response
     {
-        $sphere = new Sphere();
-
-        $form = $this->createForm(SphereForm::class, $sphere)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $sphere = $form->getData();
-
-            $entityManager->persist($sphere);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La sphere a été ajouté');
-
-            return $this->redirectToRoute('magie.sphere.detail', ['sphere' => $sphere->getId()], 303);
-        }
-
-        return $this->render('sphere/add.twig', [
-            'sphere' => $sphere,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            new Sphere(),
+            SphereForm::class,
+            routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'],
+            msg: $this->getSphereMsg(),
+            entityCallback: $this->getDocumentCallBack()
+        );
     }
 
     /**
      * Met à jour une sphere.
      */
-    #[Route('/magie/sphere/{sphere}/update', name: 'magie.sphere.update', requirements: ['sphere' => Requirement::DIGITS])]
+    #[Route('/sphere/{sphere}/update', name: 'sphere.update', requirements: ['sphere' => Requirement::DIGITS])]
     public function sphereUpdateAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Sphere $sphere
     ): RedirectResponse|Response {
-        $form = $this->createForm(SphereForm::class, $sphere)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $sphere = $form->getData();
-
-            $entityManager->persist($sphere);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La sphere a été sauvegardé');
-
-            return $this->redirectToRoute('magie.sphere.detail', ['sphere' => $sphere->getId()], 303);
-        }
-
-        return $this->render('sphere/update.twig', [
-            'sphere' => $sphere,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            $sphere,
+            SphereForm::class,
+            routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'],
+            msg: $this->getSphereMsg(),
+            entityCallback: $this->getDocumentCallBack()
+        );
     }
 
-
-    #[Route('/magie/sphere/{sphere}/delete', name: 'magie.sphere.delete', requirements: ['sphere' => Requirement::DIGITS])]
+    #[Route('/sphere/{sphere}/delete', name: 'sphere.delete', requirements: ['sphere' => Requirement::DIGITS])]
     public function sphereDeleteAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Sphere $sphere
     ): RedirectResponse|Response {
-        $form = $this->createForm(SphereDeleteForm::class, $sphere)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $sphere = $form->getData();
-
-            $entityManager->remove($sphere);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La sphere a été suprimé');
-
-            return $this->redirectToRoute('magie.sphere.list', [], 303);
-        }
-
-        return $this->render('sphere/delete.twig', [
-            'sphere' => $sphere,
-            'form' => $form->createView(),
-        ]);
+        return $this->genericDelete(
+            $sphere,
+            title: $this->translator->trans('Supprimer une sphère'),
+            successMsg: $this->translator->trans('La sphère a été supprimée'),
+            redirect: 'magie.sphere.list',
+            breadcrumb: [
+                ['route' => $this->generateUrl('magie.sphere.list'), 'name' => $this->translator->trans('Liste des sphères')],
+                [
+                    'route' => $this->generateUrl('magie.sphere.detail', ['sphere' => $sphere->getId()]),
+                    'name' => $sphere->getLabel(),
+                ],
+                ['name' => $this->translator->trans('Supprimer une sphère')],
+            ]
+        );
     }
 
     /**
      * Liste des prieres.
      */
-    #[Route('/magie/priere', name: 'magie.priere.list')]
-    public function priereListAction(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/priere', name: 'priere.list')]
+    public function priereListAction(EntityManagerInterface $entityManager): Response
     {
-        $prieres = $entityManager->getRepository('\\'.Priere::class)->findAll();
+        $prieres = $entityManager->getRepository(Priere::class)->findAll();
 
         return $this->render('priere/list.twig', [
             'prieres' => $prieres,
         ]);
     }
 
-    #[Route('/magie/priere/{priere}', name: 'magie.priere.detail', requirements: ['priere' => Requirement::DIGITS])]
+    #[Route('/priere/{priere}', name: 'priere.detail', requirements: ['priere' => Requirement::DIGITS])]
     public function priereDetailAction(#[MapEntity] Priere $priere): Response
     {
         return $this->render('priere/detail.twig', ['priere' => $priere]);
@@ -177,153 +146,146 @@ class MagieController extends AbstractController
     /**
      * Ajoute une priere.
      */
-    #[Route('/magie/priere/add', name: 'magie.priere.add')]
-    public function priereAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    #[Route('/priere/add', name: 'priere.add')]
+    public function priereAddAction(Request $request): RedirectResponse|Response
     {
-        $priere = new Priere();
+        return $this->handleCreateOrUpdate(
+            $request,
+            new Priere(),
+            PriereForm::class,
+            routes: ['root' => 'magie.priere.', 'entityAlias' => 'priere'],
+            msg: $this->getPriereMsg(),
+            entityCallback: $this->getDocumentCallBack()
+        );
+    }
 
-        $form = $this->createForm(PriereForm::class, $priere)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+    protected function getPriereMsg(): array
+    {
+        return [
+            'entity' => $this->translator->trans('prière'),
+            'entity_added' => $this->translator->trans('La prière a été ajoutée'),
+            'entity_updated' => $this->translator->trans('La prière a été mise à jour'),
+            'entity_deleted' => $this->translator->trans('La prière a été supprimée'),
+            'entity_list' => $this->translator->trans('Liste des prières'),
+            'title_add' => $this->translator->trans('Ajouter une prière'),
+            'title_update' => $this->translator->trans('Modifier une prière'),
+        ];
+    }
 
-        $form->handleRequest($request);
+    protected function getSphereMsg(): array
+    {
+        return [
+            'entity' => $this->translator->trans('sphère'),
+            'entity_added' => $this->translator->trans('La sphère a été ajoutée'),
+            'entity_updated' => $this->translator->trans('La sphère a été mise à jour'),
+            'entity_deleted' => $this->translator->trans('La sphère a été supprimée'),
+            'entity_list' => $this->translator->trans('Liste des sphères'),
+            'title_add' => $this->translator->trans('Ajouter une sphère'),
+            'title_update' => $this->translator->trans('Modifier une sphère'),
+        ];
+    }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $priere = $form->getData();
+    protected function getPotionMsg(): array
+    {
+        return [
+            'entity' => $this->translator->trans('potion'),
+            'entity_added' => $this->translator->trans('La potion a été ajoutée'),
+            'entity_updated' => $this->translator->trans('La potion a été mise à jour'),
+            'entity_deleted' => $this->translator->trans('La potion a été supprimée'),
+            'entity_list' => $this->translator->trans('Liste des potions'),
+            'title_add' => $this->translator->trans('Ajouter une potion'),
+            'title_update' => $this->translator->trans('Modifier une potion'),
+        ];
+    }
 
-            // Si un document est fourni, l'enregistrer
-            if (null != $files['document']) {
-                $path = __DIR__.'/../../private/doc/';
-                $filename = $files['document']->getClientOriginalName();
-                $extension = 'pdf';
+    protected function getDomaineMsg(): array
+    {
+        return [
+            'entity' => $this->translator->trans('domaine'),
+            'entity_added' => $this->translator->trans('Le domaine a été ajouté'),
+            'entity_updated' => $this->translator->trans('Le domaine a été mise à jour'),
+            'entity_deleted' => $this->translator->trans('Le domaine a été supprimé'),
+            'entity_list' => $this->translator->trans('Liste des domaines'),
+            'title_add' => $this->translator->trans('Ajouter un domaine'),
+            'title_update' => $this->translator->trans('Modifier un domaine'),
+        ];
+    }
 
-                if (!$extension || 'pdf' !== $extension) {
-                    $this->addFlash(
-                        'error',
-                        'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
-                    );
+    protected function getSortMsg(): array
+    {
+        return [
+            'entity' => $this->translator->trans('sort'),
+            'entity_added' => $this->translator->trans('Le sort a été ajouté'),
+            'entity_updated' => $this->translator->trans('Le sort a été mise à jour'),
+            'entity_deleted' => $this->translator->trans('Le sort a été supprimé'),
+            'entity_list' => $this->translator->trans('Liste des sorts'),
+            'title_add' => $this->translator->trans('Ajouter un sort'),
+            'title_update' => $this->translator->trans('Modifier un sort'),
+        ];
+    }
 
-                    return $this->redirectToRoute('magie.priere.list', [], 303);
-                }
+    protected function getDocumentCallBack(): \Closure
+    {
+        return function (Priere|Sphere|Sort $entity, FormInterface $form): Priere|Sphere|Sort {
+            $entity->handleUpload(
+                $this->fileUploader,
+                DocumentType::Documents,
+                FolderType::Private
+            );
 
-                $documentFilename = hash('md5', $priere->getLabel().$filename.time()).'.'.$extension;
-
-                $files['document']->move($path, $documentFilename);
-
-                $priere->setDocumentUrl($documentFilename);
-            }
-
-            $entityManager->persist($priere);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La priere a été ajouté');
-
-            return $this->redirectToRoute('magie.priere.detail', ['priere' => $priere->getId()], 303);
-        }
-
-        return $this->render('priere/add.twig', [
-            'priere' => $priere,
-            'form' => $form->createView(),
-        ]);
+            return $entity;
+        };
     }
 
     /**
      * Met à jour une priere.
      */
-    #[Route('/magie/priere/{priere}/update', name: 'magie.priere.update')]
-    public function priereUpdateAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Priere $priere
-    ): RedirectResponse|Response {
-
-        $form = $this->createForm(PriereForm::class, $priere)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $priere = $form->getData();
-
-            $files = $request->files->get($form->getName());
-
-            // Si un document est fourni, l'enregistrer
-            if (null != $files['document']) {
-                $path = __DIR__.'/../../private/doc/';
-                $filename = $files['document']->getClientOriginalName();
-                $extension = 'pdf';
-
-                if (!$extension || 'pdf' !== $extension) {
-                    $this->addFlash(
-                        'error',
-                        'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
-                    );
-
-                    return $this->redirectToRoute('magie.priere.list', [], 303);
-                }
-
-                $documentFilename = hash('md5', $priere->getLabel().$filename.time()).'.'.$extension;
-
-                $files['document']->move($path, $documentFilename);
-
-                $priere->setDocumentUrl($documentFilename);
-            }
-
-            $entityManager->persist($priere);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La priere a été sauvegardé');
-
-            return $this->redirectToRoute('magie.priere.detail', ['priere' => $priere->getId()], 303);
-        }
-
-        return $this->render('priere/update.twig', [
-            'priere' => $priere,
-            'form' => $form->createView(),
-        ]);
+    #[Route('/priere/{priere}/update', name: 'priere.update', requirements: ['priere' => Requirement::DIGITS])]
+    public function priereUpdateAction(Request $request, #[MapEntity] Priere $priere): RedirectResponse|Response
+    {
+        return $this->handleCreateOrUpdate(
+            $request,
+            $priere,
+            PriereForm::class,
+            routes: ['root' => 'magie.priere.', 'entityAlias' => 'priere'],
+            msg: $this->getPriereMsg(),
+            entityCallback: $this->getDocumentCallBack()
+        );
     }
 
     /**
      * Supprime une priere.
      */
-    #[Route('/magie/priere/{priere}/delete', name: 'magie.priere.delete')]
+    #[Route('/priere/{priere}/delete', name: 'priere.delete', requirements: ['priere' => Requirement::DIGITS])]
     public function priereDeleteAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Priere $priere
     ): RedirectResponse|Response {
-
-        $form = $this->createForm(PriereDeleteForm::class, $priere)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $priere = $form->getData();
-
-            $entityManager->remove($priere);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La priere a été suprimé');
-
-            return $this->redirectToRoute('magie.priere.list', [], 303);
-        }
-
-        return $this->render('priere/delete.twig', [
-            'priere' => $priere,
-            'form' => $form->createView(),
-        ]);
+        return $this->genericDelete(
+            $priere,
+            title: $this->translator->trans('Supprimer une prière'),
+            successMsg: $this->translator->trans('La prière a été supprimée'),
+            redirect: 'magie.priere.list',
+            breadcrumb: [
+                ['route' => $this->generateUrl('magie.priere.list'), 'name' => $this->translator->trans('Liste des prières')],
+                [
+                    'route' => $this->generateUrl('magie.priere.detail', ['sphere' => $priere->getId()]),
+                    'name' => $priere->getLabel(),
+                ],
+                ['name' => $this->translator->trans('Supprimer une prière')],
+            ]
+        );
     }
 
     /**
      * Obtenir le document lié a une priere.
+     * Todo voir pour un autre Ctrl pour autoriser les DL des User ou modifier le ROlE pour utiliser un VOTER.
      */
-    #[Route('/magie/priere/document', name: 'magie.priere.document')]
-    public function getPriereDocumentAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/priere/{priere}/document', name: 'priere.document', requirements: ['priere' => Requirement::DIGITS])]
+    public function getPriereDocumentAction(Request $request, #[MapEntity] Priere $priere)
     {
-        $document = $request->get('document');
-        $priere = $request->get('priere');
+        // Multi doc ? $document = $request->get('document');
 
-        // on ne peux télécharger que les documents des compétences que l'on connait
+        // TODO on ne peux télécharger que les documents des compétences que l'on connait
         /*if  ( ! $app['security.authorization_checker']->isGranted('ROLE_REGLE') )
         {
         if ( $this->getUser()->getPersonnage() )
@@ -335,25 +297,36 @@ class MagieController extends AbstractController
         }
         }*/
 
-        $file = __DIR__.'/../../private/doc/'.$document;
+        return $this->sendDocument($priere);
+    }
 
-        /*$stream = function () use ($file) {
-            readfile($file);
-        };
+    protected function sendDocument(mixed $entity, ?Document $document = null): BinaryFileResponse
+    {
+        // TODO check usage of entity Document
 
-        return $app->stream($stream, 200, array(
-                'Content-Type' => 'text/pdf',
-                'Content-length' => filesize($file),
-                'Content-Disposition' => 'attachment; filename="'.$priere->getLabel().'.pdf"'
-        ));*/
+        // TODO on ne peux télécharger que les documents des compétences que l'on connait
+        $filename = $entity->getDocument($this->fileUploader->getProjectDirectory());
+        if (!$entity->getDocumentUrl() || !file_exists($filename)) {
+            throw new NotFoundHttpException("Le document n'existe pas");
+        }
 
-        return $app->sendFile($file);
+        $response = (new BinaryFileResponse($filename, Response::HTTP_OK))
+            ->setContentDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                $entity->getPrintLabel().'.pdf');
+
+        $response->headers->set('Content-Control', 'private');
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Type', 'application/pdf');
+
+        return $response;
     }
 
     /**
      * Liste des personnages ayant cette prière.
      */
-    #[Route('/magie/priere/personnages', name: 'magie.priere.personnages')]
+    // TODO
+    #[Route('/priere/personnages', name: 'priere.personnages')]
     public function prierePersonnagesAction(
         Request $request,
         Priere $priere
@@ -388,7 +361,7 @@ class MagieController extends AbstractController
     /**
      * Liste des potions.
      */
-    #[Route('/magie/potion', name: 'magie.potion.list')]
+    #[Route('/potion', name: 'potion.list')]
     public function potionListAction(EntityManagerInterface $entityManager): Response
     {
         $potions = $entityManager->getRepository(Potion::class)->findAll();
@@ -401,7 +374,7 @@ class MagieController extends AbstractController
     /**
      * Detail d'une potion.
      */
-    #[Route('/magie/potion/{potion}', name: 'magie.potion.detail', requirements: ['potion' => Requirement::DIGITS])]
+    #[Route('/potion/{potion}', name: 'potion.detail', requirements: ['potion' => Requirement::DIGITS])]
     public function potionDetailAction(#[MapEntity] Potion $potion): Response
     {
         return $this->render('potion/detail.twig', [
@@ -409,12 +382,8 @@ class MagieController extends AbstractController
         ]);
     }
 
-    /**
-     * Liste des personnages ayant cette potion.
-     *
-     * @param Potion
-     */
-    #[Route('/magie/potion/{potion}/personnages', name: 'magie.potion.personnages', requirements: ['potion' => Requirement::DIGITS])]
+    // TODO
+    #[Route('/potion/{potion}/personnages', name: 'potion.personnages', requirements: ['potion' => Requirement::DIGITS])]
     public function potionPersonnagesAction(
         Request $request,
         #[MapEntity] Potion $potion
@@ -449,165 +418,79 @@ class MagieController extends AbstractController
     /**
      * Ajoute une potion.
      */
-    #[Route('/magie/potion/add', name: 'magie.potion.add')]
+    #[Route('/potion/add', name: 'potion.add')]
     public function potionAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $potion = new Potion();
-
-        $form = $this->createForm(PotionForm::class, $potion)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $potion = $form->getData();
-
-            // Si un document est fourni, l'enregistrer
-            if (null != $files['document']) {
-                $path = __DIR__.'/../../private/doc/';
-                $filename = $files['document']->getClientOriginalName();
-                $extension = 'pdf';
-
-                if (!$extension || 'pdf' !== $extension) {
-                    $this->addFlash(
-                        'error',
-                        'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
-                    );
-
-                    return $this->redirectToRoute('magie.potion.list', [], 303);
-                }
-
-                $documentFilename = hash('md5', $potion->getLabel().$filename.time()).'.'.$extension;
-
-                $files['document']->move($path, $documentFilename);
-
-                $potion->setDocumentUrl($documentFilename);
-            }
-
-            $entityManager->persist($potion);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La potion a été ajouté');
-
-            return $this->redirectToRoute('magie.potion.detail', ['potion' => $potion->getId()], 303);
-        }
-
-        return $this->render('potion/add.twig', [
-            'potion' => $potion,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            new Potion(),
+            PotionForm::class,
+            routes: ['root' => 'magie.potion.', 'entityAlias' => 'potion'],
+            msg: $this->getPotionMsg(),
+            entityCallback: $this->getDocumentCallBack()
+        );
     }
 
     /**
      * Met à jour une potion.
      */
-    #[Route('/magie/potion/{potion}/update', name: 'magie.potion.update', requirements: ['potion' => Requirement::DIGITS])]
+    #[Route('/potion/{potion}/update', name: 'potion.update', requirements: ['potion' => Requirement::DIGITS])]
     public function potionUpdateAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Potion $potion
     ): RedirectResponse|Response {
-
-        $form = $this->createForm(PotionForm::class, $potion)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $potion = $form->getData();
-
-            $files = $request->files->get($form->getName());
-
-            // Si un document est fourni, l'enregistrer
-            if (null != $files['document']) {
-                $path = __DIR__.'/../../private/doc/';
-                $filename = $files['document']->getClientOriginalName();
-                $extension = 'pdf';
-
-                if (!$extension || 'pdf' !== $extension) {
-                    $this->addFlash(
-                        'error',
-                        'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
-                    );
-
-                    return $this->redirectToRoute('magie.potion.list', [], 303);
-                }
-
-                $documentFilename = hash('md5', $potion->getLabel().$filename.time()).'.'.$extension;
-
-                $files['document']->move($path, $documentFilename);
-
-                $potion->setDocumentUrl($documentFilename);
-            }
-
-            $entityManager->persist($potion);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La potion a été sauvegardé');
-
-            return $this->redirectToRoute('magie.potion.detail', ['potion' => $potion->getId()], 303);
-        }
-
-        return $this->render('potion/update.twig', [
-            'potion' => $potion,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            $potion,
+            PotionForm::class,
+            routes: ['root' => 'magie.potion.', 'entityAlias' => 'potion'],
+            msg: $this->getPotionMsg(),
+            entityCallback: $this->getDocumentCallBack()
+        );
     }
 
     /**
      * Supprime une potion.
      */
-    #[Route('/magie/potion/{potion}/delete', name: 'magie.potion.delete', requirements: ['potion' => Requirement::DIGITS])]
+    #[Route('/potion/{potion}/delete', name: 'potion.delete', requirements: ['potion' => Requirement::DIGITS])]
     public function potionDeleteAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Potion $potion
     ): RedirectResponse|Response {
-        $form = $this->createForm(PotionDeleteForm::class, $potion)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $potion = $form->getData();
-
-            $entityManager->remove($potion);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La potion a été suprimé');
-
-            return $this->redirectToRoute('magie.potion.list', [], 303);
-        }
-
-        return $this->render('potion/delete.twig', [
-            'potion' => $potion,
-            'form' => $form->createView(),
-        ]);
+        return $this->genericDelete(
+            $potion,
+            title: $this->translator->trans('Supprimer une potion'),
+            successMsg: $this->translator->trans('La potion a été supprimée'),
+            redirect: 'magie.potion.list',
+            breadcrumb: [
+                ['route' => $this->generateUrl('magie.potion.list'), 'name' => $this->translator->trans('Liste des potions')],
+                [
+                    'route' => $this->generateUrl('magie.potion.detail', ['potion' => $potion->getId()]),
+                    'name' => $potion->getLabel(),
+                ],
+                ['name' => $this->translator->trans('Supprimer une potion')],
+            ]
+        );
     }
 
     /**
      * Obtenir le document lié a une potion.
      */
-    #[Route('/magie/potion/{potion}/document/{document}', name: 'magie.potion.document', requirements: ['potion' => Requirement::DIGITS, 'document' => Requirement::DIGITS])]
-    public function getPotionDocumentAction(Request $request, #[MapEntity] Potion $potion, #[MapEntity] Document $document): Response
-    {
-        $file = __DIR__.'/../../private/doc/'.$document;
-
-        $stream = static function () use ($file): void {
-            readfile($file);
-        };
-
-        return $app->stream($stream, 200, [
-            'Content-Type' => 'text/pdf',
-            'Content-length' => filesize($file),
-            'Content-Disposition' => 'attachment; filename="'.$potion->getLabel().'.pdf"',
-        ]);
+    #[Route('/potion/{potion}/document/{document}', name: 'potion.document', requirements: [
+        'potion' => Requirement::DIGITS,
+        'document' => Requirement::DIGITS, // todo may be a string
+    ])]
+    public function getPotionDocumentAction(
+        Request $request,
+        #[MapEntity] Potion $potion,
+        #[MapEntity] Document $document
+    ): Response {
+        return $this->sendDocument($potion, $document);
     }
 
     /**
      * Liste des domaines de magie.
      */
-    #[Route('/magie/domaine', name: 'magie.domaine.list')]
+    #[Route('/domaine', name: 'domaine.list')]
     public function domaineListAction(EntityManagerInterface $entityManager): Response
     {
         $domaines = $entityManager->getRepository(Domaine::class)->findAll();
@@ -620,7 +503,7 @@ class MagieController extends AbstractController
     /**
      * Detail d'un domaine de magie.
      */
-    #[Route('/magie/domaine/{domaine}/detail', name: 'magie.domaine.detail', requirements: ['domaine' => Requirement::DIGITS])]
+    #[Route('/domaine/{domaine}/detail', name: 'domaine.detail', requirements: ['domaine' => Requirement::DIGITS])]
     public function domaineDetailAction(#[MapEntity] Domaine $domaine): Response
     {
         return $this->render('domaine/detail.twig', [
@@ -631,114 +514,79 @@ class MagieController extends AbstractController
     /**
      * Ajoute un domaine de magie.
      */
-    #[Route('/magie/domaine/add', name: 'magie.domaine.add')]
-    public function domaineAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    #[Route('/domaine/add', name: 'domaine.add')]
+    public function domaineAddAction(Request $request): RedirectResponse|Response
     {
-        $domaine = new Domaine();
-
-        $form = $this->createForm(DomaineForm::class, $domaine)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $domaine = $form->getData();
-
-            $entityManager->persist($domaine);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le domaine de magie a été ajouté');
-
-            return $this->redirectToRoute('magie.domaine.detail', ['domaine' => $domaine->getId()], 303);
-        }
-
-        return $this->render('domaine/add.twig', [
-            'domaine' => $domaine,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            new Domaine(),
+            DomaineForm::class,
+            routes: ['root' => 'magie.domaine.', 'entityAlias' => 'domaine'],
+            msg: $this->getDomaineMsg()
+        );
     }
 
     /**
      * Met à jour un domaine de magie.
      */
-    #[Route('/magie/domaine/{domaine}/update', name: 'magie.domaine.update', requirements: ['domaine' => Requirement::DIGITS])]
+    #[Route('/domaine/{domaine}/update', name: 'domaine.update', requirements: ['domaine' => Requirement::DIGITS])]
     public function domaineUpdateAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Domaine $domaine
     ): RedirectResponse|Response {
-
-        $form = $this->createForm(DomaineForm::class, $domaine)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $domaine = $form->getData();
-
-            $entityManager->persist($domaine);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le domaine de magie a été sauvegardé');
-
-            return $this->redirectToRoute('magie.domaine.detail', ['domaine' => $domaine->getId()], 303);
-        }
-
-        return $this->render('domaine/update.twig', [
-            'domaine' => $domaine,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            $domaine,
+            DomaineForm::class,
+            routes: ['root' => 'magie.domaine.', 'entityAlias' => 'domaine'],
+            msg: $this->getDomaineMsg()
+        );
     }
 
     /**
      * Supprime un domaine de magie.
      */
-    #[Route('/magie/domaine/{domaine}', name: 'magie.domaine.delete', requirements: ['domaine' => Requirement::DIGITS])]
+    #[Route('/domaine/{domaine}', name: 'domaine.delete', requirements: ['domaine' => Requirement::DIGITS])]
     public function domaineDeleteAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Domaine $domaine
     ): RedirectResponse|Response {
-
-        $form = $this->createForm(DomaineDeleteForm::class, $domaine)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $domaine = $form->getData();
-
-            $entityManager->remove($domaine);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le domaine de magie a été suprimé');
-
-            return $this->redirectToRoute('magie.domaine.list', [], 303);
-        }
-
-        return $this->render('domaine/delete.twig', [
-            'domaine' => $domaine,
-            'form' => $form->createView(),
-        ]);
+        return $this->genericDelete(
+            $domaine,
+            title: $this->translator->trans('Supprimer un domaine'),
+            successMsg: $this->translator->trans('Le domaine a été supprimé'),
+            redirect: 'magie.domaine.list',
+            breadcrumb: [
+                ['route' => $this->generateUrl('magie.domaine.list'), 'name' => $this->translator->trans('Liste des domaines')],
+                [
+                    'route' => $this->generateUrl('magie.domaine.detail', ['sort' => $domaine->getId()]),
+                    'name' => $domaine->getLabel(),
+                ],
+                ['name' => $this->translator->trans('Supprimer un domaine')],
+            ]
+        );
     }
 
     /**
      * Liste des sorts.
      */
-    #[Route('/magie/sort', name: 'magie.sort.list')]
-    public function sortListAction(EntityManagerInterface $entityManager): Response
-    {
-        $sorts = $entityManager->getRepository(Sort::class)->findAll();
+    #[Route('/sort', name: 'sort.list')]
+    public function sortListAction(
+        Request $request,
+        PagerService $pagerService,
+        SortRepository $sortRepository
+    ): Response {
+        $pagerService->setRequest($request);
 
         return $this->render('sort/list.twig', [
-            'sorts' => $sorts,
+            'pagerService' => $pagerService,
+            'paginator' => $sortRepository->searchPaginated($pagerService),
         ]);
     }
 
     /**
      * Detail d'un sort.
      */
-    #[Route('/magie/sort/{sort}/detail', name: 'magie.sort.detail', requirements: ['sort' => Requirement::DIGITS])]
+    #[Route('/sort/{sort}/detail', name: 'sort.detail', requirements: ['sort' => Requirement::DIGITS])]
     public function sortDetailAction(#[MapEntity] Sort $sort): Response
     {
         return $this->render('sort/detail.twig', [
@@ -749,188 +597,102 @@ class MagieController extends AbstractController
     /**
      * Ajoute un sort.
      */
-    #[Route('/magie/sort/add', name: 'magie.sort.add', requirements: ['sort' => Requirement::DIGITS])]
-    public function sortAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    #[Route('/sort/add', name: 'sort.add', requirements: ['sort' => Requirement::DIGITS])]
+    public function sortAddAction(Request $request): RedirectResponse|Response
     {
-        $sort = new Sort();
-
-        $form = $this->createForm(SortForm::class, $sort)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $sort = $form->getData();
-
-            // Si un document est fourni, l'enregistrer
-            if (null != $files['document']) {
-                $path = __DIR__.'/../../private/doc/';
-                $filename = $files['document']->getClientOriginalName();
-                $extension = 'pdf';
-
-                if (!$extension || 'pdf' !== $extension) {
-                    $this->addFlash(
-                        'error',
-                        'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
-                    );
-
-                    return $this->redirectToRoute('magie.sort.list', [], 303);
-                }
-
-                $documentFilename = hash('md5', $sort->getLabel().$filename.time()).'.'.$extension;
-
-                $files['document']->move($path, $documentFilename);
-
-                $sort->setDocumentUrl($documentFilename);
-            }
-
-            $entityManager->persist($sort);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le sort a été ajouté');
-
-            return $this->redirectToRoute('magie.sort.detail', ['sort' => $sort->getId()], 303);
-        }
-
-        return $this->render('sort/add.twig', [
-            'sort' => $sort,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            new Sort(),
+            SortForm::class,
+            routes: ['root' => 'magie.sort.', 'entityAlias' => 'sort'],
+            msg: $this->getSortMsg(),
+            entityCallback: $this->getDocumentCallBack()
+        );
     }
 
     /**
      * Met à jour un sort.
      */
-    #[Route('/magie/sort/{sort}/update', name: 'magie.sort.update', requirements: ['sort' => Requirement::DIGITS])]
-    public function sortUpdateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Sort $sort): RedirectResponse|Response
-    {
-        $form = $this->createForm(SortForm::class, $sort)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $sort = $form->getData();
-
-            $files = $request->files->get($form->getName());
-
-            // Si un document est fourni, l'enregistrer
-            if (null != $files['document']) {
-                $path = __DIR__.'/../../private/doc/';
-                $filename = $files['document']->getClientOriginalName();
-                $extension = 'pdf';
-
-                if (!$extension || 'pdf' !== $extension) {
-                    $this->addFlash(
-                        'error',
-                        'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
-                    );
-
-                    return $this->redirectToRoute('magie.sort.list', [], 303);
-                }
-
-                $documentFilename = hash('md5', $sort->getLabel().$filename.time()).'.'.$extension;
-
-                $files['document']->move($path, $documentFilename);
-
-                $sort->setDocumentUrl($documentFilename);
-            }
-
-            $entityManager->persist($sort);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le sort a été sauvegardé');
-
-            return $this->redirectToRoute('magie.sort.detail', ['sort' => $sort->getId()], 303);
-        }
-
-        return $this->render('sort/update.twig', [
-            'sort' => $sort,
-            'form' => $form->createView(),
-        ]);
+    #[Route('/sort/{sort}/update', name: 'sort.update', requirements: ['sort' => Requirement::DIGITS])]
+    public function sortUpdateAction(
+        Request $request,
+        #[MapEntity] Sort $sort
+    ): RedirectResponse|Response {
+        return $this->handleCreateOrUpdate(
+            $request,
+            $sort,
+            SortForm::class,
+            routes: ['root' => 'magie.sort.', 'entityAlias' => 'sort'],
+            msg: $this->getSortMsg(),
+            entityCallback: $this->getDocumentCallBack()
+        );
     }
 
     /**
      * Supprime un sortilège.
      */
-    #[Route('/magie/sort/{sort}/delete', name: 'magie.sort.delete', requirements: ['sort' => Requirement::DIGITS])]
-    public function sortDeleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Sort $sort): RedirectResponse|Response
-    {
-        $form = $this->createForm(SortDeleteForm::class, $sort)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $sort = $form->getData();
-
-            $entityManager->remove($sort);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le sort a été supprimé');
-
-            return $this->redirectToRoute('magie.sort.list', [], 303);
-        }
-
-        return $this->render('sort/delete.twig', [
-            'sort' => $sort,
-            'form' => $form->createView(),
-        ]);
+    #[Route('/sort/{sort}/delete', name: 'sort.delete', requirements: ['sort' => Requirement::DIGITS])]
+    public function sortDeleteAction(
+        #[MapEntity] Sort $sort
+    ): RedirectResponse|Response {
+        return $this->genericDelete(
+            $sort,
+            title: $this->translator->trans('Supprimer un sort'),
+            successMsg: $this->translator->trans('Le sort a été supprimé'),
+            redirect: 'magie.sort.list',
+            breadcrumb: [
+                ['route' => $this->generateUrl('magie.sort.list'), 'name' => $this->translator->trans('Liste des sorts')],
+                [
+                    'route' => $this->generateUrl('magie.sort.detail', ['sort' => $sort->getId()]),
+                    'name' => $sort->getLabel(),
+                ],
+                ['name' => $this->translator->trans('Supprimer un sort')],
+            ]
+        );
     }
 
     /**
      * Obtenir le document lié a un sort.
      */
-    #[Route('/magie/sort/{sort}/document/{document}', name: 'magie.sort.document', requirements: ['sort' => Requirement::DIGITS])]
-    public function getSortDocumentAction(#[MapEntity] Sort $sort, #[MapEntity] Document $document)
+    // TODO migrate documentUrl as documentId to Entity Document
+    #[Route('/sort/{sort}/document/{document}', name: 'sort.document', requirements: ['sort' => Requirement::DIGITS])]
+    public function getSortDocumentAction(#[MapEntity] Sort $sort, #[MapEntity] Document $document): BinaryFileResponse
     {
-        // on ne peux télécharger que les documents des compétences que l'on connait
-        /*if  ( ! $app['security.authorization_checker']->isGranted('ROLE_REGLE') )
-        {
-            if ( $this->getUser()->getPersonnage() )
-            {
-                if ( ! $this->getUser()->getPersonnage()->getCompetences()->contains($competence) )
-                {
-                   $this->addFlash('error', 'Vous n\'avez pas les droits necessaires');
-                }
-            }
-        }*/
-
-        $file = __DIR__.'/../../private/doc/'.$document;
-
-        $stream = static function () use ($file): void {
-            readfile($file);
-        };
-
-        return $app->stream($stream, 200, [
-            'Content-Type' => 'text/pdf',
-            'Content-length' => filesize($file),
-            'Content-Disposition' => 'attachment; filename="'.$sort->getPrintLabel().'.pdf"',
-        ]);
+        // TODO on ne peux télécharger que les documents des compétences que l'on connait
+        return $this->sendDocument($sort, $document);
     }
 
-    #[Route('/magie/sort/{sort}/personnages', name: 'magie.sort.personnages', requirements: ['sort' => Requirement::DIGITS])]
-    public function sortPersonnagesAction(Request $request, #[MapEntity] Sort $sort): Response
-    {
+    #[Route('/sort/{sort}/personnages', name: 'sort.personnages', requirements: ['sort' => Requirement::DIGITS])]
+    public function sortPersonnagesAction(
+        Request $request,
+        #[MapEntity] Sort $sort,
+        PersonnageService $personnageService,
+        SortRepository $sortRepository
+    ): Response {
         $routeName = 'magie.sort.personnages';
         $routeParams = ['sort' => $sort->getId()];
-        $twigFilePath = 'admin/sort/personnages.twig';
-        $columnKeys = $this->defaultPersonnageListColumnKeys;
+        $twigFilePath = 'sort/personnages.twig';
+        $columnKeys = [
+            'colId',
+            'colStatut',
+            'colNom',
+            'colClasse',
+            'colGroupe',
+            'colUser',
+        ];
         $personnages = $sort->getPersonnages();
         $additionalViewParams = [
             'sort' => $sort,
         ];
 
-        // handle the request and return an array containing the parameters for the view
-        $personnageSearchHandler = $app['personnage.manager']->getSearchHandler();
-
-        $viewParams = $personnageSearchHandler->getSearchViewParameters(
+        $viewParams = $personnageService->getSearchViewParameters(
             $request,
             $routeName,
             $routeParams,
             $columnKeys,
             $additionalViewParams,
-            $personnages
+            $personnages,
+            $sortRepository->getPersonnages($sort)
         );
 
         return $this->render(

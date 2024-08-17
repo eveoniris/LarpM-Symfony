@@ -3,15 +3,13 @@
 
 namespace App\Repository;
 
+use App\Entity\Personnage;
+use App\Entity\Sort;
+use App\Service\OrderBy;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
-/**
- * LarpManager\Repository\SortRepository.
- *
- * @author kevin
- */
 class SortRepository extends BaseRepository
 {
     /**
@@ -84,5 +82,63 @@ class SortRepository extends BaseRepository
         }
 
         return $qb;
+    }
+
+    public function search(
+        mixed $search = null,
+        string|array|null $attributes = self::SEARCH_NOONE,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null
+    ): QueryBuilder {
+        $alias ??= static::getEntityAlias();
+        $orderBy ??= $this->orderBy;
+
+        if ('secret' === $attributes) {
+            $query = $this->createQueryBuilder($alias)
+                ->orderBy($orderBy->getSort(), $orderBy->getOrderBy());
+
+            return $this->secret(
+                $query,
+                filter_var($search, FILTER_VALIDATE_BOOLEAN)
+            );
+        }
+
+        return parent::search($search, $attributes, $orderBy, $alias);
+    }
+
+    public function searchAttributes(?string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::searchAttributes($alias),
+            $alias.'.label', // => 'Libellé',
+            $alias.'.description', // => 'Description',
+            $alias.'.niveau', // => 'Description',
+        ];
+    }
+
+    public function sortAttributes(?string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::sortAttributes($alias),
+            'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
+            'description' => [OrderBy::ASC => [$alias.'.description' => OrderBy::ASC], OrderBy::DESC => [$alias.'.description' => OrderBy::DESC]],
+            'secret' => [OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC], OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC]],
+            'niveau' => [OrderBy::ASC => [$alias.'.niveau' => OrderBy::ASC], OrderBy::DESC => [$alias.'.niveau' => OrderBy::DESC]],
+        ];
+    }
+
+    public function getPersonnages(Sort $sort): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+        return $personnageRepository->createQueryBuilder('p')
+            ->innerJoin(Sort::class, 's')
+            ->where('s.id = :sid')
+            ->setParameter('sid', $sort->getId());
     }
 }

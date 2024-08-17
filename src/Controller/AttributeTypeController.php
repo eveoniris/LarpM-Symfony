@@ -38,13 +38,13 @@ class AttributeTypeController extends AbstractController
     {
         $attributeType = new AttributeType();
 
-        return $this->handleCreateorUpdate($request, $attributeType, AttributeTypeForm::class);
+        return $this->handleCreateOrUpdate($request, $attributeType, AttributeTypeForm::class);
     }
 
     #[Route('/{attributeType}/update', name: 'update', requirements: ['attributeType' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] AttributeType $attributeType): RedirectResponse|Response
     {
-        return $this->handleCreateorUpdate(
+        return $this->handleCreateOrUpdate(
             $request,
             $attributeType,
             AttributeTypeForm::class
@@ -84,15 +84,16 @@ class AttributeTypeController extends AbstractController
         return $this->render('attributeType/detail.twig', ['attributeType' => $attributeType]);
     }
 
-    protected function handleCreateorUpdate(
+    protected function handleCreateOrUpdate(
         Request $request,
         $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
-        array $msg = []
+        array $msg = [],
+        ?callable $entityCallback = null
     ): RedirectResponse|Response {
-        return parent::handleCreateorUpdate(
+        return parent::handleCreateOrUpdate(
             request: $request,
             entity: $entity,
             formClass: $formClass,
@@ -107,7 +108,8 @@ class AttributeTypeController extends AbstractController
                 'entity_list' => $this->translator->trans("Liste des types d'attributs"),
                 'title_add' => $this->translator->trans("Ajouter un type d'attribut"),
                 'title_update' => $this->translator->trans("Modifier un type d'attribut"),
-            ]
+            ],
+            entityCallback: $entityCallback
         );
     }
 }

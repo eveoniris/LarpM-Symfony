@@ -8,4 +8,5 @@ enum DocumentType: string
     case Blason = 'blasons';
     case Photos = 'photos';
     case Stock = 'stocks';
+    case Documents = 'documents';
 }

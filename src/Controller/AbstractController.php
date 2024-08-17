@@ -33,8 +33,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected PagerService $pageRequest,
         protected MailService $mailer
         // Cache $cache, // TODO : later
-    )
-    {
+    ) {
     }
 
     protected function sendNoImageAvailable(): BinaryFileResponse
@@ -63,7 +62,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 $currentParameters
             );
 
-            if ((false !== (bool) $request->get('playerView'))) {
+            if (false !== (bool) $request->get('playerView')) {
                 return parent::render('admin/'.$view, $parameters, $response);
             }
         }
@@ -98,8 +97,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string $defOrderDir = 'ASC',
         ?string $alias = null,
         ?array $allowedFields = null // TODO: check SF security Form on Self Entity's attributes
-    ): array
-    {
+    ): array {
         $request = $this->requestStack?->getCurrentRequest();
         if (!$request) {
             return [];
@@ -155,13 +153,14 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         ]);
     }
 
-    protected function handleCreateorUpdate(
+    protected function handleCreateOrUpdate(
         Request $request,
         $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
-        array $msg = []
+        array $msg = [],
+        ?callable $entityCallback = null
     ): RedirectResponse|Response {
         $repository = $this->entityManager->getRepository($entity::class);
         if (!$repository instanceof BaseRepository || !$repository->isEntity($entity)) {
@@ -171,7 +170,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $form = $this->createForm($formClass, $entity);
         $isNew = !$this->entityManager->getUnitOfWork()->isInIdentityMap($entity);
 
-        $root = (new \ReflectionClass(static::class))
+        $root = $routes['root']
+            ?? (new \ReflectionClass(static::class))
             ?->getAttributes(Route::class)[0]
             ?->getArguments()['name'] ?? '';
 
@@ -246,6 +246,9 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entity = $form->getData();
+            if (is_callable($entityCallback)) {
+                $entity = $entityCallback($entity, $form);
+            }
 
             if ($form->has('save_continue') && $form->get('save_continue')->isClicked()) {
                 $this->addFlash('success', $msg['entity_added']);

@@ -12,12 +12,13 @@
 	{% set iconPjDead = '<span title="Personnage mort">💀</span>' %}
 	{% set iconPnj = '<span title="PNJ">🎭</span>' %}
 	{% set iconPjOld = '<span title="Ancien PJ ne participant pas au GN actif">➖</span>' %}
-	
+
 	
 	{{ include('admin/personnage/searchHeader.twig') }}
 	{{ include('admin/personnage/searchResultsTable.twig',
 		{
-			extraData: extraData
+			extraData: extraData,
+			extraDataTitle: extraDataTitle
 		}
 		)
 	}}
