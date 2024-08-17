@@ -89,4 +89,5 @@ Commande pour maj aller sur le container (voir point 6) puis faire :
 `symfony composer req "imagine/imagine:^1.2"`
 
 11) ajout de Autocomplete
-`composer require symfony/ux-autocomplete`
+- `composer require symfony/stimulus-bundle`
+- `composer require symfony/ux-autocomplete`
