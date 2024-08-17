@@ -4,17 +4,17 @@
 
 {% block body %}
 
-	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Gestion des ages'}]} %}
+	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Gestion des âges'}]} %}
 
 	<div class="well well-sm">
 
 		<div class="header">
-			<h5>Gestion des ages <small>({{ paginator|length }} ages)</small></h5>
+			<h5>Gestion des âges <small>({{ paginator|length }} âges)</small></h5>
 		</div>
 
 		{% include '_partials/formListSearch.twig' with
 			{
-				'canAdd': {'title': 'Ajouter un age', 'path': path('age.add')},
+				'canAdd': {'title': 'Ajouter un âge', 'path': path('age.add')},
 				'actionPath' : path('age.list')
 			} %}
 	</div>
@@ -45,21 +45,21 @@
 					<div class="btn-toolbar d-flex justify-content-center" role="toolbar">
 						<div class="btn-group" role="group">
 							<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-							   title="Modifier"
-							   href="{{ path('age.update',{'age':age.id}) }}"><i
-										class="fa fa-pencil"></i> Modifier</a>
-							<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
 							   title="Détail"
 							   href="{{ path('age.detail',{'age':age.id}) }}"><i
-										class="fa fa-eye"></i> Detail</a>
+										class="fa fa-eye"></i></a>
+							<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+							   title="Modifier"
+							   href="{{ path('age.update',{'age':age.id}) }}"><i
+										class="fa fa-pencil"></i></a>
 							<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
 							   title="Personnages ayant cet age"
 							   href="{{ path('age.perso',{'age':age.id}) }}"><i
-										class="fa fa-users"></i> Personnages</a>
-							<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+										class="fa fa-users"></i></a>
+							<a class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="bottom"
 							   title="Supprimer"
 							   href="{{ path('age.delete',{'age':age.id}) }}"><i
-										class="fa fa-eraser"></i> Supprimer</a>
+										class="fa fa-eraser"></i></a>
 						</div>
 					</div>
 				</td>
