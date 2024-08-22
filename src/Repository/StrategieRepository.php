@@ -19,57 +19,57 @@ class StrategieRepository extends BaseRepository
         $qbGroupes->setParameter('value', $gnId);
 
         $qbGroupes->getQuery()->getResult();
+
         return $qbGroupes;
-/*
-        $qb = $this->getEntityManager()->createQueryBuilder();
+        /*
+                $qb = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('t');
-        $qb->from(Territoire::class, 't');
+                $qb->select('t');
+                $qb->from(Territoire::class, 't');
 
-        $qb->join('t.groupe', 'g');
-        $qb->andWhere('g.id = :value');
-        $qb->setParameter('value', $gnId);
+                $qb->join('t.groupe', 'g');
+                $qb->andWhere('g.id = :value');
+                $qb->setParameter('value', $gnId);
 
-        $qb->join('t.groupe', 'g');
-        $qb->andWhere('g.id = :value');
-        $qb->setParameter('value', $gnId);
+                $qb->join('t.groupe', 'g');
+                $qb->andWhere('g.id = :value');
+                $qb->setParameter('value', $gnId);
 
-        // retire les caractères non imprimable d'une chaine UTF-8
-        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars((string)$value));
+                // retire les caractères non imprimable d'une chaine UTF-8
+                $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars((string)$value));
 
-        if ($type && $value) {
-            switch ($type) {
-                case 'Auteur':
-                    $qb->join('d.player', 'u');
-                    $qb->andWhere('u.username LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
-                    break;
-                case 'Scenariste':
-                    $qb->join('d.user', 'u');
-                    $qb->andWhere('u.username LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
-                    break;
-                case 'Groupe':
-                    $qb->join('d.groupe', 'g');
-                    $qb->andWhere('g.nom LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
-                    break;
-            }
-        }
+                if ($type && $value) {
+                    switch ($type) {
+                        case 'Auteur':
+                            $qb->join('d.player', 'u');
+                            $qb->andWhere('u.username LIKE :value');
+                            $qb->setParameter('value', '%'.$value.'%');
+                            break;
+                        case 'Scenariste':
+                            $qb->join('d.user', 'u');
+                            $qb->andWhere('u.username LIKE :value');
+                            $qb->setParameter('value', '%'.$value.'%');
+                            break;
+                        case 'Groupe':
+                            $qb->join('d.groupe', 'g');
+                            $qb->andWhere('g.nom LIKE :value');
+                            $qb->setParameter('value', '%'.$value.'%');
+                            break;
+                    }
+                }
 
-        return $qb;*/
+                return $qb;*/
     }
 
     public function search(
         mixed $search = null,
-        null|string|array $attributes = self::SEARCH_NOONE,
-        OrderBy $orderBy = null,
-        string $alias = null,
-        QueryBuilder $query = null
+        string|array|null $attributes = self::SEARCH_NOONE,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-
 
         $query->join($alias.'.groupe', 'groupe');
         $query->leftJoin($alias.'.player', 'player');
@@ -78,7 +78,7 @@ class StrategieRepository extends BaseRepository
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    public function searchAttributes(string $alias = null): array
+    public function searchAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
@@ -91,7 +91,7 @@ class StrategieRepository extends BaseRepository
         ];
     }
 
-    public function sortAttributes(string $alias = null): array
+    public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 

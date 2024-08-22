@@ -1,13 +1,11 @@
 <?php
 
-
 namespace App\Repository;
 
 use App\Entity\Personnage;
 use App\Entity\Sort;
 use App\Service\OrderBy;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
 class SortRepository extends BaseRepository
@@ -54,7 +52,7 @@ class SortRepository extends BaseRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('s');
-        $qb->from(\App\Entity\Sort::class, 's');
+        $qb->from(Sort::class, 's');
 
         // retire les caractères non imprimable d'une chaine UTF-8
         $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars((string) $value));
@@ -107,6 +105,13 @@ class SortRepository extends BaseRepository
         return parent::search($search, $attributes, $orderBy, $alias);
     }
 
+    public function secret(QueryBuilder $query, bool $secret): QueryBuilder
+    {
+        $query->andWhere($this->alias.'.secret = :value');
+
+        return $query->setParameter('value', $secret);
+    }
+
     public function searchAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
@@ -136,6 +141,7 @@ class SortRepository extends BaseRepository
     {
         /** @var PersonnageRepository $personnageRepository */
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
         return $personnageRepository->createQueryBuilder('p')
             ->innerJoin(Sort::class, 's')
             ->where('s.id = :sid')

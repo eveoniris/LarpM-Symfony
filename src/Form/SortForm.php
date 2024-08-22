@@ -14,11 +14,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\SortForm.
- *
- * @author kevin
- */
 class SortForm extends AbstractType
 {
     /**
@@ -57,9 +52,13 @@ class SortForm extends AbstractType
             ->add('secret', ChoiceType::class, [
                 'required' => true,
                 'choices' => [
-                    false => 'Sort visible',
-                    true => 'Sort secret',
+                    false,
+                    true,
                 ],
+                'choice_label' => static fn ($value) => match ($value) {
+                    false => 'Visible',
+                    true => 'Secret',
+                },
                 'label' => 'Secret',
             ]);
     }

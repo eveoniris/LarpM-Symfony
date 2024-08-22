@@ -44,6 +44,7 @@ class PriereForm extends AbstractType
             ->add('description', TextareaType::class, [
                 'required' => false,
                 'label' => 'Description',
+                'empty_data' => '',
                 'attr' => [
                     'class' => 'tinymce',
                     'rows' => 9],
@@ -51,6 +52,7 @@ class PriereForm extends AbstractType
             ->add('annonce', TextareaType::class, [
                 'required' => false,
                 'label' => 'Annonce',
+                'empty_data' => '',
                 'attr' => [
                     'class' => 'tinymce',
                     'rows' => 9],

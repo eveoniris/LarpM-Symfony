@@ -18,7 +18,7 @@
         </div>
 
         {% if sort.secret %}
-            {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : '<i class="fa fa-user-secret" aria-hidden="true"></i> Ce sort est secrète'} %}
+            {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'title': 'Attention !', 'content' : '<i class="fa fa-user-secret" aria-hidden="true"></i> Ce sort est secrèt'} %}
         {% endif %}
 
         <div class="d-flex justify-content-between">
@@ -60,20 +60,20 @@
                         </div>
                     {% endif %}
                     <div class="list-group-item">
-                        <div class="list-group-item-heading"><h6>Label</h6></div>
-                        <div class="list-group-item-text">{{ sort.label }}</div>
+                        <div class="list-group-item-heading fw-bold mb-1">Label</div>
+                        <div class="list-group-item-text ps-1">{{ sort.label }}</div>
                     </div>
                     <div class="list-group-item">
-                        <div class="list-group-item-heading"><h6>Niveau</h6></div>
-                        <div class="list-group-item-text">{{ sort.niveau }}</div>
+                        <div class="list-group-item-heading fw-bold mb-1">Niveau</div>
+                        <div class="list-group-item-text ps-1">{{ sort.niveau }}</div>
                     </div>
                     <div class="list-group-item">
-                        <div class="list-group-item-heading"><h6>Domaine</h6></div>
-                        <div class="list-group-item-text">{{ sort.domaine.label }}</div>
+                        <div class="list-group-item-heading fw-bold mb-1">Domaine</div>
+                        <div class="list-group-item-text ps-1">{{ sort.domaine.label }}</div>
                     </div>
                     <div class="list-group-item">
-                        <div class="list-group-item-heading"><h6>Description</h6></div>
-                        <div class="list-group-item-text">{{ sort.description|markdown_to_html }}</div>
+                        <div class="list-group-item-heading fw-bold mb-1">Description</div>
+                        <div class="list-group-item-text ps-1">{{ sort.description|markdown_to_html }}</div>
                     </div>
                 </div>
 

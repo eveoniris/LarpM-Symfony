@@ -7,9 +7,7 @@ use App\Form\PersonnageFindForm;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -49,7 +47,7 @@ class PersonnageService
         array $columnKeys = [],
         array $additionalViewParams = [],
         ?Collection $sourcePersonnages = null,
-        QueryBuilder $query = null,
+        ?QueryBuilder $query = null,
     ): array {
         // récupère les filtres et tris de recherche + pagination renseignés dans le formulaire
         $orderBy = $request->get('order_by') ?: 'id';
@@ -154,7 +152,6 @@ class PersonnageService
             }
         } elseif ($query) {
             $personnages = $query->orderBy('p.'.$orderBy, $orderDir)->getQuery();
-
         } else {
             // on effectue d'abord le filtre
             // TODO: pour le moment, finalement il n'y a plus besoin de filtre car le composant n'est plus affiché

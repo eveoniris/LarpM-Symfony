@@ -4,41 +4,90 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des prieres</li>
-	</ol>
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'name' : 'Liste des prieres', 'route': path('magie.priere.list') },
+		]
+	} %}
 	
 	<div class="well well-sm">
-	
-		<a href="{{ path('magie.priere.add') }}"><i class="fa fa-plus"></i> Ajouter une priere</a>
-		
-		<ul class="list-group">
-		{% for priere in prieres %}
-		
-			<li class="list-group-item">
-				<div class="row">
-					<div class="col-md-8">
-						{{ priere.sphere.label }} - Niveau {{ priere.niveau }}<br />
-						{{ priere.label }}
-						{{ priere.description|markdown_to_html }}
-						{% if priere.documentUrl %}
-							<a href="{{ path('magie.priere.document', {'priere': priere.id, 'document': priere.documentUrl}) }}">Télécharger le pdf associé</a>
-						{% else %}
-							Pas de document lié.
-						{% endif %}
-					</div>
-					<div class="col-md-4">
-						<a href="{{ path('magie.priere.update',{'priere':priere.id}) }}"><i class="fa fa-pencil"></i> Modifier</a>&nbsp;|&nbsp;
-						<a href="{{ path('magie.priere.detail',{'priere':priere.id}) }}"><i class="fa fa-eye"></i> Detail</a>&nbsp;|&nbsp;
-						<a href="{{ path('magie.priere.personnages',{'priere':priere.id}) }}"><i class="fa fa-users"></i> Personnages ({{ priere.personnages|length }})</a>&nbsp;|&nbsp;
-						<a href="{{ path('magie.priere.delete',{'priere':priere.id}) }}"><i class="fa fa-eraser"></i> Supprimer</a>
-					</div>
-				</div>
-		    </li>
 
-		{% endfor %}
-	 	</ul>
+		<div class="header">
+			<h5>Liste des prieres</h5>
+		</div>
+
+		{% include '_partials/formListSearch.twig' with
+			{
+				'canAdd': {'title': 'Ajouter une priere', 'path': path('magie.priere.add')},
+				'actionPath' : path('magie.priere.list')
+			} %}
+
+		{% include '_partials/pagination.html.twig' %}
+
+		<table class="table table-condensed table-striped table-bordered table-hover">
+			<thead>
+			<tr>
+				<th>
+					{% include '_partials/orderby.twig' with {'name' : 'Sphère', 'field' : 'sphere', 'route': 'magie.priere.list' } %}
+				</th>
+				<th>
+					{% include '_partials/orderby.twig' with {'name' : 'Niveau', 'field' : 'niveau', 'route': 'magie.priere.list' } %}
+				</th>
+				<th>
+					{% include '_partials/orderby.twig' with {'name' : 'Libellé', 'field' : 'label', 'route': 'magie.priere.list' } %}
+				</th>
+				<th>Description</th>
+				<th>Actions</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for priere in paginator %}
+				<tr>
+					<td>{{ priere.sphere.label|highlight(pagerService.searchValue) }}</td>
+					<td>{{ priere.niveau|highlight(pagerService.searchValue) }}</td>
+					<td>{{ priere.label|highlight(pagerService.searchValue) }}</td>
+					<td>
+						{{ priere.description|markdown_to_html|highlight(pagerService.searchValue) }}
+						{% if priere.annonce is not empty %}
+							{% include '_partials/cardNotif.twig' with {'type' : 'info', 'title': 'Annonce', 'content' : priere.annonce|markdown_to_html|highlight(pagerService.searchValue) } %}
+						{% endif %}
+					</td>
+					<td>
+						<div class="btn-toolbar pull-right" role="toolbar">
+							<div class="btn-group-vertical" role="group">
+								{% if priere.documentUrl %}
+									<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+									   title="Télécharger le document associé"
+									   href="{{ path('magie.priere.document', {'priere': priere.id, 'document': priere.documentUrl}) }}"><i
+												class="fa-solid fa-download"></i> Télécharger</a>
+								{% endif %}
+								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+								   title="Modifier"
+								   href="{{ path('magie.priere.update',{'priere':priere.id}) }}"><i
+											class="fa fa-pencil"></i> Modifier</a>
+								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+								   title="Détail" href="{{ path('magie.priere.detail',{'priere':priere.id}) }}"><i
+											class="fa fa-eye"></i> Detail</a>
+								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+								   title="Personnages associés"
+								   href="{{ path('magie.priere.personnages',{'priere':priere.id}) }}"><i
+											class="fa fa-users"></i> Personnages ({{ priere.personnages|length }})</a>
+								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+								   title="Supprimer"
+								   href="{{ path('magie.priere.delete',{'priere':priere.id}) }}"><i
+											class="fa fa-eraser"></i> Supprimer</a>
+							</div>
+						</div>
+					</td>
+				</tr>
+			{% else %}
+				{% include '_partials/noResultTableRow.twig' %}
+			{% endfor %}
+			</tbody>
+		</table>
+
+		{% include '_partials/pagination.html.twig' %}
+
 	</div>
 	
 {% endblock %}
