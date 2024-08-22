@@ -529,6 +529,7 @@ class UserController extends AbstractController
      * @throws NotFoundHttpException if no User is found with that ID
      */
     #[Route('/user/{user}', name: 'user.view', requirements: ['user' => Requirement::DIGITS])]
+    #[Route('/user/{user}', name: 'user.detail', requirements: ['user' => Requirement::DIGITS])]
     public function viewAction(Request $request, #[MapEntity] User $user): Response
     {
         if (!$user) {

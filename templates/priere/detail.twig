@@ -4,46 +4,87 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('magie.priere.list') }}">Liste des prieres</a></li>
-		<li class="active">Détail d'une priere</li>
-	</ol>
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des prières', 'route': path('magie.priere.list') },
+            {'name' : 'Détaile d\'une prière' }
+        ]
+    } %}
 
-	<div class="list-group">
-		<div class="list-group-item">
-			<div class="list-group-item-heading"><h6>Label</h6></div>
-			<div class="list-group-item-text">{{ priere.sphere.label }} - Niveau {{ priere.niveau }}</div>
-			<div class="list-group-item-text">{{ priere.label }}</div>
-		</div>
-		<div class="list-group-item">
-			<h4 class="list-group-item-heading">Document</h4>
-			<p class="list-group-item-text">
-				{% if not priere.documentUrl %}
-					Aucun document n'est disponible
-				{% else %}
-					<a href="{{ path('magie.priere.document',{'priere': priere.id, 'document': priere.documentUrl}) }}">Téléchargez le document</a>
-				{% endif %}
-	    	</p>
-    	</div>
-	</div>
-	
-	
-	
-	<div class="panel panel-default">
-		<div class="panel-heading"><h4>Description</h4></div>
-		<div class="panel-body">
-			<p>{{ priere.description|markdown_to_html }}</p>
-		</div>
-	</div>
-	
-	<div class="panel panel-default">
-		<div class="panel-heading"><h4>Annonce</h4></div>
-		<div class="panel-body">
-			<p>{{ priere.annonce|markdown_to_html }}</p>
-		</div>
-	</div>
-	
-	<a href="{{ path('magie.priere.update',{'priere': priere.id}) }}"><button class="btn btn-default"><i class="fa fa-pencil"></i> Modifier</button></a>
-		
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Détail d'une prière</h5>
+        </div>
+
+        <div class="d-flex justify-content-end">
+
+            <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Personnages associés"
+                       href="{{ path('magie.priere.personnages',{'priere':priere.id}) }}"><i
+                                class="fa fa-users"></i> Personnages</a>
+                    {% if priere.documentUrl %}
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Télécharger le document associé"
+                           href="{{ path('magie.priere.document',{'priere':priere.id, 'document': priere.documentUrl}) }}"><i
+                                    class="fa fa-download"></i> Document</a>
+                    {% endif %}
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier"
+                       href="{{ path('magie.priere.update',{'priere':priere.id}) }}"><i
+                                class="fa fa-pencil"></i> Modifier</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Supprimer"
+                       href="{{ path('magie.priere.delete',{'priere':priere.id}) }}"><i
+                                class="fa fa-eraser"></i> Supprimer</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+                <div class="list-group">
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Label</div>
+                        <div class="list-group-item-text ps-1">{{ priere.label }}</div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Sphere</div>
+                        <div class="list-group-item-text ps-1"><a
+                                    href="{{ path('magie.sphere.detail',{'sphere':priere.sphere.id}) }}">{{ priere.sphere.label }}</a>
+                        </div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Niveau</div>
+                        <div class="list-group-item-text ps-1">{{ priere.niveau }}</div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Description</div>
+                        <div class="list-group-item-text ps-1">{{ priere.description|markdown_to_html }}</div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Annonce</div>
+                        <div class="list-group-item-text ps-1">
+                            {% if priere.annonce is not empty %}
+                                {{ priere.annonce|markdown_to_html }}
+                            {% else %}
+                                Aucune
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
 {% endblock body %}

@@ -59,4 +59,8 @@
     background-color: #{$yellow-600};
     border: 1px solid #{$yellow-700};
   }
+
+  .ts-dropdown, .ts-control, .ts-control input {
+    color: #{$secondary};
+  }
 }

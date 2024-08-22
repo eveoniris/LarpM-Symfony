@@ -7,13 +7,13 @@
 	
 	{% set displayAdminToolbar = displayAdminToolbar is defined ? displayAdminToolbar : true %}
 	{% set extraData = extraData is defined ? extraData : false %}
+	{% set extraDataTitle = extraDataTitle is defined ? extraDataTitle : null %}
 
 	{% set iconPjConfirmed = '<span title="PJ participant au GN actif">✅</span>' %}
 	{% set iconPjDead = '<span title="Personnage mort">💀</span>' %}
 	{% set iconPnj = '<span title="PNJ">🎭</span>' %}
 	{% set iconPjOld = '<span title="Ancien PJ ne participant pas au GN actif">➖</span>' %}
 
-	
 	{{ include('admin/personnage/searchHeader.twig') }}
 	{{ include('admin/personnage/searchResultsTable.twig',
 		{

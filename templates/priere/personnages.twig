@@ -4,11 +4,13 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('magie.priere.list') }}">Liste des prières</a></li>
-		<li class="active">Personnages ayant {{ priere.label }} - Niveau {{ priere.niveau }}</li>
-	</ol>
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'name' : 'Liste des prières', 'route': path('magie.priere.list') },
+			{'name' : "Détail de la prière #{priere.label}",  'route': path('magie.priere.detail', {'priere': priere.id})},
+			{'name' : 'Personnages ayant cette prière' },
+		]
+	} %}
 	
 	{{ include('admin/personnage/search.twig',
 		 	{

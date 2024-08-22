@@ -43,8 +43,8 @@
                             {{ personnage.classeName }}
                         {% elseif fieldName == 'groupe' %}
                             {% set gn = personnage.getLastParticipantGn() ?: 'LH1' %}
-                            {% set groupe = personnage.getLastParticipantGnGroupeNom() %}
-                            <strong>{{ gn }}</strong> - {{ groupe }}
+                            {% set groupe = personnage.getLastParticipantGnGroupe() %}
+                            <strong><a href="{{ path('gn.detail', {'gn': gn.id}) }}">{{ gn }}</a></strong> - <a href="{{ path('groupe.detail', {'groupe': groupe.id}) }}">{{ groupe.nom }}</a>
                         {% elseif fieldName == 'renomme' %}
                             {{ personnage.renomme|default(0) }}
                         {% elseif fieldName == 'pugilat' %}
@@ -53,8 +53,8 @@
                             {{ personnage.heroisme|default(0) }}
                         {% elseif fieldName == 'user' %}
                             {% for participant in personnage.participants %}
-                                <strong>{{ participant.gn.label }}</strong>&nbsp;-&nbsp;
-                                {{ participant.userFullName }}<br/>
+                                <strong><a href="{{ path('gn.detail', {'gn': participant.gn.id}) }}">{{ participant.gn.label }}</a></strong>&nbsp;-&nbsp;
+                                <a href="{{ path('user.detail', {'user': participant.user.id}) }}">{{ participant.userFullName }}</a><br/>
                             {% endfor %}
                         {% elseif fieldName == 'xp' %}
                             {{ personnage.xp|default(0) }} / {{ personnage.xpTotal }} XP - <a

@@ -24,7 +24,7 @@ class ConnaissanceForm extends AbstractType
         ])
             ->add('file', FileType::class, [
                 'label' => 'Téléversez un document',
-                'required' => true,//on create only?
+                'required' => true, // on create only?
             ])
             ->add('description', TextareaType::class, [
                 'required' => false,
@@ -49,8 +49,8 @@ class ConnaissanceForm extends AbstractType
                     true,
                 ],
                 'choice_label' => static fn ($value) => match ($value) {
-                    false => 'Connaissance visible',
-                    true => 'Connaissance secrète',
+                    false => 'Visible',
+                    true => 'Secret',
                 },
                 'label' => 'Secret',
             ]);

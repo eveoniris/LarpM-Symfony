@@ -15,7 +15,9 @@ use App\Form\Potion\PotionForm;
 use App\Form\PriereForm;
 use App\Form\SortForm;
 use App\Form\SphereForm;
+use App\Repository\PriereRepository;
 use App\Repository\SortRepository;
+use App\Repository\SphereRepository;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -128,12 +130,16 @@ class MagieController extends AbstractController
      * Liste des prieres.
      */
     #[Route('/priere', name: 'priere.list')]
-    public function priereListAction(EntityManagerInterface $entityManager): Response
-    {
-        $prieres = $entityManager->getRepository(Priere::class)->findAll();
+    public function priereListAction(
+        Request $request,
+        PagerService $pagerService,
+        PriereRepository $priereRepository
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($priereRepository)->setLimit(25);
 
         return $this->render('priere/list.twig', [
-            'prieres' => $prieres,
+            'pagerService' => $pagerService,
+            'paginator' => $priereRepository->searchPaginated($pagerService),
         ]);
     }
 
@@ -268,7 +274,7 @@ class MagieController extends AbstractController
             breadcrumb: [
                 ['route' => $this->generateUrl('magie.priere.list'), 'name' => $this->translator->trans('Liste des prières')],
                 [
-                    'route' => $this->generateUrl('magie.priere.detail', ['sphere' => $priere->getId()]),
+                    'route' => $this->generateUrl('magie.priere.detail', ['priere' => $priere->getId()]),
                     'name' => $priere->getLabel(),
                 ],
                 ['name' => $this->translator->trans('Supprimer une prière')],
@@ -326,30 +332,37 @@ class MagieController extends AbstractController
      * Liste des personnages ayant cette prière.
      */
     // TODO
-    #[Route('/priere/personnages', name: 'priere.personnages')]
+    #[Route('/priere/{priere}/personnages', name: 'priere.personnages', requirements: ['priere' => Requirement::DIGITS])]
     public function prierePersonnagesAction(
         Request $request,
-        Priere $priere
+        #[MapEntity] Priere $priere,
+        PersonnageService $personnageService,
+        PriereRepository $priereRepository
     ): Response {
         $routeName = 'magie.priere.personnages';
         $routeParams = ['priere' => $priere->getId()];
-        $twigFilePath = 'admin/priere/personnages.twig';
-        $columnKeys = $this->defaultPersonnageListColumnKeys;
+        $twigFilePath = 'priere/personnages.twig';
+        $columnKeys = [
+            'colId',
+            'colStatut',
+            'colNom',
+            'colClasse',
+            'colGroupe',
+            'colUser',
+        ];
         $personnages = $priere->getPersonnages();
         $additionalViewParams = [
             'priere' => $priere,
         ];
 
-        // handle the request and return an array containing the parameters for the view
-        $personnageSearchHandler = $app['personnage.manager']->getSearchHandler();
-
-        $viewParams = $personnageSearchHandler->getSearchViewParameters(
+        $viewParams = $personnageService->getSearchViewParameters(
             $request,
             $routeName,
             $routeParams,
             $columnKeys,
             $additionalViewParams,
-            $personnages
+            $personnages,
+            $priereRepository->getPersonnages($priere)
         );
 
         return $this->render(
