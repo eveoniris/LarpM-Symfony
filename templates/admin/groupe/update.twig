@@ -4,14 +4,17 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("groupe.admin.list") }}">Liste des groupes</a></li>
-		<li class="active">Modification d'un groupe</li>
-	</ol>
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'name' : 'Liste des groupes', 'route': path('groupe.admin.list') },
+			{'name' : 'Modification d\'un groupe' }
+		]
+	} %}
 
 	<div class="well bs-component">
-	{{ form_start(form, {"attr": {"action": path('groupe.update', {'groupe': groupe.id}) }}) }}
+		{{ form(form) }}
+	{#
+		{{ form_start(form, {"attr": {"action": path('groupe.update', {'groupe': groupe.id}) }}) }}
 		<fieldset>
 			<legend>Modification d'un groupe</legend>
 			
@@ -39,6 +42,7 @@
 			{{ form_rest(form) }}
 		</fieldset>
 	{{ form_end(form) }}
+	#}
 	</div>
 		
 {% endblock body %}

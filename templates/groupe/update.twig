@@ -1,13 +1,13 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Groupes{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-12 col-md-12">
-				<a href="{{ path("groupe") }}">Retour à la liste des groupes</a>
+				<a href="{{ path("groupe.admin.list") }}">Retour à la liste des groupes</a>
 				{{ include("groupe/fragment/form.twig",{
 					'legend': 'Modification d\'un groupe',
 					'action': path('groupe.update',{'groupe': groupe.id}), 
@@ -16,7 +16,7 @@
 		</div>
 	</div>
 		
-{% endblock content %}
+{% endblock body %}
 
 
 {% block javascript %}
