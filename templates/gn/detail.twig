@@ -53,7 +53,7 @@
 				
 				<div class="panel-body">
 					<strong>Ou ?</strong> 
-					{{ gn.adresse|markdown }}
+					{{ gn.adresse|markdown_to_html }}
 					<strong>Quand ?</strong>
 					<p>Du {{ gn.dateDebut|date('d-m-Y') }} au {{ gn.dateFin|date('d-m-Y') }}.<br />
 				    L'acceuil des joueurs débutera le {{ gn.dateInstallationJoueur|date('d-m-Y') }} à {{ gn.dateInstallationJoueur|date('H:i') }} heure.</p>
@@ -203,7 +203,7 @@
 						</div>
 						<strong>{{ annonce.title }}</strong>
 									
-						{{ annonce.text|markdown }}
+						{{ annonce.text|markdown_to_html }}
 						{% if is_granted('ROLE_REDACTEUR', app.user) %}
 							<a class="btn btn-primary" href="{{ path('annonce.update', {'annonce': annonce.id}) }}"><i class="fa fa-pencil"></i></a>
 						{% endif %}
@@ -218,7 +218,7 @@
 							[Sondage] : {{ question.label }}
 						</div>
 						<div class="panel-body">
-							{{ question.text|markdown }}
+							{{ question.text|markdown_to_html }}
 							<ul>
 							{% for reponse in question.choix|split(';') %}
 								<li><a href="{{ path('participant.reponse', {'participant':participant.id,'question': question.id, 'reponse':reponse}) }}">{{ reponse }}</a></li>
@@ -235,7 +235,7 @@
 						[Répondu] : {{ reponse.question.label }}
 					</div>
 					<div class="panel-body">
-						{{ reponse.question.text|markdown }}
+						{{ reponse.question.text|markdown_to_html }}
 						<strong>{{ reponse.question.reponse(reponse.reponse) }}</strong>
 						<div class="pull-right">
 							<a class="btn btn-danger" href="{{ path('participant.reponse.delete', {'participant':participant.id,'reponse': reponse.id}) }}">Supprimer ma réponse</a>

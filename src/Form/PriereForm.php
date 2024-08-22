@@ -24,6 +24,7 @@ class PriereForm extends AbstractType
         $builder->add('sphere', EntityType::class, [
             'required' => true,
             'label' => 'Sphère',
+            'autocomplete' => true,
             'class' => Sphere::class,
             'choice_label' => 'label',
         ])
