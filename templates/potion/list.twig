@@ -4,41 +4,100 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des potions</li>
-	</ol>
-	
-	<div class="well well-sm">
-	
-		<a href="{{ path('magie.potion.add') }}"><i class="fa fa-plus"></i> Ajouter une potion</a>
-		
-		<ul class="list-group">
-		{% for potion in potions %}
-		
-			<li class="list-group-item">
-				<div class="row">
-					<div class="col-md-8">
-						<strong>{{potion.numero}}</strong> : {{ potion.label }} - Niveau {{ potion.niveau }}
-						{% if potion.secret %}<span style="color:red;">&nbsp;(SECRET)&nbsp;</span>{% endif %}
-						{{ potion.description|markdown_to_html }}
-						{% if potion.documentUrl %}
-							<a href="{{ path('magie.potion.document', {'potion': potion.id, 'document': potion.documentUrl}) }}">Télécharger le pdf associé</a>
-						{% else %}
-							Pas de document lié.
-						{% endif %}
-					</div>
-					<div class="col-md-4">
-						<a href="{{ path('magie.potion.update',{'potion':potion.id}) }}"><i class="fa fa-pencil"></i> Modifier</a>&nbsp;|&nbsp;
-						<a href="{{ path('magie.potion.detail',{'potion':potion.id}) }}"><i class="fa fa-eye"></i> Detail</a>&nbsp;|&nbsp;
-						<a href="{{ path('magie.potion.personnages',{'potion':potion.id}) }}"><i class="fa fa-users"></i> Personnages ({{ potion.personnages|length }})</a>&nbsp;|&nbsp;
-						<a href="{{ path('magie.potion.delete',{'potion':potion.id}) }}"><i class="fa fa-eraser"></i> Supprimer</a>
-					</div>
-				</div>
-		    </li>
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des potions', 'route': path('magie.potion.list') },
+        ]
+    } %}
 
-		{% endfor %}
-	 	</ul>
-	</div>
-	
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Liste des potions</h5>
+        </div>
+
+        {% include '_partials/formListSearch.twig' with
+            {
+                'canAdd': {'title': 'Ajouter une potion', 'path': path('magie.potion.add')},
+                'actionPath' : path('magie.potion.list')
+            } %}
+
+        {% include '_partials/pagination.html.twig' %}
+
+        <table class="table table-condensed table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>
+                    {% include '_partials/orderby.twig' with {'name' : 'Secret', 'field' : 'secret', 'route': 'magie.potion.list' } %}
+                </th>
+                <th>
+                    {% include '_partials/orderby.twig' with {'name' : 'Numéro', 'field' : 'numero', 'route': 'magie.potion.list' } %}
+                </th>
+                <th>
+                    {% include '_partials/orderby.twig' with {'name' : 'Niveau', 'field' : 'niveau', 'route': 'magie.potion.list' } %}
+                </th>
+                <th>
+                    {% include '_partials/orderby.twig' with {'name' : 'Libellé', 'field' : 'label', 'route': 'magie.potion.list' } %}
+                </th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for potion in paginator %}
+                <tr>
+                    <td class="text-center">
+                        {% if potion.secret %}
+                            <span class="text-danger">
+                                <i class="fa fa-user-secret text-danger" data-toggle="tooltip" data-placement="top"
+                                   title="Secret"></i>  - Oui
+                            </span>
+                        {% else %}
+                            <span class="text-info">Non</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">{{ potion.numero|highlight(pagerService.searchValue) }}</td>
+                    <td class="text-center">{{ potion.niveau|highlight(pagerService.searchValue) }}</td>
+                    <td>{{ potion.label|highlight(pagerService.searchValue) }}</td>
+                    <td>
+                        {{ potion.description|markdown_to_html|highlight(pagerService.searchValue) }}
+                    </td>
+                    <td>
+                        <div class="btn-toolbar pull-right" role="toolbar">
+                            <div class="btn-group-vertical" role="group">
+                                {% if potion.documentUrl %}
+                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="Télécharger le document associé"
+                                       href="{{ path('magie.potion.document', {'potion': potion.id, 'document': potion.documentUrl}) }}"><i
+                                                class="fa-solid fa-download"></i> Télécharger</a>
+                                {% endif %}
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Modifier"
+                                   href="{{ path('magie.potion.update',{'potion':potion.id}) }}"><i
+                                            class="fa fa-pencil"></i> Modifier</a>
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Détail" href="{{ path('magie.potion.detail',{'potion':potion.id}) }}"><i
+                                            class="fa fa-eye"></i> Detail</a>
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Personnages associés"
+                                   href="{{ path('magie.potion.personnages',{'potion':potion.id}) }}"><i
+                                            class="fa fa-users"></i> Personnages ({{ potion.personnages|length }})</a>
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Supprimer"
+                                   href="{{ path('magie.potion.delete',{'potion':potion.id}) }}"><i
+                                            class="fa fa-eraser"></i> Supprimer</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                {% include '_partials/noResultTableRow.twig' %}
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% include '_partials/pagination.html.twig' %}
+
+    </div>
+
 {% endblock %}

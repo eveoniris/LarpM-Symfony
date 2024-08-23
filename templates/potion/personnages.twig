@@ -4,19 +4,21 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('magie.potion.list') }}">Liste des potions</a></li>
-		<li class="active">Personnages ayant {{ potion.label }} - Niveau {{ potion.niveau }}</li>
-	</ol>
-	
-	{{ include('admin/personnage/search.twig',
-		 	{
-			 displayAdminToolbar: false, 
-			 displaySearchFilter: false,
-			 extraData: 'Alchimie'
-		  	}
-  		)
-	}}
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des potions', 'route': path('magie.potion.list') },
+            {'name' : "Détail de la potion #{potion.label} - Niveau #{potion.niveau}",  'route': path('magie.potion.detail', {'potion': potion.id})},
+            {'name' : 'Personnages ayant cette potion' },
+        ]
+    } %}
+
+    {{ include('admin/personnage/search.twig',
+        {
+            displayAdminToolbar: false,
+            displaySearchFilter: false,
+            extraData: constant('App\\Enum\\CompetenceFamilyType::ALCHEMY').value,
+            extraDataTitle: 'Niveau d\'alchimie',
+        }
+    ) }}
 
 {% endblock body %}

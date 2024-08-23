@@ -75,12 +75,12 @@ trait EntityFileUploadTrait
     }
 
     public function getFile(): ?UploadedFile
-    {
+    {dd($this->file);
         return $this->file ?? null;
     }
 
     public function setFile(UploadedFile $file): self
-    {
+    {dd($this->file);
         $this->file = $file;
 
         return $this;

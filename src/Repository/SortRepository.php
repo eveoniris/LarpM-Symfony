@@ -120,7 +120,7 @@ class SortRepository extends BaseRepository
             ...parent::searchAttributes($alias),
             $alias.'.label', // => 'Libellé',
             $alias.'.description', // => 'Description',
-            $alias.'.niveau', // => 'Description',
+            $alias.'.niveau',
         ];
     }
 
