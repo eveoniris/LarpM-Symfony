@@ -6,16 +6,12 @@ namespace App\Form\Potion;
 use App\Entity\Potion;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\PotionForm.
- *
- * @author kevin
- */
 class PotionForm extends AbstractType
 {
     /**
@@ -39,12 +35,16 @@ class PotionForm extends AbstractType
             ->add('secret', ChoiceType::class, [
                 'required' => true,
                 'choices' => [
-                    false => 'Potion non secrète',
-                    true => 'Potion secrète',
+                    false,
+                    true,
                 ],
+                'choice_label' => static fn ($value) => match ($value) {
+                    false => 'Visible',
+                    true => 'Secret',
+                },
                 'label' => 'Secret',
             ])
-            ->add('document', 'file', [
+            ->add('document', FileType::class, [
                 'label' => 'Téléversez un document',
                 'required' => true,
                 'mapped' => false,

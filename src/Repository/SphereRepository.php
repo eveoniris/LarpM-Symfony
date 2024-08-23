@@ -27,7 +27,7 @@ class SphereRepository extends BaseRepository
         $alias ??= static::getEntityAlias();
 
         return [
-            ...parent::searchAttributes($alias),
+            self::SEARCH_ALL,
             $alias.'.label',
         ];
     }
@@ -37,8 +37,16 @@ class SphereRepository extends BaseRepository
         $alias ??= static::getEntityAlias();
 
         return [
-            ...parent::sortAttributes($alias),
             'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
         ];
+    }
+
+    public function translateAttributes(): array
+    {
+        $attributes = parent::translateAttributes();
+        unset(parent::translateAttributes()['id']);
+        $attributes['label'] =  $this->translator->trans('Libellé');
+
+        return $attributes;
     }
 }

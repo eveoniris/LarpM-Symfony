@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -19,26 +20,26 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseSort', 'extended' => 'Sort'])]
 abstract class BaseSort
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(length: 45, type: \Doctrine\DBAL\Types\Types::STRING)]
+    #[Column(type: Types::STRING, length: 45)]
     protected string $label = '';
 
-    #[Column(nullable: true, type: \Doctrine\DBAL\Types\Types::STRING)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $description = null;
 
-    #[Column(name: 'documentUrl', length: 45, type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     protected int $niveau = 0;
 
     #[ManyToOne(targetEntity: Domaine::class, inversedBy: 'sorts')]
     #[JoinColumn(name: 'domaine_id', referencedColumnName: 'id', nullable: 'false')]
     protected Domaine $domaine;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: false, options: ['default' => 0])]
+    #[Column(type: Types::BOOLEAN, nullable: false, options: ['default' => 0])]
     protected bool $secret = false;
 
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'sorts')]

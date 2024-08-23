@@ -15,6 +15,7 @@ use App\Form\Potion\PotionForm;
 use App\Form\PriereForm;
 use App\Form\SortForm;
 use App\Form\SphereForm;
+use App\Repository\PotionRepository;
 use App\Repository\PriereRepository;
 use App\Repository\SortRepository;
 use App\Repository\SphereRepository;
@@ -52,12 +53,16 @@ class MagieController extends AbstractController
      * Liste des sphere.
      */
     #[Route('/sphere', name: 'sphere.list')]
-    public function sphereListAction(EntityManagerInterface $entityManager): Response
-    {
-        $spheres = $entityManager->getRepository(Sphere::class)->findAll();
+    public function sphereListAction(
+        Request $request,
+        PagerService $pagerService,
+        SphereRepository $sphereRepository
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($sphereRepository);
 
         return $this->render('sphere/list.twig', [
-            'spheres' => $spheres,
+            'pagerService' => $pagerService,
+            'paginator' => $sphereRepository->searchPaginated($pagerService),
         ]);
     }
 
@@ -75,7 +80,7 @@ class MagieController extends AbstractController
     /**
      * Ajoute une sphere.
      */
-    #[Route('/sphere', name: 'magie.sphere.add')]
+    #[Route('/sphere/add', name: 'sphere.add')]
     public function sphereAddAction(Request $request): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate(
@@ -83,8 +88,7 @@ class MagieController extends AbstractController
             new Sphere(),
             SphereForm::class,
             routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'],
-            msg: $this->getSphereMsg(),
-            entityCallback: $this->getDocumentCallBack()
+            msg: $this->getSphereMsg()
         );
     }
 
@@ -101,8 +105,7 @@ class MagieController extends AbstractController
             $sphere,
             SphereForm::class,
             routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'],
-            msg: $this->getSphereMsg(),
-            entityCallback: $this->getDocumentCallBack()
+            msg: $this->getSphereMsg()
         );
     }
 
@@ -232,7 +235,7 @@ class MagieController extends AbstractController
 
     protected function getDocumentCallBack(): \Closure
     {
-        return function (Priere|Sphere|Sort $entity, FormInterface $form): Priere|Sphere|Sort {
+        return function (Priere|Sphere|Sort|Potion $entity, FormInterface $form): Priere|Sphere|Sort|Potion {
             $entity->handleUpload(
                 $this->fileUploader,
                 DocumentType::Documents,
@@ -375,12 +378,16 @@ class MagieController extends AbstractController
      * Liste des potions.
      */
     #[Route('/potion', name: 'potion.list')]
-    public function potionListAction(EntityManagerInterface $entityManager): Response
-    {
-        $potions = $entityManager->getRepository(Potion::class)->findAll();
+    public function potionListAction(
+        Request $request,
+        PagerService $pagerService,
+        PotionRepository $potionRepository
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($potionRepository)->setLimit(25);
 
         return $this->render('potion/list.twig', [
-            'potions' => $potions,
+            'pagerService' => $pagerService,
+            'paginator' => $potionRepository->searchPaginated($pagerService),
         ]);
     }
 
@@ -395,31 +402,37 @@ class MagieController extends AbstractController
         ]);
     }
 
-    // TODO
     #[Route('/potion/{potion}/personnages', name: 'potion.personnages', requirements: ['potion' => Requirement::DIGITS])]
     public function potionPersonnagesAction(
         Request $request,
-        #[MapEntity] Potion $potion
+        #[MapEntity] Potion $potion,
+        PersonnageService $personnageService,
+        PotionRepository $potionRepository
     ): Response {
         $routeName = 'magie.potion.personnages';
         $routeParams = ['potion' => $potion->getId()];
-        $twigFilePath = 'admin/potion/personnages.twig';
-        $columnKeys = $this->defaultPersonnageListColumnKeys;
+        $twigFilePath = 'potion/personnages.twig';
+        $columnKeys = [
+            'colId',
+            'colStatut',
+            'colNom',
+            'colClasse',
+            'colGroupe',
+            'colUser',
+        ];
         $personnages = $potion->getPersonnages();
         $additionalViewParams = [
             'potion' => $potion,
         ];
 
-        // handle the request and return an array containing the parameters for the view
-        $personnageSearchHandler = $app['personnage.manager']->getSearchHandler();
-
-        $viewParams = $personnageSearchHandler->getSearchViewParameters(
+        $viewParams = $personnageService->getSearchViewParameters(
             $request,
             $routeName,
             $routeParams,
             $columnKeys,
             $additionalViewParams,
-            $personnages
+            $personnages,
+            $potionRepository->getPersonnages($potion)
         );
 
         return $this->render(

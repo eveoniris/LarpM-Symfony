@@ -81,21 +81,7 @@ class PriereRepository extends BaseRepository
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-
-
-        //$orderBy ??= $this->orderBy;
-
-        $query->orderBy($orderBy->getSort(), $orderBy->getOrderBy());
         $query->join($alias.'.sphere', 'sphere');
-
-        /* if ('sphere' === $attributes) {
-
-             return $this->sphere(
-                 $query,
-                 $search
-             );
-         }
-        */
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }

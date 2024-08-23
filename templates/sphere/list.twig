@@ -4,33 +4,64 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des sphères</li>
-	</ol>
-	
-	<div class="well well-sm">
-	
-		<a href="{{ path('magie.sphere.add') }}"><button class="btn btn-default"><i class="fa fa-plus"></i> Ajouter une sphere</button></a>
-		
-		<ul class="list-group">
-		{% for sphere in spheres %}
-		
-			<li class="list-group-item">
-				<div class="row">
-					<div class="col-md-8">
-						{{ sphere.label }}
-					</div>
-					<div class="col-md-4">
-						<a href="{{ path('magie.sphere.update',{'sphere':sphere.id}) }}"><i class="fa fa-pencil"></i> Modifier</a>&nbsp;|&nbsp;
-						<a href="{{ path('magie.sphere.detail',{'sphere':sphere.id}) }}"><i class="fa fa-eye"></i> Detail</a>&nbsp;|&nbsp;
-						<a href="{{ path('magie.sphere.delete',{'sphere':sphere.id}) }}"><i class="fa fa-eraser"></i> Supprimer</a>
-					</div>
-				</div>
-		    </li>
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des sphère', 'route': path('magie.sphere.list') },
+        ]
+    } %}
 
-		{% endfor %}
-	 	</ul>
-	</div>
-	
+    <div class="well well-sm">
+
+
+        <div class="header">
+            <h5>Liste des sphère</h5>
+        </div>
+
+        {% include '_partials/formListSearch.twig' with
+            {
+                'canAdd': {'title': 'Ajouter une sphère', 'path': path('magie.sphere.add')},
+                'actionPath' : path('magie.sphere.list')
+            } %}
+
+        {% include '_partials/pagination.html.twig' %}
+        <table class="table table-condensed table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>
+                    {% include '_partials/orderby.twig' with {'name' : 'Libellé', 'field' : 'label', 'route': 'magie.sphere.list' } %}
+                </th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for sphere in paginator %}
+                <tr>
+                    <td>{{ sphere.label|highlight(pagerService.searchValue) }}</td>
+                    <td>
+                        <div class="btn-toolbar pull-right" role="toolbar">
+                            <div class="btn-group-vertical" role="group">
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Modifier"
+                                   href="{{ path('magie.sphere.update',{'sphere':sphere.id}) }}"><i
+                                            class="fa fa-pencil"></i> Modifier</a>
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Détail" href="{{ path('magie.sphere.detail',{'sphere':sphere.id}) }}"><i
+                                            class="fa fa-eye"></i> Detail</a>
+                              <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Supprimer"
+                                   href="{{ path('magie.sphere.delete',{'sphere':sphere.id}) }}"><i
+                                            class="fa fa-eraser"></i> Supprimer</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                {% include '_partials/noResultTableRow.twig' %}
+            {% endfor %}
+            </tbody>
+        </table>
+        {% include '_partials/pagination.html.twig' %}
+		
+    </div>
+
 {% endblock %}

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,10 +19,10 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseSphere', 'extended' => 'Sphere'])]
 abstract class BaseSphere
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true, length: 45)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $label = null;
 
     #[OneToMany(mappedBy: 'sphere', targetEntity: Priere::class)]
@@ -30,7 +31,7 @@ abstract class BaseSphere
 
     #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'spheres')]
     #[ORM\JoinTable(name: 'religions_spheres')]
-    #[ORM\JoinColumn(name: 'sphere_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'sphere_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['label' => 'ASC'])]
     protected Collection $religions;
@@ -100,7 +101,7 @@ abstract class BaseSphere
     /**
      * Get Priere entity collection (one to many).
      */
-    public function getPrieres(): Prieres
+    public function getPrieres(): Collection
     {
         return $this->prieres;
     }
@@ -134,9 +135,4 @@ abstract class BaseSphere
     {
         return $this->religions;
     }
-
-    /* public function __sleep()
-    {
-        return ['id', 'label'];
-    } */
 }
