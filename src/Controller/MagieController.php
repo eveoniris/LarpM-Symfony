@@ -503,7 +503,7 @@ class MagieController extends AbstractController
      */
     #[Route('/potion/{potion}/document/{document}', name: 'potion.document', requirements: [
         'potion' => Requirement::DIGITS,
-        'document' => Requirement::DIGITS, // todo may be a string
+        // 'document' => Requirement::ASCII_SLUG, // todo may be a string
     ])]
     public function getPotionDocumentAction(
         Request $request,

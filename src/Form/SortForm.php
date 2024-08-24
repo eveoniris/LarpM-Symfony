@@ -36,10 +36,9 @@ class SortForm extends AbstractType
                 'class' => Domaine::class,
                 'choice_label' => 'label',
             ])
-            ->add('document', FileType::class, [
+            ->add('file', FileType::class, [
                 'label' => 'Téléversez un document',
                 'required' => true,
-                'mapped' => false,
             ])
             ->add('description', TextareaType::class, [
                 'required' => false,

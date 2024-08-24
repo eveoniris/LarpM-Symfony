@@ -44,10 +44,9 @@ class PotionForm extends AbstractType
                 },
                 'label' => 'Secret',
             ])
-            ->add('document', FileType::class, [
+            ->add('file', FileType::class, [
                 'label' => 'Téléversez un document',
                 'required' => true,
-                'mapped' => false,
             ])
             ->add('description', TextareaType::class, [
                 'required' => false,
