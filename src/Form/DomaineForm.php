@@ -5,14 +5,11 @@ namespace App\Form;
 
 use App\Entity\Domaine;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\DomaineForm.
- *
- * @author kevin
- */
 class DomaineForm extends AbstractType
 {
     /**
@@ -20,11 +17,11 @@ class DomaineForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('label', TextType::class, [
             'required' => true,
             'label' => 'Label',
         ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [

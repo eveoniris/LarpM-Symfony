@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
+use App\Repository\DomaineRepository;
 use Doctrine\ORM\Mapping\Entity;
 
-#[Entity]
+#[Entity(repositoryClass: DomaineRepository::class)]
 class Domaine extends BaseDomaine
 {
     public function getFullDescription(): string
