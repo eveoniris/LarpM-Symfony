@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Service\OrderBy;
 use Doctrine\ORM\QueryBuilder;
 
-class SphereRepository extends BaseRepository
+class DomaineRepository extends BaseRepository
 {
     public function search(
         mixed $search = null,
@@ -29,6 +29,7 @@ class SphereRepository extends BaseRepository
         return [
             self::SEARCH_ALL,
             $alias.'.label',
+            $alias.'.description',
         ];
     }
 
@@ -38,6 +39,7 @@ class SphereRepository extends BaseRepository
 
         return [
             'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
+            'description' => [OrderBy::ASC => [$alias.'.description' => OrderBy::ASC], OrderBy::DESC => [$alias.'.description' => OrderBy::DESC]],
         ];
     }
 
@@ -46,6 +48,7 @@ class SphereRepository extends BaseRepository
         $attributes = parent::translateAttributes();
         unset(parent::translateAttributes()['id']);
         $attributes['label'] = $this->translator->trans('Libellé');
+        $attributes['description'] = $this->translator->trans('Description');
 
         return $attributes;
     }

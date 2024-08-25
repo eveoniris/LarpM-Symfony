@@ -15,6 +15,7 @@ use App\Form\Potion\PotionForm;
 use App\Form\PriereForm;
 use App\Form\SortForm;
 use App\Form\SphereForm;
+use App\Repository\DomaineRepository;
 use App\Repository\PotionRepository;
 use App\Repository\PriereRepository;
 use App\Repository\SortRepository;
@@ -517,12 +518,16 @@ class MagieController extends AbstractController
      * Liste des domaines de magie.
      */
     #[Route('/domaine', name: 'domaine.list')]
-    public function domaineListAction(EntityManagerInterface $entityManager): Response
-    {
-        $domaines = $entityManager->getRepository(Domaine::class)->findAll();
+    public function domaineListAction(
+        Request $request,
+        PagerService $pagerService,
+        DomaineRepository $domaineRepository
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($domaineRepository);
 
         return $this->render('domaine/list.twig', [
-            'domaines' => $domaines,
+            'pagerService' => $pagerService,
+            'paginator' => $domaineRepository->searchPaginated($pagerService),
         ]);
     }
 
@@ -584,7 +589,7 @@ class MagieController extends AbstractController
             breadcrumb: [
                 ['route' => $this->generateUrl('magie.domaine.list'), 'name' => $this->translator->trans('Liste des domaines')],
                 [
-                    'route' => $this->generateUrl('magie.domaine.detail', ['sort' => $domaine->getId()]),
+                    'route' => $this->generateUrl('magie.domaine.detail', ['domaine' => $domaine->getId()]),
                     'name' => $domaine->getLabel(),
                 ],
                 ['name' => $this->translator->trans('Supprimer un domaine')],
