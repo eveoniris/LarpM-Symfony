@@ -7,6 +7,7 @@ use App\Entity\Technologie;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -14,11 +15,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Groupe\TechnologieForm.
- *
- * @author kevin
- */
 class TechnologieForm extends AbstractType
 {
     /**
@@ -40,15 +36,22 @@ class TechnologieForm extends AbstractType
                 'label' => 'Compétence Expert requise',
                 'choice_label' => 'label',
             ])
-            ->add('document', FileType::class, [
-                'label' => 'Téléversez un document',
+            ->add('secret', ChoiceType::class, [
                 'required' => true,
-                'mapped' => false,
-            ])
-            ->add('secret', CheckboxType::class, [
+                'choices' => [
+                    false,
+                    true,
+                ],
+                'choice_label' => static fn ($value) => match ($value) {
+                    false => 'Visible',
+                    true => 'Secret',
+                },
                 'label' => 'Technologie secrète ?',
             ])
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+            ->add('file', FileType::class, [
+                'label' => 'Téléversez un document',
+                'required' => true,
+            ]);
     }
 
     /**
@@ -58,6 +61,9 @@ class TechnologieForm extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Technologie::class,
+            'attr' => [
+                'novalidate' => 'novalidate',
+            ],
         ]);
     }
 

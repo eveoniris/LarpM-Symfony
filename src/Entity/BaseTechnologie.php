@@ -4,60 +4,52 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\DiscriminatorColumn;
-use Doctrine\ORM\Mapping\DiscriminatorMap;
-use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\InheritanceType;
-use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\ManyToMany;
-use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\OneToMany;
-use Doctrine\ORM\Mapping\Table;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[Table(name: 'technologie')]
-#[InheritanceType('SINGLE_TABLE')]
-#[DiscriminatorColumn(name: 'discr', type: 'string')]
-#[DiscriminatorMap(['base' => 'BaseTechnologie', 'extended' => 'Technologie'])]
-class BaseTechnologie
+#[ORM\Entity]
+#[ORM\Table(name: 'technologie')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['base' => 'BaseTechnologie', 'extended' => 'Technologie'])]
+abstract class BaseTechnologie
 {
-    #[Id]
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true])]
-    #[GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Id]
+    #[ORM\Column(type: Types::INTEGER, options: ['unsigned' => true])]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[ORM\Column(type: Types::STRING, length: 45)]
     #[Assert\NotBlank]
     #[Assert\NotNull]
     protected ?string $label = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, length: 450)]
+    #[ORM\Column(type: Types::TEXT, length: 450)]
     protected ?string $description = null;
 
-    #[Column(name: 'documentUrl', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[ORM\Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: false, options: ['default' => 0])]
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false, options: ['default' => 0])]
     protected bool $secret;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<\App\Entity\BaseTechnologiesRessources>
+     * @var Collection<BaseTechnologiesRessources>
      */
-    #[OneToMany(mappedBy: 'technologie', targetEntity: 'BaseTechnologiesRessources', cascade: ['persist'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'technology_id', nullable: false)]
-    protected \Doctrine\Common\Collections\Collection $technologieRessource;
+    #[ORM\OneToMany(mappedBy: 'technologie', targetEntity: 'BaseTechnologiesRessources', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'technology_id', nullable: false)]
+    protected Collection $technologieRessource;
 
-    #[ManyToOne(targetEntity: 'CompetenceFamily', cascade: ['persist'], inversedBy: 'technologies')]
-    #[JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\ManyToOne(targetEntity: 'CompetenceFamily', cascade: ['persist'], inversedBy: 'technologies')]
+    #[ORM\JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: true)]
     protected CompetenceFamily $competenceFamily;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<\App\Entity\Personnage>
+     * @var Collection<Personnage>
      */
-    #[ManyToMany(targetEntity: 'Personnage', mappedBy: 'technologies')]
-    protected \Doctrine\Common\Collections\Collection $personnages;
+    #[ORM\ManyToMany(targetEntity: 'Personnage', mappedBy: 'technologies')]
+    protected Collection $personnages;
 
     public function __construct()
     {
@@ -79,8 +71,6 @@ class BaseTechnologie
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -133,8 +123,6 @@ class BaseTechnologie
 
     /**
      * Get the value of documentUrl.
-     *
-     * @return string
      */
     public function getDocumentUrl(): string
     {
@@ -153,8 +141,6 @@ class BaseTechnologie
 
     /**
      * Get the value of secret.
-     *
-     * @return bool
      */
     public function isSecret(): bool
     {
@@ -199,8 +185,6 @@ class BaseTechnologie
 
     /**
      * Get BaseTechnologiesRessources entity collection (one to many).
-     *
-     * @return Collection
      */
     public function getRessources(): Collection
     {
@@ -223,18 +207,14 @@ class BaseTechnologie
 
     /**
      * Get CompetenceFamily entity (many to one).
-     *
-     * @return CompetenceFamily
      */
-    public function getCompetenceFamily():CompetenceFamily
+    public function getCompetenceFamily(): CompetenceFamily
     {
         return $this->competenceFamily;
     }
 
     /**
      * Add Personnage entity to collection.
-     *
-     * @param Personnage $personnage
      *
      * @return Technologie
      */
@@ -248,8 +228,6 @@ class BaseTechnologie
     /**
      * Remove Personnage entity from collection.
      *
-     * @param Personnage $personnage
-     *
      * @return Technologie
      */
     public function removePersonnage(Personnage $personnage): static
@@ -261,8 +239,6 @@ class BaseTechnologie
 
     /**
      * Get Personnage entity collection.
-     *
-     * @return Collection
      */
     public function getPersonnages(): Collection
     {

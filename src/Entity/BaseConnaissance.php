@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[Entity]
 #[ORM\Table(name: 'connaissance')]
@@ -22,6 +23,8 @@ abstract class BaseConnaissance
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     protected string $label = '';
 
     #[Column(type: Types::TEXT, nullable: true)]

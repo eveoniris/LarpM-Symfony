@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -22,11 +23,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class BaseTechnologiesRessources
 {
     #[Id]
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true])]
+    #[Column(type: Types::INTEGER, options: ['unsigned' => true])]
     #[GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     #[Assert\GreaterThan(0)]
     #[Assert\NotNull]
     #[Assert\NotBlank]
@@ -34,7 +35,7 @@ class BaseTechnologiesRessources
 
     #[ManyToOne(targetEntity: 'Technologie', cascade: ['persist'], inversedBy: 'technologieRessource')]
     #[JoinColumn(name: 'technologie_id', referencedColumnName: 'id')]
-    protected \App\Entity\Technologie $technologie;
+    protected Technologie $technologie;
 
     #[ManyToOne(targetEntity: 'Ressource', cascade: ['persist'], inversedBy: 'technologiesRessources')]
     #[JoinColumn(name: 'ressource_id', referencedColumnName: 'id')]
@@ -45,9 +46,11 @@ class BaseTechnologiesRessources
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(int $id): self
     {
         $this->id = $id;
+
+        return $this;
     }
 
     public function getQuantite(): ?int
@@ -55,9 +58,11 @@ class BaseTechnologiesRessources
         return $this->quantite;
     }
 
-    public function setQuantite(int $quantite): void
+    public function setQuantite(int $quantite): self
     {
         $this->quantite = $quantite;
+
+        return $this;
     }
 
     public function getTechnologie(): Technologie
@@ -65,21 +70,22 @@ class BaseTechnologiesRessources
         return $this->technologie;
     }
 
-    public function setTechnologie(Technologie $technologie): void
+    public function setTechnologie(Technologie $technologie): self
     {
         $this->technologie = $technologie;
+
+        return $this;
     }
 
-    /**
-     * @return Ressource
-     */
     public function getRessource(): Ressource
     {
         return $this->ressource;
     }
 
-    public function setRessource(Ressource $ressource): void
+    public function setRessource(Ressource $ressource): self
     {
         $this->ressource = $ressource;
+
+        return $this;
     }
 }
