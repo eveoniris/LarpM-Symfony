@@ -32,7 +32,7 @@ class ConnaissanceController extends AbstractController
         PagerService $pagerService,
         ConnaissanceRepository $connaissanceRepository
     ): Response {
-        $pagerService->setRequest($request);
+        $pagerService->setRequest($request)->setRepository($connaissanceRepository);
 
         return $this->render('connaissance/list.twig', [
             'pagerService' => $pagerService,
@@ -72,6 +72,7 @@ class ConnaissanceController extends AbstractController
     #[Route('/{connaissance}/update', name: 'update', requirements: ['connaissance' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Connaissance $connaissance): RedirectResponse|Response
     {
+        // TODO handle "file required" when already set
         return $this->handleCreateOrUpdate(
             $request,
             $connaissance,
@@ -115,22 +116,7 @@ class ConnaissanceController extends AbstractController
     #[Route('/{connaissance}/document', name: 'document', requirements: ['connaissance' => Requirement::DIGITS])]
     public function getDocumentAction(#[MapEntity] Connaissance $connaissance): BinaryFileResponse
     {
-
-        $filename = $connaissance->getDocument($this->fileUploader->getProjectDirectory());
-        if (!$connaissance->getDocumentUrl() || !file_exists($filename)) {
-            throw new NotFoundHttpException("Le document n'existe pas");
-        }
-
-        $response = (new BinaryFileResponse($filename, Response::HTTP_OK))
-            ->setContentDisposition(
-                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                $connaissance->getPrintLabel().'.pdf');
-
-        $response->headers->set('Content-Control', 'private');
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-Type', 'application/pdf');
-
-        return $response;
+        return $this->sendDocument($connaissance);
     }
 
     #[Route('/{connaissance}/personnages', name: 'personnages', requirements: ['connaissance' => Requirement::DIGITS])]

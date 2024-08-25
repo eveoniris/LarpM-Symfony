@@ -39,17 +39,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/magie', name: 'magie.')]
 class MagieController extends AbstractController
 {
-    // liste des colonnes à afficher par défaut sur les vues 'personnages' (l'ordre est pris en compte)
-    // TODO
-    private array $defaultPersonnageListColumnKeys = [
-        'colId',
-        'colStatut',
-        'colNom',
-        'colClasse',
-        'colGroupe',
-        'colUser',
-    ];
-
     /**
      * Liste des sphere.
      */
@@ -308,28 +297,6 @@ class MagieController extends AbstractController
         }*/
 
         return $this->sendDocument($priere);
-    }
-
-    protected function sendDocument(mixed $entity, ?Document $document = null): BinaryFileResponse
-    {
-        // TODO check usage of entity Document
-
-        // TODO on ne peux télécharger que les documents des compétences que l'on connait
-        $filename = $entity->getDocument($this->fileUploader->getProjectDirectory());
-        if (!$entity->getDocumentUrl() || !file_exists($filename)) {
-            throw new NotFoundHttpException("Le document n'existe pas");
-        }
-
-        $response = (new BinaryFileResponse($filename, Response::HTTP_OK))
-            ->setContentDisposition(
-                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                $entity->getPrintLabel().'.pdf');
-
-        $response->headers->set('Content-Control', 'private');
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-Type', 'application/pdf');
-
-        return $response;
     }
 
     /**

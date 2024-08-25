@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Document;
 use App\Enum\FolderType;
 use App\Form\DeleteForm;
 use App\Repository\BaseRepository;
@@ -17,7 +18,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -284,6 +287,28 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             'msg' => $msg,
             'breadcrumb' => $breadcrumb,
         ]);
+    }
+
+    protected function sendDocument(mixed $entity, ?Document $document = null): BinaryFileResponse
+    {
+        // TODO check usage of entity Document
+
+        // TODO on ne peux télécharger que les documents des compétences que l'on connait
+        $filename = $entity->getDocument($this->fileUploader->getProjectDirectory());
+        if (!$entity->getDocumentUrl() || !file_exists($filename)) {
+            throw new NotFoundHttpException("Le document n'existe pas");
+        }
+
+        $response = (new BinaryFileResponse($filename, Response::HTTP_OK))
+            ->setContentDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                $entity->getPrintLabel().'.pdf');
+
+        $response->headers->set('Content-Control', 'private');
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-length', filesize($filename));
+
+        return $response;
     }
 
     protected function sendCsv(

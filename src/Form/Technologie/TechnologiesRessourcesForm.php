@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Form\Technologie;
 
 use App\Entity\Ressource;
@@ -12,11 +11,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Groupe\TechnologieForm.
- *
- * @author Gérald
- */
 class TechnologiesRessourcesForm extends AbstractType
 {
     /**
@@ -39,8 +33,7 @@ class TechnologiesRessourcesForm extends AbstractType
                     '6' => 6,
                     '7' => 7],
                 'label' => 'Quantité',
-            ])
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
+            ]);
     }
 
     /**

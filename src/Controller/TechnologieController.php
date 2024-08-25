@@ -4,86 +4,64 @@ namespace App\Controller;
 
 use App\Entity\Technologie;
 use App\Entity\TechnologiesRessources;
-use App\Form\Technologie\TechnologieDeleteForm;
+use App\Enum\DocumentType;
+use App\Enum\FolderType;
 use App\Form\Technologie\TechnologieForm;
 use App\Form\Technologie\TechnologiesRessourcesForm;
+use App\Repository\TechnologieRepository;
+use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_REGLE')]
+#[Route('/technologie', name: 'technologie.')]
 class TechnologieController extends AbstractController
 {
     /**
      * Liste des technologie.
      */
-    #[Route('/technologie', name: 'technologie.index')]
-    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $technologies = $entityManager->getRepository(Technologie::class)->findAllOrderedByLabel();
+    #[Route(name: 'index')]
+    #[Route(name: 'list')]
+    public function indexAction(
+        Request $request,
+        PagerService $pagerService,
+        TechnologieRepository $technologieRepository
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($technologieRepository);
 
-        return $this->render('technologie\index.twig', [
-            'technologies' => $technologies,
+        return $this->render('technologie/list.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $technologieRepository->searchPaginated($pagerService),
         ]);
     }
 
     /**
      * Ajout d'une technologie.
      */
-    #[Route('/technologie/add', name: 'technologie.add')]
-    public function addAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/add', name: 'add')]
+    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $form = $this->createForm(TechnologieForm::class, new Technologie());
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $technologie = $form->getData();
-
-            $files = $request->files->get($form->getName());
-            // Si un document est fourni, l'enregistrer
-            if (null != $files['document']) {
-                $path = __DIR__.'/../../private/doc/';
-                $filename = $files['document']->getClientOriginalName();
-                $extension = 'pdf';
-
-                if (!$extension || 'pdf' !== $extension) {
-                    $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
-
-                    return $this->redirectToRoute('technologie', [], 303);
-                }
-
-                $documentFilename = hash('md5', $technologie->getLabel().$filename.time()).'.'.$extension;
-
-                $files['document']->move($path, $documentFilename);
-
-                $technologie->setDocumentUrl($documentFilename);
-            }
-
-            $entityManager->persist($technologie);
-            $entityManager->flush();
-            $this->addFlash('success', 'La technologie a été ajoutée.');
-
-            return $this->redirectToRoute('technologie', [], 303);
-        }
-
-        return $this->render('admin\technologie\add.twig', [
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            new Technologie(),
+            TechnologieForm::class
+        );
     }
 
     /**
      * Détail d'une technologie.
      */
-    #[Route('/technologie/{technologie}/detail', name: 'technologie.detail')]
+    #[Route('/{technologie}/detail', name: 'detail', requirements: ['technologie' => Requirement::DIGITS])]
     public function detailAction(#[MapEntity] Technologie $technologie): Response
     {
-        return $this->render('admin\technologie\detail.twig', [
+        return $this->render('technologie\detail.twig', [
             'technologie' => $technologie,
         ]);
     }
@@ -91,76 +69,40 @@ class TechnologieController extends AbstractController
     /**
      * Mise à jour d'une technologie.
      */
-    #[Route('/technologie/{technologie}/udpate', name: 'technologie.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Technologie $technologie)
+    #[Route('/{technologie}/udpate', name: 'update', requirements: ['technologie' => Requirement::DIGITS])]
+    public function updateAction(Request $request, #[MapEntity] Technologie $technologie): RedirectResponse|Response
     {
-        $form = $this->createForm(TechnologieForm::class, $technologie);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $technologie = $form->getData();
-
-            $files = $request->files->get($form->getName());
-            // Si un document est fourni, l'enregistrer
-            if (null != $files['document']) {
-                $path = __DIR__.'/../../private/doc/';
-                $filename = $files['document']->getClientOriginalName();
-                $extension = 'pdf';
-
-                if (!$extension || 'pdf' !== $extension) {
-                    $this->addFlash('error', 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)');
-
-                    return $this->redirectToRoute('technologie', [], 303);
-                }
-
-                $documentFilename = hash('md5', $technologie->getLabel().$filename.time()).'.'.$extension;
-
-                $files['document']->move($path, $documentFilename);
-
-                $technologie->setDocumentUrl($documentFilename);
-            }
-
-            $entityManager->persist($technologie);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La technologie a été mise à jour.');
-
-            return $this->redirectToRoute('technologie', [], 303);
-        }
-
-        return $this->render('admin\technologie\update.twig', [
-            'form' => $form->createView(),
-            'technologie' => $technologie,
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            $technologie,
+            TechnologieForm::class
+        );
     }
 
     /**
      * Suppression d'une technologie.
      */
-    #[Route('/technologie/{technologie}/delete', name: 'technologie.delete')]
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Technologie $technologie)
-    {
-        $form = $this->createForm(TechnologieDeleteForm::class, $technologie)
-            ->add('submit', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $technologie = $form->getData();
-
-            $entityManager->remove($technologie);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La technologie a été supprimée.');
-
-            return $this->redirectToRoute('technologie', [], 303);
-        }
-
-        return $this->render('admin\technologie\delete.twig', [
-            'form' => $form->createView(),
-            'technologie' => $technologie,
-        ]);
+    #[Route('/{technologie}/delete', name: 'delete', requirements: ['technologie' => Requirement::DIGITS])]
+    public function deleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Technologie $technologie
+    ): RedirectResponse|Response {
+        return $this->genericDelete(
+            $technologie,
+            'Supprimer une technologie',
+            'La technologie a été supprimée',
+            'technologie.list',
+            [
+                ['route' => $this->generateUrl('technologie.list'), 'name' => 'Liste des technologies'],
+                [
+                    'route' => 'technologie.detail',
+                    'technologie' => $technologie->getId(),
+                    'name' => $technologie->getLabel(),
+                ],
+                ['name' => 'Supprimer une technologie'],
+            ]
+        );
     }
 
     /**
@@ -168,9 +110,12 @@ class TechnologieController extends AbstractController
      *
      * @param Technologie
      */
-    #[Route('/technologie/{technologie}/personnages', name: 'technologie.personnages')]
-    public function personnagesAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Technologie $technologie): Response
-    {
+    #[Route('/{technologie}/personnages', name: 'personnages', requirements: ['technologie' => Requirement::DIGITS])]
+    public function personnagesAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Technologie $technologie
+    ): Response {
         $routeName = 'technologie.personnages';
         $routeParams = ['technologie' => $technologie->getId()];
         $twigFilePath = 'admin/technologie/personnages.twig';
@@ -201,87 +146,153 @@ class TechnologieController extends AbstractController
     /**
      * Ajout d'une ressource à une technologie.
      */
-    #[Route('/technologie/{technologie}/ressource/add', name: 'technologie.ressource.add')]
-    public function addRessourceAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
-    {
-        $technologieId = $request->get('technologie');
-        $technologie = $entityManager->find(Technologie::class, $technologieId);
-        $technologieNom = $technologie->getLabel();
+    #[Route('/{technologie}/ressource/add', name: 'ressource.add', requirements: ['technologie' => Requirement::DIGITS])]
+    public function addRessourceAction(
+        Request $request,
+        #[MapEntity] Technologie $technologie
+    ): RedirectResponse|Response {
+        return $this->handleCreateOrUpdate(
+            $request,
+            new TechnologiesRessources(),
+            TechnologiesRessourcesForm::class,
+            breadcrumb: [
+                ['route' => $this->generateUrl('technologie.list'), 'name' => 'Liste des techologies'],
+                [
+                    'route' => $this->generateUrl('technologie.detail', ['technologie' => $technologie->getId()]),
+                    'name' => $technologie->getLabel(),
+                ],
+                ['name' => 'Ajouter une ressource de technologie'],
+            ],
+            routes: [
+                'root' => 'technologie.',
+                'entityAlias' => 'technologiesRessources',
+            ],
+            msg: [
+                'entity' => $this->translator->trans('ressource'),
+                'entity_added' => $this->translator->trans('La ressource a été ajoutée'),
+                'entity_updated' => $this->translator->trans('La ressource a été mise à jour'),
+                'entity_deleted' => $this->translator->trans('La ressource a été supprimé'),
+                'title_add' => $this->translator->trans('Ajouter une ressource'),
+                'title_update' => $this->translator->trans('Modifier une ressource'),
+            ],
+            /* @var TechnologiesRessources $entity */
+            entityCallback: static fn ($entity) => $entity->setTechnologie($technologie),
+        );
+    }
 
-        $form = $this->createForm(new TechnologiesRessourcesForm());
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $technologieRessource = $form->getData();
-            $ressourceId = $technologieRessource->getRessource()->getId();
-            $ressourceNom = $technologieRessource->getRessource()->getLabel();
-
-            // recherche une instance de TechnologiesRessources correspondant à la technologie et la ressource sélectionnées
-            $oldRessource = $entityManager->getRepository(TechnologiesRessources::class)
-                ->findOneBy(['technologie' => $technologieId, 'ressource' => $ressourceId]);
-            $newQuantite = $technologieRessource->getQuantite();
-
-            // Si la TechnologiesRessources existe déjà
-            if ($oldRessource) {
-                // mise à jour de la Quantite
-                $oldRessource->setQuantite($newQuantite);
-            } else {
-                // création d'une nouvelle entrée TechnologiesRessources
-                $technologieRessource->setTechnologie($technologie);
-                $entityManager->persist($technologieRessource);
-            }
-
-            $entityManager->flush();
-            $this->addFlash('success', $technologieNom.' requiert désormais '.$newQuantite.' '.$ressourceNom);
-
-            return $this->redirectToRoute('technologie', [], 303);
-        }
-
-        return $this->render('admin\technologie\addRessource.twig', [
-            'technologie' => $technologieId,
-            'form' => $form->createView(),
-        ]);
+    #[Route('/{technologie}/ressource/{technologiesRessources}/update',
+        name: 'ressource.update',
+        requirements: ['technologie' => Requirement::DIGITS, 'technologiesRessources' => Requirement::DIGITS])]
+    public function updateRessourceAction(
+        Request $request,
+        #[MapEntity] Technologie $technologie,
+        #[MapEntity] TechnologiesRessources $technologiesRessources
+    ): RedirectResponse|Response {
+        return $this->handleCreateOrUpdate(
+            $request,
+            $technologiesRessources,
+            TechnologiesRessourcesForm::class,
+            breadcrumb: [
+                ['route' => $this->generateUrl('technologie.list'), 'name' => 'Liste des techologies'],
+                [
+                    'route' => $this->generateUrl('technologie.detail', ['technologie' => $technologie->getId()]),
+                    'name' => $technologie->getLabel(),
+                ],
+                ['name' => 'Modifier une ressource de technologie'],
+            ],
+            routes: [
+                'root' => 'technologie.',
+                'entityAlias' => 'technologiesRessources',
+            ],
+            msg: [
+                'entity' => $this->translator->trans('ressource'),
+                'entity_added' => $this->translator->trans('La ressource a été ajoutée'),
+                'entity_updated' => $this->translator->trans('La ressource a été mise à jour'),
+                'entity_deleted' => $this->translator->trans('La ressource a été supprimé'),
+                'title_add' => $this->translator->trans('Ajouter une ressource'),
+                'title_update' => $this->translator->trans('Modifier une ressource'),
+            ],
+            /* @var TechnologiesRessources $entity */
+            entityCallback: static fn ($entity) => $entity->setTechnologie($technologie),
+        );
     }
 
     /**
      * Retrait d'une ressource à une technologie.
      */
-    #[Route('/technologie/{technologie}/ressource/delete', name: 'technologie.ressource.delete')]
-    public function removeRessourceAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Technologie $technologie): RedirectResponse
-    {
-        $technologieNom = $technologie->getLabel();
-        $ressourceNom = $request->get('ressourceNom');
-        $ressource = $request->get('ressource');
-
-        $technologieRessource = $entityManager->getRepository(TechnologiesRessources::class)
-            ->findOneBy(['technologie' => $technologie->getId(), 'ressource' => $ressource]);
-
-        $entityManager->remove($technologieRessource);
-        $entityManager->flush();
-
-        $this->addFlash('success', $technologieNom.' ne requiert plus de '.$ressourceNom.'.');
-
-        return $this->redirectToRoute('technologie', [], 303);
+    #[Route('/{technologie}/ressource/{technologiesRessources}/delete',
+        name: 'ressource.delete',
+        requirements: ['technologie' => Requirement::DIGITS, 'technologiesRessources' => Requirement::DIGITS]
+    )]
+    public function removeRessourceAction(
+        #[MapEntity] Technologie $technologie,
+        #[MapEntity] TechnologiesRessources $technologiesRessources
+    ): RedirectResponse|Response {
+        return $this->genericDelete(
+            $technologiesRessources,
+            'Supprimer une ressource de technologie',
+            'La ressource technologie a été supprimée',
+            'technologie.list',
+            [
+                ['route' => $this->generateUrl('technologie.list'), 'name' => 'Liste des technologies'],
+                [
+                    'route' => 'technologie.detail',
+                    'technologie' => $technologie->getId(),
+                    'name' => $technologie->getLabel(),
+                ],
+                ['name' => 'Supprimer une technologie'],
+            ]
+        );
     }
 
     /**
      * Obtenir le document lié a une technologie.
      */
-    #[Route('/technologie/{technologie}/document', name: 'technologie.document')]
-    public function getTechnologieDocumentAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Technologie $technologie)
+    #[Route('/{technologie}/document', name: 'document', requirements: ['technologie' => Requirement::DIGITS])]
+    public function getTechnologieDocumentAction(#[MapEntity] Technologie $technologie)
     {
-        $document = $technologie->getDocumentUrl();
-        $file = __DIR__.'/../../private/doc/'.$document;
+        return $this->sendDocument($technologie);
+    }
 
-        $stream = static function () use ($file): void {
-            readfile($file);
-        };
+    protected function handleCreateOrUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
+        ?callable $entityCallback = null
+    ): RedirectResponse|Response {
+        if (!$entityCallback) {
+            /** @var Technologie $technologie */
+            $entityCallback = function (mixed $technologie, FormInterface $form): ?Technologie {
+                $technologie->handleUpload(
+                    $this->fileUploader,
+                    DocumentType::Documents,
+                    FolderType::Private
+                );
 
-        return $app->stream($stream, 200, [
-            'Content-Type' => 'text/pdf',
-            'Content-length' => filesize($file),
-            'Content-Disposition' => 'attachment; filename="'.$technologie->getPrintLabel().'.pdf"',
-        ]);
+                return $technologie;
+            };
+        }
+
+        return parent::handleCreateOrUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                'entity' => $this->translator->trans('technologie'),
+                'entity_added' => $this->translator->trans('La technologie a été ajoutée'),
+                'entity_updated' => $this->translator->trans('La technologie a été mise à jour'),
+                'entity_deleted' => $this->translator->trans('La technologie a été supprimée'),
+                'entity_list' => $this->translator->trans('Liste des technologies'),
+                'title_add' => $this->translator->trans('Ajouter une technologie'),
+                'title_update' => $this->translator->trans('Modifier une technologie'),
+                ...$msg,
+            ],
+            entityCallback: $entityCallback
+        );
     }
 }
