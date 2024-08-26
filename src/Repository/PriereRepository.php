@@ -94,12 +94,12 @@ class PriereRepository extends BaseRepository
         return $query->setParameter('value', $sphere);
     }
 
-    public function searchAttributes(?string $alias = null): array
+    public function searchAttributes(): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
-            ...parent::searchAttributes($alias),
+            ...parent::searchAttributes(),
             $alias.'.label', // => 'Libellé',
             $alias.'.description', // => 'Description',
             $alias.'.annonce',
@@ -151,11 +151,11 @@ class PriereRepository extends BaseRepository
     {
         return [
             ...parent::translateAttributes(),
-            'sphere' => $this->translator->trans('Sphere'),
-            'description' => $this->translator->trans('Description'),
-            'label' => $this->translator->trans('Libellé'),
-            'niveau' => $this->translator->trans('Niveau'),
-            'annonce' => $this->translator->trans('Annonce'),
+            'sphere' => $this->translator->trans('Sphere', domain: 'repository'),
+            'description' => $this->translator->trans('Description', domain: 'repository'),
+            'label' => $this->translator->trans('Libellé', domain: 'repository'),
+            'niveau' => $this->translator->trans('Niveau', domain: 'repository'),
+            'annonce' => $this->translator->trans('Annonce', domain: 'repository'),
         ];
     }
 

@@ -111,12 +111,12 @@ class PotionRepository extends BaseRepository
         return $query->setParameter('value', $secret);
     }
 
-    public function searchAttributes(?string $alias = null): array
+    public function searchAttributes(): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
-            ...parent::searchAttributes($alias),
+            ...parent::searchAttributes(),
             $alias.'.label', // => 'Libellé',
             $alias.'.description', // => 'Description',
             $alias.'.niveau',
@@ -142,10 +142,10 @@ class PotionRepository extends BaseRepository
     {
         return [
             ...parent::translateAttributes(),
-            'description' => $this->translator->trans('Description'),
-            'label' => $this->translator->trans('Libellé'),
-            'niveau' => $this->translator->trans('Niveau'),
-            'numero' => $this->translator->trans('Numero'),
+            'description' => $this->translator->trans('Description', domain: 'repository'),
+            'label' => $this->translator->trans('Libellé', domain: 'repository'),
+            'niveau' => $this->translator->trans('Niveau', domain: 'repository'),
+            'numero' => $this->translator->trans('Numero', domain: 'repository'),
         ];
     }
 

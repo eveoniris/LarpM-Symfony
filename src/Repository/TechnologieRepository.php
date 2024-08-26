@@ -55,7 +55,7 @@ class TechnologieRepository extends BaseRepository
         return $query->setParameter('value', $competenceFamilyType->value);
     }
 
-    public function searchAttributes(?string $alias = null): array
+    public function searchAttributes(): array
     {
         $alias ??= static::getEntityAlias();
 
@@ -102,9 +102,9 @@ class TechnologieRepository extends BaseRepository
     {
         return [
             ...parent::translateAttributes(),
-            'competenceFamily' => $this->translator->trans('Expert'),
-            'description' => $this->translator->trans('Description'),
-            'label' => $this->translator->trans('Nom'),
+            'competenceFamily' => $this->translator->trans('Expert', domain: 'repository'),
+            'description' => $this->translator->trans('Description', domain: 'repository'),
+            'label' => $this->translator->trans('Nom', domain: 'repository'),
         ];
     }
 

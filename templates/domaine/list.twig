@@ -12,6 +12,10 @@
 	
 	<div class="well well-sm">
 
+		<div class="header">
+			<h5>Liste des domaines de magie</h5>
+		</div>
+
 		{% include '_partials/formListSearch.twig' with
 			{
 				'canAdd': {'title': 'Ajouter une domaine', 'path': path('magie.domaine.add')},
@@ -21,24 +25,20 @@
 		{% include '_partials/pagination.html.twig' %}
 
 		<table class="table table-condensed table-striped table-bordered table-hover">
-			<thead>
-			<tr>
-				<th>
-					{% include '_partials/orderby.twig' with {'name' : 'Libellé', 'field' : 'label', 'route': 'magie.domaine.list' } %}
-				</th>
-				<th>Description</th>
-				<th>Actions</th>
-			</tr>
-			</thead>
+			{% include '_partials/thead.twig' with  { 'route': 'magie.sort.list', 'rows': [
+				{'name' : 'Libellé', 'field' : 'label', 'css': 'text-center'},
+				{'name' : 'Description', 'css': 'text-center'},
+				{'name' : 'Actions', 'css': 'text-center'},
+			]} %}
 			<tbody>
 			{% for domaine in paginator %}
 				<tr>
-					<td>{{ domaine.label|highlight(pagerService.searchValue) }}</td>
-					<td>
+					<td class="text-center align-middle">{{ domaine.label|highlight(pagerService.searchValue) }}</td>
+					<td class="text-center align-middle">
 						{{ domaine.description|markdown_to_html|highlight(pagerService.searchValue) }}
 					</td>
-					<td>
-						<div class="btn-toolbar pull-right" role="toolbar">
+					<td class="align-middle">
+						<div class="btn-toolbar d-flex justify-content-center" role="toolbar">
 							<div class="btn-group-vertical" role="group">
 								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
 								   title="Modifier"

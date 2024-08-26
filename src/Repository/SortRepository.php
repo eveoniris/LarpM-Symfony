@@ -112,12 +112,12 @@ class SortRepository extends BaseRepository
         return $query->setParameter('value', $secret);
     }
 
-    public function searchAttributes(?string $alias = null): array
+    public function searchAttributes(): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
-            ...parent::searchAttributes($alias),
+            ...parent::searchAttributes(),
             $alias.'.label', // => 'Libellé',
             $alias.'.description', // => 'Description',
             $alias.'.niveau',

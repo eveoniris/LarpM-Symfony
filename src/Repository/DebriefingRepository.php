@@ -86,12 +86,12 @@ class DebriefingRepository extends BaseRepository
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    public function searchAttributes(string $alias = null): array
+    public function searchAttributes(): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
-            ...parent::searchAttributes($alias),
+            ...parent::searchAttributes(),
             $alias.'.titre',
             'groupe.nom as groupe',
             'user.username as scriptwriter',
@@ -132,10 +132,10 @@ class DebriefingRepository extends BaseRepository
     {
         return [
             ...parent::translateAttributes(),
-            'titre' => $this->translator->trans('Titre'),
-            'groupe' => $this->translator->trans('Groupe'),
-            'user' => $this->translator->trans('Scénariste'),
-            'player' => $this->translator->trans('Auteur'),
+            'titre' => $this->translator->trans('Titre', domain: 'repository'),
+            'groupe' => $this->translator->trans('Groupe', domain: 'repository'),
+            'user' => $this->translator->trans('Scénariste', domain: 'repository'),
+            'player' => $this->translator->trans('Auteur', domain: 'repository'),
         ];
     }
 }

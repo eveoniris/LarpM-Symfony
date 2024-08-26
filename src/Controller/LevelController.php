@@ -72,7 +72,7 @@ class LevelController extends AbstractController
             redirect: 'level.list',
             breadcrumb: [
                 ['route' => $this->generateUrl('level.list'), 'name' => 'Liste des niveaux'],
-                ['route' => 'level.detail', 'name' => $level->getIndexLabel()],
+                ['route' => $this->generateUrl('level.detail', ['level' => $level->getIndexLabel()])],
                 ['name' => 'Supprimer un niveau'],
             ]
         );

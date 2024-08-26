@@ -25,34 +25,26 @@
 		{% include '_partials/pagination.html.twig' %}
 
 		<table class="table table-condensed table-striped table-bordered table-hover">
-			<thead>
-			<tr>
-				<th>
-					{% include '_partials/orderby.twig' with {'name' : 'Secrète', 'field' : 'secret', 'route': 'magie.sort.list' } %}
-				</th>
-				<th>
-					{% include '_partials/orderby.twig' with {'name' : 'Niveau', 'field' : 'niveau', 'route': 'magie.sort.list' } %}
-				</th>
-				<th>
-					{% include '_partials/orderby.twig' with {'name' : 'Libellé', 'field' : 'label', 'route': 'magie.sort.list' } %}
-				</th>
-				<th>Description</th>
-				<th>Actions</th>
-			</tr>
-			</thead>
+			{% include '_partials/thead.twig' with  { 'route': 'magie.sort.list', 'rows': [
+				{'name' : 'Secrète', 'field' : 'secret', 'css': 'text-center'},
+				{'name' : 'Niveau', 'field' : 'niveau', 'css': 'text-center'},
+				{'name' : 'Libellé', 'field' : 'label', 'css': 'text-center'},
+				{'name' : 'Description', 'css': 'text-center'},
+				{'name' : 'Actions', 'css': 'text-center'},
+			]} %}
 			<tbody>
 			{% for sort in paginator %}
 				<tr>
-					<td>
+					<td class="text-center align-middle">
 						{% if sort.secret %}<span class="text-danger">Oui</span>{% else %}<span class="text-info">Non</span>{% endif %}
 					</td>
-					<td>{{ sort.niveau }}</td>
-					<td>{{ sort.label|highlight(pagerService.searchValue) }}</td>
-					<td>
+					<td class="text-center align-middle">{{ sort.niveau }}</td>
+					<td class="text-center align-middle">{{ sort.label|highlight(pagerService.searchValue) }}</td>
+					<td class="align-middle">
 						{{ sort.description|markdown_to_html|highlight(pagerService.searchValue) }}
 					</td>
-					<td>
-						<div class="btn-toolbar pull-right" role="toolbar">
+					<td class="text-center align-middle">
+						<div class="btn-toolbar d-flex justify-content-center" role="toolbar">
 							<div class="btn-group-vertical" role="group">
 								{% if sort.documentUrl %}
 									<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"

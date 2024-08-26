@@ -176,14 +176,10 @@ class BaseTerritoire
     #[JoinColumn(name: 'culture_id', referencedColumnName: 'id')]
     protected ?Culture $culture = null;
 
-    // #[ORM\JoinTable(name: 'territoire_has_construction')]
-    // #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
-    // #[ORM\InverseJoinColumn(name: 'construction_id', referencedColumnName: 'id', nullable: false)]
-    // #[ORM\OrderBy(['label' => 'ASC'])]
-    // #[ORM\ManyToMany(targetEntity: Construction::class, mappedBy: 'territoires')]
     #[ORM\ManyToMany(targetEntity: Construction::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_has_construction')]
-    #[JoinColumn(name: 'territoire_id')]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'construction_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $constructions;
 
     #[ORM\ManyToMany(targetEntity: Loi::class, inversedBy: 'territoires')]
@@ -906,7 +902,7 @@ class BaseTerritoire
     /**
      * Set Territoire entity (many to one).
      */
-    public function setTerritoire(Territoire $territoire = null): static
+    public function setTerritoire(?Territoire $territoire = null): static
     {
         $this->territoire = $territoire;
 
@@ -942,7 +938,7 @@ class BaseTerritoire
     /**
      * Set Appelation entity (many to one).
      */
-    public function setAppelation(Appelation $appelation = null): static
+    public function setAppelation(?Appelation $appelation = null): static
     {
         $this->appelation = $appelation;
 
@@ -960,7 +956,7 @@ class BaseTerritoire
     /**
      * Set Langue entity (many to one).
      */
-    public function setLangue(Langue $langue = null): static
+    public function setLangue(?Langue $langue = null): static
     {
         $this->langue = $langue;
 
@@ -978,7 +974,7 @@ class BaseTerritoire
     /**
      * Set Topic entity (many to one).
      */
-    public function setTopic(Topic $topic = null): static
+    public function setTopic(?Topic $topic = null): static
     {
         $this->topic = $topic;
 
@@ -996,7 +992,7 @@ class BaseTerritoire
     /**
      * Set Religion entity (many to one).
      */
-    public function setReligion(Religion $religion = null): static
+    public function setReligion(?Religion $religion = null): static
     {
         $this->religion = $religion;
 
@@ -1014,7 +1010,7 @@ class BaseTerritoire
     /**
      * Set Groupe entity (many to one).
      */
-    public function setGroupe(Groupe $groupe = null): static
+    public function setGroupe(?Groupe $groupe = null): static
     {
         $this->groupe = $groupe;
 
@@ -1032,7 +1028,7 @@ class BaseTerritoire
     /**
      * Set Culture entity (many to one).
      */
-    public function setCulture(Culture $culture = null): static
+    public function setCulture(?Culture $culture = null): static
     {
         $this->culture = $culture;
 

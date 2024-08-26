@@ -7,7 +7,7 @@
 			<div class="col-xs-12 col-md-8">
 				<div class="well bs-component">
 				
-					{{ form_start(form, {"attr": {"action": path('territoire.admin.updateStatut', {'territoire': territoire.id}) }}) }}
+					{{ form_start(form, {"attr": {"action": path('territoire.updateStatut', {'territoire': territoire.id}) }}) }}
 						<fieldset>
 							<legend>Modification de {{ territoire.nom }}</legend>
 							

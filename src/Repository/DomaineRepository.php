@@ -22,7 +22,7 @@ class DomaineRepository extends BaseRepository
         );
     }
 
-    public function searchAttributes(?string $alias = null): array
+    public function searchAttributes(): array
     {
         $alias ??= static::getEntityAlias();
 
@@ -47,8 +47,8 @@ class DomaineRepository extends BaseRepository
     {
         $attributes = parent::translateAttributes();
         unset(parent::translateAttributes()['id']);
-        $attributes['label'] = $this->translator->trans('Libellé');
-        $attributes['description'] = $this->translator->trans('Description');
+        $attributes['label'] = $this->translator->trans('Libellé', domain: 'repository');
+        $attributes['description'] = $this->translator->trans('Description', domain: 'repository');
 
         return $attributes;
     }

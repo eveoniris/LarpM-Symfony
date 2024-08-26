@@ -21,7 +21,7 @@ class TokenRepository extends BaseRepository
         $alias ??= static::getEntityAlias();
 
         return [
-            ...parent::searchAttributes($alias),
+            ...parent::searchAttributes(),
             $alias.'.label',
             $alias.'.tag',
             $alias.'.description',

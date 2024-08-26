@@ -115,7 +115,7 @@ abstract class BaseRepository extends ServiceEntityRepository
     }
 
     #[Deprecated]
-    public function findPaginatedBy(array $criteria, array $orderBy = null, $limit = null, $page = null): Paginator
+    public function findPaginatedBy(array $criteria, ?array $orderBy = null, $limit = null, $page = null): Paginator
     {
         $limit = min(10, $limit);
         $page = max(1, $page);
@@ -142,11 +142,11 @@ abstract class BaseRepository extends ServiceEntityRepository
     }
 
     public function getPaginator(
-        QueryBuilder $qb = null,
+        ?QueryBuilder $qb = null,
         int $limit = 25,
         int $page = 1,
         array $orderBy = [],
-        string $alias = null,
+        ?string $alias = null,
         array $criterias = []
     ): Paginator {
         $alias ??= static::getEntityAlias();
@@ -173,9 +173,9 @@ abstract class BaseRepository extends ServiceEntityRepository
     }
 
     public function findIterable(
-        Query|QueryBuilder $query = null,
+        Query|QueryBuilder|null $query = null,
         int $batchSize = 100,
-        string $alias = null,
+        ?string $alias = null,
         string $iterableMode = self::ITERATE_EXPORT_HEADER
     ): \Generator {
         $alias ??= static::getEntityAlias();
@@ -193,7 +193,7 @@ abstract class BaseRepository extends ServiceEntityRepository
                 \in_array($iterableMode, [static::ITERATE_EXPORT, static::ITERATE_EXPORT_HEADER], true)
                 && method_exists($iterable, 'getExportValue')
             ) {
-                if (static::ITERATE_EXPORT_HEADER === $iterableMode)  {
+                if (static::ITERATE_EXPORT_HEADER === $iterableMode) {
                     yield array_keys($iterable->getExportValue());
                 }
                 yield $iterable->getExportValue();
@@ -226,13 +226,14 @@ abstract class BaseRepository extends ServiceEntityRepository
         return $this;
     }
 
-    public function searchPaginated(PagerService $pageRequest): Paginator
+    public function searchPaginated(PagerService $pageRequest, ?QueryBuilder $queryBuilder = null): Paginator
     {
         $query = $this->search(
             $pageRequest->getSearchValue(),
             $pageRequest->getSearchType(),
             $pageRequest->getOrderBy(),
-            $this->getAlias()
+            $this->getAlias(),
+            $queryBuilder
         )->getQuery();
 
         return $this->findPaginatedQuery(
@@ -258,7 +259,7 @@ abstract class BaseRepository extends ServiceEntityRepository
 
     public function findPaginatedQuery(
         Query $query,
-        int $limit = null,
+        ?int $limit = null,
         $offset = null
     ): Paginator {
         $limit = min(100, max(1, $limit));
@@ -271,17 +272,17 @@ abstract class BaseRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param mixed $search a value to filter results who's "like" it
+     * @param mixed             $search     a value to filter results who's "like" it
      * @param string|array|null $attributes Entity's attributes to search on
-     * @param OrderBy|null $orderBy custom orderBy if not from the Request
-     * @param string|null $alias the query alias for a specific one
+     * @param OrderBy|null      $orderBy    custom orderBy if not from the Request
+     * @param string|null       $alias      the query alias for a specific one
      */
     public function search(
         mixed $search = null,
-        null|string|array $attributes = self::SEARCH_NOONE,
-        OrderBy $orderBy = null,
-        string $alias = null,
-        QueryBuilder $query = null
+        string|array|null $attributes = self::SEARCH_NOONE,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null
     ): QueryBuilder {
         $orderBy ??= $this->orderBy;
         $alias ??= static::getEntityAlias();
@@ -321,6 +322,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         }
 
         $asOne = false;
+        $orWhere = [];
         foreach ($attributes as $attribute => $label) {
             // if attribute is without label
             if (is_int($attribute)) {
@@ -340,16 +342,19 @@ abstract class BaseRepository extends ServiceEntityRepository
 
             $attributeAliased = $this->getAttributeWhereName($attributeAliased);
 
-            $query->orWhere($attributeAliased.' LIKE :value');
+            $orWhere[] = $attributeAliased.' LIKE :value';
+        }
+        if (!empty($orWhere)) {
+            $query->andWhere(implode(' OR ', $orWhere));
         }
 
         return $asOne ? $query->setParameter('value', '%'.$search.'%') : $query;
     }
 
     public function addOrderBy(
-        Query|QueryBuilder $query = null,
-        OrderBy $orderBy = null,
-        string $alias = null
+        Query|QueryBuilder|null $query = null,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null
     ): Query|QueryBuilder {
         $orderBy ??= $this->orderBy;
         $alias ??= static::getEntityAlias();
@@ -396,7 +401,6 @@ abstract class BaseRepository extends ServiceEntityRepository
         }
 
         foreach ($list as $keyAttribute => $item) {
-
             // From simple sort
             if (strtolower($attribute) === strtolower($keyAttribute)) {
                 return true;
@@ -412,7 +416,7 @@ abstract class BaseRepository extends ServiceEntityRepository
             ) {
                 return true;
             }
-            //isAllowedAttribute(foreach) > keyAttribute:5/item:classe.nom as classe/attribute:nom/aliased:classe.nom/getAttributeName:nom as classe
+            // isAllowedAttribute(foreach) > keyAttribute:5/item:classe.nom as classe/attribute:nom/aliased:classe.nom/getAttributeName:nom as classe
 
             // from aliased
             if (strtolower($aliased) === strtolower($keyAttribute)) {
@@ -496,7 +500,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         return trim(substr($aliased, 0, $asPos > 0 ? $asPos : null));
     }
 
-    public function sortAttributes(string $alias = null): array
+    public function sortAttributes(?string $alias = null): array
     {
         $alias ??= $this->alias;
 
@@ -505,13 +509,10 @@ abstract class BaseRepository extends ServiceEntityRepository
         ];
     }
 
-    public function searchAttributes(string $alias = null): array
+    public function searchAttributes(): array
     {
-        $alias ??= $this->alias;
-
         return [
             self::SEARCH_ALL,
-            $alias.'.id',
         ];
     }
 
@@ -519,7 +520,7 @@ abstract class BaseRepository extends ServiceEntityRepository
      * Return all alias of searchAttributes
      * Alias is the key, Atribute is the value.
      */
-    public function searchAttributesAs(string $alias = null): array
+    public function searchAttributesAs(?string $alias = null): array
     {
         $asAttributes = [];
 

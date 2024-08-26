@@ -1,15 +1,12 @@
 <?php
 
-
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use App\Entity\Construction;
+use App\Entity\Territoire;
+use App\Service\OrderBy;
+use Doctrine\ORM\QueryBuilder;
 
-/**
- * LarpManager\Repository\TerritoireRepository.
- *
- * @author kevin
- */
 class TerritoireRepository extends BaseRepository
 {
     /**
@@ -31,7 +28,9 @@ class TerritoireRepository extends BaseRepository
      */
     public function findRoot()
     {
-        $query = $this->getEntityManager()->createQuery('SELECT t FROM App\Entity\Territoire t WHERE t.territoire IS NULL ORDER BY t.nom ASC');
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT t FROM App\Entity\Territoire t WHERE t.territoire IS NULL ORDER BY t.nom ASC'
+        );
 
         return $query->getResult();
     }
@@ -43,7 +42,9 @@ class TerritoireRepository extends BaseRepository
      */
     public function findRegions(): array
     {
-        $query = $this->getEntityManager()->createQuery('SELECT t FROM App\Entity\Territoire t  WHERE t.territoire IS NOT NULL ORDER BY t.nom ASC');
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT t FROM App\Entity\Territoire t  WHERE t.territoire IS NOT NULL ORDER BY t.nom ASC'
+        );
         $territoires = $query->getResult();
 
         $result = [];
@@ -63,7 +64,9 @@ class TerritoireRepository extends BaseRepository
      */
     public function findFiefs(): array
     {
-        $query = $this->getEntityManager()->createQuery('SELECT t FROM App\Entity\Territoire t  WHERE t.territoire IS NOT NULL ORDER BY t.nom ASC');
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT t FROM App\Entity\Territoire t  WHERE t.territoire IS NOT NULL ORDER BY t.nom ASC'
+        );
         $territoires = $query->getResult();
 
         $result = [];
@@ -87,8 +90,8 @@ class TerritoireRepository extends BaseRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('distinct t');
-        $qb->from(\App\Entity\Territoire::class, 't');
-        
+        $qb->from(Territoire::class, 't');
+
         $qb->join('t.groupe', 'tgr');
         $qb->join('t.territoire', 'tpr');
         $qb->leftjoin('tpr.territoire', 'tp');
@@ -98,7 +101,7 @@ class TerritoireRepository extends BaseRepository
         foreach ($criteria as $key => $value) {
             if ('t.nom' == $key) {
                 $qb->andWhere(sprintf('LOWER(%s) LIKE ?', $key).$count)
-                    ->setParameter($count, '%'.preg_replace('/[\'"<>=*;]/', '', strtolower((string) $value)).'%');
+                    ->setParameter($count, '%'.preg_replace('/[\'"<>=*;]/', '', strtolower((string)$value)).'%');
             } else {
                 $qb->andWhere($key.' = ?'.$count)
                     ->setParameter($count, $value);
@@ -110,9 +113,9 @@ class TerritoireRepository extends BaseRepository
         $qb->setFirstResult($offset);
         $qb->setMaxResults($limit);
 
-        $defaultEntityAlias = strstr((string) $order['by'], '.') ? '' : 't.';
+        $defaultEntityAlias = strstr((string)$order['by'], '.') ? '' : 't.';
         $qb->orderBy($defaultEntityAlias.$order['by'], $order['dir']);
-        
+
         return $qb->getQuery();
     }
 
@@ -124,7 +127,7 @@ class TerritoireRepository extends BaseRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select($qb->expr()->count('distinct t'));
-        $qb->from(\App\Entity\Territoire::class, 't');
+        $qb->from(Territoire::class, 't');
         if (array_key_exists('groupe', $criteria)) {
             $qb->join('t.groupe', 'tgr');
         }
@@ -155,8 +158,8 @@ class TerritoireRepository extends BaseRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('distinct tpr');
-        $qb->from(\App\Entity\Territoire::class, 'tpr');
-        $qb->leftJoin(\App\Entity\Territoire::class, 't', 'WITH', 'tpr.id = t.territoire');
+        $qb->from(Territoire::class, 'tpr');
+        $qb->leftJoin(Territoire::class, 't', 'WITH', 'tpr.id = t.territoire');
         $qb->join('tpr.territoire', 'tp');
         $qb->andWhere('tpr.territoire IS NOT NULL');
         $qb->andWhere('tp.territoire IS NULL');
@@ -164,4 +167,83 @@ class TerritoireRepository extends BaseRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function search(
+        mixed $search = null,
+        string|array|null $attributes = self::SEARCH_NOONE,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null
+    ): QueryBuilder {
+        $alias ??= static::getEntityAlias();
+
+        $query ??= $this->createQueryBuilder($alias);
+        $query->join($alias.'.appelation', 'appelation');
+
+        return parent::search($search, $attributes, $orderBy, $alias, $query);
+    }
+
+    public function construction(QueryBuilder $queryBuilder, Construction $construction): QueryBuilder
+    {
+        $queryBuilder
+            ->innerJoin('territoire.constructions', 'c')
+            ->andWhere('c.id = :cid')
+            ->setParameter('cid', $construction->getId());
+
+        return $queryBuilder;
+    }
+
+    public function searchAttributes(): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::searchAttributes($alias, false),
+            $alias.'.nom', // => 'Libellé',
+            $alias.'.description', // => 'Description',
+            'appelation.label as appelation',
+        ];
+    }
+
+    public function sortAttributes(?string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::sortAttributes($alias),
+            $alias.'.nom' => [
+                OrderBy::ASC => [$alias.'.nom' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.nom' => OrderBy::DESC],
+            ],
+            $alias.'.description' => [
+                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+            ],
+            'appelation' => [
+                OrderBy::ASC => ['appelation.label' => OrderBy::ASC],
+                OrderBy::DESC => ['appelation.label' => OrderBy::DESC],
+            ],
+        ];
+    }
+
+    public function translateAttribute(string $attribute): string
+    {
+        $attribute = match ($this->getAttributeAsName($attribute)) {
+            'appelation_id', 'appelation' => 'appelation',
+            default => $attribute,
+        };
+
+        return parent::translateAttribute($attribute);
+    }
+
+    public function translateAttributes(): array
+    {
+        return [
+            ...parent::translateAttributes(),
+            'appelation' => $this->translator->trans('Appelation', domain: 'repository'),
+            'description' => $this->translator->trans('Description', domain: 'repository'),
+            'nom' => $this->translator->trans('Nom', domain: 'repository'),
+        ];
+    }
+
 }

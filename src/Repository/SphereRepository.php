@@ -22,7 +22,7 @@ class SphereRepository extends BaseRepository
         );
     }
 
-    public function searchAttributes(?string $alias = null): array
+    public function searchAttributes(): array
     {
         $alias ??= static::getEntityAlias();
 
@@ -45,7 +45,7 @@ class SphereRepository extends BaseRepository
     {
         $attributes = parent::translateAttributes();
         unset(parent::translateAttributes()['id']);
-        $attributes['label'] = $this->translator->trans('Libellé');
+        $attributes['label'] = $this->translator->trans('Libellé', domain: 'repository');
 
         return $attributes;
     }

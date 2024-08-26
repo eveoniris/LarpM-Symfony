@@ -12,6 +12,10 @@
 
     <div class="well well-sm">
 
+        <div class="header">
+            <h5>Liste des technologies</h5>
+        </div>
+
         {% include '_partials/formListSearch.twig' with
             {
                 'canAdd': {'title': 'Ajouter une technologie', 'path': path('technologie.add')},
@@ -21,26 +25,18 @@
         {% include '_partials/pagination.html.twig' %}
 
         <table class="table table-condensed table-striped table-bordered table-hover">
-            <thead>
-            <tr>
-                <th>
-                    {% include '_partials/orderby.twig' with {'name' : 'Secret', 'field' : 'secret', 'route': 'technologie.list' } %}
-                </th>
-                <th>
-                    {% include '_partials/orderby.twig' with {'name' : 'Nom', 'field' : 'label', 'route': 'technologie.list' } %}
-                </th>
-                <th>
-                    {% include '_partials/orderby.twig' with {'name' : 'Expert', 'field' : 'competenceFamily.label', 'route': 'technologie.list' } %}
-                </th>
-                <th>Description</th>
-                <th>Ressources requises</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
+            {% include '_partials/thead.twig' with  { 'route': 'technologie.list', 'rows': [
+                {'name' : 'Secret', 'field' : 'secret', 'css' : 'text-center'},
+                {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
+                {'name' : 'Expert', 'field' : 'competenceFamily.label', 'css' : 'text-center'},
+                {'name' : 'Description', 'css' : 'text-center'},
+                {'name' : 'Ressources requises', 'css' : 'text-center'},
+                {'name' : 'Actions', 'css' : 'text-center'},
+            ]} %}
             <tbody>
             {% for technologie in paginator %}
                 <tr>
-                    <td class="text-center">
+                    <td class="text-center align-middle">
                         {% if technologie.secret %}
                             <span class="text-danger">
                                 <i class="fa fa-user-secret text-danger" data-toggle="tooltip" data-placement="top"
@@ -50,41 +46,36 @@
                             <span class="text-info">Non</span>
                         {% endif %}
                     </td>
-                    <td>{{ technologie.label|highlight(pagerService.searchValue) }}</td>
-                    <td>{{ technologie.competenceFamily.label|highlight(pagerService.searchValue) }}</td>
+                    <td class="text-center align-middle">{{ technologie.label|highlight(pagerService.searchValue) }}</td>
+                    <td class="text-center align-middle">{{ technologie.competenceFamily.label|highlight(pagerService.searchValue) }}</td>
                     <td>
                         {{ technologie.description|markdown_to_html|highlight(pagerService.searchValue) }}
                     </td>
-                    <td>
-
+                    <td class="align-middle">
                         <div class="list-group">
-                            {% if technologie.ressources|length < 1 %}
-                                {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "#{technologie.label} ne requiert actuellement aucune Ressource ; Veuillez en ajouter :" } %}
-                            {% else %}
-                                {% for technologieRessource in technologie.ressources %}
-                                    <div class="list-group-item d-flex justify-content-between">
-                                        <div>
-                                            {{ technologieRessource.quantite }} {{ technologieRessource.ressource.label }}
-                                        </div>
-                                        <div class="btn-group">
-
-                                            <a class="btn btn-sm btn-secondary" data-toggle="tooltip"
-                                               data-placement="top"
-                                               title="Modifier"
-                                               href="{{ path('technologie.ressource.update', {'technologie':technologie.id, 'technologiesRessources':technologieRessource.id}) }}">
-                                                <i class="fa fa-pencil"></i>
-                                            </a>
-                                            <a class="btn btn-sm btn-secondary" data-toggle="tooltip"
-                                               data-placement="top"
-                                               title="Retirer {{ technologieRessource.ressource.label }}"
-                                               href="{{ path('technologie.ressource.delete', {'technologie':technologie.id, 'technologiesRessources':technologieRessource.id}) }}"
-                                               onclick="return confirm('Vous vous apprétez à retirer {{ technologieRessource.ressource.label }} de {{ technologie.label }}. Confirmer ?')">
-                                                <i class="fa fa-trash"></i></a>
-                                        </div>
+                            {% for technologieRessource in technologie.ressources %}
+                                <div class="list-group-item d-flex justify-content-between">
+                                    <div>
+                                        {{ technologieRessource.quantite }} {{ technologieRessource.ressource.label }}
                                     </div>
-
-                                {% endfor %}
-                            {% endif %}
+                                    <div class="btn-group">
+                                        <a class="btn btn-sm btn-secondary" data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Modifier"
+                                           href="{{ path('technologie.ressource.update', {'technologie':technologie.id, 'technologiesRessources':technologieRessource.id}) }}">
+                                            <i class="fa fa-pencil"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-secondary" data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Retirer {{ technologieRessource.ressource.label }}"
+                                           href="{{ path('technologie.ressource.delete', {'technologie':technologie.id, 'technologiesRessources':technologieRessource.id}) }}"
+                                           onclick="return confirm('Vous vous apprétez à retirer {{ technologieRessource.ressource.label }} de {{ technologie.label }}. Confirmer ?')">
+                                            <i class="fa fa-trash"></i></a>
+                                    </div>
+                                </div>
+                            {% else %}
+                                {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "#{technologie.label} ne requiert actuellement aucune Ressource ; Veuillez en ajouter :" } %}
+                            {% endfor %}
                             <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
                                title="Ajouter une Ressource"
                                href="{{ path('technologie.ressource.add', {'technologie':technologie.id}) }}">

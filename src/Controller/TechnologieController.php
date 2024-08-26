@@ -97,7 +97,7 @@ class TechnologieController extends AbstractController
             [
                 ['route' => $this->generateUrl('technologie.list'), 'name' => 'Liste des technologies'],
                 [
-                    'route' => 'technologie.detail',
+                    'route' => $this->generateUrl('technologie.detail', ['technologie' => $technologie->getId()]),
                     'technologie' => $technologie->getId(),
                     'name' => $technologie->getLabel(),
                 ],
