@@ -4,7 +4,11 @@ namespace App\Controller;
 
 use App\Form\NiveauForm;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_REGLE')]
+#[Route('/niveau', name: 'niveau.')]
 class NiveauController extends AbstractController
 {
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)

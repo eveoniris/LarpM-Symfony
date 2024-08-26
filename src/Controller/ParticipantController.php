@@ -62,11 +62,6 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * LarpManager\Controllers\ParticipantController.
- *
- * @author kevin
- */
 class ParticipantController extends AbstractController
 {
     /**
