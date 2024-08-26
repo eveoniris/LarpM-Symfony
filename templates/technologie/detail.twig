@@ -4,24 +4,69 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('technologie') }}">Liste des technologies</a></li>
-		<li class="active">Détail d'une technologie</li>
-	</ol>
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des technologies', 'route': path('technologie.list') },
+            {'name' : 'Détail d\'une technologie' }
+        ]
+    } %}
 
-	<div class="list-group">
-		<div class="list-group-item">
-			<div class="list-group-item-heading"><h6>Label</h6></div>
-			<div class="list-group-item-text">{{ technologie.label }}</div>
-		</div>
-	</div>
-	
-	<div class="panel panel-default">
-		<div class="panel-heading"><h4>Description</h4></div>
-		<div class="panel-body">
-			<p>{{ technologie.description|markdown_to_html }}</p>
-		</div>
-	</div>
-	
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Détail d'une technologie</h5>
+        </div>
+
+        <div class="d-flex justify-content-end">
+
+            <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Personnages associés"
+                       href="{{ path('technologie.personnages',{'technologie':technologie.id}) }}"><i
+                                class="fa fa-users"></i> Personnages</a>
+                    {% if technologie.documentUrl %}
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Télécharger le document associé"
+                           href="{{ path('technologie.document',{'technologie':technologie.id, 'document':technologie.documentUrl}) }}"><i
+                                    class="fa fa-download"></i> Document</a>
+                    {% endif %}
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Ajouter"
+                       href="{{ path('technologie.add') }}"><i
+                                class="fa fa-plus"></i> Ajouter</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier"
+                       href="{{ path('technologie.update',{'technologie':technologie.id}) }}"><i
+                                class="fa fa-pencil"></i> Modifier</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Supprimer"
+                       href="{{ path('technologie.delete',{'technologie':technologie.id}) }}"><i
+                                class="fa fa-eraser"></i> Supprimer</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+                <div class="list-group">
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Label</div>
+                        <div class="list-group-item-text ps-1">{{ technologie.label }}</div>
+                    </div>
+
+                    <div class="list-group-item mb-4">
+                        <div class="list-group-item-heading fw-bold mb-1">Description</div>
+                        <div class="list-group-item-text ps-1">{{ technologie.description|markdown_to_html }}</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
 {% endblock body %}

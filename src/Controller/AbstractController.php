@@ -125,7 +125,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string $title,
         string $successMsg,
         string $redirect,
-        array $breadcrumb
+        array $breadcrumb,
+        ?string $content = null
     ): RedirectResponse|Response {
         $request = $this->requestStack->getCurrentRequest();
         $form = $this->createForm(DeleteForm::class, $entity, ['class' => $entity::class]);
@@ -153,6 +154,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             'form' => $form->createView(),
             'entity' => $entity,
             'breadcrumb' => $breadcrumb,
+            'content' => $content,
         ]);
     }
 

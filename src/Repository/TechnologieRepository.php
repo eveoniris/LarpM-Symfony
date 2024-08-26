@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Personnage;
-use App\Entity\Priere;
 use App\Entity\Technologie;
 use App\Enum\CompetenceFamilyType;
 use App\Service\OrderBy;
@@ -111,10 +110,10 @@ class TechnologieRepository extends BaseRepository
 
     public function getPersonnages(Technologie $technologie): QueryBuilder
     {
-        /** @var TechnologieRepository $technologieRepository */
-        $technologieRepository = $this->entityManager->getRepository(Technologie::class);
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
-        return $technologieRepository->createQueryBuilder('perso')
+        return $personnageRepository->createQueryBuilder('perso')
             ->innerJoin(Technologie::class, 't')
             ->where('t.id = :tid')
             ->setParameter('tid', $technologie->getId());

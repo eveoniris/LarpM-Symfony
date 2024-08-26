@@ -10,6 +10,7 @@ use App\Form\Technologie\TechnologieForm;
 use App\Form\Technologie\TechnologiesRessourcesForm;
 use App\Repository\TechnologieRepository;
 use App\Service\PagerService;
+use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\FormInterface;
@@ -113,28 +114,27 @@ class TechnologieController extends AbstractController
     #[Route('/{technologie}/personnages', name: 'personnages', requirements: ['technologie' => Requirement::DIGITS])]
     public function personnagesAction(
         Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Technologie $technologie
+        #[MapEntity] Technologie $technologie,
+        PersonnageService $personnageService,
+        TechnologieRepository $technologieRepository
     ): Response {
         $routeName = 'technologie.personnages';
         $routeParams = ['technologie' => $technologie->getId()];
-        $twigFilePath = 'admin/technologie/personnages.twig';
+        $twigFilePath = 'technologie/personnages.twig';
         $columnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser'];
         $personnages = $technologie->getPersonnages();
         $additionalViewParams = [
             'technologie' => $technologie,
         ];
 
-        // handle the request and return an array containing the parameters for the view
-        $personnageSearchHandler = $app['personnage.manager']->getSearchHandler();
-
-        $viewParams = $personnageSearchHandler->getSearchViewParameters(
+        $viewParams = $personnageService->getSearchViewParameters(
             $request,
             $routeName,
             $routeParams,
             $columnKeys,
             $additionalViewParams,
-            $personnages
+            $personnages,
+            $technologieRepository->getPersonnages($technologie)
         );
 
         return $this->render(
@@ -241,7 +241,8 @@ class TechnologieController extends AbstractController
                     'name' => $technologie->getLabel(),
                 ],
                 ['name' => 'Supprimer une technologie'],
-            ]
+            ],
+            $technologie->getDescription(),
         );
     }
 

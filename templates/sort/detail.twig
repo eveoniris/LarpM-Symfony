@@ -38,6 +38,11 @@
                                     class="fa fa-download"></i> Document</a>
                     {% endif %}
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Ajouter"
+                       href="{{ path('magie.sort.add') }}"><i
+                                class="fa fa-plus"></i> Ajouter</a>
+
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Modifier"
                        href="{{ path('magie.sort.update',{'sort':sort.id}) }}"><i
                                 class="fa fa-pencil"></i> Modifier</a>
