@@ -4,31 +4,30 @@
 
 {% block body %}
 
-	{% include '_partials/breadcrumb.twig' with {'items' :
-		[
-			{'name' : 'Liste des sort', 'route': path('magie.sort.list') },
-			{'name' : sort.label ~ ' - Niveau ' ~ sort.niveau , 'route': path('magie.sort.detail', {'sort': sort.id}) },
-			{'name' : 'Personnages ayant ce sort' },
-		]
-	} %}
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des sort', 'route': path('magie.sort.list') },
+            {'name' : sort.label ~ ' - Niveau ' ~ sort.niveau , 'route': path('magie.sort.detail', {'sort': sort.id}) },
+            {'name' : 'Personnages ayant ce sort' },
+        ]
+    } %}
 
-	{# TODO admin/player view #}
-	{{ include('admin/personnage/search.twig',
-		 	{
-			 displayAdminToolbar: false, 
-			 displaySearchFilter: false,
-			 extraData: 'Magie',
-			 extraDataTitle: 'Niveau de magie',
-		  	}
-  		)
-	}}
-	
-	<!-- Previous code (before reusing the same template as admin search) - can probably be removed but keeping for now just in case
+    {# TODO admin/player view #}
+    {{ include('admin/personnage/search.twig',
+        {
+            displayAdminToolbar: false,
+            displaySearchFilter: false,
+            extraData: constant('App\\Enum\\CompetenceFamilyType::MAGIC').value,
+            extraDataTitle: 'Niveau de magie',
+        }
+    ) }}
+
+    <!-- Previous code (before reusing the same template as admin search) - can probably be removed but keeping for now just in case
 	<div class="list-group">
 		{% for personnage in sort.personnages %}
 			<a class="list-group-item" href="{{ path('personnage.admin.detail', {'personnage': personnage.id}) }}">{% if personnage.vivant == 0 %}💀 {% endif %}#{{ personnage.id }} - {{ personnage.identity }} -- {{ personnage.classeName }}</a>
 		{% endfor %}
 	</div>
 	-->
-	
+
 {% endblock body %}

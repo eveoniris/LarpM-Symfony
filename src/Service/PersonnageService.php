@@ -57,6 +57,7 @@ class PersonnageService
         $page = (int) ($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
+        $alias = $query->getRootAliases()[0] ?? 'p';
 
         $formData = $request->query->get('personnageFind');
         $religion = isset($formData['religion']) ? $this->entityManager->find(
@@ -151,7 +152,7 @@ class PersonnageService
                 $numResults = $repo->findCount($criteria);
             }
         } elseif ($query) {
-            $personnages = $query->orderBy('p.'.$orderBy, $orderDir)->getQuery();
+            $personnages = $query->orderBy($alias.'.'.$orderBy, $orderDir)->getQuery();
         } else {
             // on effectue d'abord le filtre
             // TODO: pour le moment, finalement il n'y a plus besoin de filtre car le composant n'est plus affiché
