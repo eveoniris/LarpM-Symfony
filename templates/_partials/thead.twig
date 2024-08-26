@@ -25,10 +25,16 @@
         {% set options = options|merge({"route":row.route}) %}
     {% endif %}
 
+    {% if row.css is not defined %}
+        {% set css = 'no' %}
+    {% else %}
+        {% set css = row.css %}
+    {% endif %}
+
     {% if options.field is defined %}
-        <th>{% include '_partials/orderBy.twig' with options %}</th>
+        <th class="{{ css }}">{% include '_partials/orderBy.twig' with options %}</th>
     {% elseif row.name is defined %}
-        <th>{{ row.name }}</th>
+        <th class="{{ css }}">{{ row.name }}</th>
     {% endif %}
 
     {% if loop.last %}

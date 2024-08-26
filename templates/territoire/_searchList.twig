@@ -1,0 +1,92 @@
+{% if actionPath is not defined %}
+{% set actionPath = path('territoire.list') %}
+{% endif %}
+
+<div class="well well-sm">
+    <div class="header">
+        {% if searchTitle is defined %}
+            <h5>{{ searchTitle|raw }}</small></h5>
+        {% else %}
+            <h5>Liste des territoires <small>( {{ paginator|length }} )</small></h5>
+        {% endif %}
+    </div>
+
+    {% include '_partials/formListSearch.twig' with
+        {
+            'canAdd': {'title': 'Ajouter un territoire', 'path': path('territoire.add')},
+            'actionPath' : actionPath
+        } %}
+
+    {% include '_partials/pagination.html.twig' %}
+
+    <table class="table table-striped table-bordered table-condensed table-hover">
+        {% include '_partials/thead.twig' with  { 'path': actionPath, 'rows': [
+            {'name' : 'Nom', 'field' : 'nom'},
+            {'name' : 'Appelation', 'field' : 'appelation.label'},
+            {'name' : 'Description'},
+            {'name' : 'Territoires'},
+            {'name' : 'Actions'},
+        ]} %}
+        <tbody>
+        {% for territoire in paginator %}
+            <tr>
+                <td class="align-middle">{{ territoire.nom|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle">{{ territoire.appelation.label|highlight(pagerService.searchValue) }}</td>
+                <td>{{ territoire.description|markdown_to_html|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle">
+                    <div class="list-group">
+                        {% if territoire.territoire %}
+                            <div class="card mb-2">
+                                <div class="fw-bold card-header">Dépend de</div>
+                                <div class="my-1">
+                                    <a href="{{ path('territoire.detail',{'territoire': territoire.territoire.id}) }}">{{ territoire.territoire.nom }}</a>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% for fief in territoire.territoires %}
+                            <div class="list-group-item">
+                                <div>
+                                    <a href="{{ path('territoire.detail', {'territoire':fief.id}) }}">{{ fief.nom }}</a>
+                                </div>
+                            </div>
+                        {% else %}
+                            {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Aucune dépendense" } %}
+                        {% endfor %}
+                        <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
+                           title="Ajouter"
+                           href="{{ path('territoire.add', {'territoire': territoire.id}) }}">
+                            <i class="fa fa-plus"></i> Ajouter
+                        </a>
+                    </div>
+                </td>
+                <td class="text-center align-middle">
+                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                        <div class="btn-group" role="group" aria-label="...">
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Detail"
+                               href="{{ path('territoire.detail',{'territoire':territoire.id}) }}"><i
+                                        class="fa fa-eye"></i></a>
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier"
+                               href="{{ path('territoire.update',{'territoire':territoire.id}) }}"><i
+                                        class="fa fa-pencil"></i></a>
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                               title="Modifier les cibles de ce territoire"
+                               href="{{ path('territoire.updateCibles',{'territoire':territoire.id}) }}"><i
+                                        class="fa fa-bullseye"></i></a>
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                               title="Modifier les stratégies de ce territoire"
+                               href="{{ path('territoire.updateStrategie',{'territoire':territoire.id}) }}"><i
+                                        class="fa fa-chess-knight"></i></a>
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Supprimer"
+                               href="{{ path('territoire.delete',{'territoire':territoire.id}) }}"><i
+                                        class="fa fa-eraser"></i></a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include '_partials/pagination.html.twig' %}
+</div>

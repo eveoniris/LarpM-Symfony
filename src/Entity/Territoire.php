@@ -8,16 +8,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 
 /**
- *
  * Je définie les relations ManyToMany içi au lieu de le faire dans Mysql Workbench
  * car l'exporteur ne sait pas gérer correctement plusieurs relations ManyToMany entre
- * les mêmes entities (c'est dommage ...)
- *
+ * les mêmes entities (c'est dommage ...).
  */
 #[Entity(repositoryClass: TerritoireRepository::class)]
 class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringable
 {
-
     /**
      * Constructeur.
      */
@@ -316,7 +313,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Add Ressource entity to collection.
      *
-     * @return \App\Entity\Territoire
+     * @return Territoire
      */
     public function addExportation(Ressource $ressource): static
     {
@@ -329,7 +326,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Remove Ressource entity from collection.
      *
-     * @return \App\Entity\Territoire
+     * @return Territoire
      */
     public function removeExportation(Ressource $ressource): static
     {
@@ -342,7 +339,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Get Ressource entity collection.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getExportations()
     {
@@ -352,7 +349,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Add Ressource entity to collection.
      *
-     * @return \App\Entity\Territoire
+     * @return Territoire
      */
     public function addImportation(Ressource $ressource): static
     {
@@ -365,7 +362,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Remove Ressource entity from collection.
      *
-     * @return \App\Entity\Territoire
+     * @return Territoire
      */
     public function removeImportation(Ressource $ressource): static
     {
@@ -378,7 +375,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Get Ressource entity collection.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getImportations($rarete = null)
     {

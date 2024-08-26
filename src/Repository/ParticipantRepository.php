@@ -165,7 +165,7 @@ class ParticipantRepository extends BaseRepository
         $alias ??= static::getEntityAlias();
 
         return [
-            ...parent::searchAttributes($alias),
+            ...parent::searchAttributes(),
             $alias.'.renommee',
             'territoire.nom as territoire',
             'competence.description as competence',
@@ -193,13 +193,13 @@ class ParticipantRepository extends BaseRepository
     {
         return [
             ...parent::translateAttributes(),
-            'renommee' => $this->translator->trans('Renommée'),
-            'territoire' => $this->translator->trans('Territoire'),
-            'competence' => $this->translator->trans('Compétence'),
-            'classe' => $this->translator->trans('Classe'),
-            'religion' => $this->translator->trans('Religion'),
-            'langue' => $this->translator->trans('Langue'),
-            'groupe' => $this->translator->trans('Groupe'),
+            'renommee' => $this->translator->trans('Renommée', domain: 'repository'),
+            'territoire' => $this->translator->trans('Territoire', domain: 'repository'),
+            'competence' => $this->translator->trans('Compétence', domain: 'repository'),
+            'classe' => $this->translator->trans('Classe', domain: 'repository'),
+            'religion' => $this->translator->trans('Religion', domain: 'repository'),
+            'langue' => $this->translator->trans('Langue', domain: 'repository'),
+            'groupe' => $this->translator->trans('Groupe', domain: 'repository'),
         ];
     }
 }

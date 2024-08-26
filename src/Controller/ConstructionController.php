@@ -6,27 +6,35 @@ use App\Entity\Construction;
 use App\Form\ConstructionDeleteForm;
 use App\Form\ConstructionForm;
 use App\Repository\ConstructionRepository;
+use App\Repository\TerritoireRepository;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_REGLE')]
+#[Route('/construction', name: 'construction.')]
 class ConstructionController extends AbstractController
 {
     /**
      * Présentation des constructions.
      */
-    #[Route('/construction', name: 'construction.index')]
-    public function indexAction(Request $request, PagerService $pagerService, ConstructionRepository $constructionRepository): Response
-    {
+    #[Route('/', name: 'index')]
+    #[Route('/', name: 'list')]
+    public function indexAction(
+        Request $request,
+        PagerService $pagerService,
+        ConstructionRepository $constructionRepository
+    ): Response {
         $pagerService->setRequest($request)->setRepository($constructionRepository)->setLimit(25);
 
-        return $this->render('construction/index.twig', [
+        return $this->render('construction/list.twig', [
             'pagerService' => $pagerService,
             'paginator' => $constructionRepository->searchPaginated($pagerService),
         ]);
@@ -35,107 +43,116 @@ class ConstructionController extends AbstractController
     /**
      * Ajoute une construction.
      */
-    #[Route('/construction/add', name: 'construction.add')]
-    public function addAction(Request $request, EntityManagerInterface $entityManager): Response|RedirectResponse
+    #[Route('/add', name: 'add')]
+    public function addAction(Request $request): Response|RedirectResponse
     {
-        $construction = new Construction();
-
-        $form = $this->createForm(ConstructionForm::class, $construction)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $construction = $form->getData();
-
-            $entityManager->persist($construction);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La construction a été ajoutée.');
-
-            return $this->redirectToRoute('construction.detail', ['construction' => $construction->getId()], 303);
-        }
-
-        return $this->render('construction/add.twig', [
-            'construction' => $construction,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            new Construction(),
+            ConstructionForm::class
+        );
     }
 
     /**
      * Modifie une construction.
      */
-    #[Route('/construction/{construction}/update', name: 'construction.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, Construction $construction): Response|RedirectResponse
+    #[Route('/{construction}/update', name: 'update', requirements: ['construction' => Requirement::DIGITS])]
+    public function updateAction(Request $request, #[MapEntity] Construction $construction): Response|RedirectResponse
     {
-        $form = $this->createForm(ConstructionForm::class, $construction)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $construction = $form->getData();
-
-            $entityManager->persist($construction);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La construction a été modifié.');
-
-            return $this->redirectToRoute('construction.detail', ['construction' => $construction->getId()], 303);
-        }
-
-        return $this->render('construction/update.twig', [
-            'construction' => $construction,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            $construction,
+            ConstructionForm::class
+        );
     }
 
     /**
      * Supprime une construction.
      */
-    #[Route('/construction/{construction}/delete', name: 'construction.delete')]
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Construction $construction): Response|RedirectResponse
-    {
-        $form = $this->createForm(ConstructionDeleteForm::class, $construction)
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $construction = $form->getData();
-
-            $entityManager->remove($construction);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La construction a été supprimée.');
-
-            return $this->redirectToRoute('construction.index', [], 303);
-        }
-
-        return $this->render('construction/delete.twig', [
-            'construction' => $construction,
-            'form' => $form->createView(),
-        ]);
+    #[Route('/{construction}/delete', name: 'delete', requirements: ['construction' => Requirement::DIGITS])]
+    public function deleteAction(
+        #[MapEntity] Construction $construction
+    ): Response|RedirectResponse {
+        return $this->genericDelete(
+            $construction,
+            'Supprimer une construction',
+            'La construction a été supprimée',
+            'construction.list',
+            [
+                ['route' => $this->generateUrl('construction.list'), 'name' => 'Liste des constructions'],
+                [
+                    'route' => $this->generateUrl('construction.detail', ['construction' => $construction->getId()]),
+                    'technologie' => $construction->getId(),
+                    'name' => $construction->getLabel(),
+                ],
+                ['name' => 'Supprimer une construction'],
+            ]
+        );
     }
 
     /**
      * Détail d'une construction.
      */
-    #[Route('/construction/{construction}/detail', name: 'construction.detail')]
+    #[Route('/{construction}/detail', name: 'detail')]
     public function detailAction(Construction $construction): Response
     {
         return $this->render('construction/detail.twig', [
-            'construction' => $construction]);
-    }
-
-    /**
-     * Liste des territoires ayant cette construction.
-     */
-    #[Route('/construction/{construction}/territoires', name: 'construction.territoires')]
-    public function territoiresAction(Construction $construction): Response
-    {
-        return $this->render('construction/territoires.twig', [
             'construction' => $construction,
         ]);
+    }
+
+    #[Route('/{construction}/territoires', name: 'territoires')]
+    public function territoiresAction(
+        Request $request,
+        PagerService $pagerService,
+        TerritoireRepository $territoireRepository,
+        #[MapEntity] Construction $construction
+    ): Response {
+        $pagerService
+            ->setRequest($request)
+            ->setRepository($territoireRepository)
+            ->setLimit(25);
+
+
+        $alias = $territoireRepository->getAlias();
+        $queryBuilder = $territoireRepository->createQueryBuilder($alias);
+
+        return $this->render('construction/territoires.twig', [
+            'pagerService' => $pagerService,
+            'construction' => $construction,
+            'paginator' => $territoireRepository->searchPaginated(
+                $pagerService,
+                $territoireRepository->construction($queryBuilder, $construction),
+            ),
+        ]);
+    }
+
+    protected function handleCreateOrUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
+        ?callable $entityCallback = null
+    ): RedirectResponse|Response {
+        return parent::handleCreateOrUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                'entity' => $this->translator->trans('construction'),
+                'entity_added' => $this->translator->trans('La construction a été ajoutée'),
+                'entity_updated' => $this->translator->trans('La construction a été mise à jour'),
+                'entity_deleted' => $this->translator->trans('La construction a été supprimée'),
+                'entity_list' => $this->translator->trans('Liste des constructions'),
+                'title_add' => $this->translator->trans('Ajouter une construction'),
+                'title_update' => $this->translator->trans('Modifier une construction'),
+                ...$msg,
+            ],
+            entityCallback: $entityCallback
+        );
     }
 }

@@ -12,7 +12,7 @@ class LevelRepository extends BaseRepository
         $alias ??= static::getEntityAlias();
 
         return [
-            ...parent::searchAttributes($alias),
+            ...parent::searchAttributes(),
             $alias.'.label',
             $alias.'.cout',
             $alias.'.cout_favori',

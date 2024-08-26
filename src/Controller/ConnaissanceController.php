@@ -16,8 +16,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -101,7 +99,7 @@ class ConnaissanceController extends AbstractController
             [
                 ['route' => $this->generateUrl('connaissance.list'), 'name' => 'Liste des connaissances'],
                 [
-                    'route' => 'connaissance.detail',
+                    'route' => $this->generateUrl('connaissance.detail', ['connaissance' => $connaissance->getId()]),
                     'connaissance' => $connaissance->getId(),
                     'name' => $connaissance->getLabel(),
                 ],

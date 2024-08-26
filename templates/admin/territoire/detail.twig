@@ -37,7 +37,7 @@
 					<li>Aucune cibles définies</li>
 					{% endfor %}
 				</ul>	
-				<a href="{{ path('territoire.admin.updateCibles', {'territoire': territoire.id }) }}">Modifier</a> 	
+				<a href="{{ path('territoire.updateCibles', {'territoire': territoire.id }) }}">Modifier</a>
 				</div>
 			</div>
 	    			
@@ -51,7 +51,7 @@
 	    			<li>Trésor de base : {{ territoire.tresor|default(0) }}</li>
 	    			<li>Richesse réelle : {{ territoire.richesse|default(0) }} (prend en compte les constructions et le statut du territoire)</li>
 	    			</ul>
-	    			<a href="{{ path('territoire.admin.updateStrategie', {'territoire': territoire.id}) }}">Modifier</a>
+	    			<a href="{{ path('territoire.updateStrategie', {'territoire': territoire.id}) }}">Modifier</a>
 	    		</div>
 	    		
 	    		<div class="list-group-item">
@@ -59,7 +59,7 @@
 	    			<ul>
 	    				<li>{{ territoire.culture.label|default('Non définie') }}</li>
 	    			</ul>
-	    			<a href="{{ path('territoire.admin.updateCulture', {'territoire': territoire.id}) }}">Modifier</a>
+	    			<a href="{{ path('territoire.updateCulture', {'territoire': territoire.id}) }}">Modifier</a>
 	    		</div>
 	    		
 	    		<div class="list-group-item">
@@ -79,7 +79,7 @@
 	    			<ul>
 	    				<li>{{ territoire.statut|default('Normal') }}</li>
 	    			</ul>
-	    			<a href="{{ path('territoire.admin.updateStatut', {'territoire': territoire.id}) }}">Modifier</a>
+	    			<a href="{{ path('territoire.updateStatut', {'territoire': territoire.id}) }}">Modifier</a>
 	    		</div>
 	    		
 	    		<div class="list-group-item">
@@ -197,7 +197,7 @@
 				
 				<div class="list-group-item">
   					<div class="btn-group" role="group" aria-label="...">
-  						<a  class="btn btn-primary" role="button" href="{{ path('territoire.admin.update', {'territoire' : territoire.id}) }}">Modifier</a>
+  						<a  class="btn btn-primary" role="button" href="{{ path('territoire.update', {'territoire' : territoire.id}) }}">Modifier</a>
   						<a  class="btn btn-danger" role="button" href="{{ path('territoire.delete', {'territoire' : territoire.id}) }}">Supprimer</a>
   						
   						{% if territoire.topic %}

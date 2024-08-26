@@ -126,7 +126,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string $successMsg,
         string $redirect,
         array $breadcrumb,
-        ?string $content = null
+        string $content = ''
     ): RedirectResponse|Response {
         $request = $this->requestStack->getCurrentRequest();
         $form = $this->createForm(DeleteForm::class, $entity, ['class' => $entity::class]);

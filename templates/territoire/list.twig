@@ -63,7 +63,7 @@
 									Forum du territoire "{{ territoire.nom }}"
 								</a><br />
 							{% else %}
-								<a href="{{ path('territoire.admin.topic.add', {'territoire': territoire.id}) }}">Créer un forum pour ce territoire</a>
+								<a href="{{ path('territoire.topic.add', {'territoire': territoire.id}) }}">Créer un forum pour ce territoire</a>
 							{% endif %}
 						</p>
 						{%  if territoire.territoires|length > 0 %}
@@ -97,7 +97,7 @@
 										Forum du territoire "{{ region.nom }}"
 									</a><br />
 								{% else %}
-									<a href="{{ path('territoire.admin.topic.add', {'territoire': region.id}) }}">Créer un forum pour ce territoire</a>
+									<a href="{{ path('territoire.topic.add', {'territoire': region.id}) }}">Créer un forum pour ce territoire</a>
 								{% endif %}
 							</p>
 							{%  if region.territoires|length > 0 %}
@@ -131,8 +131,8 @@
 											Forum du territoire "{{ fief.nom }}"
 										</a><br />
 									{% else %}
-										<a href="{{ path('territoire.admin.topic.add', {'territoire': fief.id}) }}">Créer un forum pour ce territoire</a>
-									{% endif %}
+										<a href="{{ path('territoire.topic.add', {'territoire': fief.id}) }}">Créer un forum pour ce territoire</a>
+									{% endif %}TerRepo
 								</p>
 								{%  if fief.territoires|length > 0 %}
 									<p class="list-group-item-text">

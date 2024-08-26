@@ -1,0 +1,62 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Construction{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Liste des constructions'}]} %}
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Liste des constructions <small>( {{ paginator|length }} constructions)</small></h5>
+        </div>
+
+        {% include '_partials/formListSearch.twig' with
+            {
+                'canAdd': {'title': 'Ajouter une construction', 'path': path('construction.add')},
+                'actionPath' : path('construction.list')
+            } %}
+
+        {% include '_partials/pagination.html.twig' %}
+
+        <table class="table table-striped table-bordered table-condensed table-hover">
+            {% include '_partials/thead.twig' with  { 'route': 'construction.list', 'rows': [
+                {'name' : 'Construction', 'field' : 'label'},
+                {'name' : 'Défense', 'field' : 'defense', 'css': 'text-center'},
+                {'name' : 'Description'},
+                {'name' : 'Actions'},
+            ]} %}
+            <tbody>
+            {% for construction in paginator %}
+                <tr>
+                    <td class="align-middle">{{ construction.label|highlight(pagerService.searchValue) }}</td>
+                    <td class="text-center align-middle">{{ construction.defense|highlight(pagerService.searchValue) }}</td>
+                    <td>{{ construction.description|markdown_to_html|highlight(pagerService.searchValue) }}</td>
+                    <td class="text-center align-middle">
+                        <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Detail"
+                                   href="{{ path('construction.detail',{'construction':construction.id}) }}"><i
+                                            class="fa fa-eye"></i></a>
+                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier"
+                                   href="{{ path('construction.update',{'construction':construction.id}) }}"><i
+                                            class="fa fa-pencil"></i></a>
+                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                   title="Liste des territoires avec cette construction"
+                                   href="{{ path('construction.territoires',{'construction':construction.id}) }}"><i
+                                            class="fa fa-map"></i></a>
+                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Supprimer"
+                                   href="{{ path('construction.delete',{'construction':construction.id}) }}"><i
+                                            class="fa fa-eraser"></i></a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% include '_partials/pagination.html.twig' %}
+    </div>
+
+{% endblock %}

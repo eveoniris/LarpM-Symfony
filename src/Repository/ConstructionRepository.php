@@ -1,10 +1,11 @@
 <?php
 
-
 namespace App\Repository;
 
+use App\Entity\Construction;
+use App\Entity\Territoire;
 use App\Service\OrderBy;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * LarpManager\Repository\ConstructionRepository.
@@ -37,7 +38,19 @@ class ConstructionRepository extends BaseRepository
             ->getResult();
     }
 
-    public function sortAttributes(string $alias = null): array
+    public function searchAttributes(): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            self::SEARCH_ALL,
+            $alias.'.label', // => 'Libellé',
+            $alias.'.description', // => 'Description',
+            $alias.'.defense',
+        ];
+    }
+
+    public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
@@ -51,5 +64,28 @@ class ConstructionRepository extends BaseRepository
                 OrderBy::DESC => [$alias.'.defense' => OrderBy::DESC],
             ],
         ];
+    }
+
+    public function translateAttributes(): array
+    {
+        $attributes = parent::translateAttributes();
+        unset($attributes['id']);
+
+        $attributes['defense'] = $this->translator->trans('Défense', domain: 'repository');
+        $attributes['description'] = $this->translator->trans('Description', domain: 'repository');
+        $attributes['label'] = $this->translator->trans('Nom', domain: 'repository');
+
+        return $attributes;
+    }
+
+    public function getTerritoires(Construction $construction): QueryBuilder
+    {
+        /** @var TerritoireRepository $territoireRepository */
+        $territoireRepository = $this->entityManager->getRepository(Territoire::class);
+
+        return $territoireRepository->createQueryBuilder('t')
+            ->innerJoin(Construction::class, 'c')
+            ->where('c.id = :cid')
+            ->setParameter('cid', $construction->getId());
     }
 }

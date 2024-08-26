@@ -14,7 +14,7 @@
 
 
         <div class="header">
-            <h5>Liste des sphère</h5>
+            <h5>Liste des sphères</h5>
         </div>
 
         {% include '_partials/formListSearch.twig' with
@@ -27,18 +27,18 @@
         <table class="table table-condensed table-striped table-bordered table-hover">
             <thead>
             <tr>
-                <th>
+                <th class="text-center align-middle">
                     {% include '_partials/orderby.twig' with {'name' : 'Libellé', 'field' : 'label', 'route': 'magie.sphere.list' } %}
                 </th>
-                <th>Actions</th>
+                <th class="text-center align-middle">Actions</th>
             </tr>
             </thead>
             <tbody>
             {% for sphere in paginator %}
                 <tr>
-                    <td>{{ sphere.label|highlight(pagerService.searchValue) }}</td>
-                    <td>
-                        <div class="btn-toolbar pull-right" role="toolbar">
+                    <td class="text-center align-middle">{{ sphere.label|highlight(pagerService.searchValue) }}</td>
+                    <td class="d-flex justify-content-center">
+                        <div class="btn-toolbar" role="toolbar">
                             <div class="btn-group-vertical" role="group">
                                 <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                    title="Modifier"

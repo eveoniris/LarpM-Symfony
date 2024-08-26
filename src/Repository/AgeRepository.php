@@ -39,12 +39,12 @@ class AgeRepository extends BaseRepository
             ->setParameter('enable', $enable);
     }
 
-    public function searchAttributes(string $alias = null): array
+    public function searchAttributes(): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
-            ...parent::searchAttributes($alias),
+            ...parent::searchAttributes(),
             $alias.'.label',
             $alias.'.description',
             $alias.'.bonus',

@@ -5,21 +5,17 @@
 {% block body %}
 
 	{% include '_partials/breadcrumb.twig' with {'items' :
-        [
-            {'name' : 'Liste des constructions', 'route': path('construction.index') },
+		[
+			{'name' : 'Liste des constructions', 'route': path('construction.index') },
 			{'name' : construction.label, 'route': path('construction.detail', {'construction':construction.id})  },
-            {'name' : 'Liste des territoires' },
-        ]
-    } %}
+			{'name' : 'Liste des territoires' },
+		]
+	} %}
 
-	<table class="table table-striped table-bordered table-condensed table-hover">
-		<tbody>
-			{% for territoire in construction.territoires %}
-			<tr><td><a class="list-group-item" href="{{ path('territoire.detail', {'territoire': territoire.id}) }}">{{ territoire.tree }}</a></td></tr>
-			{% else %}
-				{% include '_partials/noResultTableRow.twig' %}
-			{% endfor %}
-	 	</tbody>
-	</table>
-	
+	{% include 'territoire/_searchList.twig' with{
+			'actionPath' : path('construction.territoires', {'construction':construction.id}),
+			'searchTitle' : "Liste des territoires ayant la construction #{construction.label} <small>( #{paginator|length} territoires )</small>",
+			'paginator': paginator
+	} %}
+
 {% endblock body %}

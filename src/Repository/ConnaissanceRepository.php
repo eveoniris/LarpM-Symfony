@@ -16,7 +16,9 @@ class ConnaissanceRepository extends BaseRepository
     public function findByNiveau($niveau)
     {
         return $this->getEntityManager()
-            ->createQuery('SELECT c FROM App\Entity\Connaissance c Where c.niveau = ?1 AND (c.secret = 0 OR c.secret IS NULL) ORDER BY c.label ASC')
+            ->createQuery(
+                'SELECT c FROM App\Entity\Connaissance c Where c.niveau = ?1 AND (c.secret = 0 OR c.secret IS NULL) ORDER BY c.label ASC'
+            )
             ->setParameter(1, $niveau)
             ->getResult();
     }
@@ -68,12 +70,12 @@ class ConnaissanceRepository extends BaseRepository
         return $query->setParameter('value', $secret);
     }
 
-    public function searchAttributes(?string $alias = null): array
+    public function searchAttributes(): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
-            ...parent::searchAttributes($alias),
+            ...parent::searchAttributes(),
             $alias.'.label', // => 'Libellé',
             $alias.'.description', // => 'Description',
             $alias.'.contraintes', // => 'Prérequis',
@@ -86,9 +88,28 @@ class ConnaissanceRepository extends BaseRepository
 
         return [
             ...parent::sortAttributes($alias),
-            'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
-            'description' => [OrderBy::ASC => [$alias.'.description' => OrderBy::ASC], OrderBy::DESC => [$alias.'.description' => OrderBy::DESC]],
-            'secret' => [OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC], OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC]],
+            'label' => [
+                OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
+            ],
+            'description' => [
+                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+            ],
+            'secret' => [
+                OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC],
+            ],
+        ];
+    }
+
+    public function translateAttributes(): array
+    {
+        return [
+            ...parent::translateAttributes(),
+            'description' => $this->translator->trans('Description', domain: 'repository'),
+            'label' => $this->translator->trans('Libellé', domain: 'repository'),
+            'contraintes' => $this->translator->trans('Contraintes', domain: 'repository'),
         ];
     }
 
@@ -96,6 +117,7 @@ class ConnaissanceRepository extends BaseRepository
     {
         /** @var PersonnageRepository $personnageRepository */
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
         return $personnageRepository->createQueryBuilder('p')
             ->innerJoin(Connaissance::class, 'c')
             ->where('c.id = :cid')

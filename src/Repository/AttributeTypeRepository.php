@@ -25,12 +25,13 @@ class AttributeTypeRepository extends BaseRepository
         ->getResult();
     }
 
-    public function searchAttributes(string $alias = null): array
+    public function searchAttributes(): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
-            ...parent::searchAttributes($alias),
+            ...parent::searchAttributes(),
+            $alias.'.id',
             $alias.'.label',
         ];
     }
