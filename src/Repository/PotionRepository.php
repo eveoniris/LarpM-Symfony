@@ -155,7 +155,7 @@ class PotionRepository extends BaseRepository
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
         return $personnageRepository->createQueryBuilder('perso')
-            ->innerJoin(Potion::class, 'p')
+            ->innerJoin('perso.potions', 'p')
             ->where('p.id = :pid')
             ->setParameter('pid', $potion->getId());
     }

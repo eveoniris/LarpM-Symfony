@@ -143,8 +143,8 @@ class SortRepository extends BaseRepository
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
         return $personnageRepository->createQueryBuilder('p')
-            ->innerJoin(Sort::class, 's')
+            ->innerJoin('p.sorts', 's')
             ->where('s.id = :sid')
-            ->setParameter('sid', $sort->getId());
+            ->setParameter('sid', $sort);
     }
 }

@@ -4,11 +4,12 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("gn.list") }}">Liste des grandeur nature</a></li>
-		<li class="active">Détail d'un grandeur nature</li>
-	</ol>
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'name' : 'Liste des grandeurs nature', 'route': path('gn.list') },
+			{'name' : gn.label }
+		]
+	} %}
 
 	<div class="row">
 						

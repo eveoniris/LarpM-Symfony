@@ -286,11 +286,11 @@ abstract class BaseRepository extends ServiceEntityRepository
     ): QueryBuilder {
         $orderBy ??= $this->orderBy;
         $alias ??= static::getEntityAlias();
+
         $query ??= $this->createQueryBuilder($alias);
 
         // Order only if allowed and if exists
         $this->addOrderBy($query, $orderBy, $alias);
-
         // Any search to perform ?
         if (empty($search) || self::SEARCH_NOONE === $attributes) {
             return $query;

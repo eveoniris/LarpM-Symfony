@@ -119,7 +119,7 @@ class ConnaissanceRepository extends BaseRepository
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
         return $personnageRepository->createQueryBuilder('p')
-            ->innerJoin(Connaissance::class, 'c')
+            ->innerJoin('p.connaissances', 'c')
             ->where('c.id = :cid')
             ->setParameter('cid', $connaissance->getId());
     }

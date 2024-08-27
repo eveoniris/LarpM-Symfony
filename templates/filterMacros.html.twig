@@ -1,19 +1,55 @@
 {% macro getCaret(app,type) %}
-    {% if app.request.get('order_by') == type  %}
+    {% if app.request.get('order_by') == type %}
         {% if app.request.get('order_dir') == 'ASC' %}
-            <span class="caret"></span>
-        {%else%}
-            <span class="dropup">
-					<span class="caret"></span>
-				</span>
+            <i class="fa-solid fa-caret-down"></i>
+        {% else %}
+            <i class="fa-solid fa-caret-up"></i>
         {% endif %}
     {% endif %}
 {% endmacro %}
 
-{% macro getDirection(app,type)  %}
+{% macro getDirection(app,type) %}
     {% if app.request.get('order_by') == type and app.request.get('order_dir') == 'ASC' %}
         {{ 'DESC' }}
     {% else %}
         {{ 'ASC' }}
     {% endif %}
+{% endmacro %}
+
+{% macro getOrderBy(app, columnDef) %}
+
+    {% set field = columnDef.sortFieldName %}
+    {% set name = columnDef.label %}
+    {% if orderDir is not defined %}
+        {% if pagerService is defined %}
+            {% set orderDir = pagerService.getOrderBy.getSort() %}
+            {% set routeOptions = {'order_by': field, 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')} %}
+        {% elseif app.request.get('order_dir') == 'DESC' %}
+            {% set orderDir = 'DESC' %}
+        {% else %}
+            {% set orderDir = 'ASC' %}
+        {% endif %}
+    {% endif %}
+
+    {% set routeOptions = {'order_by': field, 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')} %}
+    {% if pagerService is defined %}
+        {% set routeOptions = routeOptions|merge({"search":pagerService.getSearchValue}) %}
+    {% endif %}
+
+    {% if pagerService is not defined %}
+    {% endif %}
+
+    {% if path is not defined and route is defined %}
+        {% set path = path( route, routeOptions ) %}
+    {% elseif path is not defined %}
+        {% set path = '#' %}
+    {% endif %}
+
+    <a href="{{ path }}">
+        {{ name }}
+        {% if app.request.get('order_by') == field %}
+            <i class="fa-solid fa-caret-{{ orderDir == 'ASC' ? 'down' : 'up' }}"></i>
+        {% endif %}
+    </a>
+
 {% endmacro %}

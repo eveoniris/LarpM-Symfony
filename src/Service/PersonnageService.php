@@ -17,7 +17,7 @@ class PersonnageService
 {
     public array $columnDefinitions = [
         'colId' => ['label' => '#', 'fieldName' => 'id',  'sortFieldName' => 'id', 'tooltip' => 'Numéro d\'identifiant'],
-        'colStatut' => ['label' => 'S', 'fieldName' => 'status',  'sortFieldName' => 'status', 'tooltip' => 'Statut'],
+        'colStatut' => ['label' => 'Statut', 'fieldName' => 'status',  'sortFieldName' => 'status', 'tooltip' => 'Statut', 'canOrder' => false],
         'colNom' => ['label' => 'Nom', 'fieldName' => 'nom',  'sortFieldName' => 'nom', 'tooltip' => 'Nom et surnom du personnage'],
         'colClasse' => ['label' => 'Classe', 'fieldName' => 'classe',  'sortFieldName' => 'classe', 'tooltip' => 'Classe du personnage'],
         'colGroupe' => ['label' => 'Groupe', 'fieldName' => 'groupe',  'sortFieldName' => 'groupe', 'tooltip' => 'Dernier GN - Groupe participant'],

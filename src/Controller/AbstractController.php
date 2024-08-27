@@ -296,15 +296,35 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         // TODO check usage of entity Document
 
         // TODO on ne peux télécharger que les documents des compétences que l'on connait
+        // TODO on ne peux télécharger que les documents auquel on a accéss
+        if (null === $entity && $document instanceof Document) {
+            $entity = $document;
+        }
+
+        if ($entity && !method_exists($entity, 'getDocument')) {
+            throw new \RuntimeException('Missing method getDocument for given Entity');
+        }
+
+        if ($entity && !method_exists($entity, 'getDocumentUrl')) {
+            throw new \RuntimeException('Missing method getDocumentUrl for given Entity');
+        }
+
+        if ($entity && !method_exists($entity, 'getPrintLabel')) {
+            throw new \RuntimeException('Missing method getPrintLabel for given Entity');
+        }
+
         $filename = $entity->getDocument($this->fileUploader->getProjectDirectory());
-        if (!$entity->getDocumentUrl() || !file_exists($filename)) {
+        $documentUrl = $entity->getDocumentUrl();
+        $documentLabel = $entity->getPrintLabel();
+
+        if (!$documentUrl || !file_exists($filename)) {
             throw new NotFoundHttpException("Le document n'existe pas");
         }
 
         $response = (new BinaryFileResponse($filename, Response::HTTP_OK))
             ->setContentDisposition(
                 ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                $entity->getPrintLabel().'.pdf');
+                $documentLabel.'.pdf');
 
         $response->headers->set('Content-Control', 'private');
         $response->headers->set('Content-Type', 'application/pdf');

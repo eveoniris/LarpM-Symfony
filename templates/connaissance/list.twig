@@ -22,18 +22,12 @@
     {% include '_partials/pagination.html.twig' %}
 
     <table class="table table-condensed table-striped table-bordered table-hover">
-        <thead>
-        <tr>
-            <th>
-                {% include '_partials/orderby.twig' with {'name' : 'Secrète', 'field' : 'secret', 'route': 'connaissance.list' } %}
-            </th>
-            <th>
-                {% include '_partials/orderby.twig' with {'name' : 'Libellé', 'field' : 'label', 'route': 'connaissance.list' } %}
-            </th>
-            <th>Description</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
+        {% include '_partials/thead.twig' with  { 'route': 'connaissance.list', 'rows': [
+            {'name' : 'Secrète', 'field' : 'secret', 'css' : 'text-center'},
+            {'name' : 'Libellé', 'field' : 'label', 'css' : 'text-center'},
+            {'name' : 'Description', 'css' : 'text-center'},
+            {'name' : 'Actions', 'css' : 'text-center'},
+        ]} %}
         <tbody>
         {% for connaissance in paginator %}
             <tr>

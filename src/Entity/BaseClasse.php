@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -23,36 +24,36 @@ use Doctrine\ORM\Mapping\InverseJoinColumn;
 #[ORM\DiscriminatorMap(['base' => 'BaseClasse', 'extended' => 'Classe'])]
 abstract class BaseClasse
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'label_masculin', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(name: 'label_masculin', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $label_masculin = null;
 
-    #[Column(name: 'label_feminin', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(name: 'label_feminin', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $label_feminin = null;
 
-    #[Column(name: 'description', type: \Doctrine\DBAL\Types\Types::STRING, length: 450, nullable: true)]
+    #[Column(name: 'description', type: Types::STRING, length: 450, nullable: true)]
     protected ?string $description = null;
 
-    #[Column(name: 'image_m', type: \Doctrine\DBAL\Types\Types::STRING, length: 90, nullable: true)]
+    #[Column(name: 'image_m', type: Types::STRING, length: 90, nullable: true)]
     protected ?string $image_m = null;
 
-    #[Column(name: 'image_f', type: \Doctrine\DBAL\Types\Types::STRING, length: 90, nullable: true)]
+    #[Column(name: 'image_f', type: Types::STRING, length: 90, nullable: true)]
     protected ?string $image_f = null;
 
-    #[Column(name: 'creation', type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    #[Column(name: 'creation', type: Types::BOOLEAN, nullable: true)]
     protected ?bool $creation = false;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\GroupeClasse>|\App\Entity\GroupeClasse[]
+     * @var Collection<int, GroupeClasse>|GroupeClasse[]
      */
     #[OneToMany(mappedBy: 'classe', targetEntity: GroupeClasse::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
     protected Collection $groupeClasses;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Personnage>|\App\Entity\Personnage[]
+     * @var Collection<int, Personnage>|Personnage[]
      */
     #[OneToMany(mappedBy: 'classe', targetEntity: Personnage::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
