@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use App\Enum\DocumentType;
+use App\Enum\FolderType;
+use App\Service\FileUploader;
+use App\Trait\EntityFileUploadTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
@@ -10,6 +14,17 @@ use App\Repository\CompetenceRepository;
 #[Entity(repositoryClass: CompetenceRepository::class)]
 class Competence extends BaseCompetence implements \Stringable
 {
+    use EntityFileUploadTrait;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setDocumentType(DocumentType::Documents)
+            ->setFolderType(FolderType::Private)
+            // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
+            ->setFilenameMaxLength(45 - 24 - 4);
+    }
+
     public function __toString(): string
     {
         return $this->getLabel();
@@ -162,5 +177,17 @@ class Competence extends BaseCompetence implements \Stringable
         }
 
         return null;
+    }
+
+    public function getDocument(string $projectDir): string
+    {
+        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
+    }
+
+    protected function afterUpload(FileUploader $fileUploader): FileUploader
+    {
+        $this->setDocumentUrl($fileUploader->getStoredFileName());
+
+        return $fileUploader;
     }
 }

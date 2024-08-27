@@ -3,11 +3,10 @@
 namespace App\Repository;
 
 use App\Service\OrderBy;
-use Doctrine\ORM\QueryBuilder;
 
 class LevelRepository extends BaseRepository
 {
-    public function searchAttributes(string $alias = null): array
+    public function searchAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
@@ -21,7 +20,7 @@ class LevelRepository extends BaseRepository
         ];
     }
 
-    public function sortAttributes(string $alias = null): array
+    public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
@@ -29,7 +28,7 @@ class LevelRepository extends BaseRepository
             ...parent::sortAttributes($alias),
             'index' => [OrderBy::ASC => [$alias.'.index' => OrderBy::ASC], OrderBy::DESC => [$alias.'.index' => OrderBy::DESC]],
             'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
-       ];
+        ];
     }
 
     public function translateAttributes(): array
