@@ -598,7 +598,9 @@ class Personnage extends BasePersonnage implements \Stringable
         $niveau = 0;
         foreach ($this->getCompetencesFromFamilyType($famillyType) as $competence) {
             $index = $competence->getLevel()?->getIndex();
+
             if (null === $level || $niveau < (int) $index) {
+                $niveau = (int) $index;
                 $level = $competence->getLevel();
             }
         }

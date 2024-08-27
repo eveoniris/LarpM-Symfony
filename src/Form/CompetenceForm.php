@@ -38,10 +38,9 @@ class CompetenceForm extends AbstractType
                     'class' => 'tinymce',
                 ],
             ])
-            ->add('document', FileType::class, [
+            ->add('file', FileType::class, [
                 'label' => 'Téléversez un document',
                 'required' => true,
-                'mapped' => false,
             ])
             ->add('materiel', TextareaType::class, [
                 'label' => 'Matériel necessaire',

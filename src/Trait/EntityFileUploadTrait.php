@@ -52,11 +52,11 @@ trait EntityFileUploadTrait
         return $this;
     }
 
-    public function handleUpload(FileUploader $fileUploader): void
+    public function handleUpload(FileUploader $fileUploader): static
     {
         // la propriété « file » peut être vide si le champ n'est pas requis (cas Modification, on garde le doc)
         if (!isset($this->file)) {
-            return;
+            return $this;
         }
 
         $fileUploader->upload(
@@ -72,6 +72,8 @@ trait EntityFileUploadTrait
 
         // « nettoie » la propriété « file » comme vous n'en aurez plus besoin
         $this->file = null;
+
+        return $this;
     }
 
     public function getFile(): ?UploadedFile

@@ -6,10 +6,12 @@ use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
 use App\Entity\Level;
 use App\Entity\Personnage;
+use App\Entity\User;
 use App\Enum\LevelType;
 use App\Service\OrderBy;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -27,7 +29,9 @@ class CompetenceRepository extends BaseRepository
     public function findAllOrderedByLabel()
     {
         return $this->getEntityManager()
-            ->createQuery('SELECT c FROM App\Entity\Competence c JOIN c.competenceFamily cf JOIN c.level l ORDER BY cf.label ASC, l.index ASC')
+            ->createQuery(
+                'SELECT c FROM App\Entity\Competence c JOIN c.competenceFamily cf JOIN c.level l ORDER BY cf.label ASC, l.index ASC'
+            )
             ->getResult();
     }
 
@@ -124,6 +128,14 @@ class CompetenceRepository extends BaseRepository
         $alias ??= static::getEntityAlias();
 
         return [
+            'competenceFamily' => [
+                OrderBy::ASC => ['competenceFamily.label' => OrderBy::ASC],
+                OrderBy::DESC => ['competenceFamily.label' => OrderBy::DESC],
+            ],
+            'level' => [
+                OrderBy::ASC => ['level.label' => OrderBy::ASC],
+                OrderBy::DESC => ['level.label' => OrderBy::DESC],
+            ],
             ...parent::sortAttributes($alias),
             'description' => [
                 OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
@@ -132,14 +144,6 @@ class CompetenceRepository extends BaseRepository
             'materiel' => [
                 OrderBy::ASC => [$alias.'.materiel' => OrderBy::ASC],
                 OrderBy::DESC => [$alias.'.materiel' => OrderBy::DESC],
-            ],
-            'level' => [
-                OrderBy::ASC => ['level.label' => OrderBy::ASC],
-                OrderBy::DESC => ['level.label' => OrderBy::DESC],
-            ],
-            'competenceFamily' => [
-                OrderBy::ASC => ['competenceFamily.label' => OrderBy::ASC],
-                OrderBy::DESC => ['competenceFamily.label' => OrderBy::DESC],
             ],
         ];
     }
@@ -175,5 +179,30 @@ class CompetenceRepository extends BaseRepository
             ->innerJoin('p.competences', 'c')
             ->where('c.id = :cid')
             ->setParameter('cid', $competence->getId());
+    }
+
+    public function userHasCompetence(User $user, Competence $competence): bool
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('exist', 'exist', 'boolean');
+
+        /** @noinspection SqlNoDataSourceInspection */
+        $query = $this->getEntityManager()
+            ->createNativeQuery(
+                <<<SQL
+                SELECT 1 as exist 
+                FROM `user` u
+                INNER JOIN participant p ON u.id = p.user_id
+                INNER JOIN personnage pe ON p.personnage_id = pe.id
+                INNER JOIN personnages_competences pc ON pe.id = pc.personnage_id
+                WHERE pc.competence_id = :cid and u.id = :uid
+                LIMIT 1;
+                SQL,
+                $rsm
+            )
+            ->setParameter('uid', $user->getId())
+            ->setParameter('cid', $competence->getId());
+
+        return (bool) $query->getResult();
     }
 }

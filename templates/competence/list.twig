@@ -26,19 +26,48 @@
 		
 	<div class="row">
 		{% for competence in paginator %}
-			<div class="col-sm-4 col-md-4">
+			<div class="col-sm-4 col-md-4 position-relative">
 				<div class="panel panel-default fixed-height">
 					<div class="header">
 						<h5>{{ competence.competenceFamily.label }}</h5>
 					</div>
 					<div class="panel-body">
 		      			<blockquote>
-		      				<p>{{ competence.competenceFamily.description|markdown_to_html }}</p>
+		      				{{ competence.competenceFamily.description|markdown_to_html }}
 		      			</blockquote>
-		      			<h6>{{ competence.level.label }}</h6>
+		      			<h5>{{ competence.level.label }}</h5>
 		      			<p>{{ competence.description|markdown_to_html }}</p>
 		    		</div>
 		  		</div>
+
+				{% if is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+				<div class="position-absolute bottom-0 end-0 pb-4 pe-3" role="toolbar">
+					<div class="btn-group" role="group">
+						{# TODO userhasCompetence for display doc dl ? #}
+						{% if competence.documentUrl %}
+							<a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+							   title="Télécharger le document associé"
+							   href="{{ path('competence.document', {'competence': competence.id, 'document': competence.documentUrl}) }}"><i
+										class="fa-solid fa-download"></i> </a>
+						{% endif %}
+						<a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+						   title="Modifier"
+						   href="{{ path('competence.update',{'competence':competence.id}) }}"><i
+									class="fa fa-pencil"></i> </a>
+						<a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+						   title="Détail" href="{{ path('competence.detail',{'competence':competence.id}) }}"><i
+									class="fa fa-eye"></i> </a>
+						<a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+						   title="Personnages associés"
+						   href="{{ path('competence.personnages',{'competence':competence.id}) }}"><i
+									class="fa fa-users"></i>  ({{ competence.personnages|length }})</a>
+						<a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+						   title="Supprimer"
+						   href="{{ path('competence.delete',{'competence':competence.id}) }}"><i
+									class="fa fa-eraser"></i> </a>
+					</div>
+				</div>
+				{% endif %}
 		  	</div>
 		{% endfor %}
 	</div>
