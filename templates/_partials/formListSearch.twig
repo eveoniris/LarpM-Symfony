@@ -27,7 +27,7 @@
                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Reset"
                                href="{{ actionPath }}"><i class="fa fa-refresh"></i>
                             </a>
-                            {% if canAdd is defined %}
+                            {% if canAdd is defined and canAdd %}
                                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
                                    title="{{ canAdd.title }}" href="{{ canAdd.path }}">
                                     <i class="fa fa-plus"></i> Ajouter

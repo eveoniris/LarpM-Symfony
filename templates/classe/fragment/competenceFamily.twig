@@ -8,7 +8,7 @@
         {% if is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
             <div class="d-flex flex-row-reverse">
                 <div class="btn-group pull-right" role="group" aria-label="...">
-                    <a href="{{ path('classe.perso', {'classe': classe.id}) }}" class="btn btn-secondary"
+                    <a href="{{ path('classe.personnages', {'classe': classe.id}) }}" class="btn btn-secondary"
                         data-bs-toggle="tooltip" data-bs-placement="bottom"
                         title="Voir les personnages associés" role="button"><i
                                 class="fa fa-link"></i> {{ classe.personnages|length }} Personnages</a>

@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -23,34 +25,34 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BaseCompetence', 'extended' => 'Competence'])]
 class BaseCompetence
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
-    #[Column(name: 'documentUrl', type: \Doctrine\DBAL\Types\Types::TEXT, length: 45, nullable: true)]
+    #[Column(name: 'documentUrl', type: Types::TEXT, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $materiel = null;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\CompetenceAttribute>|\App\Entity\CompetenceAttribute[]
+     * @var Collection<int, CompetenceAttribute>|CompetenceAttribute[]
      */
     #[OneToMany(mappedBy: 'competence', targetEntity: CompetenceAttribute::class, cascade: ['all'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
     protected Collection $competenceAttributes;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\ExperienceUsage>|\App\Entity\ExperienceUsage[]
+     * @var Collection<int, ExperienceUsage>|ExperienceUsage[]
      */
     #[OneToMany(mappedBy: 'competence', targetEntity: ExperienceUsage::class, cascade: ['all'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
     protected Collection $experienceUsages;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\PersonnageSecondaireCompetence>|\App\Entity\PersonnageSecondaireCompetence[]
+     * @var Collection<int, PersonnageSecondaireCompetence>|PersonnageSecondaireCompetence[]
      */
     #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageSecondaireCompetence::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
@@ -66,7 +68,7 @@ class BaseCompetence
 
     #[ManyToOne(targetEntity: CompetenceFamily::class, cascade: ['persist'], inversedBy: 'competences')]
     #[JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: 'false')]
-    #[OrderBy(['competence_family_label' => \Doctrine\Common\Collections\Criteria::ASC])]
+    #[OrderBy(['competence_family_label' => Criteria::ASC])]
     protected CompetenceFamily $competenceFamily;
 
     #[ManyToOne(targetEntity: Level::class, cascade: ['persist'], inversedBy: 'competences')]

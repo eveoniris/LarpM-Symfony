@@ -1,0 +1,18 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block body %}
+
+    {% if breadcrumb|length > 0 %}
+        {% include '_partials/breadcrumb.twig' with {'items' : breadcrumb } %}
+    {% endif %}
+
+    {{ include('admin/personnage/search.twig',
+        {
+            displayAdminToolbar: false,
+            displaySearchFilter: false,
+        }
+    ) }}
+
+{% endblock body %}

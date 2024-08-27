@@ -74,14 +74,6 @@ class ClasseController extends AbstractController
         return $this->render('classe/detail.twig', ['classe' => $classe]);
     }
 
-    /** @deprecated  */
-    #[Route('/{classe}/perso', name: 'perso', requirements: ['classe' => Requirement::DIGITS])]
-    #[IsGranted(Role::ADMIN->value, message: 'You are not allowed to access to this.')]
-    public function persoAction(#[MapEntity] Classe $classe): Response
-    {
-        return $this->render('classe/perso.twig', ['classe' => $classe]);
-    }
-
     #[Route('/{classe}/personnages', name: 'personnages', requirements: ['classe' => Requirement::DIGITS])]
     public function personnagesAction(
         Request $request,
@@ -91,16 +83,29 @@ class ClasseController extends AbstractController
     ): Response {
         $routeName = 'classe.personnages';
         $routeParams = ['classe' => $classe->getId()];
-        $twigFilePath = 'classe/personnages.twig';
+        $twigFilePath = 'personnage/sub_personnages.twig';
         $columnKeys = [
             'colId',
             'colStatut',
             'colNom',
-            'colClasse',
         ]; // check if it's better in PersonnageService
         $personnages = $classe->getPersonnages();
         $additionalViewParams = [
             'classe' => $classe,
+            'title' => 'Classe',
+            'breadcrumb' => [
+                [
+                    'name' => 'Liste des classes',
+                    'route' => $this->generateUrl('classe.list'),
+                ],
+                [
+                    'name' => $classe->getLabel(),
+                    'route' => $this->generateUrl('classe.detail', ['classe' => $classe->getId()]),
+                ],
+                [
+                    'name' => 'Personnages ayant cette classe',
+                ],
+            ],
         ];
 
         // handle the request and return an array containing the parameters for the view
