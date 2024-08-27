@@ -114,7 +114,7 @@ class TechnologieRepository extends BaseRepository
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
         return $personnageRepository->createQueryBuilder('perso')
-            ->innerJoin(Technologie::class, 't')
+            ->innerJoin('perso.technologies', 't')
             ->where('t.id = :tid')
             ->setParameter('tid', $technologie->getId());
     }

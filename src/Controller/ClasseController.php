@@ -3,11 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Classe;
+use App\Enum\Role;
 use App\Form\Classe\ClasseForm;
 use App\Repository\ClasseRepository;
+use App\Security\MultiRolesExpression;
+use App\Service\PagerService;
+use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,142 +18,138 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[Route('/classe', name: 'classe.')]
 class ClasseController extends AbstractController
 {
-    /**
-     * Présentation des classes.
-     */
-    #[Route('/classe', name: 'classe.index')]
-    public function indexAction(Request $request, ClasseRepository $classeRepository): Response
-    {
-        $orderBy = $this->getRequestOrder(
-            alias: 'c',
-            defOrderBy: 'label_masculin',
-            allowedFields: $classeRepository->getFieldNames()
-        );
-
-        $query = $classeRepository->createQueryBuilder('c')
-            ->where('c.creation is not null')
-            ->orderBy(key($orderBy), current($orderBy));
-
-        $classes = $classeRepository->findPaginatedQuery(
-            $query->getQuery(),
-            $this->getRequestLimit(100),
-            $this->getRequestPage()
-        );
-
-        return $this->render(
-            'classe\list.twig',
-            [
-                'classes' => $classes,
-            ]
-        );
-    }
-
-    /**
-     * Ajout d'une classe.
-     */
-    #[Route('/classe/add', name: 'classe.add')]
-    public function addAction(
-        EntityManagerInterface $entityManager,
+    #[Route('', name: 'index')]
+    #[Route('', name: 'list')]
+    public function indexAction(
         Request $request,
+        PagerService $pagerService,
         ClasseRepository $classeRepository
     ): Response {
-        $classe = new Classe();
+        $pagerService->setRequest($request)->setRepository($classeRepository)->setLimit(50);
 
-        $form = $this->createForm(ClasseForm::class, $classe)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+        $alias = $classeRepository->getAlias();
+        $queryBuilder = $classeRepository->createQueryBuilder($alias);
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $classe = $form->getData();
-
-            $entityManager->persist($classe);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La classe a été ajoutée.');
-
-            if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('classe.index', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
-                return $this->redirectToRoute('classe.add', [], 303);
-            }
+        // User can only see the classe allowed on creation
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_REGLE')) {
+            $queryBuilder = $classeRepository->creation($queryBuilder, true);
         }
 
-        return $this->render('classe/add.twig', [
-            'form' => $form->createView(),
+        return $this->render('classe/list.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $classeRepository->searchPaginated($pagerService, $queryBuilder),
         ]);
     }
 
-    /**
-     * Mise à jour d'une classe.
-     */
-    #[Route('/classe/{classe}/update', name: 'classe.update')]
+    #[Route('/add', name: 'add')]
+    public function addAction(
+        Request $request
+    ): Response {
+        return $this->handleCreateOrUpdate(
+            $request,
+            new Classe(),
+            ClasseForm::class
+        );
+    }
+
+    #[Route('/{classe}/update', name: 'update')]
     public function updateAction(
-        EntityManagerInterface $entityManager,
         Request $request,
         #[MapEntity] Classe $classe
     ): RedirectResponse|Response {
-        $form = $this->createForm(ClasseForm::class, $classe)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $classe = $form->getData();
-
-            if ($form->get('update')->isClicked()) {
-                $entityManager->persist($classe);
-                $entityManager->flush();
-                $this->addFlash('success', 'La classe a été mise à jour.');
-            } elseif ($form->get('delete')->isClicked()) {
-                $entityManager->remove($classe);
-                $entityManager->flush();
-                $this->addFlash('success', 'La classe a été supprimée.');
-            }
-
-            // return $this->redirectToRoute('classe'));
-            return $this->redirectToRoute('classe.index', [], 303);
-        }
-
-        return $this->render('classe/update.twig', [
-            'classe' => $classe,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            $classe,
+            ClasseForm::class
+        );
     }
 
-    /**
-     * TODO admin OR REGLE acces ?
-     */
-    #[Route('/classe/{classe}', name: 'classe.detail', requirements: ['classe' => Requirement::DIGITS])]
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    #[Route('/{classe}', name: 'detail', requirements: ['classe' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::ADMIN, Role::REGLE), message: 'You are not allowed to access to this.')]
     public function detailAction(#[MapEntity] Classe $classe): Response
     {
         return $this->render('classe/detail.twig', ['classe' => $classe]);
     }
 
-    /**
-     * Liste des persos d'une classe.
-     */
-    #[Route('/classe/{classe}/perso', name: 'classe.perso')]
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
-    public function persoAction(EntityManagerInterface $entityManager, int $id)
+    /** @deprecated  */
+    #[Route('/{classe}/perso', name: 'perso', requirements: ['classe' => Requirement::DIGITS])]
+    #[IsGranted(Role::ADMIN->value, message: 'You are not allowed to access to this.')]
+    public function persoAction(#[MapEntity] Classe $classe): Response
     {
-        $classe = $entityManager->getRepository(Classe::class)->find($id);
-
         return $this->render('classe/perso.twig', ['classe' => $classe]);
+    }
+
+    #[Route('/{classe}/personnages', name: 'personnages', requirements: ['classe' => Requirement::DIGITS])]
+    public function personnagesAction(
+        Request $request,
+        #[MapEntity] Classe $classe,
+        PersonnageService $personnageService,
+        ClasseRepository $classeRepository
+    ): Response {
+        $routeName = 'classe.personnages';
+        $routeParams = ['classe' => $classe->getId()];
+        $twigFilePath = 'classe/personnages.twig';
+        $columnKeys = [
+            'colId',
+            'colStatut',
+            'colNom',
+            'colClasse',
+        ]; // check if it's better in PersonnageService
+        $personnages = $classe->getPersonnages();
+        $additionalViewParams = [
+            'classe' => $classe,
+        ];
+
+        // handle the request and return an array containing the parameters for the view
+        $viewParams = $personnageService->getSearchViewParameters(
+            $request,
+            $routeName,
+            $routeParams,
+            $columnKeys,
+            $additionalViewParams,
+            $personnages,
+            $classeRepository->getPersonnages($classe)
+        );
+
+        return $this->render(
+            $twigFilePath,
+            $viewParams
+        );
+    }
+
+    #[Route('/{classe}/delete', name: 'delete', requirements: ['classe' => Requirement::DIGITS], methods: [
+        'DELETE',
+        'GET',
+        'POST',
+    ])]
+    public function deleteAction(
+        #[MapEntity] Classe $classe
+    ): RedirectResponse|Response {
+        return $this->genericDelete(
+            $classe,
+            'Supprimer une classe',
+            'La classe a été supprimée',
+            'classe.list',
+            [
+                ['route' => $this->generateUrl('classe.list'), 'name' => 'Liste des classes'],
+                [
+                    'route' => $this->generateUrl('classe.detail', ['classe' => $classe->getId()]),
+                    'connaissance' => $classe->getId(),
+                    'name' => $classe->getLabel(),
+                ],
+                ['name' => 'Supprimer une classe'],
+            ]
+        );
     }
 
     /**
      * Récupération de l'image d'une classe en fonction du sexe.
      */
-    #[Route('/classe/{classe}/image/{sexe}', name: 'classe.image', methods: ['GET'])]
+    #[Route('/{classe}/image/{sexe}', name: 'image', methods: ['GET'])]
     public function imageAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Classe $classe,
         string $sexe
     ): Response {
@@ -159,11 +158,41 @@ class ClasseController extends AbstractController
             $image = $classe->getImageF();
         }
 
+
         $filename = __DIR__.'/../../assets/img/'.$image;
 
         $response = new Response(file_get_contents($filename));
         $response->headers->set('Content-Type', 'image/png');
 
         return $response;
+    }
+
+    protected function handleCreateOrUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
+        ?callable $entityCallback = null
+    ): RedirectResponse|Response {
+        return parent::handleCreateOrUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                ...$msg,
+                'entity' => $this->translator->trans('classe'),
+                'entity_added' => $this->translator->trans('La classe a été ajoutée'),
+                'entity_updated' => $this->translator->trans('La classe a été mise à jour'),
+                'entity_deleted' => $this->translator->trans('La classe a été supprimée'),
+                'entity_list' => $this->translator->trans('Liste des classes'),
+                'title_add' => $this->translator->trans('Ajouter une classe'),
+                'title_update' => $this->translator->trans('Modifier une classe'),
+            ],
+            entityCallback: $entityCallback
+        );
     }
 }

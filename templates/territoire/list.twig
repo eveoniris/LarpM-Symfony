@@ -4,10 +4,11 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des territoires</li>
-	</ol>
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'name' : 'Liste des territoires' },
+		]
+	} %}
 
 	<div class="well well-sm bs-component">
 

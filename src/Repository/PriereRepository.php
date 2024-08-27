@@ -165,7 +165,7 @@ class PriereRepository extends BaseRepository
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
         return $personnageRepository->createQueryBuilder('perso')
-            ->innerJoin(Priere::class, 'p')
+            ->innerJoin('perso.prieres', 'p')
             ->where('p.id = :pid')
             ->setParameter('pid', $priere->getId());
     }

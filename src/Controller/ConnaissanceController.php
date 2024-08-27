@@ -70,7 +70,6 @@ class ConnaissanceController extends AbstractController
     #[Route('/{connaissance}/update', name: 'update', requirements: ['connaissance' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Connaissance $connaissance): RedirectResponse|Response
     {
-        // TODO handle "file required" when already set
         return $this->handleCreateOrUpdate(
             $request,
             $connaissance,

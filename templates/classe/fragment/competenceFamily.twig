@@ -5,19 +5,23 @@
     </div>
 
     <div class="">
-        {% if is_granted('ROLE_REGLE', app.user) %}
+        {% if is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
             <div class="d-flex flex-row-reverse">
                 <div class="btn-group pull-right" role="group" aria-label="...">
                     <a href="{{ path('classe.perso', {'classe': classe.id}) }}" class="btn btn-secondary"
                         data-bs-toggle="tooltip" data-bs-placement="bottom"
-                        title="Voir les personnages de cette classe" role="button"><i
-                                class="fa fa-link"></i> {{ classe.personnages|length }} personnages</a>
+                        title="Voir les personnages associés" role="button"><i
+                                class="fa fa-link"></i> {{ classe.personnages|length }} Personnages</a>
                     <a href="{{ path('classe.detail', {'classe': classe.id}) }}" class="btn btn-secondary"
                         data-bs-toggle="tooltip" data-bs-placement="bottom"
-                        title="Détail" role="button"><i class="fa fa-eye"></i> Voir</a>
+                        title="Détail" role="button"><i class="fa fa-eye"></i> Détail</a>
                     <a href="{{ path('classe.update', {'classe': classe.id}) }}" class="btn btn-secondary"
                         data-bs-toggle="tooltip" data-bs-placement="bottom"
                         title="Modifier" role="button"><i class="fa fa-pencil"></i> Modifier</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Supprimer"
+                       href="{{ path('classe.delete',{'classe':classe.id}) }}"><i
+                                class="fa fa-eraser"></i> Supprimer</a>
                 </div>
             </div>
         {% endif %}
