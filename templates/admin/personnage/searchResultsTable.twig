@@ -13,7 +13,7 @@
         <thead>
         <tr>
             {% for columnDef in columnDefinitions %}
-                <th class="personnage-list-column-{{ columnDef['fieldName'] }}">
+                <th class="personnage-list-column-{{ columnDef['fieldName'] }} {% if columnDef['colMd'] is defined %}{{ columnDef['colMd'] }}{% endif %}">
 
                     {#  TODO when using PageService { macros.getOrderBy(app, columnDef) }}#}
 

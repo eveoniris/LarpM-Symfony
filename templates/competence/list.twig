@@ -4,10 +4,7 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des compétences</li>
-	</ol>
+	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Liste des compétences'}]} %}
 
 	<div class="well well-sm">
 
@@ -15,27 +12,16 @@
 			<h5>Liste des compétences</h5>
 		</div>
 
-		<ul class="list-group">
-			<li class="list-group-item">	
-				<div class="btn-toolbar" role="toolbar" aria-label="...">
-
-					{{ form_start(form, {"action": path('competence.list')}) }}
-						<div class="form-group">
-							<div class="input-group">
-								 {{ form_widget(form.value) }}
-
-								<div class="input-group-btn">
-									<button type="submit" class="btn btn-default" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
-									<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('competence.list') }}"><i class="fa fa-refresh"></i></a>
-								</div>
-							</div>
-						</div>
-						{{ form_rest(form) }}
-					{{ form_end(form) }}
-			   		
-				</div>
-			</li>
-	    </ul>
+		{% if is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+			{% set canAdd = {'title': 'Ajouter une compétence', 'path': path('competence.add')} %}
+		{% else %}
+			{% set canAdd = null %}
+		{% endif %}
+		{% include '_partials/formListSearch.twig' with
+			{
+				'canAdd': canAdd,
+				'actionPath' : path('competence.list')
+			} %}
 	</div>
 		
 	<div class="row">

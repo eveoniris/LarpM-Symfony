@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\CompetenceFamilyType;
 use App\Repository\CompetenceFamilyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -47,6 +48,11 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     public function getLabel(): string
     {
         return (string) $this->label;
+    }
+
+    public function getCompetenceFamilyType(): ?CompetenceFamilyType
+    {
+        return CompetenceFamilyType::getFromLabel($this->label);
     }
 
     /**

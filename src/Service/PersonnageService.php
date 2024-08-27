@@ -16,8 +16,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class PersonnageService
 {
     public array $columnDefinitions = [
-        'colId' => ['label' => '#', 'fieldName' => 'id',  'sortFieldName' => 'id', 'tooltip' => 'Numéro d\'identifiant'],
-        'colStatut' => ['label' => 'Statut', 'fieldName' => 'status',  'sortFieldName' => 'status', 'tooltip' => 'Statut', 'canOrder' => false],
+        'colId' => ['label' => '#', 'fieldName' => 'id',  'sortFieldName' => 'id', 'tooltip' => 'Numéro d\'identifiant', 'colMd' => 'col-md-1'],
+        'colStatut' => ['label' => 'Statut', 'fieldName' => 'status',  'sortFieldName' => 'status', 'tooltip' => 'Statut', 'canOrder' => false, 'colMd' => 'col-md-1'],
         'colNom' => ['label' => 'Nom', 'fieldName' => 'nom',  'sortFieldName' => 'nom', 'tooltip' => 'Nom et surnom du personnage'],
         'colClasse' => ['label' => 'Classe', 'fieldName' => 'classe',  'sortFieldName' => 'classe', 'tooltip' => 'Classe du personnage'],
         'colGroupe' => ['label' => 'Groupe', 'fieldName' => 'groupe',  'sortFieldName' => 'groupe', 'tooltip' => 'Dernier GN - Groupe participant'],

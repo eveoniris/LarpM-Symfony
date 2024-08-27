@@ -97,6 +97,7 @@ enum CompetenceFamilyType: string
     public static function tryFromOlder(string $value): ?CompetenceFamilyType
     {
         return match ($value) {
+            'AgilitÃ©' => static::AGILITY,
             'Armes d\'hast' => static::POLEARMS,
             'Armes Ã  1 main', 'Armes à 1 main' => static::ONE_HANDED_WEAPON,
             'Armes Ã  2 mains', 'Armes à 2 mains' => static::TWO_HANDED_WEAPON,
