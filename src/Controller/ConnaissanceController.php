@@ -85,11 +85,8 @@ class ConnaissanceController extends AbstractController
         'GET',
         'POST',
     ])]
-    public function deleteAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Connaissance $connaissance
-    ): RedirectResponse|Response {
+    public function deleteAction(#[MapEntity] Connaissance $connaissance): RedirectResponse|Response
+    {
         return $this->genericDelete(
             $connaissance,
             'Supprimer une connaissance',

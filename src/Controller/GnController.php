@@ -134,7 +134,7 @@ class GnController extends AbstractController
     /**
      * Fiche de personnage d'un participant au GN.
      */
-    #[Route('/{gn}/personnage', name: 'gpersonnage')]
+    #[Route('/{gn}/personnage', name: 'personnage')]
     public function personnageAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn): RedirectResponse|Response
     {
         $participant = $this->getUser()->getParticipant($gn);

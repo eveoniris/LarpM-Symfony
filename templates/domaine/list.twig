@@ -4,65 +4,67 @@
 
 {% block body %}
 
-	{% include '_partials/breadcrumb.twig' with {'items' :
-		[
-			{'name' : 'Liste des domaines de magie', 'route': path('magie.domaine.list') },
-		]
-	} %}
-	
-	<div class="well well-sm">
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des domaines de magie', 'route': path('magie.domaine.list') },
+        ]
+    } %}
 
-		<div class="header">
-			<h5>Liste des domaines de magie</h5>
-		</div>
+    <div class="well well-sm">
 
-		{% include '_partials/formListSearch.twig' with
-			{
-				'canAdd': {'title': 'Ajouter une domaine', 'path': path('magie.domaine.add')},
-				'actionPath' : path('magie.domaine.list')
-			} %}
+        <div class="header">
+            <h5>Liste des domaines de magie</h5>
+        </div>
 
-		{% include '_partials/pagination.html.twig' %}
 
-		<table class="table table-condensed table-striped table-bordered table-hover">
-			{% include '_partials/thead.twig' with  { 'route': 'magie.sort.list', 'rows': [
-				{'name' : 'Libellé', 'field' : 'label', 'css': 'text-center'},
-				{'name' : 'Description', 'css': 'text-center'},
-				{'name' : 'Actions', 'css': 'text-center'},
-			]} %}
-			<tbody>
-			{% for domaine in paginator %}
-				<tr>
-					<td class="text-center align-middle">{{ domaine.label|highlight(pagerService.searchValue) }}</td>
-					<td class="text-center align-middle">
-						{{ domaine.description|markdown_to_html|highlight(pagerService.searchValue) }}
-					</td>
-					<td class="align-middle">
-						<div class="btn-toolbar d-flex justify-content-center" role="toolbar">
-							<div class="btn-group-vertical" role="group">
-								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-								   title="Modifier"
-								   href="{{ path('magie.domaine.update',{'domaine':domaine.id}) }}"><i
-											class="fa fa-pencil"></i> Modifier</a>
-								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-								   title="Détail" href="{{ path('magie.domaine.detail',{'domaine':domaine.id}) }}"><i
-											class="fa fa-eye"></i> Detail</a>
-								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-								   title="Supprimer"
-								   href="{{ path('magie.domaine.delete',{'domaine':domaine.id}) }}"><i
-											class="fa fa-eraser"></i> Supprimer</a>
-							</div>
-						</div>
-					</td>
-				</tr>
-			{% else %}
-				{% include '_partials/noResultTableRow.twig' %}
-			{% endfor %}
-			</tbody>
-		</table>
+        {% include '_partials/formListSearch.twig' with
+            {
+                'canAdd': {'title': 'Ajouter un domaine', 'path': path('magie.domaine.add')},
+                'actionPath' : path('magie.domaine.list')
+            } %}
+    </div>
 
-		{% include '_partials/pagination.html.twig' %}
+    {% include '_partials/pagination.html.twig' %}
 
-	</div>
-	
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'magie.sort.list', 'rows': [
+            {'name' : 'Libellé', 'field' : 'label', 'css': 'text-center'},
+            {'name' : 'Description', 'css': 'text-center'},
+            {'name' : 'Actions', 'css': 'text-center'},
+        ]} %}
+        <tbody>
+        {% for domaine in paginator %}
+            <tr>
+                <td class="text-center align-middle">{{ domaine.label|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle">
+                    {{ domaine.description|markdown_to_html|highlight(pagerService.searchValue) }}
+                </td>
+                <td class="align-middle">
+                    <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
+                        <div class="btn-group-vertical" role="group">
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Modifier"
+                               href="{{ path('magie.domaine.update',{'domaine':domaine.id}) }}"><i
+                                        class="fa fa-pencil"></i> Modifier</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Détail" href="{{ path('magie.domaine.detail',{'domaine':domaine.id}) }}"><i
+                                        class="fa fa-eye"></i> Detail</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Supprimer"
+                               href="{{ path('magie.domaine.delete',{'domaine':domaine.id}) }}"><i
+                                        class="fa fa-eraser"></i> Supprimer</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            {% include '_partials/noResultTableRow.twig' %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include '_partials/pagination.html.twig' %}
+
+
+
 {% endblock %}

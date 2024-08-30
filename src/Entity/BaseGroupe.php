@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -24,100 +25,100 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupe', 'extended' => 'Groupe'])]
 class BaseGroupe
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
+    #[Column(type: Types::STRING, length: 100, nullable: true)]
     protected ?string $nom = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     protected int $numero;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 10, nullable: true)]
+    #[Column(type: Types::STRING, length: 10, nullable: true)]
     protected ?string $code = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $jeu_maritime = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $jeu_strategique = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $classe_open = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $pj = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $materiel = null;
 
-    #[Column(name:"`lock`", type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[Column(name: '`lock`', type: Types::BOOLEAN)]
     protected bool $lock;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $richesse = null;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: Background::class)]
-    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
     protected Collection $backgrounds;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: Debriefing::class)]
-    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $debriefings;
 
     #[OneToMany(mappedBy: 'groupeRelatedByGroupeId', targetEntity: GroupeAllie::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $groupeAllieRelatedByGroupeIds;
 
     #[OneToMany(mappedBy: 'groupeRelatedByGroupeAllieId', targetEntity: GroupeAllie::class)]
-    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'groupe_allie_id', nullable: false)]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'groupe_allie_id', nullable: false)]
     protected Collection $groupeAllieRelatedByGroupeAllieIds;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeClasse::class, cascade: ['persist'])]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $groupeClasses;
 
     #[OneToMany(mappedBy: 'groupeRelatedByGroupeId', targetEntity: GroupeEnemy::class, cascade: ['persist'])]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $groupeEnemyRelatedByGroupeIds;
 
     #[OneToMany(mappedBy: 'groupeRelatedByGroupeEnemyId', targetEntity: GroupeEnemy::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_enemy_id', nullable: false)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_enemy_id', nullable: false)]
     protected Collection $groupeEnemyRelatedByGroupeEnemyIds;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeGn::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $groupeGns;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeHasIngredient::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $groupeHasIngredients;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeHasRessource::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $groupeHasRessources;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: IntrigueHasGroupe::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $intrigueHasGroupes;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: Personnage::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $personnages;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: Territoire::class)]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $territoires;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'groupeRelatedByScenaristeIds')]
-    #[ORM\JoinColumn(name: 'scenariste_id', referencedColumnName: 'id')]
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'groupeRelatedByScenaristeIds')]
+    #[JoinColumn(name: 'scenariste_id', referencedColumnName: 'id')]
     protected ?User $userRelatedByScenaristeId = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'groupeRelatedByResponsableIds')]
-    #[ORM\JoinColumn(name: 'responsable_id', referencedColumnName: 'id')]
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'groupeRelatedByResponsableIds')]
+    #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id')]
     protected ?User $userRelatedByResponsableId = null;
 
     #[ManyToOne(targetEntity: Topic::class, inversedBy: 'groupes')]
@@ -130,14 +131,14 @@ class BaseGroupe
 
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'groupes')]
     #[ORM\JoinTable(name: 'groupe_has_document')]
-    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['code' => 'ASC'])]
     protected Collection $documents;
 
     #[ORM\ManyToMany(targetEntity: Item::class, inversedBy: 'groupes')]
     #[ORM\JoinTable(name: 'groupe_has_item')]
-    #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'item_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['label' => 'ASC'])]
     protected Collection $items;
@@ -744,7 +745,7 @@ class BaseGroupe
     /**
      * Set User entity related by `scenariste_id` (many to one).
      */
-    public function setUserRelatedByScenaristeId(User $User = null): static
+    public function setUserRelatedByScenaristeId(?User $User = null): static
     {
         $this->userRelatedByScenaristeId = $User;
 
@@ -762,7 +763,7 @@ class BaseGroupe
     /**
      * Set User entity related by `responsable_id` (many to one).
      */
-    public function setUserRelatedByResponsableId(User $User = null): static
+    public function setUserRelatedByResponsableId(?User $User = null): static
     {
         $this->userRelatedByResponsableId = $User;
 
@@ -780,7 +781,7 @@ class BaseGroupe
     /**
      * Set Topic entity (many to one).
      */
-    public function setTopic(Topic $topic = null): static
+    public function setTopic(?Topic $topic = null): static
     {
         $this->topic = $topic;
 
@@ -798,7 +799,7 @@ class BaseGroupe
     /**
      * Set Territoire entity (many to one).
      */
-    public function setTerritoire(Territoire $territoire = null): static
+    public function setTerritoire(?Territoire $territoire = null): static
     {
         $this->territoire = $territoire;
 
@@ -808,7 +809,7 @@ class BaseGroupe
     /**
      * Get Territoire entity (many to one).
      */
-    public function getTerritoire() : ?Territoire
+    public function getTerritoire(): ?Territoire
     {
         return $this->territoire;
     }

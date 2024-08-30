@@ -4,82 +4,81 @@
 
 {% block body %}
 
-	{% include '_partials/breadcrumb.twig' with {'items' :
-		[
-			{'name' : 'Liste des prieres', 'route': path('magie.priere.list') },
-		]
-	} %}
-	
-	<div class="well well-sm">
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des prieres', 'route': path('magie.priere.list') },
+        ]
+    } %}
 
-		<div class="header">
-			<h5>Liste des prieres</h5>
-		</div>
+    <div class="well well-sm">
 
-		{% include '_partials/formListSearch.twig' with
-			{
-				'canAdd': {'title': 'Ajouter une priere', 'path': path('magie.priere.add')},
-				'actionPath' : path('magie.priere.list')
-			} %}
+        <div class="header">
+            <h5>Liste des prieres</h5>
+        </div>
 
-		{% include '_partials/pagination.html.twig' %}
+        {% include '_partials/formListSearch.twig' with
+            {
+                'canAdd': {'title': 'Ajouter une priere', 'path': path('magie.priere.add')},
+                'actionPath' : path('magie.priere.list')
+            } %}
+    </div>
 
-		<table class="table table-condensed table-striped table-bordered table-hover">
-			{% include '_partials/thead.twig' with  { 'route': 'magie.priere.list', 'rows': [
-				{'name' : 'Sphère', 'field' : 'sphere', 'css' : 'text-center'},
-				{'name' : 'Niveau', 'field' : 'niveau', 'css' : 'text-center'},
-				{'name' : 'Libellé', 'field' : 'label', 'css' : 'text-center'},
-				{'name' : 'Description', 'css' : 'text-center'},
-				{'name' : 'Actions', 'css' : 'text-center'},
-			]} %}
-			<tbody>
-			{% for priere in paginator %}
-				<tr>
-					<td class="text-center align-middle">{{ priere.sphere.label|highlight(pagerService.searchValue) }}</td>
-					<td class="text-center align-middle">{{ priere.niveau|highlight(pagerService.searchValue) }}</td>
-					<td class="text-center align-middle">{{ priere.label|highlight(pagerService.searchValue) }}</td>
-					<td>
-						{{ priere.description|markdown_to_html|highlight(pagerService.searchValue) }}
-						{% if priere.annonce is not empty %}
-							{% include '_partials/cardNotif.twig' with {'type' : 'info', 'title': 'Annonce', 'content' : priere.annonce|markdown_to_html|highlight(pagerService.searchValue) } %}
-						{% endif %}
-					</td>
-					<td class="text-center align-middle">
-						<div class="btn-toolbar pull-right" role="toolbar">
-							<div class="btn-group-vertical" role="group">
-								{% if priere.documentUrl %}
-									<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-									   title="Télécharger le document associé"
-									   href="{{ path('magie.priere.document', {'priere': priere.id, 'document': priere.documentUrl}) }}"><i
-												class="fa-solid fa-download"></i> Télécharger</a>
-								{% endif %}
-								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-								   title="Modifier"
-								   href="{{ path('magie.priere.update',{'priere':priere.id}) }}"><i
-											class="fa fa-pencil"></i> Modifier</a>
-								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-								   title="Détail" href="{{ path('magie.priere.detail',{'priere':priere.id}) }}"><i
-											class="fa fa-eye"></i> Detail</a>
-								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-								   title="Personnages associés"
-								   href="{{ path('magie.priere.personnages',{'priere':priere.id}) }}"><i
-											class="fa fa-users"></i> Personnages ({{ priere.personnages|length }})</a>
-								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-								   title="Supprimer"
-								   href="{{ path('magie.priere.delete',{'priere':priere.id}) }}"><i
-											class="fa fa-eraser"></i> Supprimer</a>
-							</div>
-						</div>
-					</td>
-				</tr>
-			{% else %}
-				{% include '_partials/noResultTableRow.twig' %}
-			{% endfor %}
-			</tbody>
-		</table>
+    {% include '_partials/pagination.html.twig' %}
 
-		{% include '_partials/pagination.html.twig' %}
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'magie.priere.list', 'rows': [
+            {'name' : 'Sphère', 'field' : 'sphere', 'css' : 'text-center'},
+            {'name' : 'Niveau', 'field' : 'niveau', 'css' : 'text-center'},
+            {'name' : 'Libellé', 'field' : 'label', 'css' : 'text-center'},
+            {'name' : 'Description', 'css' : 'text-center'},
+            {'name' : 'Actions', 'css' : 'text-center'},
+        ]} %}
+        <tbody>
+        {% for priere in paginator %}
+            <tr>
+                <td class="text-center align-middle">{{ priere.sphere.label|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle">{{ priere.niveau|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle">{{ priere.label|highlight(pagerService.searchValue) }}</td>
+                <td>
+                    {{ priere.description|markdown_to_html|highlight(pagerService.searchValue) }}
+                    {% if priere.annonce is not empty %}
+                        {% include '_partials/cardNotif.twig' with {'type' : 'info', 'title': 'Annonce', 'content' : priere.annonce|markdown_to_html|highlight(pagerService.searchValue) } %}
+                    {% endif %}
+                </td>
+                <td class="text-center align-middle">
+                    <div class="btn-toolbar pull-right" role="toolbar">
+                        <div class="btn-group-vertical" role="group">
+                            {% if priere.documentUrl %}
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Télécharger le document associé"
+                                   href="{{ path('magie.priere.document', {'priere': priere.id, 'document': priere.documentUrl}) }}"><i
+                                            class="fa-solid fa-download"></i> Télécharger</a>
+                            {% endif %}
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Modifier"
+                               href="{{ path('magie.priere.update',{'priere':priere.id}) }}"><i
+                                        class="fa fa-pencil"></i> Modifier</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Détail" href="{{ path('magie.priere.detail',{'priere':priere.id}) }}"><i
+                                        class="fa fa-eye"></i> Detail</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Personnages associés"
+                               href="{{ path('magie.priere.personnages',{'priere':priere.id}) }}"><i
+                                        class="fa fa-users"></i> Personnages ({{ priere.personnages|length }})</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Supprimer"
+                               href="{{ path('magie.priere.delete',{'priere':priere.id}) }}"><i
+                                        class="fa fa-eraser"></i> Supprimer</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            {% include '_partials/noResultTableRow.twig' %}
+        {% endfor %}
+        </tbody>
+    </table>
 
-	</div>
-	
+    {% include '_partials/pagination.html.twig' %}
+
 {% endblock %}

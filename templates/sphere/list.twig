@@ -22,46 +22,45 @@
                 'canAdd': {'title': 'Ajouter une sphère', 'path': path('magie.sphere.add')},
                 'actionPath' : path('magie.sphere.list')
             } %}
-
-        {% include '_partials/pagination.html.twig' %}
-        <table class="table table-condensed table-striped table-bordered table-hover">
-            <thead>
-            <tr>
-                <th class="text-center align-middle">
-                    {% include '_partials/orderby.twig' with {'name' : 'Libellé', 'field' : 'label', 'route': 'magie.sphere.list' } %}
-                </th>
-                <th class="text-center align-middle">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for sphere in paginator %}
-                <tr>
-                    <td class="text-center align-middle">{{ sphere.label|highlight(pagerService.searchValue) }}</td>
-                    <td class="d-flex justify-content-center">
-                        <div class="btn-toolbar" role="toolbar">
-                            <div class="btn-group-vertical" role="group">
-                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                   title="Modifier"
-                                   href="{{ path('magie.sphere.update',{'sphere':sphere.id}) }}"><i
-                                            class="fa fa-pencil"></i> Modifier</a>
-                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                   title="Détail" href="{{ path('magie.sphere.detail',{'sphere':sphere.id}) }}"><i
-                                            class="fa fa-eye"></i> Detail</a>
-                              <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                   title="Supprimer"
-                                   href="{{ path('magie.sphere.delete',{'sphere':sphere.id}) }}"><i
-                                            class="fa fa-eraser"></i> Supprimer</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            {% else %}
-                {% include '_partials/noResultTableRow.twig' %}
-            {% endfor %}
-            </tbody>
-        </table>
-        {% include '_partials/pagination.html.twig' %}
-		
     </div>
+
+    {% include '_partials/pagination.html.twig' %}
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th class="text-center align-middle">
+                {% include '_partials/orderby.twig' with {'name' : 'Libellé', 'field' : 'label', 'route': 'magie.sphere.list' } %}
+            </th>
+            <th class="text-center align-middle">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for sphere in paginator %}
+            <tr>
+                <td class="text-center align-middle">{{ sphere.label|highlight(pagerService.searchValue) }}</td>
+                <td class="d-flex justify-content-center">
+                    <div class="btn-toolbar" role="toolbar">
+                        <div class="btn-group btn-sm" role="group">
+                            <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Modifier"
+                               href="{{ path('magie.sphere.update',{'sphere':sphere.id}) }}"><i
+                                        class="fa fa-pencil"></i> Modifier</a>
+                            <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Détail" href="{{ path('magie.sphere.detail',{'sphere':sphere.id}) }}"><i
+                                        class="fa fa-eye"></i> Detail</a>
+                            <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Supprimer"
+                               href="{{ path('magie.sphere.delete',{'sphere':sphere.id}) }}"><i
+                                        class="fa fa-eraser"></i> Supprimer</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            {% include '_partials/noResultTableRow.twig' %}
+        {% endfor %}
+        </tbody>
+    </table>
+    {% include '_partials/pagination.html.twig' %}
 
 {% endblock %}

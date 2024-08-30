@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -20,22 +21,22 @@ use Doctrine\ORM\Mapping\JoinColumn;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupeGn', 'extended' => 'GroupeGn'])]
 abstract class BaseGroupeGn
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[Column(type: Types::BOOLEAN)]
     protected ?bool $free = false;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 10, nullable: true)]
+    #[Column(type: Types::STRING, length: 10, nullable: true)]
     protected ?string $code = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $jeu_maritime = false;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $jeu_strategique = false;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     protected ?int $place_available = 0;
 
     protected int $agents = 0;

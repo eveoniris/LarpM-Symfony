@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Background;
-use App\Entity\Document;
 use App\Entity\Groupe;
 use App\Entity\GroupeAllie;
 use App\Entity\GroupeEnemy;
@@ -11,7 +10,6 @@ use App\Entity\GroupeHasIngredient;
 use App\Entity\GroupeHasRessource;
 use App\Entity\Ingredient;
 use App\Entity\Participant;
-use App\Entity\Personnage;
 use App\Entity\Ressource;
 use App\Entity\Territoire;
 use App\Entity\Topic;
@@ -28,26 +26,34 @@ use App\Form\Groupe\GroupeRessourceForm;
 use App\Form\Groupe\GroupeRichesseForm;
 use App\Form\Groupe\GroupeScenaristeForm;
 use App\Manager\GroupeManager;
+use App\Repository\GroupeRepository;
+use App\Repository\TerritoireRepository;
+use App\Service\PagerService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use LarpManager\Repository\TerritoireRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[IsGranted('ROLE_SCENARISTE')]
+#[Route('/groupe', name: 'groupe.')]
 class GroupeController extends AbstractController
 {
     /**
      * Modifier la composition du groupe.
      */
-    #[Route('/groupe/{groupe}/composition', name: 'groupe.composition')]
-    public function compositionAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/composition', name: 'composition')]
+    public function compositionAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse|Response {
         $originalGroupeClasses = new ArrayCollection();
 
         /*
@@ -98,9 +104,12 @@ class GroupeController extends AbstractController
     /**
      * Modification de la description du groupe.
      */
-    #[Route('/groupe/{groupe}/description', name: 'groupe.description')]
-    public function descriptionAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/description', name: 'description')]
+    public function descriptionAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse|Response {
         $form = $this->createForm(GroupeDescriptionForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
@@ -125,9 +134,12 @@ class GroupeController extends AbstractController
     /**
      * Choix du scenariste.
      */
-    #[Route('/groupe/{groupe}/scenariste', name: 'groupe.scenariste')]
-    public function scenaristeAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/scenariste', name: 'scenariste')]
+    public function scenaristeAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse|Response {
         $form = $this->createForm(GroupeScenaristeForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
@@ -152,9 +164,12 @@ class GroupeController extends AbstractController
     /**
      * fourni le tableau de quête pour tous les groupes.
      */
-    #[Route('/groupe/quetes', name: 'groupe.quetes')]
-    public function quetesAction(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer)
-    {
+    #[Route('/quetes', name: 'quetes')]
+    public function quetesAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        SerializerInterface $serializer
+    ) {
         $repo = $entityManager->getRepository(Groupe::class);
         $groupes = $repo->findAllOrderByNumero();
         $ressourceRares = new ArrayCollection($entityManager->getRepository(Ressource::class)->findRare());
@@ -196,7 +211,8 @@ class GroupeController extends AbstractController
                 'recompense 3',
                 'recompense 4',
                 'recompense 5',
-                'description'];
+                'description',
+            ];
 
             header('Content-Type: text/csv');
             header('Content-Disposition: attachment; filename=eveoniris_quetes_'.date('Ymd').'.csv');
@@ -209,17 +225,23 @@ class GroupeController extends AbstractController
 
             foreach ($quetes as $quete) {
                 $line = [];
-                $line[] = mb_convert_encoding('#'.$quete['groupe']->getNumero().' '.$quete['groupe']->getNom(), 'ISO-8859-1');
-                $line[] = $quete['groupe']->getTerritoire() ? mb_convert_encoding((string) $quete['groupe']->getTerritoire()->getNom(), 'ISO-8859-1') : '';
+                $line[] = mb_convert_encoding(
+                    '#'.$quete['groupe']->getNumero().' '.$quete['groupe']->getNom(),
+                    'ISO-8859-1'
+                );
+                $line[] = $quete['groupe']->getTerritoire() ? mb_convert_encoding(
+                    (string)$quete['groupe']->getTerritoire()->getNom(),
+                    'ISO-8859-1'
+                ) : '';
 
                 foreach ($quete['quete']['needs'] as $ressources) {
-                    $line[] = mb_convert_encoding((string) $ressources->getLabel(), 'ISO-8859-1');
+                    $line[] = mb_convert_encoding((string)$ressources->getLabel(), 'ISO-8859-1');
                 }
 
                 $line[] = '';
                 $line[] = '';
                 foreach ($quete['quete']['recompenses'] as $recompense) {
-                    $line[] = mb_convert_encoding((string) $recompense, 'ISO-8859-1');
+                    $line[] = mb_convert_encoding((string)$recompense, 'ISO-8859-1');
                 }
 
                 $line[] = '';
@@ -239,9 +261,12 @@ class GroupeController extends AbstractController
     /**
      * Générateur de quêtes commerciales.
      */
-    #[Route('/groupe/{groupe}/quete', name: 'groupe.quete')]
-    public function queteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/quete', name: 'quete')]
+    public function queteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): Response {
         $ressourceRares = new ArrayCollection($entityManager->getRepository(Ressource::class)->findRare());
         $ressourceCommunes = new ArrayCollection($entityManager->getRepository(Ressource::class)->findCommun());
         $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
@@ -258,9 +283,12 @@ class GroupeController extends AbstractController
     /**
      * Modifie les ingredients du groupe.
      */
-    #[Route('/groupe/{groupe}/ingredients', name: 'groupe.ingredients')]
-    public function adminIngredientAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/ingredients', name: 'ingredients')]
+    public function adminIngredientAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse|Response {
         $originalGroupeHasIngredients = new ArrayCollection();
 
         /*
@@ -330,9 +358,12 @@ class GroupeController extends AbstractController
     /**
      * Modifie les ressources du groupe.
      */
-    #[Route('/groupe/{groupe}/ressources', name: 'groupe.ressources')]
-    public function adminRessourceAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/ressources', name: 'ressources')]
+    public function adminRessourceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse|Response {
         $originalGroupeHasRessources = new ArrayCollection();
 
         /*
@@ -421,9 +452,12 @@ class GroupeController extends AbstractController
     /**
      * AModifie la richesse du groupe.
      */
-    #[Route('/groupe/{groupe}/richesse', name: 'groupe.richesse')]
-    public function adminRichesseAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/richesse', name: 'richesse')]
+    public function adminRichesseAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse|Response {
         $form = $this->createForm(GroupeRichesseForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
@@ -448,9 +482,12 @@ class GroupeController extends AbstractController
     /**
      * Ajoute un document dans le matériel du groupe.
      */
-    #[Route('/groupe/{groupe}/documents', name: 'groupe.documents')]
-    public function adminDocumentAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/documents', name: 'documents')]
+    public function adminDocumentAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse|Response {
         $form = $this->createForm(GroupeDocumentForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
@@ -475,9 +512,12 @@ class GroupeController extends AbstractController
     /**
      * Gestion des objets du groupe.
      */
-    #[Route('/groupe/{groupe}/items', name: 'groupe.items')]
-    public function adminItemAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/items', name: 'items')]
+    public function adminItemAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse|Response {
         $form = $this->createForm(GroupeItemForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
@@ -502,9 +542,12 @@ class GroupeController extends AbstractController
     /**
      * Gestion de l'enveloppe de groupe.
      */
-    #[Route('/groupe/{groupe}/envelope', name: 'groupe.envelope')]
-    public function envelopeAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/envelope', name: 'envelope')]
+    public function envelopeAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse|Response {
         $form = $this->createForm(GroupeEnvelopeForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
@@ -529,7 +572,7 @@ class GroupeController extends AbstractController
     /**
      * Gestion des membres du groupe.
      */
-    public function UsersAction(Request $request, EntityManagerInterface $entityManager, Groupe $groupe)
+    public function UsersAction(Request $request, EntityManagerInterface $entityManager, Groupe $groupe): Response
     {
         return $this->render('groupe/Users.twig', [
             'groupe' => $groupe,
@@ -539,14 +582,20 @@ class GroupeController extends AbstractController
     /**
      * vérouillage d'un groupe.
      */
-    #[Route('/groupe/{groupe}/lock', name: 'groupe.lock')]
-    public function lockAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/lock', name: 'lock')]
+    public function lockAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse {
         $groupe->setLock(true);
         $entityManager->persist($groupe);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Le groupe est verrouillé. Cela bloque la création et la modification des personnages membres de ce groupe');
+        $this->addFlash(
+            'success',
+            'Le groupe est verrouillé. Cela bloque la création et la modification des personnages membres de ce groupe'
+        );
 
         return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
     }
@@ -554,9 +603,12 @@ class GroupeController extends AbstractController
     /**
      * devérouillage d'un groupe.
      */
-    #[Route('/groupe/{groupe}/unlock', name: 'groupe.unlock')]
-    public function unlockAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/unlock', name: 'unlock')]
+    public function unlockAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse {
         $groupe->setLock(false);
         $entityManager->persist($groupe);
         $entityManager->flush();
@@ -569,8 +621,11 @@ class GroupeController extends AbstractController
     /**
      * rendre disponible un groupe.
      */
-    public function availableAction(Request $request, EntityManagerInterface $entityManager, Groupe $groupe)
-    {
+    public function availableAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Groupe $groupe
+    ): RedirectResponse {
         $groupe->setFree(true);
         $entityManager->persist($groupe);
         $entityManager->flush();
@@ -583,8 +638,11 @@ class GroupeController extends AbstractController
     /**
      * rendre indisponible un groupe.
      */
-    public function unvailableAction(Request $request, EntityManagerInterface $entityManager, Groupe $groupe)
-    {
+    public function unvailableAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Groupe $groupe
+    ): RedirectResponse {
         $groupe->setFree(false);
         $entityManager->persist($groupe);
         $entityManager->flush();
@@ -597,9 +655,12 @@ class GroupeController extends AbstractController
     /**
      * Lier un pays à un groupe.
      */
-    #[Route('/groupe/{groupe}/pays', name: 'groupe.pays')]
-    public function paysAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/pays', name: 'pays')]
+    public function paysAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse|Response {
         $form = $this->createForm()
             ->add('territoire', 'entity', [
                 'required' => true,
@@ -642,10 +703,13 @@ class GroupeController extends AbstractController
     /**
      * Ajout d'un territoire sous le controle du groupe.
      */
-    #[Route('/groupe/{groupe}/territoire/add', name: 'groupe.territoire.add')]
-    public function territoireAddAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
-        $form = $this->createForm()
+    #[Route('/{groupe}/territoire/add', name: 'territoire.add')]
+    public function territoireAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse|Response {
+        $form = $this->createForm(GroupeForm::class)
             ->add('territoire', 'entity', [
                 'required' => true,
                 'class' => Territoire::class,
@@ -686,9 +750,13 @@ class GroupeController extends AbstractController
     /**
      * Retirer un territoire du controle du groupe.
      */
-    #[Route('/groupe/{groupe}/territoire/{territoire}/remove', name: 'groupe.territoire.remove')]
-    public function territoireRemoveAction(Request $request, EntityManagerInterface $entityManager, Groupe $groupe, Territoire $territoire)
-    {
+    #[Route('/{groupe}/territoire/{territoire}/remove', name: 'territoire.remove')]
+    public function territoireRemoveAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Groupe $groupe,
+        Territoire $territoire
+    ): RedirectResponse|Response {
         $form = $this->createForm()
             ->add('remove', SubmitType::class, ['label' => 'Retirer le territoire']);
 
@@ -715,9 +783,12 @@ class GroupeController extends AbstractController
     /**
      * Gestion de la restauration d'un groupe.
      */
-    #[Route('/groupe/{groupe}/restauration', name: 'groupe.restauration')]
-    public function restaurationAction(Request $request, EntityManagerInterface $entityManager, Groupe $groupe)
-    {
+    #[Route('/{groupe}/restauration', name: 'restauration')]
+    public function restaurationAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Groupe $groupe
+    ): RedirectResponse|Response {
         $availableTaverns = GroupeManager::getAvailableTaverns();
 
         $formBuilder = $this->createForm();
@@ -736,7 +807,8 @@ class GroupeController extends AbstractController
 
         foreach ($participants as $participant) {
             $formBuilder->add($participant->getId(), 'choice', [
-                'label' => $participant->getUser()->getEtatCivil()->getNom().' '.$participant->getUser()->getEtatCivil()->getPrenom().' '.$participant->getUser()->getEmail(),
+                'label' => $participant->getUser()->getEtatCivil()->getNom().' '.$participant->getUser()->getEtatCivil(
+                    )->getPrenom().' '.$participant->getUser()->getEmail(),
                 'choices' => $availableTaverns,
                 'data' => $participant->getTavernId(),
                 'multiple' => false,
@@ -774,11 +846,12 @@ class GroupeController extends AbstractController
     /**
      * Impression matériel pour les personnages du groupe.
      */
-    #[Route('/groupe/{groupe}/print/materiel', name: 'groupe.print.materiel')]
-    public function printMaterielAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
-        $groupe = $request->get('groupe');
-
+    #[Route('/{groupe}/print/materiel', name: 'print.materiel')]
+    public function printMaterielAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): Response {
         // recherche les personnages du prochains GN membre du groupe
         $session = $groupe->getNextSession();
         $participants = $session->getParticipants();
@@ -792,9 +865,12 @@ class GroupeController extends AbstractController
     /**
      * Impression background pour les personnages du groupe.
      */
-    #[Route('/groupe/{groupe}/print/background', name: 'groupe.print.background')]
-    public function printBackgroundAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/print/background', name: 'print.background')]
+    public function printBackgroundAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): Response {
         return $this->render('groupe/printBackground.twig', [
             'groupe' => $groupe,
         ]);
@@ -803,7 +879,7 @@ class GroupeController extends AbstractController
     /**
      * Imprimmer toutes les enveloppes de tous les groupes.
      */
-    #[Route('/groupe/print', name: 'groupe.print')]
+    #[Route('/print', name: 'print')]
     public function printAllAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $gn = GroupeManager::getGnActif($entityManager);
@@ -830,9 +906,12 @@ class GroupeController extends AbstractController
     /**
      * Impression matériel pour le groupe.
      */
-    #[Route('/groupe/{groupe}/print/materiel/groupe', name: 'groupe.print.materiel.groupe')]
-    public function printMaterielGroupeAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/print/materiel/groupe', name: 'print.materiel.groupe')]
+    public function printMaterielGroupeAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): Response {
         // recherche les personnages du prochains GN membre du groupe
         $session = $groupe->getNextSession();
         $participants = $session->getParticipants();
@@ -852,9 +931,12 @@ class GroupeController extends AbstractController
     /**
      * Impression fiche de perso pour le groupe.
      */
-    #[Route('/groupe/{groupe}/print/perso', name: 'groupe.print.perso')]
-    public function printPersoAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}/print/perso', name: 'print.perso')]
+    public function printPersoAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): Response {
         // recherche les personnages du prochains GN membre du groupe
         $session = $groupe->getNextSession();
         $participants = $session->getParticipants();
@@ -886,8 +968,8 @@ class GroupeController extends AbstractController
     /**
      * Visualisation des liens entre groupes.
      */
-    #[Route('/groupe/diplomatie', name: 'groupe.diplomatie')]
-    public function diplomatieAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/diplomatie', name: 'diplomatie')]
+    public function diplomatieAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $repo = $entityManager->getRepository(Groupe::class);
         $groupes = $repo->findBy(['pj' => true], ['nom' => 'ASC']);
@@ -900,8 +982,8 @@ class GroupeController extends AbstractController
     /**
      * Impression des liens entre groupes.
      */
-    #[Route('/groupe/diplomatie/print', name: 'groupe.diplomatie.print')]
-    public function diplomatiePrintAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/diplomatie/print', name: 'diplomatie.print')]
+    public function diplomatiePrintAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $repo = $entityManager->getRepository(GroupeAllie::class);
         $alliances = $repo->findByAlliances();
@@ -922,13 +1004,24 @@ class GroupeController extends AbstractController
     /**
      * Liste des groupes.
      */
-    #[Route('/admin/groupe', name: 'groupe.admin.list')]
-    public function adminListAction(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('', name: 'list')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function listAction(
+        Request $request,
+        PagerService $pagerService,
+        GroupeRepository $groupeRepository): Response
     {
+        $pagerService->setRequest($request)->setRepository($groupeRepository);
+
+        return $this->render('groupe/list.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $groupeRepository->searchPaginated($pagerService),
+        ]);
+        /* OLD
         $order_by = $request->get('order_by') ?: 'numero';
         $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
+        $limit = (int)($request->get('limit') ?: 50);
+        $page = (int)($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $type = null;
         $value = null;
@@ -950,7 +1043,8 @@ class GroupeController extends AbstractController
             $value,
             $limit,
             $offset,
-            ['by' => $order_by, 'dir' => $order_dir]);
+            ['by' => $order_by, 'dir' => $order_dir]
+        );
 
         $paginator = $repo->findPaginatedQuery(
             $groupes,
@@ -962,13 +1056,16 @@ class GroupeController extends AbstractController
             'form' => $form->createView(),
             'paginator' => $paginator,
         ]);
+        */
     }
 
     /**
      * Ajouter un participant dans un groupe.
      */
-    public function adminParticipantAddAction(Request $request, EntityManagerInterface $entityManager)
-    {
+    public function adminParticipantAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): RedirectResponse|Response {
         $groupe = $request->get('groupe');
 
         $repo = $entityManager->getRepository(Participant::class);
@@ -1023,8 +1120,10 @@ class GroupeController extends AbstractController
     /**
      * Retirer un participant du groupe.
      */
-    public function adminParticipantRemoveAction(Request $request, EntityManagerInterface $entityManager)
-    {
+    public function adminParticipantRemoveAction(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): RedirectResponse|Response {
         $participantId = $request->get('participant');
         $groupe = $request->get('groupe');
 
@@ -1059,7 +1158,7 @@ class GroupeController extends AbstractController
     /**
      * Recherche d'un groupe.
      */
-    public function searchAction(Request $request, EntityManagerInterface $entityManager)
+    public function searchAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(FindGroupeForm::class, [])
             ->add('submit', SubmitType::class, ['label' => 'Rechercher']);
@@ -1110,7 +1209,7 @@ class GroupeController extends AbstractController
     /**
      * Modification du nombre de place disponibles dans un groupe.
      */
-    public function placeAction(Request $request, EntityManagerInterface $entityManager)
+    public function placeAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $id = $request->get('index');
         $groupe = $entityManager->find(Groupe::class, $id);
@@ -1130,18 +1229,21 @@ class GroupeController extends AbstractController
 
             $this->addFlash('success', 'Le nombre de place disponible a été mis à jour');
 
-            return $this->redirectToRoute('groupe.admin.list', [], 303);
+            return $this->redirectToRoute('groupe.list', [], 303);
         }
 
         return $this->render('groupe/place.twig', [
-            'groupe' => $groupe]);
+            'groupe' => $groupe,
+        ]);
     }
 
     /**
      * Ajout d'un background à un groupe.
      */
-    public function addBackgroundAction(Request $request, EntityManagerInterface $entityManager)
-    {
+    public function addBackgroundAction(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): RedirectResponse|Response {
         $id = $request->get('index');
         $groupe = $entityManager->find(Groupe::class, $id);
 
@@ -1168,8 +1270,10 @@ class GroupeController extends AbstractController
     /**
      * Mise à jour du background d'un groupe.
      */
-    public function updateBackgroundAction(Request $request, EntityManagerInterface $entityManager)
-    {
+    public function updateBackgroundAction(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): RedirectResponse|Response {
         $id = $request->get('index');
         $groupe = $entityManager->find(Groupe::class, $id);
 
@@ -1198,72 +1302,58 @@ class GroupeController extends AbstractController
     /**
      * Ajout d'un groupe.
      */
-    #[Route('/groupe/add', name: 'groupe.add')]
-    public function addAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/add', name: 'add')]
+    public function addAction(Request $request): RedirectResponse|Response
     {
-        $groupe = new Groupe();
+        return $this->handleCreateOrUpdate(
+            $request,
+            new Groupe(),
 
-        $form = $this->createForm(GroupeForm::class, $groupe)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder et nouveau']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $groupe = $form->getData();
-
-            /**
-             * Création des topics associés à ce groupe
-             * un topic doit être créé par GN auquel ce groupe est inscrit.
-             *
-             * @var Topic $topic
-             */
-            $topic = new Topic();
-            $topic->setTitle($groupe->getNom());
-            $topic->setDescription($groupe->getDescription());
-            $topic->setUser($this->getUser());
-            // défini les droits d'accés à ce forum
-            // (les membres du groupe ont le droit d'accéder à ce forum)
-            $topic->setRight('GROUPE_MEMBER');
-
-            // $topic->setTopic(GroupeManager::findTopic('TOPIC_GROUPE'));
-            $topicRepo = $entityManager->getRepository(Topic::class);
-            $topic->setTopic($topicRepo->findOneByKey('TOPIC_GROUPE'));
-
-            $groupe->setTopic($topic);
-
-            $entityManager->persist($topic);
-            $entityManager->flush();
-
-            $entityManager->persist($groupe);
-            $entityManager->flush();
-
-            $topic->setObjectId($groupe->getId());
-            $entityManager->persist($topic);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le groupe été sauvegardé');
-
-            /*
-             * Si l'utilisateur a cliqué sur "save", renvoi vers la liste des groupes
-             * Si l'utilisateur a cliqué sur "save_continue", renvoi vers un nouveau formulaire d'ajout
-             */
-            if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('groupe.admin.list', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
-                return $this->redirectToRoute('groupe.add', [], 303);
-            }
-        }
-
-        return $this->render('groupe/add.twig', ['form' => $form->createView()]);
+            GroupeForm::class
+        );
+        /*
+         * OLD :
+         * Création des topics associés à ce groupe
+         * un topic doit être créé par GN auquel ce groupe est inscrit.
+         *
+         * @var Topic $topic
+         *
+         * $topic = new Topic();
+         * $topic->setTitle($groupe->getNom());
+         * $topic->setDescription($groupe->getDescription());
+         * $topic->setUser($this->getUser());
+         * // défini les droits d'accés à ce forum
+         * // (les membres du groupe ont le droit d'accéder à ce forum)
+         * $topic->setRight('GROUPE_MEMBER');
+         *
+         * // $topic->setTopic(GroupeManager::findTopic('TOPIC_GROUPE'));
+         * $topicRepo = $entityManager->getRepository(Topic::class);
+         * $topic->setTopic($topicRepo->findOneByKey('TOPIC_GROUPE'));
+         *
+         * $groupe->setTopic($topic);
+         *
+         * $entityManager->persist($topic);
+         * $entityManager->flush();
+         *
+         * $entityManager->persist($groupe);
+         * $entityManager->flush();
+         *
+         * $topic->setObjectId($groupe->getId());
+         * $entityManager->persist($topic);
+         * $entityManager->flush();
+         */
     }
 
     /**
      * Modification d'un groupe.
      */
-    #[Route('/groupe/update/{groupe}', name: 'groupe.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    // TODO
+    #[Route('/update/{groupe}', name: 'update')]
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse|Response {
         $originalGroupeClasses = new ArrayCollection();
         $originalTerritoires = new ArrayCollection();
 
@@ -1357,7 +1447,7 @@ class GroupeController extends AbstractController
                 $entityManager->flush();
                 $this->addFlash('success', 'Le groupe a été supprimé.');
 
-                return $this->redirectToRoute('groupe.admin.list');
+                return $this->redirectToRoute('groupe.list');
             }
         }
 
@@ -1370,9 +1460,12 @@ class GroupeController extends AbstractController
     /**
      * Affiche le détail d'un groupe.
      */
-    #[Route('/groupe/{groupe}', name: 'groupe.detail')]
-    public function detailAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Groupe $groupe)
-    {
+    #[Route('/{groupe}', name: 'detail')]
+    public function detailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe
+    ): RedirectResponse|Response {
         /*
          * Si le groupe existe, on affiche son détail
          * Sinon on envoi une erreur
@@ -1384,6 +1477,31 @@ class GroupeController extends AbstractController
 
             return $this->redirectToRoute('groupe');
         }
+    }
+
+    #[Route('/{groupe}/delete', name: 'delete', requirements: ['groupe' => Requirement::DIGITS], methods: [
+        'DELETE',
+        'GET',
+        'POST',
+    ])]
+    public function deleteAction(#[MapEntity] Groupe $groupe): RedirectResponse|Response
+    {
+        return $this->genericDelete(
+            $groupe,
+            'Supprimer un groupe',
+            'Le groupe a été supprimé',
+            'groupe.list',
+            [
+                ['route' => $this->generateUrl('groupe.list'), 'name' => 'Liste des groupes'],
+                [
+                    'route' => $this->generateUrl('groupe.detail', ['groupe' => $groupe->getId()]),
+                    'groupe' => $groupe->getId(),
+                    'name' => $groupe->getNom(),
+                    'content' => $groupe->getDescription(),
+                ],
+                ['name' => 'Supprimer un groupe'],
+            ]
+        );
     }
 
     /**
@@ -1402,12 +1520,16 @@ class GroupeController extends AbstractController
         $output = fopen('php://output', 'w');
 
         // header
-        fputcsv($output,
+        fputcsv(
+            $output,
             [
                 'nom',
                 'description',
                 'code',
-                'creation_date'], ',');
+                'creation_date',
+            ],
+            ','
+        );
 
         foreach ($groupes as $groupe) {
             fputcsv($output, $groupe->getExportValue(), ',');
@@ -1415,5 +1537,57 @@ class GroupeController extends AbstractController
 
         fclose($output);
         exit;
+    }
+
+    protected function handleCreateOrUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
+        ?callable $entityCallback = null
+    ): RedirectResponse|Response {
+        $routes['root'] = 'groupe.';
+
+        $entityCallback ??= function ($entity, $form) {
+            // Todo to remove
+            $topic = new Topic();
+            $topic->setTitle($entity->getNom());
+            $topic->setDescription($entity->getDescription());
+            $topic->setUser($this->getUser());
+            $topic->setRight('GROUPE_MEMBER');
+
+            // $topic->setTopic(GroupeManager::findTopic('TOPIC_GROUPE'));
+            $topicRepo = $this->entityManager->getRepository(Topic::class);
+            $topic->setTopic($topicRepo->findOneByKey('TOPIC_GROUPE'));
+
+            $entity->setTopic($topic);
+
+            $this->entityManager->persist($topic);
+            $this->entityManager->flush();
+
+            return $entity;
+            // END todo to remove
+        };
+
+        return parent::handleCreateOrUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                ...$msg,
+                'entity' => $this->translator->trans('groupe'),
+                'entity_added' => $this->translator->trans('Le groupe a été ajoutée'),
+                'entity_updated' => $this->translator->trans('Le groupe a été mise à jour'),
+                'entity_deleted' => $this->translator->trans('Le groupe a été supprimé'),
+                'entity_list' => $this->translator->trans('Liste des groupes'),
+                'title_add' => $this->translator->trans('Ajouter un groupe'),
+                'title_update' => $this->translator->trans('Modifier un groupe'),
+            ],
+            entityCallback: $entityCallback
+        );
     }
 }
