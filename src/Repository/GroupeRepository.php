@@ -2,11 +2,10 @@
 
 namespace App\Repository;
 
-use App\Entity\GroupeGn;
 use App\Entity\Groupe;
 use App\Entity\Territoire;
+use App\Service\OrderBy;
 use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\EntityRepository;
 
 class GroupeRepository extends BaseRepository
 {
@@ -41,7 +40,7 @@ class GroupeRepository extends BaseRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('g');
-        $qb->from(\App\Entity\Groupe::class, 'g');
+        $qb->from(Groupe::class, 'g');
 
         if ($type && $value) {
             switch ($type) {
@@ -71,7 +70,7 @@ class GroupeRepository extends BaseRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select($qb->expr()->count('g'));
-        $qb->from(\App\Entity\Groupe::class, 'g');
+        $qb->from(Groupe::class, 'g');
 
         if ($type && $value) {
             switch ($type) {
@@ -118,7 +117,7 @@ class GroupeRepository extends BaseRepository
         return reset($groupes);
     }
 
-    public function findByGn(int $gn, ?string $type = "", ?string $value = "", ?array $order = [])
+    public function findByGn(int $gn, ?string $type = '', ?string $value = '', ?array $order = [])
     {
         // Liste des groupes du GN en paramètre
         $qbGroupes = $this->getEntityManager()
@@ -126,13 +125,106 @@ class GroupeRepository extends BaseRepository
             ->setParameter('code', $gn)
             ->getResult();
         $listeGroupes = array_column($qbGroupes, 1);
-           
+
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('t');
         $qb->from(Territoire::class, 't');
         $qb->andWhere($qb->expr()->in('t.groupe', $listeGroupes));
         $qb->orderBy('t.'.$order['by'], $order['dir']);
-        
+
         return $qb->getQuery();
+    }
+
+    public function search(
+        mixed $search = null,
+        string|array|null $attributes = self::SEARCH_NOONE,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null
+    ): QueryBuilder {
+        $alias ??= static::getEntityAlias();
+        $query ??= $this->createQueryBuilder($alias);
+        $query->join($alias.'.userRelatedByScenaristeId', 'scenariste');
+        $query->join('scenariste.etatCivil', 'etatCivil');
+
+        return parent::search($search, $attributes, $orderBy, $alias, $query);
+    }
+
+    public function searchAttributes(): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::searchAttributes(),
+            $alias.'.numero',
+            $alias.'.nom', // => 'Libellé',
+            'scenariste.username as scenariste_username',
+            'etatCivil.nom as scenariste_nom',
+            'etatCivil.prenom as scenariste_prenom',
+            'scenariste.email as scenariste_email',
+            $alias.'.description', // => 'Description',
+        ];
+    }
+
+    public function sortAttributes(?string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::sortAttributes($alias),
+            'nom' => [
+                OrderBy::ASC => [$alias.'.nom' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.nom' => OrderBy::DESC],
+            ],
+            'description' => [
+                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+            ],
+            'numero' => [
+                OrderBy::ASC => [$alias.'.numero' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.numero' => OrderBy::DESC],
+            ],
+            'scenariste' => [
+                OrderBy::ASC => ['scenariste.username' => OrderBy::ASC],
+                OrderBy::DESC => ['scenariste.username' => OrderBy::DESC],
+            ],
+            'scenariste_nom' => [
+                OrderBy::ASC => ['etatCivil.nom' => OrderBy::ASC],
+                OrderBy::DESC => ['etatCivil.nom' => OrderBy::DESC],
+            ],
+            'scenariste_prenom' => [
+                OrderBy::ASC => ['etatCivil.prenom' => OrderBy::ASC],
+                OrderBy::DESC => ['etatCivil.prenom' => OrderBy::DESC],
+            ],
+            'scenariste_email' => [
+                OrderBy::ASC => ['scenariste.email' => OrderBy::ASC],
+                OrderBy::DESC => ['scenariste.email' => OrderBy::DESC],
+            ],
+        ];
+    }
+
+    public function translateAttribute(string $attribute): string
+    {
+        $attribute = match ($this->getAttributeAsName($attribute)) {
+            'scenariste_id', 'scenariste', 'username' => 'scenariste',
+            'etat_civil_id', 'etatCivil_id', 'etatCivil' => 'etatCivil',
+            default => $attribute,
+        };
+
+        return parent::translateAttribute($attribute);
+    }
+
+    public function translateAttributes(): array
+    {
+        return [
+            ...parent::translateAttributes(),
+            'description' => $this->translator->trans('Description', domain: 'repository'),
+            'nom' => $this->translator->trans('Nom', domain: 'repository'),
+            'numero' => $this->translator->trans('Numero', domain: 'repository'),
+            'scenariste_username' => $this->translator->trans('Scénariste', domain: 'repository'),
+            'scenariste_email' => $this->translator->trans('Email scénariste', domain: 'repository'),
+            'scenariste_prenom' => $this->translator->trans('Prénom scénariste', domain: 'repository'),
+            'scenariste_nom' => $this->translator->trans('Nom scénariste', domain: 'repository'),
+        ];
     }
 }

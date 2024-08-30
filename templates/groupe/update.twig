@@ -7,7 +7,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-12 col-md-12">
-				<a href="{{ path("groupe.admin.list") }}">Retour à la liste des groupes</a>
+				<a href="{{ path("groupe.list") }}">Retour à la liste des groupes</a>
 				{{ include("groupe/fragment/form.twig",{
 					'legend': 'Modification d\'un groupe',
 					'action': path('groupe.update',{'groupe': groupe.id}), 

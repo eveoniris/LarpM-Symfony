@@ -33,6 +33,12 @@
                                     <i class="fa fa-plus"></i> Ajouter
                                 </a>
                             {% endif %}
+                            {% if print is defined and print %}
+                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                                   title="{{ print.title }}" href="{{ print.path }}">
+                                    <i class="fa fa-print"></i> Imprimer
+                                </a>
+                            {% endif %}
                         </div>
 
                         <div class="btn-group" role="group">

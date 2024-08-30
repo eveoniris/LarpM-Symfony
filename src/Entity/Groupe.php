@@ -66,6 +66,11 @@ class Groupe extends BaseGroupe implements \Stringable
         return null;
     }
 
+    public function getLabel(): string
+    {
+        return ($this->getNumero() ?: '?').' - '.$this->getNom();
+    }
+
     /**
      * Fourni les informations pour une session de jeu.
      */
@@ -500,7 +505,7 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Get User entity related by `scenariste_id` (many to one).
      *
-     * @return \App\Entity\User
+     * @return User
      */
     public function getScenariste()
     {
@@ -510,7 +515,7 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Set User entity related by `scenariste_id` (many to one).
      *
-     * @return \App\Entity\Groupe
+     * @return Groupe
      */
     public function setScenariste(User $User)
     {

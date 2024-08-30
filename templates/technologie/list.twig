@@ -21,106 +21,105 @@
                 'canAdd': {'title': 'Ajouter une technologie', 'path': path('technologie.add')},
                 'actionPath' : path('technologie.list')
             } %}
+    </div>
 
-        {% include '_partials/pagination.html.twig' %}
+    {% include '_partials/pagination.html.twig' %}
 
-        <table class="table table-condensed table-striped table-bordered table-hover">
-            {% include '_partials/thead.twig' with  { 'route': 'technologie.list', 'rows': [
-                {'name' : 'Secret', 'field' : 'secret', 'css' : 'text-center'},
-                {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
-                {'name' : 'Expert', 'field' : 'competenceFamily.label', 'css' : 'text-center'},
-                {'name' : 'Description', 'css' : 'text-center'},
-                {'name' : 'Ressources requises', 'css' : 'text-center'},
-                {'name' : 'Actions', 'css' : 'text-center'},
-            ]} %}
-            <tbody>
-            {% for technologie in paginator %}
-                <tr>
-                    <td class="text-center align-middle">
-                        {% if technologie.secret %}
-                            <span class="text-danger">
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'technologie.list', 'rows': [
+            {'name' : 'Secret', 'field' : 'secret', 'css' : 'text-center'},
+            {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
+            {'name' : 'Expert', 'field' : 'competenceFamily.label', 'css' : 'text-center'},
+            {'name' : 'Description', 'css' : 'text-center'},
+            {'name' : 'Ressources requises', 'css' : 'text-center'},
+            {'name' : 'Actions', 'css' : 'text-center'},
+        ]} %}
+        <tbody>
+        {% for technologie in paginator %}
+            <tr>
+                <td class="text-center align-middle">
+                    {% if technologie.secret %}
+                        <span class="text-danger">
                                 <i class="fa fa-user-secret text-danger" data-toggle="tooltip" data-placement="top"
                                    title="Secret"></i>  - Oui
                             </span>
-                        {% else %}
-                            <span class="text-info">Non</span>
-                        {% endif %}
-                    </td>
-                    <td class="text-center align-middle">{{ technologie.label|highlight(pagerService.searchValue) }}</td>
-                    <td class="text-center align-middle">{{ technologie.competenceFamily.label|highlight(pagerService.searchValue) }}</td>
-                    <td>
-                        {{ technologie.description|markdown_to_html|highlight(pagerService.searchValue) }}
-                    </td>
-                    <td class="align-middle">
-                        <div class="list-group">
-                            {% for technologieRessource in technologie.ressources %}
-                                <div class="list-group-item d-flex justify-content-between">
-                                    <div>
-                                        {{ technologieRessource.quantite }} {{ technologieRessource.ressource.label }}
-                                    </div>
-                                    <div class="btn-group">
-                                        <a class="btn btn-sm btn-secondary" data-toggle="tooltip"
-                                           data-placement="top"
-                                           title="Modifier"
-                                           href="{{ path('technologie.ressource.update', {'technologie':technologie.id, 'technologiesRessources':technologieRessource.id}) }}">
-                                            <i class="fa fa-pencil"></i>
-                                        </a>
-                                        <a class="btn btn-sm btn-secondary" data-toggle="tooltip"
-                                           data-placement="top"
-                                           title="Retirer {{ technologieRessource.ressource.label }}"
-                                           href="{{ path('technologie.ressource.delete', {'technologie':technologie.id, 'technologiesRessources':technologieRessource.id}) }}"
-                                           onclick="return confirm('Vous vous apprétez à retirer {{ technologieRessource.ressource.label }} de {{ technologie.label }}. Confirmer ?')">
-                                            <i class="fa fa-trash"></i></a>
-                                    </div>
+                    {% else %}
+                        <span class="text-info">Non</span>
+                    {% endif %}
+                </td>
+                <td class="text-center align-middle">{{ technologie.label|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle">{{ technologie.competenceFamily.label|highlight(pagerService.searchValue) }}</td>
+                <td>
+                    {{ technologie.description|markdown_to_html|highlight(pagerService.searchValue) }}
+                </td>
+                <td class="align-middle">
+                    <div class="list-group">
+                        {% for technologieRessource in technologie.ressources %}
+                            <div class="list-group-item d-flex justify-content-between">
+                                <div>
+                                    {{ technologieRessource.quantite }} {{ technologieRessource.ressource.label }}
                                 </div>
-                            {% else %}
-                                {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "#{technologie.label} ne requiert actuellement aucune Ressource ; Veuillez en ajouter :" } %}
-                            {% endfor %}
-                            <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
-                               title="Ajouter une Ressource"
-                               href="{{ path('technologie.ressource.add', {'technologie':technologie.id}) }}">
-                                <i class="fa fa-plus"></i> Ajouter
-                            </a>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="btn-toolbar pull-right" role="toolbar">
-                            <div class="btn-group-vertical" role="group">
-                                {% if technologie.documentUrl %}
-                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                       title="Télécharger le document associé"
-                                       href="{{ path('technologie.document', {'technologie': technologie.id, 'document': technologie.documentUrl}) }}"><i
-                                                class="fa-solid fa-download"></i> Télécharger</a>
-                                {% endif %}
-                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                   title="Modifier"
-                                   href="{{ path('technologie.update',{'technologie':technologie.id}) }}"><i
-                                            class="fa fa-pencil"></i> Modifier</a>
-                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                   title="Détail"
-                                   href="{{ path('technologie.detail',{'technologie':technologie.id}) }}"><i
-                                            class="fa fa-eye"></i> Detail</a>
-                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                   title="Personnages associés"
-                                   href="{{ path('technologie.personnages',{'technologie':technologie.id}) }}"><i
-                                            class="fa fa-users"></i> Personnages ({{ technologie.personnages|length }})</a>
-                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                   title="Supprimer"
-                                   href="{{ path('technologie.delete',{'technologie':technologie.id}) }}"><i
-                                            class="fa fa-eraser"></i> Supprimer</a>
+                                <div class="btn-group">
+                                    <a class="btn btn-sm btn-secondary" data-toggle="tooltip"
+                                       data-placement="top"
+                                       title="Modifier"
+                                       href="{{ path('technologie.ressource.update', {'technologie':technologie.id, 'technologiesRessources':technologieRessource.id}) }}">
+                                        <i class="fa fa-pencil"></i>
+                                    </a>
+                                    <a class="btn btn-sm btn-secondary" data-toggle="tooltip"
+                                       data-placement="top"
+                                       title="Retirer {{ technologieRessource.ressource.label }}"
+                                       href="{{ path('technologie.ressource.delete', {'technologie':technologie.id, 'technologiesRessources':technologieRessource.id}) }}"
+                                       onclick="return confirm('Vous vous apprétez à retirer {{ technologieRessource.ressource.label }} de {{ technologie.label }}. Confirmer ?')">
+                                        <i class="fa fa-trash"></i></a>
+                                </div>
                             </div>
+                        {% else %}
+                            {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "#{technologie.label} ne requiert actuellement aucune Ressource ; Veuillez en ajouter :" } %}
+                        {% endfor %}
+                        <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
+                           title="Ajouter une Ressource"
+                           href="{{ path('technologie.ressource.add', {'technologie':technologie.id}) }}">
+                            <i class="fa fa-plus"></i> Ajouter
+                        </a>
+                    </div>
+                </td>
+                <td>
+                    <div class="btn-toolbar pull-right" role="toolbar">
+                        <div class="btn-group-vertical" role="group">
+                            {% if technologie.documentUrl %}
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Télécharger le document associé"
+                                   href="{{ path('technologie.document', {'technologie': technologie.id, 'document': technologie.documentUrl}) }}"><i
+                                            class="fa-solid fa-download"></i> Télécharger</a>
+                            {% endif %}
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Modifier"
+                               href="{{ path('technologie.update',{'technologie':technologie.id}) }}"><i
+                                        class="fa fa-pencil"></i> Modifier</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Détail"
+                               href="{{ path('technologie.detail',{'technologie':technologie.id}) }}"><i
+                                        class="fa fa-eye"></i> Detail</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Personnages associés"
+                               href="{{ path('technologie.personnages',{'technologie':technologie.id}) }}"><i
+                                        class="fa fa-users"></i> Personnages ({{ technologie.personnages|length }})</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Supprimer"
+                               href="{{ path('technologie.delete',{'technologie':technologie.id}) }}"><i
+                                        class="fa fa-eraser"></i> Supprimer</a>
                         </div>
-                    </td>
-                </tr>
-            {% else %}
-                {% include '_partials/noResultTableRow.twig' %}
-            {% endfor %}
-            </tbody>
-        </table>
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            {% include '_partials/noResultTableRow.twig' %}
+        {% endfor %}
+        </tbody>
+    </table>
 
-        {% include '_partials/pagination.html.twig' %}
+    {% include '_partials/pagination.html.twig' %}
 
-
-    </div>
 
 {% endblock %}

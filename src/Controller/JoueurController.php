@@ -3,18 +3,18 @@
 namespace App\Controller;
 
 use App\Form\JoueurForm;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 
-/**
- * LarpManager\Controllers\JoueurController.
- *
- * @author kevin
- */
+#[Route('/joueur', name: 'joueur.')]
 class JoueurController extends AbstractController
 {
     /**
      * Affiche la vue index.twig.
      */
+    #[Route('', name: 'list')]
     public function indexAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository('\App\Entity\Joueur');
@@ -26,6 +26,7 @@ class JoueurController extends AbstractController
     /**
      * Affiche le formulaire d'ajout d'un joueur.
      */
+    #[Route('/add', name: 'add')]
     public function addAction(Request $request,  EntityManagerInterface $entityManager)
     {
         $joueur = new \App\Entity\Joueur();
@@ -56,7 +57,8 @@ class JoueurController extends AbstractController
     /**
      * Detail d'un joueur.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
+    #[Route('/{joueur}', name: 'detail', requirements: ['joueur' => Requirement::DIGITS])]
+    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Joueur $joueur)
     {
         $id = $request->get('index');
 
