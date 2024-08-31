@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -20,31 +21,31 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseIntrigue', 'extended' => 'Intrigue'])]
 abstract class BaseIntrigue
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
+    #[Column(type: Types::TEXT)]
     protected string $description = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
     protected string $titre = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
+    #[Column(type: Types::TEXT)]
     protected string $text = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
+    #[Column(type: Types::TEXT)]
     protected ?string $resolution = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected \DateTime $date_creation;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected \DateTime $date_update;
 
     /**
      * @Column(name="`state`", type="string", length=45, nullable=true)
      */
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $state = null;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasEvenement::class, cascade: ['persist', 'remove'])]
@@ -468,7 +469,7 @@ abstract class BaseIntrigue
     /**
      * Set User entity (many to one).
      */
-    public function setUser(User $User = null): static
+    public function setUser(?User $User = null): static
     {
         $this->user = $User;
 

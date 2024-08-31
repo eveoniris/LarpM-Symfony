@@ -1,107 +1,69 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Intrigue;
 use App\Entity\IntrigueHasModification;
 use App\Entity\Relecture;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Form\Intrigue\IntrigueDeleteForm;
-use App\Form\Intrigue\IntrigueFindForm;
 use App\Form\Intrigue\IntrigueForm;
 use App\Form\Intrigue\IntrigueRelectureForm;
 use App\Repository\IntrigueRepository;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use App\Service\PagerService;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_SCENARISTE')]
+#[Route('/intrigue', name: 'intrigue.')]
 class IntrigueController extends AbstractController
 {
     /**
      * Liste de toutes les intrigues.
      */
-    #[Route('/intrigue', name: 'intrigue.list')]
-    public function listAction(Request $request, EntityManagerInterface $entityManager, IntrigueRepository $intrigueRepository)
-    {
-        $type = null;
-        $value = null;
-
-        $form = $this->createForm(IntrigueFindForm::class);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $type = $data['type'];
-            $value = $data['value'];
-        }
-        
-        $alias = IntrigueRepository::getEntityAlias();
-
-        $criterias = [];
-        if (!empty($value)) {
-            if (empty($type) || '*' === $type) {
-                $criterias[] = Criteria::create()->where(
-                    Criteria::expr()?->contains($alias.'.titre', $value)
-                )->orWhere(
-                    Criteria::expr()?->contains($alias.'.description', $value)
-                )->orWhere(
-                    Criteria::expr()?->contains($alias.'.text', $value)
-                )
-                ;
-            } else {
-                $criterias[] = Criteria::create()->andWhere(
-                    Criteria::expr()?->contains($alias.'.'.$type, $value)
-                );
-            }
-        }
-
-        $orderBy = $this->getRequestOrder(
-            defOrderBy: 'titre',
-            alias: $alias,
-            allowedFields: $intrigueRepository->getFieldNames()
-        );
-
-        $paginator = $intrigueRepository->getPaginator(
-            limit: $this->getRequestLimit(),
-            page: $this->getRequestPage(),
-            orderBy: $orderBy,
-            alias: $alias,
-            criterias: $criterias
-        );
+    #[Route('', name: 'list')]
+    public function listAction(
+        Request $request,
+        PagerService $pagerService,
+        IntrigueRepository $intrigueRepository
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($intrigueRepository);
 
         return $this->render('intrigue/list.twig', [
-            'form' => $form->createView(),
-            //'intrigues' => $intrigues,
-            'paginator' => $paginator,
+            'pagerService' => $pagerService,
+            'paginator' => $intrigueRepository->searchPaginated($pagerService),
         ]);
     }
-
-    
 
     /**
      * Ajouter une intrigue.
      */
-    #[Route('/intrigue/add', name: 'intrigue.add')]
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
-    {
+    #[Route('/add', name: 'add')]
+    public function addAction(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): RedirectResponse|Response {
         $intrigue = new Intrigue();
         $form = $this->createForm(IntrigueForm::class, $intrigue)
-            ->add('state', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('state', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Etat',
                 'choices' => [
                     'L\'élément est actif' => 'ACTIF',
-				    'L\'élément est inactif' => 'INACTIF',
+                    'L\'élément est inactif' => 'INACTIF',
                 ],
             ])
-            ->add('add', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => "Ajouter l'intrigue"]);
+            ->add(
+                'add',
+                SubmitType::class,
+                ['label' => "Ajouter l'intrigue"]
+            );
 
         $form->handleRequest($request);
 
@@ -109,9 +71,9 @@ class IntrigueController extends AbstractController
             $intrigue = $form->getData();
 
             if (!$intrigue->getDescription()) {
-               $this->addFlash('error', 'la description de votre intrigue est obligatoire.');
+                $this->addFlash('error', 'la description de votre intrigue est obligatoire.');
             } elseif (!$intrigue->getText()) {
-               $this->addFlash('error', 'le texte de votre intrigue est obligatoire.');
+                $this->addFlash('error', 'le texte de votre intrigue est obligatoire.');
             } else {
                 $intrigue->setUser($this->getUser());
 
@@ -169,7 +131,7 @@ class IntrigueController extends AbstractController
                     }
                 }
 
-               $this->addFlash('success', 'Votre intrigue a été ajouté.');
+                $this->addFlash('success', 'Votre intrigue a été ajouté.');
 
                 return $this->redirectToRoute('intrigue.list', [], 303);
             }
@@ -183,8 +145,8 @@ class IntrigueController extends AbstractController
     /**
      * Lire une intrigue.
      */
-    #[Route('/intrigue/{intrigue}', name: 'intrigue.detail')]
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
+    #[Route('/{intrigue}', name: 'detail')]
+    public function detailAction(Request $request, EntityManagerInterface $entityManager, Intrigue $intrigue): Response
     {
         return $this->render('intrigue/detail.twig', [
             'intrigue' => $intrigue,
@@ -194,9 +156,12 @@ class IntrigueController extends AbstractController
     /**
      * Mettre à jour une intrigue.
      */
-    #[Route('/intrigue/{intrigue}/update', name: 'intrigue.update')]
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
-    {
+    #[Route('/{intrigue}/update', name: 'update')]
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Intrigue $intrigue
+    ): RedirectResponse|Response {
         $originalIntrigueHasGroupes = new ArrayCollection();
         $originalIntrigueHasGroupeSecondaires = new ArrayCollection();
         $originalIntrigueHasEvenements = new ArrayCollection();
@@ -247,7 +212,7 @@ class IntrigueController extends AbstractController
         }
 
         $form = $this->createForm(IntrigueForm::class, $intrigue)
-            ->add('state', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('state', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Etat',
                 'choices' => [
@@ -255,7 +220,11 @@ class IntrigueController extends AbstractController
                     'L\'élément est inactif' => 'INACTIF',
                 ],
             ])
-            ->add('enregistrer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+            ->add(
+                'enregistrer',
+                SubmitType::class,
+                ['label' => 'Enregistrer']
+            );
 
         $form->handleRequest($request);
 
@@ -385,7 +354,9 @@ class IntrigueController extends AbstractController
                 if ($modification->getUser() != $this->getUser()) {
                     $sendNotification = true;
                     foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
-                        if (true == $modification->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
+                        if (true == $modification->getUser()->getGroupeScenariste()->contains(
+                            $intrigueHasGroupe->getGroupe()
+                        )) {
                             $sendNotification = false;
                         }
                     }
@@ -396,7 +367,7 @@ class IntrigueController extends AbstractController
                 }
             }
 
-           $this->addFlash('success', 'Votre intrigue a été modifiée.');
+            $this->addFlash('success', 'Votre intrigue a été modifiée.');
 
             return $this->redirectToRoute('intrigue.detail', ['intrigue' => $intrigue->getId()], 303);
         }
@@ -410,11 +381,14 @@ class IntrigueController extends AbstractController
     /**
      * Supression d'une intrigue.
      */
-    #[Route('/intrigue/{intrigue}/delete', name: 'intrigue.delete')]
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
-    {
+    #[Route('/{intrigue}/delete', name: 'delete')]
+    public function deleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Intrigue $intrigue
+    ): RedirectResponse|Response {
         $form = $this->createForm(IntrigueDeleteForm::class, $intrigue)
-            ->add('supprimer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('supprimer', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -423,7 +397,7 @@ class IntrigueController extends AbstractController
             $entityManager->remove($intrigue);
             $entityManager->flush();
 
-           $this->addFlash('success', 'L\'intrigue a été supprimée.');
+            $this->addFlash('success', 'L\'intrigue a été supprimée.');
 
             return $this->redirectToRoute('intrigue.list', [], 303);
         }
@@ -437,12 +411,19 @@ class IntrigueController extends AbstractController
     /**
      * Ajout d'une relecture.
      */
-    #[Route('/intrigue/{intrigue}/relecture', name: 'intrigue.relecture.add')]
-    public function relectureAddAction(Request $request,  EntityManagerInterface $entityManager, Intrigue $intrigue)
-    {
+    #[Route('/{intrigue}/relecture', name: 'relecture.add')]
+    public function relectureAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Intrigue $intrigue
+    ): RedirectResponse|Response {
         $relecture = new Relecture();
         $form = $this->createForm(IntrigueRelectureForm::class, $relecture)
-            ->add('enregistrer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+            ->add(
+                'enregistrer',
+                SubmitType::class,
+                ['label' => 'Enregistrer']
+            );
 
         $form->handleRequest($request);
 
@@ -463,7 +444,7 @@ class IntrigueController extends AbstractController
                 }
             }
 
-           $this->addFlash('success', 'Votre relecture a été enregistrée.');
+            $this->addFlash('success', 'Votre relecture a été enregistrée.');
 
             return $this->redirectToRoute('intrigue.detail', ['intrigue' => $intrigue->getId()], 303);
         }
