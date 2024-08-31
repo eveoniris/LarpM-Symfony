@@ -1,16 +1,9 @@
 <?php
 
-
 namespace App\Repository;
 
 use App\Entity\Rumeur;
-use Doctrine\ORM\EntityRepository;
 
-/**
- * LarpManager\Repository\RumeurRepository.
- *
- * @author kevin
- */
 class RumeurRepository extends BaseRepository
 {
     /**
@@ -26,7 +19,7 @@ class RumeurRepository extends BaseRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('i');
-        $qb->from(\App\Entity\Rumeur::class, 'i');
+        $qb->from(Rumeur::class, 'i');
         if ($type && $value && 'text' === $type) {
             $qb->andWhere('i.text LIKE :value');
             $qb->setParameter('value', '%'.$value.'%');
@@ -52,7 +45,7 @@ class RumeurRepository extends BaseRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select($qb->expr()->count('r'));
-        $qb->from(\App\Entity\Rumeur::class, 'r');
+        $qb->from(Rumeur::class, 'r');
 
         if ($type && $value && 'text' === $type) {
             $qb->andWhere('r.text LIKE :value');

@@ -44,17 +44,17 @@
 		{% for groupe in paginator %}
 			<tr>
 				<td>{% if groupe.pj %}PJ{%else%}PNJ{% endif %}</td>
-				<td>{{ groupe.numero }}</td>
-				<td>{{ groupe.nom }}</td>
+				<td>{{ groupe.numero|highlight(pagerService.searchValue) }}</td>
+				<td>{{ groupe.nom|highlight(pagerService.searchValue) }}</td>
 				<td>
 					<ul>
 					{% for groupeGn in groupe.groupeGns|reverse %}
-						<li><strong>{{ groupeGn.gn.label }}</strong> : {{ groupeGn.participants|length }} / {{ groupe.placeTotal|default(0) }}</li>
+						<li><strong>{{ groupeGn.gn.label|highlight(pagerService.searchValue) }}</strong> : {{ groupeGn.participants|length }} / {{ groupe.placeTotal|default(0) }}</li>
 					{% endfor %}
 					</ul>
 				</td>
 				<td>{% if groupe.lock %}<span class="text-danger">Verrouillé</span>{% else %}Ouvert{% endif %}</td>
-				<td>{% if groupe.scenariste %}{{ groupe.scenariste.etatCivil }}{% else %}pas de scénariste{% endif %}</td>
+				<td>{% if groupe.scenariste %}{{ groupe.scenariste.etatCivil|highlight(pagerService.searchValue) }}{% else %}pas de scénariste{% endif %}</td>
 				<td>
 					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 						<div class="btn-group" role="group" aria-label="...">
