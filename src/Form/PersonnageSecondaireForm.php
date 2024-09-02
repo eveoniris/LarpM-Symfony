@@ -1,38 +1,36 @@
 <?php
 
-
 namespace App\Form;
 
+use App\Entity\Classe;
+use App\Entity\PersonnageSecondaire;
 use App\Form\Type\PersonnageSecondairesCompetencesType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\PersonnageSecondaireForm.
- *
- * @author kevin
- */
 class PersonnageSecondaireForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add(
-            'classe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-            'required' => true,
-            'label' => 'Choisissez la classe',
-            'class' => \App\Entity\Classe::class,
-            'choice_label' => 'label',
-        ])
+            'classe', EntityType::class, [
+                'required' => true,
+                'label' => 'Choisissez la classe',
+                'class' => Classe::class,
+                'choice_label' => 'label',
+            ])
             ->add(
-                'personnageSecondaireCompetences', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
-                'label' => 'Competences',
-                'required' => false,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'entry_type' => PersonnageSecondairesCompetencesType::class,
-            ]);
+                'personnageSecondaireCompetences', CollectionType::class, [
+                    'label' => 'Competences',
+                    'required' => false,
+                    'allow_add' => true,
+                    'allow_delete' => true,
+                    'by_reference' => false,
+                    'entry_type' => PersonnageSecondairesCompetencesType::class,
+                ]);
     }
 
     /**
@@ -41,7 +39,7 @@ class PersonnageSecondaireForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\PersonnageSecondaire::class,
+            'data_class' => PersonnageSecondaire::class,
         ]);
     }
 
