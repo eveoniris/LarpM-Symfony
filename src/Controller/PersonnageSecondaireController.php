@@ -84,8 +84,10 @@ class PersonnageSecondaireController extends AbstractController
      * Mise à jour d'un personnage secondaire.
      */
     #[Route('/personnageSecondaire/update/{personnageSecondaire}', name: 'personnageSecondaire.update')]
-    public function updateAction(Request $request, #[MapEntity] PersonnageSecondaire $personnageSecondaire): RedirectResponse|Response
-    {
+    public function updateAction(
+        Request $request,
+        #[MapEntity] PersonnageSecondaire $personnageSecondaire
+    ): RedirectResponse|Response {
         /**
          *  Crée un tableau contenant les objets personnageSecondaireCompetences courants de la base de données.
          */
@@ -95,7 +97,13 @@ class PersonnageSecondaireController extends AbstractController
         }
 
         $form = $this->createForm(PersonnageSecondaireForm::class, $personnageSecondaire)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, [
+                    'label' => 'Sauvegarder',
+                    'attr' => [
+                        'class' => 'btn btn-secondary',
+                    ],
+                ]
+            );
 
         $form->handleRequest($request);
 
@@ -113,7 +121,9 @@ class PersonnageSecondaireController extends AbstractController
              *  supprime la relation entre le groupeClasse et le groupe
              */
             foreach ($originalPersonnageSecondaireComptences as $personnageSecondaireCompetence) {
-                if (false === $personnageSecondaire->getPersonnageSecondaireCompetences()->contains($personnageSecondaireCompetence)) {
+                if (false === $personnageSecondaire->getPersonnageSecondaireCompetences()->contains(
+                        $personnageSecondaireCompetence
+                    )) {
                     $this->entityManager->remove($personnageSecondaireCompetence);
                 }
             }
@@ -135,8 +145,11 @@ class PersonnageSecondaireController extends AbstractController
      * Suppression d'un personnage secondaire.
      */
     #[Route('/personnageSecondaire/delete/{personnageSecondaire}', name: 'personnageSecondaire.delete')]
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] PersonnageSecondaire $personnageSecondaire): RedirectResponse|Response
-    {
+    public function deleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] PersonnageSecondaire $personnageSecondaire
+    ): RedirectResponse|Response {
         $form = $this->createForm(PersonnageSecondaireDeleteForm::class, $personnageSecondaire)
             ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 

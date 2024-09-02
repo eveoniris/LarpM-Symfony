@@ -9,7 +9,7 @@
 				<h5>Compétences</h5>
 				<p>Composez votre personnage secondaire avec une ou plusieurs competences.</p>
 					
-				<ul class="list-group competences" data-prototype="{{ form_widget(form.personnageSecondaireCompetences.vars.prototype)|e }}">
+				<ul class="list-group mb-2 competences" data-prototype="{{ form_widget(form.personnageSecondaireCompetences.vars.prototype)|e }}">
 					{% for competence in form.personnageSecondaireCompetences %}
 				       	<li class="list-group-item">{{ form_widget(competence) }}</li>
 				    {% endfor %}
