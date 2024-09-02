@@ -98,11 +98,11 @@ class PersonnageSecondaireController extends AbstractController
 
         $form = $this->createForm(PersonnageSecondaireForm::class, $personnageSecondaire)
             ->add('save', SubmitType::class, [
-                    'label' => 'Sauvegarder',
-                    'attr' => [
-                        'class' => 'btn btn-secondary',
-                    ],
-                ]
+                'label' => 'Sauvegarder',
+                'attr' => [
+                    'class' => 'btn btn-secondary',
+                ],
+            ]
             );
 
         $form->handleRequest($request);
@@ -122,8 +122,8 @@ class PersonnageSecondaireController extends AbstractController
              */
             foreach ($originalPersonnageSecondaireComptences as $personnageSecondaireCompetence) {
                 if (false === $personnageSecondaire->getPersonnageSecondaireCompetences()->contains(
-                        $personnageSecondaireCompetence
-                    )) {
+                    $personnageSecondaireCompetence
+                )) {
                     $this->entityManager->remove($personnageSecondaireCompetence);
                 }
             }

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -20,36 +21,36 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['base' => 'BaseItem', 'extended' => 'Item'])]
 abstract class BaseItem
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     #[Assert\NotBlank()]
     protected ?string $label = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     #[Assert\NotBlank()]
     protected ?string $description = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     protected int $numero = 0;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 2)]
+    #[Column(type: Types::STRING, length: 2)]
     protected string $identification = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $special = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
     protected string $couleur;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected \DateTime $date_creation;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected \DateTime $date_update;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     protected int $quantite = 0;
 
     /*
@@ -156,8 +157,6 @@ abstract class BaseItem
 
     /**
      * Set the value of identification.
-     *
-     * @param string $identification
      */
     public function setIdentification(string $identification): static
     {
@@ -271,7 +270,7 @@ abstract class BaseItem
     /**
      * Set Quality entity (many to one).
      */
-    public function setQuality(Quality $quality = null): static
+    public function setQuality(?Quality $quality = null): static
     {
         $this->quality = $quality;
 
@@ -289,7 +288,7 @@ abstract class BaseItem
     /**
      * Set Statut entity (many to one).
      */
-    public function setStatut(Statut $statut = null): static
+    public function setStatut(?Statut $statut = null): static
     {
         $this->statut = $statut;
 
@@ -307,7 +306,7 @@ abstract class BaseItem
     /**
      * Set Objet entity (many to one).
      */
-    public function setObjet(Objet $objet = null): static
+    public function setObjet(?Objet $objet = null): static
     {
         $this->objet = $objet;
 

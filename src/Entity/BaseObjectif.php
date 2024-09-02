@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,20 +19,20 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseObjectif', 'extended' => 'Objectif'])]
 class BaseObjectif
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 450)]
+    #[Column(type: Types::STRING, length: 450)]
     protected string $text = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected \DateTime $date_creation;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected \DateTime $date_update;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\IntrigueHasObjectif>|\App\Entity\IntrigueHasObjectif[]
+     * @var Collection<int, IntrigueHasObjectif>|IntrigueHasObjectif[]
      */
     #[OneToMany(mappedBy: 'objectif', targetEntity: IntrigueHasObjectif::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'objectif_id', nullable: 'false')]

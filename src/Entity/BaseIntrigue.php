@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'intrigue')]
@@ -24,12 +25,18 @@ abstract class BaseIntrigue
     #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     #[Column(type: Types::TEXT)]
     protected string $description = '';
 
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     #[Column(type: Types::STRING, length: 45)]
     protected string $titre = '';
 
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     #[Column(type: Types::TEXT)]
     protected string $text = '';
 
@@ -39,7 +46,7 @@ abstract class BaseIntrigue
     #[Column(type: Types::DATETIME_MUTABLE)]
     protected \DateTime $date_creation;
 
-    #[Column(type: Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: false)]
     protected \DateTime $date_update;
 
     /**
@@ -119,9 +126,9 @@ abstract class BaseIntrigue
     /**
      * Set the value of description.
      */
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
-        $this->description = $description;
+        $this->description = $description ?? '';
 
         return $this;
     }
@@ -137,9 +144,9 @@ abstract class BaseIntrigue
     /**
      * Set the value of titre.
      */
-    public function setTitre(string $titre): static
+    public function setTitre(?string $titre): static
     {
-        $this->titre = $titre;
+        $this->titre = $titre ?? '';
 
         return $this;
     }
@@ -155,9 +162,9 @@ abstract class BaseIntrigue
     /**
      * Set the value of text.
      */
-    public function setText(string $text): static
+    public function setText(?string $text): static
     {
-        $this->text = $text;
+        $this->text = $text ?? '';
 
         return $this;
     }
@@ -173,9 +180,9 @@ abstract class BaseIntrigue
     /**
      * Set the value of resolution.
      */
-    public function setResolution(string $resolution): static
+    public function setResolution(?string $resolution): static
     {
-        $this->resolution = $resolution;
+        $this->resolution = $resolution ?? '';
 
         return $this;
     }
