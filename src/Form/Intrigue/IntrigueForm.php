@@ -11,14 +11,13 @@ use App\Form\Type\IntrigueHasGroupeType;
 use App\Form\Type\IntrigueHasLieuType;
 use App\Form\Type\IntrigueHasObjectifType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Groupe\IntrigueForm.
- *
- * @author kevin
- */
+
 class IntrigueForm extends AbstractType
 {
     /**
@@ -26,11 +25,11 @@ class IntrigueForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('titre', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('titre', TextType::class, [
             'label' => 'Le titre de votre intrigue',
             'required' => true,
         ])
-            ->add('intrigueHasGroupes', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+            ->add('intrigueHasGroupes', CollectionType::class, [
                 'label' => 'Groupes concernés',
                 'required' => false,
                 'allow_add' => true,
@@ -38,7 +37,7 @@ class IntrigueForm extends AbstractType
                 'by_reference' => false,
                 'entry_type' => IntrigueHasGroupeType::class,
             ])
-            ->add('intrigueHasGroupeSecondaires', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+            ->add('intrigueHasGroupeSecondaires', CollectionType::class, [
                 'label' => 'Groupes secondaires concernés',
                 'required' => false,
                 'allow_add' => true,
@@ -46,7 +45,7 @@ class IntrigueForm extends AbstractType
                 'by_reference' => false,
                 'entry_type' => IntrigueHasGroupeSecondaireType::class,
             ])
-            ->add('intrigueHasDocuments', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+            ->add('intrigueHasDocuments', CollectionType::class, [
                 'label' => 'Documents concernées',
                 'required' => false,
                 'allow_add' => true,
@@ -54,7 +53,7 @@ class IntrigueForm extends AbstractType
                 'by_reference' => false,
                 'entry_type' => IntrigueHasDocumentType::class,
             ])
-            ->add('intrigueHasLieus', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+            ->add('intrigueHasLieus', CollectionType::class, [
                 'label' => 'Instances concernées',
                 'required' => false,
                 'allow_add' => true,
@@ -62,7 +61,7 @@ class IntrigueForm extends AbstractType
                 'by_reference' => false,
                 'entry_type' => IntrigueHasLieuType::class,
             ])
-            ->add('intrigueHasEvenements', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+            ->add('intrigueHasEvenements', CollectionType::class, [
                 'label' => 'Evénements',
                 'required' => false,
                 'allow_add' => true,
@@ -70,7 +69,7 @@ class IntrigueForm extends AbstractType
                 'by_reference' => false,
                 'entry_type' => IntrigueHasEvenementType::class,
             ])
-            ->add('intrigueHasObjectifs', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+            ->add('intrigueHasObjectifs', CollectionType::class, [
                 'label' => 'Objectifs',
                 'required' => false,
                 'allow_add' => true,
@@ -78,7 +77,7 @@ class IntrigueForm extends AbstractType
                 'by_reference' => false,
                 'entry_type' => IntrigueHasObjectifType::class,
             ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('description', TextareaType::class, [
                 'label' => 'Description de votre intrigue',
                 'required' => true,
                 'attr' => [
@@ -87,7 +86,7 @@ class IntrigueForm extends AbstractType
                     'help' => 'Une courte description de votre intrigue.',
                 ],
             ])
-            ->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('text', TextareaType::class, [
                 'label' => 'Votre intrigue',
                 'required' => true,
                 'attr' => [
@@ -96,7 +95,7 @@ class IntrigueForm extends AbstractType
                     'help' => 'Développez votre intrigue içi. N\'oubliez pas d\'ajouter les groupes concernés et les événements si votre intrigue y fait référence',
                 ],
             ])
-            ->add('resolution', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('resolution', TextareaType::class, [
                 'label' => 'Résolution de votre intrigue',
                 'required' => false,
                 'attr' => [
