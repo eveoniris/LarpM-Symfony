@@ -100,7 +100,7 @@
 			</div>
 			<div class="col-md-6">
 				<h4>Auteur</h4>
-				<p>Cette intrigue a été créé par <strong><a href="{{ path('user.view', {'user': intrigue.auteur.id}) }}">{{ intrigue.auteur.username }}</a></strong> le <strong>{{ intrigue.dateCreation|date('Y-m-d H:i:s') }}</strong></p>
+				<p>Cette intrigue a été créé par <strong><a href="{{ path('user.view', {'user': intrigue.user.id}) }}">{{ intrigue.user.username }}</a></strong> le <strong>{{ intrigue.dateCreation|date('Y-m-d H:i:s') }}</strong></p>
 					
 				<h4>Modifications</h4>
 				<ul>
