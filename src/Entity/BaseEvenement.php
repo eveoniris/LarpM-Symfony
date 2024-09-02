@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,22 +19,23 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseEvenement', 'extended' => 'Evenement'])]
 abstract class BaseEvenement
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::STRING, length: 450)]
+    #[Column(name: 'text', type: Types::STRING, length: 450)]
     protected string $text;
 
-    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(name: 'date', type: Types::STRING, length: 45)]
     protected string $date;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected \DateTime $date_creation;
 
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected \DateTime $date_update;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\IntrigueHasEvenement>|\App\Entity\IntrigueHasEvenement[]
+     * @var Collection<int, IntrigueHasEvenement>|IntrigueHasEvenement[]
      */
     #[OneToMany(mappedBy: 'evenement', targetEntity: IntrigueHasEvenement::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'evenement_id', nullable: 'false')]

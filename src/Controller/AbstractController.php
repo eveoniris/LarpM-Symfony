@@ -221,9 +221,9 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 SubmitType::class,
                 [
                     'label' => $msg['save'],
-                    'attr' => [
-                        'class' => 'btn btn-secondary',
-                    ],
+//                    'attr' => [
+//                        'class' => 'btn btn-secondary',
+//                    ],
                 ]
             )
                 ->add('save_continue', SubmitType::class, [

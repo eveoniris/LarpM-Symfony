@@ -62,7 +62,12 @@ class IntrigueController extends AbstractController
             ->add(
                 'add',
                 SubmitType::class,
-                ['label' => "Ajouter l'intrigue"]
+                [
+                    'label' => "Ajouter l'intrigue",
+                    'attr' => [
+                        'class' => 'btn btn-secondary',
+                    ],
+                ]
             );
 
         $form->handleRequest($request);
@@ -223,7 +228,12 @@ class IntrigueController extends AbstractController
             ->add(
                 'enregistrer',
                 SubmitType::class,
-                ['label' => 'Enregistrer']
+                [
+                    'label' => 'Enregistrer',
+                    'attr' => [
+                        'class' => 'btn btn-secondary',
+                    ],
+                ]
             );
 
         $form->handleRequest($request);
@@ -355,8 +365,8 @@ class IntrigueController extends AbstractController
                     $sendNotification = true;
                     foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
                         if (true == $modification->getUser()->getGroupeScenariste()->contains(
-                            $intrigueHasGroupe->getGroupe()
-                        )) {
+                                $intrigueHasGroupe->getGroupe()
+                            )) {
                             $sendNotification = false;
                         }
                     }
@@ -422,7 +432,12 @@ class IntrigueController extends AbstractController
             ->add(
                 'enregistrer',
                 SubmitType::class,
-                ['label' => 'Enregistrer']
+                [
+                    'label' => 'Enregistrer',
+                    'attr' => [
+                        'class' => 'btn btn-secondary',
+                    ],
+                ]
             );
 
         $form->handleRequest($request);
