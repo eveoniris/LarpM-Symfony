@@ -12,12 +12,14 @@ use App\Repository\IntrigueRepository;
 use App\Service\PagerService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_SCENARISTE')]
@@ -147,13 +149,10 @@ class IntrigueController extends AbstractController
         ]);
     }
 
-    /**
-     * Lire une intrigue.
-     */
-    #[Route('/{intrigue}', name: 'detail')]
-    public function detailAction(Request $request, EntityManagerInterface $entityManager, Intrigue $intrigue): Response
+    #[Route('/{intrigue}', name: 'detail', requirements: ['intrigue' => Requirement::DIGITS])]
+    public function detailAction(#[MapEntity] Intrigue $intrigue): Response
     {
-        return $this->render('intrigue/detail.twig', [
+       return $this->render('intrigue/detail.twig', [
             'intrigue' => $intrigue,
         ]);
     }
@@ -161,7 +160,7 @@ class IntrigueController extends AbstractController
     /**
      * Mettre à jour une intrigue.
      */
-    #[Route('/{intrigue}/update', name: 'update')]
+    #[Route('/{intrigue}/update', name: 'update', requirements: ['intrigue' => Requirement::DIGITS])]
     public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -391,7 +390,7 @@ class IntrigueController extends AbstractController
     /**
      * Supression d'une intrigue.
      */
-    #[Route('/{intrigue}/delete', name: 'delete')]
+    #[Route('/{intrigue}/delete', name: 'delete', requirements: ['intrigue' => Requirement::DIGITS])]
     public function deleteAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -421,7 +420,7 @@ class IntrigueController extends AbstractController
     /**
      * Ajout d'une relecture.
      */
-    #[Route('/{intrigue}/relecture', name: 'relecture.add')]
+    #[Route('/{intrigue}/relecture', name: 'relecture.add', requirements: ['intrigue' => Requirement::DIGITS])]
     public function relectureAddAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -454,7 +453,7 @@ class IntrigueController extends AbstractController
              * Envoyer une notification à tous les scénaristes des groupes concernés (hors utilisateur courant)
              */
             foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
-                if (false == $this->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
+                if (false == $this->getUser()?->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
                     // NOTIFY $app['notify']->relecture($intrigue, $intrigueHasGroupe->getGroupe());
                 }
             }

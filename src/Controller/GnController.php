@@ -175,7 +175,7 @@ class GnController extends AbstractController
         $offset = ($page - 1) * $limit;
         $criteria = [];
         $criteria[] = 'gn.id = '.$gn->getId();
-        $form = $this->createForm(new PersonnageFindForm());
+        $form = $this->createForm( PersonnageFindForm::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();

@@ -11,6 +11,7 @@ use App\Service\MailService;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use JetBrains\PhpStorm\Deprecated;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -34,7 +35,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected readonly TranslatorInterface $translator,
         protected readonly SluggerInterface $slugger,
         protected PagerService $pageRequest,
-        protected MailService $mailer
+        protected MailService $mailer,
+        protected LoggerInterface $logger,
         // Cache $cache, // TODO : later
     ) {
     }
@@ -175,10 +177,20 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $form = $this->createForm($formClass, $entity);
         $isNew = !$this->entityManager->getUnitOfWork()->isInIdentityMap($entity);
 
-        $root = $routes['root']
-            ?? (new \ReflectionClass(static::class))
-            ?->getAttributes(Route::class)[0]
-            ?->getArguments()['name'] ?? '';
+        try {
+            $root = $routes['root']
+                ?? (new \ReflectionClass(static::class))
+                ?->getAttributes(Route::class)[0]
+                ?->getArguments()['name'] ?? '';
+        } catch (\ErrorException $e) {
+            $this->logger->error($e);
+            throw new \RuntimeException(<<<'EOF'
+                Unable to get the root route.
+                If you do not define a main route as class attributes (ie: #[Route('/groupe', name: 'groupe.')]), 
+                You may need to provide the argument $routes['root'] from the calling methods.
+                Sample: ['root' => 'groupe.'] from GroupeController::handleCreateOrUpdate()
+                EOF);
+        }
 
         $routes['add'] ??= $root.'add';
         $routes['list'] ??= ($routes['index'] ?? $root.'list');
@@ -221,9 +233,9 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 SubmitType::class,
                 [
                     'label' => $msg['save'],
-//                    'attr' => [
-//                        'class' => 'btn btn-secondary',
-//                    ],
+                    'attr' => [
+                        'class' => 'btn btn-secondary',
+                    ],
                 ]
             )
                 ->add('save_continue', SubmitType::class, [
@@ -324,7 +336,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $response = (new BinaryFileResponse($filename, Response::HTTP_OK))
             ->setContentDisposition(
                 ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                $documentLabel.'.pdf');
+                $documentLabel.'.pdf'
+            );
 
         $response->headers->set('Content-Control', 'private');
         $response->headers->set('Content-Type', 'application/pdf');

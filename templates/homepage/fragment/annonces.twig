@@ -1,11 +1,11 @@
 {% for annonce in annonces%}
-	<div class="panel panel-conan">
-		<div class="panel-heading">
-			<div class="pull-right">
-				<small>publié le {{ annonce.updateDate|date('Y-m-d') }}</small>
-			</div>
-			{{ annonce.title }}
+	<div class="well well-sm">
+		<div class="header">
+			<h5 class="px-2 d-flex justify-content-between">{{ annonce.title }} <small>publié le {{ annonce.updateDate|date('Y-m-d') }}</small></h5>
+
+
 		</div>
+
 		<div class="panel-body">
 			{{ annonce.text|markdown_to_html }}
 			{% if is_granted('ROLE_REDACTEUR', app.user) %}
