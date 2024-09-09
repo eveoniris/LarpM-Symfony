@@ -133,7 +133,7 @@ class IntrigueController extends AbstractController
                  * Envoyer une notification à tous les scénaristes des groupes concernés (hors utilisateur courant)
                  */
                 foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
-                    if (false == $this->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
+                    if (!$this->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
                         // NOTIFY $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
                     }
                 }
@@ -152,7 +152,7 @@ class IntrigueController extends AbstractController
     #[Route('/{intrigue}', name: 'detail', requirements: ['intrigue' => Requirement::DIGITS])]
     public function detailAction(#[MapEntity] Intrigue $intrigue): Response
     {
-       return $this->render('intrigue/detail.twig', [
+        return $this->render('intrigue/detail.twig', [
             'intrigue' => $intrigue,
         ]);
     }
@@ -287,7 +287,7 @@ class IntrigueController extends AbstractController
              *  supprime la relation entre intrigueHasGroupe et l'intrigue
              */
             foreach ($originalIntrigueHasGroupes as $intrigueHasGroupe) {
-                if (false == $intrigue->getIntrigueHasGroupes()->contains($intrigueHasGroupe)) {
+                if (!$intrigue->getIntrigueHasGroupes()->contains($intrigueHasGroupe)) {
                     $entityManager->remove($intrigueHasGroupe);
                 }
             }
@@ -296,7 +296,7 @@ class IntrigueController extends AbstractController
              *  supprime la relation entre intrigueHasGroupe et l'intrigue
              */
             foreach ($originalIntrigueHasGroupeSecondaires as $intrigueHasGroupeSecondaire) {
-                if (false == $intrigue->getIntrigueHasGroupes()->contains($intrigueHasGroupeSecondaire)) {
+                if (!$intrigue->getIntrigueHasGroupes()->contains($intrigueHasGroupeSecondaire)) {
                     $entityManager->remove($intrigueHasGroupeSecondaire);
                 }
             }
@@ -305,7 +305,7 @@ class IntrigueController extends AbstractController
              *  supprime la relation entre intrigueHasEvenement et l'intrigue
              */
             foreach ($originalIntrigueHasEvenements as $intrigueHasEvenement) {
-                if (false == $intrigue->getIntrigueHasEvenements()->contains($intrigueHasEvenement)) {
+                if (!$intrigue->getIntrigueHasEvenements()->contains($intrigueHasEvenement)) {
                     $entityManager->remove($intrigueHasEvenement);
                 }
             }
@@ -314,7 +314,7 @@ class IntrigueController extends AbstractController
              *  supprime la relation entre intrigueHasObjectif et l'intrigue
              */
             foreach ($originalIntrigueHasObjectifs as $intrigueHasObjectif) {
-                if (false == $intrigue->getIntrigueHasObjectifs()->contains($intrigueHasObjectif)) {
+                if (!$intrigue->getIntrigueHasObjectifs()->contains($intrigueHasObjectif)) {
                     $entityManager->remove($intrigueHasObjectif);
                 }
             }
@@ -323,7 +323,7 @@ class IntrigueController extends AbstractController
              *  supprime la relation entre intrigueHasDocument et l'intrigue
              */
             foreach ($originalIntrigueHasDocuments as $intrigueHasDocument) {
-                if (false == $intrigue->getIntrigueHasDocuments()->contains($intrigueHasDocument)) {
+                if (!$intrigue->getIntrigueHasDocuments()->contains($intrigueHasDocument)) {
                     $entityManager->remove($intrigueHasDocument);
                 }
             }
@@ -332,7 +332,7 @@ class IntrigueController extends AbstractController
              *  supprime la relation entre intrigueHasLieu et l'intrigue
              */
             foreach ($originalIntrigueHasLieus as $intrigueHasLieu) {
-                if (false == $intrigue->getIntrigueHasLieus()->contains($intrigueHasLieu)) {
+                if (!$intrigue->getIntrigueHasLieus()->contains($intrigueHasLieu)) {
                     $entityManager->remove($intrigueHasLieu);
                 }
             }
@@ -351,8 +351,8 @@ class IntrigueController extends AbstractController
              * Envoyer une notification à tous les scénaristes des groupes concernés (hors utilisateur courant)
              */
             foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
-                if (false == $this->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
-                    // NOTIFY $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
+                if (!$this->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
+                    // TODO NOTIFY $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
                 }
             }
 
@@ -363,14 +363,15 @@ class IntrigueController extends AbstractController
                 if ($modification->getUser() != $this->getUser()) {
                     $sendNotification = true;
                     foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
-                        if (true == $modification->getUser()->getGroupeScenariste()->contains(
-                                $intrigueHasGroupe->getGroupe()
-                            )) {
+                        if ($modification->getUser()->getGroupeScenariste()->contains(
+                            $intrigueHasGroupe->getGroupe()
+                        )) {
                             $sendNotification = false;
                         }
                     }
 
                     if ($sendNotification) {
+                        // TODO NOTIFY
                         // NOTIFY $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
                     }
                 }
@@ -450,10 +451,11 @@ class IntrigueController extends AbstractController
             $entityManager->flush();
 
             /*
+             * TODO NOTIFY
              * Envoyer une notification à tous les scénaristes des groupes concernés (hors utilisateur courant)
              */
             foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
-                if (false == $this->getUser()?->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
+                if (!$this->getUser()?->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
                     // NOTIFY $app['notify']->relecture($intrigue, $intrigueHasGroupe->getGroupe());
                 }
             }

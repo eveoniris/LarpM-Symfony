@@ -32,9 +32,9 @@
     {% endif %}
 
     {% if options.field is defined %}
-        <th class="{{ css }}">{% include '_partials/orderBy.twig' with options %}</th>
+        <th class="{{ css }}" scope="col">{% include '_partials/orderBy.twig' with options %}</th>
     {% elseif row.name is defined %}
-        <th class="{{ css }}">{{ row.name }}</th>
+        <th class="{{ css }}" scope="col">{{ row.name }}</th>
     {% endif %}
 
     {% if loop.last %}

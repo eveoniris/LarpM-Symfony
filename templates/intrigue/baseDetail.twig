@@ -1,0 +1,121 @@
+<div class="list-group">
+
+    <div class="card text-bg mb-3">
+        <div class="card-header"><h6>Groupes concernés</h6></div>
+
+        <ul class="list-group-flush list-group">
+            {% for intrigueHasGroupe in intrigue.intrigueHasGroupes %}
+                <li class="list-group-item ps-1">
+                    <a href="{{ path('groupe.detail', {'groupe': intrigueHasGroupe.groupe.id}) }}">{{ intrigueHasGroupe.groupe.nom }}</a>
+                </li>
+            {% else %}
+                <li class="list-group-item ps-1">Aucun</li>
+            {% endfor %}
+
+        </ul>
+    </div>
+
+    <div class="card text-bg mb-3">
+        <div class="card-header"><h6>Groupes secondaires concernés</h6></div>
+
+        <ul class="list-group-flush list-group">
+            {% for intrigueHasGroupeSecondaire in intrigue.intrigueHasGroupeSecondaires %}
+                <li class="list-group-item ps-1">
+                    <a href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire': intrigueHasGroupeSecondaire.secondaryGroup.id}) }}">
+                        {% if intrigueHasGroupeSecondaire.secondaryGroup.secret %}
+                            <span>
+                                                <i class="fa fa-user-secret text-danger" data-toggle="tooltip"
+                                                   data-placement="top" title="Secret"></i>  -
+                                            </span>
+                        {% endif %}
+                        {{ intrigueHasGroupeSecondaire.secondaryGroup.label }}
+                    </a>
+                </li>
+            {% else %}
+                <li class="list-group-item text-center">Aucun</li>
+            {% endfor %}
+
+        </ul>
+    </div>
+
+    <div class="card text-bg mb-3">
+        <div class="card-header"><h6>Documents concernés</h6></div>
+
+        <ul class="list-group-flush list-group">
+            {% for intrigueHasDocument in intrigue.intrigueHasDocuments %}
+                <li class="list-group-item ps-1">
+                    <a href="{{ path('document.detail', {'document': intrigueHasDocument.document.id}) }}">{{ intrigueHasDocument.document.titre }}</a>
+                </li>
+            {% else %}
+                <li class="list-group-item text-center">Aucun</li>
+            {% endfor %}
+
+        </ul>
+    </div>
+
+    <div class="card text-bg mb-3">
+        <div class="card-header"><h6>Instances concernés</h6></div>
+
+        <ul class="list-group-flush list-group">
+            {% for intrigueHasLieu in intrigue.intrigueHasLieus %}
+                <li class="list-group-item ps-1">
+                    <a href="{{ path('lieu.detail', {'lieu': intrigueHasLieu.lieu.id}) }}">{{ intrigueHasLieu.lieu.nom }}</a>
+                </li>
+            {% else %}
+                <li class="list-group-item text-center">Aucune</li>
+            {% endfor %}
+
+        </ul>
+    </div>
+
+    <div class="card text-bg mb-3">
+        <div class="card-header"><h6>Evénements</h6></div>
+
+        <ul class="list-group-flush list-group">
+            {% for intrigueHasEvenement in intrigue.intrigueHasEvenements %}
+                <li class="list-group-item ps-1">
+                    <strong>{{ intrigueHasEvenement.evenement.date }}</strong>&nbsp;:&nbsp;{{ intrigueHasEvenement.evenement.text }}
+                </li>
+            {% else %}
+                <li class="list-group-item text-center">Aucun</li>
+            {% endfor %}
+
+        </ul>
+    </div>
+
+    <div class="card text-bg mb-3">
+        <div class="card-header"><h6>Objectifs</h6></div>
+
+        <ul class="list-group-flush list-group">
+            {% for intrigueHasObjectif in intrigue.intrigueHasObjectifs %}
+                <li class="list-group-item ">
+                    {{ intrigueHasObjectif.objectif.text|markdown_to_html }}
+                </li>
+            {% else %}
+                <li class="list-group-item text-center">Aucun</li>
+            {% endfor %}
+
+        </ul>
+    </div>
+
+    <div class="card text-bg mb-3">
+        <div class="card-header"><h6>Intrigue</h6></div>
+
+        <div class="card-body">
+            <div class="card-text">
+                {{ intrigue.text|markdown_to_html }}
+            </div>
+        </div>
+    </div>
+
+    <div class="card text-bg mb-3">
+        <div class="card-header"><h6>Résolution</h6></div>
+
+        <div class="card-body">
+            <div class="card-text">
+                {{ intrigue.resolution|markdown_to_html }}
+            </div>
+        </div>
+    </div>
+
+</div>

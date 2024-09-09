@@ -6,7 +6,7 @@
 
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
-            {'name' : 'Liste des intrigues', 'route': path('groupe.list') },
+            {'name' : 'Liste des intrigues', 'route': path('intrigue.list') },
             {'name' : "Détail de l'intrigue #{intrigue.titre}" }
         ]
     } %}
@@ -17,7 +17,7 @@
             <h5>Détail d'une intrigue</h5>
         </div>
 
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-end mb-2">
             <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
                 <div class="btn-group" role="group">
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
@@ -40,176 +40,116 @@
             </div>
         </div>
 
+        <div>
+            <div class="card text-bg mb-3">
+
+                <div class="card-header"><h6>{{ intrigue.titre }}</h6></div>
+                <div class="card-body">
+                    <div class="card-text">{{ intrigue.description|markdown_to_html }}</div>
+                </div>
+            </div>
+
+
+        </div>
 
         <div class="row">
             <div class="col-md-6">
 
+                {% include 'intrigue/baseDetail.twig' %}
 
-                <div class="list-group">
-
-                    <div class="list-group-item">
-                        <div class="list-group-item-heading fw-bold mb-1 list-group-item-light">Titre</div>
-                        <div class="list-group-item-text ps-1">{{ intrigue.titre }}</div>
-                    </div>
-
-
-                    <hr/>
-                    <div class="card text-bg mb-3">
-                        <div class="card-header"><h6>Titre</h6></div>
-                        <div class="card-body">
-                            <div class="card-title">{{ intrigue.titre }}</div>
-                        </div>
-
-                        <div class="card-header"><h6>Description</h6></div>
-                        <div class="card-body">
-                            <div class="card-text">{{ intrigue.description|markdown_to_html }}</div>
-                        </div>
-                    </div>
-
-
-                    <div class="card text-bg mb-3">
-                        <div class="card-header"><h6>Groupes concernés</h6></div>
-
-                        <ul class="list-group-flush list-group">
-                                <li class="list-group-item ps-1">
-                                    <a href="">LOREM</a>
-                                </li>
-                            <li class="list-group-item list-group-item-secondary -text ps-1">
-                                <a href="">LOREM</a>
-                            </li>
-
-                                {% for intrigueHasGroupe in intrigue.intrigueHasGroupes %}
-                                    <li class="list-group-item-text ps-1">
-                                        <a href="{{ path('groupe.detail', {'groupe': intrigueHasGroupe.groupe.id}) }}">{{ intrigueHasGroupe.groupe.nom }}</a>
-                                    </li>
-                                {% else %}
-                                    <li>Aucun</li>
-                                {% endfor %}
-
-                        </ul>
-
-
-                    </div>
-
-                </div>
-
-
-                <h6><i class="fa fa-circle"></i>&nbsp;Groupes concernés</h6>
-                <div class="white-box">
-                    <ul>
-                        {% for intrigueHasGroupe in intrigue.intrigueHasGroupes %}
-                            <li>
-                                <a href="{{ path('groupe.detail', {'groupe': intrigueHasGroupe.groupe.id}) }}">{{ intrigueHasGroupe.groupe.nom }}</a>
-                            </li>
-                        {% else %}
-                            <li>Aucun</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <h6><i class="fa fa-circle"></i>&nbsp;Groupes secondaires concernés</h6>
-                <div class="white-box">
-                    <ul>
-                        {% for intrigueHasGroupeSecondaire in intrigue.intrigueHasGroupeSecondaires %}
-                            <li>
-                                <a href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire': intrigueHasGroupeSecondaire.secondaryGroup.id}) }}">{% if intrigueHasGroupeSecondaire.secondaryGroup.secret %}
-                                        <span style="color:red;">Secret</span> - {% endif %}{{ intrigueHasGroupeSecondaire.secondaryGroup.label }}
-                                </a></li>
-                        {% else %}
-                            <li>Aucun</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <h6><i class="fa fa-circle"></i>&nbsp;Documents concernés</h6>
-                <div class="white-box">
-                    <ul>
-                        {% for intrigueHasDocument in intrigue.intrigueHasDocuments %}
-                            <li>
-                                <a href="{{ path('document.detail', {'document': intrigueHasDocument.document.id}) }}">{{ intrigueHasDocument.document.titre }}</a>
-                            </li>
-                        {% else %}
-                            <li>Aucun</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <h6><i class="fa fa-circle"></i>&nbsp;Instances concernées</h6>
-                <div class="white-box">
-                    <ul>
-                        {% for intrigueHasLieu in intrigue.intrigueHasLieus %}
-                            <li>
-                                <a href="{{ path('lieu.detail', {'lieu': intrigueHasLieu.lieu.id}) }}">{{ intrigueHasLieu.lieu.nom }}</a>
-                            </li>
-                        {% else %}
-                            <li>Aucune</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <h6><i class="fa fa-circle"></i>&nbsp;Evénements</h6>
-                <div class="white-box">
-                    <ul>
-                        {% for intrigueHasEvenement in intrigue.intrigueHasEvenements %}
-                            <li>
-                                <strong>{{ intrigueHasEvenement.evenement.date }}</strong>&nbsp;:&nbsp;{{ intrigueHasEvenement.evenement.text }}
-                            </li>
-                        {% else %}
-                            <li>Aucun</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <h6><i class="fa fa-circle"></i>&nbsp;Objectifs</h6>
-                <div class="white-box">
-                    <ul>
-                        {% for intrigueHasObjectif in intrigue.intrigueHasObjectifs %}
-                            <li>{{ intrigueHasObjectif.objectif.text }}</li>
-                        {% else %}
-                            <li>Aucun</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <h6><i class="fa fa-circle"></i>&nbsp;Intrigue</h6>
-                <div class="white-box">
-                    {{ intrigue.text|markdown_to_html }}
-                </div>
-
-                <h6><i class="fa fa-circle"></i>&nbsp;Résolution</h6>
-                <div class="white-box">
-                    {{ intrigue.resolution|markdown_to_html }}
-                </div>
             </div>
+
             <div class="col-md-6">
-                <h4>Auteur</h4>
-                <p>Cette intrigue a été créé par <strong><a
-                                href="{{ path('user.view', {'user': intrigue.user.id}) }}">{{ intrigue.user.username }}</a></strong>
-                    le <strong>{{ intrigue.dateCreation|date('Y-m-d H:i:s') }}</strong></p>
 
-                <h4>Modifications</h4>
-                <ul>
-                    {% for modification in intrigue.intrigueHasModifications %}
-                        <li>Modification par <a
-                                    href="{{ path('user.view', {'user': intrigue.user.id}) }}">{{ modification.user.username }}</a>
-                            le <strong>{{ modification.date|date('Y-m-d H:i:s') }}</strong></li>
-                    {% else %}
-                        <li>Cette intrigue n'a pas encore été modifiée</li>
-                    {% endfor %}
-                </ul>
+                <div class="card mb-2">
+                    <div class="header">
 
-                <h4>Relectures</h4>
-                {% for relecture in intrigue.relectures %}
-                    <div class="white-box">
-                        <strong>{{ relecture.date|date('Y-m-d H:i:s') }} :</strong> <strong><a
-                                    href="{{ path('user.view', {'user': intrigue.user.id}) }}">{{ relecture.user.username }}</a></strong>
-                        a relu l'intrigue. Statut donné : <strong>{{ relecture.statut }}</strong>
-                        {{ relecture.remarque|markdown_to_html }}
+                        <h5 class="m-0">Auteur</h5>
                     </div>
-                {% else %}
-                    Aucune relectures n'a été faite.
-                {% endfor %}
-                </ul>
+
+                    <div class="card-body">
+                        <p class="card-text">Intrigue créée par <strong><a
+                                        href="{{ path('user.view', {'user': intrigue.user.id}) }}">{{ intrigue.user.username }}</a></strong>
+                            le <strong>{{ intrigue.dateCreation|date('Y-m-d H:i:s') }}</strong></p>
+                    </div>
+                </div>
+
+
+                <div class="card mb-2">
+                    <div class="header">
+
+                        <h5 class="m-0">Modifications</h5>
+                    </div>
+                    <table class="table table-condensed table-striped table-bordered table-hover mb-0">
+                        <thead>
+                        <tr class="text-center">
+                            <th scope="col" class="col-6">Date</th>
+                            <th scope="col">Auteur</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for modification in intrigue.intrigueHasModifications %}
+                            <tr>
+                                <td>{{ modification.date|date('Y-m-d H:i:s') }}</td>
+                                <td>
+                                    <a href="{{ path('user.view', {'user': modification.user.id}) }}">{{ modification.user.username }}</a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="2" class="text-center text-info">
+                                    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Cette intrigue n'a pas encore été modifiée"} %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+
+                <div class="card mb-2">
+                    <div class="header">
+
+                        <h5 class="m-0">Relectures</h5>
+                    </div>
+
+                    {% for relecture in intrigue.relectures %}
+
+                        <div class="card-body">
+                            <div class="card-text">
+                                {{ relecture.remarque|markdown_to_html }}
+                            </div>
+
+                        </div>
+                        <div class="card-footer text-body-secondary border-bottom border-top-0">
+                            <div class="text-footer d-flex justify-content-between">
+                                <div class="text-center">
+                                    <small>Date</small><br/>
+                                    <small>{{ relecture.date|date('Y-m-d H:i:s') }}</small>
+                                </div>
+                                <div class="text-center">
+                                    <small> Relecteur </small><br/>
+                                    <small>
+                                        <a href="{{ path('user.view', {'user': relecture.user.id}) }}">{{ relecture.user.username }}</a></small>
+                                </div>
+
+                                <div class="text-center">
+                                    <small>Statut </small> <br/>
+                                    <small>{{ relecture.statut }}</small>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <div class="card-body">
+                            {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Aucune relectures n'a été faite."} %}
+                        </div>
+                    {% endfor %}
+
+
+                </div>
+
+
             </div>
         </div>
     </div>

@@ -64,7 +64,7 @@
                         {% if competence.description %}
                             {{ competence.description|markdown_to_html }}
                         {% else %}
-                            {% include '_partials/cardNotif.twig' with {'type' : 'info', 'warning' : "Attention, cette compétence n'a pas de description."} %}
+                            {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Attention, cette compétence n'a pas de description."} %}
                         {% endif %}
                     </div>
                 </div>
