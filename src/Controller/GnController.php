@@ -10,12 +10,11 @@ use App\Entity\Topic;
 use App\Form\Gn\GnDeleteForm;
 use App\Form\Gn\GnForm;
 use App\Form\ParticipantFindForm;
-use App\Form\PersonnageFindForm;
 use App\Repository\GnRepository;
 use App\Repository\QuestionRepository;
+use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -166,50 +165,40 @@ class GnController extends AbstractController
      * Les personnages present pendant le jeu.
      */
     #[Route('/{gn}/personnages', name: 'personnages')]
-    public function personnagesAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn): Response
-    {
-        $order_by = $request->get('order_by') ?: 'id';
-        $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
-        $offset = ($page - 1) * $limit;
-        $criteria = [];
-        $criteria[] = 'gn.id = '.$gn->getId();
-        $form = $this->createForm( PersonnageFindForm::class);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $type = $data['type'];
-            $value = $data['value'];
-            switch ($type) {
-                case 'nom':
-                    // $criteria[] = new LikeExpression("p.nom", "%$value%");
-                    $criteria['nom'] = "LOWER(p.nom) LIKE '%".preg_replace('/[\'"<>=*;]/', '', strtolower((string) $value))."%'";
-                    break;
-                case 'id':
-                    // $criteria[] = new EqualExpression("p.id", $value);
-                    $criteria['id'] = 'p.id = '.preg_replace('/[^\d]/', '', (string) $value);
-                    break;
-            }
-        }
+    public function personnagesAction(
+        Request $request,
+        #[MapEntity] Gn $gn,
+        PersonnageService $personnageService,
+        GnRepository $gnRepository,
+    ): Response {
 
-        $repo = $entityManager->getRepository('\\'.Personnage::class);
-        $personnages = $repo->findList($criteria, [
-            'by' => $order_by,
-            'dir' => $order_dir,
-        ], $limit, $offset);
-        $numResults = $repo->findCount($criteria);
-        $paginator = new Paginator($numResults, $limit, $page, $app['url_generator']->generate('gn.personnages', [
-                'gn' => $gn->getId(),
-            ]).'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir);
-
-        return $this->render('gn/personnages.twig', [
-            'gn' => $gn,
-            'personnages' => $personnages,
-            'paginator' => $paginator,
-            'numResults' => $numResults,
-            'form' => $form->createView(),
-        ]);
+        return $this->render(
+            'admin/personnage/list.twig',
+            $personnageService->getSearchViewParameters(
+                $request,
+                'gn.personnages',
+                ['gn' => $gn->getId()],
+                ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser', 'colRenommee', 'colHeroisme', 'colXp', 'colHasAnomalie'],
+                [
+                    'displayAdminToolbar' => false,
+                    'breadcrumb' => [
+                        [
+                            'name' => 'Liste des grandeurs natures',
+                            'route' => $this->generateUrl('gn.list'),
+                        ],
+                        [
+                            'name' => $gn->getLabel(),
+                            'route' => $this->generateUrl('gn.detail', ['gn' => $gn->getId()]),
+                        ],
+                        [
+                            'name' => 'Personnages participants à ce GN',
+                        ],
+                    ],
+                ],
+                null,
+                $gnRepository->getPersonnages($gn),
+            )
+        );
     }
 
     /**
@@ -436,7 +425,7 @@ class GnController extends AbstractController
 
         $qb = $entityManager->createQueryBuilder('p')
             ->select('p')
-            ->from('\\'. Participant::class, 'p')
+            ->from('\\'.Participant::class, 'p')
             ->join('p.gn', 'gn')
             ->join('p.user', 'u')
             ->join('u.etatCivil', 'ec')

@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Gn;
+use App\Entity\Personnage;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class GnRepository extends BaseRepository
@@ -86,5 +88,16 @@ class GnRepository extends BaseRepository
         $result['limit'] = $limit;
 
         return $result;*/
+    }
+
+    public function getPersonnages(Gn $gn): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        return $personnageRepository->createQueryBuilder('perso')
+            ->innerJoin('perso.gn', 'gn')
+            ->where('gn.id = :gnid')
+            ->setParameter('gnid', $gn->getId());
     }
 }

@@ -16,17 +16,17 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class PersonnageService
 {
     public array $columnDefinitions = [
-        'colId' => ['label' => '#', 'fieldName' => 'id',  'sortFieldName' => 'id', 'tooltip' => 'Numéro d\'identifiant', 'colMd' => 'col-md-1'],
-        'colStatut' => ['label' => 'Statut', 'fieldName' => 'status',  'sortFieldName' => 'status', 'tooltip' => 'Statut', 'canOrder' => false, 'colMd' => 'col-md-1'],
-        'colNom' => ['label' => 'Nom', 'fieldName' => 'nom',  'sortFieldName' => 'nom', 'tooltip' => 'Nom et surnom du personnage'],
-        'colClasse' => ['label' => 'Classe', 'fieldName' => 'classe',  'sortFieldName' => 'classe', 'tooltip' => 'Classe du personnage'],
-        'colGroupe' => ['label' => 'Groupe', 'fieldName' => 'groupe',  'sortFieldName' => 'groupe', 'tooltip' => 'Dernier GN - Groupe participant'],
-        'colRenommee' => ['label' => 'Renommée', 'fieldName' => 'renomme',  'sortFieldName' => 'renomme', 'tooltip' => 'Points de renommée'],
-        'colPugilat' => ['label' => 'Pugilat', 'fieldName' => 'pugilat',  'sortFieldName' => 'pugilat', 'tooltip' => 'Points de pugilat'],
-        'colHeroisme' => ['label' => 'Héroïsme', 'fieldName' => 'heroisme',  'sortFieldName' => 'heroisme', 'tooltip' => 'Points d\'héroisme'],
-        'colUser' => ['label' => 'Utilisateur', 'fieldName' => 'user',  'sortFieldName' => 'user', 'tooltip' => 'Liste des utilisateurs (Nom et prénom) par GN'],
-        'colXp' => ['label' => 'Points d\'expérience', 'fieldName' => 'xp',  'sortFieldName' => 'xp', 'tooltip' => 'Points d\'expérience actuels sur le total max possible'],
-        'colHasAnomalie' => ['label' => 'Ano.', 'fieldName' => 'hasAnomalie',  'sortFieldName' => 'hasAnomalie', 'tooltip' => 'Une pastille orange indique une anomalie'],
+        'colId' => ['label' => '#', 'fieldName' => 'id',  'sortFieldName' => 'id', 'tooltip' => 'Numéro d\'identifiant', 'colMd' => 'col-md-1', 'css' => 'col-md-1 align-middle text-center'],
+        'colStatut' => ['label' => 'Statut', 'fieldName' => 'status',  'sortFieldName' => 'status', 'tooltip' => 'Statut', 'canOrder' => false,  'colMd' => 'col-md-1', 'css' => 'col-md-1 align-middle text-center'],
+        'colNom' => ['label' => 'Nom', 'fieldName' => 'nom',  'sortFieldName' => 'nom', 'tooltip' => 'Nom et surnom du personnage', 'css' => 'align-middle'],
+        'colClasse' => ['label' => 'Classe', 'fieldName' => 'classe',  'sortFieldName' => 'classe', 'tooltip' => 'Classe du personnage', 'css' => 'align-middle'],
+        'colGroupe' => ['label' => 'Groupe', 'fieldName' => 'groupe',  'sortFieldName' => 'groupe', 'tooltip' => 'Dernier GN - Groupe participant', 'css' => 'align-middle'],
+        'colRenommee' => ['label' => 'Renommée', 'fieldName' => 'renomme',  'sortFieldName' => 'renomme', 'tooltip' => 'Points de renommée', 'css' => 'col-md-1 align-middle text-center'],
+        'colPugilat' => ['label' => 'Pugilat', 'fieldName' => 'pugilat',  'sortFieldName' => 'pugilat', 'tooltip' => 'Points de pugilat', 'css' => 'col-md-1 align-middle text-center'],
+        'colHeroisme' => ['label' => 'Héroïsme', 'fieldName' => 'heroisme',  'sortFieldName' => 'heroisme', 'tooltip' => 'Points d\'héroisme', 'css' => 'col-md-1 align-middle text-center'],
+        'colUser' => ['label' => 'Utilisateur', 'fieldName' => 'user',  'sortFieldName' => 'user', 'tooltip' => 'Liste des utilisateurs (Nom et prénom) par GN', 'css' => 'align-middle'],
+        'colXp' => ['label' => 'Points d\'expérience', 'fieldName' => 'xp',  'sortFieldName' => 'xp', 'tooltip' => 'Points d\'expérience actuels sur le total max possible', 'css' => 'col-md-1 align-middle text-center'],
+        'colHasAnomalie' => ['label' => 'Ano.', 'fieldName' => 'hasAnomalie',  'sortFieldName' => 'hasAnomalie', 'tooltip' => 'Une pastille orange indique une anomalie', 'css' => 'col-md-1 align-middle text-center'],
     ];
 
     public function __construct(
