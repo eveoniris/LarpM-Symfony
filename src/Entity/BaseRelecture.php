@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -19,39 +21,39 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseRelecture', 'extended' => 'Relecture'])]
 class BaseRelecture
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     /**
      * @Column(name="`date`", type="datetime")
      */
-    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(name: 'date', type: Types::DATETIME_MUTABLE)]
     protected \DateTime $date;
 
     /**
      * @Column(type="string", length=45)
      */
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
     protected string $statut;
 
     /**
      * @Column(type="text", nullable=true)
      */
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: 45)]
+    #[Column(type: Types::TEXT, nullable: 45)]
     protected string $remarque = '';
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'relectures')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?User $user = null;
 
-    #[ManyToOne(targetEntity: Intrigue::class, inversedBy: 'relectures', cascade: ['persist', 'remove'])]
+    #[ManyToOne(targetEntity: Intrigue::class, cascade: ['persist', 'remove'], inversedBy: 'relectures')]
     #[JoinColumn(name: 'intrigue_id', referencedColumnName: 'id', nullable: 'false')]
     protected Intrigue $intrigue;
 
     public function __construct()
     {
     }
-    
+
     /**
      * Set the value of id.
      */
@@ -127,7 +129,7 @@ class BaseRelecture
     /**
      * Set User entity (many to one).
      */
-    public function setUser(User $user = null): static
+    public function setUser(?User $user = null): static
     {
         $this->user = $user;
 
@@ -145,7 +147,7 @@ class BaseRelecture
     /**
      * Set Intrigue entity (many to one).
      */
-    public function setIntrigue(Intrigue $intrigue = null): static
+    public function setIntrigue(?Intrigue $intrigue = null): static
     {
         $this->intrigue = $intrigue;
 
