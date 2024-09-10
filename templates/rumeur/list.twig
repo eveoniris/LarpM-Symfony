@@ -4,76 +4,60 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des rumeurs</li>
-	</ol>
-	
-	<div class="well well-sm">
-	
-		<div class="header">
-			<h5>Liste des rumeurs <small>( {{ paginator|length }} rumeurs)</small></h5>
-		</div>
-		
-		<ul class="list-group">
-			<li class="list-group-item">	
-				<div class="btn-toolbar" role="toolbar" aria-label="...">
-					{{ form_start(form, {"action": path('rumeur.list')}) }}
-										
-						<div class="form-group">
-							<div class="input-group">
-								{{ form_widget(form.search) }}
-								{{ form_widget(form.type) }}
-								<div class="input-group-btn">
-									<button type="submit" class="btn btn-default" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
-									<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('rumeur.list') }}"><i class="fa fa-refresh"></i></a>
-									<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter une rumeur" href="{{ path('rumeur.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
-								</div>
-							</div>
-						</div>
-						{{ form_rest(form) }}
-			   		{{ form_end(form) }}
-				</div>
-			</li>
-	    </ul>
-	</div>
 
-	{% include '_partials/pagination.html.twig' %}
-		
-	<table class="table table-striped table-bordered table-condensed">
-		<thead>
-			<th>Contenu</th>
-			<th>Territoire</th>
-			<th>GN</th>
-			<th>Visibilité</th>
-			<th>Auteur</th>
-			<th>Date de création</th>
-			<th>Date de mise à jour</th>
-			<th>Actions</th>
-		</thead>
-		<tbody>
-		{% for rumeur in paginator %}
-			<tr>
-				<td>{{ rumeur.text|markdown_to_html }}</td>
-				<td>{{ rumeur.territoire|default('Tous') }}</td>
-				<td>{{ rumeur.gn.label }}</td>
-				<td>{{ rumeur.visibility }}</td>
-				<td>{{ rumeur.user.username }}</td>
-				<td>{{ rumeur.creationDate|date('Y-m-d') }}</td>
-				<td>{{ rumeur.updateDate|date('Y-m-d') }}</td>
-				<td>
-					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
-						<div class="btn-group" role="group" aria-label="...">
-							<a class="btn btn-secondary" href="{{ path('rumeur.detail', {'rumeur':rumeur.id}) }}"><i class="fa fa-eye"></i></a>
-							<a class="btn btn-secondary" href="{{ path('rumeur.update', {'rumeur':rumeur.id}) }}"><i class="fa fa-pencil"></i></a>
-						</div>
-					</div>
-				</td>
-			</tr>
-		{% endfor %}
-		</tbody>
-	</table>
-			
-	{% include '_partials/pagination.html.twig' %}
-	
+    {% include '_partials/breadcrumb.twig' with {'items' :[{'name' : 'Liste des rumeurs' },]} %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Liste des rumeurs <small>( {{ paginator|length }} rumeurs)</small></h5>
+
+            {% include '_partials/formListSearch.twig' with
+                {
+                    'canAdd': {'title': 'Ajouter une rumeur', 'path': path('rumeur.add')},
+                    'actionPath' : path('rumeur.list')
+                } %}
+        </div>
+    </div>
+
+    {% include '_partials/pagination.html.twig' %}
+
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'rumeur.list', 'rows': [
+            {'name' : 'Contenu', 'field' : 'text'},
+            {'name' : 'Territoire', 'field' : 'territoire', 'css' : 'text-center'},
+            {'name' : 'GN', 'field' : 'gn.label', 'css' : 'text-center'},
+            {'name' : 'Visibilité', 'field' : 'visibility', 'css' : 'text-center'},
+            {'name' : 'Auteur requises', 'field' : 'user.username', 'css' : 'text-center'},
+            {'name' : 'Date de création',  'field' : 'creationDate', 'css' : 'text-center'},
+            {'name' : 'Date de mise à jour', 'field' : 'updateDate', 'css' : 'text-center'},
+            {'name' : 'Actions', 'css' : 'text-center'},
+        ]} %}
+        <tbody>
+        {% for rumeur in paginator %}
+            <tr>
+                <td>{{ rumeur.text|markdown_to_html }}</td>
+                <td>{{ rumeur.territoire|default('Tous') }}</td>
+                <td>{{ rumeur.gn.label }}</td>
+                <td>{{ rumeur.visibility }}</td>
+                <td>{{ rumeur.user.username }}</td>
+                <td>{{ rumeur.creationDate|date('Y-m-d') }}</td>
+                <td>{{ rumeur.updateDate|date('Y-m-d') }}</td>
+                <td>
+                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                        <div class="btn-group" role="group" aria-label="...">
+                            <a class="btn btn-secondary" href="{{ path('rumeur.detail', {'rumeur':rumeur.id}) }}"><i
+                                        class="fa fa-eye"></i></a>
+                            <a class="btn btn-secondary" href="{{ path('rumeur.update', {'rumeur':rumeur.id}) }}"><i
+                                        class="fa fa-pencil"></i></a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include '_partials/pagination.html.twig' %}
+
 {% endblock body %}

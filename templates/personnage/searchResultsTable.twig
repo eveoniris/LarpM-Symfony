@@ -13,7 +13,7 @@
         <thead>
         <tr>
             {% for columnDef in columnDefinitions %}
-                <th class="personnage-list-column-{{ columnDef['fieldName'] }} {% if columnDef['colMd'] is defined %}{{ columnDef['colMd'] }}{% endif %}">
+                <th class="personnage-list-column-{{ columnDef['fieldName'] }} {% if columnDef['colMd'] is defined %}{{ columnDef['colMd'] }}{% endif %}{% if columnDef['css'] is defined %} {{ columnDef['css'] }}{% endif %}">
 
                     {#  TODO when using PageService { macros.getOrderBy(app, columnDef) }}#}
 
@@ -32,7 +32,7 @@
                 </th>
             {% endfor %}
             {% if extraData %}
-                <th class="personnage-list-column-{{ extraData }}">
+                <th class="personnage-list-column-{{ extraData }} align-middle text-center">
                     {{ extraDataTitle }}
                 </th>
             {% endif %}
@@ -43,9 +43,9 @@
             <tr>
                 {% for columnDef in columnDefinitions %}
                     {% set fieldName = columnDef['fieldName'] %}
-                    <td class="personnage-list-column-{{ fieldName }}">
+                    <td class="personnage-list-column-{{ fieldName }}{% if columnDef['css'] is defined %} {{ columnDef['css'] }}{% endif %}">
                         {% if fieldName == 'id' %}
-                            {{ personnage.id }}
+                            <a href="{{ path('personnage.admin.detail', {'personnage':personnage.id}) }}">{{ personnage.id }}</a>
                         {% elseif fieldName == 'status' %}
                             {% if personnage.vivant == 0 %}{{ iconPjDead | raw }}{% elseif personnage.isPnj() %}{{ iconPnj | raw }}{% elseif personnage.isLastParticipantOnActiveGn() %}{{ iconPjConfirmed | raw }}{% else %}{{ iconPjOld | raw }}{% endif %}
                         {% elseif fieldName == 'nom' %}
@@ -87,7 +87,7 @@
                     </td>
                 {% endfor %}
                 {% if extraData %}
-                    <td class="personnage-list-column-{{ extraData }}">
+                    <td class="personnage-list-column-{{ extraData }} align-middle text-center">
                         {{ personnage.getCompetenceTypeLevel(extraData) }}
                     </td>
                 {% endif %}
