@@ -5,7 +5,7 @@
 {% block body %}
 
 
-	{% if breadcrumb|length > 0 %}
+	{% if breadcrumb is defined and breadcrumb|length > 0 %}
 		{% include '_partials/breadcrumb.twig' with {'items' : breadcrumb } %}
 	{% else %}
 		{% include '_partials/breadcrumb.twig' with {'items' :[ {'name' : 'Liste des personnages'}]} %}

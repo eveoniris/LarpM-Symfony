@@ -3,35 +3,68 @@
 {% block title %}Rumeurs{% endblock title %}
 
 {% block body %}
-
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('rumeur.list') }}">Liste des rumeurs</a></li>
-		<li class="active">Détail d'une rumeur</li>
-	</ol>
+	
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'name' : 'Liste des rumeurs', 'route': path('rumeur.list') },
+			{'name' : 'Détail d\'une rumeur' }
+		]
+	} %}
 	
 	<div class="well well-sm">
-		<div class="row">
-			<div class="col-md-6">
-				<a class="btn btn-default" href="{{ path('rumeur.update', {'rumeur':rumeur.id}) }}"><i class="fa fa-pencil"></i> Modifier la rumeur</a>
-				<a class="btn btn-danger" href="{{ path('rumeur.delete', {'rumeur':rumeur.id}) }}"><i class="fa fa-close"></i> Supprimer la rumeur</a>
-				
-				<h6><i class="fa fa-circle"></i>&nbsp;Contenu de la rumeur</h6>
-				<div class="white-box">
-					{{ rumeur.text|markdown_to_html }}
+
+		<div class="header">
+			<h5>Détail d'une rumeur</h5>
+		</div>
+
+		<div class="d-flex justify-content-end">
+			<div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+				<div class="btn-group" role="group">
+					<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+					   title="Ajouter"
+					   href="{{ path('rumeur.add') }}"><i
+								class="fa fa-plus"></i> Ajouter</a>
+					<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+					   title="Modifier"
+					   href="{{ path('rumeur.update',{'rumeur':rumeur.id}) }}"><i
+								class="fa fa-pencil"></i> Modifier</a>
+					<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+					   title="Supprimer"
+					   href="{{ path('rumeur.delete',{'rumeur':rumeur.id}) }}"><i
+								class="fa fa-eraser"></i> Supprimer</a>
 				</div>
-				
-				<h6><i class="fa fa-circle"></i>&nbsp;Territoire concerné</h6>
-				<div class="white-box">
-					{{ rumeur.territoire|default('Tous') }}
-				</div>
-				
-				<h6><i class="fa fa-circle"></i>&nbsp;GN : {{ rumeur.gn.label }}</h6>
-			</div>
-			<div class="col-md-6">
-				<h4>Auteur</h4>
-				<p>Cette rumeur a été créé par <strong><a href="{{ path('user.view', {'user': rumeur.user.id}) }}">{{ rumeur.user.username }}</a></strong> le <strong>{{ rumeur.creationDate|date('Y-m-d H:i:s') }}</strong></p>
 			</div>
 		</div>
+
+
+		<div class="panel panel-default">
+			<div class="panel-body">
+
+				<div class="list-group">
+
+					<div class="list-group-item">
+						<div class="list-group-item-heading fw-bold mb-1">Contenu</div>
+						<div class="list-group-item-text ps-1">{{ rumeur.text }}</div>
+					</div>
+
+					<div class="list-group-item">
+						<div class="list-group-item-heading fw-bold mb-1">Territoire concerné</div>
+						<div class="list-group-item-text ps-1">{{ rumeur.territoire|default('Tous') }}</div>
+					</div>
+
+					<div class="list-group-item">
+						<div class="list-group-item-heading fw-bold mb-1">GN concerné</div>
+						<div class="list-group-item-text ps-1"> {{ rumeur.gn.label }}</div>
+					</div>
+
+					<div class="list-group-item mb-4">
+						<div class="list-group-item-heading fw-bold mb-1">Auteur</div>
+						<div class="list-group-item-text ps-1"> <strong><a href="{{ path('user.view', {'user': rumeur.user.id}) }}">{{ rumeur.user.username }}</a></strong> le <strong>{{ rumeur.creationDate|date('Y-m-d H:i:s') }}</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
 	</div>
 {% endblock body %}

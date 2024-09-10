@@ -43,7 +43,7 @@ class DebriefingRepository extends BaseRepository
         $qb->from(\App\Entity\Debriefing::class, 'd');
 
         // retire les caractères non imprimable d'une chaine UTF-8
-        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars((string)$value));
+        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars((string) $value));
 
         if ($type && $value) {
             switch ($type) {
@@ -70,14 +70,13 @@ class DebriefingRepository extends BaseRepository
 
     public function search(
         mixed $search = null,
-        null|string|array $attributes = self::SEARCH_NOONE,
-        OrderBy $orderBy = null,
-        string $alias = null,
-        QueryBuilder $query = null
+        string|array|null $attributes = self::SEARCH_NOONE,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-
 
         $query->join($alias.'.groupe', 'groupe');
         $query->leftJoin($alias.'.player', 'player');
@@ -99,7 +98,7 @@ class DebriefingRepository extends BaseRepository
         ];
     }
 
-    public function sortAttributes(string $alias = null): array
+    public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 

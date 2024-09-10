@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Repository\GroupeGnRepository;
 use App\Repository\RumeurRepository;
 use Doctrine\ORM\Mapping\Entity;
 
@@ -25,5 +24,15 @@ class Rumeur extends BaseRumeur
             'disponible' => 'Disponible pour les joueurs',
             default => 'Brouillon',
         };
+    }
+
+    public function getLabel(): string
+    {
+        return 'Par '.$this->user->getDisplayName().' en '.$this->territoire->getNom();
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->getText() ?? '';
     }
 }
