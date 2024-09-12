@@ -3,17 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Document;
-use App\Entity\Technologie;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
-use App\Form\DocumentDeleteForm;
 use App\Form\DocumentForm;
-use App\Form\Technologie\TechnologieForm;
 use App\Repository\DocumentRepository;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -37,6 +33,7 @@ class DocumentController extends AbstractController
         PagerService $pagerService,
         DocumentRepository $documentRepository,
     ): Response {
+        // TODO la recherche sur critère précis ne fonctionne pas
         $pagerService->setRequest($request)->setRepository($documentRepository);
 
         return $this->render('document/list.twig', [
@@ -51,10 +48,7 @@ class DocumentController extends AbstractController
     #[Route('/print', name: 'print')]
     public function printAction(DocumentRepository $documentRepository): Response
     {
-        // TODO global
-        $documents = $documentRepository->findAllOrderedByCode();
-
-        return $this->render('document/print.twig', ['documents' => $documents]);
+        return $this->render('document/print.twig', ['documents' => $documentRepository->findAllOrderedByCode()]);
     }
 
     /**
@@ -74,7 +68,8 @@ class DocumentController extends AbstractController
         $output = fopen('php://output', 'wb');
 
         // header
-        fputcsv($output,
+        fputcsv(
+            $output,
             [
                 'code',
                 'titre',
@@ -86,13 +81,19 @@ class DocumentController extends AbstractController
                 'personnages',
                 'createur',
                 'date de création',
-                'date de mise à jour'], ';');
+                'date de mise à jour',
+            ],
+            ';'
+        );
 
         foreach ($documents as $document) {
             $line = [];
             $line[] = mb_convert_encoding((string) $document->getCode(), 'ISO-8859-1');
             $line[] = mb_convert_encoding((string) $document->getTitre(), 'ISO-8859-1');
-            $line[] = $document->getImpression() ? mb_convert_encoding('Imprimé', 'ISO-8859-1') : mb_convert_encoding('Non imprimé', 'ISO-8859-1');
+            $line[] = $document->getImpression() ? mb_convert_encoding('Imprimé', 'ISO-8859-1') : mb_convert_encoding(
+                'Non imprimé',
+                'ISO-8859-1'
+            );
 
             $line[] = mb_convert_encoding((string) $document->getDescriptionRaw(), 'ISO-8859-1');
 
@@ -167,8 +168,11 @@ class DocumentController extends AbstractController
      * Détail d'un document.
      */
     #[Route('/{document}', name: 'detail', requirements: ['document' => Requirement::DIGITS])]
-    public function detailAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Document $document): Response
-    {
+    public function detailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Document $document
+    ): Response {
         return $this->render('document/detail.twig', ['document' => $document]);
     }
 
@@ -219,7 +223,6 @@ class DocumentController extends AbstractController
         ?callable $entityCallback = null
     ): RedirectResponse|Response {
         if (!$entityCallback) {
-
             // TODO debug why we do not store the docUrl
             $entityCallback = function (Document $document, FormInterface $form): ?Document {
                 $document->setUser($this->getUser());

@@ -82,10 +82,9 @@ class DocumentForm extends AbstractType
                     'help' => 'Le responsable des documents devra indiqué pour chacun des documents s\'ils ont été imprimés ou pas.',
                 ],
             ])
-            ->add('document', FileType::class, [
+            ->add('file', FileType::class, [
                 'label' => 'Choisissez votre fichier',
                 'required' => true,
-                'mapped' => false,
                 'attr' => [
                     'help' => 'Téléversez le fichier PDF correspondant à votre document.',
                 ],
