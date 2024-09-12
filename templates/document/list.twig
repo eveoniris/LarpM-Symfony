@@ -1,0 +1,101 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Documents{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :[{'name' : 'Liste des document' },]} %}
+
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Liste des documents <small>( {{ paginator|length }} documents)</small></h5>
+
+            {% include '_partials/formListSearch.twig' with
+                {
+                    'canAdd': {'title': 'Ajouter un document', 'path': path('document.add')},
+                    'actionPath' : path('document.list')
+                } %}
+
+            {#  TODO add this buttons in the previous include ? #}
+            <div class="d-flex justify-content-end">
+
+                <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+                    <div class="btn-group" role="group">
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Télécharger la liste (CSV)"
+                           href="{{ path('document.download') }}"><i
+                                    class="fa fa-download"></i> Document</a>
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Imprimer la liste"
+                           href="{{ path('document.print') }}"><i
+                                    class="fa fa-download"></i> Imprimer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    {% include '_partials/pagination.html.twig' %}
+
+    <table class="table table-condensed table-striped table-bordered">
+        {% include '_partials/thead.twig' with  { 'route': 'document.list', 'rows': [
+            {'name' : 'Titre', 'field' : 'titre'},
+            {'name' : 'Impression', 'field' : 'impression', 'css' : 'text-center'},
+            {'name' : 'Description', 'field' : 'description', 'css' : 'text-center'},
+            {'name' : 'Langues', 'field' : 'langues', 'css' : 'text-center'},
+            {'name' : 'Lieux', 'field' : 'lieus.lieus', 'css' : 'text-center'},
+            {'name' : 'Groupe',  'field' : 'groupe', 'css' : 'text-center'},
+            {'name' : 'Personnages', 'field' : 'personnages', 'css' : 'text-center'},
+            {'name' : 'Auteur', 'field' : 'auteur', 'css' : 'text-center'},
+            {'name' : 'Date de création', 'field' : 'creation_date', 'css' : 'text-center'},
+            {'name' : 'Date de mise à jour', 'field' : 'update_date', 'css' : 'text-center'},
+            {'name' : 'Actions', 'css' : 'text-center'},
+        ]} %}
+        <tbody>
+        {% for document in paginator %}
+            <tr>
+                <td>{{ document.code }} -- {{ document.titre }}</td>
+                <td>{% if document.impression %}Imprimé{% else %}Non imprimé{% endif %}</td>
+                <td>{{ document.description|markdown_to_html }}</td>
+                <td>{% if document.langues|length > 0 %}{{ document.langues|join(', ') }}{% else %}Aucune langue définie{% endif %}</td>
+                <td>{% if document.lieus|length > 0 %}{{ document.lieus|join(', ') }}{% else %}Non défini{% endif %}</td>
+                <td>{% if document.groupes|length > 0 %}{{ document.groupes|join(', ') }}{% else %}Non défini{% endif %}</td>
+                <td>{% if document.personnages|length > 0 %}{{ document.personnages|join(', ') }}{% else %}Non défini{% endif %}</td>
+                <td>{{ document.auteur|default('Inconnu') }}</td>
+                <td>{{ document.creationDate|date('Y-m-d') }}</td>
+                <td>{{ document.updateDate|date('Y-m-d') }}</td>
+                <td>
+                    <div class="btn-toolbar pull-right" role="toolbar">
+                        <div class="btn-group" role="group">
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Télécharger le document associé"
+                               href="{{ path('document.download', {'document': document.id, 'document': document.documentUrl}) }}"><i
+                                        class="fa-solid fa-download"></i></a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Modifier"
+                               href="{{ path('document.update',{'document':document.id}) }}"><i
+                                        class="fa fa-pencil"></i></a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Détail"
+                               href="{{ path('document.detail',{'document':document.id}) }}"><i
+                                        class="fa fa-eye"></i></a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Supprimer"
+                               href="{{ path('document.delete',{'document':document.id}) }}"><i
+                                        class="fa fa-eraser"></i></a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include '_partials/pagination.html.twig' %}
+
+{% endblock %}
