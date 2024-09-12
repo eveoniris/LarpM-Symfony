@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[Entity]
 #[ORM\Table(name: 'document')]
@@ -24,11 +25,15 @@ abstract class BaseDocument
     #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     #[Column(type: Types::STRING, length: 45)]
-    protected string $code = '';
+    protected ?string $code = '';
 
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     #[Column(type: Types::STRING, length: 45)]
-    protected string $titre = '';
+    protected ?string $titre = '';
 
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
@@ -97,7 +102,7 @@ abstract class BaseDocument
         return $this->id;
     }
 
-    public function setCode(string $code): static
+    public function setCode(?string $code): static
     {
         $this->code = $code;
 
@@ -109,7 +114,7 @@ abstract class BaseDocument
         return $this->code ?? '';
     }
 
-    public function setTitre(string $titre): static
+    public function setTitre(?string $titre): static
     {
         $this->titre = $titre;
 

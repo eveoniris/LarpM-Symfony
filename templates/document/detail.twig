@@ -24,7 +24,7 @@
                        title="Ajouter une document"
                        href="{{ path('document.add') }}"><i
                                 class="fa fa-plus"></i> Ajouter</a>
-                    <a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Télécharger"
+                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Télécharger"
                        target="_blank" href="{{ path('document.get',{'document': document.id}) }}"><i
                                 class="fa fa-download"></i> Télécharger</a>
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
@@ -45,9 +45,15 @@
         <div class="col-md-8">
             <div class="card text-bg mb-3">
 
-                <div class="card-header"><h6>{{ document.label }}</h6></div>
+                <div class="header"><h5>{{ document.titre }}</h5></div>
                 <div class="card-body">
-                    <div class="card-text">{{ document.description|markdown_to_html }}</div>
+                    <div class="card-text">
+                        {% if document.description %}
+                        {{ document.description|markdown_to_html }}
+                        {% else %}
+                            {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Aucune description n'a été faite."} %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
@@ -58,41 +64,72 @@
                 <div class="header">
                     <h5 class="m-0">Propriétés</h5>
                 </div>
-                <div class="list-group">
-                    <div class="list-group-item">
-                        Impression : {% if document.impression %}Imprimé{% else %}Non imprimé{% endif %}
-                    </div>
-                    <div class="list-group-item">
-                        Auteur : {{ document.auteur }}
-                    </div>
-                    <div class="list-group-item">
-                        Groupes :
-                        {% for groupe in document.groupes %}
-                            <a href="{{ path('groupe.detail',{'index':groupe.id}) }}">{{ groupe.nom }}</a>,
-                        {% endfor %}
-                    </div>
-                    <div class="list-group-item">
-                        Personnages :
-                        {% for personnage in document.personnages %}
-                            <a href="{{ path('personnage.admin.detail',{'personnage':personnage.id}) }}">{% if personnage.vivant == 0 %}💀 {% endif %}{{ personnage.nom }}</a>,
-                        {% endfor %}
-                    </div>
-                    <div class="list-group-item">
-                        Lieux : {{ document.lieus|join(', ') }}
-                    </div>
-                    <div class="list-group-item">
-                        Créé par {{ document.user.userName }}
-                    </div>
-                    <div class="list-group-item">
-                        Date de création: {{ document.creationDate|date('Y-m-d') }}. Modifié
-                        le {{ document.updateDate|date('Y-m-d') }}
 
-                    </div>
-                    <div class="list-group-item">
-                        Date de modification: {{ document.updateDate|date('Y-m-d') }}
+                <table class="table table-condensed table-striped table-bordered table-hover mb-0">
+                    <tbody>
+                    <tr>
+                        <th class="col-md-2" scope="row">Code</th>
+                        <td>{{ document.code }}</td>
+                    </tr>
+                    <tr>
+                        <th class="col-md-2" scope="row">Impression</th>
+                        <td>{% if document.impression %}Imprimé{% else %}Non imprimé{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Auteur</th>
+                        <td>{{ document.auteur|default('Aucun') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Groupes</th>
+                        <td>
+                            {% for groupe in document.groupes %}
+                                <a href="{{ path('groupe.detail',{'index':groupe.id}) }}">{{ groupe.nom }}</a>,
+                            {% else %}
+                                Aucun
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Personnages</th>
+                        <td>
+                            {% for personnage in document.personnages %}
+                                <a href="{{ path('personnage.admin.detail',{'personnage':personnage.id}) }}">{% if personnage.vivant == 0 %}<i class="fa-solid fa-skull"></i> {% endif %}{{ personnage.nom }}</a>,
+                            {% else %}
+                                Aucun
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Lieux</th>
+                        <td>
+                            {{ document.lieus|join(', ')|default('Aucun') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Créé par</th>
+                        <td>
+                            {{ document.user.userName }}
+                        </td>
+                    </tr>
 
-                    </div>
-                </div>
+                    <tr>
+                        <th scope="row">Date de création</th>
+                        <td>
+                            {{ document.creationDate|date('Y-m-d') }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Date de modification</th>
+                        <td>
+                            {{ document.updateDate|date('Y-m-d') }}
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+
+
             </div>
         </div>
 

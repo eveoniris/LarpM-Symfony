@@ -14,13 +14,6 @@ use Doctrine\ORM\QueryBuilder;
  */
 class DocumentRepository extends BaseRepository
 {
-    /**
-     * Find all classes ordered by label.
-     *
-     * @return ArrayCollection $classes
-     *
-     * @deprecated
-     */
     public function findAllOrderedByCode()
     {
         return $this->getEntityManager()

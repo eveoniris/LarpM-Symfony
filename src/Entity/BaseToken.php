@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,16 +19,16 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseToken', 'extended' => 'Token'])]
 abstract class BaseToken
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
     protected string $label = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $description = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
     protected string $tag = '';
 
     #[OneToMany(mappedBy: 'token', targetEntity: PersonnageHasToken::class)]

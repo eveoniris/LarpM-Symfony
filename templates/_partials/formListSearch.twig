@@ -27,6 +27,8 @@
                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Reset"
                                href="{{ actionPath }}"><i class="fa fa-refresh"></i>
                             </a>
+                        </div>
+                        <div class="input-group-btn btn-group" role="group">
                             {% if canAdd is defined and canAdd %}
                                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
                                    title="{{ canAdd.title }}" href="{{ canAdd.path }}">
@@ -39,9 +41,6 @@
                                     <i class="fa fa-print"></i> Imprimer
                                 </a>
                             {% endif %}
-                        </div>
-
-                        <div class="btn-group" role="group">
                             {% if buttons is defined %}
                                 {% for button in buttons %}
                                     <a class="btn {% if button.css is defined %}{{ button.css }}{% else %}btn-secondary{% endif %}"
@@ -51,12 +50,11 @@
                                        href="{{ button.route }}">
                                         {% if button.icon is defined %}<i
                                             class="fa {{ button.icon }}"></i>{% endif %}
-                                        {% if button.label is defined %}{{ button.label }}">{% endif %}
+                                        {% if button.label is defined %}{{ button.label }}{% endif %}
                                     </a>
                                 {% endfor %}
                             {% endif %}
                         </div>
-
                     </div>
                 </div>
                 {{ form_rest(form) }}
