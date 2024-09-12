@@ -1,81 +1,58 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Document;
-use DateTime;
+use App\Entity\Technologie;
+use App\Enum\DocumentType;
+use App\Enum\FolderType;
 use App\Form\DocumentDeleteForm;
-use App\Form\DocumentFindForm;
 use App\Form\DocumentForm;
+use App\Form\Technologie\TechnologieForm;
+use App\Repository\DocumentRepository;
+use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
-#[isGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_SCENARISTE')]
+#[Route('/document', name: 'document.')]
 class DocumentController extends AbstractController
 {
     /**
      * Liste des documents.
      */
-    #[Route('/document', name: 'document.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager): Response
-    {
-        $order_by = $request->get('order_by', 'titre');
-        $order_dir = 'DESC' === $request->get('order_dir', 'ASC') ? 'DESC' : 'ASC';
-        $limit = (int) $request->get('limit', 50);
-        $page = (int) $request->get('page', 1);
-        $offset = (int) (($page - 1) * $limit);
-        $type = null;
-        $value = null;
+    #[Route('', name: 'index')]
+    #[Route('', name: 'list')]
+    public function indexAction(
+        Request $request,
+        PagerService $pagerService,
+        DocumentRepository $documentRepository,
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($documentRepository);
 
-        $form = $this->createForm(DocumentFindForm::class);
-        
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $type = $data['type'];
-            $value = $data['value'];
-        }
-
-        $repo = $entityManager->getRepository('\\'. Document::class);
-        $documents = $repo->findList(
-            $type,
-            $value,
-            ['by' => $order_by, 'dir' => $order_dir],
-            $limit,
-            $offset
-        );
-
-        $paginator = $repo->findPaginatedQuery(
-            $documents, 
-            $this->getRequestLimit(),
-            $this->getRequestPage()
-        );
-
-        return $this->render(
-            'admin/document/index.twig',
-            [
-                'paginator' => $paginator,
-                'form' => $form->createView(),
-            ]
-        );
+        return $this->render('document/list.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $documentRepository->searchPaginated($pagerService),
+        ]);
     }
 
     /**
      * Imprimer la liste des documents.
      */
-    #[Route('/document/print', name: 'document.print')]
-    public function printAction(Request $request,  EntityManagerInterface $entityManager): Response
+    #[Route('/print', name: 'print')]
+    public function printAction(DocumentRepository $documentRepository): Response
     {
-        $documents = $entityManager->getRepository('\\'. Document::class)->findAllOrderedByCode();
+        // TODO global
+        $documents = $documentRepository->findAllOrderedByCode();
 
         return $this->render('document/print.twig', ['documents' => $documents]);
     }
@@ -83,17 +60,18 @@ class DocumentController extends AbstractController
     /**
      * Télécharger la liste des documents.
      */
-    #[Route('/document/download', name: 'document.download')]
-    public function downloadAction(Request $request,  EntityManagerInterface $entityManager): void
+    #[Route('/download', name: 'download')]
+    public function downloadAction(DocumentRepository $documentRepositoryr): void
     {
-        $documents = $entityManager->getRepository('\\'. Document::class)->findAllOrderedByCode();
+        // TODO use abstract download mode
+        $documents = $documentRepositoryr->findAllOrderedByCode();
 
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename=eveoniris_documents_'.date('Ymd').'.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
 
-        $output = fopen('php://output', 'w');
+        $output = fopen('php://output', 'wb');
 
         // header
         fputcsv($output,
@@ -162,71 +140,34 @@ class DocumentController extends AbstractController
      *
      * @param unknown $document
      */
-    #[Route('/document/get/{document}', name: 'document.get')]
-    public function getAction(Request $request,  EntityManagerInterface $entityManager, $document): BinaryFileResponse
+    #[Route('/get/{document}', name: 'get', requirements: ['document' => Requirement::DIGITS])]
+    public function getAction(#[MapEntity] Document $document): BinaryFileResponse
     {
-        $filename = __DIR__.'/../../private/documents/'.$document;
+        // TODO
+        $filename = __DIR__.'/../../private/documents/'.$document->getDocumentUrl();
 
-        //return $app->sendFile($filename);
+        // return $app->sendFile($filename);
         return new BinaryFileResponse($filename);
     }
 
     /**
      * Ajouter un document.
      */
-    #[Route('/document/add', name: 'document.add')]
-    public function addAction(Request $request,  EntityManagerInterface $entityManager): Response|RedirectResponse
+    #[Route('/add', name: 'add')]
+    public function addAction(Request $request): RedirectResponse|Response
     {
-        $form = $this->createForm(DocumentForm::class, new Document())
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $document = $form->getData();
-            $document->setUser($this->getUser());
-
-            $files = $request->files->get($form->getName());
-
-            $path = __DIR__.'/../../private/documents/';
-            $filename = $files['document']->getClientOriginalName();
-            $extension = $files['document']->guessExtension();
-
-            if (!$extension || 'pdf' != $extension) {
-               $this->addFlash('error', 'Désolé, votre fichier ne semble pas valide (vérifiez le format de votre fichier)');
-
-                return $this->redirectToRoute('document.add', [], 303);
-            }
-
-            $documentFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
-
-            $files['document']->move($path, $documentFilename);
-
-            $document->setDocumentUrl($documentFilename);
-
-            $entityManager->persist($document);
-            $entityManager->flush();
-
-           $this->addFlash('success', 'Le document a été ajouté.');
-
-            if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('document.index', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
-                return $this->redirectToRoute('document.add', [], 303);
-            }
-        }
-
-        return $this->render('document/add.twig', [
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            new Document(),
+            DocumentForm::class
+        );
     }
 
     /**
      * Détail d'un document.
      */
-    #[Route('/document/{document}', name: 'document.detail')]
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Document $document): Response
+    #[Route('/{document}', name: 'detail', requirements: ['document' => Requirement::DIGITS])]
+    public function detailAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Document $document): Response
     {
         return $this->render('document/detail.twig', ['document' => $document]);
     }
@@ -234,76 +175,81 @@ class DocumentController extends AbstractController
     /**
      * Mise à jour d'un document.
      */
-    #[Route('/document/{document}/update', name: 'document.update')]
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Document $document): Response|RedirectResponse
+    #[Route('/{document}/update', name: 'update')]
+    public function updateAction(Request $request, #[MapEntity] Document $document): RedirectResponse|Response
     {
-        $form = $this->createForm(DocumentForm::class, $document)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $document = $form->getData();
-            $document->setUpdateDate(new DateTime('NOW'));
-
-            $files = $request->files->get($form->getName());
-            if ($files['document']) {
-                $path = __DIR__.'/../../private/documents/';
-                $filename = $files['document']->getClientOriginalName();
-                $extension = $files['document']->guessExtension();
-
-                if (!$extension || 'pdf' != $extension) {
-                   $this->addFlash('error', 'Désolé, votre fichier ne semble pas valide (vérifiez le format de votre fichier)');
-
-                    return $this->redirectToRoute('document.add', [], 303);
-                }
-
-                $documentFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
-
-                $files['document']->move($path, $documentFilename);
-
-                $document->setDocumentUrl($documentFilename);
-            }
-
-            $entityManager->persist($document);
-            $entityManager->flush();
-
-           $this->addFlash('success', 'Le document a été modifié.');
-
-            return $this->redirectToRoute('document.index', [], 303);
-        }
-
-        return $this->render('document/update.twig', [
-            'document' => $document,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            $document,
+            DocumentForm::class
+        );
     }
 
     /**
      * Suppression d'un document.
      */
-    #[Route('/document/{document}/delete', name: 'document.delete')]
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Document $document): Response|RedirectResponse
-    {
-        $form = $this->createForm(DocumentDeleteForm::class, $document)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
+    #[Route('/{document}/delete', name: 'delete', requirements: ['document' => Requirement::DIGITS])]
+    public function deleteAction(
+        #[MapEntity] Document $document
+    ): RedirectResponse|Response {
+        return $this->genericDelete(
+            $document,
+            'Supprimer un document',
+            'Le document a été supprimé',
+            'document.list',
+            [
+                ['route' => $this->generateUrl('document.list'), 'name' => 'Liste des documents'],
+                [
+                    'route' => $this->generateUrl('document.detail', ['document' => $document->getId()]),
+                    'document' => $document->getId(),
+                    'name' => $document->getLabel(),
+                ],
+                ['name' => 'Supprimer un document'],
+            ]
+        );
+    }
 
-        $form->handleRequest($request);
+    protected function handleCreateOrUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
+        ?callable $entityCallback = null
+    ): RedirectResponse|Response {
+        if (!$entityCallback) {
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $document = $form->getData();
+            // TODO debug why we do not store the docUrl
+            $entityCallback = function (Document $document, FormInterface $form): ?Document {
+                $document->setUser($this->getUser());
+                $document->handleUpload(
+                    $this->fileUploader,
+                    DocumentType::Documents,
+                    FolderType::Private
+                );
 
-            $entityManager->remove($document);
-            $entityManager->flush();
-
-           $this->addFlash('success', 'Le document a été supprimé.');
-
-            return $this->redirectToRoute('document.index', [], 303);
+                return $document;
+            };
         }
 
-        return $this->render('document/delete.twig', [
-            'document' => $document,
-            'form' => $form->createView(),
-        ]);
+        return parent::handleCreateOrUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                'entity' => $this->translator->trans('document'),
+                'entity_added' => $this->translator->trans('Le document a été ajouté'),
+                'entity_updated' => $this->translator->trans('Le document a été mis à jour'),
+                'entity_deleted' => $this->translator->trans('Le document a été supprimé'),
+                'entity_list' => $this->translator->trans('Liste des documents'),
+                'title_add' => $this->translator->trans('Ajouter un document'),
+                'title_update' => $this->translator->trans('Modifier un documents'),
+                ...$msg,
+            ],
+            entityCallback: $entityCallback
+        );
     }
 }

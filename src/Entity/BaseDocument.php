@@ -73,7 +73,7 @@ abstract class BaseDocument
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'documents')]
     protected Collection $personnages;
 
-    #[ORM\OneToMany(targetEntity: IntrigueHasDocument::class, mappedBy: 'document')]
+    #[ORM\OneToMany(mappedBy: 'document', targetEntity: IntrigueHasDocument::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'document_id', nullable: 'false')]
     protected Collection $intrigueHasDocuments;
 
@@ -121,7 +121,7 @@ abstract class BaseDocument
         return $this->titre ?? '';
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
 
@@ -157,7 +157,7 @@ abstract class BaseDocument
         return $this->cryptage;
     }
 
-    public function setStatut(string $statut): static
+    public function setStatut(?string $statut): static
     {
         $this->statut = $statut;
 
@@ -217,9 +217,9 @@ abstract class BaseDocument
         return $this->impression;
     }
 
-    public function setUser(?User $User = null): static
+    public function setUser(?User $user = null): static
     {
-        $this->user = $User;
+        $this->user = $user;
 
         return $this;
     }

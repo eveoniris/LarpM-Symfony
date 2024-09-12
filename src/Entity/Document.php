@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Enum\DocumentType;
+use App\Enum\FolderType;
 use App\Repository\DocumentRepository;
 use App\Service\FileUploader;
 use App\Trait\EntityFileUploadTrait;
@@ -20,9 +22,13 @@ class Document extends BaseDocument implements \Stringable
     public function __construct()
     {
         parent::__construct();
-        $this->setCreationDate(new \DateTime('now'));
-        $this->setUpdateDate(new \DateTime('now'));
-        $this->setImpression(false);
+        $this->setDocumentType(DocumentType::Documents)
+            ->setFolderType(FolderType::Private)
+            // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
+            ->setFilenameMaxLength(45 - 24 - 4)
+            ->setCreationDate(new \DateTime('now'))
+            ->setUpdateDate(new \DateTime('now'))
+            ->setImpression(false);
     }
 
     /**
@@ -31,6 +37,11 @@ class Document extends BaseDocument implements \Stringable
     public function getDescriptionRaw(): string
     {
         return html_entity_decode(strip_tags($this->getDescription()));
+    }
+
+    public function getLabel()
+    {
+        return $this->getIdentity();
     }
 
     /**

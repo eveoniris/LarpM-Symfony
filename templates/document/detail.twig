@@ -1,0 +1,111 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Documents{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des documents', 'route': path('document.list') },
+            {'name' : "Détail du document #{document.label}" }
+        ]
+    } %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Détail d'un document</h5>
+        </div>
+
+        <div class="d-flex justify-content-end mb-2">
+            <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Ajouter une document"
+                       href="{{ path('document.add') }}"><i
+                                class="fa fa-plus"></i> Ajouter</a>
+                    <a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Télécharger"
+                       target="_blank" href="{{ path('document.get',{'document': document.id}) }}"><i
+                                class="fa fa-download"></i> Télécharger</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier"
+                       href="{{ path('document.update',{'document':document.id}) }}"><i
+                                class="fa fa-pencil"></i> Modifier</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Supprimer"
+                       href="{{ path('document.delete',{'document':document.id}) }}"><i
+                                class="fa fa-eraser"></i> Supprimer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card text-bg mb-3">
+
+                <div class="card-header"><h6>{{ document.label }}</h6></div>
+                <div class="card-body">
+                    <div class="card-text">{{ document.description|markdown_to_html }}</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-2">
+                <div class="header">
+                    <h5 class="m-0">Propriétés</h5>
+                </div>
+                <div class="list-group">
+                    <div class="list-group-item">
+                        Impression : {% if document.impression %}Imprimé{% else %}Non imprimé{% endif %}
+                    </div>
+                    <div class="list-group-item">
+                        Auteur : {{ document.auteur }}
+                    </div>
+                    <div class="list-group-item">
+                        Groupes :
+                        {% for groupe in document.groupes %}
+                            <a href="{{ path('groupe.detail',{'index':groupe.id}) }}">{{ groupe.nom }}</a>,
+                        {% endfor %}
+                    </div>
+                    <div class="list-group-item">
+                        Personnages :
+                        {% for personnage in document.personnages %}
+                            <a href="{{ path('personnage.admin.detail',{'personnage':personnage.id}) }}">{% if personnage.vivant == 0 %}💀 {% endif %}{{ personnage.nom }}</a>,
+                        {% endfor %}
+                    </div>
+                    <div class="list-group-item">
+                        Lieux : {{ document.lieus|join(', ') }}
+                    </div>
+                    <div class="list-group-item">
+                        Créé par {{ document.user.userName }}
+                    </div>
+                    <div class="list-group-item">
+                        Date de création: {{ document.creationDate|date('Y-m-d') }}. Modifié
+                        le {{ document.updateDate|date('Y-m-d') }}
+
+                    </div>
+                    <div class="list-group-item">
+                        Date de modification: {{ document.updateDate|date('Y-m-d') }}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card">
+        <object type="application/pdf" width="100%" height="800px"
+                data="{{ path('document.get',{'document': document.id}) }}">
+            <div class="well">
+                Si le PDF n'apparait pas correctement dans votre navigateur, <a
+                        href="{{ path('document.get',{'document': document.id}) }}">cliquez ici</a> pour télécharger
+                le fichier.
+            </div>
+        </object>
+    </div>
+{% endblock %}
