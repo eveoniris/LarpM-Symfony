@@ -4,6 +4,8 @@ namespace App\Form;
 
 use App\Entity\Document;
 use App\Entity\Langue;
+use App\Repository\LangueRepository;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -12,13 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use App\Repository\LangueRepository;
 
-/**
- * LarpManager\Form\DocumentForm.
- *
- * @author kevin
- */
 class DocumentForm extends AbstractType
 {
     /**
@@ -42,15 +38,15 @@ class DocumentForm extends AbstractType
                     'help' => 'Indiquez l\'auteur (en jeu) du document. Cet auteur est soit un personnage fictif (p.e. le célébre poète Archibald) ou l\'un des personnage joué par un joueur',
                 ],
             ])
+            // TODO autocomplete multiple choices
             ->add('langues', EntityType::class, [
                 'required' => true,
                 'multiple' => true,
                 'expanded' => true,
+                // 'autocomplete' => true,
                 'label' => 'Langues dans lesquelles le document est rédigé',
                 'class' => Langue::class,
-                'query_builder' => static function (LangueRepository $er) {
-                    return $er->createQueryBuilder('l')->orderBy('l.label', 'ASC');
-                },
+                'query_builder' => static fn (LangueRepository $er) => $er->createQueryBuilder('l')->orderBy('l.label', 'ASC'),
                 'choice_label' => 'label',
                 'attr' => [
                     'help' => 'Vous pouvez choisir une ou plusieurs langues',
@@ -58,10 +54,10 @@ class DocumentForm extends AbstractType
             ])
             ->add('cryptage', ChoiceType::class, [
                 'required' => true,
-                'choices' => ['Non crypté' =>false, 'Crypté' => true],
-                'label' => 'Indiquez si le document est crypté',
+                'choices' => ['Non Chiffré' => false, 'Chiffré' => true],
+                'label' => 'Indiquez si le document est chiffré',
                 'attr' => [
-                    'help' => 'Un document crypté est rédigé dans la langue indiqué, mais le joueur doit le décrypter de lui-même (p.e rédigé en aquilonien, mais utilisant un code type césar)',
+                    'help' => 'Un document chiffré est rédigé dans la langue indiqué, mais le joueur doit le déchiffrer de lui-même (p.e rédigé en aquilonien, mais utilisant un code type césar)',
                 ],
             ])
             ->add('description', TextareaType::class, [
@@ -80,7 +76,7 @@ class DocumentForm extends AbstractType
             ])
             ->add('impression', ChoiceType::class, [
                 'required' => false,
-                'choices' => ['Non imprimé' =>false, 'Imprimé' => true],
+                'choices' => ['Non imprimé' => false, 'Imprimé' => true],
                 'label' => 'Indiquez si le document a été imprimé',
                 'attr' => [
                     'help' => 'Le responsable des documents devra indiqué pour chacun des documents s\'ils ont été imprimés ou pas.',
@@ -103,6 +99,18 @@ class DocumentForm extends AbstractType
     {
         $resolver->setDefaults([
             'class' => Document::class,
+            'searchable_fields' => ['langues'],
+            'security' => ['ROLE_ADMIN', 'ROLE_SCENARISTE', 'ROLE_ORGA', 'ROLE_REGLE'],
+            'query_builder' => static function (EntityRepository $er) {
+                $qb = $er->createQueryBuilder('u');
+                $qb->where($qb->expr()->orX(
+                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
+                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%')),
+                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ORGA%'))),
+                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_REGLE%')));
+
+                return $qb;
+            },
             // TinyMce Hide the text field. It's break the form Submit because autovalidate can't allow it
             // Reason : the user can't fill a hidden field, so it's couldn't be "required"
             'attr' => [

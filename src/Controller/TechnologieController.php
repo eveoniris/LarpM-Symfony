@@ -85,8 +85,6 @@ class TechnologieController extends AbstractController
      */
     #[Route('/{technologie}/delete', name: 'delete', requirements: ['technologie' => Requirement::DIGITS])]
     public function deleteAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Technologie $technologie
     ): RedirectResponse|Response {
         return $this->genericDelete(

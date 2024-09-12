@@ -1,36 +1,27 @@
-<!DOCTYPE html>
-<html>
-    <head>
-    	<meta charset="utf-8">
-    	<title>LarpManager - Impression de la liste des documents</title>
-    	<style>
-    		table{
-    			width: 100%;
-    			border-collapse:collapse;
-    		}
-    	</style>
-    </head>
-    <body>
-    
-    <table border="1">
-    	<caption><h4>Liste des documents</h4></caption>
-   		<thead>
-			<tr>
-				<th>Code</th>
-				<th>Titre</th>
-				<th>Impression</th>
-				<th>Description</th>
-				<th>Langues</th>
-				<th>Lieux</th>
-				<th>Groupes</th>
-				<th>Personnages</th>
-				<th>Createur</th>
-				<th>Date de création</th>
-				<th>Date de mise à jour</th>
-			</tr>
+{% extends "base.print.twig" %}
+
+{% block title %}Impression de la liste des documents{% endblock title %}
+
+{% block content %}
+	<table>
+		<caption><h4>Liste des documents</h4></caption>
+		<thead>
+		<tr>
+			<th>Code</th>
+			<th>Titre</th>
+			<th>Impression</th>
+			<th>Description</th>
+			<th>Langues</th>
+			<th>Lieux</th>
+			<th>Groupes</th>
+			<th>Personnages</th>
+			<th>Cr"ateur</th>
+			<th>Date de création</th>
+			<th>Date de mise à jour</th>
+		</tr>
 		</thead>
 		<tbody>
-			{% for document in documents %}
+		{% for document in documents %}
 			<tr>
 				<td>{{ document.code }}</td>
 				<td>{{ document.titre }}</td>
@@ -44,9 +35,7 @@
 				<td>{{ document.creationDate|date('Y-m-d') }}</td>
 				<td>{{ document.updateDate|date('Y-m-d') }}</td>
 			</tr>
-			{% endfor %}
+		{% endfor %}
 		</tbody>
-    </table>
-    
-    </body>
-</html>
+	</table>
+{% endblock content %}

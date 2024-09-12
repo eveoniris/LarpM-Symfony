@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -15,30 +16,29 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseDebriefing', 'extended' => 'Debriefing'])]
-
 class BaseDebriefing
 {
     #[ORM\Id]
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[ORM\Column(type: Types::INTEGER)]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[ORM\Column(type: Types::STRING, length: 45)]
     protected ?string $titre = null;
 
-    #[ORM\Column(name: '`text`', type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[ORM\Column(name: '`text`', type: Types::TEXT, nullable: true)]
     protected ?string $text = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $visibility = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $update_date = null;
 
-    #[ORM\Column(name: 'documentUrl', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[ORM\Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
     #[ORM\ManyToOne(targetEntity: 'Groupe', inversedBy: 'debriefings')]
@@ -75,8 +75,6 @@ class BaseDebriefing
 
     /**
      * Get the value of id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -97,8 +95,6 @@ class BaseDebriefing
 
     /**
      * Get the value of titre.
-     *
-     * @return string
      */
     public function getTitre(): string
     {
@@ -119,8 +115,6 @@ class BaseDebriefing
 
     /**
      * Get the value of text.
-     *
-     * @return string
      */
     public function getText(): string
     {
@@ -141,8 +135,6 @@ class BaseDebriefing
 
     /**
      * Get the value of visibility.
-     *
-     * @return string
      */
     public function getVisibility(): string
     {
@@ -151,8 +143,6 @@ class BaseDebriefing
 
     /**
      * Set the value of creation_date.
-     *
-     * @param \DateTime $creation_date
      *
      * @return Debriefing
      */
@@ -165,8 +155,6 @@ class BaseDebriefing
 
     /**
      * Get the value of creation_date.
-     *
-     * @return \DateTime
      */
     public function getCreationDate(): ?\DateTime
     {
@@ -175,8 +163,6 @@ class BaseDebriefing
 
     /**
      * Set the value of update_date.
-     *
-     * @param \DateTime $update_date
      *
      * @return Debriefing
      */
@@ -189,8 +175,6 @@ class BaseDebriefing
 
     /**
      * Get the value of update_date.
-     *
-     * @return \DateTime
      */
     public function getUpdateDate(): ?\DateTime
     {
@@ -214,7 +198,7 @@ class BaseDebriefing
      *
      * @return Debriefing
      */
-    public function setGroupe(Groupe $groupe = null): static
+    public function setGroupe(?Groupe $groupe = null): static
     {
         $this->groupe = $groupe;
 
@@ -223,8 +207,6 @@ class BaseDebriefing
 
     /**
      * Get Groupe entity (many to one).
-     *
-     * @return Groupe
      */
     public function getGroupe(): Groupe
     {
@@ -236,7 +218,7 @@ class BaseDebriefing
      *
      * @return Debriefing
      */
-    public function setUser(User $User = null): static
+    public function setUser(?User $User = null): static
     {
         $this->user = $User;
 
@@ -245,8 +227,6 @@ class BaseDebriefing
 
     /**
      * Get User entity (many to one).
-     *
-     * @return User
      */
     public function getUser(): User
     {
@@ -258,7 +238,7 @@ class BaseDebriefing
      *
      * @return Debriefing
      */
-    public function setPlayer(User $player = null): static
+    public function setPlayer(?User $player = null): static
     {
         $this->player = $player;
 
@@ -267,8 +247,6 @@ class BaseDebriefing
 
     /**
      * Get player User entity (many to one).
-     *
-     * @return User
      */
     public function getPlayer(): ?User
     {
@@ -280,7 +258,7 @@ class BaseDebriefing
      *
      * @return Debriefing
      */
-    public function setGn(Gn $gn = null): static
+    public function setGn(?Gn $gn = null): static
     {
         $this->gn = $gn;
 
@@ -289,8 +267,6 @@ class BaseDebriefing
 
     /**
      * Get Gn entity (many to one).
-     *
-     * @return Gn
      */
     public function getGn(): ?Gn
     {
