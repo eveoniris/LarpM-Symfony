@@ -16,3 +16,12 @@ when@dev:
             headers:
                 From: '%fromEmailName% <%fromEmailAddress%>'
                 #Reply-To: '%fromEmailName% <%fromEmailAddress%>'
+
+when@prod:
+    framework:
+        mailer:
+            envelope:
+                sender: '%fromEmailAddress%'
+            headers:
+                From: '%fromEmailName% <%fromEmailAddress%>'
+                To: 'gectou4@eveoniris.com'
