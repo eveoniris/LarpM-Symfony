@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class IndexController extends AbstractController
 {
     #[Route('/', name: 'homepage')]
-    public function index(Request $request, AnnonceRepository $annonceRepository): Response
+    public function index(AnnonceRepository $annonceRepository): Response
     {
         return $this->render('index/index.html.twig', [
             'controller_name' => 'IndexController',
@@ -27,6 +27,13 @@ class IndexController extends AbstractController
     #[Route('/design', name: 'design')]
     public function designAction(Request $request): Response
     {
+        // Only in dev
+        if ('dev' !== $this->getParameter('kernel.environment')) {
+            $this->addFlash('error', 'Do not challenge the dark gods');
+
+            return $this->redirectToRoute('homepage');
+        }
+
         return $this->render('index/design.twig', ['user' => $this->getUser()]);
     }
 
@@ -34,9 +41,19 @@ class IndexController extends AbstractController
     #[Route('/mail', name: 'mail')]
     public function mail(MailerInterface $mailer)
     {
+        // DETECT ENV : dump($_SERVER['APP_ENV']);
+        // OR DETECT ENV : dump($this->getParameter('kernel.environment'));
+
+        // Only in dev
+        if ('dev' !== $this->getParameter('kernel.environment')) {
+            $this->addFlash('error', 'Do not challenge the dark gods');
+
+            return $this->redirectToRoute('homepage');
+        }
+
         $email = (new Email())
             ->from('gestion@eveoniris.com')
-            ->to('gectou4@gmail.com')
+            ->to('gectou4@eveoniris.com')
             // ->cc('cc@example.com')
             // ->bcc('bcc@example.com')
             // ->replyTo('fabien@example.com')
@@ -47,16 +64,7 @@ class IndexController extends AbstractController
             ->text('Sending emails is fun again!')
             ->html('<p>See Twig integration for better HTML integration!</p>');
 
-        try {
-            $mailer->send($email);
-                echo 'ok';
-
-        } catch (\Exception $e) {
-            dump($e);
-            echo 'KO';
-        }
-
-        dd('test');
+        $mailer->send($email);
     }
 
     #[Route('/setpwd', name: 'setpwd')]
