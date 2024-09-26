@@ -40,7 +40,7 @@
     border-color: #{$dark-border-subtle-dark};
   }
 
-  .panel-conan > .panel-heading, .header > h5 {
+  .panel-conan > .panel-heading, .header > h5, .header > h4, .header-conan {
     background: url("../img/header.png") no-repeat scroll 25% 40% / 110% 110% #8B360C;
     color: #{$dark-text-emphasis-dark};
   }
