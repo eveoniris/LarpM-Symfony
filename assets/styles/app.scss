@@ -1,13 +1,17 @@
 // Option A: Include all of Bootstrap
 $primary: #337ab7; // #2a9fd6 !default;
-$body-color-dark : #777 !default;
-$body-color: #aaa !default;
-$body-bg-dark: #222 !default;
+$body-color-dark : #888 !default;
+$body-color: #454545 !default;
+//$body-emphasis-color: #cccccc !default;
+//$body-emphasis-color-dark: #333333 !default;
+$body-color-dark: #aaa !default;
+$body-bg-dark: #181818 !default;
+// $headings-color: #dddddd !default;
+$headings-color-dark: #111111 !default;
 $dark:#333 !default;
 
-
-$bs-font-sans-serif:"Roboto", -apple-system,BlinkMacSystemFont,"Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
-$bs-body-font-family:"Roboto", -apple-system,BlinkMacSystemFont,"Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$font-sans-serif:"Roboto", -apple-system,BlinkMacSystemFont,"Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$body-font-family:"Roboto", -apple-system,BlinkMacSystemFont,"Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
 $font-size-base: 0.875rem;
 
 // Include any default variable overrides here (though functions won't be available)
@@ -31,7 +35,7 @@ $font-size-base: 0.875rem;
 // 5. Include remainder of required parts
 //@import "~bootstrap/scss/maps";
 //@import "~bootstrap/scss/mixins";
-// @import "~bootstrap/scss/root"; // allow override OK to check and edit each variable but not import full of them
+// @import "~bootstrap/scss/root";
 
 // 6. Optionally include any other parts as needed
 //@import "~bootstrap/scss/utilities";
