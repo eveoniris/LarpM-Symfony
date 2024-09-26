@@ -7,6 +7,8 @@
   --bs-primary-bg-subtle-dark: #{$primary};
   --bs-breadcrumb-bg-color: #{$dark-bg-subtle-dark};
   --bs-link-color:#2a9fd6 ;
+  --bs-heading-color: #cccccc;
+  --bs-secondary-bg-rgb: 40, 40, 40;
 
   .breadcrumb {
     background-color: #{$dark-bg-subtle-dark};

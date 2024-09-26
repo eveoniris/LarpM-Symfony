@@ -1,18 +1,20 @@
 // Option A: Include all of Bootstrap
 $primary: #337ab7; // #2a9fd6 !default;
-$body-color-dark : #888 !default;
+$body-color-dark: #999 !default;
 $body-color: #454545 !default;
-//$body-emphasis-color: #cccccc !default;
-//$body-emphasis-color-dark: #333333 !default;
+$body-emphasis-color: #333333 !default;
+$body-emphasis-color-dark: #cccccc !default;
 $body-color-dark: #aaa !default;
 $body-bg-dark: #181818 !default;
 // $headings-color: #dddddd !default;
 $headings-color-dark: #111111 !default;
-$dark:#333 !default;
+$dark: #333 !default;
 
-$font-sans-serif:"Roboto", -apple-system,BlinkMacSystemFont,"Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
-$body-font-family:"Roboto", -apple-system,BlinkMacSystemFont,"Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$font-sans-serif: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$body-font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
 $font-size-base: 0.875rem;
+
+$card-cap-color: $body-color-dark;
 
 // Include any default variable overrides here (though functions won't be available)
 @import '~bootstrap/scss/bootstrap';
