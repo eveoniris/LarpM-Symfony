@@ -17,6 +17,7 @@ use App\Entity\Priere;
 use App\Entity\RenommeHistory;
 use App\Entity\Sort;
 use App\Entity\Technologie;
+use App\Enum\FolderType;
 use App\Form\Personnage\PersonnageChronologieForm;
 use App\Form\Personnage\PersonnageDocumentForm;
 use App\Form\Personnage\PersonnageIngredientForm;
@@ -189,7 +190,7 @@ class PersonnageController extends AbstractController
             'optionalParameters' => $optionalParameters,
             'columnDefinitions' => $columnDefinitions,
             'formPath' => $routeName,
-            ]
+        ]
         );
     }
 
@@ -220,7 +221,16 @@ class PersonnageController extends AbstractController
     public function getTrombineAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage): Response
     {
         $trombine = $personnage->getTrombineUrl();
-        $filename = __DIR__.'/../../assets/img/'.$trombine;
+        $filename = $this->fileUploader->getDirectory(FolderType::Photos).$trombine;
+
+        // Larpv1 temp
+        if (!is_file($filename)) {
+            $filename = $this->fileUploader->getDirectory(FolderType::Asset).'../../larpmanager/private/img/'.$trombine;
+        }
+
+        if (!is_file($filename)) {
+            return $this->sendNoImageAvailable();
+        }
 
         $response = new Response(file_get_contents($filename));
         $response->headers->set('Content-Type', 'image/png');
@@ -538,7 +548,7 @@ class PersonnageController extends AbstractController
         $langueMateriel = [];
         foreach ($personnage->getPersonnageLangues() as $langue) {
             if ($langue->getLangue()->getGroupeLangue()->getId() > 0 && $langue->getLangue()->getGroupeLangue()->getId() < 6) {
-                if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel) ) {
+                if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel)) {
                     $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
                 }
             }
@@ -750,6 +760,7 @@ class PersonnageController extends AbstractController
      * Affiche le détail d'un personnage (pour les orgas).
      */
     #[Route('/{personnage}/admin', name: 'admin.detail')]
+    #[Route('/admin/{personnage}/detail', name: 'admin.detail')]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     public function adminDetailAction(EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
     {
