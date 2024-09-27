@@ -6,7 +6,7 @@
 
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
-            {'name' : 'Liste des sphère', 'route': path('magie.sphere.list') },
+            {'name' : 'Liste des sphères', 'route': path('magie.sphere.list') },
         ]
     } %}
 
@@ -26,14 +26,10 @@
 
     {% include '_partials/pagination.html.twig' %}
     <table class="table table-condensed table-striped table-bordered table-hover">
-        <thead>
-        <tr>
-            <th class="text-center align-middle">
-                {% include '_partials/orderby.twig' with {'name' : 'Libellé', 'field' : 'label', 'route': 'magie.sphere.list' } %}
-            </th>
-            <th class="text-center align-middle">Actions</th>
-        </tr>
-        </thead>
+        {% include '_partials/thead.twig' with  { 'route': 'magie.sphere.list', 'rows': [
+            {'name' : 'Libellé', 'field' : 'label', 'css': 'text-center'},
+            {'name' : 'Actions', 'css': 'text-center'},
+        ]} %}
         <tbody>
         {% for sphere in paginator %}
             <tr>
