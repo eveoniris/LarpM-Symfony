@@ -9,7 +9,7 @@
 		{% include '_partials/breadcrumb.twig' with {'items' : breadcrumb } %}
 	{% else %}
 		{% include '_partials/breadcrumb.twig' with {'items' :[ {'name' : 'Liste des personnages'}]} %}
-	{% endif %}>
+	{% endif %}
 
 	{{ include('admin/personnage/search.twig') }}	
 
