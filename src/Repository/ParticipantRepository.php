@@ -3,9 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Gn;
+use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\PersonnageLangues;
 use App\Entity\PersonnagesReligions;
+use App\Entity\User;
 use App\Service\OrderBy;
 use App\Service\PagerService;
 use Doctrine\ORM\QueryBuilder;
@@ -21,7 +23,7 @@ class ParticipantRepository extends BaseRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select($qb->expr()->count('p'));
-        $qb->from(\App\Entity\Participant::class, 'p');
+        $qb->from(Participant::class, 'p');
         $qb->join('p.gn', 'gn');
 
         foreach ($criteria as $criter) {
@@ -71,7 +73,6 @@ class ParticipantRepository extends BaseRepository
 
         // $query->leftJoin($alias.'.player', 'player');
         // $query->join($alias.'.user', 'user');
-
 
         switch ($attributes) {
             case 'religion.label':
@@ -215,5 +216,25 @@ class ParticipantRepository extends BaseRepository
         $query->andWhere($this->alias.'.gn = :value');
 
         return $query->setParameter('value', $gn->getId());
+    }
+
+    public function getPersonnages(Participant $participant): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        $queryBuilder = $personnageRepository->createQueryBuilder('perso');
+
+        return $personnageRepository->user($queryBuilder, $participant->getUser());
+    }
+
+    public function getPersonnagesAlive(Participant $participant): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        $queryBuilder = $this->getPersonnages($participant);
+
+        return $personnageRepository->alive($queryBuilder, true);
     }
 }

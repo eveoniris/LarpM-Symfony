@@ -3,23 +3,39 @@
 namespace App\Controller;
 
 use App\Entity\Age;
+use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\Connaissance;
 use App\Entity\Document;
+use App\Entity\Domaine;
+use App\Entity\ExperienceGain;
+use App\Entity\ExperienceUsage;
 use App\Entity\Groupe;
+use App\Entity\GroupeAllie;
+use App\Entity\GroupeEnemy;
+use App\Entity\GroupeGn;
 use App\Entity\Langue;
+use App\Entity\Membre;
 use App\Entity\Message;
 use App\Entity\Participant;
 use App\Entity\Personnage;
+use App\Entity\PersonnageChronologie;
+use App\Entity\PersonnageLangues;
+use App\Entity\PersonnageSecondaire;
+use App\Entity\PersonnagesReligions;
+use App\Entity\PersonnageTrigger;
 use App\Entity\Postulant;
 use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\Question;
+use App\Entity\Religion;
+use App\Entity\RenommeHistory;
 use App\Entity\Reponse;
 use App\Entity\Rule;
 use App\Entity\SecondaryGroup;
 use App\Entity\Sort;
 use App\Entity\Technologie;
+use App\Entity\Territoire;
 use App\Entity\User;
 use App\Form\AcceptAllianceForm;
 use App\Form\AcceptPeaceForm;
@@ -43,23 +59,27 @@ use App\Form\Personnage\PersonnageEditForm;
 use App\Form\Personnage\PersonnageForm;
 use App\Form\Personnage\PersonnageOriginForm;
 use App\Form\Personnage\PersonnageReligionForm;
+use App\Form\PersonnageOldFindForm;
 use App\Form\RefuseAllianceForm;
 use App\Form\RefusePeaceForm;
 use App\Form\RequestAllianceForm;
 use App\Form\RequestPeaceForm;
 use App\Form\TrombineForm;
 use App\Manager\GroupeManager;
-use App\Repository\UserRepository;
+use App\Repository\PersonnageRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\Expr\Join;
+use Imagine\Gd\Imagine;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ParticipantController extends AbstractController
@@ -90,8 +110,13 @@ class ParticipantController extends AbstractController
      * @param unknown $reponse
      */
     #[Route('/participant/{participant}/question/{question}/reponse', name: 'participant.reponse')]
-    public function reponseAction(EntityManagerInterface $entityManager, Request $request, Participant $participant, Question $question, $reponse)
-    {
+    public function reponseAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        Participant $participant,
+        Question $question,
+        $reponse
+    ) {
         $rep = new Reponse();
         $rep->setQuestion($question);
         $rep->setParticipant($participant);
@@ -109,8 +134,12 @@ class ParticipantController extends AbstractController
      * Supprimer une réponse à une question.
      */
     #[Route('/participant/{participant}/reponse/{reponse}/delete', name: 'participant.reponse.delete')]
-    public function reponseDeleteAction(EntityManagerInterface $entityManager, Request $request, Participant $participant, Reponse $reponse)
-    {
+    public function reponseDeleteAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        Participant $participant,
+        Reponse $reponse
+    ) {
         $entityManager->remove($reponse);
         $entityManager->flush();
 
@@ -132,7 +161,6 @@ class ParticipantController extends AbstractController
         if ($user) {
             $participant->setUser($user);
         }
-
 
         $form = $this->createForm(ParticipantNewForm::class, $participant)
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -161,8 +189,11 @@ class ParticipantController extends AbstractController
      * Affecte un participant à un groupe.
      */
     #[Route('/participant/{participant}/groupe', name: 'participant.groupe')]
-    public function groupeAction(EntityManagerInterface $entityManager, Request $request, #[MapEntity] Participant $participant)
-    {
+    public function groupeAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        #[MapEntity] Participant $participant
+    ) {
         // il faut un billet pour rejoindre un groupe
         /* Commenté parce que ça gène la manière de faire d'Edaelle.
         if ( ! $participant->getBillet() )
@@ -171,7 +202,8 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', array('gn' => $participant->getGn()->getId())),303);
         }
         */
-        $form = $this->createForm(ParticipantGroupeForm::class, $participant, ['gnId' => $participant->getGn()->getId()])
+        $form = $this->createForm(ParticipantGroupeForm::class, $participant, ['gnId' => $participant->getGn()->getId()]
+        )
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -196,9 +228,13 @@ class ParticipantController extends AbstractController
      * Retire la participation de l'utilisateur à un jeu.
      */
     #[Route('/participant/{participant}/remove', name: 'participant.remove')]
-    public function removeAction(EntityManagerInterface $entityManager, Request $request, #[MapEntity] Participant $participant)
-    {
-        $form = $this->createForm(ParticipantRemoveForm::class, $participant, ['gnId' => $participant->getGn()->getId()])
+    public function removeAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        #[MapEntity] Participant $participant
+    ) {
+        $form = $this->createForm(ParticipantRemoveForm::class, $participant, ['gnId' => $participant->getGn()->getId()]
+        )
             ->add('save', SubmitType::class, ['label' => 'Oui, retirer la participation de cet utilisateur']);
 
         $form->handleRequest($request);
@@ -248,16 +284,20 @@ class ParticipantController extends AbstractController
      * Ajout d'un billet à un utilisateur. L'utilisateur doit participer au même jeu que celui du billet qui lui est affecté.
      */
     #[Route('/participant/{participant}/billet', name: 'participant.billet')]
-    public function billetAction(EntityManagerInterface $entityManager, Request $request, #[MapEntity] Participant $participant)
-    {
-        $form = $this->createForm(ParticipantBilletForm::class, $participant, ['gnId' => $participant->getGn()->getId()])
+    public function billetAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        #[MapEntity] Participant $participant
+    ) {
+        $form = $this->createForm(ParticipantBilletForm::class, $participant, ['gnId' => $participant->getGn()->getId()]
+        )
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $participant = $form->getData();
-            $participant->setBilletDate(new \DateTime('NOW'));
+            $participant->setBilletDate(new DateTime('NOW'));
             $entityManager->persist($participant);
             $entityManager->flush();
 
@@ -278,8 +318,11 @@ class ParticipantController extends AbstractController
      * Choix du lieu de restauration d'un utilisateur.
      */
     #[Route('/participant/{participant}/restauration', name: 'participant.restauration')]
-    public function restaurationAction(EntityManagerInterface $entityManager, Request $request, #[MapEntity] Participant $participant)
-    {
+    public function restaurationAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        #[MapEntity] Participant $participant
+    ) {
         $originalParticipantHasRestaurations = new ArrayCollection();
 
         /*
@@ -391,8 +434,11 @@ class ParticipantController extends AbstractController
      * Modification de quelques informations concernant le personnage.
      */
     #[Route('/participant/{participant}/personnageEdit', name: 'participant.personnage.edit')]
-    public function personnageEditAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
+    public function personnageEditAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -427,8 +473,12 @@ class ParticipantController extends AbstractController
      * Modification de la photo lié à un personnage.
      */
     #[Route('/participant/{participant}/personnage/{personnage}/trombine', name: 'participant.personnage.trombine')]
-    public function personnageTrombineAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Personnage $personnage)
-    {
+    public function personnageTrombineAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Personnage $personnage
+    ) {
         $form = $this->createForm(TrombineForm::class, [])
             ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
 
@@ -442,14 +492,21 @@ class ParticipantController extends AbstractController
             $extension = $files['trombine']->guessExtension();
 
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
-                $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
+                $this->addFlash(
+                    'error',
+                    'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)'
+                );
 
-                return $this->redirectToRoute('participant.personnage.trombine', ['participant' => $participant->getId(), 'personnage' => $personnage->getId()], 303);
+                return $this->redirectToRoute(
+                    'participant.personnage.trombine',
+                    ['participant' => $participant->getId(), 'personnage' => $personnage->getId()],
+                    303
+                );
             }
 
             $trombineFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
 
-            $imagine = new \Imagine\Gd\Imagine();
+            $imagine = new Imagine();
             $image = $imagine->open($files['trombine']->getPathname());
             $image->resize($image->getSize()->widen(160));
             $image->save($path.$trombineFilename);
@@ -474,8 +531,12 @@ class ParticipantController extends AbstractController
      * Retire un personnage à un participant.
      */
     #[Route('/participant/{participant}/personnage/{personnage}/remove', name: 'participant.personnage.remove')]
-    public function personnageRemoveAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Personnage $personnage)
-    {
+    public function personnageRemoveAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Personnage $personnage
+    ) {
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
 
@@ -507,8 +568,11 @@ class ParticipantController extends AbstractController
      * Reprendre un ancien personnage.
      */
     #[Route('/participant/{participant}/personnageOld', name: 'participant.personnage.old')]
-    public function personnageOldAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
+    public function personnageOldAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
         $groupeGn = $participant->getGroupeGn();
 
         if (!$groupeGn) {
@@ -524,7 +588,10 @@ class ParticipantController extends AbstractController
         }
 
         if (true == $groupeGn->getGroupe()->getLock()) {
-            $this->addFlash('error', 'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.');
+            $this->addFlash(
+                'error',
+                'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.'
+            );
 
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
@@ -538,6 +605,7 @@ class ParticipantController extends AbstractController
         $groupe = $groupeGn->getGroupe();
         $gn = $groupeGn->getGn();
 
+        // TODO all alive
         $default = $participant->getUser()?->getPersonnages()->toArray()[0] ?? null;
         $lastPersonnage = $participant->getUser()?->getLastPersonnage();
         if (null != $lastPersonnage) {
@@ -568,7 +636,7 @@ class ParticipantController extends AbstractController
             if ($territoire) {
                 $langue = $territoire->getLangue();
                 if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = new \App\Entity\PersonnageLangues();
+                    $personnageLangue = new PersonnageLangues();
                     $personnageLangue->setPersonnage($personnage);
                     $personnageLangue->setLangue($langue);
                     $personnageLangue->setSource('GROUPE');
@@ -579,7 +647,7 @@ class ParticipantController extends AbstractController
             // Chronologie : Participation au GN courant
             $anneeGN2 = $participant->getGn()->getDateJeu();
             $evenement2 = 'Participation '.$participant->getGn()->getLabel();
-            $personnageChronologie2 = new \App\Entity\PersonnageChronologie();
+            $personnageChronologie2 = new PersonnageChronologie();
             $personnageChronologie2->setAnnee($anneeGN2);
             $personnageChronologie2->setEvenement($evenement2);
             $personnageChronologie2->setPersonnage($personnage);
@@ -589,13 +657,13 @@ class ParticipantController extends AbstractController
                 // Litterature initié : 1 sort 1 + 1 recette 1
                 if ('Littérature' == $competence->getCompetenceFamily()->getLabel()) {
                     if (2 == $competence->getLevel()->getId()) {
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('SORT APPRENTI');
                         $trigger->setDone(false);
                         $entityManager->persist($trigger);
 
-                        $trigger2 = new \App\Entity\PersonnageTrigger();
+                        $trigger2 = new PersonnageTrigger();
                         $trigger2->setPersonnage($personnage);
                         $trigger2->setTag('ALCHIMIE APPRENTI');
                         $trigger2->setDone(false);
@@ -604,13 +672,13 @@ class ParticipantController extends AbstractController
 
                     // Litterature expert : 1 sort 2 + 1 recette 2
                     if (3 == $competence->getLevel()->getId()) {
-                        $trigger3 = new \App\Entity\PersonnageTrigger();
+                        $trigger3 = new PersonnageTrigger();
                         $trigger3->setPersonnage($personnage);
                         $trigger3->setTag('SORT INITIE');
                         $trigger3->setDone(false);
                         $entityManager->persist($trigger3);
 
-                        $trigger4 = new \App\Entity\PersonnageTrigger();
+                        $trigger4 = new PersonnageTrigger();
                         $trigger4->setPersonnage($personnage);
                         $trigger4->setTag('ALCHIMIE INITIE');
                         $trigger4->setDone(false);
@@ -619,13 +687,13 @@ class ParticipantController extends AbstractController
 
                     // Litterature maitre : 1 sort 3 + 1 recette 3
                     if (4 == $competence->getLevel()->getId()) {
-                        $trigger5 = new \App\Entity\PersonnageTrigger();
+                        $trigger5 = new PersonnageTrigger();
                         $trigger5->setPersonnage($personnage);
                         $trigger5->setTag('SORT EXPERT');
                         $trigger5->setDone(false);
                         $entityManager->persist($trigger5);
 
-                        $trigger6 = new \App\Entity\PersonnageTrigger();
+                        $trigger6 = new PersonnageTrigger();
                         $trigger6->setPersonnage($personnage);
                         $trigger6->setTag('ALCHIMIE EXPERT');
                         $trigger6->setDone(false);
@@ -634,8 +702,9 @@ class ParticipantController extends AbstractController
                 }
 
                 // Noblesse expert : +2 Renommee
-                if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel()->getId()) {
-                    $renomme_history = new \App\Entity\RenommeHistory();
+                if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel()->getId(
+                )) {
+                    $renomme_history = new RenommeHistory();
                     $renomme_history->setRenomme(2);
                     $renomme_history->setExplication('[Nouvelle participation] Noblesse Expert');
                     $renomme_history->setPersonnage($personnage);
@@ -663,34 +732,29 @@ class ParticipantController extends AbstractController
      * Reprendre un ancien personnage.
      */
     #[Route('/participant/{participant}/admin/personnageOld', name: 'participant.admin.personnage.old')]
-    public function adminPersonnageOldAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
+    public function adminPersonnageOldAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): RedirectResponse|Response {
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
         $gn = $groupeGn->getGn();
 
-        $form = $this->createFormBuilder($participant)
-            ->add('personnage', 'entity', [
-                'label' => 'Choisissez le personnage',
-                'choice_label' => 'nom',
-                'class' => Personnage::class,
-                'choices' => array_unique($participant->getUser()->getPersonnages()->toArray()),
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider'])
-            ->getForm();
+        $form = $this->createForm(PersonnageOldFindForm::class, $participant);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $participant->setPersonnage($data['personnage']);
+            $participant = $form->getData();
+            $personnage = $participant->getPersonnage();
 
             $territoire = $groupe->getTerritoire();
             if ($territoire) {
                 $langue = $territoire->getLangue();
-                if ($langue && !$data['personnage']->isKnownLanguage($langue)) {
-                    $personnageLangue = new \App\Entity\PersonnageLangues();
-                    $personnageLangue->setPersonnage($data['personnage']);
+                if ($langue && !$personnage->isKnownLanguage($langue)) {
+                    $personnageLangue = new PersonnageLangues();
+                    $personnageLangue->setPersonnage($personnage);
                     $personnageLangue->setLangue($langue);
                     $personnageLangue->setSource('GROUPE');
                     $entityManager->persist($personnageLangue);
@@ -700,10 +764,10 @@ class ParticipantController extends AbstractController
             // Chronologie : Participation au GN courant
             $anneeGN2 = $participant->getGn()->getDateJeu();
             $evenement2 = 'Participation '.$participant->getGn()->getLabel();
-            $personnageChronologie2 = new \App\Entity\PersonnageChronologie();
+            $personnageChronologie2 = new PersonnageChronologie();
             $personnageChronologie2->setAnnee($anneeGN2);
             $personnageChronologie2->setEvenement($evenement2);
-            $personnageChronologie2->setPersonnage($data['personnage']);
+            $personnageChronologie2->setPersonnage($personnage);
 
             $entityManager->persist($personnageChronologie2);
             $entityManager->persist($participant);
@@ -725,8 +789,11 @@ class ParticipantController extends AbstractController
      * Création d'un nouveau personnage. L'utilisateur doit être dans un groupe et son billet doit être valide.
      */
     #[Route('/participant/{participant}/personnageNew', name: 'participant.personnage.new')]
-    public function personnageNewAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
-    {
+    public function personnageNewAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): RedirectResponse|Response {
         $groupeGn = $participant->getGroupeGn();
 
         if (!$groupeGn) {
@@ -742,7 +809,10 @@ class ParticipantController extends AbstractController
         }
 
         if (true === $groupeGn->getGroupe()->getLock()) {
-            $this->addFlash('error', 'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.');
+            $this->addFlash(
+                'error',
+                'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.'
+            );
 
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
@@ -762,7 +832,7 @@ class ParticipantController extends AbstractController
         }*/
 
         $personnage = new Personnage();
-        $classes = $entityManager->getRepository('\\'.\App\Entity\Classe::class)->findAllCreation();
+        $classes = $entityManager->getRepository('\\'.Classe::class)->findAllCreation();
 
         // j'ajoute ici certains champs du formulaires (les classes)
         // car j'ai besoin des informations du groupe pour les alimenter
@@ -770,10 +840,17 @@ class ParticipantController extends AbstractController
             ->add('classe', 'entity', [
                 'label' => 'Classes disponibles',
                 'choice_label' => 'label',
-                'class' => \App\Entity\Classe::class,
+                'class' => Classe::class,
                 'choices' => array_unique($classes),
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider mon personnage', 'attr' => ['onclick' => "return confirm('Confirmez vous le personnage ?')"]]);
+            ->add(
+                'save',
+                SubmitType::class,
+                [
+                    'label' => 'Valider mon personnage',
+                    'attr' => ['onclick' => "return confirm('Confirmez vous le personnage ?')"],
+                ]
+            );
 
         $form->handleRequest($request);
 
@@ -794,7 +871,7 @@ class ParticipantController extends AbstractController
             // Chronologie : Naissance
             $anneeGN = $participant->getGn()->getDateJeu() - $age;
             $evenement = 'Naissance';
-            $personnageChronologie = new \App\Entity\PersonnageChronologie();
+            $personnageChronologie = new PersonnageChronologie();
             $personnageChronologie->setAnnee($anneeGN);
             $personnageChronologie->setEvenement($evenement);
             $personnageChronologie->setPersonnage($personnage);
@@ -803,16 +880,16 @@ class ParticipantController extends AbstractController
             // Chronologie : Participation au GN courant
             $anneeGN2 = $participant->getGn()->getDateJeu();
             $evenement2 = 'Participation '.$participant->getGn()->getLabel();
-            $personnageChronologie2 = new \App\Entity\PersonnageChronologie();
+            $personnageChronologie2 = new PersonnageChronologie();
             $personnageChronologie2->setAnnee($anneeGN2);
             $personnageChronologie2->setEvenement($evenement2);
             $personnageChronologie2->setPersonnage($personnage);
             $entityManager->persist($personnageChronologie2);
 
             // historique
-            $historique = new \App\Entity\ExperienceGain();
+            $historique = new ExperienceGain();
             $historique->setExplanation('Création de votre personnage');
-            $historique->setOperationDate(new \DateTime('NOW'));
+            $historique->setOperationDate(new DateTime('NOW'));
             $historique->setPersonnage($personnage);
             $historique->setXpGain($participant->getGn()->getXpCreation());
             $entityManager->persist($historique);
@@ -828,7 +905,7 @@ class ParticipantController extends AbstractController
 
                 if ('Noblesse' === $competenceFamily->getLabel()) {
                     $personnage->addRenomme(2);
-                    $renomme_history = new \App\Entity\RenommeHistory();
+                    $renomme_history = new RenommeHistory();
 
                     $renomme_history->setRenomme(2);
                     $renomme_history->setExplication('Compétence Noblesse niveau 1');
@@ -851,9 +928,9 @@ class ParticipantController extends AbstractController
 
             if ($xpAgeBonus) {
                 $personnage->addXp($xpAgeBonus);
-                $historique = new \App\Entity\ExperienceGain();
+                $historique = new ExperienceGain();
                 $historique->setExplanation("Modification liée à l'age");
-                $historique->setOperationDate(new \DateTime('NOW'));
+                $historique->setOperationDate(new DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($xpAgeBonus);
                 $entityManager->persist($historique);
@@ -862,7 +939,7 @@ class ParticipantController extends AbstractController
             // Ajout des langues en fonction de l'origine du personnage
             $langue = $personnage->getOrigine()->getLangue();
             if ($langue) {
-                $personnageLangue = new \App\Entity\PersonnageLangues();
+                $personnageLangue = new PersonnageLangues();
                 $personnageLangue->setPersonnage($personnage);
                 $personnageLangue->setLangue($langue);
                 $personnageLangue->setSource('ORIGINE');
@@ -872,7 +949,7 @@ class ParticipantController extends AbstractController
             // Ajout des langues secondaires lié à l'origine du personnage
             foreach ($personnage->getOrigine()->getLangues() as $langue) {
                 if (!$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = new \App\Entity\PersonnageLangues();
+                    $personnageLangue = new PersonnageLangues();
                     $personnageLangue->setPersonnage($personnage);
                     $personnageLangue->setLangue($langue);
                     $personnageLangue->setSource('ORIGINE SECONDAIRE');
@@ -885,7 +962,7 @@ class ParticipantController extends AbstractController
             if ($territoire) {
                 $langue = $territoire->getLangue();
                 if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = new \App\Entity\PersonnageLangues();
+                    $personnageLangue = new PersonnageLangues();
                     $personnageLangue->setPersonnage($personnage);
                     $personnageLangue->setLangue($langue);
                     $personnageLangue->setSource('GROUPE');
@@ -902,8 +979,8 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
-        $ages = $entityManager->getRepository(\App\Entity\Age::class)->findAllOnCreation();
-        $territoires = $entityManager->getRepository(\App\Entity\Territoire::class)->findRoot();
+        $ages = $entityManager->getRepository(Age::class)->findAllOnCreation();
+        $territoires = $entityManager->getRepository(Territoire::class)->findRoot();
 
         return $this->render('participant/personnage_new.twig', [
             'form' => $form->createView(),
@@ -919,21 +996,24 @@ class ParticipantController extends AbstractController
      * Création d'un nouveau personnage. L'utilisateur doit être dans un groupe et son billet doit être valide.
      */
     #[Route('/participant/{participant}/admin/personnageNew', name: 'participant.admin.personnage.new')]
-    public function adminPersonnageNewAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
+    public function adminPersonnageNewAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
 
         $personnage = new Personnage();
-        $classes = $entityManager->getRepository('\\'.\App\Entity\Classe::class)->findAllCreation();
+        $classes = $entityManager->getRepository('\\'.Classe::class)->findAllCreation();
 
         // j'ajoute içi certain champs du formulaires (les classes)
         // car j'ai besoin des informations du groupe pour les alimenter
         $form = $this->createForm(PersonnageForm::class, $personnage)
-            ->add('classe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('classe', EntityType::class, [
                 'label' => 'Classes disponibles',
                 'choice_label' => 'label',
-                'class' => \App\Entity\Classe::class,
+                'class' => Classe::class,
                 'choices' => array_unique($classes),
             ])
             ->add('save', SubmitType::class, ['label' => 'Valider le personnage']);
@@ -950,9 +1030,9 @@ class ParticipantController extends AbstractController
             $personnage->setXp($participant->getGn()->getXpCreation());
 
             // historique
-            $historique = new \App\Entity\ExperienceGain();
+            $historique = new ExperienceGain();
             $historique->setExplanation('Création de votre personnage');
-            $historique->setOperationDate(new \DateTime('NOW'));
+            $historique->setOperationDate(new DateTime('NOW'));
             $historique->setPersonnage($personnage);
             $historique->setXpGain($participant->getGn()->getXpCreation());
             $entityManager->persist($historique);
@@ -968,7 +1048,7 @@ class ParticipantController extends AbstractController
 
                 if ('Noblesse' == $competenceFamily->getLabel()) {
                     $personnage->addRenomme(2);
-                    $renomme_history = new \App\Entity\RenommeHistory();
+                    $renomme_history = new RenommeHistory();
 
                     $renomme_history->setRenomme(2);
                     $renomme_history->setExplication('Compétence Noblesse niveau 1');
@@ -981,9 +1061,9 @@ class ParticipantController extends AbstractController
             $xpAgeBonus = $personnage->getAge()->getBonus();
             if ($xpAgeBonus) {
                 $personnage->addXp($xpAgeBonus);
-                $historique = new \App\Entity\ExperienceGain();
+                $historique = new ExperienceGain();
                 $historique->setExplanation("Bonus lié à l'age");
-                $historique->setOperationDate(new \DateTime('NOW'));
+                $historique->setOperationDate(new DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($xpAgeBonus);
                 $entityManager->persist($historique);
@@ -992,7 +1072,7 @@ class ParticipantController extends AbstractController
             // Ajout des langues en fonction de l'origine du personnage
             $langue = $personnage->getOrigine()->getLangue();
             if ($langue) {
-                $personnageLangue = new \App\Entity\PersonnageLangues();
+                $personnageLangue = new PersonnageLangues();
                 $personnageLangue->setPersonnage($personnage);
                 $personnageLangue->setLangue($langue);
                 $personnageLangue->setSource('ORIGINE');
@@ -1002,7 +1082,7 @@ class ParticipantController extends AbstractController
             // Ajout des langues secondaires lié à l'origine du personnage
             foreach ($personnage->getOrigine()->getLangues() as $langue) {
                 if (!$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = new \App\Entity\PersonnageLangues();
+                    $personnageLangue = new PersonnageLangues();
                     $personnageLangue->setPersonnage($personnage);
                     $personnageLangue->setLangue($langue);
                     $personnageLangue->setSource('ORIGINE SECONDAIRE');
@@ -1015,7 +1095,7 @@ class ParticipantController extends AbstractController
             if ($territoire) {
                 $langue = $territoire->getLangue();
                 if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = new \App\Entity\PersonnageLangues();
+                    $personnageLangue = new PersonnageLangues();
                     $personnageLangue->setPersonnage($personnage);
                     $personnageLangue->setLangue($langue);
                     $personnageLangue->setSource('GROUPE');
@@ -1032,8 +1112,8 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.participants.withoutperso', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
-        $ages = $entityManager->getRepository(\App\Entity\Age::class)->findAllOnCreation();
-        $territoires = $entityManager->getRepository(\App\Entity\Territoire::class)->findRoot();
+        $ages = $entityManager->getRepository(Age::class)->findAllOnCreation();
+        $territoires = $entityManager->getRepository(Territoire::class)->findRoot();
 
         return $this->render('participant/personnage_new.twig', [
             'form' => $form->createView(),
@@ -1077,8 +1157,12 @@ class ParticipantController extends AbstractController
      * @param Rule rule
      */
     #[Route('/participant/{participant}/regle/{rule}/document', name: 'participant.regle.document')]
-    public function regleDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Rule $rule)
-    {
+    public function regleDocumentAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Rule $rule
+    ) {
         $filename = __DIR__.'/../../private/rules/'.$rule->getUrl();
         $file = new File($filename);
 
@@ -1088,10 +1172,12 @@ class ParticipantController extends AbstractController
     /**
      * Rejoindre un groupe.
      */
-
     #[Route('/participant/{participant}/groupe/join', name: 'participant.groupe.join')]
-    public function groupeJoinAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
-    {
+    public function groupeJoinAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): RedirectResponse|Response {
         // il faut un billet pour rejoindre un groupe
         if (!$participant->getBillet()) {
             $this->addFlash('error', 'Désolé, vous devez obtenir un billet avant de pouvoir rejoindre un groupe');
@@ -1107,7 +1193,7 @@ class ParticipantController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $code = $data['code'];
-            $groupeGn = $entityManager->getRepository('\\'.\App\Entity\GroupeGn::class)->findOneByCode($code);
+            $groupeGn = $entityManager->getRepository('\\'.GroupeGn::class)->findOneByCode($code);
             if (!$groupeGn) {
                 $this->addFlash('error', 'Désolé, le code que vous utilisez ne correspond à aucun groupe');
 
@@ -1131,7 +1217,10 @@ class ParticipantController extends AbstractController
 
             // il faut que le groupe ai un responsable pour le rejoindre
             if (!$groupeGn->getResponsable()) {
-                $this->addFlash('error', "Le groupe n'a pas encore de responsable, vous ne pouvez pas le rejoindre pour le moment.");
+                $this->addFlash(
+                    'error',
+                    "Le groupe n'a pas encore de responsable, vous ne pouvez pas le rejoindre pour le moment."
+                );
 
                 return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
             }
@@ -1158,9 +1247,12 @@ class ParticipantController extends AbstractController
      * Choix du personnage secondaire par un utilisateur.
      */
     #[Route('/participant/{participant}/personnageSecondaire', name: 'participant.personnageSecondaire')]
-    public function personnageSecondaireAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\PersonnageSecondaire::class);
+    public function personnageSecondaireAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
+        $repo = $entityManager->getRepository('\\'.PersonnageSecondaire::class);
         $personnageSecondaires = $repo->findAll();
 
         $form = $this->createForm(ParticipantPersonnageSecondaireForm::class, $participant)
@@ -1194,7 +1286,10 @@ class ParticipantController extends AbstractController
         // l'utilisateur doit avoir un personnage
         $personnage = $participant->getPersonnage();
         if (!$personnage) {
-            $this->addFlash('error', 'Désolé, Vous devez faire votre personnage pour pouvoir consulter votre background.');
+            $this->addFlash(
+                'error',
+                'Désolé, Vous devez faire votre personnage pour pouvoir consulter votre background.'
+            );
 
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
@@ -1206,23 +1301,29 @@ class ParticipantController extends AbstractController
         $backsJoueur = $personnage->getBackgrounds('OWNER');
 
         // recherche les backgrounds liés au groupe (visibilité == PUBLIC)
-        $backsGroupe = new ArrayCollection(array_merge(
-            $participant->getGroupeGn()->getGroupe()->getBacks('PUBLIC')->toArray(),
-            $backsGroupe->toArray()
-        ));
+        $backsGroupe = new ArrayCollection(
+            array_merge(
+                $participant->getGroupeGn()->getGroupe()->getBacks('PUBLIC')->toArray(),
+                $backsGroupe->toArray()
+            )
+        );
 
         // recherche les backgrounds liés au groupe (visibilité == GROUP_MEMBER)
-        $backsGroupe = new ArrayCollection(array_merge(
-            $participant->getGroupeGn()->getGroupe()->getBacks('GROUPE_MEMBER')->toArray(),
-            $backsGroupe->toArray()
-        ));
+        $backsGroupe = new ArrayCollection(
+            array_merge(
+                $participant->getGroupeGn()->getGroupe()->getBacks('GROUPE_MEMBER')->toArray(),
+                $backsGroupe->toArray()
+            )
+        );
 
         // recherche les backgrounds liés au groupe (visibilité == GROUP_OWNER)
         if ($this->getUser() == $participant->getGroupeGn()->getGroupe()->getUserRelatedByResponsableId()) {
-            $backsGroupe = new ArrayCollection(array_merge(
-                $participant->getGroupeGn()->getGroupe()->getBacks('GROUPE_OWNER')->toArray(),
-                $backsGroupe->toArray()
-            ));
+            $backsGroupe = new ArrayCollection(
+                array_merge(
+                    $participant->getGroupeGn()->getGroupe()->getBacks('GROUPE_OWNER')->toArray(),
+                    $backsGroupe->toArray()
+                )
+            );
         }
 
         return $this->render('participant/background.twig', [
@@ -1249,13 +1350,19 @@ class ParticipantController extends AbstractController
         }
 
         if (true == $personnage->getGroupe()->getLock()) {
-            $this->addFlash('error', 'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contacter votre scénariste si vous pensez que cela est une erreur');
+            $this->addFlash(
+                'error',
+                'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contacter votre scénariste si vous pensez que cela est une erreur'
+            );
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if ($personnage->getTerritoire()) {
-            $this->addFlash('error', 'Désolé, il n\'est pas possible de modifier votre origine. Veuillez contacter votre orga pour exposer votre problème.');
+            $this->addFlash(
+                'error',
+                'Désolé, il n\'est pas possible de modifier votre origine. Veuillez contacter votre orga pour exposer votre problème.'
+            );
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
@@ -1286,9 +1393,12 @@ class ParticipantController extends AbstractController
      * Liste des religions.
      */
     #[Route('/participant/{participant}/religion/list', name: 'participant.religion.list')]
-    public function religionListAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Religion::class);
+    public function religionListAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
+        $repo = $entityManager->getRepository('\\'.Religion::class);
         $religions = $repo->findAllOrderedByLabel();
 
         return $this->render('participant/religion.twig', [
@@ -1312,26 +1422,35 @@ class ParticipantController extends AbstractController
         }
 
         if (true == $participant->getGroupeGn()->getGroupe()->getLock()) {
-            $this->addFlash('error', 'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur');
+            $this->addFlash(
+                'error',
+                'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur'
+            );
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         // refUser la demande si le personnage est Fanatique
         if ($personnage->isFanatique()) {
-            $this->addFlash('error', 'Désolé, vous êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. Veuillez contacter votre orga en cas de problème.');
+            $this->addFlash(
+                'error',
+                'Désolé, vous êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. Veuillez contacter votre orga en cas de problème.'
+            );
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $personnageReligion = new \App\Entity\PersonnagesReligions();
+        $personnageReligion = new PersonnagesReligions();
         $personnageReligion->setPersonnage($personnage);
 
         // ne proposer que les religions que le personnage ne pratique pas déjà ...
         $availableReligions = $app['personnage.manager']->getAvailableReligions($personnage);
 
         if (0 == $availableReligions->count()) {
-            $this->addFlash('error', 'Désolé, il n\'y a plus de religion disponibles ( Sérieusement ? vous êtes éclectique, c\'est bien, mais ... faudrait savoir ce que vous voulez non ? L\'heure n\'est-il pas venu de faire un choix parmi tous ces dieux ?)');
+            $this->addFlash(
+                'error',
+                'Désolé, il n\'y a plus de religion disponibles ( Sérieusement ? vous êtes éclectique, c\'est bien, mais ... faudrait savoir ce que vous voulez non ? L\'heure n\'est-il pas venu de faire un choix parmi tous ces dieux ?)'
+            );
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
@@ -1346,7 +1465,7 @@ class ParticipantController extends AbstractController
             ->add('religion', 'entity', [
                 'required' => true,
                 'label' => 'Votre religion',
-                'class' => \App\Entity\Religion::class,
+                'class' => Religion::class,
                 'choices' => $availableReligions,
                 'choice_label' => 'label',
             ])
@@ -1366,7 +1485,10 @@ class ParticipantController extends AbstractController
                 }
             } elseif (2 == $personnageReligion->getReligionLevel()->getIndex()) {
                 if ($personnage->isFervent()) {
-                    $this->addFlash('error', 'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.');
+                    $this->addFlash(
+                        'error',
+                        'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.'
+                    );
 
                     return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
                 }
@@ -1392,8 +1514,12 @@ class ParticipantController extends AbstractController
      * Detail d'une priere.
      */
     #[Route('/participant/{participant}/priere/{priere}/detail', name: 'participant.priere.detail')]
-    public function priereDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Priere $priere)
-    {
+    public function priereDetailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Priere $priere
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1419,8 +1545,12 @@ class ParticipantController extends AbstractController
      * Obtenir le document lié à une priere.
      */
     #[Route('/participant/{participant}/priere/{priere}/document', name: 'participant.priere.document')]
-    public function priereDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Priere $priere)
-    {
+    public function priereDocumentAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Priere $priere
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1445,8 +1575,12 @@ class ParticipantController extends AbstractController
      * Obtenir le document lié à une technologie.
      */
     #[Route('/participant/{participant}/technologie/{technologie}/document', name: 'participant.technologie.document')]
-    public function technologieDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Technologie $technologie)
-    {
+    public function technologieDocumentAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Technologie $technologie
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1471,8 +1605,12 @@ class ParticipantController extends AbstractController
      * Detail d'une potion.
      */
     #[Route('/participant/{participant}/potion/{potion}/detail', name: 'participant.potion.detail')]
-    public function potionDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Potion $potion)
-    {
+    public function potionDetailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Potion $potion
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1498,8 +1636,12 @@ class ParticipantController extends AbstractController
      * Obtenir le document lié à une potion.
      */
     #[Route('/participant/{participant}/potion/{potion}/document', name: 'participant.potion.document')]
-    public function potionDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Potion $potion)
-    {
+    public function potionDocumentAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Potion $potion
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1611,8 +1753,11 @@ class ParticipantController extends AbstractController
      * Choix d'une nouvelle potion de départ.
      */
     #[Route('/participant/{participant}/potionDepart', name: 'participant.potionDepart')]
-    public function potiondepartAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
+    public function potiondepartAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1674,8 +1819,11 @@ class ParticipantController extends AbstractController
      * Choix d'une nouvelle description de religion.
      */
     #[Route('/participant/{participant}/religionDescription', name: 'participant.religionDescription')]
-    public function religionDescriptionAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
+    public function religionDescriptionAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1698,7 +1846,7 @@ class ParticipantController extends AbstractController
                 'label' => 'Choisissez votre nouveau descriptif religion',
                 'multiple' => false,
                 'expanded' => true,
-                'class' => \App\Entity\Religion::class,
+                'class' => Religion::class,
                 'choices' => $availableDescriptionReligion,
                 'choice_label' => 'label',
             ])
@@ -1733,8 +1881,11 @@ class ParticipantController extends AbstractController
      * Choix d'une nouvelle langue commune.
      */
     #[Route('/participant/{participant}/langueCommune', name: 'participant.langueCommune')]
-    public function langueCommuneAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
+    public function langueCommuneAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1770,7 +1921,7 @@ class ParticipantController extends AbstractController
             $data = $form->getData();
             $langue = $data['langue'];
 
-            $personnageLangue = new \App\Entity\PersonnageLangues();
+            $personnageLangue = new PersonnageLangues();
             $personnageLangue->setPersonnage($personnage);
             $personnageLangue->setLangue($langue);
             $personnageLangue->setSource('LITTERATURE');
@@ -1797,8 +1948,11 @@ class ParticipantController extends AbstractController
      * Choix d'une nouvelle langue courante.
      */
     #[Route('/participant/{participant}/langueCourante', name: 'participant.langueCourante')]
-    public function langueCouranteAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
+    public function langueCouranteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1834,7 +1988,7 @@ class ParticipantController extends AbstractController
             $data = $form->getData();
             $langue = $data['langue'];
 
-            $personnageLangue = new \App\Entity\PersonnageLangues();
+            $personnageLangue = new PersonnageLangues();
             $personnageLangue->setPersonnage($personnage);
             $personnageLangue->setLangue($langue);
             $personnageLangue->setSource('LITTERATURE');
@@ -1861,8 +2015,11 @@ class ParticipantController extends AbstractController
      * Choix d'une nouvelle langue ancienne.
      */
     #[Route('/participant/{participant}/langueAncienne', name: 'participant.langueAncienne')]
-    public function langueAncienneAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
+    public function langueAncienneAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1898,7 +2055,7 @@ class ParticipantController extends AbstractController
             $data = $form->getData();
             $langue = $data['langue'];
 
-            $personnageLangue = new \App\Entity\PersonnageLangues();
+            $personnageLangue = new PersonnageLangues();
             $personnageLangue->setPersonnage($personnage);
             $personnageLangue->setLangue($langue);
             $personnageLangue->setSource('LITTERATURE');
@@ -1925,8 +2082,12 @@ class ParticipantController extends AbstractController
      * Obtenir le document lié à une langue.
      */
     #[Route('/participant/{participant}/langue/{langue}/document', name: 'participant.langue.document')]
-    public function langueDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Langue $langue)
-    {
+    public function langueDocumentAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Langue $langue
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1951,8 +2112,11 @@ class ParticipantController extends AbstractController
      * Choix d'un domaine de magie.
      */
     #[Route('/participant/{participant}/domaineMagie', name: 'participant.domaineMagie')]
-    public function domaineMagieAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
+    public function domaineMagieAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1975,7 +2139,7 @@ class ParticipantController extends AbstractController
                 'label' => 'Choisissez votre domaine de magie',
                 'multiple' => false,
                 'expanded' => true,
-                'class' => \App\Entity\Domaine::class,
+                'class' => Domaine::class,
                 'choices' => $availableDomaines,
                 'choice_label' => 'label',
             ])
@@ -2015,8 +2179,12 @@ class ParticipantController extends AbstractController
      * Choix d'un nouveau sortilège.
      */
     #[Route('/participant/{participant}/sort/{sort}', name: 'participant.sort')]
-    public function sortAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Sort $sort)
-    {
+    public function sortAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Sort $sort
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2101,8 +2269,12 @@ class ParticipantController extends AbstractController
      * Detail d'un sort.
      */
     #[Route('/participant/{participant}/sort/{sort}/detail', name: 'participant.sort.detail')]
-    public function sortDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Sort $sort)
-    {
+    public function sortDetailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Sort $sort
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2128,8 +2300,12 @@ class ParticipantController extends AbstractController
      * Obtenir le document lié à un sort.
      */
     #[Route('/participant/{participant}/sort/{sort}/document', name: 'participant.sort.document')]
-    public function sortDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Sort $sort)
-    {
+    public function sortDocumentAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Sort $sort
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2154,8 +2330,12 @@ class ParticipantController extends AbstractController
      * Detail d'une connaissance.
      */
     #[Route('/participant/{participant}/connaissance/{connaissance}/detail', name: 'participant.connaissance.detail')]
-    public function connaissanceDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Connaissance $connaissance)
-    {
+    public function connaissanceDetailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Connaissance $connaissance
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2181,8 +2361,12 @@ class ParticipantController extends AbstractController
      * Obtenir le document lié à une connaissance.
      */
     #[Route('/participant/{participant}/connaissance/{connaissance}/document', name: 'participant.connaissance.document')]
-    public function connaissanceDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Connaissance $connaissance)
-    {
+    public function connaissanceDocumentAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Connaissance $connaissance
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2217,7 +2401,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $domaines = $entityManager->getRepository('\\'.\App\Entity\Domaine::class)->findAll();
+        $domaines = $entityManager->getRepository('\\'.Domaine::class)->findAll();
 
         return $this->render('magie/index.twig', [
             'domaines' => $domaines,
@@ -2230,8 +2414,11 @@ class ParticipantController extends AbstractController
      * Liste des compétences pour les joueurs.
      */
     #[Route('/participant/{participant}/competence/list', name: 'participant.competence.list')]
-    public function competenceListAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
+    public function competenceListAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
         $competences = $app['larp.manager']->getRootCompetences();
 
         return $this->render('competence/list.twig', [
@@ -2244,8 +2431,12 @@ class ParticipantController extends AbstractController
      * Detail d'une competence.
      */
     #[Route('/participant/{participant}/competence/{competence}/detail', name: 'participant.competence.detail')]
-    public function competenceDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Competence $competence)
-    {
+    public function competenceDetailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Competence $competence
+    ) {
         $personnage = $participant->getPersonnage();
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage !');
@@ -2270,8 +2461,12 @@ class ParticipantController extends AbstractController
      * Detail d'un document.
      */
     #[Route('/participant/{participant}/document/{document}/detail', name: 'participant.document.detail')]
-    public function documentDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Document $document)
-    {
+    public function documentDetailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Document $document
+    ) {
         $personnage = $participant->getPersonnage();
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage !');
@@ -2298,7 +2493,7 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/classe/list', name: 'participant.classe.list')]
     public function classeListAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Classe::class);
+        $repo = $entityManager->getRepository('\\'.Classe::class);
         $classes = $repo->findAllOrderedByLabel();
 
         return $this->render('classe/list.twig', [
@@ -2311,8 +2506,12 @@ class ParticipantController extends AbstractController
      * Obtenir le document lié à une competence.
      */
     #[Route('/participant/{participant}/competence/{competence}/document', name: 'participant.competence.document')]
-    public function competenceDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Competence $competence)
-    {
+    public function competenceDocumentAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Competence $competence
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2337,8 +2536,12 @@ class ParticipantController extends AbstractController
      * Obtenir le document lié à un document.
      */
     #[Route('/participant/{participant}/document/{document}/document', name: 'participant.document.document')]
-    public function documentDocumentAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Document $document)
-    {
+    public function documentDocumentAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Document $document
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2363,8 +2566,11 @@ class ParticipantController extends AbstractController
      * Liste des groupes secondaires public (pour les joueurs).
      */
     #[Route('/participant/{participant}/groupeSecondaire/list', name: 'participant.groupeSecondaire.list')]
-    public function groupeSecondaireListAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
+    public function groupeSecondaireListAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
         $repo = $entityManager->getRepository('\\'.SecondaryGroup::class);
         $groupeSecondaires = $repo->findAllPublic();
 
@@ -2378,8 +2584,12 @@ class ParticipantController extends AbstractController
      * Postuler à un groupe secondaire.
      */
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postuler', name: 'participant.groupeSecondaire.postuler')]
-    public function groupeSecondairePostulerAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire)
-    {
+    public function groupeSecondairePostulerAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        SecondaryGroup $groupeSecondaire
+    ) {
         /**
          * L'utilisateur doit avoir un personnage.
          *
@@ -2459,8 +2669,12 @@ class ParticipantController extends AbstractController
      * Affichage à destination d'un membre du groupe secondaire.
      */
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/detail', name: 'participant.groupeSecondaire.detail')]
-    public function groupeSecondaireDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire)
-    {
+    public function groupeSecondaireDetailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        SecondaryGroup $groupeSecondaire
+    ) {
         $personnage = $participant->getPersonnage();
         $membre = $personnage->getMembre($groupeSecondaire);
 
@@ -2487,8 +2701,13 @@ class ParticipantController extends AbstractController
      * Accepter une candidature à un groupe secondaire.
      */
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/accept', name: 'participant.groupeSecondaire.postulant.accept')]
-    public function groupeSecondaireAcceptAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire, Postulant $postulant)
-    {
+    public function groupeSecondaireAcceptAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        SecondaryGroup $groupeSecondaire,
+        Postulant $postulant
+    ) {
         $form = $this->createFormBuilder($participant)
             ->add('envoyer', SubmitType::class, ['label' => 'Accepter le postulant'])
             ->getForm();
@@ -2498,7 +2717,7 @@ class ParticipantController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $postulant->getPersonnage();
 
-            $membre = new \App\Entity\Membre();
+            $membre = new Membre();
             $membre->setPersonnage($personnage);
             $membre->setSecondaryGroup($groupeSecondaire);
             $membre->setSecret(false);
@@ -2512,7 +2731,11 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez accepté la candidature. Un message a été envoyé au joueur concerné.');
 
-            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], 303);
+            return $this->redirectToRoute(
+                'participant.groupeSecondaire.detail',
+                ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()],
+                303
+            );
         }
 
         return $this->render('groupeSecondaire/gestion_accept.twig', [
@@ -2527,8 +2750,13 @@ class ParticipantController extends AbstractController
      * Accepter une candidature à un groupe secondaire.
      */
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/reject', name: 'participant.groupeSecondaire.postulant.reject')]
-    public function groupeSecondaireRejectAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire, Postulant $postulant)
-    {
+    public function groupeSecondaireRejectAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        SecondaryGroup $groupeSecondaire,
+        Postulant $postulant
+    ) {
         $form = $this->createFormBuilder($participant)
             ->add('envoyer', SubmitType::class, ['label' => 'Refuser le postulant'])
             ->getForm();
@@ -2544,7 +2772,11 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez refusé la candidature. Un message a été envoyé au joueur concerné.');
 
-            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], 303);
+            return $this->redirectToRoute(
+                'participant.groupeSecondaire.detail',
+                ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()],
+                303
+            );
         }
 
         return $this->render('groupeSecondaire/gestion_reject.twig', [
@@ -2559,8 +2791,13 @@ class ParticipantController extends AbstractController
      * Laisser la candidature dans les postulant.
      */
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/wait', name: 'participant.groupeSecondaire.postulant.wait')]
-    public function groupeSecondaireWaitAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire, Postulant $postulant)
-    {
+    public function groupeSecondaireWaitAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        SecondaryGroup $groupeSecondaire,
+        Postulant $postulant
+    ) {
         $form = $this->createFormBuilder($participant)
             ->add('envoyer', SubmitType::class, ['label' => 'Laisser en attente'])
             ->getForm();
@@ -2577,7 +2814,11 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'La candidature reste en attente. Un message a été envoyé au joueur concerné.');
 
-            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], 303);
+            return $this->redirectToRoute(
+                'participant.groupeSecondaire.detail',
+                ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()],
+                303
+            );
         }
 
         return $this->render('groupeSecondaire/gestion_wait.twig', [
@@ -2592,14 +2833,19 @@ class ParticipantController extends AbstractController
      * Répondre à un postulant.
      */
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/response', name: 'participant.groupeSecondaire.postulant.response')]
-    public function groupeSecondaireResponseAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, SecondaryGroup $groupeSecondaire, Postulant $postulant)
-    {
+    public function groupeSecondaireResponseAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        SecondaryGroup $groupeSecondaire,
+        Postulant $postulant
+    ) {
         $message = new Message();
 
         $message->setUserRelatedByAuteur($this->getUser());
         $message->setUserRelatedByDestinataire($postulant->getPersonnage()->getUser());
-        $message->setCreationDate(new \DateTime('NOW'));
-        $message->setUpdateDate(new \DateTime('NOW'));
+        $message->setCreationDate(new DateTime('NOW'));
+        $message->setUpdateDate(new DateTime('NOW'));
 
         $form = $this->createForm(MessageForm::class, $message)
             ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre réponse']);
@@ -2616,7 +2862,11 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Votre message a été envoyé au joueur concerné.');
 
-            return $this->redirectToRoute('participant.groupeSecondaire.detail', ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()], 303);
+            return $this->redirectToRoute(
+                'participant.groupeSecondaire.detail',
+                ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()],
+                303
+            );
         }
 
         return $this->render('groupeSecondaire/gestion_response.twig', [
@@ -2631,8 +2881,11 @@ class ParticipantController extends AbstractController
      * Ajoute une compétence au personnage.
      */
     #[Route('/participant/{participant}/competence/add', name: 'participant.competence.add')]
-    public function competenceAddAction(Request $request, EntityManagerInterface $entityManager, Participant $participant)
-    {
+    public function competenceAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ) {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2642,7 +2895,10 @@ class ParticipantController extends AbstractController
         }
 
         if (true == $participant->getGroupeGn()->getGroupe()->getLock()) {
-            $this->addFlash('error', 'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur');
+            $this->addFlash(
+                'error',
+                'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur'
+            );
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
@@ -2658,7 +2914,8 @@ class ParticipantController extends AbstractController
         // construit le tableau de choix
         $choices = [];
         foreach ($availableCompetences as $competence) {
-            $choices[$competence->getId()] = $competence->getLabel().' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
+            $choices[$competence->getId()] = $competence->getLabel(
+            ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
         }
 
         $form = $this->createFormBuilder($participant)
@@ -2681,7 +2938,10 @@ class ParticipantController extends AbstractController
             $xp = $personnage->getXp();
 
             if ($xp - $cout < 0) {
-                $this->addFlash('error', 'Vos n\'avez pas suffisement de points d\'expérience pour acquérir cette compétence.');
+                $this->addFlash(
+                    'error',
+                    'Vos n\'avez pas suffisement de points d\'expérience pour acquérir cette compétence.'
+                );
 
                 return $this->redirectToRoute('homepage', [], 303);
             }
@@ -2699,7 +2959,7 @@ class ParticipantController extends AbstractController
                 switch ($competence->getLevel()->getId()) {
                     case 1:
                         $personnage->addRenomme(2);
-                        $renomme_history = new \App\Entity\RenommeHistory();
+                        $renomme_history = new RenommeHistory();
 
                         $renomme_history->setRenomme(2);
                         $renomme_history->setExplication('Compétence Noblesse niveau 1');
@@ -2708,7 +2968,7 @@ class ParticipantController extends AbstractController
                         break;
                     case 2:
                         $personnage->addRenomme(3);
-                        $renomme_history = new \App\Entity\RenommeHistory();
+                        $renomme_history = new RenommeHistory();
 
                         $renomme_history->setRenomme(3);
                         $renomme_history->setExplication('Compétence Noblesse niveau 2');
@@ -2717,7 +2977,7 @@ class ParticipantController extends AbstractController
                         break;
                     case 3:
                         $personnage->addRenomme(2);
-                        $renomme_history = new \App\Entity\RenommeHistory();
+                        $renomme_history = new RenommeHistory();
 
                         $renomme_history->setRenomme(2);
                         $renomme_history->setExplication('Compétence Noblesse niveau 3');
@@ -2726,7 +2986,7 @@ class ParticipantController extends AbstractController
                         break;
                     case 4:
                         $personnage->addRenomme(5);
-                        $renomme_history = new \App\Entity\RenommeHistory();
+                        $renomme_history = new RenommeHistory();
 
                         $renomme_history->setRenomme(5);
                         $renomme_history->setExplication('Compétence Noblesse niveau 4');
@@ -2735,7 +2995,7 @@ class ParticipantController extends AbstractController
                         break;
                     case 5:
                         $personnage->addRenomme(6);
-                        $renomme_history = new \App\Entity\RenommeHistory();
+                        $renomme_history = new RenommeHistory();
 
                         $renomme_history->setRenomme(6);
                         $renomme_history->setExplication('Compétence Noblesse niveau 5');
@@ -2753,14 +3013,19 @@ class ParticipantController extends AbstractController
                     $religion = $personnage->getMainReligion();
                     foreach ($religion->getSpheres() as $sphere) {
                         foreach ($sphere->getPrieres() as $priere) {
-                            if ($priere->getNiveau() == $competence->getLevel()->getId() && !$personnage->hasPriere($priere)) {
+                            if ($priere->getNiveau() == $competence->getLevel()->getId() && !$personnage->hasPriere(
+                                $priere
+                            )) {
                                 $priere->addPersonnage($personnage);
                                 $personnage->addPriere($priere);
                             }
                         }
                     }
                 } else {
-                    $this->addFlash('error', 'Pour obtenir la compétence Prêtrise, vous devez être FERVENT ou FANATIQUE');
+                    $this->addFlash(
+                        'error',
+                        'Pour obtenir la compétence Prêtrise, vous devez être FERVENT ou FANATIQUE'
+                    );
 
                     return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
                 }
@@ -2768,17 +3033,17 @@ class ParticipantController extends AbstractController
 
             // case special prêtrise initié
             if ('Prêtrise' == $competence->getCompetenceFamily()->getLabel() && $competence->getLevel()->getId() >= 2) {
-                $trigger = new \App\Entity\PersonnageTrigger();
+                $trigger = new PersonnageTrigger();
                 $trigger->setPersonnage($personnage);
                 $trigger->setTag('PRETISE INITIE');
                 $trigger->setDone(false);
                 $entityManager->persist($trigger);
-                $trigger2 = new \App\Entity\PersonnageTrigger();
+                $trigger2 = new PersonnageTrigger();
                 $trigger2->setPersonnage($personnage);
                 $trigger2->setTag('PRETISE INITIE');
                 $trigger2->setDone(false);
                 $entityManager->persist($trigger2);
-                $trigger3 = new \App\Entity\PersonnageTrigger();
+                $trigger3 = new PersonnageTrigger();
                 $trigger3->setPersonnage($personnage);
                 $trigger3->setTag('PRETISE INITIE');
                 $trigger3->setDone(false);
@@ -2790,13 +3055,13 @@ class ParticipantController extends AbstractController
             if ('Alchimie' == $competence->getCompetenceFamily()->getLabel()) {
                 switch ($competence->getLevel()->getId()) {
                     case 1: // le personnage doit choisir 2 potions de niveau apprenti
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('ALCHIMIE APPRENTI');
                         $trigger->setDone(false);
                         $entityManager->persist($trigger);
 
-                        $trigger2 = new \App\Entity\PersonnageTrigger();
+                        $trigger2 = new PersonnageTrigger();
                         $trigger2->setPersonnage($personnage);
                         $trigger2->setTag('ALCHIMIE APPRENTI');
                         $trigger2->setDone(false);
@@ -2804,13 +3069,13 @@ class ParticipantController extends AbstractController
                         $entityManager->flush();
                         break;
                     case 2: // le personnage doit choisir 1 potion de niveau initie et 1 potion de niveau apprenti
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('ALCHIMIE INITIE');
                         $trigger->setDone(false);
                         $entityManager->persist($trigger);
 
-                        $trigger2 = new \App\Entity\PersonnageTrigger();
+                        $trigger2 = new PersonnageTrigger();
                         $trigger2->setPersonnage($personnage);
                         $trigger2->setTag('ALCHIMIE APPRENTI');
                         $trigger2->setDone(false);
@@ -2818,7 +3083,7 @@ class ParticipantController extends AbstractController
                         $entityManager->flush();
                         break;
                     case 3: // le personnage doit choisir 1 potion de niveau expert
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('ALCHIMIE EXPERT');
                         $trigger->setDone(false);
@@ -2826,7 +3091,7 @@ class ParticipantController extends AbstractController
                         $entityManager->flush();
                         break;
                     case 4: // le personnage doit choisir 1 potion de niveau maitre
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('ALCHIMIE MAITRE');
                         $trigger->setDone(false);
@@ -2840,14 +3105,14 @@ class ParticipantController extends AbstractController
             if ('Magie' == $competence->getCompetenceFamily()->getLabel()) {
                 switch ($competence->getLevel()->getId()) {
                     case 1: // le personnage doit choisir un domaine de magie
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('DOMAINE MAGIE');
                         $trigger->setDone(false);
                         $entityManager->persist($trigger);
 
                         // il obtient aussi la possibilité de choisir un sort de niveau 1
-                        $trigger2 = new \App\Entity\PersonnageTrigger();
+                        $trigger2 = new PersonnageTrigger();
                         $trigger2->setPersonnage($personnage);
                         $trigger2->setTag('SORT APPRENTI');
                         $trigger2->setDone(false);
@@ -2856,7 +3121,7 @@ class ParticipantController extends AbstractController
                         break;
                     case 2:
                         // il obtient aussi la possibilité de choisir un sort de niveau 2
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('SORT INITIE');
                         $trigger->setDone(false);
@@ -2864,14 +3129,14 @@ class ParticipantController extends AbstractController
                         $entityManager->flush();
                         break;
                     case 3: // le personnage peut choisir un nouveau domaine de magie
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('DOMAINE MAGIE');
                         $trigger->setDone(false);
                         $entityManager->persist($trigger);
 
                         // il obtient aussi la possibilité de choisir un sort de niveau 3
-                        $trigger2 = new \App\Entity\PersonnageTrigger();
+                        $trigger2 = new PersonnageTrigger();
                         $trigger2->setPersonnage($personnage);
                         $trigger2->setTag('SORT EXPERT');
                         $trigger2->setDone(false);
@@ -2880,7 +3145,7 @@ class ParticipantController extends AbstractController
                         break;
                     case 4:
                         // il obtient aussi la possibilité de choisir un sort de niveau 4
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('SORT MAITRE');
                         $trigger->setDone(false);
@@ -2899,7 +3164,7 @@ class ParticipantController extends AbstractController
                         break;
                     case 3: // le personnage doit choisir 1 technologie
                     case 4: // le personnage doit choisir 1 technologie
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('TECHNOLOGIE');
                         $trigger->setDone(false);
@@ -2913,13 +3178,13 @@ class ParticipantController extends AbstractController
             if ('Littérature' == $competence->getCompetenceFamily()->getLabel()) {
                 switch ($competence->getLevel()->getId()) {
                     case 1: // 2 langues commune supplémentaires de son choix
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('LANGUE COURANTE');
                         $trigger->setDone(false);
                         $entityManager->persist($trigger);
 
-                        $trigger2 = new \App\Entity\PersonnageTrigger();
+                        $trigger2 = new PersonnageTrigger();
                         $trigger2->setPersonnage($personnage);
                         $trigger2->setTag('LANGUE COURANTE');
                         $trigger2->setDone(false);
@@ -2928,32 +3193,32 @@ class ParticipantController extends AbstractController
 
                         break;
                     case 2: //  Sait parler, lire et écrire trois autres langues vivantes (courante ou commune) de son choix.
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('LANGUE COURANTE');
                         $trigger->setDone(false);
                         $entityManager->persist($trigger);
 
-                        $trigger2 = new \App\Entity\PersonnageTrigger();
+                        $trigger2 = new PersonnageTrigger();
                         $trigger2->setPersonnage($personnage);
                         $trigger2->setTag('LANGUE COURANTE');
                         $trigger2->setDone(false);
                         $entityManager->persist($trigger2);
 
-                        $trigger3 = new \App\Entity\PersonnageTrigger();
+                        $trigger3 = new PersonnageTrigger();
                         $trigger3->setPersonnage($personnage);
                         $trigger3->setTag('LANGUE COURANTE');
                         $trigger3->setDone(false);
                         $entityManager->persist($trigger3);
 
                         // il obtient aussi la possibilité de choisir un sort de niveau 1
-                        $trigger4 = new \App\Entity\PersonnageTrigger();
+                        $trigger4 = new PersonnageTrigger();
                         $trigger4->setPersonnage($personnage);
                         $trigger4->setTag('SORT APPRENTI');
                         $trigger4->setDone(false);
                         $entityManager->persist($trigger4);
 
-                        $trigger5 = new \App\Entity\PersonnageTrigger();
+                        $trigger5 = new PersonnageTrigger();
                         $trigger5->setPersonnage($personnage);
                         $trigger5->setTag('ALCHIMIE APPRENTI');
                         $trigger5->setDone(false);
@@ -2962,38 +3227,38 @@ class ParticipantController extends AbstractController
 
                         break;
                     case 3: // Sait parler, lire et écrire un langage ancien ainsi que trois autres langues vivantes (courante ou commune) de son choix ainsi qu'une langue ancienne
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('LANGUE COURANTE');
                         $trigger->setDone(false);
                         $entityManager->persist($trigger);
 
-                        $trigger2 = new \App\Entity\PersonnageTrigger();
+                        $trigger2 = new PersonnageTrigger();
                         $trigger2->setPersonnage($personnage);
                         $trigger2->setTag('LANGUE COURANTE');
                         $trigger2->setDone(false);
                         $entityManager->persist($trigger2);
 
-                        $trigger3 = new \App\Entity\PersonnageTrigger();
+                        $trigger3 = new PersonnageTrigger();
                         $trigger3->setPersonnage($personnage);
                         $trigger3->setTag('LANGUE COURANTE');
                         $trigger3->setDone(false);
                         $entityManager->persist($trigger3);
 
-                        $trigger4 = new \App\Entity\PersonnageTrigger();
+                        $trigger4 = new PersonnageTrigger();
                         $trigger4->setPersonnage($personnage);
                         $trigger4->setTag('LANGUE ANCIENNE');
                         $trigger4->setDone(false);
                         $entityManager->persist($trigger4);
 
                         // il obtient aussi la possibilité de choisir un sort et une potion de niveau 2
-                        $trigger5 = new \App\Entity\PersonnageTrigger();
+                        $trigger5 = new PersonnageTrigger();
                         $trigger5->setPersonnage($personnage);
                         $trigger5->setTag('SORT INITIE');
                         $trigger5->setDone(false);
                         $entityManager->persist($trigger5);
 
-                        $trigger6 = new \App\Entity\PersonnageTrigger();
+                        $trigger6 = new PersonnageTrigger();
                         $trigger6->setPersonnage($personnage);
                         $trigger6->setTag('ALCHIMIE INITIE');
                         $trigger6->setDone(false);
@@ -3001,38 +3266,38 @@ class ParticipantController extends AbstractController
                         $entityManager->flush();
                         break;
                     case 4: // Sait parler, lire et écrire un autre langage ancien ainsi que trois autres langues vivantes de son choix (courante ou commune) ainsi qu'une langue ancienne
-                        $trigger = new \App\Entity\PersonnageTrigger();
+                        $trigger = new PersonnageTrigger();
                         $trigger->setPersonnage($personnage);
                         $trigger->setTag('LANGUE COURANTE');
                         $trigger->setDone(false);
                         $entityManager->persist($trigger);
 
-                        $trigger2 = new \App\Entity\PersonnageTrigger();
+                        $trigger2 = new PersonnageTrigger();
                         $trigger2->setPersonnage($personnage);
                         $trigger2->setTag('LANGUE COURANTE');
                         $trigger2->setDone(false);
                         $entityManager->persist($trigger2);
 
-                        $trigger3 = new \App\Entity\PersonnageTrigger();
+                        $trigger3 = new PersonnageTrigger();
                         $trigger3->setPersonnage($personnage);
                         $trigger3->setTag('LANGUE COURANTE');
                         $trigger3->setDone(false);
                         $entityManager->persist($trigger3);
 
-                        $trigger4 = new \App\Entity\PersonnageTrigger();
+                        $trigger4 = new PersonnageTrigger();
                         $trigger4->setPersonnage($personnage);
                         $trigger4->setTag('LANGUE ANCIENNE');
                         $trigger4->setDone(false);
                         $entityManager->persist($trigger4);
 
                         // il obtient aussi la possibilité de choisir un sort et une potion de niveau 3
-                        $trigger5 = new \App\Entity\PersonnageTrigger();
+                        $trigger5 = new PersonnageTrigger();
                         $trigger5->setPersonnage($personnage);
                         $trigger5->setTag('SORT EXPERT');
                         $trigger5->setDone(false);
                         $entityManager->persist($trigger5);
 
-                        $trigger6 = new \App\Entity\PersonnageTrigger();
+                        $trigger6 = new PersonnageTrigger();
                         $trigger6->setPersonnage($personnage);
                         $trigger6->setTag('ALCHIMIE EXPERT');
                         $trigger6->setDone(false);
@@ -3043,8 +3308,8 @@ class ParticipantController extends AbstractController
             }
 
             // historique
-            $historique = new \App\Entity\ExperienceUsage();
-            $historique->setOperationDate(new \DateTime('NOW'));
+            $historique = new ExperienceUsage();
+            $historique->setOperationDate(new DateTime('NOW'));
             $historique->setXpUse($cout);
             $historique->setCompetence($competence);
             $historique->setPersonnage($personnage);
@@ -3073,7 +3338,7 @@ class ParticipantController extends AbstractController
     #[Route('/participant/add', name: 'participant.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager)
     {
-        $joueur = new \App\Entity\Participant();
+        $joueur = new Participant();
 
         $form = $this->createForm(JoueurForm::class, $joueur)
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -3196,9 +3461,9 @@ class ParticipantController extends AbstractController
                 $entityManager->persist($personnage);
 
                 // historique
-                $historique = new \App\Entity\ExperienceGain();
+                $historique = new ExperienceGain();
                 $historique->setExplanation($explanation);
-                $historique->setOperationDate(new \DateTime('NOW'));
+                $historique->setOperationDate(new DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($gain);
                 $entityManager->persist($historique);
@@ -3259,12 +3524,19 @@ class ParticipantController extends AbstractController
      * Demander une nouvelle alliance.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/requestAlliance', name: 'participant.groupe.requestAlliance')]
-    public function requestAllianceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
-    {
+    public function requestAllianceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Groupe $groupe
+    ) {
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+            $this->addFlash(
+                'error',
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+            );
 
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
@@ -3278,12 +3550,15 @@ class ParticipantController extends AbstractController
 
         // un groupe ne peux pas avoir plus d'alliances que d'ennemis
         if ($groupe->getEnnemies()->count() - $groupe->getAlliances()->count() <= 0) {
-            $this->addFlash('error', 'Désolé, vous n\'avez pas suffisement d\'ennemis pour pouvoir vous choisir un allié.');
+            $this->addFlash(
+                'error',
+                'Désolé, vous n\'avez pas suffisement d\'ennemis pour pouvoir vous choisir un allié.'
+            );
 
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        $alliance = new \App\Entity\GroupeAllie();
+        $alliance = new GroupeAllie();
         $alliance->setGroupe($groupe);
 
         $form = $this->createForm(RequestAllianceForm::class, $alliance)
@@ -3299,7 +3574,10 @@ class ParticipantController extends AbstractController
             // vérification des conditions pour le groupe choisi
             $requestedGroupe = $alliance->getRequestedGroupe();
             if ($requestedGroupe == $groupe) {
-                $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir votre propre groupe pour faire une alliance ...');
+                $this->addFlash(
+                    'error',
+                    'Désolé, vous ne pouvez pas choisir votre propre groupe pour faire une alliance ...'
+                );
 
                 return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
@@ -3311,19 +3589,28 @@ class ParticipantController extends AbstractController
             }
 
             if ($groupe->isEnemyTo($requestedGroupe)) {
-                $this->addFlash('error', 'Désolé, vous êtes ennemi avec ce groupe. Impossible de faire une alliance, faites d\'abord la paix !');
+                $this->addFlash(
+                    'error',
+                    'Désolé, vous êtes ennemi avec ce groupe. Impossible de faire une alliance, faites d\'abord la paix !'
+                );
 
                 return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
 
             if ($requestedGroupe->getAlliances()->count() >= 3) {
-                $this->addFlash('error', 'Désolé, le groupe demandé dispose déjà de 3 alliances, ce qui est le maximum possible.');
+                $this->addFlash(
+                    'error',
+                    'Désolé, le groupe demandé dispose déjà de 3 alliances, ce qui est le maximum possible.'
+                );
 
                 return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
 
             if ($requestedGroupe->getEnnemies()->count() - $requestedGroupe->getAlliances()->count() <= 0) {
-                $this->addFlash('error', 'Désolé, le groupe demandé n\'a pas suffisement d\'ennemis pour pouvoir obtenir un allié supplémentaire.');
+                $this->addFlash(
+                    'error',
+                    'Désolé, le groupe demandé n\'a pas suffisement d\'ennemis pour pouvoir obtenir un allié supplémentaire.'
+                );
 
                 return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
@@ -3350,13 +3637,20 @@ class ParticipantController extends AbstractController
      * Annuler une demande d'alliance.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/cancelRequestedAlliance', name: 'participant.groupe.cancelRequestedAlliance')]
-    public function cancelRequestedAllianceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
-    {
+    public function cancelRequestedAllianceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Groupe $groupe
+    ) {
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+            $this->addFlash(
+                'error',
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+            );
 
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
@@ -3392,13 +3686,20 @@ class ParticipantController extends AbstractController
      * Accepter une alliance.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/acceptAlliance', name: 'participant.groupe.acceptAlliance')]
-    public function acceptAllianceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
-    {
+    public function acceptAllianceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Groupe $groupe
+    ) {
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+            $this->addFlash(
+                'error',
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+            );
 
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
@@ -3435,13 +3736,20 @@ class ParticipantController extends AbstractController
      * RefUser une alliance.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/refuseAlliance', name: 'participant.groupe.refuseAlliance')]
-    public function refuseAllianceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
-    {
+    public function refuseAllianceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Groupe $groupe
+    ) {
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+            $this->addFlash(
+                'error',
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+            );
 
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
@@ -3477,13 +3785,20 @@ class ParticipantController extends AbstractController
      * Briser une alliance.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/breakAlliance', name: 'participant.groupe.breakAlliance')]
-    public function breakAllianceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
-    {
+    public function breakAllianceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Groupe $groupe
+    ) {
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+            $this->addFlash(
+                'error',
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+            );
 
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
@@ -3523,24 +3838,34 @@ class ParticipantController extends AbstractController
      * Déclarer la guerre.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/declareWar', name: 'participant.groupe.declareWar')]
-    public function declareWarAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
-    {
+    public function declareWarAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Groupe $groupe
+    ) {
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+            $this->addFlash(
+                'error',
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+            );
 
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
         // un groupe ne peux pas faire de déclaration de guerre si il a 3 ou plus ennemis
         if ($groupe->getEnnemies()->count() >= 3) {
-            $this->addFlash('error', 'Désolé, vous avez déjà 3 ennemis ou plus, impossible de faire une nouvelle déclaration de guerre .');
+            $this->addFlash(
+                'error',
+                'Désolé, vous avez déjà 3 ennemis ou plus, impossible de faire une nouvelle déclaration de guerre .'
+            );
 
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
 
-        $war = new \App\Entity\GroupeEnemy();
+        $war = new GroupeEnemy();
         $war->setGroupe($groupe);
         $war->setGroupePeace(false);
         $war->setGroupeEnemyPeace(false);
@@ -3570,7 +3895,10 @@ class ParticipantController extends AbstractController
             }
 
             if ($requestedGroupe->getEnnemies()->count() >= 5) {
-                $this->addFlash('error', 'Désolé, le groupe demandé dispose déjà de 5 ennemis, ce qui est le maximum possible.');
+                $this->addFlash(
+                    'error',
+                    'Désolé, le groupe demandé dispose déjà de 5 ennemis, ce qui est le maximum possible.'
+                );
 
                 return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
             }
@@ -3603,13 +3931,20 @@ class ParticipantController extends AbstractController
      * Demander la paix.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/requestPeace', name: 'participant.groupe.requestPeace')]
-    public function requestPeaceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
-    {
+    public function requestPeaceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Groupe $groupe
+    ) {
         $war = $request->get('enemy');
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+            $this->addFlash(
+                'error',
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+            );
 
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
@@ -3650,13 +3985,20 @@ class ParticipantController extends AbstractController
      * Accepter la paix.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/acceptPeace', name: 'participant.groupe.acceptPeace')]
-    public function acceptPeaceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
-    {
+    public function acceptPeaceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Groupe $groupe
+    ) {
         $war = $request->get('enemy');
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+            $this->addFlash(
+                'error',
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+            );
 
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
@@ -3697,13 +4039,20 @@ class ParticipantController extends AbstractController
      * RefUser la paix.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/refusePeace', name: 'participant.groupe.refusePeace')]
-    public function refusePeaceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
-    {
+    public function refusePeaceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Groupe $groupe
+    ) {
         $war = $request->get('enemy');
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+            $this->addFlash(
+                'error',
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+            );
 
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }
@@ -3741,14 +4090,21 @@ class ParticipantController extends AbstractController
      * Annuler la demande de paix.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/cancelRequestedPeace', name: 'participant.groupe.cancelRequestedPeace')]
-    public function cancelRequestedPeaceAction(Request $request, EntityManagerInterface $entityManager, Participant $participant, Groupe $groupe)
-    {
+    public function cancelRequestedPeaceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant,
+        Groupe $groupe
+    ) {
         $war = $request->get('enemy');
 
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
-            $this->addFlash('error', 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)');
+            $this->addFlash(
+                'error',
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+            );
 
             return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
         }

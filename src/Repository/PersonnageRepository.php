@@ -5,6 +5,7 @@ namespace App\Repository;
 
 use App\Entity\PersonnageLignee;
 use App\Entity\Titre;
+use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Deprecated;
@@ -190,4 +191,5 @@ LEFT JOIN p2.participants pa2
 
         return $qb->getQuery()->getResult();
     }
+
 }
