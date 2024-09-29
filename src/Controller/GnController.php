@@ -4,12 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Gn;
 use App\Entity\Loi;
-use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\Topic;
 use App\Form\Gn\GnDeleteForm;
 use App\Form\Gn\GnForm;
-use App\Form\ParticipantFindForm;
 use App\Repository\GnRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\QuestionRepository;

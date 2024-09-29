@@ -1,8 +1,8 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}{{ gn.label }} Participants sans personnage{% endblock title %}
 
-{% block content %}
+{% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
@@ -49,7 +49,7 @@
 						{% if participant.groupeGn %}
 							{{ participant.groupeGn.groupe.nom }}
 						{% endif %}
-					</td>						
+					</td>
 					<td>
 						{% if participant.groupeGn %}
 							<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Changer de groupe"
@@ -76,8 +76,8 @@
 				</tr>
 			{% endfor %}
 		</tbody>
-	</table>	
+	</table>
 
 </div>
 
-{% endblock content %}
+{% endblock body %}

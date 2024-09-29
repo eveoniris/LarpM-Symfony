@@ -12,6 +12,9 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity(repositoryClass: PersonnageRepository::class)]
 class Personnage extends BasePersonnage implements \Stringable
 {
+    // For some FormBuilder search
+    public Personnage $personnageChoosen;
+
     /**
      * Constructeur.
      */
