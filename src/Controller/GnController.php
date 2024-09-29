@@ -11,7 +11,9 @@ use App\Form\Gn\GnDeleteForm;
 use App\Form\Gn\GnForm;
 use App\Form\ParticipantFindForm;
 use App\Repository\GnRepository;
+use App\Repository\ParticipantRepository;
 use App\Repository\QuestionRepository;
+use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -171,7 +173,6 @@ class GnController extends AbstractController
         PersonnageService $personnageService,
         GnRepository $gnRepository,
     ): Response {
-
         return $this->render(
             'admin/personnage/list.twig',
             $personnageService->getSearchViewParameters(
@@ -416,49 +417,22 @@ class GnController extends AbstractController
      * Liste des participants à un jeu.
      */
     #[Route('/{gn}/participants', name: 'participants')]
-    public function participantsAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn, GnRepository $gnRepository): Response
-    {
-        $orderBy = $this->getRequestOrder(
-            alias: 'p',
-            allowedFields: $gnRepository->getFieldNames()
-        );
+    public function participantsAction(
+        Request $request,
+        PagerService $pagerService,
+        ParticipantRepository $participantRepository,
+        #[MapEntity] Gn $gn
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($participantRepository);
 
-        $qb = $entityManager->createQueryBuilder('p')
-            ->select('p')
-            ->from('\\'.Participant::class, 'p')
-            ->join('p.gn', 'gn')
-            ->join('p.user', 'u')
-            ->join('u.etatCivil', 'ec')
-            ->where('gn.id = :gnId')
-            ->setParameter('gnId', $gn->getId())
-            ->orderBy(key($orderBy), current($orderBy))
-        ;
-
-        $form = $this->createForm(ParticipantFindForm::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            switch ($data['type']) {
-                case 'Nom':
-                    $qb->andWhere('ec.nom LIKE :value');
-                    break;
-                case 'Email':
-                    $qb->andWhere('u.email LIKE :value');
-                    break;
-            }
-
-            $qb->setParameter('value', '%'.$data['value'].'%');
-        }
-
-        $paginator = $gnRepository->findPaginatedQuery(
-            $qb->getQuery(), $this->getRequestLimit(25), $this->getRequestPage()
-        );
+        $alias = $participantRepository->getAlias();
+        $queryBuilder = $participantRepository->createQueryBuilder($alias);
+        $queryBuilder = $participantRepository->gn($queryBuilder, $gn);
 
         return $this->render('gn/participants.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $participantRepository->searchPaginated($pagerService, $queryBuilder),
             'gn' => $gn,
-            'paginator' => $paginator,
-            'form' => $form->createView(),
         ]);
     }
 

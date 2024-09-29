@@ -1,24 +1,16 @@
 <?php
 
-
 namespace App\Repository;
 
-use App\Entity\Competence;
+use App\Entity\Gn;
 use App\Entity\Personnage;
 use App\Entity\PersonnageLangues;
-use App\Entity\PersonnagesCompetences;
 use App\Entity\PersonnagesReligions;
 use App\Service\OrderBy;
 use App\Service\PagerService;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
-/**
- * LarpManager\Repository\ParticipantRepository.
- *
- * @author kevin
- */
 class ParticipantRepository extends BaseRepository
 {
     /**
@@ -47,7 +39,7 @@ class ParticipantRepository extends BaseRepository
             $pageRequest->getSearchValue(),
             $pageRequest->getSearchType(),
             $pageRequest->getOrderBy(),
-            $this->getAlias(),            
+            $this->getAlias(),
         )->getQuery();
 
         return $this->findPaginatedQuery(
@@ -60,10 +52,10 @@ class ParticipantRepository extends BaseRepository
     public function searchByGn(
         int $gnid,
         mixed $search = null,
-        null|string|array $attributes = self::SEARCH_NOONE,
-        OrderBy $orderBy = null,
-        string $alias = null,
-        QueryBuilder $query = null        
+        string|array|null $attributes = self::SEARCH_NOONE,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
@@ -76,12 +68,12 @@ class ParticipantRepository extends BaseRepository
         $query->join('groupeGn.groupe', 'groupe');
         $query->join($alias.'.personnage', 'personnage');
         $query->join('personnage.classe', 'classe');
-        
-        //$query->leftJoin($alias.'.player', 'player');
-        //$query->join($alias.'.user', 'user');
 
-        dump('searchByGn:$attributes='.$attributes);
-        switch($attributes) {
+        // $query->leftJoin($alias.'.player', 'player');
+        // $query->join($alias.'.user', 'user');
+
+
+        switch ($attributes) {
             case 'religion.label':
                 $religion = $search;
                 $sub = new QueryBuilder($this->getEntityManager());
@@ -136,11 +128,26 @@ class ParticipantRepository extends BaseRepository
             case 'participant.renommee':
                 $renommee = $search;
                 $query->andWhere('personnage.renomme >= :renommee');
-                $query->setParameter('renommee', (int)$renommee);
+                $query->setParameter('renommee', (int) $renommee);
                 $search = '';
                 break;
         }
 
+        return parent::search($search, $attributes, $orderBy, $alias, $query);
+    }
+
+    public function search(
+        mixed $search = null,
+        string|array|null $attributes = self::SEARCH_NOONE,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null
+    ): QueryBuilder {
+        $alias ??= static::getEntityAlias();
+        $query ??= $this->createQueryBuilder($alias);
+        $query->join($alias.'.user', 'user');
+        $query->join($alias.'.gn', 'gn');
+        $query->join('user.etatCivil', 'etatCivil');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
@@ -160,7 +167,7 @@ class ParticipantRepository extends BaseRepository
         ];
     }*/
 
-    public function searchAttributes(string $alias = null): array
+    public function searchAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
@@ -201,5 +208,12 @@ class ParticipantRepository extends BaseRepository
             'langue' => $this->translator->trans('Langue', domain: 'repository'),
             'groupe' => $this->translator->trans('Groupe', domain: 'repository'),
         ];
+    }
+
+    public function gn(QueryBuilder $query, Gn $gn): QueryBuilder
+    {
+        $query->andWhere($this->alias.'.gn = :value');
+
+        return $query->setParameter('value', $gn->getId());
     }
 }

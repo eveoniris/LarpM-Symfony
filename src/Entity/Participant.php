@@ -17,7 +17,7 @@ class Participant extends BaseParticipant implements \Stringable
 
     public function __toString(): string
     {
-        return (string) $this->getUser()->getDisplayName();
+        return (string) $this->getUser()?->getDisplayName();
     }
 
     /**
