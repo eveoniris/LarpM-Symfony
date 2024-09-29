@@ -36,7 +36,7 @@ class GnRepository extends BaseRepository
      *
      * @return ArrayCollection $gns
      */
-    public function findActive(): Array
+    public function findActive(): array
     {
         return $this->getEntityManager()
             ->createQuery('SELECT g FROM App\Entity\Gn g WHERE g.actif = true ORDER BY g.date_debut ASC')
@@ -97,6 +97,17 @@ class GnRepository extends BaseRepository
 
         return $personnageRepository->createQueryBuilder('perso')
             ->innerJoin('perso.gn', 'gn')
+            ->where('gn.id = :gnid')
+            ->setParameter('gnid', $gn->getId());
+    }
+
+    public function getParticipant(Gn $gn): QueryBuilder
+    {
+        /** @var ParticipantRepository $participantRepository */
+        $participantRepository = $this->entityManager->getRepository(Personnage::class);
+
+        return $participantRepository->createQueryBuilder('participant')
+            ->innerJoin('participant.gn', 'gn')
             ->where('gn.id = :gnid')
             ->setParameter('gnid', $gn->getId());
     }
