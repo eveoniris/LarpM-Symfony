@@ -7,6 +7,9 @@
 
     {% if route is defined and row.route is not defined and row.field is defined %}
         {% set options = options|merge({"route":route}) %}
+        {% if routeOptions is defined %}
+            {% set options = options|merge({"routeOptions":routeOptions}) %}
+        {% endif %}
     {% endif %}
 
     {% if row.field is defined %}
@@ -23,6 +26,9 @@
 
     {% if row.route is defined %}
         {% set options = options|merge({"route":row.route}) %}
+        {% if row.routeOptions is defined %}
+            {% set options = options|merge({"routeOptions":row.route}) %}
+        {% endif %}
     {% endif %}
 
     {% if row.css is not defined %}
