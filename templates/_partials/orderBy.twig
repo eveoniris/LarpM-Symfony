@@ -1,13 +1,16 @@
 {% if orderDir is not defined %}
     {% if pagerService is defined %}
         {% set orderDir = pagerService.getOrderBy.getSort() %}
-        {% set routeOptions = {'order_by': field, 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')} %}
     {% else %}
         {% set orderDir = 'ASC' %}
     {% endif %}
 {% endif %}
 
-{% set routeOptions = {'order_by': field, 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')} %}
+{% if routeOptions is not defined %}
+    {% set routeOptions = {} %}
+{% endif %}
+
+{% set routeOptions = routeOptions|merge({'order_by': field, 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')}) %}
 {% if pagerService is defined %}
     {% set routeOptions = routeOptions|merge({"search":pagerService.getSearchValue}) %}
 {% endif %}

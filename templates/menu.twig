@@ -14,18 +14,18 @@
                     </a>
                     <ul class="dropdown-menu">
                         {% if app.user %}
-                            <li><a class="dropdown-item" href="{{ path('user.self') }}">Mon compte</a></li>
-                            <li><a class="dropdown-item" href="{{ path('gn.list') }}">Mes Grandeurs natures</a></li>
-                            <li><a class="dropdown-item" href="{{ path('messagerie') }}">Ma messagerie</a></li>
+                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('user.self') }}">Mon compte</a></li>
+                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('gn.list') }}">Mes Grandeurs natures</a></li>
+                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('messagerie') }}">Ma messagerie</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="{{ path('app_logout') }}">Déconnection</a></li>
+                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('app_logout') }}">Déconnection</a></li>
                         {% else %}
-                            <li><a class="dropdown-item" href="{{ path('app_login') }}">Connection</a></li>
-                            <li><a class="dropdown-item" href="{{ path('user.register') }}">S'enregistrer</a>
+                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('app_login') }}">Connection</a></li>
+                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('user.register') }}">S'enregistrer</a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ path('user.forgot-password') }}">Mot de passe
+                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('user.forgot-password') }}">Mot de passe
                                     oublié ?</a></li>
                         {% endif %}
                     </ul>
@@ -71,20 +71,20 @@
                         Univers
                     </a>
                     <ul class="dropdown-menu">
+                        <li><a class="dropdown-item text-body-emphasis" href="{{ path('religion.index') }}">Religions</a></li>
+                        <li><a class="dropdown-item text-body-emphasis" href="{{ path('world') }}">Carte</a></li>
                         {% if is_granted('ROLE_CARTOGRAPHE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
-                            <li><a class="dropdown-item" href="{{ path('territoire.list') }}">Territoires</a>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item"  href="{{ path('territoire.list') }}">Territoires</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ path('territoire.fief') }}">Fiefs</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ path('culture.index') }}">Cultures</a>
                             </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
                         {% endif %}
-                        <li><a class="dropdown-item" href="{{ path('religion.index') }}">Religions</a></li>
-                        <li><a class="dropdown-item" href="{{ path('world') }}">Carte</a></li>
-                    </ul>
+                       </ul>
                 </li>
 
                 {# Menus reservé aux scénaristes #}
@@ -158,9 +158,9 @@
                         Règles
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ path('rules.list') }}">Règles</a></li>
-                        <li><a class="dropdown-item" href="{{ path('competence.list') }}">Compétences</a></li>
-                        <li><a class="dropdown-item" href="{{ path('classe.index') }}">Classes</a></li>
+                        <li><a class="dropdown-item text-body-emphasis" href="{{ path('rules.list') }}">Règles</a></li>
+                        <li><a class="dropdown-item text-body-emphasis" href="{{ path('competence.list') }}">Compétences</a></li>
+                        <li><a class="dropdown-item text-body-emphasis" href="{{ path('classe.index') }}">Classes</a></li>
                         {% if is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                             <li>
                                 <hr class="dropdown-divider">

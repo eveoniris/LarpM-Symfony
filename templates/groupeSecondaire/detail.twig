@@ -2,24 +2,23 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("groupeSecondaire.admin.list") }}">Liste des groupes secondaires</a></li>
-		<li class="active">Détail de {{ groupeSecondaire.label }}</li>
-	</ol>
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'name' : 'Liste des groupes secondaires', 'route': path('groupeSecondaire.admin.list') },
+			{'name' : "Détail de #{groupeSecondaire.label}" },
+		]
+	} %}
 
-	<div class="well well-sm bs-component">
+	<div class="well well-sm">
 		<div class="header">
 			<h5>{% if groupeSecondaire.secret %}<span style="color:red;">Secret</span> - {% endif %}{{ groupeSecondaire.label }}</h5>
 		</div>
-	</div>
 
-	<div class="well well-sm bs-component">
-		<div class="panel-heading">Informations</div>
+		<div class="panel-heading"><h5>Informations</h5></div>
 		<div class="panel-body">
 			<div class="list-group">
 				<div class="list-group-item">
-					<h6>Description (publique)</h6>
+					<h5>Description (publique)</h5>
 					<p>{{ groupeSecondaire.description|markdown_to_html }}</p>
 				</div>
 				<div class="list-group-item">
@@ -28,12 +27,12 @@
 				</div>
 				
 				<div class="list-group-item">
-					<h6>Matériel</h6>
+					<h5>Matériel</h5>
 					<p>{{ groupeSecondaire.materiel }}</p>
-					<p>
-						<a href="{{ path('groupeSecondaire.materiel.update', {'groupeSecondaire': groupeSecondaire.id}) }}">Modifier</a><br />
-						<a href="{{ path('groupeSecondaire.materiel.print', {'groupeSecondaire': groupeSecondaire.id}) }}">Impression</a>
-					</p>
+					<div class="btn-group ">
+						<a href="{{ path('groupeSecondaire.materiel.update', {'groupeSecondaire': groupeSecondaire.id}) }}" class="btn btn-secondary">Modifier</a><br />
+						<a href="{{ path('groupeSecondaire.materiel.print', {'groupeSecondaire': groupeSecondaire.id}) }}" class="btn btn-secondary">Impression</a>
+					</div>
 				</div>
 				<div class="list-group-item">
 					<h6>Documents</h6>
@@ -106,7 +105,7 @@
 		<div class="panel-heading">Liste des membres ({{groupeSecondaire.getActifs(gn)}}/{{groupeSecondaire.membres|length}})</div>
 		
 		<div class="panel-body">					
-			<a href="{{ path('groupeSecondaire.admin.newMembre', {'groupeSecondaire': groupeSecondaire.id}) }}">Ajouter un membre</a>
+			<a href="{{ path('groupeSecondaire.admin.newMembre', {'groupeSecondaire': groupeSecondaire.id}) }}" class="btn btn-primary">Ajouter un membre</a>
 			<div class="list-group">
 				{% for membre in groupeSecondaire.membres %}
 					<div class="list-group-item">
@@ -154,16 +153,6 @@
 			</div>
 		</div>
 	</div>
-	
-	<div class="panel panel-default">
-		<div class="panel-heading">Forum associé</div>
-		<div class="panel-body">
-			<a href="{{ path('forum.topic',{'index': groupeSecondaire.topic.id}) }}">
-				<i class="fa fa-comment"></i>
-				Forum groupe secondaire "{{ groupeSecondaire.label }}"</a>
-		</div>
-	</div>
-		
 
 				
 	<div class="list-group-item">
