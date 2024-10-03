@@ -1,56 +1,101 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Gn -- {{ gn.label }}{% endblock title %}
 
-{% block content %}
-	<div class="well well-sm clearfix">
-		<ol class="breadcrumb">
-			<li><a href="{{ path('homepage')  }}">Accueil</a></li>
-			<li><a href="{{path('gn.list') }}">Liste des GNs</a></li>
-			<li><a href="{{path('gn.detail', {'gn': gn.id}) }}">{{ gn.label }}</a></li>
-			<li class="active">Les groupes recherchant des joueur.euse.s</li>
-		</ol>
-		
-		<blockquote>
-			Tous les groupes recherchant des joueur.euse.s sur {{ gn.label }}
-			<small>
-				{{ groupes|length }} groupes
-			</small>
-		</blockquote>
-	</div>
-	
-	<div class="well well-sm">
+{% block body %}
+    {% include '_partials/breadcrumb.twig' with {'items' : [
+        {'name' : 'Liste des grandeurs nature', 'route': path('gn.list') },
+        {'name' : gn.label, 'route': path('gn.detail', {'gn':gn.id}) },
+        {'name' : 'Les groupes recherchant des membres' }
+    ]} %}
 
-			{% for groupe in groupes if groupe.pj %}
-				{% set session = groupe.getSession(gn) %}	
-				<h4>
-					{{ groupe.numero }} -- {{ groupe.nom }}
-				 	{% if is_granted('ROLE_SCENARISTE', app.user) %}
-				 		<a href="{{ path('groupe.detail', {'index': groupe.id}) }}">Détail</a>
-				 	{% endif %}
-				</h4>
-				
-				<ul>
-					<li>{% if session.free %}Ce groupe est libre{% else %}Ce groupe est réservé{% endif %}<br />
-					<li>Joueur.euse.s recherché.e : {{ session.placeAvailable|default(0) }}<br />
-					<li>Contacter le/la responsable : 
-						{% if session.responsable %} 
-							{{ session.responsable.user }}. <a href="{{ path('message.new', {'to': session.responsable.user.id }) }}">Envoyer un message</a>
-						{% else %}
-							Aucun chef de groupe, impossible de le/la contacter.
-						{% endif %}
-					</li>
-				</ul>
-				
-				{% if groupe.description %}
-					{{ groupe.description|markdown }}
-				{% else %}
-					Aucune description
-				{% endif %}
-				
-				
-				<hr />
-			{% endfor %}
+    <div class="well well-sm">
 
-	</div>
-{% endblock content %}
+        <div class="header">
+            <h5>{{ groupes|length }} groupes recherche des membres sur {{ gn.label }}</h5>
+        </div>
+
+
+        {% for groupe in groupes %}
+            {% if groupe.pj %}
+                {% set session = groupe.getSession(gn) %}
+                <div class="card text-bg mb-3">
+                    <div class="card-header">
+                        <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+                            <h5>  {{ groupe.numero }} - {{ groupe.nom }}</h5>
+                            {% if is_granted('ROLE_SCENARISTE', app.user) %}
+                                <div class="btn-group" role="group">
+                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="Detail"
+                                       href="{{ path('groupe.detail', {'groupe': groupe.id}) }}"><i
+                                                class="fa fa-eye"></i> Détail</a>
+
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <ul class="list-group-flush list-group">
+
+                        <li class="list-group-item m-0 p-0 g-0">
+                            <div class="d-flex justify-content-start">
+                                <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
+                                    Statut
+                                </div>
+                                <div class="col-md-10 px-2 py-1">{% if session.free %}Ce groupe est libre{% else %}Ce groupe est réservé{% endif %}</div>
+                            </div>
+                        </li>
+
+                        <li class="list-group-item m-0 p-0 g-0">
+                            <div class="d-flex justify-content-start">
+                                <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
+                                    Nombre de membres recherchées
+                                </div>
+                                <div class="col-md-10 px-2 py-1">{{ session.placeAvailable|default(0) }}</div>
+                            </div>
+                        </li>
+
+                        <li class="list-group-item m-0 p-0 g-0">
+                            <div class="d-flex justify-content-start">
+                                <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
+                                    Contact
+                                </div>
+                                <div class="col-md-10 px-2 py-1">
+                                    {% if session.responsable %}
+                                        {{ session.responsable.user }}. <a
+                                            href="{{ path('message.new', {'to': session.responsable.user.id }) }}"
+                                            class="btn btn-primary">Envoyer un
+                                        message</a>
+                                    {% else %}
+                                        Aucun
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="list-group-item m-0 p-0 g-0">
+                            <div class="d-flex justify-content-start">
+                                <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
+                                    Description
+                                </div>
+                                <div class="col-md-10 px-2 py-1">
+                                    {% if groupe.description %}
+                                        {{ groupe.description|markdown_to_html }}
+                                    {% else %}
+                                        Aucune description
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </li>
+
+
+                    </ul>
+
+                </div>
+            {% endif %}
+        {% else %}
+            {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Ce GN ne dispose d'aucun groupe qui cherche des membres"} %}
+        {% endfor %}
+
+    </div>
+{% endblock body %}
