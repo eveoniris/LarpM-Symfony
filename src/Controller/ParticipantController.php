@@ -85,8 +85,11 @@ class ParticipantController extends AbstractController
      * Interface Joueur d'un jeu.
      */
     #[Route('/participant/{participant}/index', name: 'participant.index')]
-    public function indexAction(EntityManagerInterface $entityManager, Request $request, Participant $participant): Response
-    {
+    public function indexAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        Participant $participant
+    ): Response {
         $groupeGn = $participant->getSession();
 
         // liste des questions non répondu par le participant
@@ -392,8 +395,11 @@ class ParticipantController extends AbstractController
      * Fourni la page détaillant les relations entre les fiefs.
      */
     #[Route('/participant/{participant}/politique', name: 'participant.politique')]
-    public function politiqueAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
-    {
+    public function politiqueAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -700,7 +706,7 @@ class ParticipantController extends AbstractController
 
                 // Noblesse expert : +2 Renommee
                 if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel()->getId(
-                )) {
+                    )) {
                     $renomme_history = new RenommeHistory();
                     $renomme_history->setRenomme(2);
                     $renomme_history->setExplication('[Nouvelle participation] Noblesse Expert');
@@ -1126,8 +1132,11 @@ class ParticipantController extends AbstractController
      * Page listant les règles à télécharger.
      */
     #[Route('/participant/{participant}/regle/list', name: 'participant.regle.list')]
-    public function regleListAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): Response
-    {
+    public function regleListAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): Response {
         $regles = $entityManager->getRepository(Rule::class)->findAll();
 
         return $this->render('rule/list.twig', [
@@ -1278,8 +1287,11 @@ class ParticipantController extends AbstractController
      * Liste des background pour le joueur.
      */
     #[Route('/participant/{participant}/background', name: 'participant.background')]
-    public function backgroundAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
-    {
+    public function backgroundAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): RedirectResponse|Response {
         // l'utilisateur doit avoir un personnage
         $personnage = $participant->getPersonnage();
         if (!$personnage) {
@@ -1336,8 +1348,11 @@ class ParticipantController extends AbstractController
      * Impossible si le personnage dispose déjà d'une origine.
      */
     #[Route('/participant/{participant}/origine', name: 'participant.origine')]
-    public function origineAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
-    {
+    public function origineAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1408,8 +1423,11 @@ class ParticipantController extends AbstractController
      * Ajoute une religion au personnage.
      */
     #[Route('/participant/{participant}/religion/add', name: 'participant.religion.add')]
-    public function religionAddAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
-    {
+    public function religionAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1663,8 +1681,11 @@ class ParticipantController extends AbstractController
      * Choix d'une nouvelle potion.
      */
     #[Route('/participant/{participant}/potion', name: 'participant.potion')]
-    public function potionAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
-    {
+    public function potionAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2388,8 +2409,11 @@ class ParticipantController extends AbstractController
      * Découverte de la magie, des domaines et sortilèges.
      */
     #[Route('/participant/{participant}/magie', name: 'participant.magie')]
-    public function magieAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
-    {
+    public function magieAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2488,8 +2512,11 @@ class ParticipantController extends AbstractController
      * Liste des classes pour le joueur.
      */
     #[Route('/participant/{participant}/classe/list', name: 'participant.classe.list')]
-    public function classeListAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): Response
-    {
+    public function classeListAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): Response {
         $repo = $entityManager->getRepository('\\'.Classe::class);
         $classes = $repo->findAllOrderedByLabel();
 
@@ -2667,10 +2694,8 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/detail', name: 'participant.groupeSecondaire.detail')]
     public function groupeSecondaireDetailAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        Participant $participant,
-        SecondaryGroup $groupeSecondaire
+        #[MapEntity] Participant $participant,
+        #[MapEntity] SecondaryGroup $groupeSecondaire
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2914,7 +2939,7 @@ class ParticipantController extends AbstractController
         $choices = [];
         foreach ($availableCompetences as $competence) {
             $choices[$competence->getId()] = $competence->getLabel(
-            ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
+                ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
         }
 
         $form = $this->createFormBuilder($participant)
@@ -3013,8 +3038,8 @@ class ParticipantController extends AbstractController
                     foreach ($religion->getSpheres() as $sphere) {
                         foreach ($sphere->getPrieres() as $priere) {
                             if ($priere->getNiveau() == $competence->getLevel()->getId() && !$personnage->hasPriere(
-                                $priere
-                            )) {
+                                    $priere
+                                )) {
                                 $priere->addPersonnage($personnage);
                                 $personnage->addPriere($priere);
                             }
@@ -3425,8 +3450,11 @@ class ParticipantController extends AbstractController
      * Detail d'un joueur.
      */
     #[Route('/participant/admin/{participant}/detail', name: 'participant.admin.detail')]
-    public function adminDetailAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
-    {
+    public function adminDetailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): RedirectResponse|Response {
         if ($participant) {
             return $this->render('joueur/admin/detail.twig', ['participant' => $participant]);
         } else {
@@ -3440,8 +3468,11 @@ class ParticipantController extends AbstractController
      * Met a jours les points d'expérience des joueurs.
      */
     #[Route('/participant/admin/{participant}/xp', name: 'participant.admin.xp')]
-    public function adminXpAction(EntityManagerInterface $entityManager, Request $request, Participant $participant): Response
-    {
+    public function adminXpAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        Participant $participant
+    ): Response {
         $form = $this->createForm(JoueurXpForm::class, $participant)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -3481,8 +3512,11 @@ class ParticipantController extends AbstractController
      * Detail d'un joueur (pour les orgas).
      */
     #[Route('/participant/orga/{participant}/detail', name: 'participant.orga.detail')]
-    public function detailOrgaAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
-    {
+    public function detailOrgaAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): RedirectResponse|Response {
         if ($participant) {
             return $this->render('joueur/admin/detail.twig', ['participant' => $participant]);
         } else {
@@ -3496,8 +3530,11 @@ class ParticipantController extends AbstractController
      * Met à jour les informations d'un joueur.
      */
     #[Route('/participant/orga/{participant}/detail', name: 'participant.orga.detail')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
-    {
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): RedirectResponse|Response {
         $form = $this->createForm(JoueurForm::class, $participant)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -4144,8 +4181,11 @@ class ParticipantController extends AbstractController
      * Choix d'une technologie.
      */
     #[Route('/participant/{participant}/technologie', name: 'participant.technologie')]
-    public function technologieAction(Request $request, EntityManagerInterface $entityManager, Participant $participant): RedirectResponse|Response
-    {
+    public function technologieAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Participant $participant
+    ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
