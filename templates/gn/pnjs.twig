@@ -4,62 +4,66 @@
 
 {% block body %}
 
-	{% include '_partials/breadcrumb.twig' with {'items' :
-		[
-			{'name' : 'Liste des GNs', 'route': path('gn.list') },
-			{'name' : gn.label, 'route': path('gn.detail', {'gn':gn.id}) },
-			{'name' : 'Liste des personnages non joueurs' }
-		]
-	} %}
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des GNs', 'route': path('gn.list') },
+            {'name' : gn.label, 'route': path('gn.detail', {'gn':gn.id}) },
+            {'name' : 'Liste des personnages non joueurs' }
+        ]
+    } %}
 
-	<div class="well well-sm clearfix">
-		
-		<blockquote>
-			Tous les personnages non joueurs participants à {{ gn.label }}
-			<small>
-				{{ pnjs|length }} PNJs
-			</small>
-		</blockquote>
-	</div>
-	
-	<div class="well well-sm">
-		<div class="white-box">
-			{% for pnj in pnjs %}
-				{{ pnj.user.email }}
-			{% endfor %}
-		</div>
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Nom Prénom</th>
-					<th>Email</th>
-					<th>Billet</th>
-					<th>Groupe</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for pnj in pnjs %}
-				<tr>
-					<td>{{ pnj.user.etatCivil.nom }} {{ pnj.user.etatCivil.prenom }}</td>
-					<td>{{ pnj.user.email }}</td>
-					<td>
-					{% if pnj.billet %}
-						{{ pnj.billet.label }}
-					{% else %}
-						<span class="text-danger">Aucun billet</span>
-					{% endif %}
-					</td>
-					<td>
-						{% if pnj.groupegn %}
-							<a href="{{ path('groupe.detail', {'groupe': pnj.groupegn.groupe.id}) }}">{{ pnj.groupegn.groupe }}</a>
-						{% else %}
-							<span class="text-danger">Aucun groupe</span>
-						{% endif %}
-						
-					</td>
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-	</div>
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>{{ pnjs|length }} personnages non joueurs participent à {{ gn.label }}</h5>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Emails</h5>
+            </div>
+            <div class="card-body">
+            {% for pnj in pnjs %}
+                {{ pnj.user.email }}{% if loop.last == false %}, {% endif %}
+            {% else %}
+                {% include '_partials/noResult.twig' with {'css' : 'text-center'} %}
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'gn.pnjs', 'routeOptions': {'gn': gn.id}, 'rows': [
+            {'name' : 'Nom prénom', 'field' : 'user.etatCivil.nom'},
+            {'name' : 'Email', 'field' : 'user.email'},
+            {'name' : 'Billet'},
+            {'name' : 'Groupe'},
+        ]} %}
+        <tbody>
+        {% for pnj in pnjs %}
+            <tr>
+                <td>{{ pnj.user.etatCivil.nom }} {{ pnj.user.etatCivil.prenom }}</td>
+                <td>{{ pnj.user.email }}</td>
+                <td>
+                    {% if pnj.billet %}
+                        {{ pnj.billet.label }}
+                    {% else %}
+                        <span class="text-danger">Aucun billet</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if pnj.groupegn %}
+                        <a href="{{ path('groupe.detail', {'groupe': pnj.groupegn.groupe.id}) }}">{{ pnj.groupegn.groupe }}</a>
+                    {% else %}
+                        <span class="text-danger">Aucun groupe</span>
+                    {% endif %}
+
+                </td>
+            </tr>
+        {% else %}
+            {% include '_partials/noResultTableRow.twig' %}
+        {% endfor %}
+        </tbody>
+    </table>
+
 {% endblock body %}

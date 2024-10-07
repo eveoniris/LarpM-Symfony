@@ -275,7 +275,7 @@ class GnController extends AbstractController
      * Liste des participants à un jeu n'ayant pas encore de billets.
      */
     #[Route('/{gn}/participants/withoutbillet', name: 'participants.withoutbillet')]
-    public function participantsWithoutBilletAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn): Response
+    public function participantsWithoutBilletAction(#[MapEntity] Gn $gn): Response
     {
         $participants = $gn->getParticipantsWithoutBillet();
 
@@ -289,7 +289,7 @@ class GnController extends AbstractController
      * Liste des participants à un jeu ayant un billet mais pas encore de groupe.
      */
     #[Route('/{gn}/participants/withoutgroup', name: 'participants.withoutgroup')]
-    public function participantsWithoutGroupAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn): Response
+    public function participantsWithoutGroupAction(#[MapEntity] Gn $gn): Response
     {
         $participants = $gn->getParticipantsWithoutGroup();
 
@@ -303,7 +303,7 @@ class GnController extends AbstractController
      * Liste des participants à un jeu ayant un billet mais pas encore de personnage.
      */
     #[Route('/{gn}/participants/withoutperso', name: 'participants.withoutperso')]
-    public function participantsWithoutPersoAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn): Response
+    public function participantsWithoutPersoAction(#[MapEntity] Gn $gn): Response
     {
         $participants = $gn->getParticipantsWithoutPerso();
 
@@ -317,7 +317,7 @@ class GnController extends AbstractController
      * Liste des participants à un jeu ayant un billet mais pas encore de groupe au format CSV.
      */
     #[Route('/{gn}/participants/withoutgroup/csv', name: 'participants.withoutgroup.csv')]
-    public function participantsWithoutGroupCSVAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn): void
+    public function participantsWithoutGroupCSVAction(#[MapEntity] Gn $gn): void
     {
         $participants = $gn->getParticipantsWithoutGroup();
         header('Content-Type: text/csv');
@@ -629,7 +629,7 @@ class GnController extends AbstractController
      * Liste des pnjs prévu sur le jeu.
      */
     #[Route('/{gn}/pnjs', name: 'pnjs')]
-    public function pnjsAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn): Response
+    public function pnjsAction(#[MapEntity] Gn $gn): Response
     {
         $pnjs = $gn->getParticipantsPnj();
 
