@@ -46,6 +46,8 @@
 						</div>
 					</td>
 				</tr>
+			{% else %}
+				{% include '_partials/noResultTableRow.twig' %}
 			{% endfor %}
 		</tbody>
 	</table>	
