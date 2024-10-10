@@ -1199,7 +1199,7 @@ class ParticipantController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $code = $data['code'];
-            $groupeGn = $entityManager->getRepository('\\'.GroupeGn::class)->findOneByCode($code);
+            $groupeGn = $entityManager->getRepository(GroupeGn::class)->findOneByCode($code);
             if (!$groupeGn) {
                 $this->addFlash('error', 'Désolé, le code que vous utilisez ne correspond à aucun groupe');
 
@@ -1236,7 +1236,7 @@ class ParticipantController extends AbstractController
             $entityManager->flush();
 
             // envoyer une notification au chef de groupe et au scénariste
-            // NOTIFY $app['notify']->joinGroupe($participant, $groupeGn);
+            // NOTIFY TODO $app['notify']->joinGroupe($participant, $groupeGn);
 
             $this->addFlash('success', 'Vous avez rejoint le groupe.');
 

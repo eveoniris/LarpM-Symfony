@@ -4,66 +4,81 @@
 
 {% block body %}
 
-<div class="well well-sm">
-	<div class="row">
-		<div class="col-md-4">
-			{{ form_start(form, {"attr": {"action": path('participant.admin.personnage.new', {'participant': participant.id}) }}) }}
-				<fieldset>
-					<legend>Ajout d'un personnage, pour l'utilisateur {{ participant.user.username }}</legend>
-					
-					{{ form_row(form.nom) }}
-					{{ form_row(form.surnom) }}
-					{{ form_row(form.age) }}
-					{{ form_row(form.genre) }}
-					{{ form_row(form.sensible) }}
-					{{ form_row(form.territoire) }}
-					{{ form_row(form.intrigue) }}
-					{{ form_row(form.classe) }}
-					<p><strong class="text-danger">ATTENTION !</strong> Toute validation du personnage est définitive.</p>
-					{{ form_rest(form) }}
-				</fieldset>
-			{{ form_end(form) }}
-		</div>
-		<div class="col-md-8">
-			<blockquote>
-				Lors de la création d'un personnage vous recevez {{ participant.gn.xpCreation }} points d'expériences (XP) qui vous serviront à obtenir des compétences.
-			</blockquote>
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Création d'un nouveau personnage, pour l'utilisateur {{ participant.user.username }}</h5>
+        </div>
 
-			<p><button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseAge" aria-expanded="false" aria-controls="collapseAge">
-  				Aide pour choisir l'age
-			</button></p>
-			<div class="collapse" id="collapseAge">
-				{{ include("age/fragment/info.twig", {'ages' : ages}) }}
-			</div>
+        <div class="row">
+            <div class="col-md-4">
+                {{ form(form) }}
 
-			<p><button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseSensible" aria-expanded="false" aria-controls="collapseSensible">
-				Aide pour choisir votre Sensibilité
-			</button></p>
-			<div class="collapse" id="collapseSensible">
-				<div class="header">
-					<h5>La Sensibilité</h5>
-				</div>
-				<blockquote>
-					<p>Défini si vous acceptez d'être témoin ou victime des violences physiques et morales liées à l'univers des Légendes d'Hyborée, de drague, de propositions d'alcool, etc.<p>
-					<p>Par défaut, les joueurs mineurs doivent être notés comme Sensible.</p>
-				</blockquote>
-			</div>
+                {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : 'Toute validation du personnage est définitive.', 'title': 'Attention !'} %}
+            </div>
 
-			<div class="collapse" id="collapseOrigine">
-				{{ include("territoire/fragment/info.twig", {'territoires' : territoires}) }}
-			</div>
-			<p><button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseClasse" aria-expanded="false" aria-controls="collapseClasse">
-				Aide pour choisir la classe
-			</button></p>
+            <div class="col-md-8">
+                {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Lors de la création d\'un personnage vous recevez {{ participant.gn.xpCreation }} points
+                    d\'expériences (XP) qui vous serviront à obtenir des compétences.'} %}
 
-			<p><button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseOrigine" aria-expanded="false" aria-controls="collapseOrigine">
-				Aide pour choisir l'origine
-			</button></p>
-			<div class="collapse" id="collapseClasse">
-				{{ include("classe/fragment/info.twig", {'classes' : classes}) }}
-			</div>
-
-		</div>
-	</div>		
-</div>
+                <div class="accordion" id="accordionHelper">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAge" aria-expanded="true" aria-controls="collapseAge">
+                                Information pour choisir l'age du personnage
+                            </button>
+                        </h2>
+                        <div id="collapseAge" class="accordion-collapse collapse show" data-bs-parent="#accordionHelper">
+                            <div class="accordion-body">
+                                {{ include("age/fragment/info.twig", {'ages' : ages}) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSensitive" aria-expanded="false" aria-controls="collapseSensitive">
+                                Aide pour choisir votre Sensibilité
+                            </button>
+                        </h2>
+                        <div id="collapseSensitive" class="accordion-collapse collapse" data-bs-parent="#accordionHelper">
+                            <div class="accordion-body">
+                                <div class="header">
+                                    <h5>La Sensibilité</h5>
+                                </div>
+                                <blockquote>
+                                    <p>Défini si vous acceptez d'être témoin ou victime des violences physiques et morales liées à
+                                        l'univers des Légendes d'Hyborée, de drague, de propositions d'alcool, etc.
+                                    <p>
+                                    <p>Par défaut, les joueurs mineurs doivent être notés comme <code>Sensible</code>.</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseClasse" aria-expanded="false" aria-controls="collapseClasse">
+                                Aide pour choisir la classe du personnage
+                            </button>
+                        </h2>
+                        <div id="collapseClasse" class="accordion-collapse collapse" data-bs-parent="#accordionHelper">
+                            <div class="accordion-body">
+                                {{ include("classe/fragment/info.twig", {'classes' : classes}) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrigin" aria-expanded="false" aria-controls="collapseClasse">
+                                Aide pour choisir l'origine du personnage
+                            </button>
+                        </h2>
+                        <div id="collapseOrigin" class="accordion-collapse collapse" data-bs-parent="#accordionHelper">
+                            <div class="accordion-body">
+                                {{ include("territoire/fragment/info.twig", {'territoires' : territoires}) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock body %}
