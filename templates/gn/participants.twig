@@ -34,9 +34,9 @@
 
     <table class="table table-condensed table-striped table-bordered">
         {% include '_partials/thead.twig' with  { 'route': 'gn.participants', 'routeOptions': {'gn': gn.id}, 'rows': [
-            {'name' : 'Participant', 'field' : 'secret', 'css' : 'text-center'},
-            {'name' : 'Email', 'field' : 'label', 'css' : 'text-center'},
-            {'name' : 'Billet', 'field' : 'competenceFamily.label', 'css' : 'text-center'},
+            {'name' : 'Participant', 'field' : 'user.nom', 'css' : 'text-center'},
+            {'name' : 'Email', 'field' : 'user.email', 'css' : 'text-center'},
+            {'name' : 'Billet', 'field' : 'billet.label', 'css' : 'text-center'},
             {'name' : 'Restauration', 'css' : 'text-center'},
             {'name' : 'Personnage', 'css' : 'text-center'},
             {'name' : 'Groupe', 'css' : 'text-center'},

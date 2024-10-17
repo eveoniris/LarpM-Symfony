@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -19,16 +20,16 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseParticipant', 'extended' => 'Participant'])]
 class BaseParticipant
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected int $id;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected ?\DateTimeInterface $subscription_date = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected \DateTime $billet_date;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTimeInterface $valide_ci_le = null;
 
     #[OneToMany(mappedBy: 'participant', targetEntity: GroupeGn::class)]
@@ -122,8 +123,6 @@ class BaseParticipant
 
     /**
      * Set the value of billet_date.
-     *
-     * @param \DateTime $billet_date
      */
     public function setBilletDate(\DateTime $billet_date): static
     {
@@ -247,7 +246,7 @@ class BaseParticipant
     /**
      * Set Gn entity (many to one).
      */
-    public function setGn(Gn $gn = null): static
+    public function setGn(?Gn $gn = null): static
     {
         $this->gn = $gn;
 
@@ -265,7 +264,7 @@ class BaseParticipant
     /**
      * Set User entity (many to one).
      */
-    public function setUser(User $user = null): static
+    public function setUser(?User $user = null): static
     {
         $this->user = $user;
 
@@ -283,7 +282,7 @@ class BaseParticipant
     /**
      * Set PersonnageSecondaire entity (many to one).
      */
-    public function setPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire = null): static
+    public function setPersonnageSecondaire(?PersonnageSecondaire $personnageSecondaire = null): static
     {
         $this->personnageSecondaire = $personnageSecondaire;
 
@@ -301,7 +300,7 @@ class BaseParticipant
     /**
      * Set Personnage entity (many to one).
      */
-    public function setPersonnage(Personnage $personnage = null): static
+    public function setPersonnage(?Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -319,7 +318,7 @@ class BaseParticipant
     /**
      * Set Billet entity (many to one).
      */
-    public function setBillet(Billet $billet = null): static
+    public function setBillet(?Billet $billet = null): static
     {
         $this->billet = $billet;
 
@@ -337,7 +336,7 @@ class BaseParticipant
     /**
      * Set GroupeGn entity (many to one).
      */
-    public function setGroupeGn(GroupeGn $groupeGn = null): static
+    public function setGroupeGn(?GroupeGn $groupeGn = null): static
     {
         $this->groupeGn = $groupeGn;
 

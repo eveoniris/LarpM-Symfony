@@ -64,13 +64,13 @@ abstract class BasePersonnageIngredient
      */
     public function getNombre(): int
     {
-        return $this->nombre;
+        return $this->nombre ?? 0;
     }
 
     /**
      * Set Personnage entity (many to one).
      */
-    public function setPersonnage(Personnage $personnage = null): static
+    public function setPersonnage(?Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -88,7 +88,7 @@ abstract class BasePersonnageIngredient
     /**
      * Set Ingredient entity (many to one).
      */
-    public function setIngredient(Ingredient $ingredient = null): static
+    public function setIngredient(?Ingredient $ingredient = null): static
     {
         $this->ingredient = $ingredient;
 

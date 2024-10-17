@@ -49,11 +49,12 @@ abstract class BaseGroupeGn
 
     #[ORM\OneToMany(mappedBy: 'groupeGn', targetEntity: Participant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: 'false')]
+    #[ORM\OrderBy(['subscription_date' => 'ASC'])]
     protected Collection $participants;
 
     #[ORM\OneToMany(mappedBy: 'groupeGn', targetEntity: GroupeGnOrdre::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: 'false')]
-    #[ORM\orderBy(['ordre' => 'ASC'])]
+    #[ORM\OrderBy(['ordre' => 'ASC'])]
     protected Collection $groupeGnOrdres;
 
     #[ORM\ManyToOne(targetEntity: Groupe::class, inversedBy: 'groupeGns')]
@@ -290,7 +291,7 @@ abstract class BaseGroupeGn
     /**
      * Set Groupe entity (many to one).
      */
-    public function setGroupe(Groupe $groupe = null): static
+    public function setGroupe(?Groupe $groupe = null): static
     {
         $this->groupe = $groupe;
 
@@ -308,7 +309,7 @@ abstract class BaseGroupeGn
     /**
      * Set Gn entity (many to one).
      */
-    public function setGn(Gn $gn = null): static
+    public function setGn(?Gn $gn = null): static
     {
         $this->gn = $gn;
 
@@ -326,7 +327,7 @@ abstract class BaseGroupeGn
     /**
      * Set Participant entity (many to one).
      */
-    public function setParticipant(Participant $participant = null): static
+    public function setParticipant(?Participant $participant = null): static
     {
         $this->participant = $participant;
 

@@ -1,3 +1,5 @@
+
+{# TODO Used for sample usage of some TAB with active reloading => move to Design page #}
 {% extends "base.html.twig" %}
 
 {% block title %}{{ groupe.nom }}{% endblock title %}
@@ -84,52 +86,89 @@
                 <div>
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
-                            <a class="nav-link{% if tab == 'detail' %} active{% endif %}"
-                               href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'detail'})) }}"
-                            >Détail</a>
+                            <a class="nav-link jsTabAnchor{% if tab == 'detail' %} active{% endif %}"
+                               href="#">Détail</a>
                         </li>
-                        <li class="nav-item dropdown{% if tab == 'membres' %} active{% endif %}">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
-                               aria-expanded="false">Membres</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Dropdown</a>
                             <ul class="dropdown-menu">
-                                {% for session in groupe.groupeGns|reverse %}
-                                    <li><a class="dropdown-item"
-                                           href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'membres', 'gn': session.gn.id})) }}"
-                                        >{{ session.gn }}</a></li>
-                                {% endfor %}
-
+                                <li><a class="dropdown-item" href="#">Action</a></li>
+                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">Separated link</a></li>
                             </ul>
                         </li>
-
                         <li class="nav-item">
-                            <a class="nav-link{% if tab == 'enveloppe' %} active{% endif %}"
-                               href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'enveloppe'})) }}"
-                            >Enveloppe</a>
+                            <a class="nav-link" href="#">Link</a>
                         </li>
-
                         <li class="nav-item">
-                            <a class="nav-link{% if tab == 'domaine' %} active{% endif %}"
-                               href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'domaine'})) }}"
-                            >Jeu de domaine</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link{% if tab == 'backgrounds' %} active{% endif %}"
-                               href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'backgrounds'})) }}"
-                            >Backgrounds</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link{% if tab == 'debriefings' %} active{% endif %}"
-                               href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'debriefings'})) }}"
-                            >Debriefings</a>
+                            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
                         </li>
                     </ul>
 
+                    <!-- Nav tabs -->
+                    <nav class="nav nav-tabs" id="nav-page-tab" role="tablist">
+                        <button class="nav-link jsTabAnchor{% if tab == 'detail' %} active{% endif %}"
+                                id="nav-detail-tab" href="#detail" data-bs-toggle="tab"
+                                data-bs-target="#detail" aria-current="page"
+                                aria-selected="{% if tab == 'detail' %}true{% else %}false{% endif %}">Détail
+                        </button>
+                        <button class="nav-link nav-item dropdown dropdown-toggle jsTabAnchor{% if tab == 'membres' %} active{% endif %}"
+                                id="nav-membres-tab" href="#membres" data-bs-toggle="tab"
+                                data-bs-target="#membres"
+                                aria-selected="{% if tab == 'membres' %}true{% else %}false{% endif %}">Membres
+                        </button>
+                        <button class="nav-link jsTabAnchor{% if tab == 'enveloppe' %} active{% endif %}"
+                                id="nav-enveloppe-tab" href="#enveloppe" data-bs-toggle="tab"
+                                data-bs-target="#enveloppe"
+                                aria-selected="{% if tab == 'enveloppe' %}true{% else %}false{% endif %}">Enveloppe
+                        </button>
+                        <button class="nav-link jsTabAnchor{% if tab == 'domaine' %} active{% endif %}"
+                                id="nav-domaine-tab" href="#domaine" data-bs-toggle="tab"
+                                data-bs-target="#domaine"
+                                aria-selected="{% if tab == 'domaine' %}true{% else %}false{% endif %}">Jeu de domaine
+                        </button>
+                        <button class="nav-link jsTabAnchor{% if tab == 'backgrounds' %} active{% endif %}"
+                                id="nav-backgrounds-tab" href="#backgrounds" data-bs-toggle="tab"
+                                data-bs-target="#backgrounds"
+                                aria-selected="{% if tab == 'backgrounds' %}true{% else %}false{% endif %}">Backgrounds
+                        </button>
+                        <button class="nav-link jsTabAnchor{% if tab == 'debriefings' %} active{% endif %}"
+                                id="nav-debriefings-tab" href="#debriefings" data-bs-toggle="tab"
+                                data-bs-target="#debriefings"
+                                aria-selected="{% if tab == 'debriefrings' %}true{% else %}false{% endif %}">Debriefings
+                        </button>
+                    </nav>
+
                     <!-- Tab panes -->
                     <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane active" role="tabpanel">
-                            {% include "admin/groupe/fragment/#{tab}.twig" with {'groupe': groupe} %}
+                        <div role="tabpanel" class="tab-pane active" role="tabpanel" id="detail"
+                             aria-labelledby="detail-tab" tabindex="0">
+                            {% include 'admin/groupe/fragment/detail.twig' with {'groupe': groupe} %}
+                        </div>
+                        <div role="tabpanel" class="tab-pane" role="tabpanel" id="membres" aria-labelledby="membres-tab"
+                             tabindex="0">
+                            {% include 'admin/groupe/fragment/membres.twig' with {'groupe': groupe} %}
+                        </div>
+                        <div role="tabpanel" class="tab-pane" role="tabpanel" id="enveloppe"
+                             aria-labelledby="enveloppe-tab"
+                             tabindex="0">
+                            {% include 'admin/groupe/fragment/enveloppe.twig' with {'groupe': groupe} %}
+                        </div>
+                        <div role="tabpanel" class="tab-pane" role="tabpanel" id="domaine" aria-labelledby="domaine-tab"
+                             tabindex="0">
+                            {% include 'admin/groupe/fragment/domaine.twig' with {'groupe': groupe} %}
+                        </div>
+                        <div role="tabpanel" class="tab-pane" role="tabpanel" id="backgrounds"
+                             aria-labelledby="backgrounds-tab"
+                             tabindex="0">
+                            {% include 'admin/groupe/fragment/backgrounds.twig' with {'groupe': groupe} %}
+                        </div>
+                        <div role="tabpanel" class="tab-pane" role="tabpanel" id="debriefings"
+                             aria-labelledby="debriefings-tab"
+                             tabindex="0">
+                            {% include 'admin/groupe/fragment/debriefings.twig' with {'groupe': groupe} %}
                         </div>
                     </div>
                 </div>
@@ -143,7 +182,16 @@
         {{ parent() }}
 
         <script type="text/javascript">
+            // Keep active tag on page reloading
             $(document).ready(function () {
+                $('button[data-bs-toggle="tab"]').on('show.bs.tab', function (e) {
+                    localStorage.setItem('activeTab', $(e.target).attr('href'));
+                });
+
+                let activeTab = localStorage.getItem('activeTab');
+                if (activeTab) {
+                    $('#nav-page-tab button[href="' + activeTab + '"]').tab('show');
+                }
                 // allow copy to clipboard
                 $('.copyToClipBoard').click(function () {
                     let textToCopy = $($(this).attr('data-target')).text();

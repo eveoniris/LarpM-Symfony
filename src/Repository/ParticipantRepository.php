@@ -149,6 +149,9 @@ class ParticipantRepository extends BaseRepository
         $query->join($alias.'.user', 'user');
         $query->join($alias.'.gn', 'gn');
         $query->join('user.etatCivil', 'etatCivil');
+        $query->leftJoin($alias.'.billet', 'billet');
+        // Next may be a LEFT join because it's can be null
+       // $query->join($alias.'.territoire', 'territoire');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
@@ -174,40 +177,35 @@ class ParticipantRepository extends BaseRepository
 
         return [
             ...parent::searchAttributes(),
-            $alias.'.renommee',
-            'territoire.nom as territoire',
-            'competence.description as competence',
-            'classe.label_masculin as classe',
-            'religion.label as religion',
-            'langue.label as langue',
-            'groupe.nom as groupe',
+            'user.username as username',
+            'user.nom as lastname',
+            'user.prenom as firstname',
+            'user.email as email',
+            'billet.label as billet',
         ];
     }
 
-    /*public function translateAttribute(string $attribute): string
+    public function translateAttribute(string $attribute): string
     {
         $attribute = match ($this->getAttributeAsName($attribute)) {
-            'user_id', 'scriptwriter' => 'user',
-            'groupe_id' => 'groupe',
-            'player_id', 'auteur' => 'player',
-            'classe', 'classe_id' => 'classe',
+            'user_id', 'username' => 'username',
+            'email' => 'email',
+            'billet_id', 'billet' => 'billet',
             default => $attribute,
         };
 
         return parent::translateAttribute($attribute);
-    }*/
+    }
 
     public function translateAttributes(): array
     {
         return [
             ...parent::translateAttributes(),
-            'renommee' => $this->translator->trans('Renommée', domain: 'repository'),
-            'territoire' => $this->translator->trans('Territoire', domain: 'repository'),
-            'competence' => $this->translator->trans('Compétence', domain: 'repository'),
-            'classe' => $this->translator->trans('Classe', domain: 'repository'),
-            'religion' => $this->translator->trans('Religion', domain: 'repository'),
-            'langue' => $this->translator->trans('Langue', domain: 'repository'),
-            'groupe' => $this->translator->trans('Groupe', domain: 'repository'),
+            'username' => $this->translator->trans('Utilisateur', domain: 'repository'),
+            'lastname' => $this->translator->trans('Nom', domain: 'repository'),
+            'firstname' => $this->translator->trans('Prénom', domain: 'repository'),
+            'email' => $this->translator->trans('Email', domain: 'repository'),
+            'billet' => $this->translator->trans('Billet', domain: 'repository'),
         ];
     }
 
