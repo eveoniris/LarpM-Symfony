@@ -1009,8 +1009,8 @@ class GroupeController extends AbstractController
     public function listAction(
         Request $request,
         PagerService $pagerService,
-        GroupeRepository $groupeRepository): Response
-    {
+        GroupeRepository $groupeRepository
+    ): Response {
         $pagerService->setRequest($request)->setRepository($groupeRepository);
 
         return $this->render('groupe/list.twig', [
@@ -1468,15 +1468,16 @@ class GroupeController extends AbstractController
     ): RedirectResponse|Response {
         /*
          * Si le groupe existe, on affiche son détail
-         * Sinon on envoi une erreur
+         * Sinon on envoie une erreur
          */
         if ($groupe) {
-            return $this->render('groupe/detail.twig', ['groupe' => $groupe]);
-        } else {
-            $this->addFlash('error', 'Le groupe n\'a pas été trouvé.');
-
-            return $this->redirectToRoute('groupe');
+            return $this->render('groupe/detail.twig', ['groupe' => $groupe, 'tab' => $request->get('tab', 'detail')]);
         }
+
+        $this->addFlash('error', 'Le groupe n\'a pas été trouvé.');
+
+        return $this->redirectToRoute('groupe');
+
     }
 
     #[Route('/{groupe}/delete', name: 'delete', requirements: ['groupe' => Requirement::DIGITS], methods: [

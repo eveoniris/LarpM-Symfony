@@ -4,13 +4,13 @@
 
 {% block body %}
 
-    {#  TODO list for admin and detail for groupe member #}
-    {% include '_partials/breadcrumb.twig' with {'items' :
-        [
-            {'name' : 'Liste des groupes', 'route': path('groupe.list') },
-            {'name' : 'Détail d\'un groupe' }
-        ]
-    } %}
+    {% set breadcrumb = [] %}
+    {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+        {% set breadcrumb = breadcrumb|merge([{'name' : 'Liste des groupes', 'route': path('groupe.list') }]) %}
+    {% endif %}
+    {% set breadcrumb = breadcrumb|merge( [{'name' : 'Détail d\'un groupe' }]) %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :breadcrumb} %}
 
     <div class="well well-sm">
 
