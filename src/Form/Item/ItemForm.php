@@ -93,6 +93,7 @@ class ItemForm extends AbstractType
                     '54',
                     '55',
                     '56',
+                    '57',
                 ],
                 'choice_label' => static fn ($value) => match ($value) {
                     '81' => 'Rien de spécial',
@@ -134,6 +135,7 @@ class ItemForm extends AbstractType
                     '54' => 'Objet sanctifié par la compétence Prêtrise - Dagda',
                     '55' => 'Objet sanctifié par la compétence Prêtrise - Xotli/Ong',
                     '56' => 'Objet sanctifié par la compétence Prêtrise - Affras',
+                    '57' => 'Lié aux chaudrons (mais aucun en particulier)',
                 },
                 'attr' => [
                     'help' => "Information sur l'objet",
