@@ -58,12 +58,6 @@
 
                                 </ul>
                             </div>
-
-                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Restauration"
-                               href="{{ path('groupe.restauration',{'groupe':groupe.id}) }}"><i
-                                        class="fa fa-coffee"></i> Restauration</a>
-
                         </div>
                     </div>
                 </div>
@@ -129,7 +123,7 @@
                     <!-- Tab panes -->
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" role="tabpanel">
-                            {% include "admin/groupe/fragment/#{tab}.twig" with {'groupe': groupe} %}
+                            {% include "admin/groupe/fragment/#{tab|default('detail')}.twig" with {'groupe': groupe} %}
                         </div>
                     </div>
                 </div>

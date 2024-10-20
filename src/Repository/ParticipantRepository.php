@@ -178,8 +178,8 @@ class ParticipantRepository extends BaseRepository
         return [
             ...parent::searchAttributes(),
             'user.username as username',
-            'user.nom as lastname',
-            'user.prenom as firstname',
+            'etatCivil.nom as lastname',
+            'etatCivil.prenom as firstname',
             'user.email as email',
             'billet.label as billet',
         ];
