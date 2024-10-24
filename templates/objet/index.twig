@@ -2,7 +2,7 @@
 
 {% block title %}Objets{% endblock title %}
 
-{% block style %}
+{# block style %}
 <style>
 .hover_img a { position:relative; }
 .hover_img a span { position:absolute; display:none; z-index:99; }
@@ -10,75 +10,72 @@
 table {width: 100%; table-layout: fixed}
 td {white-space: normal; text-overflow: ellipsis;}
 </style>
-{% endblock style %}
+{% endblock style #}
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Objets</li>
-	</ol>
+	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Objets'}]} %}
+
 
 	<div class="well well-sm">
 		<div class="header">
-			<h5>Liste des objets <small>( {{ paginator|length }} objets)</small></h5>
+			<h5>Liste des objets <small>( {{ paginator|length }} )</small></h5>
 		</div>
 
-		<div class="btn-toolbar" role="toolbar" aria-label="...">
-			<div class="btn-group" role="group" aria-label="...">
-				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Fichier CSV" href="{{ path('item.print-csv') }}"><i class="fa fa-file-csv"></i> Fichier CSV</a>
-				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimer les photos" href="{{ path('item.print-photo') }}"><i class="fa fa-print"></i> Imprimer les photos</a>
-				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimer les etiquettes" href="{{ path('item.print-all') }}"><i class="fa fa-print"></i> Imprimer les étiquettes</a>
-			</div>
-		</div>
+		{% include '_partials/formListSearch.twig' with
+			{
+				'actionPath' : path('item.list'),
+				'buttons' : [
+				{'label': 'Imprimer les photos', 'title': "Imprimer les photos", 'route': path('item.print-csv'), 'icon': 'fa-print', 'target':'_blank'},
+				{'label': 'Imprimer les étiquettes', 'title': "Imprimer les étiquettes", 'route': path('item.print-photo'), 'icon': 'fa-print', 'target':'_blank'},
+				{'label': 'Fichier CSV','title': "Télécharger la liste (CSV)", 'route': path('item.print-all'), 'icon': 'fa-file-csv'}
+			]
+			} %}
 	</div>
 
 	{% include '_partials/pagination.html.twig' %}
-	
+
 	<table class="table table-condensed table-striped table-bordered">
-		<thead>
-			<tr>
-				<th>Numéro</th>
-				<th>Qualité et identification</th>
-				<th>Label</th>
-				<th>Photo</th>
-				<th>Quantité</th>
-				<th>Description</th>
-				<th>Spécial</th>
-				<th>Groupe</th>
-				<th>Personnage</th>
-				<th>Actions</th>
-			</tr>
-		</thead>
+		{% include '_partials/thead.twig' with  { 'route': 'item.list', 'rows': [
+			{'name' : 'Numéro', 'field' : 'numero', 'css' : 'text-center'},
+			{'name' : 'Qualité et identification', 'field': 'numero', 'css' : 'text-center'},
+			{'name' : 'Label', 'field': 'label', 'css' : 'text-center'},
+			{'name' : 'Photo', 'css' : 'text-center'},
+			{'name' : 'Quantité', 'css' : 'text-center'},
+			{'name' : 'Description', 'field': 'description', 'css' : 'text-center'},
+			{'name' : 'Spécial', 'field': 'special', 'css' : 'text-center'},
+			{'name' : 'Groupe', 'css' : 'text-center'},
+			{'name' : 'Personnage', 'css' : 'text-center'},
+			{'name' : 'Actions', 'css' : 'text-center'},
+		]} %}
 		<tbody>
 		{% for item in paginator%}
 			<tr>
-				<td>{{ item.numero }}</td>
-				<td>{{ item.quality.numero }}{{ item.identification }}</td>
-				<td>{{ item.label }}</td>
-				<td>
+				<td class="text-center align-middle">{{ item.numero|highlight(pagerService.searchValue) }}</td>
+				<td class="text-center align-middle">{{ item.qualident|highlight(pagerService.searchValue) }}</td>
+				<td class="text-center align-middle">{{ item.label|highlight(pagerService.searchValue) }}</td>
+				<td class="text-center align-middle">
 					<div class="hover_img">
 						<a href="{{ path('stockObjet.photo', {'objet': item.objet.id }) }}" target="_blank" rel="noopener noreferrer">Show Image<span>
-								<img src="{{ path('stockObjet.photo', {'objet': item.objet.id, 'miniature': true}) }}" width="200px" />
+								<img src="{{ path('stockObjet.photo', {'objet': item.objet.id, 'miniature': true}) }}" width="200px"  alt=""/>
 								</span>
 						</a>
 					</div>
-
 				</td>
-				<td>{{ item.quantite }}</td>
-				<td>{{ item.description|markdown_to_html }}</td>
-				<td>{{ item.special|markdown_to_html }}</td>
-				<td>
+				<td class="text-center align-middle">{{ item.quantite }}</td>
+				<td class="align-middle">{{ item.description|markdown_to_html|highlight(pagerService.searchValue) }}</td>
+				<td class="align-middle">{{ item.special|markdown_to_html|highlight(pagerService.searchValue) }}</td>
+				<td class="align-middle">
 					{% for groupe in item.groupes %}
 						<a href="{{ path('groupe.detail', {'groupe':groupe.id}) }}">{{ groupe }}</a><br />
 					{% endfor %}
 				</td>
-				<td>
+				<td class="align-middle">
 					{% for personnage in item.personnages %}
 						<a href="{{ path('personnage.admin.detail', {'personnage':personnage.id}) }}">{{ personnage }}</a><br />
 					{% endfor %}
 				</td>
-				<td>
+				<td class="align-middle">
 					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 						<div class="btn-group" role="group" aria-label="...">
 							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimer" href="{{ path('item.print', {'item': item.id}) }}"><i class="fa fa-print"></i></a>

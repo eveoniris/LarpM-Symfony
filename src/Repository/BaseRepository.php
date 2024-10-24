@@ -235,6 +235,7 @@ abstract class BaseRepository extends ServiceEntityRepository
             $this->getAlias(),
             $queryBuilder
         )->getQuery();
+      //  $query->setHydrationMode(Query::HYDRATE_SCALAR);
 
         return $this->findPaginatedQuery(
             $query,
@@ -268,7 +269,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         $query->setMaxResults($limit)
             ->setFirstResult(($offset - 1) * $limit);
 
-        return new Paginator($query, false);
+            return new Paginator($query, false);
     }
 
     /**

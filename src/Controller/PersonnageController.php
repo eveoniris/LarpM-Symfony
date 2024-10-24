@@ -760,9 +760,10 @@ class PersonnageController extends AbstractController
      * Affiche le détail d'un personnage (pour les orgas).
      */
     #[Route('/{personnage}/admin', name: 'admin.detail')]
-    #[Route('/admin/{personnage}/detail', name: 'admin.detail')]
+    #[Route('/{personnage}', name: 'detail')]
+    #[Route('/admin/{personnage}/detail', name: 'admin.detail')] // larp V1 url
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
-    public function adminDetailAction(EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
+    public function adminDetailAction(EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage): Response
     {
         $descendants = $entityManager->getRepository(Personnage::class)->findDescendants($personnage);
 
