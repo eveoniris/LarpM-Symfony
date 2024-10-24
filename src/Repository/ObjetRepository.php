@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Rangement;
 use App\Entity\Tag;
+use App\Service\OrderBy;
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Deprecated;
 
@@ -82,7 +83,7 @@ class ObjetRepository extends BaseRepository
         }
 
         if (\is_numeric($criter)) {
-            $criter = (int) $criter;
+            $criter = (int)$criter;
 
             if (-1 === $criter) {
                 $qb->leftjoin($alias.'.tags', 't');
@@ -103,8 +104,10 @@ class ObjetRepository extends BaseRepository
         return $qb;
     }
 
-    public function addRangementCriteriaToQueryBuilder(string|int|Rangement|null $criter, QueryBuilder $qb): QueryBuilder
-    {
+    public function addRangementCriteriaToQueryBuilder(
+        string|int|Rangement|null $criter,
+        QueryBuilder $qb
+    ): QueryBuilder {
         $alias = $qb->getRootAliases()[0] ?? 'o';
         if (null === $criter) {
             return $qb;
@@ -119,7 +122,7 @@ class ObjetRepository extends BaseRepository
         }
 
         if (\is_numeric($criter)) {
-            $criter = (int) $criter;
+            $criter = (int)$criter;
             if (-1 === $criter) {
                 $qb->leftjoin($alias.'.rangement', 'r');
                 $qb->andWhere('r.id is null');

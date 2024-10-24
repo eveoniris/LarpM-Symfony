@@ -7,36 +7,40 @@ use App\Entity\Objet;
 use App\Form\Item\ItemDeleteForm;
 use App\Form\Item\ItemForm;
 use App\Form\Item\ItemLinkForm;
+use App\Repository\ItemRepository;
+use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\RedirectResponse as RedirectResponseAlias;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+#[Route('/item', name: 'item.')]
 class ObjetController extends AbstractController
 {
     /**
      * Présentation des objets de jeu.
      */
-    #[Route('/item', name: 'item.index')]
-    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/', name: 'index')]
+    #[Route('/', name: 'list')]
+    public function indexAction(Request $request, PagerService $pagerService, ItemRepository $itemRepository): Response
     {
-        $repo = $entityManager->getRepository('\\'.Item::class);
-        $items = $repo->findPaginated(
-            $this->getRequestPage(),
-            $this->getRequestLimit(),
-        );
+        $pagerService->setRequest($request)->setRepository($itemRepository)->setLimit(25);
 
         return $this->render('objet/index.twig', [
-            'paginator' => $items,
+            'pagerService' => $pagerService,
+            'paginator' => $itemRepository->searchPaginated($pagerService),
         ]);
     }
 
     /**
      * Impression d'une etiquette.
      */
-    #[Route('/item/{item}/print', name: 'item.print')]
+    #[Route('/{item}/print', name: 'print')]
     public function printAction(Request $request, EntityManagerInterface $entityManager, Item $item): Response
     {
         return $this->render('objet/print.twig', [
@@ -47,7 +51,7 @@ class ObjetController extends AbstractController
     /**
      * Impression de toutes les etiquettes.
      */
-    #[Route('/item/print-all', name: 'item.print-all')]
+    #[Route('/print-all', name: 'print-all')]
     public function printAllAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $repo = $entityManager->getRepository('\\'.Item::class);
@@ -61,7 +65,7 @@ class ObjetController extends AbstractController
     /**
      * Impression de tous les objets avec photo.
      */
-    #[Route('/item/print-photo', name: 'item.print-photo')]
+    #[Route('/print-photo', name: 'print-photo')]
     public function printPhotoAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $repo = $entityManager->getRepository('\\'.Item::class);
@@ -75,7 +79,7 @@ class ObjetController extends AbstractController
     /**
      * Sortie CSV.
      */
-    #[Route('/item/print-csv', name: 'item.print-csv')]
+    #[Route('/print-csv', name: 'print-csv')]
     public function printCsvAction(Request $request, EntityManagerInterface $entityManager): void
     {
         $repo = $entityManager->getRepository('\\'.Item::class);
@@ -144,7 +148,7 @@ class ObjetController extends AbstractController
     /**
      * Création d'un nouvel objet de jeu.
      */
-    #[Route('/item/new/{objet}', name: 'item.new')]
+    #[Route('/new/{objet}', name: 'new')]
     public function newAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Objet $objet): RedirectResponseAlias|Response
     {
         $item = new Item();
@@ -192,7 +196,7 @@ class ObjetController extends AbstractController
             $this->addFlash('success', 'L\'objet de jeu a été créé');
 
             // todo handle "referer" or "redirectUrl"
-            return $this->redirectToRoute('item.index', [], 303);
+            return $this->redirectToRoute('index', [], 303);
         }
 
         return $this->render('objet/new.twig', [
@@ -205,8 +209,10 @@ class ObjetController extends AbstractController
     /**
      * Détail d'un objet de jeu.
      */
-    #[Route('/item/{item}', name: 'item.detail')]
-    public function detailAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Item $item): Response
+    #[Route('/{item}', name: 'detail')]
+    #[Route('/{item}/detail', name: 'detail')]
+    #[Route('/objet/{item}/detail', name: 'detail')] // Larp v1 route
+    public function detailAction(#[MapEntity] Item $item): Response
     {
         return $this->render('objet/detail.twig', [
             'item' => $item,
@@ -216,7 +222,7 @@ class ObjetController extends AbstractController
     /**
      * Mise à jour d'un objet de jeu.
      */
-    #[Route('/item/{item}/update', name: 'item.update')]
+    #[Route('/{item}/update', name: 'update')]
     public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Item $item): RedirectResponseAlias|Response
     {
         $form = $this->createForm(ItemForm::class, $item);
@@ -246,7 +252,7 @@ class ObjetController extends AbstractController
 
             $this->addFlash('success', 'L\'objet de jeu a été sauvegardé');
 
-            return $this->redirectToRoute('item.index', [], 303);
+            return $this->redirectToRoute('index', [], 303);
         }
 
         return $this->render('objet/update.twig', [
@@ -258,7 +264,7 @@ class ObjetController extends AbstractController
     /**
      * Suppression d'un objet de jeu.
      */
-    #[Route('/item/{item}/delete', name: 'item.delete')]
+    #[Route('/{item}/delete', name: 'delete')]
     public function deleteAction(Request $request, EntityManagerInterface $entityManager, Item $item): RedirectResponseAlias|Response
     {
         $form = $this->createForm(ItemDeleteForm::class, $item);
@@ -271,7 +277,7 @@ class ObjetController extends AbstractController
 
             $this->addFlash('success', 'L\'objet de jeu a été supprimé');
 
-            return $this->redirectToRoute('item.index', [], 303);
+            return $this->redirectToRoute('index', [], 303);
         }
 
         return $this->render('objet/delete.twig', [
@@ -283,7 +289,7 @@ class ObjetController extends AbstractController
     /**
      * Lier un objet de jeu à un groupe/personnage/lieu.
      */
-    #[Route('/item/{item}/link', name: 'item.link')]
+    #[Route('/{item}/link', name: 'link')]
     public function linkAction(Request $request, EntityManagerInterface $entityManager, Item $item): RedirectResponseAlias|Response
     {
         $form = $this->createForm(ItemLinkForm::class, $item);
