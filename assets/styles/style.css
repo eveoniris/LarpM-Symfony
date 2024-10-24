@@ -36,6 +36,14 @@
     padding: 0.5em;
     border-radius: 3px
 }
+
+.item
+{
+    font-weight: bold;
+    width : 200px;
+    padding : 5px 5px 5px 5px;
+}
+
 /** EndPage content **/
 
 .pull-right {

@@ -62,7 +62,7 @@
 						{{ item.description|markdown_to_html }}
 					</div>
 				</div>
-  				<img src="{{ path('stockObjet.photo',{'objet': item.objet.id, 'miniature': true}) }}" alt="{{ item.label }}" />
+  				<img src="{{ path('stockObjet.photo', {'objet': item.objet.id, 'miniature': true}) }}" alt="{{ item.label }}" />
   				
   				{{ item.description|markdown_to_html }}
   				{{ item.special|markdown_to_html }}

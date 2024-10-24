@@ -19,10 +19,11 @@ class StringHelper
 
         $replace = '<span'.$styles.$css.'>'.$word.'</span>';
 
-        return (string) str_ireplace($word, $replace, $content);
+        return static::splitTag($word, $replace, $content);
+        // return (string)str_ireplace($word, $replace, $content);
     }
 
-    public static function getStringFrom(null|string|array $content, int|string $key = null): string
+    public static function getStringFrom(string|array|null $content, int|string|null $key = null): string
     {
         if (null === $content) {
             return '';
@@ -44,5 +45,16 @@ class StringHelper
         }
 
         return (string) $content;
+    }
+
+    public static function splitTag($from, $to, $txt, bool $outterHtml = true)
+    {
+        return preg_replace_callback(
+            '#((?:(?!<[/a-z]).)*)([^>]*>|$)#si',
+            static fn ($capture) => $outterHtml
+                ? str_ireplace($from, $to, $capture[1]).$capture[2]
+                : $capture[1].str_ireplace($from, $to, $capture[2]),
+            $txt
+        );
     }
 }

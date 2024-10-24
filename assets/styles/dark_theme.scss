@@ -1,4 +1,3 @@
-
 /* Customize Theme */
 
 [data-bs-theme="dark"] {
@@ -6,7 +5,7 @@
   --bs-primary-bg-subtle: #{$primary};
   --bs-primary-bg-subtle-dark: #{$primary};
   --bs-breadcrumb-bg-color: #{$dark-bg-subtle-dark};
-  --bs-link-color:#2a9fd6 ;
+  --bs-link-color: #2a9fd6;
   --bs-heading-color: #cccccc;
   --bs-secondary-bg-rgb: 40, 40, 40;
 
@@ -18,17 +17,17 @@
     border-radius: 4px
   }
 
-  .breadcrumb>li {
+  .breadcrumb > li {
     display: inline-block
   }
 
-  .breadcrumb>li+li:before {
+  .breadcrumb > li + li:before {
     content: "/\00a0";
     padding: 0 5px;
     color: #ffffff
   }
 
-  .breadcrumb>.active {
+  .breadcrumb > .active {
     color: #888888
   }
 
@@ -64,5 +63,13 @@
 
   .ts-dropdown, .ts-control, .ts-control input {
     color: #{$secondary};
+  }
+
+  .item-bleu {
+    background-color: #{blue-600};
+  }
+
+  .item-orange {
+    background-color: #{orange};
   }
 }

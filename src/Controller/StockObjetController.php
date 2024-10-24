@@ -188,6 +188,9 @@ class StockObjetController extends AbstractController
         #[MapEntity] Objet $objet,
         ImageOptimizer $imageOptimizer,
     ): BinaryFileResponse|StreamedResponse {
+        // PROD path https://larpmanager.eveoniris.com/stock/objet/1200/photo?miniature=1
+        // PROD lARPV2 https://larpm.eveoniris.com/stock/objet/90/photo
+
         $miniature = $request->get('miniature');
         $photo = $objet->getPhoto();
 
