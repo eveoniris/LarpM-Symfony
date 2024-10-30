@@ -2,44 +2,17 @@
     <h5>Informations</h5>
 </div>
 
-
-<div class="btn-toolbar d-flex justify-content-end" role="toolbar">
-    {# TODO? as component or admin component ? send title, path&Label List ? #}
-    <div class="btn-group dropdown" role="group" aria-label="...">
-        <button type="button" class="btn btn-dark dropdown-toggle " data-bs-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-            Action
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-            <li class="d-grid gap-2">
-                <a class="btn btn-dark" href="{{ path('personnage.admin.statut', {'personnage':personnage.id}) }}">Modifier
-                    le statut (vivant/mort)</a>
-            </li>
-            <li class="d-grid gap-2">
-                <a class="btn btn-dark" href="{{ path('personnage.admin.update.age',{'personnage': personnage.id}) }}">Modifier
-                    l'age</a>
-            </li>
-            <li class="d-grid gap-2">
-                <a class="btn btn-dark" href="{{ path('personnage.admin.update', {'personnage':personnage.id}) }}">Modifier
-                    (nom/surnom/etc ...)</a>
-            </li>
-            <li class="d-grid gap-2">
-                <a class="btn btn-dark" href="{{ path('personnage.admin.transfert', {'personnage':personnage.id}) }}">Transférer
-                    à un autre joueur</a>
-            </li>
-            <li class="d-grid gap-2">
-                <a class="btn btn-dark"
-                   href="{{ path('personnage.export', {'personnage':personnage.id}) }}">Imprimer</a>
-            </li>
-            <li class="d-grid gap-2">
-                <a class="btn btn-dark" href="{{ path('personnage.admin.delete', {'personnage':personnage.id}) }}">Supprimer</a>
-            </li>
-        </ul>
-    </div>
-
-
-</div>
+{% include '_partials/dropDown.twig' with {
+    'title' : 'Action',
+    'actions' :
+    [
+        {'path' : path('personnage.admin.statut', {'personnage': personnage.id}), 'label': 'Modifier le statut (vivant/mort)' },
+        {'path' : path('personnage.admin.update.age', {'personnage': personnage.id}), 'label': 'Modifier l\'Age' },
+        {'path' : path('personnage.admin.transfert', {'personnage': personnage.id}), 'label': 'Modifier (nom/surnom/etc ...)' },
+        {'path' : path('personnage.export', {'personnage': personnage.id}), 'label': 'Imprimer' },
+        {'path' : path('personnage.admin.delete', {'personnage': personnage.id}), 'label': 'Supprimer' },
+    ]
+} %}
 
 <div class="panel-body">
     <p><strong>Numéro : </strong>{{ personnage.id }}</p>
