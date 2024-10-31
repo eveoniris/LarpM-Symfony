@@ -773,6 +773,7 @@ class PersonnageController extends AbstractController
                 'personnage' => $personnage,
                 'descendants' => $descendants,
                 'langueMateriel' => $this->getLangueMateriel($personnage),
+                'participant' => $personnage->getLastParticipant()
             ]
         );
     }
