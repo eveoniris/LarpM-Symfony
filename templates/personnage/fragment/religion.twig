@@ -62,7 +62,7 @@
 {% if personnage.isPriest() %}
 
     <div class="header mt-4">
-        <h5>Vos connaissances religieuses</h5>
+        <h5>Connaissances religieuses</h5>
     </div>
 
     <div class="list-group">
@@ -219,6 +219,8 @@
                     </div>
                 </div>
             {% endfor %}
+            {% else %}
+                {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucune'} %}
         {% endif %}
     </div>
 {% endif %}
