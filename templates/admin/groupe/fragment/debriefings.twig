@@ -1,15 +1,14 @@
 <div class="panel panel-default">
-    <div class="panel-heading">
-        Debriefings
-        <a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter"
-           href="{{ path('debriefing.add', {'groupe': groupe.id}) }}"><i class="fa fa-plus"></i></a>
+    <div class="panel-heading d-flex justify-content-end mb-2">
+        <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter"
+           href="{{ path('debriefing.add', {'groupe': groupe.id}) }}"><i class="fa fa-plus"></i> Ajouter</a>
     </div>
     <div class="panel-body">
         <div class="list-group">
             {% for debriefing in groupe.debriefings %}
                 <div class="list-group-item">
                     <div class="list-group-item-heading">
-                        <h6>
+                        <h3>
                             {% if debriefing.gn %}
                                 GN {{ debriefing.gn.label }} -&nbsp;
                             {% endif %}
@@ -17,17 +16,17 @@
 
                             <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <a class="btn btn-default" data-toggle="tooltip" data-placement="top"
+                                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                                        title="Modifier"
                                        href="{{ path('debriefing.update', {'debriefing': debriefing.id}) }}"><i
                                                 class="fa fa-pencil"></i></a>
-                                    <a class="btn btn-danger" data-toggle="tooltip" data-placement="top"
+                                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                                        title="Supprimer"
                                        href="{{ path('debriefing.delete', {'debriefing': debriefing.id}) }}"><i
                                                 class="fa fa-eraser"></i></a>
                                 </div>
                             </div>
-                        </h6>
+                        </h3>
                     </div>
                     <p class="list-group-item-text text-warning">
                         {{ debriefing.visibility }}

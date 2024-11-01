@@ -1,7 +1,6 @@
 <div class="panel panel-default">
-    <div class="panel-heading">
-        Backgrounds
-        <a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter"
+    <div class="panel-heading d-flex justify-content-end mb-2">
+        <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter"
            href="{{ path('background.add', {'groupe': groupe.id}) }}"><i class="fa fa-plus"></i></a>
     </div>
     <div class="panel-body">
@@ -9,7 +8,7 @@
             {% for background in groupe.backgrounds %}
                 <div class="list-group-item">
                     <div class="list-group-item-heading">
-                        <h6>
+                        <h4>
                             {% if background.gn %}
                                 GN {{ background.gn.label }} -&nbsp;
                             {% endif %}
@@ -17,17 +16,17 @@
 
                             <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <a class="btn btn-default" data-toggle="tooltip" data-placement="top"
+                                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                                        title="Modifier"
                                        href="{{ path('background.update', {'background': background.id}) }}"><i
                                                 class="fa fa-pencil"></i></a>
-                                    <a class="btn btn-danger" data-toggle="tooltip" data-placement="top"
+                                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                                        title="Supprimer"
                                        href="{{ path('background.delete', {'background': background.id}) }}"><i
                                                 class="fa fa-eraser"></i></a>
                                 </div>
                             </div>
-                        </h6>
+                        </h4>
                     </div>
                     <p class="list-group-item-text text-warning">
                         {{ background.visibility }}

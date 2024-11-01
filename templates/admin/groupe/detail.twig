@@ -3,8 +3,10 @@
 {% block title %}{{ groupe.nom }}{% endblock title %}
 {% block body %}
 
+    {% set isAdmin = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
+
     {% set breadcrumb = [] %}
-    {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+    {% if isAdmin %}
         {% set breadcrumb = breadcrumb|merge([{'name' : 'Liste des groupes', 'route': path('groupe.list') }]) %}
     {% endif %}
     {% set breadcrumb = breadcrumb|merge( [{'name' : 'Détail d\'un groupe' }]) %}
@@ -71,7 +73,7 @@
             <h4>Détail d'un groupe</h4>
         </div>
 
-        <h5> {{ groupe.label }}</h5>
+        <h4 class="bold">{{ groupe.label }}</h4>
 
         <div class="row">
             <div class="col-md-12">
@@ -82,29 +84,39 @@
                                href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'detail'})) }}"
                             >Détail</a>
                         </li>
-                        <li class="nav-item dropdown{% if tab == 'membres' %} active{% endif %}">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle{% if tab == 'membres' %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button"
                                aria-expanded="false">Membres</a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu p-0 border-2 rounded-2 border-secondary">
                                 {% for session in groupe.groupeGns|reverse %}
-                                    <li><a class="dropdown-item"
+                                    <li class="d-grid gap-2{% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}">
+                                        <a class="dropdown-item {% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}"
                                            href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'membres', 'gn': session.gn.id})) }}"
                                         >{{ session.gn }}</a></li>
                                 {% endfor %}
-
                             </ul>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link{% if tab == 'enveloppe' %} active{% endif %}"
+                            <a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
                                href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'enveloppe'})) }}"
                             >Enveloppe</a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link{% if tab == 'domaine' %} active{% endif %}"
-                               href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'domaine'})) }}"
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle{% if tab == 'domaine' %} active{% endif %}"
+                               data-bs-toggle="dropdown" href="#" role="button"
+                               aria-expanded="false"
                             >Jeu de domaine</a>
+                            <ul class="dropdown-menu p-0 border-2 rounded-2 border-secondary">
+                                {% for session in groupe.groupeGns|reverse %}
+                                    <li class="d-grid gap-2{% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}">
+                                        <a class="dropdown-item {% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}"
+                                           href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'domaine', 'gn': session.gn.id})) }}"
+                                        >{{ session.gn }}</a></li>
+                                {% endfor %}
+
+                            </ul>
                         </li>
 
                         <li class="nav-item">

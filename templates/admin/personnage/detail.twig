@@ -4,8 +4,9 @@
 
 {% block body %}
 
+    {% set isAdmin = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
     {% set breadcrumb = [] %}
-    {% if is_granted('ROLE_REGLE', app.user) %}
+    {% if isAdmin %}
         {% set breadcrumb = breadcrumb|merge([{'name' : 'Liste des personnages', 'route': path('personnage.list') }]) %}
     {% elseif participant is defined %}
         {% set breadcrumb = breadcrumb|merge([{'name' : participant.gn.label, 'route': path('gn.detail', {'gn' : participant.gn.id}) }]) %}
@@ -42,7 +43,7 @@
         </h3>
 
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-6">
 
                 <div class="panel panel-default">
                     <small>(admin)</small>
@@ -58,24 +59,26 @@
                         <h5>Informations de jeu</h5>
                     </div>
 
-                    {% include '_partials/dropDown.twig' with {
-                        'title' : 'Action',
-                        'actions' :
-                        [
-                            {'path' : path('personnage.admin.update.renomme', {'personnage': personnage.id}), 'label': 'Modifier la Renomée' },
-                            {'path' : path('personnage.admin.update.heroisme', {'personnage': personnage.id}), 'label': 'Modifier l\'Héroïsme' },
-                            {'path' : path('personnage.admin.update.pugilat', {'personnage': personnage.id}), 'label': 'Modifier le Pugilat' },
-                            {'path' : path('personnage.admin.update.domaine', {'personnage': personnage.id}), 'label': 'Modifier la liste des domaines de magie' },
-                            {'path' : path('personnage.admin.add.religion', {'personnage': personnage.id}), 'label': 'Ajouter une religion' },
-                            {'path' : path('personnage.admin.update.origine', {'personnage': personnage.id}), 'label': 'Modifier l\'origine' },
-                            {'path' : path('personnage.admin.update.langue', {'personnage': personnage.id}), 'label': 'Modifier les langages' },
-                            {'path' : path('personnage.admin.update.sort', {'personnage': personnage.id}), 'label': 'Modifier la liste des sorts' },
-                            {'path' : path('personnage.admin.update.potion', {'personnage': personnage.id}), 'label': 'Modifier la liste des potions' },
-                            {'path' : path('personnage.admin.update.priere', {'personnage': personnage.id}), 'label': 'Modifier la liste des prieres' },
-                            {'path' : path('personnage.admin.update.technologie', {'personnage': personnage.id}), 'label': 'Modifier la liste des technologies' },
-                            {'path' : path('personnage.admin.update.connaissance', {'personnage': personnage.id}), 'label': 'Modifier la liste des connaissances' },
-                        ]
-                    } %}
+                    {% if isAdmin %}
+                        {% include '_partials/dropDown.twig' with {
+                            'title' : 'Action',
+                            'actions' :
+                            [
+                                {'path' : path('personnage.admin.update.renomme', {'personnage': personnage.id}), 'label': 'Modifier la Renomée' },
+                                {'path' : path('personnage.admin.update.heroisme', {'personnage': personnage.id}), 'label': 'Modifier l\'Héroïsme' },
+                                {'path' : path('personnage.admin.update.pugilat', {'personnage': personnage.id}), 'label': 'Modifier le Pugilat' },
+                                {'path' : path('personnage.admin.update.domaine', {'personnage': personnage.id}), 'label': 'Modifier la liste des domaines de magie' },
+                                {'path' : path('personnage.admin.add.religion', {'personnage': personnage.id}), 'label': 'Ajouter une religion' },
+                                {'path' : path('personnage.admin.update.origine', {'personnage': personnage.id}), 'label': 'Modifier l\'origine' },
+                                {'path' : path('personnage.admin.update.langue', {'personnage': personnage.id}), 'label': 'Modifier les langages' },
+                                {'path' : path('personnage.admin.update.sort', {'personnage': personnage.id}), 'label': 'Modifier la liste des sorts' },
+                                {'path' : path('personnage.admin.update.potion', {'personnage': personnage.id}), 'label': 'Modifier la liste des potions' },
+                                {'path' : path('personnage.admin.update.priere', {'personnage': personnage.id}), 'label': 'Modifier la liste des prieres' },
+                                {'path' : path('personnage.admin.update.technologie', {'personnage': personnage.id}), 'label': 'Modifier la liste des technologies' },
+                                {'path' : path('personnage.admin.update.connaissance', {'personnage': personnage.id}), 'label': 'Modifier la liste des connaissances' },
+                            ]
+                        } %}
+                    {% endif %}
 
                     <div class="panel-body">
                         <p>Origine : <strong
@@ -252,14 +255,16 @@
                         <h5>Technique</h5>
                     </div>
 
-                    {#  {'path' : path('personnage.admin.token.add', {'personnage': personnage.id}), 'label': 'Ajouter un jeton vieillessee', 'token : 'VIEILLESSE'}, #}
-                    {% include '_partials/dropDown.twig' with {
-                        'title' : 'Action',
-                        'actions' :
-                        [
-                            {'path' : path('personnage.admin.trigger.add', {'personnage': personnage.id}), 'label': 'Ajouter un déclencheur de compétence' },
-                        ]
-                    } %}
+                    {% if isAdmin %}
+                        {#  {'path' : path('personnage.admin.token.add', {'personnage': personnage.id}), 'label': 'Ajouter un jeton vieillessee', 'token : 'VIEILLESSE'}, #}
+                        {% include '_partials/dropDown.twig' with {
+                            'title' : 'Action',
+                            'actions' :
+                            [
+                                {'path' : path('personnage.admin.trigger.add', {'personnage': personnage.id}), 'label': 'Ajouter un déclencheur de compétence' },
+                            ]
+                        } %}
+                    {% endif %}
 
                     <div class="panel-body">
                         <h6>Jetons de vieillesse</h6>
@@ -290,24 +295,25 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-
+            <div class="col-md-6">
 
                 <div class="panel panel-default">
                     <div class="header">
                         <h5>Photo</h5>
                     </div>
 
-                    {% include '_partials/dropDown.twig' with {
-                        'title' : 'Action',
-                        'actions' :
-                        [
-                            {'path' : path('personnage.trombine.update', {'personnage': personnage.id}), 'label': 'Modifier la trombine' },
-                        ]
-                    } %}
+                    {% if isAdmin %}
+                        {% include '_partials/dropDown.twig' with {
+                            'title' : 'Action',
+                            'actions' :
+                            [
+                                {'path' : path('personnage.trombine.update', {'personnage': personnage.id}), 'label': 'Modifier la trombine' },
+                            ]
+                        } %}
+                    {% endif %}
 
 
-                    <div class="thumbnail">
+                    <div class="thumbnail d-flex justify-content-center">
                         {% if personnage.trombineUrl %}
                             <img class="media-object" width="200"
                                  src="{{ path('personnage.trombine', {'personnage' : personnage.id }) }}"/>
@@ -318,159 +324,31 @@
                     </div>
                 </div>
 
-                <div class="panel panel-default">
-                    <div class="header">
-                        <h5>Enveloppe</h5> {# TODO ADMIN #}
-                    </div>
-
-                    {% include '_partials/dropDown.twig' with {
-                        'title' : 'Action',
-                        'actions' :
-                        [
-                            {'path' : path('personnage.documents', {'personnage': personnage.id}), 'label': 'Modifier la liste des documents' },
-                            {'path' : path('personnage.items', {'personnage': personnage.id}), 'label': 'Modifier la liste des objets' },
-                            {'path' : path('personnage.admin.update.ingredient', {'personnage': personnage.id}), 'label': 'Modifier la liste des ingrédients' },
-                            {'path' : path('personnage.admin.update.ressource', {'personnage': personnage.id}), 'label': 'Modifier la liste des ressources' },
-                            {'path' : path('personnage.admin.update.richesse', {'personnage': personnage.id}), 'label': 'Modifier la richesse' },
-                        ]
-                    } %}
-
-                    <div class="panel-body">
-                        <div class="list-group">
-
-                            <div class="list-group-item">
-                                <h6 class="list-group-item-heading">Renommée
-                                    : {{ personnage.renomme|default(0) }}</h6>
-                            </div>
-
-                            <div class="list-group-item">
-                                <h6 class="list-group-item-heading">Richesse : {{ personnage.richesse|default(0) }}
-                                    pièces d'argent</h6>
-                            </div>
-
-                            <div class="list-group-item">
-                                <h6 class="list-group-item-heading">Lié aux compétences :</h6>
-                                {% for competence in personnage.competences %}
-                                    {% if competence.materiel %}
-                                        <div class="list-group-item-text">
-                                            <strong>{{ competence.competenceFamily.label }}
-                                                &nbsp({{ competence.level.label }}) : </strong>
-                                            {{ competence.materielRaw }}
-                                        </div>
-                                    {% else %}
-                                        <div class="list-group-item-text">Aucun</div>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-
-                            {% if personnage.hasCompetence('Prêtrise') %}
-                                <div class="list-group-item">
-                                    {% set enoughReligion = 0 %}
-                                    <h6 class="list-group-item-heading">Divinité principale :</h6>
-                                    {% for religion in personnage.personnagesReligions %}
-                                        {% if religion.religionLevel.index >= 2 %}
-                                            {% set enoughReligion = 1 %}
-                                            <div class="list-group-item-text">
-                                                <strong>{{ religion.religion }}</strong>
-                                                ({{ religion.religionLevel.label }})
-                                            </div>
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% if enoughReligion == 0 %}
-                                        <div class="list-group-item-text">CE PRÊTRE N'A PAS ASSEZ DE FERVEUR</div>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                            <div class="list-group-item">
-                                <h6 class="list-group-item-heading">Lié aux langues :</h6>
-                                {% for materiel in personnage.langueMateriel %}
-                                    <div class="list-group-item-text"><strong>{{ materiel }}</strong></div>
-                                {% else %}
-                                    <div class="list-group-item-text">Aucun</div>
-                                {% endfor %}
-                            </div>
-
-                            <div class="list-group-item">
-                                <h6 class="list-group-item-heading">Documents :</h6>
-                                {% for document in personnage.documents %}
-                                    <div class="list-group-item-text"><a
-                                                href="{{ path('document.detail', {'document':document.id}) }}"><strong>{{ document.code }}</strong>
-                                            - {{ document.titre }}</a></div>
-                                {% else %}
-                                    <div class="list-group-item-text">Aucun</div>
-                                {% endfor %}
-                            </div>
-
-                            <div class="list-group-item">
-                                <h6 class="list-group-item-heading">Objets :</h6>
-                                {% for item in personnage.items %}
-                                    <div class="list-group-item-text"><a
-                                                href="{{ path('item.detail', {'item':item.id}) }}"><strong>{{ item.numero }}</strong>
-                                            - {{ item.label }}</a></div>
-                                {% else %}
-                                    <div class="list-group-item-text">Aucun</div>
-                                {% endfor %}
-                            </div>
-
-                            <div class="list-group-item">
-                                <h6 class="list-group-item-heading">Ingrédients :</h6>
-                                {% for personnageIngredient in personnage.personnageIngredients %}
-                                    <div class="list-group-item-text">{{ personnageIngredient.nombre }} {{ personnageIngredient.ingredient }}
-                                        - {{ personnageIngredient.ingredient.color }}
-                                        : {{ personnageIngredient.ingredient.dose }}
-                                        (Niveau {{ personnageIngredient.ingredient.niveau }})
-                                    </div>
-                                {% else %}
-                                    <div class="list-group-item-text">Aucun</div>
-                                {% endfor %}
-                            </div>
-
-                            <div class="list-group-item">
-                                <h6 class="list-group-item-heading">Ressources :</h6>
-                                {% for personnageRessource in personnage.personnageRessources %}
-                                    <div class="list-group-item-text">{{ personnageRessource.nombre }} {{ personnageRessource.ressource }}</div>
-                                {% else %}
-                                    <div class="list-group-item-text">Aucune</div>
-                                {% endfor %}
-                            </div>
-
-                            <div class="list-group-item">
-                                <h6 class="list-group-item-heading">Matériel :</h6>
-                                {% if personnage.materiel %}
-                                    {{ personnage.materiel }}
-                                {% else %}
-                                    <div class="list-group-item-text">Aucun</div>
-                                {% endif %}
-                            </div>
+                <div class="card mb-2">
+                    <div class="card-header p-0">
+                        <div class="header">
+                            <h5 class="m-0">Compétences <small>({{ personnage.xp|default(0) }}
+                                    / {{ personnage.xpTotal }}
+                                    xp)</small></h5>
                         </div>
                     </div>
-                </div>
 
-                <div class="panel panel-default">
-                    {% include 'personnage/fragment/religion.twig' with {'personnage' : personnage} %}
-                </div>
-            </div>
-            <div class="col-md-4">
-
-                <div class="panel panel-default">
-                    <div class="header">
-                        <h5>Compétences <small>({{ personnage.xp|default(0) }} / {{ personnage.xpTotal }}
-                                xp)</small></h5>
-                    </div>
-
-                    {% include '_partials/dropDown.twig' with {
-                        'title' : 'Action',
-                        'actions' :
-                        [
-                            {'path' : path('personnage.admin.xp', {'personnage': personnage.id}), 'label': 'Ajouter des points d\'expérience' },
-                            {'path' : path('personnage.admin.add.competence', {'personnage': personnage.id}), 'label': 'Ajouter une compétence' },
-                            {'path' : path('personnage.admin.delete.competence', {'personnage': personnage.id}), 'label': 'Retirer la dernière compétence acquise' },
-                        ]
-                    } %}
+                    {% if isAdmin %}
+                        {% include '_partials/dropDown.twig' with {
+                            'title' : 'Action',
+                            'actions' :
+                            [
+                                {'path' : path('personnage.admin.xp', {'personnage': personnage.id}), 'label': 'Ajouter des points d\'expérience' },
+                                {'path' : path('personnage.admin.add.competence', {'personnage': personnage.id}), 'label': 'Ajouter une compétence' },
+                                {'path' : path('personnage.admin.delete.competence', {'personnage': personnage.id}), 'label': 'Retirer la dernière compétence acquise' },
+                            ]
+                        } %}
+                    {% endif %}
 
                     <div class="panel-body">
 
                         <div class="list-group">
+                            {#  TODO : mark favorite/normal/unknown #}
                             {% for competence in personnage.competences %}
                                 <div class="list-group-item">{{ competence.competenceFamily.label }}
                                     &nbsp({{ competence.level.label }})
@@ -478,52 +356,104 @@
                             {% endfor %}
                         </div>
 
+                        <div class="d-flex justify-content-center m-2">
+                            <a class="btn btn-secondary"
+                               data-bs-toggle="collapse"
+                               href="#xpHistory"
+                               aria-expanded="false" aria-controls="xpHistory"
+                               role="button">
+                                <i class="fa-solid fa-clock-rotate-left"></i> voir l'historique
+                            </a>
+                        </div>
                         <div class="collapse" id="xpHistory">
-                            <h6>Historique</h6>
 
                             <div class="list-group">
-                                {% for historique in personnage.experienceGains %}
-                                    <div class="list-group-item">{{ historique.operationDate|date("Y-m-d H:i:s") }}
-                                        : + {{ historique.xpGain }}
-                                        xp {% if historique.explanation %} pour la raison suivante : "{{ historique.explanation }}"{% endif %}
-                                        .
-                                    </div>
-                                {% endfor %}
-                                {% for historique in personnage.experienceUsages %}
-                                    <div class="list-group-item">{{ historique.operationDate|date("Y-m-d H:i:s") }}
-                                        : - {{ historique.xpUse }} xp pour
-                                        acquérir {{ historique.competence.label }}.
-                                    </div>
-                                {% endfor %}
+                                <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
+                                    Gains</h6>
+                                <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                                    <thead>
+                                    <tr>
+                                        <th class="col-md-3">Date</th>
+                                        <th class="col-md-1">Quantité</th>
+                                        <th>Raison</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% set totalXpGain = 0 %}
+                                    {% for historique in personnage.experienceGains %}
+                                        {% set totalXpGain = totalXpGain + historique.xpGain %}
+                                        <tr>
+                                            <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
+                                            <td>+{{ historique.xpGain }}</td>
+                                            <td>{{ historique.explanation }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td>Total</td>
+                                        <td>{{ totalXpGain }}</td>
+                                        <td></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                                <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
+                                    Usages</h6>
+                                <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                                    <thead>
+                                    <tr>
+                                        <th class="col-md-3">Date</th>
+                                        <th class="col-md-1">Quantité</th>
+                                        <th>Compétence</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% set totalXpUse = 0 %}
+                                    {% for historique in personnage.experienceUsages %}
+                                        {% set totalXpUse = totalXpUse + historique.xpUse %}
+                                        <tr>
+                                            <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
+                                            <td>-{{ historique.xpUse }}</td>
+                                            <td>{{ historique.competence.label }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td>Total</td>
+                                        <td>{{ totalXpUse }}</td>
+                                        <td></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {% if personnage.personnageLignee %}
-                    <div class="panel panel-default">
-                        <div class="header">
-                            <h5>Lignée & Généalogie</h5>
+                    <div class="card">
+                        <div class="header m-0 p-0">
+                            <h5 class="m-0 p-0">Lignée & Généalogie</h5>
                         </div>
 
-                        {% if personnage.personnageLignee|length == 0 %}
-                            {% include '_partials/dropDown.twig' with {
-                                'title' : 'Action',
-                                'actions' :
-                                [
-                                    {'path' : path('personnage.admin.add.lignee', {'personnage': personnage.id}), 'label': 'Ajouter une lignée' },
-                                ]
-                            } %}
-                        {% else %}
-                            {% set actions = {} %}
-                            {% for lignage in personnage.personnageLignee %}
-                                {% set actions = actions|merge({
-                                    'path':  path('personnage.admin.delete.lignee', {'personnage': personnage.id, 'personnageLignee' : lignage.id }),
-                                    'label': 'Retirer'
-                                }) %}
-                            {% endfor %}
+                        {% if isAdmin %}
+                            {% if personnage.personnageLignee|length == 0 %}
+                                {% include '_partials/dropDown.twig' with {
+                                    'title' : 'Action',
+                                    'actions' :
+                                    [
+                                        {'path' : path('personnage.admin.add.lignee', {'personnage': personnage.id}), 'label': 'Ajouter une lignée' },
+                                    ]
+                                } %}
+                            {% else %}
+                                {% set actions = {} %}
+                                {% for lignage in personnage.personnageLignee %}
+                                    {% set actions = actions|merge({
+                                        'path':  path('personnage.admin.delete.lignee', {'personnage': personnage.id, 'personnageLignee' : lignage.id }),
+                                        'label': 'Retirer'
+                                    }) %}
+                                {% endfor %}
 
-                            {% include '_partials/dropDown.twig' with {'title' : 'Action','actions' :actions} %}
+                                {% include '_partials/dropDown.twig' with {'title' : 'Action','actions' :actions} %}
+                            {% endif %}
                         {% endif %}
 
                         <div class="panel-body">
@@ -558,7 +488,7 @@
                                         </li>
                                     {% endfor %}
                                 {% else %}
-                                    <p class="list-group-item-text">
+                                    <p class="m-2">
                                         Ce personnage n'a pas de lignée.
                                     </p>
                                 {% endif %}
@@ -585,13 +515,15 @@
                         <h5>Chronologie</h5>
                     </div>
 
-                    {% include '_partials/dropDown.twig' with {
-                        'title' : 'Action',
-                        'actions' :
-                        [
-                            {'path' : path('personnage.admin.add.chronologie', {'personnage': personnage.id}), 'label': 'Ajouter un évènement' },
-                        ]
-                    } %}
+                    {% if isAdmin %}
+                        {% include '_partials/dropDown.twig' with {
+                            'title' : 'Action',
+                            'actions' :
+                            [
+                                {'path' : path('personnage.admin.add.chronologie', {'personnage': personnage.id}), 'label': 'Ajouter un évènement' },
+                            ]
+                        } %}
+                    {% endif %}
 
 
                     <div class="panel-body">
@@ -611,18 +543,160 @@
                     </div>
                 </div>
 
+                {% if isAdmin %}
+                    <div class="panel panel-default">
+                        <div class="header">
+                            <h5>Enveloppe</h5>
+                        </div>
+
+                        {# TODO : fragment for enveloppe -> to also use it on groupe #}
+                        {% if isAdmin %}
+                            {% include '_partials/dropDown.twig' with {
+                                'title' : 'Action',
+                                'actions' :
+                                [
+                                    {'path' : path('personnage.documents', {'personnage': personnage.id}), 'label': 'Modifier la liste des documents' },
+                                    {'path' : path('personnage.items', {'personnage': personnage.id}), 'label': 'Modifier la liste des objets' },
+                                    {'path' : path('personnage.admin.update.ingredient', {'personnage': personnage.id}), 'label': 'Modifier la liste des ingrédients' },
+                                    {'path' : path('personnage.admin.update.ressource', {'personnage': personnage.id}), 'label': 'Modifier la liste des ressources' },
+                                    {'path' : path('personnage.admin.update.richesse', {'personnage': personnage.id}), 'label': 'Modifier la richesse' },
+                                ]
+                            } %}
+                        {% endif %}
+
+                        <div class="panel-body">
+                            <div class="list-group">
+
+                                <div class="list-group-item">
+                                    <h6 class="list-group-item-heading">Renommée
+                                        : {{ personnage.renomme|default(0) }}</h6>
+                                </div>
+
+                                <div class="list-group-item">
+                                    <h6 class="list-group-item-heading">Richesse : {{ personnage.richesse|default(0) }}
+                                        pièces d'argent</h6>
+                                </div>
+
+                                <div class="list-group-item">
+                                    <h6 class="list-group-item-heading">Lié aux compétences :</h6>
+                                    {% for competence in personnage.competences %}
+                                        {% if competence.materiel %}
+                                            <div class="list-group-item-text">
+                                                <strong>{{ competence.competenceFamily.label }}
+                                                    &nbsp({{ competence.level.label }}) : </strong>
+                                                {{ competence.materielRaw }}
+                                            </div>
+                                        {% else %}
+                                            <div class="list-group-item-text">Aucun</div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+
+                                {% if personnage.hasCompetence('Prêtrise') %}
+                                    <div class="list-group-item">
+                                        {% set enoughReligion = 0 %}
+                                        <h6 class="list-group-item-heading">Divinité principale :</h6>
+                                        {% for religion in personnage.personnagesReligions %}
+                                            {% if religion.religionLevel.index >= 2 %}
+                                                {% set enoughReligion = 1 %}
+                                                <div class="list-group-item-text">
+                                                    <strong>{{ religion.religion }}</strong>
+                                                    ({{ religion.religionLevel.label }})
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if enoughReligion == 0 %}
+                                            <div class="list-group-item-text">CE PRÊTRE N'A PAS ASSEZ DE FERVEUR</div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                                <div class="list-group-item">
+                                    <h6 class="list-group-item-heading">Lié aux langues :</h6>
+                                    {% for materiel in personnage.langueMateriel %}
+                                        <div class="list-group-item-text"><strong>{{ materiel }}</strong></div>
+                                    {% else %}
+                                        <div class="list-group-item-text">Aucun</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="list-group-item">
+                                    <h6 class="list-group-item-heading">Documents :</h6>
+                                    {% for document in personnage.documents %}
+                                        <div class="list-group-item-text"><a
+                                                    href="{{ path('document.detail', {'document':document.id}) }}"><strong>{{ document.code }}</strong>
+                                                - {{ document.titre }}</a></div>
+                                    {% else %}
+                                        <div class="list-group-item-text">Aucun</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="list-group-item">
+                                    <h6 class="list-group-item-heading">Objets :</h6>
+                                    {% for item in personnage.items %}
+                                        <div class="list-group-item-text"><a
+                                                    href="{{ path('item.detail', {'item':item.id}) }}"><strong>{{ item.numero }}</strong>
+                                                - {{ item.label }}</a></div>
+                                    {% else %}
+                                        <div class="list-group-item-text">Aucun</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="list-group-item">
+                                    <h6 class="list-group-item-heading">Ingrédients :</h6>
+                                    {% for personnageIngredient in personnage.personnageIngredients %}
+                                        <div class="list-group-item-text">{{ personnageIngredient.nombre }} {{ personnageIngredient.ingredient }}
+                                            - {{ personnageIngredient.ingredient.color }}
+                                            : {{ personnageIngredient.ingredient.dose }}
+                                            (Niveau {{ personnageIngredient.ingredient.niveau }})
+                                        </div>
+                                    {% else %}
+                                        <div class="list-group-item-text">Aucun</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="list-group-item">
+                                    <h6 class="list-group-item-heading">Ressources :</h6>
+                                    {% for personnageRessource in personnage.personnageRessources %}
+                                        <div class="list-group-item-text">{{ personnageRessource.nombre }} {{ personnageRessource.ressource }}</div>
+                                    {% else %}
+                                        <div class="list-group-item-text">Aucune</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="list-group-item">
+                                    <h6 class="list-group-item-heading">Matériel :</h6>
+                                    {% if personnage.materiel %}
+                                        {{ personnage.materiel }}
+                                    {% else %}
+                                        <div class="list-group-item-text">Aucun</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    {% include 'personnage/fragment/religion.twig' with {'personnage' : personnage} %}
+                </div>
+
                 <div class="panel panel-default">
                     <div class="header">
                         <h5>Background</h5>
                     </div>
 
-                    {% include '_partials/dropDown.twig' with {
-                        'title' : 'Action',
-                        'actions' :
-                        [
-                            {'path' : path('personnage.admin.add.background', {'personnage': personnage.id}), 'label': 'Ajouter un background' },
-                        ]
-                    } %}
+                    {% if isAdmin %}
+                        {% include '_partials/dropDown.twig' with {
+                            'title' : 'Action',
+                            'actions' :
+                            [
+                                {'path' : path('personnage.admin.add.background', {'personnage': personnage.id}), 'label': 'Ajouter un background' },
+                            ]
+                        } %}
+                    {% endif %}
 
                     <div class="panel-body">
                         <div class="list-group">
