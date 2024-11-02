@@ -46,7 +46,7 @@
         "symfony/ux-autocomplete": "^2.21",
         "symfony/validator": "7.1.*",
         "symfony/web-link": "7.1.*",
-        "symfony/webpack-encore-bundle": "^2.2",
+        "symfony/webpack-encore-bundle": "*",
         "symfony/yaml": "7.1.*",
         "twig/extra-bundle": "*",
         "twig/intl-extra": "3.8.*",
@@ -98,7 +98,8 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "7.1.*"
+            "require": "7.1.*",
+            "docker": true
         }
     },
     "require-dev": {
