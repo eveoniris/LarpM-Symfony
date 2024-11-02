@@ -1,6 +1,6 @@
 name: app
 
-type: php:8.2
+type: php:8.3
 
 runtime:
     extensions:
@@ -11,10 +11,10 @@ runtime:
         - iconv
         
 
-#variables:
-#    php:
+variables:
+    php:
 #        # uncomment on PHP 7.4+
-#        #opcache.preload: config/preload.php
+        opcache.preload: config/preload.php
 
 build:
     flavor: none

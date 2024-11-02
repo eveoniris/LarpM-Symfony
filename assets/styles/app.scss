@@ -17,7 +17,7 @@ $font-size-base: 0.875rem;
 $card-cap-color: $body-color-dark;
 
 // Include any default variable overrides here (though functions won't be available)
-@import '~bootstrap/scss/bootstrap';
+//@import '~bootstrap/scss/bootstrap';
 
 // Option B: Include parts of Bootstrap
 
@@ -54,7 +54,7 @@ $card-cap-color: $body-color-dark;
 //@import "~bootstrap/scss/utilities/api";
 
 // 8. Add additional custom code here
-@import '../fontawesome-6-5-1/css/fontawesome.min.css';
-@import '../fontawesome-6-5-1/css/solid.min.css';
-@import '../fontawesome-6-5-1/css/brands.min.css';
+//@import '../fontawesome-6-5-1/css/fontawesome.min.css';
+//@import '../fontawesome-6-5-1/css/solid.min.css';
+//@import '../fontawesome-6-5-1/css/brands.min.css';
 @import 'style.css';
