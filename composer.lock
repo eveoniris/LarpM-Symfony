@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b26be7fb6c52f6a870dcf9daaa1750b0",
+    "content-hash": "270565e2c59b04150210158f1fc880af",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -7550,6 +7550,104 @@
                 }
             ],
             "time": "2024-10-21T19:02:15+00:00"
+        },
+        {
+            "name": "symfony/ux-turbo",
+            "version": "v2.21.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/ux-turbo.git",
+                "reference": "075c609e54fc421c6b1c1974e46e9a8b2d44277c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/ux-turbo/zipball/075c609e54fc421c6b1c1974e46e9a8b2d44277c",
+                "reference": "075c609e54fc421c6b1c1974e46e9a8b2d44277c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1",
+                "symfony/stimulus-bundle": "^2.9.1"
+            },
+            "conflict": {
+                "symfony/flex": "<1.13"
+            },
+            "require-dev": {
+                "dbrekelmans/bdi": "dev-main",
+                "doctrine/doctrine-bundle": "^2.4.3",
+                "doctrine/orm": "^2.8 | 3.0",
+                "phpstan/phpstan": "^1.10",
+                "symfony/asset-mapper": "^6.4|^7.0",
+                "symfony/debug-bundle": "^5.4|^6.0|^7.0",
+                "symfony/expression-language": "^5.4|^6.0|^7.0",
+                "symfony/form": "^5.4|^6.0|^7.0",
+                "symfony/framework-bundle": "^6.4|^7.0",
+                "symfony/mercure-bundle": "^0.3.7",
+                "symfony/messenger": "^5.4|^6.0|^7.0",
+                "symfony/panther": "^2.1",
+                "symfony/phpunit-bridge": "^5.4|^6.0|^7.0",
+                "symfony/process": "^5.4|6.3.*|^7.0",
+                "symfony/property-access": "^5.4|^6.0|^7.0",
+                "symfony/security-core": "^5.4|^6.0|^7.0",
+                "symfony/stopwatch": "^5.4|^6.0|^7.0",
+                "symfony/twig-bundle": "^6.4|^7.0",
+                "symfony/ux-twig-component": "^2.21",
+                "symfony/web-profiler-bundle": "^5.4|^6.0|^7.0"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "thanks": {
+                    "name": "symfony/ux",
+                    "url": "https://github.com/symfony/ux"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\UX\\Turbo\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kévin Dunglas",
+                    "email": "kevin@dunglas.fr"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Hotwire Turbo integration for Symfony",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "hotwire",
+                "javascript",
+                "mercure",
+                "symfony-ux",
+                "turbo",
+                "turbo-stream"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/ux-turbo/tree/v2.21.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2024-10-21T19:07:02+00:00"
         },
         {
             "name": "symfony/validator",
