@@ -23,10 +23,6 @@
     border-radius: 4px;
 }
 
-.well blockquote {
-
-}
-
 .well-lg {
     padding: 1em;
     border-radius: 6px
@@ -169,6 +165,47 @@ ul.forum li {
     border-color: #aaa;
 }
 
+ul.detail {
+
+}
+
+ul.detail li {
+    display: flex !important;
+    justify-content: flex-start !important;
+    flex-wrap: wrap;
+    padding: 0 !important;
+}
+
+ul.detail li>div {
+    padding: 4px;
+}
+
+ul.detail li .head, ul.detail li>strong {
+    flex: 0 0 auto;
+    width: 16.66667%;
+    min-width: 100px;
+    text-align: center !important;
+    font-weight: 700 !important;
+    padding: .25rem !important;
+    box-sizing: border-box;
+    align-items: center !important;
+    border-right: 1px solid;
+}
+
+ul.detail li .text {
+
+    padding: 4px;
+    display: flex !important;
+    align-items: center !important;
+}
+
+ul.detail li .first {
+    border-top-left-radius: 6px !important;
+}
+
+ul.detail li .last {
+    border-bottom-left-radius: 6px !important;
+}
 
 /**
  * Ajoute un asterix rouge si le champ est obligatoire
