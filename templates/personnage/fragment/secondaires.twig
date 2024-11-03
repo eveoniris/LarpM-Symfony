@@ -1,0 +1,33 @@
+<div class="well">
+    <div class="header">
+        <h5>Groupes secondaires</h5>
+    </div>
+
+
+    <ul class="list-group">
+        {% for groupeSecondaire in personnage.secondaryGroups %}
+            <li class="list-group-item">{% if groupeSecondaire.secret %}<span
+                        style="color:red;">Secret</span> - {% endif %}{{ groupeSecondaire.label }} (Chef)
+            </li>
+        {% endfor %}
+        {% for membre in personnage.membres %}
+            <a class="list-group-item"
+               href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire': membre.secondaryGroup.id}) }}">{% if membre.secondaryGroup.secret %}
+                    <span style="color:red;">Secret</span> - {% endif %}{{ membre.secondaryGroup.label }}</a>
+        {% endfor %}
+        {% if personnage.secondaryGroups|length <= 0 and personnage.membres|length <= 0 %}
+            <li class="list-group-item">Ce personnage ne fait pas partie d'un groupe secondaire.</li>
+        {% endif %}
+    </ul>
+
+    {% if personnage.postulants|length > 0 %}
+        <h6>Postulation(s)</h6>
+        <ul class="list-group">
+            {% for postulant in personnage.postulants %}
+                <a class="list-group-item"
+                   href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire': postulant.secondaryGroup.id}) }}">{{ postulant.secondaryGroup.label }}
+                    en attente de validation.</a>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>

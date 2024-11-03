@@ -65,4 +65,8 @@
   .item-orange {
     background-color: #{orange};
   }
+
+  ul.detail li .head,   ul.detail li>strong {
+    background-color: #{$dark-bg-subtle};
+  }
 }

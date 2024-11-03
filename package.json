@@ -34,6 +34,6 @@
     },
     "dependencies": {
         "file-loader": "^6.2.0",
-        "tinymce": "^7.4.1"
+        "tinymce": "^7.1.1"
     }
 }
