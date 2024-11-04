@@ -28,6 +28,36 @@ class Classe extends BaseClasse
         return $competenceFamilyInCommons;
     }
 
+    public function isFavoriteCompetenceFamily(string|CompetenceFamily $competenceFamily): bool
+    {
+        foreach ($this->competenceFamilyFavorites as $competenceFamilyFavorite) {
+            if (
+                (is_string($competenceFamily) && $competenceFamilyFavorite->getLabel() === $competenceFamily)
+                || ($competenceFamily instanceof CompetenceFamily
+                    && $competenceFamily->getId() === $competenceFamilyFavorite->getId())
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isCommonCompetenceFamily(string|CompetenceFamily $competenceFamily): bool
+    {
+        foreach ($this->competenceFamilyNormales as $competenceFamilyNormale) {
+            if (
+                (is_string($competenceFamily) && $competenceFamilyNormale->getLabel() === $competenceFamily)
+                || ($competenceFamily instanceof CompetenceFamily
+                    && $competenceFamily->getId() === $competenceFamilyNormale->getId())
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getCompetenceFamilyCreationLabelsInNotInFavorites(): array
     {
         $competenceFamiliesLabels = [];

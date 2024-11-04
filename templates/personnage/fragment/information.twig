@@ -1,4 +1,7 @@
-<div class="well">
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
+<div class="{{ css }}">
     <div class="header">
         <h5>Informations</h5>
     </div>
@@ -164,9 +167,9 @@
                             {% for historique in personnage.experienceGains %}
                                 {% set totalXpGain = totalXpGain + historique.xpGain %}
                                 <tr>
-                                    <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
-                                    <td>+{{ historique.xpGain }}</td>
-                                    <td>{{ historique.explanation }}</td>
+                                <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
+                                <td>+{{ historique.xpGain }}</td>
+                                <td>{{ historique.explanation }}</td>
                                 </tr>{% else %}
                                 {% include '_partials/noResultTableRow.twig' %}
                             {% endfor %}
@@ -275,12 +278,12 @@
             <div class="head last">Personnage secondaire</div>
             <div class="text">
                 {% if participant is defined %}
-                    {% if participant.personnageSecondaire is defined %}
-                        {{ participant.personnageSecondaire.classe.label }}
-                    {% else %}
-                        <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">Choisir
-                            son personnage secondaire</a>
-                    {% endif %}
+                {% if participant.personnageSecondaire is defined %}
+                    {{ participant.personnageSecondaire.classe.label }}
+                {% else %}
+                    <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">Choisir
+                        son personnage secondaire</a>
+                {% endif %}
                 {% else %}
                     {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'title': 'Prérequis !', 'content' : "Le personnage ne dispose d'aucune participation à un GN"} %}
                 {% endif %}

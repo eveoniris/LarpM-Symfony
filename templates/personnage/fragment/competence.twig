@@ -1,22 +1,142 @@
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
 {# Compétences #}
-<div class="header">
-	<h5>Compétences</h5>
+<div class="{{ css }}">
+    <div class="header">
+        <h5>Compétences ({{ personnage.xp|default(0) }} / {{ personnage.xpTotal }} xp)</h5>
+    </div>
+
+    {% if isAdmin %}
+        {% include '_partials/dropDown.twig' with {
+            'title' : 'Action',
+            'actions' :
+            [
+                {'path' : path('personnage.admin.xp', {'personnage': personnage.id}), 'label': 'Ajouter des points d\'expérience' },
+                {'path' : path('personnage.admin.add.competence', {'personnage': personnage.id}), 'label': 'Ajouter une compétence' },
+                {'path' : path('personnage.admin.delete.competence', {'personnage': personnage.id}), 'label': 'Retirer la dernière compétence acquise' },
+            ]
+        } %}
+    {% endif %}
+
+    <ul class="list-group">
+        {% set currentFamillyId = null %}
+
+        {% for competence in personnage.competences %}
+
+            {% if currentFamillyId != competence.competenceFamily.id %}
+                {% if not true and FakeLiForIDE is defined %}<li> Shouldn't be used{% endif %}
+                {% if not loop.first %}
+                    </li>
+                {% endif %}
+            {% endif %}
+
+            {% if loop.first or currentFamillyId != competence.competenceFamily.id %}
+                <li class="list-group-item">
+                <h5>
+                    {{ competence.competenceFamily.label }}
+                    {% if personnage.classe.isFavoriteCompetenceFamily(competence.competenceFamily) %}
+                        <i class="fa fa-heart text-success" data-toggle="tooltip" data-placement="top"
+                           title="Favorite"></i>
+                    {% elseif not personnage.classe.isCommonCompetenceFamily(competence.competenceFamily) %}
+                        <i class="fa fa-face-tired text-danger" data-toggle="tooltip" data-placement="top"
+                           title="Méconnue"></i>
+                    {% endif %}
+                </h5>
+            {% endif %}
+
+            <h6>{{ competence.level.label }}</h6>
+            <div class="list-group-item-text border-top mt-1">{{ competence.description|markdown_to_html }}</div>
+            <p class="list-group-item-text">
+                {% if competence.documentUrl %}
+                    {% if participant is defined %}
+                        <a class="btn btn-secondary btn-sm"
+                           href="{{ path('participant.competence.detail',{'participant': participant.id, 'competence' : competence.id}) }}">
+                            <i class="fa fa-file"></i> Imprimer l'aide de jeu
+                        </a>
+                    {% else %}
+                        {# TODO CHECK isGranted #}
+                        <a class="btn btn-secondary btn-sm"
+                           href="{{ path('competence.detail',{'competence' : competence.id}) }}">
+                            <i class="fa fa-file"></i> Imprimer l'aide de jeu
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </p>
+
+            {% if loop.last %}
+                </li>
+            {% endif %}
+            {% set currentFamillyId = competence.competenceFamily.id %}
+        {% endfor %}
+    </ul>
+    <div class="d-flex justify-content-center m-2">
+        <a class="btn btn-secondary"
+           data-bs-toggle="collapse"
+           href="#xpHistory"
+           aria-expanded="false" aria-controls="xpHistory"
+           role="button">
+            <i class="fa-solid fa-clock-rotate-left"></i> voir l'historique
+        </a>
+    </div>
+    <div class="collapse" id="xpHistory">
+
+        <div class="list-group">
+            <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
+                Gains</h6>
+            <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                <thead>
+                <tr>
+                    <th class="col-md-3">Date</th>
+                    <th class="col-md-1">Quantité</th>
+                    <th>Raison</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set totalXpGain = 0 %}
+                {% for historique in personnage.experienceGains %}
+                    {% set totalXpGain = totalXpGain + historique.xpGain %}
+                    <tr>
+                        <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
+                        <td>+{{ historique.xpGain }}</td>
+                        <td>{{ historique.explanation }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td>Total</td>
+                    <td>{{ totalXpGain }}</td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
+                Usages</h6>
+            <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                <thead>
+                <tr>
+                    <th class="col-md-3">Date</th>
+                    <th class="col-md-1">Quantité</th>
+                    <th>Compétence</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set totalXpUse = 0 %}
+                {% for historique in personnage.experienceUsages %}
+                    {% set totalXpUse = totalXpUse + historique.xpUse %}
+                    <tr>
+                        <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
+                        <td>-{{ historique.xpUse }}</td>
+                        <td>{{ historique.competence.label }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td>Total</td>
+                    <td>{{ totalXpUse }}</td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
-<h6>{{ personnage.xp|default(0) }} / {{ personnage.xpTotal }} xp</h6>
-
-<ul class="list-group">
-	{% for competence in personnage.competences %}
-		<li class="list-group-item">
-			<strong>{{ competence.competenceFamily.label }}</strong>&nbsp({{ competence.level.label }}) :<br />
-			{{ competence.description|markdown_to_html }}
-			<p class="list-group-item-text">
-				{% if competence.documentUrl %}
-					<a class="btn btn-default btn-sm" href="{{ path('participant.competence.detail',{'participant': participant.id, 'competence' : competence.id}) }}">
-						<i class="fa fa-file"></i> Imprimer l'aide de jeu
-					</a>
-				{% endif %}
-			</p>							
-		</li>
-	{% endfor %}
-</ul>
