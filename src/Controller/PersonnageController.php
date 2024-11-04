@@ -764,7 +764,7 @@ class PersonnageController extends AbstractController
     #[Route('/{personnage}', name: 'detail')]
     #[Route('/admin/{personnage}/detail', name: 'admin.detail')] // larp V1 url
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
-    public function adminDetailAction(EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage): Response
+    public function adminDetailAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage): Response
     {
         $descendants = $entityManager->getRepository(Personnage::class)->findDescendants($personnage);
 
@@ -774,7 +774,8 @@ class PersonnageController extends AbstractController
                 'personnage' => $personnage,
                 'descendants' => $descendants,
                 'langueMateriel' => $this->getLangueMateriel($personnage),
-                'participant' => $personnage->getLastParticipant()
+                'participant' => $personnage->getLastParticipant(),
+                'tab' => $request->get('tab', 'detail'),
             ]
         );
     }

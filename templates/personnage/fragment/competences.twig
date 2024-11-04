@@ -1,0 +1,115 @@
+<div class="row border-top-0">
+    <div class="col-md-6">
+
+        {% if participant is not defined %}
+            {% set participant = null %}
+        {% endif %}
+        {% include 'personnage/fragment/competence.twig' with {'personnage': personnage, 'participant': participant, 'css': 'panel'} %}
+
+    </div>
+
+    <div class="col-md-6">
+
+
+        <div class="panel">
+            <div class="header">
+                <h5>Compétences <small>({{ personnage.xp|default(0) }}
+                        / {{ personnage.xpTotal }}
+                        xp)</small></h5>
+            </div>
+
+            {% if isAdmin %}
+                {% include '_partials/dropDown.twig' with {
+                    'title' : 'Action',
+                    'actions' :
+                    [
+                        {'path' : path('personnage.admin.xp', {'personnage': personnage.id}), 'label': 'Ajouter des points d\'expérience' },
+                        {'path' : path('personnage.admin.add.competence', {'personnage': personnage.id}), 'label': 'Ajouter une compétence' },
+                        {'path' : path('personnage.admin.delete.competence', {'personnage': personnage.id}), 'label': 'Retirer la dernière compétence acquise' },
+                    ]
+                } %}
+            {% endif %}
+
+
+            <div class="list-group">
+                {#  TODO : mark favorite/normal/unknown #}
+                {% for competence in personnage.competences %}
+                    <div class="list-group-item">{{ competence.competenceFamily.label }}
+                        &nbsp({{ competence.level.label }})
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="d-flex justify-content-center m-2">
+                <a class="btn btn-secondary"
+                   data-bs-toggle="collapse"
+                   href="#xpHistory"
+                   aria-expanded="false" aria-controls="xpHistory"
+                   role="button">
+                    <i class="fa-solid fa-clock-rotate-left"></i> voir l'historique
+                </a>
+            </div>
+            <div class="collapse" id="xpHistory">
+
+                <div class="list-group">
+                    <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
+                        Gains</h6>
+                    <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                        <thead>
+                        <tr>
+                            <th class="col-md-3">Date</th>
+                            <th class="col-md-1">Quantité</th>
+                            <th>Raison</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% set totalXpGain = 0 %}
+                        {% for historique in personnage.experienceGains %}
+                            {% set totalXpGain = totalXpGain + historique.xpGain %}
+                            <tr>
+                                <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
+                                <td>+{{ historique.xpGain }}</td>
+                                <td>{{ historique.explanation }}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <td>Total</td>
+                            <td>{{ totalXpGain }}</td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
+                        Usages</h6>
+                    <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                        <thead>
+                        <tr>
+                            <th class="col-md-3">Date</th>
+                            <th class="col-md-1">Quantité</th>
+                            <th>Compétence</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% set totalXpUse = 0 %}
+                        {% for historique in personnage.experienceUsages %}
+                            {% set totalXpUse = totalXpUse + historique.xpUse %}
+                            <tr>
+                                <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
+                                <td>-{{ historique.xpUse }}</td>
+                                <td>{{ historique.competence.label }}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <td>Total</td>
+                            <td>{{ totalXpUse }}</td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

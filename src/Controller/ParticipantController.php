@@ -90,7 +90,7 @@ class ParticipantController extends AbstractController
     public function indexAction(
         EntityManagerInterface $entityManager,
         Request $request,
-        Participant $participant
+        Participant $participant,
     ): Response {
         $groupeGn = $participant->getSession();
 
@@ -117,7 +117,7 @@ class ParticipantController extends AbstractController
         Request $request,
         Participant $participant,
         Question $question,
-        $reponse
+        $reponse,
     ): RedirectResponse {
         $rep = new Reponse();
         $rep->setQuestion($question);
@@ -140,7 +140,7 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Request $request,
         Participant $participant,
-        Reponse $reponse
+        Reponse $reponse,
     ): RedirectResponse {
         $entityManager->remove($reponse);
         $entityManager->flush();
@@ -194,7 +194,7 @@ class ParticipantController extends AbstractController
     public function groupeAction(
         EntityManagerInterface $entityManager,
         Request $request,
-        #[MapEntity] Participant $participant
+        #[MapEntity] Participant $participant,
     ): RedirectResponse|Response {
         // il faut un billet pour rejoindre un groupe
         /* Commenté parce que ça gène la manière de faire d'Edaelle.
@@ -233,7 +233,7 @@ class ParticipantController extends AbstractController
     public function removeAction(
         EntityManagerInterface $entityManager,
         Request $request,
-        #[MapEntity] Participant $participant
+        #[MapEntity] Participant $participant,
     ): RedirectResponse|Response {
         $form = $this->createForm(ParticipantRemoveForm::class, $participant, ['gnId' => $participant->getGn()->getId()]
         )
@@ -289,7 +289,7 @@ class ParticipantController extends AbstractController
     public function billetAction(
         EntityManagerInterface $entityManager,
         Request $request,
-        #[MapEntity] Participant $participant
+        #[MapEntity] Participant $participant,
     ): RedirectResponse|Response {
         $form = $this->createForm(ParticipantBilletForm::class, $participant, ['gnId' => $participant->getGn()->getId()]
         )
@@ -323,7 +323,7 @@ class ParticipantController extends AbstractController
     public function restaurationAction(
         EntityManagerInterface $entityManager,
         Request $request,
-        #[MapEntity] Participant $participant
+        #[MapEntity] Participant $participant,
     ): RedirectResponse|Response {
         $originalParticipantHasRestaurations = new ArrayCollection();
 
@@ -400,7 +400,7 @@ class ParticipantController extends AbstractController
     public function politiqueAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -442,7 +442,7 @@ class ParticipantController extends AbstractController
     public function personnageEditAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -482,7 +482,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Personnage $personnage
+        Personnage $personnage,
     ): RedirectResponse|Response {
         $form = $this->createForm(TrombineForm::class, [])
             ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
@@ -540,7 +540,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Personnage $personnage
+        Personnage $personnage,
     ): RedirectResponse|Response {
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
@@ -576,7 +576,7 @@ class ParticipantController extends AbstractController
     public function personnageOldAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $groupeGn = $participant->getGroupeGn();
 
@@ -708,7 +708,7 @@ class ParticipantController extends AbstractController
 
                 // Noblesse expert : +2 Renommee
                 if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel()->getId(
-                    )) {
+                )) {
                     $renomme_history = new RenommeHistory();
                     $renomme_history->setRenomme(2);
                     $renomme_history->setExplication('[Nouvelle participation] Noblesse Expert');
@@ -740,7 +740,7 @@ class ParticipantController extends AbstractController
     public function adminPersonnageOldAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
@@ -797,7 +797,7 @@ class ParticipantController extends AbstractController
     public function personnageNewAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $groupeGn = $participant->getGroupeGn();
 
@@ -1004,7 +1004,7 @@ class ParticipantController extends AbstractController
     public function adminPersonnageNewAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
@@ -1137,7 +1137,7 @@ class ParticipantController extends AbstractController
     public function regleListAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): Response {
         $regles = $entityManager->getRepository(Rule::class)->findAll();
 
@@ -1169,7 +1169,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Rule $rule
+        Rule $rule,
     ): \Symfony\Component\HttpFoundation\BinaryFileResponse {
         $filename = __DIR__.'/../../private/rules/'.$rule->getUrl();
         $file = new File($filename);
@@ -1184,7 +1184,7 @@ class ParticipantController extends AbstractController
     public function groupeJoinAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         // il faut un billet pour rejoindre un groupe
         if (!$participant->getBillet()) {
@@ -1258,7 +1258,7 @@ class ParticipantController extends AbstractController
     public function personnageSecondaireAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $repo = $entityManager->getRepository('\\'.PersonnageSecondaire::class);
         $personnageSecondaires = $repo->findAll();
@@ -1292,7 +1292,7 @@ class ParticipantController extends AbstractController
     public function backgroundAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         // l'utilisateur doit avoir un personnage
         $personnage = $participant->getPersonnage();
@@ -1353,7 +1353,7 @@ class ParticipantController extends AbstractController
     public function origineAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -1410,7 +1410,7 @@ class ParticipantController extends AbstractController
     public function religionListAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): Response {
         $repo = $entityManager->getRepository('\\'.Religion::class);
         $religions = $repo->findAllOrderedByLabel();
@@ -1428,7 +1428,7 @@ class ParticipantController extends AbstractController
     public function religionAddAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -1535,7 +1535,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Priere $priere
+        Priere $priere,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -1566,7 +1566,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Priere $priere
+        Priere $priere,
     ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
@@ -1596,7 +1596,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Technologie $technologie
+        Technologie $technologie,
     ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
@@ -1626,7 +1626,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Potion $potion
+        Potion $potion,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -1657,7 +1657,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Potion $potion
+        Potion $potion,
     ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
@@ -1686,7 +1686,7 @@ class ParticipantController extends AbstractController
     public function potionAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -1776,7 +1776,7 @@ class ParticipantController extends AbstractController
     public function potiondepartAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -1842,7 +1842,7 @@ class ParticipantController extends AbstractController
     public function religionDescriptionAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -1904,7 +1904,7 @@ class ParticipantController extends AbstractController
     public function langueCommuneAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -1971,7 +1971,7 @@ class ParticipantController extends AbstractController
     public function langueCouranteAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2038,7 +2038,7 @@ class ParticipantController extends AbstractController
     public function langueAncienneAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2106,7 +2106,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Langue $langue
+        Langue $langue,
     ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
@@ -2135,7 +2135,7 @@ class ParticipantController extends AbstractController
     public function domaineMagieAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2203,7 +2203,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Sort $sort
+        Sort $sort,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2293,7 +2293,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Sort $sort
+        Sort $sort,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2324,7 +2324,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Sort $sort
+        Sort $sort,
     ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
@@ -2354,7 +2354,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Connaissance $connaissance
+        Connaissance $connaissance,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2385,7 +2385,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Connaissance $connaissance
+        Connaissance $connaissance,
     ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
@@ -2414,7 +2414,7 @@ class ParticipantController extends AbstractController
     public function magieAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2440,7 +2440,7 @@ class ParticipantController extends AbstractController
     public function competenceListAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): Response {
         $competences = $app['larp.manager']->getRootCompetences();
 
@@ -2458,7 +2458,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Competence $competence
+        Competence $competence,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
         if (!$personnage) {
@@ -2488,7 +2488,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Document $document
+        Document $document,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
         if (!$personnage) {
@@ -2517,7 +2517,7 @@ class ParticipantController extends AbstractController
     public function classeListAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): Response {
         $repo = $entityManager->getRepository('\\'.Classe::class);
         $classes = $repo->findAllOrderedByLabel();
@@ -2536,7 +2536,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Competence $competence
+        Competence $competence,
     ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
@@ -2566,7 +2566,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Document $document
+        Document $document,
     ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
@@ -2595,7 +2595,7 @@ class ParticipantController extends AbstractController
     public function groupeSecondaireListAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): Response {
         $repo = $entityManager->getRepository('\\'.SecondaryGroup::class);
         $groupeSecondaires = $repo->findAllPublic();
@@ -2614,7 +2614,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        SecondaryGroup $groupeSecondaire
+        SecondaryGroup $groupeSecondaire,
     ): RedirectResponse|Response {
         /**
          * L'utilisateur doit avoir un personnage.
@@ -2697,7 +2697,7 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/detail', name: 'participant.groupeSecondaire.detail')]
     public function groupeSecondaireDetailAction(
         #[MapEntity] Participant $participant,
-        #[MapEntity] SecondaryGroup $groupeSecondaire
+        #[MapEntity] SecondaryGroup $groupeSecondaire,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2732,7 +2732,7 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Participant $participant,
         SecondaryGroup $groupeSecondaire,
-        Postulant $postulant
+        Postulant $postulant,
     ): RedirectResponse|Response {
         $form = $this->createFormBuilder($participant)
             ->add('envoyer', SubmitType::class, ['label' => 'Accepter le postulant'])
@@ -2781,7 +2781,7 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Participant $participant,
         SecondaryGroup $groupeSecondaire,
-        Postulant $postulant
+        Postulant $postulant,
     ): RedirectResponse|Response {
         $form = $this->createFormBuilder($participant)
             ->add('envoyer', SubmitType::class, ['label' => 'Refuser le postulant'])
@@ -2822,7 +2822,7 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Participant $participant,
         SecondaryGroup $groupeSecondaire,
-        Postulant $postulant
+        Postulant $postulant,
     ): RedirectResponse|Response {
         $form = $this->createFormBuilder($participant)
             ->add('envoyer', SubmitType::class, ['label' => 'Laisser en attente'])
@@ -2864,7 +2864,7 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Participant $participant,
         SecondaryGroup $groupeSecondaire,
-        Postulant $postulant
+        Postulant $postulant,
     ): RedirectResponse|Response {
         $message = new Message();
 
@@ -2910,7 +2910,7 @@ class ParticipantController extends AbstractController
     public function competenceAddAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2941,7 +2941,7 @@ class ParticipantController extends AbstractController
         $choices = [];
         foreach ($availableCompetences as $competence) {
             $choices[$competence->getId()] = $competence->getLabel(
-                ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
+            ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
         }
 
         $form = $this->createFormBuilder($participant)
@@ -3040,8 +3040,8 @@ class ParticipantController extends AbstractController
                     foreach ($religion->getSpheres() as $sphere) {
                         foreach ($sphere->getPrieres() as $priere) {
                             if ($priere->getNiveau() == $competence->getLevel()->getId() && !$personnage->hasPriere(
-                                    $priere
-                                )) {
+                                $priere
+                            )) {
                                 $priere->addPersonnage($personnage);
                                 $personnage->addPriere($priere);
                             }
@@ -3455,7 +3455,7 @@ class ParticipantController extends AbstractController
     public function adminDetailAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         if ($participant) {
             return $this->render('joueur/admin/detail.twig', ['participant' => $participant]);
@@ -3473,7 +3473,7 @@ class ParticipantController extends AbstractController
     public function adminXpAction(
         EntityManagerInterface $entityManager,
         Request $request,
-        Participant $participant
+        Participant $participant,
     ): Response {
         $form = $this->createForm(JoueurXpForm::class, $participant)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -3517,7 +3517,7 @@ class ParticipantController extends AbstractController
     public function detailOrgaAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         if ($participant) {
             return $this->render('joueur/admin/detail.twig', ['participant' => $participant]);
@@ -3535,7 +3535,7 @@ class ParticipantController extends AbstractController
     public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $form = $this->createForm(JoueurForm::class, $participant)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -3566,7 +3566,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Groupe $groupe
+        Groupe $groupe,
     ): RedirectResponse|Response {
         $groupeGn = $participant->getGroupeGn();
 
@@ -3679,7 +3679,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Groupe $groupe
+        Groupe $groupe,
     ): RedirectResponse|Response {
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
@@ -3728,7 +3728,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Groupe $groupe
+        Groupe $groupe,
     ): RedirectResponse|Response {
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
@@ -3778,7 +3778,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Groupe $groupe
+        Groupe $groupe,
     ): RedirectResponse|Response {
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
@@ -3827,7 +3827,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Groupe $groupe
+        Groupe $groupe,
     ): RedirectResponse|Response {
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
@@ -3880,7 +3880,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Groupe $groupe
+        Groupe $groupe,
     ): RedirectResponse|Response {
         $groupeGn = $participant->getGroupeGn();
 
@@ -3973,7 +3973,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Groupe $groupe
+        Groupe $groupe,
     ): RedirectResponse|Response {
         $war = $request->get('enemy');
         $groupeGn = $participant->getGroupeGn();
@@ -4027,7 +4027,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Groupe $groupe
+        Groupe $groupe,
     ): RedirectResponse|Response {
         $war = $request->get('enemy');
         $groupeGn = $participant->getGroupeGn();
@@ -4081,7 +4081,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Groupe $groupe
+        Groupe $groupe,
     ): RedirectResponse|Response {
         $war = $request->get('enemy');
         $groupeGn = $participant->getGroupeGn();
@@ -4132,7 +4132,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
-        Groupe $groupe
+        Groupe $groupe,
     ): RedirectResponse|Response {
         $war = $request->get('enemy');
 
@@ -4186,7 +4186,7 @@ class ParticipantController extends AbstractController
     public function technologieAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant
+        Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 

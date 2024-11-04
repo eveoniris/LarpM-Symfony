@@ -25,6 +25,8 @@ docker compose up -d
 ```
 
 4) Goto : http://localhost:8082/
+If it's say can't connect or network error 
+try `symfony server start` and then go to http://localhost:8000
 
 5) Connection your Database IDE :
 

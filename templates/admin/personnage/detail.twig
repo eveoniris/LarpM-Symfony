@@ -16,7 +16,7 @@
     {% include '_partials/breadcrumb.twig' with {'items' : breadcrumb} %}
 
 
-    <div class="well well-sm bs-component">
+    <div class="panel mb-0 border-bottom-0">
         <div class="header">
             <h5>Fiche de personnage</h5>
         </div>
@@ -77,11 +77,63 @@
                                                                                            aria-hidden="true"></i></a>
             </div>
         </div>
+
+
+        <div class="row">
+            <div class="col-md-12">
+                <div>
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link{% if tab == 'detail' %} active{% endif %}"
+                               href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'detail'})) }}"
+                            >Générale</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link{% if tab == 'competences' %} active{% endif %}"
+                               href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'competences'})) }}"
+                            >Compétences</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link{% if tab == 'religions' %} active{% endif %}"
+                               href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'religions'})) }}"
+                            >Religions</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link{% if tab == 'backgrounds' %} active{% endif %}"
+                               href="#"
+                            >Biographie</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link{% if tab == 'groupes-secondaires' %} active{% endif %}"
+                               href="#"
+                            >Groupes secondaires</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
+                               href="#"
+                            >Enveloppe</a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" role="tabpanel">
+            {% include "personnage/fragment/#{tab|default('detail')}.twig" with {'personnage': personnage} %}
+        </div>
     </div>
 
     <div class="row">
         <div class="col-md-6">
-            {% include 'personnage/fragment/information.twig' %}
 
 
             {% include 'personnage/fragment/participations.twig' %}
@@ -331,132 +383,8 @@
         </div>
         <div class="col-md-6">
 
-            <div class="well">
-                <div class="header">
-                    <h5>Photo</h5>
-                </div>
-
-                {% if isAdmin %}
-                    {% include '_partials/dropDown.twig' with {
-                        'title' : 'Action',
-                        'actions' :
-                        [
-                            {'path' : path('personnage.trombine.update', {'personnage': personnage.id}), 'label': 'Modifier la trombine' },
-                        ]
-                    } %}
-                {% endif %}
 
 
-                <div class="thumbnail d-flex justify-content-center">
-                    {% if personnage.trombineUrl %}
-                        <img class="media-object" width="200"
-                             src="{{ path('personnage.trombine', {'personnage' : personnage.id }) }}"/>
-                    {% else %}
-                        <img class="media-object" width="200"
-                             src="{{ app.request.basepath }}/img/no_trombine.png"/>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="well">
-                <div class="header">
-                    <h5>Compétences <small>({{ personnage.xp|default(0) }}
-                            / {{ personnage.xpTotal }}
-                            xp)</small></h5>
-                </div>
-
-                {% if isAdmin %}
-                    {% include '_partials/dropDown.twig' with {
-                        'title' : 'Action',
-                        'actions' :
-                        [
-                            {'path' : path('personnage.admin.xp', {'personnage': personnage.id}), 'label': 'Ajouter des points d\'expérience' },
-                            {'path' : path('personnage.admin.add.competence', {'personnage': personnage.id}), 'label': 'Ajouter une compétence' },
-                            {'path' : path('personnage.admin.delete.competence', {'personnage': personnage.id}), 'label': 'Retirer la dernière compétence acquise' },
-                        ]
-                    } %}
-                {% endif %}
-
-
-                <div class="list-group">
-                    {#  TODO : mark favorite/normal/unknown #}
-                    {% for competence in personnage.competences %}
-                        <div class="list-group-item">{{ competence.competenceFamily.label }}
-                            &nbsp({{ competence.level.label }})
-                        </div>
-                    {% endfor %}
-                </div>
-
-                <div class="d-flex justify-content-center m-2">
-                    <a class="btn btn-secondary"
-                       data-bs-toggle="collapse"
-                       href="#xpHistory"
-                       aria-expanded="false" aria-controls="xpHistory"
-                       role="button">
-                        <i class="fa-solid fa-clock-rotate-left"></i> voir l'historique
-                    </a>
-                </div>
-                <div class="collapse" id="xpHistory">
-
-                    <div class="list-group">
-                        <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
-                            Gains</h6>
-                        <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
-                            <thead>
-                            <tr>
-                                <th class="col-md-3">Date</th>
-                                <th class="col-md-1">Quantité</th>
-                                <th>Raison</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% set totalXpGain = 0 %}
-                            {% for historique in personnage.experienceGains %}
-                                {% set totalXpGain = totalXpGain + historique.xpGain %}
-                                <tr>
-                                    <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
-                                    <td>+{{ historique.xpGain }}</td>
-                                    <td>{{ historique.explanation }}</td>
-                                </tr>
-                            {% endfor %}
-                            <tr>
-                                <td>Total</td>
-                                <td>{{ totalXpGain }}</td>
-                                <td></td>
-                            </tr>
-                            </tbody>
-                        </table>
-
-                        <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
-                            Usages</h6>
-                        <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
-                            <thead>
-                            <tr>
-                                <th class="col-md-3">Date</th>
-                                <th class="col-md-1">Quantité</th>
-                                <th>Compétence</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% set totalXpUse = 0 %}
-                            {% for historique in personnage.experienceUsages %}
-                                {% set totalXpUse = totalXpUse + historique.xpUse %}
-                                <tr>
-                                    <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
-                                    <td>-{{ historique.xpUse }}</td>
-                                    <td>{{ historique.competence.label }}</td>
-                                </tr>
-                            {% endfor %}
-                            <tr>
-                                <td>Total</td>
-                                <td>{{ totalXpUse }}</td>
-                                <td></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
 
             {% if personnage.personnageLignee %}
                 <div class="well">
