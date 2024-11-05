@@ -1,10 +1,19 @@
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
 {% if personnage.documents|length > 0 %}
-	<div class="header">
-		<h5>Vos documents</h5>
-	</div>
-	<div class="list-group">
-		{% for document in personnage.documents %}
-			<a class="list-group-item" href="{{ path('participant.document.detail',{'participant': participant.id, 'document' : document.id}) }}"><strong>{{ document.code }}</strong> - {{ document.titre }}</a>
-		{% endfor %}
-	</div>
+    <div class="{{ css }}">
+        <div class="header">
+            <h5>Vos documents</h5>
+        </div>
+        <div class="list-group">
+            {% for document in personnage.documents %}
+                <a class="list-group-item"
+                   href="{{ path('participant.document.detail',{'participant': participant.id, 'document' : document.id}) }}"><strong>{{ document.code }}</strong>
+                    - {{ document.titre }}</a>
+            {% else %}
+                {% include '_partials/noResult.twig' with {'content' : 'Aucun', 'css' : 'w-100'} %}
+            {% endfor %}
+        </div>
+    </div>
 {% endif %}

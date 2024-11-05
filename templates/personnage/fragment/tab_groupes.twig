@@ -1,0 +1,23 @@
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
+{# Groupe principal #}
+<div class="row">
+    <div class="col-md-6">
+        <div class="{{ css }}">
+
+            {% include 'personnage/fragment/groupe.twig' with {'personnage': personnage, 'participant': participant} %}
+
+        </div>
+
+        {% include 'personnage/fragment/participations.twig' %}
+
+    </div>
+    <div class="col-md-6">
+        {% include 'personnage/fragment/secondaires.twig' %}
+
+        {% include 'personnage/fragment/groupeSecondaireChef.twig' with {'personnage': personnage, 'participant': participant} %}
+        {% include 'personnage/fragment/groupeSecondaireMembre.twig' with {'personnage': personnage, 'participant': participant} %}
+
+    </div>
+</div>

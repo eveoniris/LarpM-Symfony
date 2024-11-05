@@ -103,6 +103,10 @@
             <div class="text">{{ personnage.genre }}</div>
         </li>
         <li class="list-group-item">
+            <div class="head">Origine</div>
+            <div class="text">{{ personnage.territoire|default("non définie") }}</div>
+        </li>
+        <li class="list-group-item">
             <div class="head">Intrigue</div>
             <div class="text">
                 {% if personnage.intrigue %}
@@ -271,6 +275,46 @@
                 </div>
             </div>
         </li>
+        <li class="list-group-item">
+            <div class="head">Pugilat</div>
+            <div class="text">
+                <div>
+                    {{ personnage.pugilat|default(0) }}
+                </div>
+                <button class="btn btn-sm btn-secondary ms-2" role="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#pugilatHistory"
+                        aria-expanded="false"
+                        title="historique"
+                        aria-controls="pugilatHistory">
+                    <i class="fa fa-history" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="collapse w-100" id="pugilatHistory">
+                <div class="list-group">
+                    <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                        <thead>
+                        <tr>
+                            <th class="col-md-3">Date</th>
+                            <th class="col-md-1">Quantité</th>
+                            <th>Raison</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for historique in personnage.displayPugilat %}
+                            <tr>
+                                <td>{{ historique.date|date("Y-m-d H:i:s") }}</td>
+                                <td>{% if historique.pugilat > 0 %}+{% endif %}{{ historique.pugilat }}</td>
+                                <td>{% if historique.explication %}{{ historique.explication }}{% endif %}</td>
+                            </tr>
+                        {% else %}
+                            {% include '_partials/noResultTableRow.twig' %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </li>
         {# TODO <li class="list-group-item">
 				<div class="head">Titre :</div> {{ app['personnage.manager'].titre(personnage)|default('Aucun') }}
 			</li> #}
@@ -278,12 +322,12 @@
             <div class="head last">Personnage secondaire</div>
             <div class="text">
                 {% if participant is defined %}
-                {% if participant.personnageSecondaire is defined %}
-                    {{ participant.personnageSecondaire.classe.label }}
-                {% else %}
-                    <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">Choisir
-                        son personnage secondaire</a>
-                {% endif %}
+                    {% if participant.personnageSecondaire is defined %}
+                        {{ participant.personnageSecondaire.classe.label }}
+                    {% else %}
+                        <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">Choisir
+                            son personnage secondaire</a>
+                    {% endif %}
                 {% else %}
                     {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'title': 'Prérequis !', 'content' : "Le personnage ne dispose d'aucune participation à un GN"} %}
                 {% endif %}

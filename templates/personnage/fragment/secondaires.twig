@@ -1,4 +1,7 @@
-<div class="well">
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
+<div class="{{ css }}">
     <div class="header">
         <h5>Groupes secondaires</h5>
     </div>

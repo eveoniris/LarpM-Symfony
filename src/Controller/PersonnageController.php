@@ -56,6 +56,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Twig\Environment;
 
 #[Route('/personnage', name: 'personnage.')]
 class PersonnageController extends AbstractController
@@ -764,9 +765,17 @@ class PersonnageController extends AbstractController
     #[Route('/{personnage}', name: 'detail')]
     #[Route('/admin/{personnage}/detail', name: 'admin.detail')] // larp V1 url
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
-    public function adminDetailAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage): Response
-    {
+    public function adminDetailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+        Environment $twig,
+    ): Response {
         $descendants = $entityManager->getRepository(Personnage::class)->findDescendants($personnage);
+        $tab = $request->get('tab', 'general');
+        if (!$twig->getLoader()->exists('personnage/fragment/tab_'.$tab.'.twig')) {
+            $tab = 'general';
+        }
 
         return $this->render(
             'personnage/detail.twig',
@@ -775,7 +784,7 @@ class PersonnageController extends AbstractController
                 'descendants' => $descendants,
                 'langueMateriel' => $this->getLangueMateriel($personnage),
                 'participant' => $personnage->getLastParticipant(),
-                'tab' => $request->get('tab', 'detail'),
+                'tab' => $tab,
             ]
         );
     }
