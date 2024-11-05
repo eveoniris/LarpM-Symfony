@@ -1,0 +1,49 @@
+{% if isAdmin %}
+    {% if css is not defined %}
+        {% set css = 'well' %}
+    {% endif %}
+    <div class="{{ css }}">
+        <div class="header">
+            <h5>Technique</h5>
+        </div>
+
+        {% if isAdmin %}
+            {#  {'path' : path('personnage.admin.token.add', {'personnage': personnage.id}), 'label': 'Ajouter un jeton vieillessee', 'token : 'VIEILLESSE'}, #}
+            {% include '_partials/dropDown.twig' with {
+                'title' : 'Action',
+                'actions' :
+                [
+                    {'path' : path('personnage.admin.trigger.add', {'personnage': personnage.id}), 'label': 'Ajouter un déclencheur de compétence' },
+                ]
+            } %}
+        {% endif %}
+
+        <div class="panel-body">
+            <h6>Jetons de vieillesse</h6>
+            <div class="list-group mb-2">
+                {% for personnageToken in personnage.personnageHasTokens %}
+                    <div class="list-group-item">
+                        {{ personnageToken.token.label }}
+                        --
+                        <a href="{{ path('personnage.admin.token.delete', {'personnage': personnage.id, 'personnageHasToken': personnageToken.id}) }}">Supprimer</a>
+                    </div>
+                {% else %}
+                    <div class="list-group-item">La liste est vide</div>
+                {% endfor %}
+            </div>
+
+            <h6>Déclencheurs de compétences (à choisir pour le joueur)</h6>
+            <div class="list-group">
+                {% for trigger in personnage.personnageTriggers %}
+                    <div class="list-group-item">
+                        {{ trigger.tag }}
+                        --
+                        <a href="{{ path('personnage.admin.trigger.delete', {'personnage': personnage.id, 'trigger': trigger.id}) }}">Supprimer</a>
+                    </div>
+                {% else %}
+                    <div class="list-group-item">La liste est vide</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endif %}

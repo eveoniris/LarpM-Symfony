@@ -104,19 +104,23 @@
 			<div class="col-sm-6">
 				<div class="well well-sm">
 					{% include 'personnage/fragment/trombinoscope.twig' with {'personnage': personnage, 'participant': participant} %}
+
 					{% include 'personnage/fragment/groupe.twig' with {'personnage': personnage, 'participant': participant} %}
 					{% include 'personnage/fragment/groupeSecondaireChef.twig' with {'personnage': personnage, 'participant': participant} %}
 					{% include 'personnage/fragment/groupeSecondaireMembre.twig' with {'personnage': personnage, 'participant': participant} %}
+
 					{% include 'personnage/fragment/alchimie.twig' with {'personnage': personnage, 'participant': participant} %}
 					{% include 'personnage/fragment/magie.twig' with {'personnage': personnage, 'participant': participant} %}
 					{% include 'personnage/fragment/language.twig' with {'personnage': personnage, 'participant': participant} %}
 					{% include 'personnage/fragment/technologie.twig' with {'personnage': personnage, 'participant': participant} %}
 					{% include 'personnage/fragment/connaissance.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% include 'personnage/fragment/item.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% include 'personnage/fragment/document.twig' with {'personnage': personnage, 'participant': participant} %}
 					{% include 'personnage/fragment/politique.twig' with {'personnage': personnage, 'participant': participant, 'lois': participant.personnage.origine.lois} %}
 					{% include 'personnage/fragment/priere.twig' with {'personnage': personnage, 'participant': participant} %}
+					{% include 'personnage/fragment/document.twig' with {'personnage': personnage, 'participant': participant} %}
+					{% include 'personnage/fragment/item.twig' with {'personnage': personnage, 'participant': participant} %}
+
 					{% include 'personnage/fragment/religion.twig' with {'personnage': personnage, 'participant': participant} %}
+
 					{% include 'personnage/fragment/background.twig' with {'personnage': personnage, 'participant': participant} %}
 				</div>
 			</div>

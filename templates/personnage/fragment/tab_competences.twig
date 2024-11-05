@@ -1,0 +1,25 @@
+<div class="row border-top-0">
+    <div class="col-md-6">
+
+        {% if participant is not defined %}
+            {% set participant = null %}
+        {% endif %}
+        {% include 'personnage/fragment/competence.twig' with {'personnage': personnage, 'participant': participant, 'css': 'panel'} %}
+
+    </div>
+
+    <div class="col-md-6">
+        {% include 'personnage/fragment/experience.twig' with {'personnage': personnage, 'participant': participant, css: 'panel'} %}
+        {% include 'personnage/fragment/technique.twig' with {'personnage': personnage, 'participant': participant, css: 'panel'} %}
+        {% include 'personnage/fragment/trigger.twig' with {'personnage': personnage, 'participant': participant} %}
+        {% include 'personnage/fragment/alchimie.twig' with {'personnage': personnage, 'participant': participant} %}
+        {% include 'personnage/fragment/magie.twig' with {'personnage': personnage, 'participant': participant} %}
+        {% include 'personnage/fragment/language.twig' with {'personnage': personnage, 'participant': participant} %}
+        {% include 'personnage/fragment/technologie.twig' with {'personnage': personnage, 'participant': participant} %}
+        {% include 'personnage/fragment/connaissance.twig' with {'personnage': personnage, 'participant': participant} %}
+        {% include 'personnage/fragment/politique.twig' with {'personnage': personnage, 'participant': participant, 'lois': participant.personnage.origine.lois} %}
+        {% include 'personnage/fragment/priere.twig' with {'personnage': personnage, 'participant': participant} %}
+        {% include 'personnage/fragment/document.twig' with {'personnage': personnage, 'participant': participant} %}
+        {% include 'personnage/fragment/item.twig' with {'personnage': personnage, 'participant': participant} %}
+    </div>
+</div>

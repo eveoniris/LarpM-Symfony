@@ -4,7 +4,7 @@
 {# Compétences #}
 <div class="{{ css }}">
     <div class="header">
-        <h5>Compétences ({{ personnage.xp|default(0) }} / {{ personnage.xpTotal }} xp)</h5>
+        <h5>Compétences</h5>
     </div>
 
     {% if isAdmin %}
@@ -36,7 +36,7 @@
                 <h5>
                     {{ competence.competenceFamily.label }}
                     {% if personnage.classe.isFavoriteCompetenceFamily(competence.competenceFamily) %}
-                        <i class="fa fa-heart text-success" data-toggle="tooltip" data-placement="top"
+                        <i class="fa fa-star text-success" data-toggle="tooltip" data-placement="top"
                            title="Favorite"></i>
                     {% elseif not personnage.classe.isCommonCompetenceFamily(competence.competenceFamily) %}
                         <i class="fa fa-face-tired text-danger" data-toggle="tooltip" data-placement="top"
@@ -70,73 +70,4 @@
             {% set currentFamillyId = competence.competenceFamily.id %}
         {% endfor %}
     </ul>
-    <div class="d-flex justify-content-center m-2">
-        <a class="btn btn-secondary"
-           data-bs-toggle="collapse"
-           href="#xpHistory"
-           aria-expanded="false" aria-controls="xpHistory"
-           role="button">
-            <i class="fa-solid fa-clock-rotate-left"></i> voir l'historique
-        </a>
-    </div>
-    <div class="collapse" id="xpHistory">
-
-        <div class="list-group">
-            <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
-                Gains</h6>
-            <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
-                <thead>
-                <tr>
-                    <th class="col-md-3">Date</th>
-                    <th class="col-md-1">Quantité</th>
-                    <th>Raison</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% set totalXpGain = 0 %}
-                {% for historique in personnage.experienceGains %}
-                    {% set totalXpGain = totalXpGain + historique.xpGain %}
-                    <tr>
-                        <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
-                        <td>+{{ historique.xpGain }}</td>
-                        <td>{{ historique.explanation }}</td>
-                    </tr>
-                {% endfor %}
-                <tr>
-                    <td>Total</td>
-                    <td>{{ totalXpGain }}</td>
-                    <td></td>
-                </tr>
-                </tbody>
-            </table>
-
-            <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
-                Usages</h6>
-            <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
-                <thead>
-                <tr>
-                    <th class="col-md-3">Date</th>
-                    <th class="col-md-1">Quantité</th>
-                    <th>Compétence</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% set totalXpUse = 0 %}
-                {% for historique in personnage.experienceUsages %}
-                    {% set totalXpUse = totalXpUse + historique.xpUse %}
-                    <tr>
-                        <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
-                        <td>-{{ historique.xpUse }}</td>
-                        <td>{{ historique.competence.label }}</td>
-                    </tr>
-                {% endfor %}
-                <tr>
-                    <td>Total</td>
-                    <td>{{ totalXpUse }}</td>
-                    <td></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>

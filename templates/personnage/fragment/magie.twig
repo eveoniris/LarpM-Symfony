@@ -1,35 +1,60 @@
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
 {% if personnage.sorts|length > 0 %}
-	<div class="header">
-		<h5>Magie</h5>
-	</div>	
-	
-	{% if personnage.hasCompetence('Magie') %}
-		<h6>Liste de vos domaines de Magie</h6>
-		<div class="list-group">
-		{% for domaine in personnage.domaines %}
-			<div class="list-group-item">
-				<div class="list-group-item-heading"><strong>{{ domaine.label|markdown_to_html }}</strong></div>
-				<div class="list-group-item-text">{{ domaine.description|markdown_to_html }}</div>
-			</div>
-		{% endfor %}
-		</div>
-	{% endif %}
+    <div class="{{ css }}">
+        <div class="header">
+            <h5>Magie</h5>
+        </div>
 
-	{% if not personnage.hasCompetence('Magie') %}
-	<span style="color:red;">Vous n'avez pas les connaissances pour lancer ces sorts et vous ne pouvez pas les recopier sans l'aide adéquate.</span>
-	{% endif %}
+        {% if personnage.hasCompetence('Magie') %}
+            <h6>Liste de vos domaines de Magie</h6>
+            <div class="list-group">
+                {% for domaine in personnage.domaines %}
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading"><strong>{{ domaine.label|markdown_to_html }}</strong></div>
+                        <div class="list-group-item-text">{{ domaine.description|markdown_to_html }}</div>
+                    </div>
+                {% else %}
+                    {% include '_partials/noResult.twig' with {'content' : 'Aucun', 'css' : 'w-100'} %}
+                {% endfor %}
+            </div>
+        {% endif %}
 
-	<h6>Liste de vos sorts</h6>
-	<div class="list-group">
-		{% for sort in personnage.sorts %}
-			<a class="list-group-item" href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort': sort.id}) }}">
-				{% if sort.secret %}<span style="color:red;">Secret</span> - {% endif %}{{ sort.label }} - {{ sort.domaine.label }} Niveau {{ sort.niveau }} 
-				({% if sort.domaine in personnage.domaines %}{{ sort.niveau + 1}}
-				{% else %}{{ sort.niveau + 2 }}
-				{% endif %}
-				Perles)
-			</a>
-		{% endfor %}
-	</div>
+        {% if not personnage.hasCompetence('Magie') %}
+            {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'title': 'Avertissement', 'content' : "Vous n'avez pas les connaissances pour lancer ces sorts et vous ne pouvez pas les recopier sans l'aide adéquate." } %}
+        {% endif %}
+
+        <h6>Liste de vos sorts</h6>
+        <div class="list-group">
+            {% for sort in personnage.sorts %}
+                <div class="list-group-item">
+                    <a  href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort': sort.id}) }}">
+                        {% if sort.secret %}
+                            <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               title="Secret"></i><span class="text-warning">Secret</span> - {% endif %}
+                        {{ sort.label }}
+                        - {{ sort.domaine.label }} Niveau {{ sort.niveau }}
+                        ({% if sort.domaine in personnage.domaines %}{{ sort.niveau + 1 }}
+                        {% else %}{{ sort.niveau + 2 }}
+                        {% endif %}
+                        Perles)
+                    </a>
+                    &nbsp;
+                    <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                            href="#sort_{{ sort.id }}"
+                            aria-expanded="false" aria-controls="sort_{{ sort.id }}"
+                            role="button">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </button>
+                    {# TODO télécharger le DOC ? #}
+                </div>
+                <div class="list-group-item bg-body-secondary collapse" id="sort_{{ sort.id }}">
+                    {{ sort.description|markdown_to_html }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
 {% endif %}

@@ -1,26 +1,57 @@
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
 {% if personnage.potions|length > 0 %}
-	<div class="header">
-		<h5>Alchimie</h5>
-	</div>
-	{% if not personnage.hasCompetence('Alchimie') %}
-		<span style="color:red;">Vous n'avez pas les connaissances pour préparer ces potions et vous ne pouvez pas les recopier sans l'aide adéquate.</span>
-	{% else %}
-		<h6>Liste de vos potions de départ</h6>
-		<div class="list-group">
-			{% for niveau in 1..personnage.getCompetenceNiveau('Alchimie') %}
-				{% set potion = participant.hasPotionsDepartByLevel(niveau) %}
-				{% if potion %}
-					<a class="list-group-item" href="{{ path('participant.potion.detail', {'participant': participant.id, 'potion': potion.id}) }}">{% if potion.secret %}<span style="color:red;">Secret</span> - {% endif %}{{ potion.label }} - Niveau {{ potion.niveau }}</a>
-				{% else %}
-					<a class="list-group-item">Vous n'avez pas choisi de potion de niveau {{ niveau }}.</a>
-				{% endif %}
-			{% endfor %}
-		</div>
-	{% endif %}
-	<h6>Liste de vos potions connues</h6>
-	<div class="list-group">
-		{% for potion in personnage.potions %}
-			<a class="list-group-item" href="{{ path('participant.potion.detail', {'participant': participant.id, 'potion': potion.id}) }}">{% if potion.secret %}<span style="color:red;">Secret</span> - {% endif %}{{ potion.label }} - Niveau {{ potion.niveau }}</a>
-		{% endfor %}
-	</div>
+    <div class="{{ css }}">
+        <div class="header">
+            <h5>Alchimie</h5>
+        </div>
+        {% if not personnage.hasCompetence('Alchimie') %}
+            {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'title': 'Avertissement', 'content' : "Vous n'avez pas les connaissances pour préparer ces potions et vous ne pouvez pas les recopier sans l'aide adéquate." } %}
+        {% else %}
+            <h6>Liste de vos potions de départ</h6>
+            <div class="list-group">
+                {% for niveau in 1..personnage.getCompetenceNiveau('Alchimie') %}
+                    {% set potion = participant.hasPotionsDepartByLevel(niveau) %}
+                    {% if potion %}
+                        <a class="list-group-item"
+                           href="{{ path('participant.potion.detail', {'participant': participant.id, 'potion': potion.id}) }}">{% if potion.secret %}
+                                <span style="color:red;">Secret</span> - {% endif %}{{ potion.label }} -
+                            Niveau {{ potion.niveau }}</a>
+                    {% else %}
+                        <a class="list-group-item">Vous n'avez pas choisi de potion de niveau {{ niveau }}.</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <h6>Liste de vos potions connues</h6>
+        <div class="list-group">
+            {% for potion in personnage.potions %}
+                {% if isAdmin %}
+                    {% set potionPath = path('magie.potion.detail', {'potion': potion.id}) %}
+                {% else %}
+                    {% set potionPath = path('participant.potion.detail', {'participant': participant.id, 'potion': potion.id}) %}
+                {% endif %}
+
+                <div class="list-group-item">
+                    <a href="{{ potionPath }}">
+                        {% if potion.secret %}
+                            <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip" data-bs-placement="top"
+                               title="Secret"></i>&nbsp;
+                        {% endif %}{{ potion.id }} - {{ potion.label }}
+                        <small>(Niveau {{ potion.niveau }})</small></a>
+                    <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                            href="#potion_{{ potion.id }}"
+                            aria-expanded="false" aria-controls="potion_{{ potion.id }}"
+                            role="button">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </button>
+                </div>
+                <div class="list-group-item bg-body-secondary collapse" id="potion_{{ potion.id }}">
+                    {{ potion.description|markdown_to_html }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endif %}

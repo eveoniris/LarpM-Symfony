@@ -1,13 +1,21 @@
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
 {% if personnage.hasCompetence('Prêtrise') %}
-	<div class="header">
-		<h5>Prêtrise</h5>
-	</div>
-	
-	<h6>Liste de vos prières</h6>
-	<div class="list-group">
-		{% for priere in personnage.prieres %}
-			<a class="list-group-item" href="{{ path('participant.priere.detail', {'participant': participant.id, 'priere': priere.id}) }}">{{ priere.sphere.label }} - Niveau {{ priere.niveau }} ({{ priere.label }})</a>
-		{% endfor %}
-	</div>
+    <div class="{{ css }}">
+        <div class="header">
+            <h5>Prêtrise</h5>
+        </div>
 
+        <h6>Liste de vos prières</h6>
+        <div class="list-group">
+            {% for priere in personnage.prieres %}
+                <a class="list-group-item"
+                   href="{{ path('participant.priere.detail', {'participant': participant.id, 'priere': priere.id}) }}">{{ priere.sphere.label }}
+                    - Niveau {{ priere.niveau }} ({{ priere.label }})</a>
+            {% else %}
+                {% include '_partials/noResult.twig' with {'content' : 'Aucune', 'css' : 'w-100'} %}
+            {% endfor %}
+        </div>
+    </div>
 {% endif %}

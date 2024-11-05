@@ -1,0 +1,135 @@
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
+{% if isAdmin %}
+    <div class="{{ css }}">
+        <div class="header">
+            <h5>Enveloppe</h5>
+        </div>
+
+        {# TODO : fragment for enveloppe -> to also use it on groupe #}
+        {% if isAdmin %}
+            {% include '_partials/dropDown.twig' with {
+                'title' : 'Action',
+                'actions' :
+                [
+                    {'path' : path('personnage.documents', {'personnage': personnage.id}), 'label': 'Modifier la liste des documents' },
+                    {'path' : path('personnage.items', {'personnage': personnage.id}), 'label': 'Modifier la liste des objets' },
+                    {'path' : path('personnage.admin.update.ingredient', {'personnage': personnage.id}), 'label': 'Modifier la liste des ingrédients' },
+                    {'path' : path('personnage.admin.update.ressource', {'personnage': personnage.id}), 'label': 'Modifier la liste des ressources' },
+                    {'path' : path('personnage.admin.update.richesse', {'personnage': personnage.id}), 'label': 'Modifier la richesse' },
+                ]
+            } %}
+        {% endif %}
+
+        <div class="panel-body">
+            <div class="list-group">
+
+                <div class="list-group-item">
+                    <h6 class="list-group-item-heading">Renommée
+                        : {{ personnage.renomme|default(0) }}</h6>
+                </div>
+
+                <div class="list-group-item">
+                    <h6 class="list-group-item-heading">Richesse : {{ personnage.richesse|default(0) }}
+                        pièces d'argent</h6>
+                </div>
+
+                <div class="list-group-item">
+                    <h6 class="list-group-item-heading">Lié aux compétences :</h6>
+                    {% for competence in personnage.competences %}
+                        {% if competence.materiel %}
+                            <div class="list-group-item-text">
+                                <strong>{{ competence.competenceFamily.label }}
+                                    &nbsp({{ competence.level.label }}) : </strong>
+                                {{ competence.materielRaw }}
+                            </div>
+                        {% else %}
+                            <div class="list-group-item-text">Aucun</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if personnage.hasCompetence('Prêtrise') %}
+                    <div class="list-group-item">
+                        {% set enoughReligion = 0 %}
+                        <h6 class="list-group-item-heading">Divinité principale :</h6>
+                        {% for religion in personnage.personnagesReligions %}
+                            {% if religion.religionLevel.index >= 2 %}
+                                {% set enoughReligion = 1 %}
+                                <div class="list-group-item-text">
+                                    <strong>{{ religion.religion }}</strong>
+                                    ({{ religion.religionLevel.label }})
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        {% if enoughReligion == 0 %}
+                            <div class="list-group-item-text">CE PRÊTRE N'A PAS ASSEZ DE FERVEUR</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                <div class="list-group-item">
+                    <h6 class="list-group-item-heading">Lié aux langues :</h6>
+                    {% for materiel in personnage.langueMateriel %}
+                        <div class="list-group-item-text"><strong>{{ materiel }}</strong></div>
+                    {% else %}
+                        <div class="list-group-item-text">Aucun</div>
+                    {% endfor %}
+                </div>
+
+                <div class="list-group-item">
+                    <h6 class="list-group-item-heading">Documents :</h6>
+                    {% for document in personnage.documents %}
+                        <div class="list-group-item-text"><a
+                                    href="{{ path('document.detail', {'document':document.id}) }}"><strong>{{ document.code }}</strong>
+                                - {{ document.titre }}</a></div>
+                    {% else %}
+                        <div class="list-group-item-text">Aucun</div>
+                    {% endfor %}
+                </div>
+
+                <div class="list-group-item">
+                    <h6 class="list-group-item-heading">Objets :</h6>
+                    {% for item in personnage.items %}
+                        <div class="list-group-item-text"><a
+                                    href="{{ path('item.detail', {'item':item.id}) }}"><strong>{{ item.numero }}</strong>
+                                - {{ item.label }}</a></div>
+                    {% else %}
+                        <div class="list-group-item-text">Aucun</div>
+                    {% endfor %}
+                </div>
+
+                <div class="list-group-item">
+                    <h6 class="list-group-item-heading">Ingrédients :</h6>
+                    {% for personnageIngredient in personnage.personnageIngredients %}
+                        <div class="list-group-item-text">{{ personnageIngredient.nombre }} {{ personnageIngredient.ingredient }}
+                            - {{ personnageIngredient.ingredient.color }}
+                            : {{ personnageIngredient.ingredient.dose }}
+                            (Niveau {{ personnageIngredient.ingredient.niveau }})
+                        </div>
+                    {% else %}
+                        <div class="list-group-item-text">Aucun</div>
+                    {% endfor %}
+                </div>
+
+                <div class="list-group-item">
+                    <h6 class="list-group-item-heading">Ressources :</h6>
+                    {% for personnageRessource in personnage.personnageRessources %}
+                        <div class="list-group-item-text">{{ personnageRessource.nombre }} {{ personnageRessource.ressource }}</div>
+                    {% else %}
+                        <div class="list-group-item-text">Aucune</div>
+                    {% endfor %}
+                </div>
+
+                <div class="list-group-item">
+                    <h6 class="list-group-item-heading">Matériel :</h6>
+                    {% if personnage.materiel %}
+                        {{ personnage.materiel }}
+                    {% else %}
+                        <div class="list-group-item-text">Aucun</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

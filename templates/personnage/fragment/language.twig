@@ -1,16 +1,42 @@
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
 {# languages connu #}
-<div class="header">
-	<h5>Langues connues</h5>
+<div class="{{ css }}">
+    <div class="header">
+        <h5>Langues connues</h5>
+    </div>
+    <div class="list-group">
+        {% for personnageLangue in personnage.personnageLangues %}
+            <div class="list-group-item">
+                {% if personnageLangue.langue.secret %}
+                    <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
+                       data-bs-placement="top"
+                       title="Secret"></i><span class="text-warning">Secret</span> -
+                {% endif %}
+                <strong>{{ personnageLangue.langue }}</strong>&nbsp;
+                <small>(obtenu grâce à votre {{ personnageLangue.source }})</small>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                            href="#langue_{{ personnageLangue.langue.id }}"
+                            aria-expanded="false" aria-controls="langue_{{ personnageLangue.langue.id }}"
+                            role="button">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </button>
+                    {% if personnageLangue.langue.documentUrl %}
+                        <a class="btn btn-secondary btn-sm"
+                           title="Télécharger l'abécédaire" data-bs-toggle="tooltip"
+                           data-bs-placement="top"
+                           href="{{ path('participant.langue.document',{'participant': participant.id, 'langue' : personnageLangue.langue.id, 'filename': personnageLangue.langue.printlabel }) }}">
+                            <i class="fa fa-file"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="list-group-item bg-body-secondary collapse"
+                 id="langue_{{ personnageLangue.langue.id }}">
+                {{ personnageLangue.langue.description|markdown_to_html }}
+            </div>
+        {% endfor %}
+    </div>
 </div>
-<ul class="list-group">
-	{% for personnageLangue in personnage.personnageLangues %}
-		<li class="list-group-item">{% if personnageLangue.langue.secret %}<span style="color:red;">Secret</span> - {% endif %}<strong>{{ personnageLangue.langue }}</strong>&nbsp;<small>(obtenu grace à votre {{ personnageLangue.source }})</small><br />
-		{{ personnageLangue.langue.description|markdown_to_html }}
-		{% if personnageLangue.langue.documentUrl %}
-		<a class="btn btn-default btn-sm" href="{{ path('participant.langue.document',{'participant': participant.id, 'langue' : personnageLangue.langue.id, 'filename': personnageLangue.langue.printlabel }) }}">
-			<i class="fa fa-file"></i> Imprimer l'abécédaire
-		</a>
-    	{% endif %}
-		</li>
-	{% endfor %}
-</ul>
