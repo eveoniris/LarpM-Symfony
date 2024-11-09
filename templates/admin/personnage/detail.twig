@@ -88,7 +88,7 @@
                     </div>
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
-                            <a class="nav-link{% if tab == 'generale' %} active{% endif %}"
+                            <a class="nav-link{% if tab == 'general' %} active{% endif %}"
                                href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'general'})) }}"
                             >Générale</a>
                         </li>
