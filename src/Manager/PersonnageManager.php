@@ -57,13 +57,14 @@ final class PersonnageManager
     {
         $classe = $personnage->getClasse();
         if ($classe->getCompetenceFamilyFavorites()->contains($competence->getCompetenceFamily())) {
-            return $competence->getLevel()->getCoutFavori();
-        } elseif ($classe->getCompetenceFamilyNormales()->contains($competence->getCompetenceFamily())) {
-            return $competence->getLevel()->getCout();
+            return $competence->getLevel()?->getCoutFavori();
         }
 
-        return $competence->getLevel()->getCoutMeconu();
+        if ($classe->getCompetenceFamilyNormales()->contains($competence->getCompetenceFamily())) {
+            return $competence->getLevel()?->getCout();
+        }
 
+        return $competence->getLevel()?->getCoutMeconu();
     }
 
     /**
@@ -87,25 +88,6 @@ final class PersonnageManager
     }
 
     /**
-     * Indique si un personnage connait une famille de competence
-     *
-     * @param Personnage $personnage
-     * @param CompetenceFamily $competenceFamily
-     * @return boolean
-     */
-    public function knownCompetenceFamily(Personnage $personnage, CompetenceFamily $competenceFamily)
-    {
-        $competences = $personnage->getCompetences();
-
-        foreach ($competences as $competence) {
-            if ($competence->getCompetenceFamily() === $competenceFamily) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Indique si un personnage connait une religion
      *
      * @param Personnage $personnage
@@ -124,31 +106,6 @@ final class PersonnageManager
     }
 
     /**
-     * Fourni la liste des compétences inconnues d'un personnage
-     *
-     * @param Personnage $personnage
-     * @return Collection $competences
-     */
-    public function getUnknownCompetences(Personnage $personnage, EntityManagerInterface $entityManager)
-    {
-        $unknownCompetences = new ArrayCollection();
-
-        $repo = $entityManager->getRepository('\\' . \App\Entity\CompetenceFamily::class);
-        $competenceFamilies = $repo->findAll();
-
-        foreach ($competenceFamilies as $competenceFamily) {
-            if (!$this->knownCompetenceFamily($personnage, $competenceFamily)) {
-                $competence = $competenceFamily->getFirstCompetence();
-                if ($competence) {
-                    $unknownCompetences->add($competence);
-                }
-            }
-        }
-
-        return $unknownCompetences;
-    }
-
-    /**
      * Retourne la liste des toutes les religions inconnues d'un personnage
      * @param Personnage $personnage
      */
@@ -164,41 +121,6 @@ final class PersonnageManager
         }
 
         return $availableDescriptionReligions;
-    }
-
-    /**
-     * Récupére la liste des toutes les compétences accessibles pour un personnage
-     *
-     * @param Personnage $personnage
-     * @return Collection $competenceNiveaux
-     */
-    public function getAvailableCompetences(Personnage $personnage, EntityManagerInterface $entityManager)
-    {
-        $availableCompetences = new ArrayCollection();
-
-        // les compétences de niveau supérieur sont disponibles
-        $competences = $personnage->getCompetences();
-        foreach ($competences as $competence) {
-            $nextCompetence = $competence->getNext();
-            if ($nextCompetence && !$personnage->getCompetences()->contains($nextCompetence)) {
-                $availableCompetences->add($nextCompetence);
-            }
-        }
-
-        // les compétences inconnues du personnage sont disponibles au niveau 1
-        $competences = $this->getUnknownCompetences($personnage, $entityManager);
-
-        foreach ($competences as $competence) {
-            $availableCompetences->add($competence);
-        }
-
-        // trie des competences disponibles
-        $iterator = $availableCompetences->getIterator();
-        $iterator->uasort(function ($a, $b) {
-            return ($a->getLabel() < $b->getLabel()) ? -1 : 1;
-        });
-
-        return new ArrayCollection(iterator_to_array($iterator));
     }
 
     /**

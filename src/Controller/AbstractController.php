@@ -9,9 +9,11 @@ use App\Repository\BaseRepository;
 use App\Service\FileUploader;
 use App\Service\MailService;
 use App\Service\PagerService;
+use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
 use JetBrains\PhpStorm\Deprecated;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -37,6 +39,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected PagerService $pageRequest,
         protected MailService $mailer,
         protected LoggerInterface $logger,
+        protected PersonnageService $personnageService,
         // Cache $cache, // TODO : later
     ) {
     }

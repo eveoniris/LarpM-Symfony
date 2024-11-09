@@ -2,22 +2,37 @@
 
 namespace App\Controller;
 
+use App\Entity\Age;
+use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\Connaissance;
 use App\Entity\ExperienceGain;
 use App\Entity\ExperienceUsage;
+use App\Entity\HeroismeHistory;
+use App\Entity\Ingredient;
+use App\Entity\Langue;
+use App\Entity\Participant;
 use App\Entity\Personnage;
+use App\Entity\PersonnageBackground;
 use App\Entity\PersonnageChronologie;
 use App\Entity\PersonnageHasToken;
 use App\Entity\PersonnageIngredient;
+use App\Entity\PersonnageLangues;
 use App\Entity\PersonnageLignee;
 use App\Entity\PersonnageRessource;
+use App\Entity\PersonnagesReligions;
+use App\Entity\PersonnageTrigger;
 use App\Entity\Potion;
 use App\Entity\Priere;
+use App\Entity\PugilatHistory;
+use App\Entity\Religion;
 use App\Entity\RenommeHistory;
+use App\Entity\Ressource;
 use App\Entity\Sort;
 use App\Entity\Technologie;
+use App\Entity\Token;
 use App\Enum\FolderType;
+use App\Enum\Role;
 use App\Form\Personnage\PersonnageChronologieForm;
 use App\Form\Personnage\PersonnageDocumentForm;
 use App\Form\Personnage\PersonnageIngredientForm;
@@ -48,9 +63,14 @@ use App\Form\TriggerForm;
 use App\Form\TrombineForm;
 use App\Manager\GroupeManager;
 use App\Manager\PersonnageManager;
+use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,17 +83,62 @@ class PersonnageController extends AbstractController
 {
     // contient la liste des colonnes
     protected $columnDefinitions = [
-        'colId' => ['label' => '#', 'fieldName' => 'id',  'sortFieldName' => 'id', 'tooltip' => 'Numéro d\'identifiant'],
-        'colStatut' => ['label' => 'S', 'fieldName' => 'status',  'sortFieldName' => 'status', 'tooltip' => 'Statut'],
-        'colNom' => ['label' => 'Nom', 'fieldName' => 'nom',  'sortFieldName' => 'nom', 'tooltip' => 'Nom et surnom du personnage'],
-        'colClasse' => ['label' => 'Classe', 'fieldName' => 'classe',  'sortFieldName' => 'classe', 'tooltip' => 'Classe du personnage'],
-        'colGroupe' => ['label' => 'Groupe', 'fieldName' => 'groupe',  'sortFieldName' => 'groupe', 'tooltip' => 'Dernier GN - Groupe participant'],
-        'colRenommee' => ['label' => 'Renommée', 'fieldName' => 'renomme',  'sortFieldName' => 'renomme', 'tooltip' => 'Points de renommée'],
-        'colPugilat' => ['label' => 'Pugilat', 'fieldName' => 'pugilat',  'sortFieldName' => 'pugilat', 'tooltip' => 'Points de pugilat'],
-        'colHeroisme' => ['label' => 'Héroïsme', 'fieldName' => 'heroisme',  'sortFieldName' => 'heroisme', 'tooltip' => 'Points d\'héroisme'],
-        'colUser' => ['label' => 'Utilisateur', 'fieldName' => 'user',  'sortFieldName' => 'user', 'tooltip' => 'Liste des utilisateurs (Nom et prénom) par GN'],
-        'colXp' => ['label' => 'Points d\'expérience', 'fieldName' => 'xp',  'sortFieldName' => 'xp', 'tooltip' => 'Points d\'expérience actuels sur le total max possible'],
-        'colHasAnomalie' => ['label' => 'Ano.', 'fieldName' => 'hasAnomalie',  'sortFieldName' => 'hasAnomalie', 'tooltip' => 'Une pastille orange indique une anomalie'],
+        'colId' => ['label' => '#', 'fieldName' => 'id', 'sortFieldName' => 'id', 'tooltip' => 'Numéro d\'identifiant'],
+        'colStatut' => ['label' => 'S', 'fieldName' => 'status', 'sortFieldName' => 'status', 'tooltip' => 'Statut'],
+        'colNom' => [
+            'label' => 'Nom',
+            'fieldName' => 'nom',
+            'sortFieldName' => 'nom',
+            'tooltip' => 'Nom et surnom du personnage',
+        ],
+        'colClasse' => [
+            'label' => 'Classe',
+            'fieldName' => 'classe',
+            'sortFieldName' => 'classe',
+            'tooltip' => 'Classe du personnage',
+        ],
+        'colGroupe' => [
+            'label' => 'Groupe',
+            'fieldName' => 'groupe',
+            'sortFieldName' => 'groupe',
+            'tooltip' => 'Dernier GN - Groupe participant',
+        ],
+        'colRenommee' => [
+            'label' => 'Renommée',
+            'fieldName' => 'renomme',
+            'sortFieldName' => 'renomme',
+            'tooltip' => 'Points de renommée',
+        ],
+        'colPugilat' => [
+            'label' => 'Pugilat',
+            'fieldName' => 'pugilat',
+            'sortFieldName' => 'pugilat',
+            'tooltip' => 'Points de pugilat',
+        ],
+        'colHeroisme' => [
+            'label' => 'Héroïsme',
+            'fieldName' => 'heroisme',
+            'sortFieldName' => 'heroisme',
+            'tooltip' => 'Points d\'héroisme',
+        ],
+        'colUser' => [
+            'label' => 'Utilisateur',
+            'fieldName' => 'user',
+            'sortFieldName' => 'user',
+            'tooltip' => 'Liste des utilisateurs (Nom et prénom) par GN',
+        ],
+        'colXp' => [
+            'label' => 'Points d\'expérience',
+            'fieldName' => 'xp',
+            'sortFieldName' => 'xp',
+            'tooltip' => 'Points d\'expérience actuels sur le total max possible',
+        ],
+        'colHasAnomalie' => [
+            'label' => 'Ano.',
+            'fieldName' => 'hasAnomalie',
+            'sortFieldName' => 'hasAnomalie',
+            'tooltip' => 'Une pastille orange indique une anomalie',
+        ],
     ];
 
     /**
@@ -82,20 +147,26 @@ class PersonnageController extends AbstractController
     public function getSearchViewParameters(
         Request $request,
         EntityManagerInterface $entityManager,
-        string $routeName): array
-    {
+        string $routeName,
+    ): array {
         // récupère les filtres et tris de recherche + pagination renseignés dans le formulaire
         $orderBy = $request->get('order_by') ?: 'id';
         $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
         $isAsc = 'ASC' == $orderDir;
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
+        $limit = (int)($request->get('limit') ?: 50);
+        $page = (int)($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
         $formData = $request->query->all('personnage_find_form');
-        $religion = isset($formData['religion']) ? $entityManager->find('App\Entity\Religion', $formData['religion']) : null;
-        $competence = isset($formData['competence']) ? $entityManager->find('App\Entity\Competence', $formData['competence']) : null;
+        $religion = isset($formData['religion']) ? $entityManager->find(
+            'App\Entity\Religion',
+            $formData['religion']
+        ) : null;
+        $competence = isset($formData['competence']) ? $entityManager->find(
+            'App\Entity\Competence',
+            $formData['competence']
+        ) : null;
         $classe = isset($formData['classe']) ? $entityManager->find('App\Entity\Classe', $formData['classe']) : null;
         $groupe = isset($formData['groupe']) ? $entityManager->find('App\Entity\Groupe', $formData['groupe']) : null;
         $optionalParameters = '';
@@ -186,13 +257,13 @@ class PersonnageController extends AbstractController
         }
 
         return array_merge([
-            'personnages' => $personnages,
-            'paginator' => $paginator,
-            'form' => $form->createView(),
-            'optionalParameters' => $optionalParameters,
-            'columnDefinitions' => $columnDefinitions,
-            'formPath' => $routeName,
-        ]
+                'personnages' => $personnages,
+                'paginator' => $paginator,
+                'form' => $form->createView(),
+                'optionalParameters' => $optionalParameters,
+                'columnDefinitions' => $columnDefinitions,
+                'formPath' => $routeName,
+            ]
         );
     }
 
@@ -220,8 +291,11 @@ class PersonnageController extends AbstractController
      * Obtenir une image protégée.
      */
     #[Route('/{personnage}/trombine', name: 'trombine')]
-    public function getTrombineAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage): Response
-    {
+    public function getTrombineAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ): Response {
         $trombine = $personnage->getTrombineUrl();
         $filename = $this->fileUploader->getDirectory(FolderType::Photos).$trombine;
 
@@ -245,10 +319,13 @@ class PersonnageController extends AbstractController
      * Mise à jour de la photo.
      */
     #[Route('/{personnage}/updateTrombine', name: 'trombine.update')]
-    public function updateTrombineAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function updateTrombineAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm(TrombineForm::class, [])
-            ->add('envoyer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Envoyer']);
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
@@ -260,7 +337,10 @@ class PersonnageController extends AbstractController
             $extension = $files['trombine']->guessExtension();
 
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
-                $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
+                $this->addFlash(
+                    'error',
+                    'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)'
+                );
 
                 return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
             }
@@ -295,7 +375,7 @@ class PersonnageController extends AbstractController
         $personnage = new Personnage();
 
         $form = $this->createForm(PersonnageForm::class, $personnage)
-            ->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+            ->add('valider', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -335,14 +415,18 @@ class PersonnageController extends AbstractController
     public function vieillirAction(Request $request, EntityManagerInterface $entityManager)
     {
         $form = $this->createForm()
-            ->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Faire vieillir tous les personnages', 'attr' => ['class' => 'btn-danger']]);
+            ->add(
+                'valider',
+                SubmitType::class,
+                ['label' => 'Faire vieillir tous les personnages', 'attr' => ['class' => 'btn-danger']]
+            );
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $personnages = $entityManager->getRepository('\\'.Personnage::class)->findAll();
-            $token = $entityManager->getRepository('\\'.\App\Entity\Token::class)->findOneByTag('VIEILLESSE');
-            $ages = $entityManager->getRepository('\\'.\App\Entity\Age::class)->findAll();
+            $token = $entityManager->getRepository('\\'.Token::class)->findOneByTag('VIEILLESSE');
+            $ages = $entityManager->getRepository('\\'.Age::class)->findAll();
 
             if (!$token) {
                 $this->addFlash('error', "Le jeton VIEILLESSE n'existe pas !");
@@ -401,10 +485,13 @@ class PersonnageController extends AbstractController
      * Modifier l'age d'un personnage.
      */
     #[Route('/{personnage}/updateAge', name: 'admin.update.age')]
-    public function adminUpdateAgeAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdateAgeAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm(PersonnageUpdateAgeForm::class, $personnage)
-            ->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
+            ->add('valider', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -429,8 +516,11 @@ class PersonnageController extends AbstractController
      * Modification des technologies d'un personnage.
      */
     #[Route('/{personnage}/updateTechnologie', name: 'admin.update.technologie')]
-    public function adminUpdateTechnologieAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdateTechnologieAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $technologies = $entityManager->getRepository(Technologie::class)->findAllOrderedByLabel();
         $competences = $personnage->getCompetences();
 
@@ -471,7 +561,7 @@ class PersonnageController extends AbstractController
         }
 
         $form = $this->createForm(PersonnageTechnologieForm::class, $personnage)
-            ->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
+            ->add('valider', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -549,7 +639,8 @@ class PersonnageController extends AbstractController
     {
         $langueMateriel = [];
         foreach ($personnage->getPersonnageLangues() as $langue) {
-            if ($langue->getLangue()->getGroupeLangue()->getId() > 0 && $langue->getLangue()->getGroupeLangue()->getId() < 6) {
+            if ($langue->getLangue()->getGroupeLangue()->getId() > 0 && $langue->getLangue()->getGroupeLangue()->getId(
+                ) < 6) {
                 if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel)) {
                     $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
                 }
@@ -565,8 +656,11 @@ class PersonnageController extends AbstractController
     }
 
     #[Route('/{personnage}/enveloppe/print', name: 'enveloppe.print')]
-    public function enveloppePrintAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function enveloppePrintAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         return $this->render('personnage/enveloppe.twig', [
             'personnage' => $personnage,
             'langueMateriel' => $this->getLangueMateriel($personnage),
@@ -577,14 +671,17 @@ class PersonnageController extends AbstractController
      * Modifie le matériel lié à un personnage.
      */
     #[Route('/{personnage}/updateMateriel', name: 'update.materiel')]
-    public function adminMaterielAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminMaterielAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm()
             ->add('materiel', 'textarea', [
                 'required' => false,
                 'data' => $personnage->getMateriel(),
             ])
-            ->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
+            ->add('valider', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -609,10 +706,13 @@ class PersonnageController extends AbstractController
      * Modification du statut d'un personnage.
      */
     #[Route('/{personnage}/statut', name: 'admin.statut')]
-    public function adminStatutAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminStatutAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm(PersonnageStatutForm::class, $personnage)
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -647,17 +747,20 @@ class PersonnageController extends AbstractController
      * Transfert d'un personnage à un autre utilisateur.
      */
     #[Route('/{personnage}/transfert', name: 'admin.transfert')]
-    public function adminTransfertAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminTransfertAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm()
             ->add('participant', 'entity', [
                 'required' => true,
                 'expanded' => true,
                 'label' => 'Nouveau propriétaire',
-                'class' => \App\Entity\Participant::class,
+                'class' => Participant::class,
                 'choice_label' => 'UserIdentity',
             ])
-            ->add('transfert', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Transferer']);
+            ->add('transfert', SubmitType::class, ['label' => 'Transferer']);
 
         $form->handleRequest($request);
 
@@ -705,7 +808,7 @@ class PersonnageController extends AbstractController
     /**
      * @return mixed[]
      */
-    private function getErrorMessages(\Symfony\Component\Form\Form $form): array
+    private function getErrorMessages(Form $form): array
     {
         $errors = [];
 
@@ -793,10 +896,13 @@ class PersonnageController extends AbstractController
      * Gestion des points d'expérience d'un personnage (pour les orgas).
      */
     #[Route('/{personnage}/xp', name: 'admin.xp')]
-    public function adminXpAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminXpAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm(PersonnageXpForm::class, [])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -833,8 +939,11 @@ class PersonnageController extends AbstractController
      * Ajout d'un personnage (orga seulement).
      */
     #[Route('/add', name: 'admin.add')]
-    public function adminAddAction(Request $request, EntityManagerInterface $entityManager)
-    {
+    public function adminAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        PersonnageService $personnageService,
+    ): Response {
         $personnage = new Personnage();
         $gnActif = GroupeManager::getGnActif($entityManager);
 
@@ -851,16 +960,16 @@ class PersonnageController extends AbstractController
                 $participant = $this->getUser()->getLastParticipant();
             }
         } else {
-            $participant = $entityManager->getRepository('\\'.\App\Entity\Participant::class)->find($participant);
+            $participant = $entityManager->getRepository('\\'.Participant::class)->find($participant);
         }
 
         $form = $this->createForm(PersonnageForm::class, $personnage)
             ->add('classe', 'entity', [
                 'label' => 'Classes disponibles',
                 'choice_label' => 'label',
-                'class' => \App\Entity\Classe::class,
+                'class' => Classe::class,
             ])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -885,14 +994,20 @@ class PersonnageController extends AbstractController
             $entityManager->persist($historique);
 
             // ajout des compétences acquises à la création
-            foreach ($personnage->getClasse()->getCompetenceFamilyCreations() as $competenceFamily) {
+            $personnageService->addClasseCompetencesFamilyCreation($personnage);
+            if ($personnageService->hasErrors()) {
+                $this->addFlash('success', $personnageService->getErrorsAsString());
+
+                return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+            }
+            /*foreach ($personnage->getClasse()->getCompetenceFamilyCreations() as $competenceFamily) {
                 $firstCompetence = $competenceFamily->getFirstCompetence();
                 if ($firstCompetence) {
                     $personnage->addCompetence($firstCompetence);
                     $firstCompetence->addPersonnage($personnage);
                     $entityManager->persist($firstCompetence);
                 }
-            }
+            }*/
 
             // Ajout des points d'expérience gagné grace à l'age
             $xpAgeBonus = $personnage->getAge()->getBonus();
@@ -931,10 +1046,13 @@ class PersonnageController extends AbstractController
      * Supression d'un personnage (orga seulement).
      */
     #[Route('/{personnage}/delete', name: 'admin.delete')]
-    public function adminDeleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminDeleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm(PersonnageDeleteForm::class, $personnage)
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -1009,11 +1127,13 @@ class PersonnageController extends AbstractController
      * Modification du personnage.
      */
     #[Route('/{personnage}/update', name: 'admin.update')]
-    public function adminUpdateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm(PersonnageUpdateForm::class, $personnage)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider les modifications'])
-        ;
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1030,16 +1150,20 @@ class PersonnageController extends AbstractController
 
         return $this->render('personnage/update.twig', [
             'form' => $form->createView(),
-            'personnage' => $personnage]);
+            'personnage' => $personnage,
+        ]);
     }
 
     /**
      * Ajoute un background au personnage.
      */
     #[Route('/{personnage}/addBackground', name: 'admin.add.background')]
-    public function adminAddBackgroundAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
-        $background = new \App\Entity\PersonnageBackground();
+    public function adminAddBackgroundAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
+        $background = new PersonnageBackground();
 
         $background->setPersonnage($personnage);
         $background->setUser($this->getUser());
@@ -1050,7 +1174,7 @@ class PersonnageController extends AbstractController
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getPersonnageBackgroundVisibility(),
             ])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1076,8 +1200,11 @@ class PersonnageController extends AbstractController
      * Modifie le background d'un personnage.
      */
     #[Route('/{personnage}/updateBackground', name: 'admin.update.background')]
-    public function adminUpdateBackgroundAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdateBackgroundAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $personnage = $request->get('personnage');
         $background = $request->get('background');
 
@@ -1087,7 +1214,7 @@ class PersonnageController extends AbstractController
                 'label' => 'Visibilité',
                 'choices' => $app['larp.manager']->getPersonnageBackgroundVisibility(),
             ])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1113,10 +1240,13 @@ class PersonnageController extends AbstractController
      * Modification de la renommee du personnage.
      */
     #[Route('/{personnage}/updateRenomme', name: 'admin.update.renomme')]
-    public function adminUpdateRenommeAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdateRenommeAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm(PersonnageUpdateRenommeForm::class)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1142,17 +1272,21 @@ class PersonnageController extends AbstractController
 
         return $this->render('personnage/updateRenomme.twig', [
             'form' => $form->createView(),
-            'personnage' => $personnage]);
+            'personnage' => $personnage,
+        ]);
     }
 
     /**
      * Modification de l'héroisme d'un personnage.
      */
     #[Route('/{personnage}/updateHeroisme', name: 'admin.update.heroisme')]
-    public function adminUpdateHeroismeAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdateHeroismeAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm(PersonnageUpdateHeroismeForm::class)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1160,7 +1294,7 @@ class PersonnageController extends AbstractController
             $heroisme = $form->get('heroisme')->getData();
             $explication = $form->get('explication')->getData();
 
-            $heroisme_history = new \App\Entity\HeroismeHistory();
+            $heroisme_history = new HeroismeHistory();
 
             $heroisme_history->setHeroisme($heroisme);
             $heroisme_history->setExplication($explication);
@@ -1178,17 +1312,21 @@ class PersonnageController extends AbstractController
 
         return $this->render('personnage/updateHeroisme.twig', [
             'form' => $form->createView(),
-            'personnage' => $personnage]);
+            'personnage' => $personnage,
+        ]);
     }
 
     /**
      * Modification du pugilat d'un personnage.
      */
     #[Route('/{personnage}/updatePugilat', name: 'admin.update.pugilat')]
-    public function adminUpdatePugilatAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdatePugilatAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm(PersonnageUpdatePugilatForm::class)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1196,7 +1334,7 @@ class PersonnageController extends AbstractController
             $pugilat = $form->get('pugilat')->getData();
             $explication = $form->get('explication')->getData();
 
-            $pugilat_history = new \App\Entity\PugilatHistory();
+            $pugilat_history = new PugilatHistory();
 
             $pugilat_history->setPugilat($pugilat);
             $pugilat_history->setExplication($explication);
@@ -1214,17 +1352,21 @@ class PersonnageController extends AbstractController
 
         return $this->render('personnage/updatePugilat.twig', [
             'form' => $form->createView(),
-            'personnage' => $personnage]);
+            'personnage' => $personnage,
+        ]);
     }
 
     /**
      * Ajoute un jeton vieillesse au personnage.
      */
     #[Route('/{personnage}/addToken', name: 'admin.token.add')]
-    public function adminTokenAddAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminTokenAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $token = $request->get('token');
-        $token = $entityManager->getRepository('\\'.\App\Entity\Token::class)->findOneByTag($token);
+        $token = $entityManager->getRepository('\\'.Token::class)->findOneByTag($token);
 
         // donne un jeton vieillesse
         $personnageHasToken = new PersonnageHasToken();
@@ -1238,7 +1380,7 @@ class PersonnageController extends AbstractController
 
         if (0 == $personnage->getPersonnageHasTokens()->count() % 2) {
             if (5 != $personnage->getAge()->getId()) {
-                $age = $entityManager->getRepository('\\'.\App\Entity\Age::class)->findOneById($personnage->getAge()->getId() + 1);
+                $age = $entityManager->getRepository('\\'.Age::class)->findOneById($personnage->getAge()->getId() + 1);
                 $personnage->setAge($age);
             } else {
                 $personnage->setVivant(false);
@@ -1268,12 +1410,16 @@ class PersonnageController extends AbstractController
      * Retire un jeton d'un personnage.
      */
     #[Route('/{personnage}/deleteToken', name: 'admin.token.delete')]
-    public function adminTokenDeleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage, PersonnageHasToken $personnageHasToken)
-    {
+    public function adminTokenDeleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+        PersonnageHasToken $personnageHasToken,
+    ) {
         $personnage->removePersonnageHasToken($personnageHasToken);
         // $personnage->setAgeReel($personnage->getAgeReel() - 5);
         if (0 != $personnage->getPersonnageHasTokens()->count() % 2 && 5 != $personnage->getAge()->getId()) {
-            $age = $entityManager->getRepository('\\'.\App\Entity\Age::class)->findOneById($personnage->getAge()->getId() - 1);
+            $age = $entityManager->getRepository('\\'.Age::class)->findOneById($personnage->getAge()->getId() - 1);
             $personnage->setAge($age);
         }
 
@@ -1305,14 +1451,17 @@ class PersonnageController extends AbstractController
      * Ajoute un trigger.
      */
     #[Route('/{personnage}/addTrigger', name: 'admin.trigger.add')]
-    public function adminTriggerAddAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
-        $trigger = new \App\Entity\PersonnageTrigger();
+    public function adminTriggerAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
+        $trigger = new PersonnageTrigger();
         $trigger->setPersonnage($personnage);
         $trigger->setDone(false);
 
         $form = $this->createForm(TriggerForm::class, $trigger)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1329,19 +1478,23 @@ class PersonnageController extends AbstractController
 
         return $this->render('personnage/addTrigger.twig', [
             'form' => $form->createView(),
-            'personnage' => $personnage]);
+            'personnage' => $personnage,
+        ]);
     }
 
     /**
      * Supprime un trigger.
      */
     #[Route('/{personnage}/deleteTrigger', name: 'admin.trigger.delete')]
-    public function adminTriggerDeleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminTriggerDeleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $trigger = $request->get('trigger');
 
         $form = $this->createForm(TriggerDeleteForm::class, $trigger)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1367,15 +1520,18 @@ class PersonnageController extends AbstractController
      * Modifie la liste des domaines de magie.
      */
     #[Route('/{personnage}/updateDomaine', name: 'admin.update.domaine')]
-    public function adminUpdateDomaineAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdateDomaineAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $originalDomaines = new ArrayCollection();
         foreach ($personnage->getDomaines() as $domaine) {
             $originalDomaines[] = $domaine;
         }
 
         $form = $this->createForm(PersonnageUpdateDomaineForm::class, $personnage)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -1412,9 +1568,13 @@ class PersonnageController extends AbstractController
      * Modifie la liste des langues.
      */
     #[Route('/{personnage}/updateLangue', name: 'admin.update.langue')]
-    public function adminUpdateLangueAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
-        $langues = $entityManager->getRepository(\App\Entity\Langue::class)->findBy([], ['secret' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC']);
+    public function adminUpdateLangueAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
+        $langues = $entityManager->getRepository(Langue::class)->findBy([],
+            ['secret' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC']);
 
         $originalLanguages = [];
         foreach ($personnage->getLanguages() as $languages) {
@@ -1427,12 +1587,12 @@ class PersonnageController extends AbstractController
                 'label' => 'Choisissez les langues du personnage',
                 'multiple' => true,
                 'expanded' => true,
-                'class' => \App\Entity\Langue::class,
+                'class' => Langue::class,
                 'choices' => $langues,
                 'choice_label' => 'label',
                 'data' => $originalLanguages,
             ])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider vos modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider vos modifications']);
 
         $form->handleRequest($request);
 
@@ -1443,7 +1603,7 @@ class PersonnageController extends AbstractController
             // pour toutes les nouvelles langues
             foreach ($langues as $langue) {
                 if (!$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = new \App\Entity\PersonnageLangues();
+                    $personnageLangue = new PersonnageLangues();
                     $personnageLangue->setPersonnage($personnage);
                     $personnageLangue->setLangue($langue);
                     $personnageLangue->setSource('ADMIN');
@@ -1490,12 +1650,15 @@ class PersonnageController extends AbstractController
      * Affiche la liste des prières pour modifications.
      */
     #[Route('/{personnage}/updatePriere', name: 'admin.update.priere')]
-    public function adminUpdatePriereAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdatePriereAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $order_by = $request->get('order_by', 'label');
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) $request->get('limit', 50);
-        $page = (int) $request->get('page', 1);
+        $limit = (int)$request->get('limit', 50);
+        $page = (int)$request->get('page', 1);
         $offset = ($page - 1) * $limit;
         $type = null;
         $value = null;
@@ -1521,7 +1684,8 @@ class PersonnageController extends AbstractController
 
         $numResults = $repo->findCount($type, $value);
 
-        $url = $app['url_generator']->generate('personnage.admin.update.priere', ['personnage' => $personnage->getId()]);
+        $url = $app['url_generator']->generate('personnage.admin.update.priere', ['personnage' => $personnage->getId()]
+        );
         $paginator = new Paginator(
             $numResults,
             $limit,
@@ -1529,7 +1693,8 @@ class PersonnageController extends AbstractController
             $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('personnage/updatePriere.twig',
+        return $this->render(
+            'personnage/updatePriere.twig',
             [
                 'prieres' => $prieres,
                 'personnage' => $personnage,
@@ -1545,8 +1710,11 @@ class PersonnageController extends AbstractController
      * @return RedirectResponse
      */
     #[Route('/{personnage}/addPriere', name: 'admin.add.priere')]
-    public function adminAddPriereAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminAddPriereAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $priereID = $request->get('priere');
 
         $priere = $entityManager->getRepository(Priere::class)
@@ -1591,8 +1759,11 @@ class PersonnageController extends AbstractController
      * Affiche la liste des connaissances pour modification.
      */
     #[Route('/{personnage}/updateConnaissance', name: 'admin.update.connaissance')]
-    public function adminUpdateConnaissanceAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdateConnaissanceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $connaissances = $entityManager->getRepository(Connaissance::class)->findAllOrderedByLabel();
 
         return $this->render('personnage/updateConnaissance.twig', [
@@ -1607,8 +1778,11 @@ class PersonnageController extends AbstractController
      * @return RedirectResponse
      */
     #[Route('/{personnage}/addConnaissance', name: 'admin.add.connaissance')]
-    public function adminAddConnaissanceAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminAddConnaissanceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $connaissanceID = $request->get('connaissance');
 
         $connaissance = $entityManager->getRepository(Connaissance::class)
@@ -1623,7 +1797,10 @@ class PersonnageController extends AbstractController
 
         $this->addFlash('success', $nomConnaissance.' '.$niveauConnaissance.' a été ajouté.');
 
-        return $this->redirectToRoute('personnage.admin.update.connaissance', ['personnage' => $personnage->getId(), 303]);
+        return $this->redirectToRoute(
+            'personnage.admin.update.connaissance',
+            ['personnage' => $personnage->getId(), 303]
+        );
     }
 
     /**
@@ -1632,8 +1809,11 @@ class PersonnageController extends AbstractController
      * @return RedirectResponse
      */
     #[Route('/{personnage}/deleteConnaissance', name: 'admin.delete.connaissance')]
-    public function adminRemoveConnaissanceAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminRemoveConnaissanceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $connaissanceID = $request->get('connaissance');
 
         $connaissance = $entityManager->getRepository(Connaissance::class)
@@ -1648,19 +1828,25 @@ class PersonnageController extends AbstractController
 
         $this->addFlash('success', $nomConnaissance.' '.$niveauConnaissance.' a été retiré.');
 
-        return $this->redirectToRoute('personnage.admin.update.connaissance', ['personnage' => $personnage->getId(), 303]);
+        return $this->redirectToRoute(
+            'personnage.admin.update.connaissance',
+            ['personnage' => $personnage->getId(), 303]
+        );
     }
 
     /**
      * Affiche la liste des sorts pour modification.
      */
     #[Route('/{personnage}/updateSort', name: 'admin.update.sort')]
-    public function adminUpdateSortAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdateSortAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $order_by = $request->get('order_by', 'label');
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) $request->get('limit', 50);
-        $page = (int) $request->get('page', 1);
+        $limit = (int)$request->get('limit', 50);
+        $page = (int)$request->get('page', 1);
         $offset = ($page - 1) * $limit;
         $type = null;
         $value = null;
@@ -1694,7 +1880,8 @@ class PersonnageController extends AbstractController
             $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('personnage/updateSort.twig',
+        return $this->render(
+            'personnage/updateSort.twig',
             [
                 'sorts' => $sorts,
                 'personnage' => $personnage,
@@ -1710,8 +1897,11 @@ class PersonnageController extends AbstractController
      * @return RedirectResponse
      */
     #[Route('/{personnage}/addSort', name: 'admin.add.sort')]
-    public function adminAddSortAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminAddSortAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $sortID = $request->get('sort');
 
         $sort = $entityManager->getRepository(Sort::class)
@@ -1735,8 +1925,11 @@ class PersonnageController extends AbstractController
      * @return RedirectResponse
      */
     #[Route('/{personnage}/deleteSort', name: 'admin.delete.sort')]
-    public function adminRemoveSortAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminRemoveSortAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $sortID = $request->get('sort');
 
         $sort = $entityManager->getRepository(Sort::class)
@@ -1758,12 +1951,15 @@ class PersonnageController extends AbstractController
      * Affiche la liste des potions pour modification.
      */
     #[Route('/{personnage}/updatePotion', name: 'admin.update.potion')]
-    public function adminUpdatePotionAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdatePotionAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $order_by = $request->get('order_by', 'label');
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) $request->get('limit', 50);
-        $page = (int) $request->get('page', 1);
+        $limit = (int)$request->get('limit', 50);
+        $page = (int)$request->get('page', 1);
         $offset = ($page - 1) * $limit;
         $type = null;
         $value = null;
@@ -1789,7 +1985,8 @@ class PersonnageController extends AbstractController
 
         $numResults = $repo->findCount($type, $value);
 
-        $url = $app['url_generator']->generate('personnage.admin.update.potion', ['personnage' => $personnage->getId()]);
+        $url = $app['url_generator']->generate('personnage.admin.update.potion', ['personnage' => $personnage->getId()]
+        );
         $paginator = new Paginator(
             $numResults,
             $limit,
@@ -1797,7 +1994,8 @@ class PersonnageController extends AbstractController
             $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
         );
 
-        return $this->render('personnage/updatePotion.twig',
+        return $this->render(
+            'personnage/updatePotion.twig',
             [
                 'potions' => $potions,
                 'personnage' => $personnage,
@@ -1813,8 +2011,11 @@ class PersonnageController extends AbstractController
      * @return RedirectResponse
      */
     #[Route('/{personnage}/addPotion', name: 'admin.add.potion')]
-    public function adminAddPotionAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminAddPotionAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $potionID = $request->get('potion');
 
         $potion = $entityManager->getRepository(Potion::class)
@@ -1837,8 +2038,11 @@ class PersonnageController extends AbstractController
      * @return RedirectResponse
      */
     #[Route('/{personnage}/deletePotion', name: 'admin.delete.potion')]
-    public function adminRemovePotionAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminRemovePotionAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $potionID = $request->get('potion');
 
         $potion = $entityManager->getRepository(Potion::class)
@@ -1859,8 +2063,11 @@ class PersonnageController extends AbstractController
      * Modifie la liste des ingrédients.
      */
     #[Route('/{personnage}/updateIngredient', name: 'admin.update.ingredient')]
-    public function adminUpdateIngredientAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdateIngredientAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $originalPersonnageIngredients = new ArrayCollection();
 
         /*
@@ -1899,7 +2106,7 @@ class PersonnageController extends AbstractController
              *  Gestion des ingrédients alloués au hasard
              */
             if ($random && $random > 0) {
-                $ingredients = $entityManager->getRepository(\App\Entity\Ingredient::class)->findAllOrderedByLabel();
+                $ingredients = $entityManager->getRepository(Ingredient::class)->findAllOrderedByLabel();
                 shuffle($ingredients);
                 $needs = new ArrayCollection(array_slice($ingredients, 0, $random));
 
@@ -1930,8 +2137,11 @@ class PersonnageController extends AbstractController
      * Modifie la liste des ressources.
      */
     #[Route('/{personnage}/updateRessource', name: 'admin.update.ressource')]
-    public function adminUpdateRessourceAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdateRessourceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $originalPersonnageRessources = new ArrayCollection();
 
         /*
@@ -1970,7 +2180,7 @@ class PersonnageController extends AbstractController
              *  Gestion des ressources communes alloués au hasard
              */
             if ($randomCommun && $randomCommun > 0) {
-                $ressourceCommune = $entityManager->getRepository(\App\Entity\Ressource::class)->findCommun();
+                $ressourceCommune = $entityManager->getRepository(Ressource::class)->findCommun();
                 shuffle($ressourceCommune);
                 $needs = new ArrayCollection(array_slice($ressourceCommune, 0, $randomCommun));
 
@@ -1989,7 +2199,7 @@ class PersonnageController extends AbstractController
              *  Gestion des ressources rares alloués au hasard
              */
             if ($randomRare && $randomRare > 0) {
-                $ressourceRare = $entityManager->getRepository(\App\Entity\Ressource::class)->findRare();
+                $ressourceRare = $entityManager->getRepository(Ressource::class)->findRare();
                 shuffle($ressourceRare);
                 $needs = new ArrayCollection(array_slice($ressourceRare, 0, $randomRare));
 
@@ -2020,8 +2230,11 @@ class PersonnageController extends AbstractController
      * Modifie la richesse.
      */
     #[Route('/{personnage}/updateRichesse', name: 'admin.update.richesse')]
-    public function adminUpdateRichesseAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdateRichesseAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm(PersonnageRichesseForm::class, $personnage);
 
         $form->handleRequest($request);
@@ -2047,10 +2260,13 @@ class PersonnageController extends AbstractController
      * Gestion des documents lié à un personnage.
      */
     #[Route('/{personnage}/documents', name: 'documents')]
-    public function documentAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function documentAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm(PersonnageDocumentForm::class, $personnage)
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -2074,10 +2290,13 @@ class PersonnageController extends AbstractController
      * Gestion des objets lié à un personnage.
      */
     #[Route('/{personnage}/items', name: 'items')]
-    public function itemAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function itemAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm(PersonnageItemForm::class, $personnage)
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -2101,16 +2320,22 @@ class PersonnageController extends AbstractController
      * Ajoute une religion à un personnage.
      */
     #[Route('/{personnage}/addReligion', name: 'admin.add.religion')]
-    public function adminAddReligionAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminAddReligionAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         // refUser la demande si le personnage est Fanatique
         if ($personnage->isFanatique()) {
-            $this->addFlash('error', 'Désolé, le personnage êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. (supprimer la religion fanatique qu\'il possède avant)');
+            $this->addFlash(
+                'error',
+                'Désolé, le personnage êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. (supprimer la religion fanatique qu\'il possède avant)'
+            );
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
-        $personnageReligion = new \App\Entity\PersonnagesReligions();
+        $personnageReligion = new PersonnagesReligions();
         $personnageReligion->setPersonnage($personnage);
 
         // ne proposer que les religions que le personnage ne pratique pas déjà ...
@@ -2132,11 +2357,11 @@ class PersonnageController extends AbstractController
             ->add('religion', 'entity', [
                 'required' => true,
                 'label' => 'Votre religion',
-                'class' => \App\Entity\Religion::class,
+                'class' => Religion::class,
                 'choices' => $availableReligions,
                 'choice_label' => 'label',
             ])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider votre religion']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre religion']);
 
         $form->handleRequest($request);
 
@@ -2152,7 +2377,10 @@ class PersonnageController extends AbstractController
                 }
             } elseif (2 == $personnageReligion->getReligionLevel()->getIndex()) {
                 if ($personnage->isFervent()) {
-                    $this->addFlash('error', 'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.');
+                    $this->addFlash(
+                        'error',
+                        'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.'
+                    );
 
                     return $this->redirectToRoute('homepage', [], 303);
                 }
@@ -2168,19 +2396,23 @@ class PersonnageController extends AbstractController
 
         return $this->render('personnage/addReligion.twig', [
             'form' => $form->createView(),
-            'personnage' => $personnage]);
+            'personnage' => $personnage,
+        ]);
     }
 
     /**
      * Retire une religion d'un personnage.
      */
     #[Route('/{personnage}/deleteReligion', name: 'admin.delete.religion')]
-    public function adminRemoveReligionAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminRemoveReligionAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $personnageReligion = $request->get('personnageReligion');
 
         $form = $this->createForm()
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Retirer la religion']);
+            ->add('save', SubmitType::class, ['label' => 'Retirer la religion']);
 
         $form->handleRequest($request);
 
@@ -2206,12 +2438,15 @@ class PersonnageController extends AbstractController
      * Retire une langue d'un personnage.
      */
     #[Route('/{personnage}/deleteLangue', name: 'admin.delete.langue')]
-    public function adminRemoveLangueAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminRemoveLangueAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $personnageLangue = $request->get('personnageLangue');
 
         $form = $this->createForm()
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Retirer la langue']);
+            ->add('save', SubmitType::class, ['label' => 'Retirer la langue']);
 
         $form->handleRequest($request);
 
@@ -2237,10 +2472,13 @@ class PersonnageController extends AbstractController
      * Modifie l'origine d'un personnage.
      */
     #[Route('/{personnage}/updateOrigine', name: 'admin.update.origine')]
-    public function adminUpdateOriginAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminUpdateOriginAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $form = $this->createForm(PersonnageOriginForm::class, $personnage)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => "Valider l'origine du personnage"]);
+            ->add('save', SubmitType::class, ['label' => "Valider l'origine du personnage"]);
 
         $form->handleRequest($request);
 
@@ -2250,7 +2488,8 @@ class PersonnageController extends AbstractController
             // le personnage doit perdre les langues de son ancienne origine
             // et récupérer les langue de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
-                if ('ORIGINE' == $personnageLangue->getSource() || 'ORIGINE SECONDAIRE' == $personnageLangue->getSource()) {
+                if ('ORIGINE' == $personnageLangue->getSource() || 'ORIGINE SECONDAIRE' == $personnageLangue->getSource(
+                    )) {
                     $personnage->removePersonnageLangues($personnageLangue);
                     $entityManager->remove($personnageLangue);
                 }
@@ -2258,7 +2497,7 @@ class PersonnageController extends AbstractController
 
             $newOrigine = $personnage->getTerritoire();
             foreach ($newOrigine->getLangues() as $langue) {
-                $personnageLangue = new \App\Entity\PersonnageLangues();
+                $personnageLangue = new PersonnageLangues();
                 $personnageLangue->setPersonnage($personnage);
                 $personnageLangue->setSource('ORIGINE SECONDAIRE');
                 $personnageLangue->setLangue($langue);
@@ -2285,8 +2524,11 @@ class PersonnageController extends AbstractController
      * Retire la dernière compétence acquise par un personnage.
      */
     #[Route('/{personnage}/deleteCompetence', name: 'admin.delete.competence')]
-    public function removeCompetenceAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function removeCompetenceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $lastCompetence = $app['personnage.manager']->getLastCompetence($personnage);
 
         if (!$lastCompetence) {
@@ -2296,7 +2538,7 @@ class PersonnageController extends AbstractController
         }
 
         $form = $this->createForm()
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Retirer la compétence']);
+            ->add('save', SubmitType::class, ['label' => 'Retirer la compétence']);
 
         $form->handleRequest($request);
 
@@ -2373,12 +2615,22 @@ class PersonnageController extends AbstractController
     }
 
     #[Route('/{personnage}/addCompetence', name: 'admin.add.competence')]
-    public function adminAddCompetenceAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
-        $availableCompetences = $app['personnage.manager']->getAvailableCompetences($personnage);
+    #[Route('/{personnage}/addCompetence', name: 'add.competence')]
+    public function adminAddCompetenceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+        PersonnageService $personnageService,
+    ): RedirectResponse|Response {
+        $availableCompetences = $personnageService->getAvailableCompetences($personnage);
+        $referer = $request->headers->get('referer');
 
         if (0 === $availableCompetences->count()) {
             $this->addFlash('error', 'Désolé, il n\'y a plus de compétence disponible.');
+
+            if (!$referer || str_starts_with($referer, $request->getUri())) {
+                $this->redirect($referer, 303);
+            }
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -2386,95 +2638,47 @@ class PersonnageController extends AbstractController
         // construit le tableau de choix
         $choices = [];
         foreach ($availableCompetences as $competence) {
-            $choices[$competence->getId()] = $competence->getLabel().' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
+            $choices[$competence->getLabel().' (cout : '.$personnageService->getCompetenceCout(
+                $personnage,
+                $competence
+            ).' xp)'] = $competence->getId();
         }
 
-        $form = $this->createForm()
-            ->add('competenceId', 'choice', [
+        $competence = new Competence();
+        $form = $this->createFormBuilder($competence)
+            ->add('id', ChoiceType::class, [
                 'label' => 'Choisissez une nouvelle compétence',
                 'choices' => $choices,
             ])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider la compétence']);
+            ->add('save', SubmitType::class, ['label' => 'Ajouter la compétence'])->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
-            $competenceId = $data['competenceId'];
+            $competenceId = $data->getId();
             $competence = $entityManager->find(Competence::class, $competenceId);
+            $service = null;
 
-            $cout = $app['personnage.manager']->getCompetenceCout($personnage, $competence);
-            $xp = $personnage->getXp();
-
-            if ($xp - $cout < 0) {
-                $this->addFlash('error', 'Vos n\'avez pas suffisement de points d\'expérience pour acquérir cette compétence.');
-
-                return $this->redirectToRoute('homepage', [], 303);
+            if (!$competence) {
+                $form->addError('Competence not found');
+            } else {
+                $service = $personnageService->addCompetence($personnage, $competence);
             }
 
-            $personnage->setXp($xp - $cout);
-            $personnage->addCompetence($competence);
-            $competence->addPersonnage($personnage);
+            if (!$service->hasErrors()) {
+                $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            // historique xp
-            $historiqueXP = new ExperienceUsage();
-            $historiqueXP->setOperationDate(new \DateTime('NOW'));
-            $historiqueXP->setXpUse($cout);
-            $historiqueXP->setCompetence($competence);
-            $historiqueXP->setPersonnage($personnage);
-
-            // historique renommée
-            $competenceNom = $competence->getCompetenceFamily()->getLabel();
-            $competenceNiveau = $competence->getLevel()->getLabel();
-
-            // si la nouvelle compétence est Noblesse ou Stratégie(5)
-            if (151 === $competenceId || 26 === $competence->getCompetenceFamily()->getId()) {
-                if (97 === $competenceId) {
-                    $renomme = 2;
-                }
-
-                if (98 === $competenceId) {
-                    $renomme = 3;
-                }
-
-                if (99 === $competenceId) {
-                    $renomme = 2;
-                }
-
-                if (100 === $competenceId) {
-                    $renomme = 5;
-                }
-
-                if (101 === $competenceId) {
-                    $renomme = 6;
-                }
-
-                if (151 === $competenceId) {
-                    $renomme = 5;
-                }
-
-                $renommeHistory = new RenommeHistory();
-                $renommeHistory->setDate(new \DateTime('NOW'));
-                $renommeHistory->setPersonnage($personnage);
-                $renommeHistory->setExplication('[Acquisition] '.$competenceNom.' '.$competenceNiveau);
-                $renommeHistory->setRenomme($renomme);
-
-                $entityManager->persist($renommeHistory);
+                return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
             }
 
-            $entityManager->persist($competence);
-            $entityManager->persist($personnage);
-            $entityManager->persist($historiqueXP);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Votre personnage a été sauvegardé.');
-
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            $form->get('id')->addError(new FormError($service->getErrorsAsString()));
         }
 
         return $this->render('personnage/competence.twig', [
             'form' => $form->createView(),
+            'isAdmin' => $this->isGranted(Role::ADMIN->value) || $this->isGranted(Role::SCENARISTE->value),
             'personnage' => $personnage,
             'competences' => $availableCompetences,
         ]);
@@ -2484,8 +2688,11 @@ class PersonnageController extends AbstractController
      * Exporte la fiche d'un personnage.
      */
     #[Route('/{personnage}/export', name: 'export')]
-    public function exportAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function exportAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $participant = $personnage->getParticipants()->last();
         $groupe = null;
 
@@ -2505,13 +2712,16 @@ class PersonnageController extends AbstractController
      * Ajoute un evenement de chronologie au personnage.
      */
     #[Route('/{personnage}/addChronologie', name: 'admin.add.chronologie')]
-    public function adminAddChronologieAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminAddChronologieAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $personnageChronologie = new PersonnageChronologie();
         $personnageChronologie->setPersonnage($personnage);
 
         $form = $this->createForm(PersonnageChronologieForm::class, $personnageChronologie)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider l\'évènement']);
+            ->add('save', SubmitType::class, ['label' => 'Valider l\'évènement']);
 
         $form->handleRequest($request);
 
@@ -2544,12 +2754,15 @@ class PersonnageController extends AbstractController
      * Retire un évènement d'un personnage.
      */
     #[Route('/{personnage}/deleteChronologie', name: 'admin.delete.chronologie')]
-    public function adminDeleteChronologieAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminDeleteChronologieAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $personnageChronologie = $request->get('personnageChronologie');
 
         $form = $this->createForm()
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Retirer l\'évènement']);
+            ->add('save', SubmitType::class, ['label' => 'Retirer l\'évènement']);
 
         $form->handleRequest($request);
 
@@ -2575,13 +2788,16 @@ class PersonnageController extends AbstractController
      * Ajoute une lignée au personnage.
      */
     #[Route('/{personnage}/addLignee', name: 'admin.add.lignee')]
-    public function adminAddLigneeAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminAddLigneeAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $personnageLignee = new PersonnageLignee();
         $personnageLignee->setPersonnage($personnage);
 
         $form = $this->createForm(PersonnageLigneeForm::class, $personnageLignee)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
         $form->handleRequest($request);
 
@@ -2613,12 +2829,15 @@ class PersonnageController extends AbstractController
      * Retire une lignée d'un personnage.
      */
     #[Route('/{personnage}/deleteLignee', name: 'admin.delete.lignee')]
-    public function adminDeleteLigneeAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Personnage $personnage)
-    {
+    public function adminDeleteLigneeAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ) {
         $personnageLignee = $request->get('personnageLignee');
 
         $form = $this->createForm()
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Retirer la lignée']);
+            ->add('save', SubmitType::class, ['label' => 'Retirer la lignée']);
 
         $form->handleRequest($request);
 

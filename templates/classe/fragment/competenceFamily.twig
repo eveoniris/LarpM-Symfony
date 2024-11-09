@@ -9,15 +9,15 @@
             <div class="d-flex flex-row-reverse">
                 <div class="btn-group pull-right" role="group" aria-label="...">
                     <a href="{{ path('classe.personnages', {'classe': classe.id}) }}" class="btn btn-secondary"
-                        data-bs-toggle="tooltip" data-bs-placement="bottom"
-                        title="Voir les personnages associés" role="button"><i
+                       data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Voir les personnages associés" role="button"><i
                                 class="fa fa-link"></i> {{ classe.personnages|length }} Personnages</a>
                     <a href="{{ path('classe.detail', {'classe': classe.id}) }}" class="btn btn-secondary"
-                        data-bs-toggle="tooltip" data-bs-placement="bottom"
-                        title="Détail" role="button"><i class="fa fa-eye"></i> Détail</a>
+                       data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Détail" role="button"><i class="fa fa-eye"></i> Détail</a>
                     <a href="{{ path('classe.update', {'classe': classe.id}) }}" class="btn btn-secondary"
-                        data-bs-toggle="tooltip" data-bs-placement="bottom"
-                        title="Modifier" role="button"><i class="fa fa-pencil"></i> Modifier</a>
+                       data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier" role="button"><i class="fa fa-pencil"></i> Modifier</a>
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Supprimer"
                        href="{{ path('classe.delete',{'classe':classe.id}) }}"><i
@@ -42,61 +42,35 @@
         {% if classe.competenceFamilyCreations|length != 0 %}
             <div class="card mb-2">
                 <div class="card-header">
-                    Famille de compétence acquises à la création
+                    Famille de compétence acquises à la création <i class="fa fa-gift text-info"></i>
                 </div>
                 <div class="card-body">
                     <div class="card-text mb-0">
-                        {% for competenceFamily in classe.competenceFamilyCreations %}
-                            <a class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0"
-                                data-bs-toggle="tooltip" data-bs-title="{{ competenceFamily.description|striptags }}" data-bs-placement="bottom"
-                                    {% if is_granted('ROLE_REGLE', app.user) %}
-                                        href="{{ path('competenceFamily.detail', {'competenceFamily': competenceFamily.id }) }}"
-                                    {% endif %}
-                                        >{{ competenceFamily.label }}</a>
-                        {% endfor %}
+                        {% include 'classe/fragment/competenceFamiliesBadges.twig' with {'competenceFamilies': classe.competenceFamilyCreations} %}
                     </div>
                 </div>
             </div>
         {% elseif is_granted('ROLE_REGLE', app.user) %}
-            <div class="card mb-2 border-warning">
-                <div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
-                <div class="card-body">
-                    <p class="card-text">
-                        Cette classe n'a pas de famille de compétences acquises à la créations
-                    </p>
-                </div>
-            </div>
+            {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : "Cette classe n'a pas de famille de compétences acquises à la création" } %}
+
         {% endif %}
 
         {% if classe.competenceFamilyFavorites|length != 0 %}
             <div class="card mb-2">
                 <div class="card-header">
                     Famille de compétence favorites
+                    <i class="fa fa-star text-success" data-toggle="tooltip" data-placement="top" title="Favorite"></i>
                 </div>
                 <div class="card-body">
                     <div class="card-text">
-                        {% for competenceFamily in classe.competenceFamilyFavorites %}
-                            <a class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0"
-                                data-bs-toggle="tooltip" data-bs-title="{{ competenceFamily.description|striptags }}" data-bs-placement="bottom"
-                                    {% if is_granted('ROLE_REGLE', app.user) %}
-                                        href="{{ path('competenceFamily.detail', {'competenceFamily': competenceFamily.id }) }}"
-                                    {% endif %}
-                                        >{{ competenceFamily.label }}</a>
-                        {% endfor %}
+                        {% include 'classe/fragment/competenceFamiliesBadges.twig' with {'competenceFamilies': classe.competenceFamilyFavorites} %}
                     </div>
                     <div class="card-subtitle mt-1"><small>Bénéficie d'un cout d'apprentissage moindre en
                             XP</small></div>
                 </div>
             </div>
         {% elseif is_granted('ROLE_REGLE', app.user) %}
-            <div class="card mb-2 border-warning">
-                <div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
-                <div class="card-body">
-                    <p class="card-text">
-                        Cette classe n'a pas de famille de compétences acquises à la créations
-                    </p>
-                </div>
-            </div>
+            {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : "Cette classe n'a pas de famille de compétences à la création" } %}
         {% endif %}
 
         {% if classe.competenceFamilyNormales|length != 0 %}
@@ -106,33 +80,19 @@
                 </div>
                 <div class="card-body">
                     <div class="card-text">
-                        {% for competenceFamily in classe.competenceFamilyNormales %}
-                            <a class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0"
-                                data-bs-toggle="tooltip" data-bs-title="{{ competenceFamily.description|striptags }}" data-bs-placement="bottom"
-                                    {% if is_granted('ROLE_REGLE', app.user) %}
-                                        href="{{ path('competenceFamily.detail', {'competenceFamily': competenceFamily.id }) }}"
-                                    {% endif %}
-                                        >{{ competenceFamily.label }}</a>
-                        {% endfor %}
+                        {% include 'classe/fragment/competenceFamiliesBadges.twig' with {'competenceFamilies': classe.competenceFamilyNormales} %}
                     </div>
                 </div>
             </div>
         {% elseif is_granted('ROLE_REGLE', app.user) %}
-            <div class="card mb-2 border-warning">
-                <div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
-                <div class="card-body">
-                    <p class="card-text">
-                        Cette classe n'a pas de famille de compétences normales
-                    </p>
-                </div>
-            </div>
+            {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : "Cette classe n'a pas de famille de compétences normales" } %}
         {% endif %}
     </div>
 
     <img width="184" height="250" alt="{{ classe.labelFeminin }}"
-            src="{{ path('classe.image', {'classe' : classe.id, 'sexe' : 'F' }) }}"/>
+         src="{{ path('classe.image', {'classe' : classe.id, 'sexe' : 'F' }) }}"/>
     <div class="pull-right">
         <img width="184" height="250" alt="{{ classe.labelMasculin }}"
-                src="{{ path('classe.image', {'classe' : classe.id, 'sexe' : 'M' }) }}"/>
+             src="{{ path('classe.image', {'classe' : classe.id, 'sexe' : 'M' }) }}"/>
     </div>
 </div>

@@ -66,6 +66,7 @@ use App\Form\RequestAllianceForm;
 use App\Form\RequestPeaceForm;
 use App\Form\TrombineForm;
 use App\Manager\GroupeManager;
+use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Gd\Imagine;
@@ -798,6 +799,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
+        PersonnageService $personnageService,
     ): RedirectResponse|Response {
         $groupeGn = $participant->getGroupeGn();
 
@@ -900,6 +902,13 @@ class ParticipantController extends AbstractController
             $entityManager->persist($historique);
 
             // ajout des compétences acquises à la création
+            $personnageService->addClasseCompetencesFamilyCreation($personnage);
+            if ($personnageService->hasErrors()) {
+                $this->addFlash('success', $personnageService->getErrorsAsString());
+
+                return $this->redirectToRoute('homepage', [], 303);
+            }
+            /*
             foreach ($personnage->getClasse()->getCompetenceFamilyCreations() as $competenceFamily) {
                 $firstCompetence = $competenceFamily->getFirstCompetence();
                 if ($firstCompetence) {
@@ -917,7 +926,7 @@ class ParticipantController extends AbstractController
                     $renomme_history->setPersonnage($personnage);
                     $entityManager->persist($renomme_history);
                 }
-            }
+            }*/
 
             // Ajout des points d'expérience gagné grace à l'age du personnage ou perdu à cause de l'age du joueur
             $age_joueur = $participant->getAgeJoueur();
@@ -1005,6 +1014,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
+        PersonnageService $personnageService,
     ): RedirectResponse|Response {
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
@@ -1043,7 +1053,13 @@ class ParticipantController extends AbstractController
             $entityManager->persist($historique);
 
             // ajout des compétences acquises à la création
-            foreach ($personnage->getClasse()->getCompetenceFamilyCreations() as $competenceFamily) {
+            $personnageService->addClasseCompetencesFamilyCreation($personnage);
+            if ($personnageService->hasErrors()) {
+                $this->addFlash('success', $personnageService->getErrorsAsString());
+
+                return $this->redirectToRoute('homepage', [], 303);
+            }
+            /*foreach ($personnage->getClasse()->getCompetenceFamilyCreations() as $competenceFamily) {
                 $firstCompetence = $competenceFamily->getFirstCompetence();
                 if ($firstCompetence) {
                     $personnage->addCompetence($firstCompetence);
@@ -1060,7 +1076,7 @@ class ParticipantController extends AbstractController
                     $renomme_history->setPersonnage($personnage);
                     $entityManager->persist($renomme_history);
                 }
-            }
+            }*/
 
             // Ajout des points d'expérience gagné grace à l'age
             $xpAgeBonus = $personnage->getAge()->getBonus();

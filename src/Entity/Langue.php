@@ -3,13 +3,18 @@
 namespace App\Entity;
 
 use App\Repository\LangueRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity(repositoryClass: LangueRepository::class)]
 class Langue extends BaseLangue implements \Stringable
 {
+    public const DIFFUSION_COURANTE = 1;
+    public const DIFFUSION_COMMUNE = 2;
+    public const DIFFUSION_RARE = 0;
+    public const DIFFUSION_INCONNUE = null;
+
+    public const SECRET_VISIBLE = 0;
+    public const SECRET_HIDDEN = 1;
 
     public function __toString(): string
     {
@@ -20,7 +25,6 @@ class Langue extends BaseLangue implements \Stringable
     {
         return $this->getLabel().' : '.$this->getDescription();
     }
-
 
     /**
      * Fourni la liste des territoires ou la langue est la langue principale.
@@ -35,16 +39,11 @@ class Langue extends BaseLangue implements \Stringable
      */
     public function getCategorie(): string
     {
-        $unknown = 'Inconnue';
-        if (null === $this->getDiffusion()) {
-            return $unknown;
-        }
-
         return match ($this->getDiffusion()) {
-            2 => 'Commune',
-            1 => 'Courante',
-            0 => 'Rare',
-            default => $unknown,
+            self::DIFFUSION_COMMUNE => 'Commune',
+            self::DIFFUSION_COURANTE => 'Courante',
+            self::DIFFUSION_RARE => 'Rare',
+            default => 'Inconnue',
         };
     }
 
