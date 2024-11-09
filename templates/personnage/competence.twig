@@ -1,45 +1,116 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}{{ personnage.publicName }}{% endblock title %}
 
-{% block content %}
+{% block body %}
 
-<div class="container-fluid">
+    <div class="container-fluid">
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage')  }}">Accueil</a></li>
-		<li><a href="{{ path('personnage')  }}">Votre personnage</a></li>
-		<li class="active">Achat d'une compétence</li>
-	</ol>
-	
-	<div class="well bs-component">
-		<form action="{{ path('personnage.competence.add',{'personnage':personnage.id}) }}" method="POST" {{ form_enctype(form) }}>
-			<fieldset>
-				<legend>{{ personnage.publicName }} - <small>Achat d'une compétence</small></legend>
-				
-				<ul class="list-group">
-					<li class="list-group-item">Vous disposez de <strong>{{ personnage.xp }}</strong> Points d'expériences.</li>
-					<li class="list-group-item">Vos compétences favorites sont : {{ personnage.classe.competenceFamilyFavorites|join(', ') }}</li>
-					<li class="list-group-item">Vos compétences normales sont : {{ personnage.classe.competenceFamilyNormales|join(', ') }}</li>
-					<li class="list-group-item">Les autres compétences sont méconnues</li>
-				</ul> 
-		
-				{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
-	
-				{{ form_row(form.competenceId) }}
-				{{ form_rest(form) }}
-			</fieldset>
-		</form>
-		
-		<h4>Détail des competences accessibles</h4>
-		<div class="list-group">
-			{% for competence in competences|sort %}
-				<div class="list-group-item">
-					<div class="list-group-item-heading"><h6>{{ competence.label }}</h6></div>
-					<div class="list-group-item-text">{{ competence.description }}</div>
-				</div>
-			{% endfor %}
-		</div>
-	</div>
-</div>
-{% endblock content %}
+        {% set breadcrumb = [] %}
+        {% if isAdmin %}
+            {% set breadcrumb = breadcrumb|merge([{'name' : 'Liste des personnages', 'route': path('personnage.list') }]) %}
+        {% elseif participant is defined %}
+            {% set breadcrumb = breadcrumb|merge([{'name' : participant.gn.label, 'route': path('gn.detail', {'gn' : participant.gn.id}) }]) %}
+        {% endif %}
+        {% set breadcrumb = breadcrumb|merge([{'name' : "Detail de #{personnage.nom}", 'route': path('personnage.detail', {'personnage' : personnage.id})}, {'name': "Ajout de compétence"}]) %}
+
+        {% include '_partials/breadcrumb.twig' with {'items' : breadcrumb} %}
+
+        <div class="well">
+            <div class="header">
+                <h5>Ajout de compétence</h5>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 ">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="header">Points d'expériences disponibles</h6>
+                        </div>
+                        <div class="card-body text-center align-center">
+                        <span class="fw-bold card-text text-info display-6">{{ personnage.xp }}</span
+                        ></div>
+                    </div>
+
+                    <div class="card mt-2">
+                        <div class="card-body text-center align-center">
+                            {{ form(form) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="header">
+                                Compétences favorites
+                                <i class="fa fa-star text-success"
+                                   data-toggle="tooltip" data-placement="top"
+                                   title="Favorite"></i></h6></div>
+                        <div class="card-body text-center align-center">
+                            <div class="card-text">
+                                {% include 'classe/fragment/competenceFamiliesBadges.twig' with {'competenceFamilies': personnage.classe.competenceFamilyFavorites} %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-2">
+                        <div class="card-header">
+                            <h6 class="header">Compétences normal</h6>
+                        </div>
+                        <div class="card-body text-center align-center">
+                            <div class="card-text">
+                                {% include 'classe/fragment/competenceFamiliesBadges.twig' with {'competenceFamilies': personnage.classe.competenceFamilyNormales} %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-2">
+                        <div class="card-body">
+                            <div class="card-text">
+                                Les autres compétences sont méconnues
+                                <i class="fa fa-face-tired text-danger" data-toggle="tooltip" data-placement="top"
+                                   title="Méconnue"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# TODO APPRENTISSAGE #}
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="well">
+            <div class="header">
+                <h5>Détail des competences accessibles</h5>
+            </div>
+
+            <div class="row ps-2">
+                {% for competence in competences|sort %}
+                    <div class="col-md-6 list-group mb-2">
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading">
+                            <h6>
+                                {{ competence.label }}
+                                {% if personnage.classe.isFavoriteCompetenceFamily(competence.competenceFamily) %}
+                                    <i class="fa fa-star text-success" data-toggle="tooltip" data-placement="top"
+                                       title="Favorite"></i>
+                                {% elseif not personnage.classe.isCommonCompetenceFamily(competence.competenceFamily) %}
+                                    <i class="fa fa-face-tired text-danger" data-toggle="tooltip" data-placement="top"
+                                       title="Méconnue"></i>
+                                {% endif %}
+                                &nbsp;({{ personnageService.getCompetenceCout(personnage, competence) }} xp)
+                                {# TODO APPRENTISSAGE #}
+                            </h6>
+                        </div>
+                        <div class="list-group-item-text">{{ competence.description }}</div>
+                    </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+{% endblock body %}

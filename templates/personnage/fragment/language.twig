@@ -15,7 +15,7 @@
                        title="Secret"></i><span class="text-warning">Secret</span> -
                 {% endif %}
                 <strong>{{ personnageLangue.langue }}</strong>&nbsp;
-                <small>(obtenu grâce à votre {{ personnageLangue.source }})</small>
+                <small>({{ personnageLangue.langue.groupeLangue.couleur }}, obtenu grâce à votre {{ personnageLangue.source }})</small>
                 <div class="btn-group" role="group">
                     <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
                             href="#langue_{{ personnageLangue.langue.id }}"

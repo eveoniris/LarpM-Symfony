@@ -6,7 +6,7 @@
 
 	{% set isAdmin = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
 	{% set breadcrumb = [] %}
-	{% if is_granted('ROLE_REGLE', app.user) %}
+	{% if isAdmin %}
 		{% set breadcrumb = breadcrumb|merge([{'name' : 'Liste des personnages', 'route': path('personnage.list') }]) %}
 	{% elseif participant is defined %}
 		{% set breadcrumb = breadcrumb|merge([{'name' : participant.gn.label, 'route': path('gn.detail', {'gn' : participant.gn.id}) }]) %}
@@ -119,7 +119,7 @@
 					{% include 'personnage/fragment/document.twig' with {'personnage': personnage, 'participant': participant} %}
 					{% include 'personnage/fragment/item.twig' with {'personnage': personnage, 'participant': participant} %}
 
-					{% include 'personnage/fragment/religion.twig' with {'personnage': personnage, 'participant': participant} %}
+					{% include 'personnage/fragment/tab_religions.twig' with {'personnage': personnage, 'participant': participant} %}
 
 					{% include 'personnage/fragment/background.twig' with {'personnage': personnage, 'participant': participant} %}
 				</div>
