@@ -16,7 +16,7 @@ class RumeurRepository extends BaseRepository
      * @param unknown $limit
      * @param unknown $offset
      */
-    public function findList($type, $value, array $order = [], $limit, $offset)
+    public function findList($type, $value, array $order = [], int $limit = 0, int $offset = 20)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 

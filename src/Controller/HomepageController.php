@@ -160,7 +160,7 @@ class HomepageController extends AbstractController
         return $this->getWorldTerritoireGeoData('countries');
     }
 
-    #[Route('/api/{gn}/gdata.json', name: 'api.gdata.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/api/{gn}/gdata', name: 'api.gdata', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted('ROLE_SCENARISTE')]
     public function gdataAction(
         Request $request,
