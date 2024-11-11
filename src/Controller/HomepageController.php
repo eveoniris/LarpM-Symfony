@@ -199,7 +199,9 @@ class HomepageController extends AbstractController
         )
             ->setParameter('gnid', $gn->getId());
 
-        return new JsonResponse($query->getResult());
+        $results = $query->getResult();
+
+        return new JsonResponse($results, empty($results) ? 204 : 200);
     }
 
     private function getWorldTerritoireGeoData(string $type): JsonResponse

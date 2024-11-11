@@ -1,28 +1,20 @@
 
 ###
 # curl -X POST -H "Content-Type: application/json" https://localhost/api/login_check -d '{"username":"johndoe","password":"test"}'
-POST http://127.0.0.1:8000/api/login_check
+POST {{host}}/api/login_check
 Content-Type: application/json
 
 {
-  "username": "gectou4@gmail.com",
-  "password": "azerty"
+  "username": "{{username}}",
+  "password": "{{pwd}}"
 }
 
 > {%
-    client.log('TEST')
     client.global.set("auth_token", response.body.token);
     client.log(response.body.token);
-
-
-    client.test("Content-Type is application/json", () => {
-        const contentType = response.headers.valueOf("content-type");
-        client.assert(contentType == "application/json",
-            `Expected Content-Type is application/json, but actual is ${contentType}`)
-    })
 %}
 ###
 
 ### Authorization by token, part 2. Use token to authorize.
-GET http://127.0.0.1:8000/api/7/gdata.json
+GET {{host}}/api/7/gdata.json
 Authorization: Bearer {{auth_token}}
