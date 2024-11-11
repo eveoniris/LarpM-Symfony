@@ -27,7 +27,8 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Serializer.
      */
-    public function jsonSerialize()
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->getId(),

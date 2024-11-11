@@ -16,5 +16,18 @@ Content-Type: application/json
 ###
 
 ### Authorization by token, part 2. Use token to authorize.
-GET {{host}}/api/7/gdata.json
+GET {{host}}/api/7/gdata
 Authorization: Bearer {{auth_token}}
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json", function () {
+        const type = response.contentType.mimeType;
+        client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
+    });
+
+    client.log(response.body);
+%}
