@@ -11,6 +11,7 @@ use App\Entity\Territoire;
 use App\Form\EtatCivilForm;
 use App\Form\UserRestrictionForm;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,6 +19,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class HomepageController extends AbstractController
 {
@@ -155,6 +158,48 @@ class HomepageController extends AbstractController
     public function countriesAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         return $this->getWorldTerritoireGeoData('countries');
+    }
+
+    #[Route('/api/{gn}/gdata.json', name: 'api.gdata.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function gdataAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Gn $gn,
+    ): JsonResponse {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('exist', 'exist', 'boolean');
+        $rsm->addScalarResult('groupId', 'groupId', 'integer');
+        $rsm->addScalarResult('IdPj', 'IdPj', 'integer');
+        $rsm->addScalarResult('NomGroupe', 'NomGroupe', 'string');
+        $rsm->addScalarResult('Personnage', 'Personnage', 'string');
+        $rsm->addScalarResult('ChefEmail', 'ChefEmail', 'string');
+        $rsm->addScalarResult('ScenaristeEmail', 'ScenaristeEmail', 'string');
+
+        /** @noinspection SqlNoDataSourceInspection */
+        $query = $entityManager->createNativeQuery(
+            <<<SQL
+                SELECT g.numero         as groupId,
+                       g.nom            as NomGroupe,
+                       pr.id            as IdPj,
+                       pr.nom           as Personnage,
+                       chef.email       as ChefEmail,
+                       scenariste.email as ScenaristeEmail
+                FROM groupe_gn grgn
+                         INNER JOIN participant p ON grgn.responsable_id = p.id
+                         INNER JOIN personnage pr ON p.personnage_id = pr.id
+                         INNER JOIN groupe g ON grgn.groupe_id = g.id
+                         INNER JOIN `user` chef ON p.user_id = chef.id
+                         INNER JOIN `user` scenariste ON g.scenariste_id = scenariste.id
+                
+                WHERE p.gn_id = :gnid
+                ORDER BY g.numero;
+                SQL,
+            $rsm
+        )
+            ->setParameter('gnid', $gn->getId());
+
+        return new JsonResponse($query->getResult());
     }
 
     private function getWorldTerritoireGeoData(string $type): JsonResponse
