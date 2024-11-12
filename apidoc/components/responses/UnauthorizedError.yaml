@@ -1,0 +1,5 @@
+description: You are not authorized
+content:
+  application/problem+json:
+    schema:
+      $ref: ../schemas/Problem.yaml

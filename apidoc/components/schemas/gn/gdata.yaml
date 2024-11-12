@@ -1,0 +1,20 @@
+type: object
+properties:
+  IdGroup:
+    type: integer
+    description: Group number
+  IdPj:
+    type: integer
+    description: Character number
+  NomGroupe:
+    type: string
+    description: Groupe name
+  Personnage:
+    type: string
+    description: Character name (of the leader)
+  ChefEmail:
+    type: string
+    description: Leader email
+  ScenaristeEmail:
+    type: string
+    description: Game master of the group email

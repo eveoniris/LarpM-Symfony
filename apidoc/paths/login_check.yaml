@@ -1,0 +1,29 @@
+post:
+  tags:
+    - auth
+  summary: get token
+  description: Get a token for your Api Call by using your credential
+  operationId: auth
+  parameters:
+    - name: username
+      in: query
+      description: Your LarpManager login (should be email)
+      required: true
+      schema:
+        type: string
+    - name: password
+      in: query
+      description: Your LarpManager password
+      schema:
+        type: string
+  responses:
+    '200':
+      description: successful operation, return a bearer token
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../components/schemas/Token.yaml"
+    '401':
+      $ref: '../components/responses/UnauthorizedError.yaml'
