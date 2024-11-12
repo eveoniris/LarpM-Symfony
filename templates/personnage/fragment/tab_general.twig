@@ -203,6 +203,7 @@
 
     <div class="col-md-6">
         {% include 'personnage/fragment/trombinoscope.twig' with {'personnage': personnage, 'participant': participant, css: 'panel'} %}
+        {% include 'personnage/fragment/qrcode.twig' with {'personnage': personnage, 'participant': participant} %}
     </div>
 
 </div>

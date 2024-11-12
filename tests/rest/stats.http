@@ -1,0 +1,23 @@
+
+### Get Token
+POST {{host}}/api/login_check
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{pwd}}"
+}
+
+> {%
+    client.global.set("auth_token", response.body.token);
+    client.log(response.body.token);
+%}
+###
+
+### Authorization by token, part 2. Use token to authorize.
+GET {{host}}/api/religions/pratiquants/7
+Authorization: Bearer {{auth_token}}
+
+> {%
+    client.log(response.body);
+%}

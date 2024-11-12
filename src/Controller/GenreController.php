@@ -74,7 +74,7 @@ class GenreController extends AbstractController
         }
 
         $this->addFlash('error', 'Le genre n\'a pas été trouvé.');
-        $this->createNotFoundException(); // Todo render 404 ?
+            $this->createNotFoundException(); // Todo render 404 ?
 
         return $this->redirectToRoute('genre');
     }

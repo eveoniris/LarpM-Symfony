@@ -1,0 +1,16 @@
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
+{# Trombinoscope #}
+<div class="{{ css }}">
+    <div class="header">
+        <h5>qrCode</h5>
+    </div>
+
+    <div class="text-center mt-2">
+        <a href="{{ path('qr_code_generate', {'builder':'default', 'data': path('gn.personnage', {'gn': participant.gn.id}) }) }}">
+            <img src="{{ qr_code_url( path('gn.personnage', {'gn': participant.gn.id}) ) }}" width="150px"/>
+        </a>
+    </div>
+
+</div>

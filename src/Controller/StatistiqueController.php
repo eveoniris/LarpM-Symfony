@@ -6,6 +6,7 @@ use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\Construction;
 use App\Entity\Genre;
+use App\Entity\Gn;
 use App\Entity\Groupe;
 use App\Entity\Langue;
 use App\Entity\Participant;
@@ -13,9 +14,13 @@ use App\Entity\Personnage;
 use App\Entity\User;
 use App\Manager\RandomColor;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class StatistiqueController extends AbstractController
@@ -154,5 +159,37 @@ class StatistiqueController extends AbstractController
             'participantCount' => count($participants),
             'places' => $places,
         ]);
+    }
+
+
+    #[Route('/api/religions/pratiquants/{gn}', name: 'api.religions.pratiquants', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted('ROLE_SCENARISTE', message: 'You are not allowed to access the admin dashboard.')]
+    public function religionsPratiquantsAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Gn $gn,
+    ): JsonResponse {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('pratiquants', 'pratiquants', 'integer');
+        $rsm->addScalarResult('religion', 'religion', 'string');
+        $rsm->addScalarResult('niveau', 'niveau', 'string');
+
+        /** @noinspection SqlNoDataSourceInspection */
+        $query = $entityManager->createNativeQuery(
+            <<<SQL
+                SELECT r.label as religion, count(perso.id) as pratiquants, rl.label as niveau
+                FROM participant p
+                         INNER JOIN personnages_religions pr ON p.personnage_id = pr.personnage_id
+                         INNER JOIN religion r ON pr.religion_id = r.id
+                         INNER JOIN personnage perso ON pr.personnage_id = perso.id
+                         INNER JOIN religion_level rl ON pr.religion_level_id = rl.id
+                WHERE perso.vivant = 1 and p.gn_id = :gnid
+                GROUP BY pr.religion_id, rl.label
+                ORDER BY pratiquants DESC;
+                SQL,
+            $rsm
+        )->setParameter('gnid', $gn->getId());
+
+        return new JsonResponse($query->getResult());
     }
 }
