@@ -1,0 +1,7 @@
+<img src="{{ qr_code_path('My QR Code') }}" />
+<img src="{{ qr_code_url('My QR Code') }}" />
+<img src="{{ qr_code_data_uri('My QR Code') }}" />
+
+{# You can access the width and height via the matrix #}
+{% set qrCode = qr_code_result('My QR Code') %}
+<img src="{{ qrCode.dataUri }}" width="{{ qrCode.matrix.outerSize }}" />
