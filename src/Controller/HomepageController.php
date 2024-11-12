@@ -168,8 +168,7 @@ class HomepageController extends AbstractController
         #[MapEntity] Gn $gn,
     ): JsonResponse {
         $rsm = new ResultSetMapping();
-        $rsm->addScalarResult('exist', 'exist', 'boolean');
-        $rsm->addScalarResult('groupId', 'groupId', 'integer');
+        $rsm->addScalarResult('IdGroup', 'IdGroup', 'integer');
         $rsm->addScalarResult('IdPj', 'IdPj', 'integer');
         $rsm->addScalarResult('NomGroupe', 'NomGroupe', 'string');
         $rsm->addScalarResult('Personnage', 'Personnage', 'string');
@@ -179,7 +178,7 @@ class HomepageController extends AbstractController
         /** @noinspection SqlNoDataSourceInspection */
         $query = $entityManager->createNativeQuery(
             <<<SQL
-                SELECT g.numero         as groupId,
+                SELECT g.numero         as IdGroup,
                        g.nom            as NomGroupe,
                        pr.id            as IdPj,
                        pr.nom           as Personnage,

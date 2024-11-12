@@ -1,0 +1,6 @@
+type: object
+properties:
+  token:
+    type: string
+    description: |
+      Token to be used for other call in the Header "Authorisation: Bearer {TOKEN}".
