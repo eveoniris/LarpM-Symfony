@@ -5,13 +5,18 @@ namespace App\Entity;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\LevelType;
 use App\Repository\PersonnageRepository;
+use App\Service\FileUploader;
+use App\Trait\EntityFileUploadTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 #[Entity(repositoryClass: PersonnageRepository::class)]
 class Personnage extends BasePersonnage implements \Stringable
 {
+    use EntityFileUploadTrait;
+
     // For some FormBuilder search
     public Personnage $personnageChoosen;
     protected bool $isCreation = false;
@@ -1519,5 +1524,15 @@ class Personnage extends BasePersonnage implements \Stringable
         $this->groupe = null;
 
         return $this;
+    }
+
+    public function getFullLabel(): string
+    {
+        return $this->getLabel();
+    }
+
+    public function getPrintLabel(): ?string
+    {
+        return (new AsciiSlugger())->slug($this->getLabel());
     }
 }

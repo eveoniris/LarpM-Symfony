@@ -4,22 +4,26 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('personnage.admin.list') }}">Liste des personnages</a></li>
-		<li><a href="{{ path('personnage.admin.detail', {'personnage': personnage.id}) }}">Détail de {{ personnage.publicName }}</a></li>
-		<li class="active">Retrait d'une compétence</li>
-	</ol>
 
-	<div class="well bs-component">	
-		{{ form_start(form, {"attr": {"action": path('personnage.admin.delete.competence', {'personnage': personnage.id}) }}) }}
-			<fieldset>
-				<legend>Retrait d'une compétence</legend>
-				
-				Attention, vous vous appretez à retirer la compétence <b>{{ competence.label }}</b>
-				{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
+	{% set isAdmin = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
+	{% set breadcrumb = [] %}
+	{% if isAdmin %}
+		{% set breadcrumb = breadcrumb|merge([{'name' : 'Liste des personnages', 'route': path('personnage.list') }]) %}
+	{% elseif participant is defined %}
+		{% set breadcrumb = breadcrumb|merge([{'name' : participant.gn.label, 'route': path('gn.detail', {'gn' : participant.gn.id}) }]) %}
+	{% endif %}
+	{% set breadcrumb = breadcrumb|merge([{'name' : "Detail de #{personnage.nom}", 'route': path('personnage.detail', {'personnage' : personnage.id})},{'name': "Retrait d'une compétence"}]) %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' : breadcrumb} %}
+
+
+	<div class="well bs-component">
+		<div class="header">
+			<h5>Retrait d'une compétence</h5>
+		</div>
+
+		{% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Vous vous appretez à retirer la compétence <strong>#{competence.label}</strong>"} %}
+		{{ form(form) }}
 	</div>
 	
 {% endblock body %}

@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
+use App\Entity\ExperienceGain;
 use App\Entity\ExperienceUsage;
 use App\Entity\Level;
 use App\Entity\Personnage;
@@ -105,17 +106,45 @@ class CompetenceService
         return $this;
     }
 
-    public function addRenomme(int $value, string $explication): self
+    public function giveXP(int $cout, string $explanation): self
     {
-        $this->getPersonnage()->addRenomme($value);
-        $renomme_history = new RenommeHistory();
-        $renomme_history->setRenomme($value);
-        $renomme_history->setExplication($explication);
-        $renomme_history->setPersonnage($this->getPersonnage());
-        $this->entityManager->persist($renomme_history);
+        $this->getPersonnage()->setXp($this->getPersonnage()->getXp() + $cout);
+
+        $historique = new ExperienceGain();
+        $historique->setOperationDate(new \DateTime('NOW'));
+        $historique->setXpGain($cout);
+        $historique->setExplanation($explanation);
+        $historique->setPersonnage($this->getPersonnage());
+        $this->entityManager->persist($historique);
 
         return $this;
     }
+
+    public function addRenomme(int $value, string $explication): self
+    {
+        $this->getPersonnage()->addRenomme($value);
+        $renommeHistory = new RenommeHistory();
+        $renommeHistory->setRenomme($value);
+        $renommeHistory->setExplication($explication);
+        $renommeHistory->setPersonnage($this->getPersonnage());
+        $this->entityManager->persist($renommeHistory);
+
+        return $this;
+    }
+
+    public function removeRenomme(int $value, string $explication): self
+    {
+        $this->getPersonnage()->removeRenomme($value);
+        $renommeHistory = new RenommeHistory();
+        $renommeHistory->setDate(new \DateTime('NOW'));
+        $renommeHistory->setRenomme($value);
+        $renommeHistory->setExplication($explication);
+        $renommeHistory->setPersonnage($this->getPersonnage());
+        $this->entityManager->persist($renommeHistory);
+
+        return $this;
+    }
+
     public function addCompetence(int $cout = self::COUT_DEFAUT): self
     {
         if (!$this->canLearn($cout)) {
@@ -131,6 +160,26 @@ class CompetenceService
 
         // Attribution des bonus
         $this->giveBonus();
+
+        // Enregistrement en base du lot
+        $this->entityManager->persist($this->getCompetence());
+        $this->entityManager->persist($this->getPersonnage());
+        $this->entityManager->flush();
+
+        return $this;
+    }
+
+    public function removeCompetence(int $cout = self::COUT_DEFAUT): self
+    {
+        // Pré-update en base
+        $this->getPersonnage()->removeCompetence($this->getCompetence());
+        $this->getCompetence()->removePersonnage($this->getPersonnage());
+
+        // Consommation d'expérience et historisation
+        $this->giveXP($cout, 'Suppression de la compétence '.$this->getCompetence()->getLabel());
+
+        // Retrait des bonus
+        $this->removeBonus();
 
         // Enregistrement en base du lot
         $this->entityManager->persist($this->getCompetence());
@@ -246,6 +295,28 @@ class CompetenceService
         }
     }
 
+    protected function removeRules(array $rules): void
+    {
+        $rule = $rules[$this->getCompetence()->getLevel()?->getIndex()] ?? [];
+        if (empty($rule)) {
+            return;
+        }
+
+        foreach ($rule as $tagName => $nb) {
+            while ($nb-- > 0) {
+
+                // TODO FIND & REMOVE TRIGGER
+                /*
+                $trigger = new PersonnageTrigger();
+                $trigger->setPersonnage($this->getPersonnage());
+                $trigger->setTag($tagName);
+                $trigger->setDone(false);
+                $this->entityManager->persist($trigger);
+                */
+            }
+        }
+    }
+
     /**
      * Indique si une class de compétence héritée donne droit à des bonus.
      */
@@ -324,9 +395,23 @@ class CompetenceService
         $this->give();
     }
 
+    final public function removeBonus(): void
+    {
+        if (!$this->canGetBonus()) {
+            return;
+        }
+
+        $this->remove();
+    }
+
     protected function give(): void
     {
         throw new \RuntimeException('Method "give" is not implemented for competence:'.static::class);
+    }
+
+    protected function remove(): void
+    {
+        throw new \RuntimeException('Method "remove" is not implemented for competence:'.static::class);
     }
 
     final public function getErrors(): array

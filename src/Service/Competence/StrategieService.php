@@ -24,4 +24,20 @@ class StrategieService extends CompetenceService
             );
         }
     }
+
+    protected function remove(): void
+    {
+        $level = $this->getCompetence()->getLevel();
+
+        if ($level && $level->getId() === LevelType::GRAND_MASTER->getId()) {
+            $this->removeRenomme(
+                5,
+                sprintf(
+                    '[Retrait] %s niveau %s',
+                    $this->getCompetence()->getCompetenceFamily()?->getLabel(),
+                    $level->getLabel()
+                )
+            );
+        }
+    }
 }

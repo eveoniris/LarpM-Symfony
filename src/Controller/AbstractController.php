@@ -13,7 +13,6 @@ use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
 use JetBrains\PhpStorm\Deprecated;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -104,7 +103,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string $defOrderBy = 'id',
         string $defOrderDir = 'ASC',
         ?string $alias = null,
-        ?array $allowedFields = null // TODO: check SF security Form on Self Entity's attributes
+        ?array $allowedFields = null, // TODO: check SF security Form on Self Entity's attributes
     ): array {
         $request = $this->requestStack?->getCurrentRequest();
         if (!$request) {
@@ -131,7 +130,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string $successMsg,
         string $redirect,
         array $breadcrumb,
-        string $content = ''
+        string $content = '',
     ): RedirectResponse|Response {
         $request = $this->requestStack->getCurrentRequest();
         $form = $this->createForm(DeleteForm::class, $entity, ['class' => $entity::class]);
@@ -170,7 +169,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         array $breadcrumb = [],
         array $routes = [],
         array $msg = [],
-        ?callable $entityCallback = null
+        ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         $repository = $this->entityManager->getRepository($entity::class);
         if (!$repository instanceof BaseRepository || !$repository->isEntity($entity)) {
@@ -295,7 +294,9 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
             $this->entityManager->flush();
 
-            return $this->redirectToRoute($routes['list']);
+            return $form->has('update')
+                ? $this->redirectToRoute($routes['list'])
+                : $this->redirectToRoute($routes['detail']);
         }
 
         return $this->render('_partials/addOrUpdateForm.twig', [
@@ -353,7 +354,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string $title,
         ?BaseRepository $repository = null,
         array $header = [],
-        ?callable $content = null
+        ?callable $content = null,
     ): StreamedResponse {
         if (!$repository && !$content) {
             throw new \Exception('Method need a repository or a callable content');

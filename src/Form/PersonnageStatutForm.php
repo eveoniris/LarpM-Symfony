@@ -3,15 +3,12 @@
 
 namespace App\Form;
 
+use App\Entity\Personnage;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\PersonnageStatutForm.
- *
- * @author kevin
- */
 class PersonnageStatutForm extends AbstractType
 {
     /**
@@ -19,12 +16,12 @@ class PersonnageStatutForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('vivant', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+        $builder->add('vivant', ChoiceType::class, [
             'required' => true,
             'label' => 'Statut du personnage',
             'choices' => [
-                true => 'Vivant',
-                false => 'Mort',
+                'Vivant' => true,
+                'Mort' => false,
             ],
             'expanded' => true,
         ]);
@@ -36,7 +33,7 @@ class PersonnageStatutForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Personnage::class,
+            'data_class' => Personnage::class,
         ]);
     }
 
