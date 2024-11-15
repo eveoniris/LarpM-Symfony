@@ -367,7 +367,7 @@ class PersonnageService
     /**
      * Calcul le cout d'une compétence en fonction de la classe du personnage.
      */
-    public function getCompetenceCout(Personnage $personnage, Competence $competence)
+    public function getCompetenceCout(Personnage $personnage, Competence $competence): int
     {
         return $this->getCompetenceHandler($personnage, $competence)->getCompetenceCout();
     }
@@ -377,13 +377,20 @@ class PersonnageService
      *
      * Si cela est impossible remonte un tableau d'erreur
      */
-    public function addCompetence(
-        Personnage $personnage,
-        Competence $competence,
-        bool $gratuite = false,
-    ): CompetenceService {
+    public function addCompetence(Personnage $personnage, Competence $competence, bool $gratuite = false): CompetenceService
+    {
         return $this->getCompetenceHandler($personnage, $competence)
             ->addCompetence(
+                $gratuite
+                    ? CompetenceService::COUT_GRATUIT
+                    : $this->getCompetenceCout($personnage, $competence)
+            );
+    }
+
+    public function removeCompetence(Personnage $personnage, Competence $competence, bool $gratuite = false): CompetenceService
+    {
+        return $this->getCompetenceHandler($personnage, $competence)
+            ->removeCompetence(
                 $gratuite
                     ? CompetenceService::COUT_GRATUIT
                     : $this->getCompetenceCout($personnage, $competence)

@@ -29,8 +29,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -46,7 +44,7 @@ class MagieController extends AbstractController
     public function sphereListAction(
         Request $request,
         PagerService $pagerService,
-        SphereRepository $sphereRepository
+        SphereRepository $sphereRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($sphereRepository);
 
@@ -88,7 +86,7 @@ class MagieController extends AbstractController
     #[Route('/sphere/{sphere}/update', name: 'sphere.update', requirements: ['sphere' => Requirement::DIGITS])]
     public function sphereUpdateAction(
         Request $request,
-        #[MapEntity] Sphere $sphere
+        #[MapEntity] Sphere $sphere,
     ): RedirectResponse|Response {
         return $this->handleCreateOrUpdate(
             $request,
@@ -101,7 +99,7 @@ class MagieController extends AbstractController
 
     #[Route('/sphere/{sphere}/delete', name: 'sphere.delete', requirements: ['sphere' => Requirement::DIGITS])]
     public function sphereDeleteAction(
-        #[MapEntity] Sphere $sphere
+        #[MapEntity] Sphere $sphere,
     ): RedirectResponse|Response {
         return $this->genericDelete(
             $sphere,
@@ -126,7 +124,7 @@ class MagieController extends AbstractController
     public function priereListAction(
         Request $request,
         PagerService $pagerService,
-        PriereRepository $priereRepository
+        PriereRepository $priereRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($priereRepository)->setLimit(25);
 
@@ -257,7 +255,7 @@ class MagieController extends AbstractController
      */
     #[Route('/priere/{priere}/delete', name: 'priere.delete', requirements: ['priere' => Requirement::DIGITS])]
     public function priereDeleteAction(
-        #[MapEntity] Priere $priere
+        #[MapEntity] Priere $priere,
     ): RedirectResponse|Response {
         return $this->genericDelete(
             $priere,
@@ -308,7 +306,7 @@ class MagieController extends AbstractController
         Request $request,
         #[MapEntity] Priere $priere,
         PersonnageService $personnageService,
-        PriereRepository $priereRepository
+        PriereRepository $priereRepository,
     ): Response {
         $routeName = 'magie.priere.personnages';
         $routeParams = ['priere' => $priere->getId()];
@@ -349,7 +347,7 @@ class MagieController extends AbstractController
     public function potionListAction(
         Request $request,
         PagerService $pagerService,
-        PotionRepository $potionRepository
+        PotionRepository $potionRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($potionRepository)->setLimit(25);
 
@@ -375,7 +373,7 @@ class MagieController extends AbstractController
         Request $request,
         #[MapEntity] Potion $potion,
         PersonnageService $personnageService,
-        PotionRepository $potionRepository
+        PotionRepository $potionRepository,
     ): Response {
         $routeName = 'magie.potion.personnages';
         $routeParams = ['potion' => $potion->getId()];
@@ -431,7 +429,7 @@ class MagieController extends AbstractController
     #[Route('/potion/{potion}/update', name: 'potion.update', requirements: ['potion' => Requirement::DIGITS])]
     public function potionUpdateAction(
         Request $request,
-        #[MapEntity] Potion $potion
+        #[MapEntity] Potion $potion,
     ): RedirectResponse|Response {
         return $this->handleCreateOrUpdate(
             $request,
@@ -448,7 +446,7 @@ class MagieController extends AbstractController
      */
     #[Route('/potion/{potion}/delete', name: 'potion.delete', requirements: ['potion' => Requirement::DIGITS])]
     public function potionDeleteAction(
-        #[MapEntity] Potion $potion
+        #[MapEntity] Potion $potion,
     ): RedirectResponse|Response {
         return $this->genericDelete(
             $potion,
@@ -476,7 +474,7 @@ class MagieController extends AbstractController
     public function getPotionDocumentAction(
         Request $request,
         #[MapEntity] Potion $potion,
-        #[MapEntity] Document $document
+        #[MapEntity] Document $document,
     ): Response {
         return $this->sendDocument($potion, $document);
     }
@@ -488,7 +486,7 @@ class MagieController extends AbstractController
     public function domaineListAction(
         Request $request,
         PagerService $pagerService,
-        DomaineRepository $domaineRepository
+        DomaineRepository $domaineRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($domaineRepository);
 
@@ -530,7 +528,7 @@ class MagieController extends AbstractController
     #[Route('/domaine/{domaine}/update', name: 'domaine.update', requirements: ['domaine' => Requirement::DIGITS])]
     public function domaineUpdateAction(
         Request $request,
-        #[MapEntity] Domaine $domaine
+        #[MapEntity] Domaine $domaine,
     ): RedirectResponse|Response {
         return $this->handleCreateOrUpdate(
             $request,
@@ -546,7 +544,7 @@ class MagieController extends AbstractController
      */
     #[Route('/domaine/{domaine}', name: 'domaine.delete', requirements: ['domaine' => Requirement::DIGITS])]
     public function domaineDeleteAction(
-        #[MapEntity] Domaine $domaine
+        #[MapEntity] Domaine $domaine,
     ): RedirectResponse|Response {
         return $this->genericDelete(
             $domaine,
@@ -571,7 +569,7 @@ class MagieController extends AbstractController
     public function sortListAction(
         Request $request,
         PagerService $pagerService,
-        SortRepository $sortRepository
+        SortRepository $sortRepository,
     ): Response {
         $pagerService->setRequest($request);
 
@@ -614,7 +612,7 @@ class MagieController extends AbstractController
     #[Route('/sort/{sort}/update', name: 'sort.update', requirements: ['sort' => Requirement::DIGITS])]
     public function sortUpdateAction(
         Request $request,
-        #[MapEntity] Sort $sort
+        #[MapEntity] Sort $sort,
     ): RedirectResponse|Response {
         return $this->handleCreateOrUpdate(
             $request,
@@ -631,7 +629,7 @@ class MagieController extends AbstractController
      */
     #[Route('/sort/{sort}/delete', name: 'sort.delete', requirements: ['sort' => Requirement::DIGITS])]
     public function sortDeleteAction(
-        #[MapEntity] Sort $sort
+        #[MapEntity] Sort $sort,
     ): RedirectResponse|Response {
         return $this->genericDelete(
             $sort,
@@ -665,7 +663,7 @@ class MagieController extends AbstractController
         Request $request,
         #[MapEntity] Sort $sort,
         PersonnageService $personnageService,
-        SortRepository $sortRepository
+        SortRepository $sortRepository,
     ): Response {
         $routeName = 'magie.sort.personnages';
         $routeParams = ['sort' => $sort->getId()];
