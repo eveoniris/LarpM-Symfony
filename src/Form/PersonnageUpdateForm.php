@@ -3,15 +3,18 @@
 
 namespace App\Form;
 
+use App\Entity\Age;
+use App\Entity\Genre;
+use App\Entity\Personnage;
+use App\Entity\Territoire;
+use App\Repository\TerritoireRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\PersonnageUpdateForm.
- *
- * @author kevin
- */
 class PersonnageUpdateForm extends AbstractType
 {
     /**
@@ -20,44 +23,44 @@ class PersonnageUpdateForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('nom', TextType::class, [
             'required' => true,
             'label' => '',
         ])
-            ->add('surnom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('surnom', TextType::class, [
                 'required' => false,
                 'label' => '',
             ])
-            ->add('age', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('age', EntityType::class, [
                 'required' => true,
                 'label' => '',
-                'class' => \App\Entity\Age::class,
+                'class' => Age::class,
                 'choice_label' => 'label',
             ])
-            ->add('genre', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('genre', EntityType::class, [
                 'required' => true,
                 'label' => '',
-                'class' => \App\Entity\Genre::class,
+                'class' => Genre::class,
                 'choice_label' => 'label',
             ])
-            ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('territoire', EntityType::class, [
                 'required' => true,
                 'label' => 'Origine du personnage',
-                'class' => \App\Entity\Territoire::class,
+                'class' => Territoire::class,
                 'choice_label' => 'nom',
-                'query_builder' => static function (\LarpManager\Repository\TerritoireRepository $er) {
+                'query_builder' => static function (TerritoireRepository $er) {
                     $qb = $er->createQueryBuilder('t');
                     $qb->andWhere('t.territoire IS NULL');
 
                     return $qb;
                 },
             ])
-            ->add('intrigue', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('intrigue', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['Oui' => true, false => 'Non'],
                 'label' => 'Participer aux intrigues',
             ])
-            ->add('sensible', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('sensible', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['Non' => false, true => 'Oui'],
                 'label' => 'Personnage sensible',
@@ -70,7 +73,7 @@ class PersonnageUpdateForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Personnage::class,
+            'data_class' => Personnage::class,
         ]);
     }
 

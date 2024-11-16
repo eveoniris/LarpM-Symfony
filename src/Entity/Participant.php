@@ -78,7 +78,7 @@ class Participant extends BaseParticipant implements \Stringable
 
     public function getUserIdentity(): string
     {
-        return $this->getUser()->getDisplayName().' '.$this->getUser()->getEmail();
+        return $this->getUser()?->getDisplayName().' '.$this->getUser()?->getEmail();
     }
 
     public function getBesoinValidationCi(): bool
