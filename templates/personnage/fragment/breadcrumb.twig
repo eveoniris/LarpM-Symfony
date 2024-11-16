@@ -1,0 +1,22 @@
+{% if isAdmin is not defined %}
+    {% set isAdmin = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
+{% endif %}
+
+{% if breadcrumb is not defined %}
+    {% set breadcrumb = [] %}
+{% endif %}
+
+{% if name is not defined %}
+    {% set name = '' %}
+{% endif %}
+
+{% if isAdmin %}
+    {% set breadcrumb = breadcrumb|merge([{'name' : 'Liste des personnages', 'route': path('personnage.list') }]) %}
+{% elseif participant is defined %}
+    {% set breadcrumb = breadcrumb|merge([{'name' : participant.gn.label, 'route': path('gn.detail', {'gn' : participant.gn.id}) }]) %}
+{% endif %}
+{% set breadcrumb = breadcrumb|merge([{'name' : "Detail de #{personnage.nom}", 'route': path('personnage.detail', {'personnage' : personnage.id})}]) %}
+
+{% set breadcrumb = breadcrumb|merge([{'name': name}]) %}
+
+{% include '_partials/breadcrumb.twig' with {'items' : breadcrumb} %}

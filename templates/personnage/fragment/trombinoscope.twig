@@ -5,45 +5,46 @@
 <div class="{{ css }}">
     <div class="header">
         <h5>Trombinoscope</h5>
-
-        {#  TODO OR IS PLAYER #}
-        {% if isAdmin %}
-            {% include '_partials/dropDown.twig' with {
-                'title' : 'Action',
-                'actions' :
-                [
-                    {'path' : path('personnage.trombine.update', {'personnage': personnage.id}), 'label': 'Modifier la trombine' },
-                ]
-            } %}
-        {% endif %}
-
-        <div class="thumbnail d-flex justify-content-center">
-            {% if personnage.trombineUrl %}
-                <img class="media-object" style="max-width: 400px; max-height: 400px;"
-                     src="{{ path('personnage.trombine', {'personnage' : personnage.id }) }}"
-                     alt="{{ personnage.nom }}"/>
-            {% else %}
-                <img class="media-object" width="200px"
-                     src="{{ app.request.basepath }}/img/no_trombine.png" alt="inconnue"/>
-            {% endif %}
-        </div>
-        <div class="caption">
-            <p>
-                {% if participant is defined %}
-                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top"
-                       title="Modifier votre photo"
-                       href="{{ path('participant.personnage.trombine', {'participant': participant.id, 'personnage': participant.personnage.id}) }}"><span
-                                class="fa fa-camera" aria-hidden="true"></span></a>
-                {% elseif personnage.user_id %}
-                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top"
-                       title="Modifier votre photo"
-                       href="{{ path('personnage.trombine.update', {'personnage': participant.personnage.id}) }}"><span
-                                class="fa fa-camera" aria-hidden="true"></span></a>
-                {% endif %}
-                Votre photo est utilisée pour les différents trombinoscopes des groupes auxquels vous appartenez
-                afin que les autres joueurs puissent vous reconnaitre.
-            </p>
-        </div>
-
-
     </div>
+
+    {#  TODO OR IS PLAYER #}
+    {% if isAdmin %}
+        {% include '_partials/dropDown.twig' with {
+            'title' : 'Action',
+            'actions' :
+            [
+                {'path' : path('personnage.trombine.update', {'personnage': personnage.id}), 'label': 'Modifier la trombine' },
+            ]
+        } %}
+    {% endif %}
+
+    <div class="thumbnail d-flex justify-content-center">
+        {% if personnage.trombineUrl %}
+            <img class="media-object" style="max-width: 400px; max-height: 400px;"
+                 src="{{ path('personnage.trombine', {'personnage' : personnage.id }) }}"
+                 alt="{{ personnage.nom }}"/>
+        {% else %}
+            <img class="media-object" width="200px"
+                 src="{{ app.request.basepath }}/img/no_trombine.png" alt="inconnue"/>
+        {% endif %}
+    </div>
+    <div class="caption">
+        <p>
+            {% if participant is defined %}
+                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top"
+                   title="Modifier votre photo"
+                   href="{{ path('participant.personnage.trombine', {'participant': participant.id, 'personnage': participant.personnage.id}) }}"><span
+                            class="fa fa-camera" aria-hidden="true"></span></a>
+            {% elseif personnage.user_id %}
+                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top"
+                   title="Modifier votre photo"
+                   href="{{ path('personnage.trombine.update', {'personnage': participant.personnage.id}) }}"><span
+                            class="fa fa-camera" aria-hidden="true"></span></a>
+            {% endif %}
+            Votre photo est utilisée pour les différents trombinoscopes des groupes auxquels vous appartenez
+            afin que les autres joueurs puissent vous reconnaitre.
+        </p>
+    </div>
+
+
+</div>

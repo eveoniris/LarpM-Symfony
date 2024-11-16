@@ -117,9 +117,9 @@ class GnController extends AbstractController
         #[MapEntity] Gn $gn,
         QuestionRepository $questionRepository,
     ): Response {
-        $participant = $this->getUser()->getParticipant($gn);
+        $participant = $this->getUser()?->getParticipant($gn);
 
-        if (null != $participant && $participant->getBesoinValidationCi()) {
+        if (null !== $participant && $participant->getBesoinValidationCi()) {
             // L'utilisateur n'a pas validé les CG.
             /*return $this->redirectToRoute('User.gn.validationci', [
                 'gn' => $gn->getId(),

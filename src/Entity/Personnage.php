@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\LevelType;
 use App\Repository\PersonnageRepository;
-use App\Service\FileUploader;
 use App\Trait\EntityFileUploadTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -36,7 +35,7 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function __toString(): string
     {
-        return (string)$this->getPublicName();
+        return (string) $this->getPublicName();
     }
 
     /**
@@ -208,8 +207,8 @@ class Personnage extends BasePersonnage implements \Stringable
         foreach ($this->getCompetencesFromFamilyType($famillyType) as $competence) {
             $index = $competence->getLevel()?->getIndex();
 
-            if (null === $level || $niveau < (int)$index) {
-                $niveau = (int)$index;
+            if (null === $level || $niveau < (int) $index) {
+                $niveau = (int) $index;
                 $level = $competence->getLevel();
             }
         }
@@ -514,15 +513,15 @@ class Personnage extends BasePersonnage implements \Stringable
         $groupeLabel = null;
         $nomGn = '???';
         if ($this->getUser()) {
-            dump('User = '.$this->getUser()->getUsername());
+            // dump('User = '.$this->getUser()->getUsername());
             foreach ($this->getUser()->getParticipants() as $participant) {
                 if ($participant->getPersonnage() == $this) {
                     $nomGn = $participant->getGn()->getLabel();
-                    dump('NomGn = '.$nomGn);
+                    // dump('NomGn = '.$nomGn);
                     $groupeGn = $participant->getGroupeGn();
                     if (null != $groupeGn) {
-                        dump('groupeGnId = '.$groupeGn->getId());
-                        dump('groupeGnCode = '.$groupeGn->getCode());
+                        // dump('groupeGnId = '.$groupeGn->getId());
+                        // dump('groupeGnCode = '.$groupeGn->getCode());
                         $groupeLabel = $groupeGn->getGroupe()->getNom();
                     }
                 }
@@ -927,7 +926,7 @@ class Personnage extends BasePersonnage implements \Stringable
     {
         $total = 0;
         foreach ($this->getExperienceGains() as $gain) {
-            $pos = strpos((string)$gain->getExplanation(), 'Suppression de la compétence');
+            $pos = strpos((string) $gain->getExplanation(), 'Suppression de la compétence');
             if (false === $pos) {
                 $total += $gain->getXpGain();
             }
@@ -962,7 +961,7 @@ class Personnage extends BasePersonnage implements \Stringable
         $label = '';
         foreach ($this->getPersonnageLangues() as $personnageLangue) {
             $label = $label.' '.$personnageLangue->getLangue();
-            if (str_starts_with((string)$personnageLangue->getLangue(), 'Ancien')) {
+            if (str_starts_with((string) $personnageLangue->getLangue(), 'Ancien')) {
                 ++$compteLangueAncienne;
             } else {
                 ++$compteLangue;

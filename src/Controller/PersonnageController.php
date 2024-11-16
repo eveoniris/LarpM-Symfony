@@ -30,7 +30,6 @@ use App\Entity\Ressource;
 use App\Entity\Sort;
 use App\Entity\Technologie;
 use App\Entity\Token;
-use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Enum\Role;
 use App\Form\Personnage\PersonnageChronologieForm;
@@ -67,11 +66,11 @@ use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -274,7 +273,7 @@ class PersonnageController extends AbstractController
     public function selectAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Personnage $personnage
+        Personnage $personnage,
     ): RedirectResponse {
         $app['personnage.manager']->setCurrentPersonnage($personnage->getId());
 
@@ -576,8 +575,6 @@ class PersonnageController extends AbstractController
 
     /**
      * Ajoute une technologie à un personnage.
-     *
-     * @return RedirectResponse
      */
     public function adminAddTechnologieAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse
     {
@@ -600,12 +597,10 @@ class PersonnageController extends AbstractController
 
     /**
      * Retire une technologie à un personnage.
-     *
-     * @return RedirectResponse
      */
     public function adminRemoveTechnologieAction(
         Request $request,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): RedirectResponse {
         $technologieId = $request->get('technologie');
         $personnage = $request->get('personnage');
@@ -744,22 +739,36 @@ class PersonnageController extends AbstractController
         EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
-        $form = $this->createForm()
-            ->add('participant', 'entity', [
+        if ($oldParticipant = $personnage->getLastParticipant()) {
+            $this->addFlash(
+                'error',
+                'Désolé, le personnage ne dispose pas encore de participation et ne peut donc pas encore être transféré'
+            );
+
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        $form = $this->createFormBuilder()
+            ->add('id', EntityType::class, [
                 'required' => true,
-                'expanded' => true,
+                // 'expanded' => true,
+                'autocomplete' => true,
                 'label' => 'Nouveau propriétaire',
                 'class' => Participant::class,
-                'choice_label' => 'UserIdentity',
+                // 'choice_label' => 'UserIdentity',
             ])
-            ->add('transfert', SubmitType::class, ['label' => 'Transferer']);
+            ->add('transfert', SubmitType::class, [
+                'label' => 'Transferer',
+                'attr' => [
+                    'class' => 'btn btn-secondary',
+                ],
+            ])->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $newParticipant = $data['participant'];
-            $oldParticipant = $personnage->getLastParticipant();
 
             $personnage->setUser($newParticipant->getUser());
 
@@ -776,7 +785,7 @@ class PersonnageController extends AbstractController
             }
 
             $oldParticipant->setPersonnageNull();
-            $oldParticipant->getUser()->setPersonnage(null);
+            $oldParticipant->getUser()?->setPersonnage(null);
             $newParticipant->setPersonnage($personnage);
             $newParticipant->getUser()->setPersonnage($personnage);
             $personnage->addParticipant($newParticipant);
@@ -1125,7 +1134,12 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $form = $this->createForm(PersonnageUpdateForm::class, $personnage)
-            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
+            ->add('save', SubmitType::class, [
+                'label' => 'Valider les modifications',
+                'attr' => [
+                    'class' => 'btn btn-secondary',
+                ],
+            ]);
 
         $form->handleRequest($request);
 
@@ -1698,8 +1712,6 @@ class PersonnageController extends AbstractController
 
     /**
      * Ajoute une priere à un personnage.
-     *
-     * @return RedirectResponse
      */
     #[Route('/{personnage}/addPriere', name: 'admin.add.priere')]
     public function adminAddPriereAction(
@@ -1725,8 +1737,6 @@ class PersonnageController extends AbstractController
 
     /**
      * Retire une priere à un personnage.
-     *
-     * @return RedirectResponse
      */
     public function adminRemovePriereAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse
     {
@@ -1766,8 +1776,6 @@ class PersonnageController extends AbstractController
 
     /**
      * Ajoute une connaissance à un personnage.
-     *
-     * @return RedirectResponse
      */
     #[Route('/{personnage}/addConnaissance', name: 'admin.add.connaissance')]
     public function adminAddConnaissanceAction(
@@ -1797,8 +1805,6 @@ class PersonnageController extends AbstractController
 
     /**
      * Retire une connaissance à un personnage.
-     *
-     * @return RedirectResponse
      */
     #[Route('/{personnage}/deleteConnaissance', name: 'admin.delete.connaissance')]
     public function adminRemoveConnaissanceAction(
@@ -1885,8 +1891,6 @@ class PersonnageController extends AbstractController
 
     /**
      * Ajoute un sort à un personnage.
-     *
-     * @return RedirectResponse
      */
     #[Route('/{personnage}/addSort', name: 'admin.add.sort')]
     public function adminAddSortAction(
@@ -1913,8 +1917,6 @@ class PersonnageController extends AbstractController
 
     /**
      * Retire un sort à un personnage.
-     *
-     * @return RedirectResponse
      */
     #[Route('/{personnage}/deleteSort', name: 'admin.delete.sort')]
     public function adminRemoveSortAction(
@@ -1999,8 +2001,6 @@ class PersonnageController extends AbstractController
 
     /**
      * Ajoute une potion à un personnage.
-     *
-     * @return RedirectResponse
      */
     #[Route('/{personnage}/addPotion', name: 'admin.add.potion')]
     public function adminAddPotionAction(
@@ -2026,8 +2026,6 @@ class PersonnageController extends AbstractController
 
     /**
      * Retire une potion à un personnage.
-     *
-     * @return RedirectResponse
      */
     #[Route('/{personnage}/deletePotion', name: 'admin.delete.potion')]
     public function adminRemovePotionAction(
@@ -2547,7 +2545,6 @@ class PersonnageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $personnageService->removeCompetence($personnage, $lastCompetence);
 
             $this->addFlash('success', 'La compétence a été retirée');
@@ -2564,6 +2561,7 @@ class PersonnageController extends AbstractController
 
     #[Route('/{personnage}/addCompetence', name: 'admin.add.competence')]
     #[Route('/{personnage}/addCompetence', name: 'add.competence')]
+    #[Route('/{personnage}/competence/add', name: 'add.competence')]
     public function adminAddCompetenceAction(
         Request $request,
         EntityManagerInterface $entityManager,

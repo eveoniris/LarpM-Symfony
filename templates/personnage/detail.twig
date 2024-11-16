@@ -1,6 +1,6 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Votre personnage{% endblock title %}
+{% block title %}{{ personnage.nom }} détails{% endblock title %}
 
 {% block body %}
 
@@ -13,121 +13,127 @@
 	{% endif %}
 	{% set breadcrumb = breadcrumb|merge([{'name' : "Detail de #{personnage.nom}" }]) %}
 
-	{% include '_partials/breadcrumb.twig' with {'items' : breadcrumb}  %}
+	{% include '_partials/breadcrumb.twig' with {'items' : breadcrumb} %}
 
-	{% if participant is defined %}
-	<div class="well well-sm">
-		<div class="btn-toolbar" role="toolbar" aria-label="...">
-			<div class="btn-group" role="group" aria-label="...">
-				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Liste des groupes secondaires" href="{{ path('participant.groupeSecondaire.list', {'participant': participant.id}) }}"><i class="fa fa-user-secret" aria-hidden="true"></i></a>
-				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Choisir une nouvelle religion" href="{{ path('participant.religion.add',{'participant': participant.id}) }}"><i class="fa fa-cloud" aria-hidden="true"></i></a>
-				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Acheter une compétence" href="{{ path('participant.competence.add', {'participant': participant.id}) }}"><i class="fa fa-graduation-cap" aria-hidden="true"></i></a>
-				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier votre personnage" href="{{ path('participant.personnage.edit', {'participant': participant.id}) }}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-				{% if personnage.hasCompetence('Magie') %}
-					<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Découvrir la magie" href="{{ path('participant.magie', {'participant': participant.id}) }}"><i class="fa fa-magic" aria-hidden="true"></i></a>
+
+	<div class="panel mb-0 border-bottom-0">
+		<div class="header">
+			<h5>Fiche de personnage</h5>
+		</div>
+
+		<div class="d-flex justify-content-between">
+
+			<h3>
+				{% if personnage.isPnj() %}🎭 PNJ - {% endif %}
+				{{ personnage.nom }}{% if personnage.surnom %} <small>({{ personnage.surnom }})</small>{% endif %}
+			</h3>
+			<div class="fs-3">
+				{% if personnage.genre == 'Masculin' %}
+					<i class="fa fa-mars" aria-hidden="true"></i>
+				{% elseif personnage.genre == 'Feminin' %}
+					<i class="fa fa-venus" aria-hidden="true"></i>
+				{% else %}
+					<i class="fa fa-transgender-alt" aria-hidden="true"></i>
 				{% endif %}
-				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Imprimer votre personnage" href="{{ path('personnage.export', {'personnage':personnage.id}) }}"><i class="fa fa-print" aria-hidden="true"></i></a>
+
+				<small>{{ personnage.ageReel|default('x') }} ans ({{ personnage.age }})</small>
+
+				{% if personnage.vivant %}<span class="text-success">Vivant</span>{% else %}<span
+						class="text-danger">💀 Mort</span>{% endif %}
+
+			</div>
+			<div class="fs-3">
+				{{ personnage.classeName }}
+			</div>
+		</div>
+
+
+		<div class="row">
+			<div class="col-md-12">
+				<div>
+					<div class="pull-right">
+						<div class="btn-toolbar" role="toolbar" aria-label="...">
+							<div class="btn-group" role="group" aria-label="...">
+								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+								   title="Liste des groupes secondaires"
+								   href="{{ path('participant.groupeSecondaire.list', {'participant': participant.id}) }}"><i
+											class="fa fa-user-secret" aria-hidden="true"></i></a>
+								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+								   title="Choisir une nouvelle religion"
+								   href="{{ path('participant.religion.add',{'participant': participant.id}) }}"><i
+											class="fa fa-cloud"
+											aria-hidden="true"></i></a>
+								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+								   title="Acheter une compétence"
+								   href="{{ path('participant.competence.add', {'participant': participant.id}) }}"><i
+											class="fa fa-graduation-cap" aria-hidden="true"></i></a>
+								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+								   title="Modifier votre personnage"
+								   href="{{ path('participant.personnage.edit', {'participant': participant.id}) }}"><i
+											class="fa fa-pencil" aria-hidden="true"></i></a>
+								{% if personnage.hasCompetence('Magie') %}
+									<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+									   title="Découvrir la magie"
+									   href="{{ path('participant.magie', {'participant': participant.id}) }}"><i
+												class="fa fa-magic"
+												aria-hidden="true"></i></a>
+								{% endif %}
+								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+								   title="Imprimer votre personnage"
+								   href="{{ path('personnage.export', {'personnage':personnage.id}) }}"><i
+											class="fa fa-print"
+											aria-hidden="true"></i></a>
+							</div>
+						</div>
+					</div>
+					<ul class="nav nav-tabs">
+						<li class="nav-item">
+							<a class="nav-link{% if tab == 'general' %} active{% endif %}"
+							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'general'})) }}"
+							>Générale</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link{% if tab == 'competences' %} active{% endif %}"
+							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'competences'})) }}"
+							>Compétences</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link{% if tab == 'religions' %} active{% endif %}"
+							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'religions'})) }}"
+							>Religions</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link{% if tab == 'biographie' %} active{% endif %}"
+							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'biographie'})) }}"
+							>Biographie</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link{% if tab == 'groupes' %} active{% endif %}"
+							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'groupes'})) }}"
+							>Groupes</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
+							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'enveloppe'})) }}"
+							>Enveloppe</a>
+						</li>
+
+					</ul>
+
+				</div>
 			</div>
 		</div>
 	</div>
 
-		<div class="row">
-			<div class="col-sm-6">
-				<div class="well well-sm">
-					{% if personnage.personnageTriggers|length > 0 %}
-						<blockquote>Vos compétences vous permettent de choisir des connaissances supplémentaires</blockquote>
-						<ul class="list-group">
-						{% for trigger in personnage.personnageTriggers %}
-							{% if trigger.tag == 'LANGUE COMMUNE' %}
-								<li class="list-group-item"><a href="{{ path('participant.personnage.langueCommune', {'participant': participant.id}) }}">Choisir une langue commune supplémentaire</a></li>
-							{% endif %}
-							{% if trigger.tag == 'LANGUE COURANTE' %}
-								<li class="list-group-item"><a href="{{ path('participant.personnage.langueCourante', {'participant': participant.id}) }}">Choisir une langue courante supplémentaire</a></li>
-							{% endif %}
-							{% if trigger.tag == 'LANGUE ANCIENNE' %}
-								<li class="list-group-item"><a href="{{ path('participant.personnage.langueAncienne', {'participant': participant.id}) }}">Choisir une langue ancienne supplémentaire</a></li>
-							{% endif %}
-							{% if trigger.tag == 'ALCHIMIE APPRENTI' %}
-								<li class="list-group-item"><a href="{{ path('participant.potion.detail', {'potion' : 1, 'participant' : participant.id}) }}">Choisir une nouvelle potion de niveau Apprenti</a></li>
-							{% endif %}
-							{% if trigger.tag == 'ALCHIMIE INITIE' %}
-								<li class="list-group-item"><a href="{{ path('participant.potion.detail', {'potion' : 2, 'participant' : participant.id}) }}">Choisir une nouvelle potion de niveau Initié</a></li>
-							{% endif %}
-							{% if trigger.tag == 'ALCHIMIE EXPERT' %}
-								<li class="list-group-item"><a href="{{ path('participant.potion.detail', {'potion' : 3, 'participant' : participant.id}) }}">Choisir une nouvelle potion de niveau Expert</a></li>
-							{% endif %}
-							{% if trigger.tag == 'ALCHIMIE MAITRE' %}
-								<li class="list-group-item"><a href="{{ path('participant.potion.detail', {'potion' : 4, 'participant' : participant.id}) }}">Choisir une nouvelle potion de niveau Maitre</a></li>
-							{% endif %}
-							{% if trigger.tag == 'DOMAINE MAGIE' %}
-								<li class="list-group-item"><a href="{{ path('participant.personnage.domaine', {'participant': participant.id}) }}">Choisir un domaine de magie</a></li>
-							{% endif %}
-							{% if trigger.tag == 'SORT APPRENTI' %}
-								<li class="list-group-item"><a href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort' : 1}) }}">Choisir un sort de niveau Apprenti</a></li>
-							{% endif %}
-							{% if trigger.tag == 'SORT INITIE' %}
-								<li class="list-group-item"><a href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort' : 2}) }}">Choisir un sort de niveau Initié</a></li>
-							{% endif %}
-							{% if trigger.tag == 'SORT EXPERT' %}
-								<li class="list-group-item"><a href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort' : 3}) }}">Choisir un sort de niveau Expert</a></li>
-							{% endif %}
-							{% if trigger.tag == 'SORT MAITRE' %}
-								<li class="list-group-item"><a href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort' : 4}) }}">Choisir un sort de niveau Maitre</a></li>
-							{% endif %}
-							{% if trigger.tag == 'PRETRISE INITIE' %}
-								<li class="list-group-item"><a href="{{ path('participant.personnage.religionDescription', {'participant': participant.id}) }}">Choisir une description de religion</a></li>
-							{% endif %}
-							{% if trigger.tag == 'TECHNOLOGIE' %}
-								<li class="list-group-item"><a href="{{ path('participant.personnage.technologie', {'participant': participant.id}) }}">Choisir une technologie</a></li>
-							{% endif %}
-						{% endfor %}
-							{% if personnage.hasCompetence('Alchimie') %}
-								{% for niveau in 1..personnage.getCompetenceNiveau('Alchimie') %}
-									{% if not participant.hasPotionsDepartByLevel(niveau) %}
-										<li class="list-group-item"><a href="{{ path('participant.sort', {'sort' : niveau, 'participant' : participant.id}) }}">Choisir votre potion de niveau {{ niveau }} à ajouter à votre enveloppe de départ</a></li>
-									{% endif %}
-								{% endfor %}
-							{% endif %}
-						</ul>
-					{% endif %}
-
-					{% include 'personnage/fragment/information.twig' with {'personnage': personnage, 'participant' : participant} %}
-					{% include 'personnage/fragment/origine.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% include 'personnage/fragment/lignee.twig'%}
-					{% include 'personnage/fragment/chronologie.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% include 'personnage/fragment/pugilat.twig' with {'personnage': personnage} %}
-					{% include 'personnage/fragment/competence.twig' with {'personnage': personnage, 'participant': participant} %}
-				</div>
-
-			</div>
-
-			<div class="col-sm-6">
-				<div class="well well-sm">
-					{% include 'personnage/fragment/trombinoscope.twig' with {'personnage': personnage, 'participant': participant} %}
-
-					{% include 'personnage/fragment/groupe.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% include 'personnage/fragment/groupeSecondaireChef.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% include 'personnage/fragment/groupeSecondaireMembre.twig' with {'personnage': personnage, 'participant': participant} %}
-
-					{% include 'personnage/fragment/alchimie.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% include 'personnage/fragment/magie.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% include 'personnage/fragment/language.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% include 'personnage/fragment/technologie.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% include 'personnage/fragment/connaissance.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% include 'personnage/fragment/politique.twig' with {'personnage': personnage, 'participant': participant, 'lois': participant.personnage.origine.lois} %}
-					{% include 'personnage/fragment/priere.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% include 'personnage/fragment/document.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% include 'personnage/fragment/item.twig' with {'personnage': personnage, 'participant': participant} %}
-
-					{% include 'personnage/fragment/tab_religions.twig' with {'personnage': personnage, 'participant': participant} %}
-
-					{% include 'personnage/fragment/background.twig' with {'personnage': personnage, 'participant': participant} %}
-				</div>
-			</div>
-
+	<!-- Tab panes -->
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active" role="tabpanel">
+			{% include "personnage/fragment/tab_#{tab|default('detail')}.twig" with {'personnage': personnage, 'css': 'panel'} %}
 		</div>
-	{% else %}
-		{% include '_partials/cardNotif.twig' with {'type' : 'warning', 'title': 'Prérequis !', 'content' : "Le personnage ne dispose d'aucune participation à un GN" } %}
-	{% endif %}
-
+	</div>
 {% endblock body %}
