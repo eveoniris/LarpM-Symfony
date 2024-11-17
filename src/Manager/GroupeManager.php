@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\Gn;
 use App\Entity\Groupe;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;

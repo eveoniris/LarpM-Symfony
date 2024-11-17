@@ -1,12 +1,11 @@
 <?php
 
-
 namespace App\Repository;
 
+use App\Entity\Participant;
+use App\Entity\Personnage;
 use App\Entity\PersonnageLignee;
 use App\Entity\Titre;
-use App\Entity\User;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Deprecated;
 
@@ -26,8 +25,7 @@ class PersonnageRepository extends BaseRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-
-    public function findList(array $criteria = [], ?array $order = [], int $limit = null, int $offset = null)
+    public function findList(array $criteria = [], ?array $order = [], ?int $limit = null, ?int $offset = null)
     {
         $orderBy = '';
         $orderDir = 'ASC';
@@ -59,7 +57,7 @@ class PersonnageRepository extends BaseRepository
                 case 'classe':
                     $qb->addOrderBy('cl.label_feminin', $orderDir);
                     $qb->addOrderBy('cl.label_masculin', $orderDir);
-                    //$qb->addOrderBy('p.genre', $orderDir);
+                    // $qb->addOrderBy('p.genre', $orderDir);
                     break;
                 default:
                     $qb->orderBy('p.'.$orderBy, $orderDir);
@@ -69,9 +67,9 @@ class PersonnageRepository extends BaseRepository
         return $qb->getQuery();
     }
 
-    private function buildSearchFromJoinWhereQuery(QueryBuilder $qb, array $criteria, string $orderBy = null): void
+    private function buildSearchFromJoinWhereQuery(QueryBuilder $qb, array $criteria, ?string $orderBy = null): void
     {
-        $qb->from(\App\Entity\Personnage::class, 'p');
+        $qb->from(Personnage::class, 'p');
         // jointure sur le dernier participant créé (on se base sur le max id des personnage participants)
         $qb->join('p.participants', 'pa', 'with', 'pa.id =
  (SELECT MAX(pa2.id) 
@@ -133,7 +131,7 @@ LEFT JOIN p2.participants pa2
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('p');
-        $qb->from(\App\Entity\Personnage::class, 'p');
+        $qb->from(Personnage::class, 'p');
         $qb->andWhere('p.id IN (:ids)')->setParameter('ids', $ids);
 
         return $qb->getQuery()->getResult();
@@ -148,7 +146,7 @@ LEFT JOIN p2.participants pa2
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('pb');
-        $qb->from(\App\Entity\Participant::class, 'pa');
+        $qb->from(Participant::class, 'pa');
         $qb->join('pa.personnage', 'p');
         $qb->join('pa.groupeGn', 'gg');
         $qb->join('p.personnageBackground', 'pb');
@@ -192,4 +190,26 @@ LEFT JOIN p2.participants pa2
         return $qb->getQuery()->getResult();
     }
 
+    public function getFindGenderQueryBuilder(int $genderId, ?int $ambigus = null): QueryBuilder
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select($this->alias);
+        $qb->from(Personnage::class, $this->alias);
+        $qb = $this->gender($qb, $genderId, $ambigus);
+
+        return $qb->orderBy($this->alias.'.nom', 'ASC');
+    }
+
+    public function gender(QueryBuilder $qb, int $gender, ?int $ambigus = null): QueryBuilder
+    {
+        if (!$ambigus) {
+            $qb->andWhere($this->alias.'.genre = :value');
+        } else {
+            $qb->andWhere($this->alias.'.genre = :value OR '.$this->alias.'.genre = :ambigus');
+            $qb->setParameter('ambigus', $ambigus);
+        }
+
+        return $qb->setParameter('value', $gender);
+    }
 }

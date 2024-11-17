@@ -6,8 +6,8 @@
     {% set breadcrumb = [] %}
 {% endif %}
 
-{% if name is not defined %}
-    {% set name = '' %}
+{% if tab is not defined %}
+    {% set tab = 'generale' %}
 {% endif %}
 
 {% if isAdmin %}
@@ -15,8 +15,10 @@
 {% elseif participant is defined %}
     {% set breadcrumb = breadcrumb|merge([{'name' : participant.gn.label, 'route': path('gn.detail', {'gn' : participant.gn.id}) }]) %}
 {% endif %}
-{% set breadcrumb = breadcrumb|merge([{'name' : "Detail de #{personnage.nom}", 'route': path('personnage.detail', {'personnage' : personnage.id})}]) %}
+{% set breadcrumb = breadcrumb|merge([{'name' : "Detail de #{personnage.nom}", 'route': path('personnage.detail', {'personnage' : personnage.id, 'tab': tab})}]) %}
 
-{% set breadcrumb = breadcrumb|merge([{'name': name}]) %}
+{% if name is defined %}
+    {% set breadcrumb = breadcrumb|merge([{'name': name}]) %}
+{% endif %}
 
 {% include '_partials/breadcrumb.twig' with {'items' : breadcrumb} %}

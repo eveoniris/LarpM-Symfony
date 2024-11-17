@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -9,17 +10,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * App\Entity\PersonnageBackground.
- *
- * @Table(name="", indexes={@Index(name="", columns={""}), @Index(name="", columns={"User_id"}), @Index(name="fk_personnage_background_gn1_idx", columns={"gn_id"})})
- *
- * @InheritanceType("SINGLE_TABLE")
- *
- * @DiscriminatorColumn(name="discr", type="string")
- *
- * @DiscriminatorMap({"base":"BasePersonnageBackground", "extended":"PersonnageBackground"})
- */
 #[ORM\Entity]
 #[ORM\Table(name: 'personnage_background')]
 #[ORM\Index(columns: ['personnage_id'], name: 'fk_personnage_background_personnage1_idx')]
@@ -29,19 +19,19 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageBackground', 'extended' => 'PersonnageBackground'])]
 abstract class BasePersonnageBackground
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $text = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $visibility = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected \DateTime $creation_date;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected $update_date;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageBackgrounds')]
@@ -149,7 +139,7 @@ abstract class BasePersonnageBackground
     /**
      * Set Personnage entity (many to one).
      */
-    public function setPersonnage(Personnage $personnage = null): static
+    public function setPersonnage(?Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -167,7 +157,7 @@ abstract class BasePersonnageBackground
     /**
      * Set User entity (many to one).
      */
-    public function setUser(User $User = null): static
+    public function setUser(?User $User = null): static
     {
         $this->user = $User;
 
@@ -185,7 +175,7 @@ abstract class BasePersonnageBackground
     /**
      * Set Gn entity (many to one).
      */
-    public function setGn(Gn $gn = null): static
+    public function setGn(?Gn $gn = null): static
     {
         $this->gn = $gn;
 

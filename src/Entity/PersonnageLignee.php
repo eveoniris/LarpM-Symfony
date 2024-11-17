@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Entity;
+
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity]
@@ -16,6 +17,16 @@ class PersonnageLignee extends BasePersonnageLignee
         return null;
     }
 
+    public function getLabel(): ?string
+    {
+        return $this->getLignee()?->getLabel() ?? '';
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->getLignee()?->getDescription() ?? '';
+    }
+
     /**
      * Trouve tous les descendants correspondant au personnage.
      *
@@ -26,7 +37,7 @@ class PersonnageLignee extends BasePersonnageLignee
         $qb = $this->createQueryBuilder();
 
         $qb->select('d');
-        $qb->from(\App\Entity\PersonnageChronologie::class, 'd');
+        $qb->from(PersonnageChronologie::class, 'd');
         $qb->join('d.personnage', 'p');
         $qb->where('(d.parent1 = :personnage1 OR d.parent2 = :personnage2)');
         $qb->orderBy('d.id', 'DESC');

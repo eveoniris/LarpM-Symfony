@@ -6,6 +6,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -20,7 +21,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageLignee', 'extended' => 'PersonnageLignee'])]
 abstract class BasePersonnageLignee
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageLignee')]
@@ -37,7 +38,7 @@ abstract class BasePersonnageLignee
 
     #[ManyToOne(targetEntity: Lignee::class, inversedBy: 'personnageLignees')]
     #[JoinColumn(name: 'lignee_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Lignee $lignee;
+    protected ?Lignee $lignee;
 
     /**
      * Set the value of id.
@@ -60,7 +61,7 @@ abstract class BasePersonnageLignee
     /**
      * Set Personnage entity (many to one).
      */
-    public function setPersonnage(Personnage $personnage = null): static
+    public function setPersonnage(?Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -78,7 +79,7 @@ abstract class BasePersonnageLignee
     /**
      * Set Parent1 entity (many to one).
      */
-    public function setParent1(Personnage $parent1 = null): static
+    public function setParent1(?Personnage $parent1 = null): static
     {
         $this->parent1 = $parent1;
 
@@ -96,7 +97,7 @@ abstract class BasePersonnageLignee
     /**
      * Set Parent2 entity (many to one).
      */
-    public function setParent2(Personnage $parent2 = null): static
+    public function setParent2(?Personnage $parent2 = null): static
     {
         $this->parent2 = $parent2;
 
@@ -114,7 +115,7 @@ abstract class BasePersonnageLignee
     /**
      * Set Lignee entity (many to one).
      */
-    public function setLignee(Lignee $lignee = null): static
+    public function setLignee(?Lignee $lignee = null): static
     {
         $this->lignee = $lignee;
 
@@ -126,7 +127,7 @@ abstract class BasePersonnageLignee
      */
     public function getLignee(): ?Lignee
     {
-        return $this->lignee;
+        return $this->lignee ?? null;
     }
 
     /* public function __sleep()

@@ -4,21 +4,10 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('personnage.admin.list') }}">Liste des personnages</a></li>
-		<li class="active">Modification de {{ personnage.publicName }}</li>
-	</ol>
+	{% include 'personnage/fragment/breadcrumb.twig' with {'name': "Ajout d'un background"} %}
 
 	<div class="well bs-component">	
-		{{ form_start(form, {"attr": {"action": path('personnage.admin.add.background', {'personnage': personnage.id,'background': background.id}) }}) }}
-			<fieldset>
-				<legend>Modification de {{ personnage.publicName }}</legend>
-				
-	
-				{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
+		{{ form(form) }}
 	</div>
 	
 {% endblock body %}

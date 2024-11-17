@@ -4,17 +4,9 @@
 
 {% block body %}
 
+	{% include 'personnage/fragment/breadcrumb.twig' %}
+
 	{% set isAdmin = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
-	{% set breadcrumb = [] %}
-	{% if isAdmin %}
-		{% set breadcrumb = breadcrumb|merge([{'name' : 'Liste des personnages', 'route': path('personnage.list') }]) %}
-	{% elseif participant is defined %}
-		{% set breadcrumb = breadcrumb|merge([{'name' : participant.gn.label, 'route': path('gn.detail', {'gn' : participant.gn.id}) }]) %}
-	{% endif %}
-	{% set breadcrumb = breadcrumb|merge([{'name' : "Detail de #{personnage.nom}" }]) %}
-
-	{% include '_partials/breadcrumb.twig' with {'items' : breadcrumb} %}
-
 
 	<div class="panel mb-0 border-bottom-0">
 		<div class="header">
@@ -24,7 +16,7 @@
 		<div class="d-flex justify-content-between">
 
 			<h3>
-				{% if personnage.isPnj() %}🎭 PNJ - {% endif %}
+				{% if isAdmin and personnage.isPnj() %}🎭 PNJ - {% endif %}
 				{{ personnage.nom }}{% if personnage.surnom %} <small>({{ personnage.surnom }})</small>{% endif %}
 			</h3>
 			<div class="fs-3">
@@ -110,7 +102,6 @@
 							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'biographie'})) }}"
 							>Biographie</a>
 						</li>
-
 						<li class="nav-item">
 							<a class="nav-link{% if tab == 'groupes' %} active{% endif %}"
 							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'groupes'})) }}"
