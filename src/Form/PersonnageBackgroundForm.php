@@ -7,15 +7,12 @@ use App\Entity\Gn;
 use App\Entity\PersonnageBackground;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\PersonnageBackgroundForm.
- *
- * @author kevin
- */
 class PersonnageBackgroundForm extends AbstractType
 {
     /**
@@ -37,7 +34,20 @@ class PersonnageBackgroundForm extends AbstractType
                 'choice_label' => 'label',
                 'placeholder' => 'Choisissez le GN auquel est lié ce background',
                 'empty_data' => null,
-            ]);
+            ])
+            ->add('visibility', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Visibilité',
+                'choices' => [
+                    'Seul les scénaristes peuvent voir ceci' => 'PRIVATE',
+                    'Le proprietaire du personnage peut voir ceci' => 'OWNER',
+                ],
+            ])
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => 'Valider les modifications', 'attr' => ['class' => 'btn btn-secondary']]
+            );
     }
 
     /**

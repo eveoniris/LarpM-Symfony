@@ -1,19 +1,16 @@
 <?php
 
-
 namespace App\Form\Personnage;
 
-use LarpManager\Repository\LigneesRepository;
-use LarpManager\Repository\PersonnageRepository;
+use App\Entity\Lignee;
+use App\Entity\Personnage;
+use App\Repository\LigneeRepository;
+use App\Repository\PersonnageRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\PersonnageLigneeForm.
- *
- * @author Kevin F.
- */
 class PersonnageLigneeForm extends AbstractType
 {
     /**
@@ -21,40 +18,33 @@ class PersonnageLigneeForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('parent1', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-            'label' => 'Choisissez le Parent 1 du personnage',
+        $builder->add('parent1', EntityType::class, [
+            'label' => 'Choisissez le Parent Male ou Ambigüe du personnage',
             'expanded' => false,
             'required' => false,
-            'class' => \App\Entity\Personnage::class,
-            'choice_label' => static function ($personnage) {
-                return $personnage->getIdentity();
-            },
-            'query_builder' => static function (PersonnageRepository $pr) {
-                return $pr->createQueryBuilder('p')->orderBy('p.nom', 'ASC');
-            },
+            'autocomplete' => true,
+            'class' => Personnage::class,
+            'choice_label' => static fn (Personnage $personnage) => $personnage->getLigneeIdentity(),
+            'query_builder' => static fn (PersonnageRepository $pr) => $pr->getFindGenderQueryBuilder(1, 3), // Men or ambigous
         ])
-            ->add('parent2', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-                'label' => 'Choisissez le Parent 2 du personnage',
+            ->add('parent2', EntityType::class, [
+                'label' => 'Choisissez le Parent Femelle ou Ambigüe du personnage',
                 'expanded' => false,
                 'required' => false,
+                'autocomplete' => true,
                 'empty_data' => null,
-                'class' => \App\Entity\Personnage::class,
-                'choice_label' => static function ($personnage) {
-                    return $personnage->getIdentity();
-                },
-                'query_builder' => static function (PersonnageRepository $pr) {
-                    return $pr->createQueryBuilder('p')->orderBy('p.nom', 'ASC');
-                },
+                'class' => Personnage::class,
+                'choice_label' => static fn (Personnage $personnage) => $personnage->getLigneeIdentity(),
+                'query_builder' => static fn (PersonnageRepository $pr) => $pr->getFindGenderQueryBuilder(2, 3), // women or ambigous
             ])
-            ->add('lignee', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('lignee', EntityType::class, [
                 'label' => 'Choisissez la lignée de votre personnage ',
                 'expanded' => false,
                 'required' => false,
+                'autocomplete' => true,
                 'empty_data' => null,
-                'class' => \App\Entity\Lignee::class,
-                'query_builder' => static function (LigneesRepository $pr) {
-                    return $pr->createQueryBuilder('p')->orderBy('p.nom', 'ASC');
-                },
+                'class' => Lignee::class,
+                'query_builder' => static fn (LigneeRepository $pr) => $pr->createQueryBuilder('p')->orderBy('p.nom', 'ASC'),
             ]);
     }
 

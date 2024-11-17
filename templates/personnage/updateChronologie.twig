@@ -4,22 +4,13 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('personnage.admin.list') }}">Liste des personnages</a></li>
-		<li class="active">Modification de {{ personnage.publicName }}</li>
-	</ol>
+	@
 
-	<div class="well bs-component">	
-		{{ form_start(form, {"attr": {"action": path('personnage.admin.chronologie.add', {'personnage': personnage.id}) }}) }}
-			<fieldset>
-				<legend>Modification de {{ personnage.publicName }}</legend>
-				<p><strong>Ajouter un évènement</strong></p>
-				
-	
-				{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
+	<div class="well">
+		<div class="header">
+			<h5>Modification de {{ personnage.publicName }}</h5>
+		</div>
+		{{ form(form) }}
 	</div>
 	
 {% endblock body %}

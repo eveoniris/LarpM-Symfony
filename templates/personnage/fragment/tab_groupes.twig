@@ -16,6 +16,7 @@
     <div class="col-md-6">
         {% include 'personnage/fragment/secondaires.twig' %}
 
+        {#  TODO debug #}
         {% include 'personnage/fragment/groupeSecondaireChef.twig' with {'personnage': personnage, 'participant': participant} %}
         {% include 'personnage/fragment/groupeSecondaireMembre.twig' with {'personnage': personnage, 'participant': participant} %}
 

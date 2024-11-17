@@ -508,34 +508,34 @@ class Personnage extends BasePersonnage implements \Stringable
     /**
      * Fourni l'identité complete d'un personnage.
      */
-    public function getIdentity(): string
+    public function getIdentity(bool $withId = true, bool $full = false): string
     {
-        $groupeLabel = null;
-        $nomGn = '???';
-        if ($this->getUser()) {
-            // dump('User = '.$this->getUser()->getUsername());
-            foreach ($this->getUser()->getParticipants() as $participant) {
-                if ($participant->getPersonnage() == $this) {
-                    $nomGn = $participant->getGn()->getLabel();
-                    // dump('NomGn = '.$nomGn);
-                    $groupeGn = $participant->getGroupeGn();
-                    if (null != $groupeGn) {
-                        // dump('groupeGnId = '.$groupeGn->getId());
-                        // dump('groupeGnCode = '.$groupeGn->getCode());
-                        $groupeLabel = $groupeGn->getGroupe()->getNom();
-                    }
-                }
-            }
+        if ($full && $participant = $this->getParticipants()->last()) {
+            $groupeLabel = $participant?->getGroupeGn()?->getGroupe()?->getNom();
+
+            return sprintf(
+                '%s (%s)',
+                $withId ? $this->getIdName() : $this->getPublicName(),
+                $participant?->getGn()?->getLabel().($groupeLabel ? ' - ' : '').$groupeLabel
+            );
         }
 
-        $identity = $this->getNom().' - '.$this->getSurnom().' (';
-        if ($groupeLabel) {
-            $identity .= $nomGn.' - '.$groupeLabel;
-        } else {
-            $identity .= $nomGn.' - *** GROUPE NON IDENTIFIABLE ***';
-        }
+        return $withId ? $this->getIdName() : $this->getNameSurname();
+    }
 
-        return $identity.')';
+    public function getLigneeIdentity(bool $withId = true, bool $full = false): string
+    {
+        return $this->getIdentity($withId, $full) . ' (' . $this->getAge()->getLabel() . ')';
+    }
+    
+    public function getIdName(): string
+    {
+        return $this->getId().' - '.$this->getNameSurname();
+    }
+
+    public function getNameSurname(): string
+    {
+        return $this->getNom().(empty(trim($this->getSurnom())) ? '' : ' - ').$this->getSurnom();
     }
 
     public function getIdentityByLabel($gnLabel): string

@@ -24,12 +24,11 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnage', 'extended' => 'Personnage'])]
-
-class BasePersonnage
+abstract class BasePersonnage
 {
     public int $pugilat = 1;
 
-    #[ORM\Id, ORM\Column(type: Types::INTEGER), ORM\GeneratedValue]
+    #[ORM\Id, Column(type: Types::INTEGER), ORM\GeneratedValue]
     protected int $id;
 
     #[Column(type: Types::STRING, length: 100)]
@@ -141,7 +140,7 @@ class BasePersonnage
     #[JoinColumn(name: 'id', referencedColumnName: 'suzerain_id', nullable: 'false')]
     protected Collection $groupeGns;
     */
-    
+
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'personnages')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?Groupe $groupe;
@@ -172,65 +171,65 @@ class BasePersonnage
 
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_has_document')]
-    #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'Document_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\OrderBy(['code' => 'ASC'])]
+    #[OrderBy(['code' => 'ASC'])]
     protected Collection $documents;
 
     #[ORM\ManyToMany(targetEntity: Item::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_has_item')]
-    #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'item_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\OrderBy(['label' => 'ASC'])]
+    #[OrderBy(['label' => 'ASC'])]
     protected Collection $items;
 
     #[ORM\ManyToMany(targetEntity: Technologie::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_has_technologie')]
-    #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'technologie_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $technologies;
 
     #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_religion_description')]
-    #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $religions;
 
     #[ORM\ManyToMany(targetEntity: Competence::class, mappedBy: 'personnages')]
-    //#[ORM\OrderBy(['competenceFamily' => 'ASC', 'level' => 'ASC'])]
+    // #[ORM\OrderBy(['competenceFamily' => 'ASC', 'level' => 'ASC'])]
     protected Collection $competences;
 
     #[ORM\ManyToMany(targetEntity: Domaine::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_domaines')]
-    #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'domaine_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $domaines;
 
     #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_potions')]
-    #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
+    #[OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $potions;
 
     #[ORM\ManyToMany(targetEntity: Priere::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_prieres')]
-    #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'priere_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $prieres;
 
     #[ORM\ManyToMany(targetEntity: Sort::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_sorts')]
-    #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'sort_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
+    #[OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $sorts;
 
     #[ORM\ManyToMany(targetEntity: Connaissance::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_connaissances')]
-    #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'connaissance_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
+    #[OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $connaissances;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PugilatHistory::class)]
@@ -239,7 +238,7 @@ class BasePersonnage
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageChronologie::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
-    #[ORM\OrderBy(['annee' => 'ASC', 'id' => 'ASC'])]
+    #[OrderBy(['annee' => 'ASC', 'id' => 'ASC'])]
     protected Collection $personnageChronologie;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageLignee::class)]
@@ -1035,7 +1034,7 @@ class BasePersonnage
     /**
      * Set Groupe entity (many to one).
      */
-    public function setGroupe(Groupe $groupe = null): static
+    public function setGroupe(?Groupe $groupe = null): static
     {
         $this->groupe = $groupe;
 
@@ -1053,7 +1052,7 @@ class BasePersonnage
     /**
      * Set Classe entity (many to one).
      */
-    public function setClasse(Classe $classe = null): static
+    public function setClasse(?Classe $classe = null): static
     {
         $this->classe = $classe;
 
@@ -1071,7 +1070,7 @@ class BasePersonnage
     /**
      * Set Age entity (many to one).
      */
-    public function setAge(Age $age = null): static
+    public function setAge(?Age $age = null): static
     {
         $this->age = $age;
 
@@ -1089,7 +1088,7 @@ class BasePersonnage
     /**
      * Set Genre entity (many to one).
      */
-    public function setGenre(Genre $genre = null): static
+    public function setGenre(?Genre $genre = null): static
     {
         $this->genre = $genre;
 
@@ -1107,7 +1106,7 @@ class BasePersonnage
     /**
      * Set Territoire entity (many to one).
      */
-    public function setTerritoire(Territoire $territoire = null): static
+    public function setTerritoire(?Territoire $territoire = null): static
     {
         $this->territoire = $territoire;
 
@@ -1125,7 +1124,7 @@ class BasePersonnage
     /**
      * Set User entity (many to one).
      */
-    public function setUser(User $user = null): static
+    public function setUser(?User $user = null): static
     {
         $this->user = $user;
 
@@ -1285,6 +1284,7 @@ class BasePersonnage
      */
     /**
      * @return Collection<Competence>
+     *
      * @throws \Exception
      */
     public function getCompetences(): Collection

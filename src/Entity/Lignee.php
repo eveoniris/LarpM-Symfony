@@ -12,4 +12,9 @@ class Lignee extends BaseLignee implements \Stringable
     {
         return $this->getNom();
     }
+
+    public function getLabel(): string
+    {
+        return $this->getNom();
+    }
 }

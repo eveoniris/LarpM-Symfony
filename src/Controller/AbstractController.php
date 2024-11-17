@@ -150,7 +150,11 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
             $this->addFlash('success', $successMsg);
 
-            return $this->redirectToRoute($redirect, [], 303);
+            try {
+                return $this->redirectToRoute($redirect, [], 303);
+            } catch (\Exception $e) {
+                return $this->redirect($redirect, '303');
+            }
         }
 
         return $this->render('_partials/delete.twig', [

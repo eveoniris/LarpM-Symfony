@@ -1,16 +1,56 @@
 {# Chronologie #}
-<div class="header">
-	<h5>Chronologie</h5>
-</div>
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
 
-<ul class="list-group">
-	{% if personnage.personnageChronologie|length > 0 %}
-		{% for evenement in personnage.personnageChronologie %}
-			<li class="list-group-item">{{ evenement.annee }} : {{ evenement.evenement }}</li>
-		{% endfor %}
-	{% else %}
-		<p class="list-group-item-text">
-			<li class="list-group-item">Ce personnage n'a pas de chronologie.</li>
-		</p>
-	{% endif %}
-</ul>
+<div class="{{ css }}">
+    <div class="header">
+        <h5>Chronologie</h5>
+    </div>
+
+    {% if isAdmin %}
+        {% include '_partials/dropDown.twig' with {
+            'title' : 'Action',
+            'actions' :
+            [
+                {'path' : path('personnage.admin.add.chronologie', {'personnage': personnage.id}), 'label': 'Ajouter un évènement' },
+            ]
+        } %}
+    {% endif %}
+
+
+    <div class="panel-body">
+        <div class="list-group">
+            {# Gestion de la chronologie du personnage #}
+            {% if personnage.personnageChronologie|length > 0 %}
+                <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                    <thead>
+                    <tr>
+                        <th class="text-center col-sm-2">Année</th>
+                        <th class="text-center">Évènement</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for personnageChronologie in personnage.personnageChronologie %}
+                        <tr>
+                            <td class="text-center">{{ personnageChronologie.annee }}</td>
+                            <td>{{ personnageChronologie.evenement }}</td>
+                            <td class="text-center">
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Supprimer"
+                                   href="{{ path('personnage.admin.delete.chronologie', {'personnage':personnage.id, 'personnageChronologie': personnageChronologie.id}) }}"><i
+                                            class="fa fa-eraser"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="list-group-item-text">
+                    Ce personnage n'a pas de chronologie.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>

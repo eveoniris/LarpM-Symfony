@@ -1,39 +1,94 @@
 {# Lignée #}
-{% if personnage.personnageLignee|length > 0 %}
-	<div class="header">
-		<h5>Lignée</h5>
-	</div>
-
-	<div class="list-group">
-		{% for lignage in personnage.personnageLignee %}
-			{% if lignage.lignee %}
-			<li class="list-group-item"><strong>Lignée :</strong> {{ lignage.lignee.nom }}</li>
-			{% endif %}
-
-			{% if lignage.parent1 or lignage.parent2 %}
-			<li class="list-group-item">
-				<strong>Parents :</strong>
-				<ul>
-				{% if lignage.parent1 %}
-					<li>{{ lignage.parent1.surnom }}</li>
-				{% endif %}
-				{% if lignage.parent2 %}
-					<li>{{ lignage.parent2.surnom }}</li>
-				{% endif %}
-				</ul>
-				</li>
-			{% endif %}
-		{% endfor %}
-
-		{% if descendants|length > 0 %}
-			<li class="list-group-item">
-				<strong>Enfants :</strong>
-				<ul>
-				{% for descendant in descendants %}
-					<li>{{ descendant.personnage.surnom }}</li>
-				{% endfor %}
-				</ul>
-			</li>
-		{% endif %}
-	</div>
+{% if css is not defined %}
+    {% set css = 'well' %}
 {% endif %}
+
+<div class="{{ css }}">
+    {% if personnage.personnageLignee %}
+        <div class="header">
+            <h5>Lignée & Généalogie</h5>
+        </div>
+
+        {% if isAdmin is defined and isAdmin %}
+            {% include '_partials/dropDown.twig' with {
+                'title' : 'Action',
+                'actions' :
+                [
+                    {'path' : path('personnage.admin.add.lignee', {'personnage': personnage.id}), 'label': 'Ajouter une lignée' },
+                ]
+            } %}
+            {% if personnage.personnageLignee|length > 0 %}
+                {% set actions = {} %}
+                {# TODO for lignage in personnage.personnageLignee }
+                        {% set actions = actions|merge({
+                            'path':  path('personnage.admin.delete.lignee', {'personnage': personnage.id, 'personnageLignee' : lignage.id }),
+                            'label': 'Retirer'
+                        }) %}
+                    {% endfor #}
+                {# include '_partials/dropDown.twig' with {'title' : 'Action','actions' :actions} #}
+
+            {% endif %}
+        {% endif %}
+
+        <div class="panel-body">
+            <div class="list-group">
+                {# Gestion de la lignée du personnage #}
+                {% if personnage.personnageLignee|length > 0 %}
+                    {% for lignage in personnage.personnageLignee %}
+                        {% if lignage.lignee %}
+                            <div class="list-group-item d-flex justify-content-between">
+                                <div>
+                                    <strong>Lignée :</strong> <a
+                                            href="{{ path('lignee.detail', {'lignee':lignage.lignee.id}) }}"> {{ lignage.lignee.nom }}</a>
+                                </div>
+
+                                <a class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Supprimer"
+                                   href="{{ path('personnage.admin.delete.lignee', {'personnage':personnage.id, 'personnageLignee': lignage.id}) }}"><i
+                                            class="fa fa-eraser"></i></a>
+
+                            </div>
+                        {% endif %}
+                        <li class="list-group-item">
+                            <strong>Parents :</strong>
+                            <ul>
+                                {% if lignage.parent1 %}
+                                    <li>
+                                        <a href="{{ path('personnage.admin.detail', {'personnage':lignage.parent1.id}) }}">{{ lignage.parent1.identity }}{% if lignage.parent2.surnom %} - {{ lignage.parent2.surnom }}{% endif %}</a>
+                                        - {{ lignage.parent1.agereel }} ans
+                                    </li>
+                                    {% if lignage.parent2 %}
+                                        <li>
+                                            <a href="{{ path('personnage.admin.detail', {'personnage':lignage.parent2.id}) }}">{{ lignage.parent2.identity }}{% if lignage.parent1.surnom %} - {{ lignage.parent2.surnom }}{% endif %}</a>
+                                            - {{ lignage.parent2.agereel }} ans
+                                        </li>
+                                    {% endif %}
+                                {% else %}
+                                    <li>Ni PJ, ni PNJ</li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <p class="m-2 text-center">
+                        Ce personnage n'a pas de lignée.
+                    </p>
+                {% endif %}
+                {% if descendants|length > 0 %}
+                    <li class="list-group-item">
+                        <strong>Enfants :</strong>
+                        <ul>
+                            {% for descendant in descendants %}
+                                <li>
+                                    <a href="{{ path('personnage.admin.detail', {'personnage':descendant.personnage.id}) }}">{{ descendant.personnage.identity }}
+                                        - {{ descendant.personnage.surnom }}</a>
+                                    - {{ descendant.personnage.agereel }} ans
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
