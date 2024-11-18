@@ -1454,11 +1454,20 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        if (true == $participant->getGroupeGn()->getGroupe()->getLock()) {
-            $this->addFlash(
-                'error',
-                'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur'
-            );
+        if (true === $participant->getGroupeGn()?->getGroupe()->getLock()) {
+            $href = $this->generateUrl(
+                'groupe.detail',
+                ['groupe' => $participant->getGroupeGn()?->getGroupe()->getId()]
+            ).'#groupe_lock';
+
+            $message =
+                <<<HTML
+                Désolé, il n\'est plus possible de modifier ce personnage. <br />
+                Le <a href="$href">groupe est verrouillé</a>.<br />
+                Contactez votre scénariste si vous pensez que cela est une erreur
+                HTML;
+
+            $this->addFlash('error', $message);
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
@@ -1470,7 +1479,7 @@ class ParticipantController extends AbstractController
                 'Désolé, vous êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. Veuillez contacter votre orga en cas de problème.'
             );
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId(), 'tab' => 'religions'], 303);
         }
 
         $personnageReligion = new PersonnagesReligions();

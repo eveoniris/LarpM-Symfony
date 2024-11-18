@@ -1,0 +1,91 @@
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
+
+<div class="{{ css }}">
+    <div class="header" id="religions_head">
+        <h5>Religions</h5>
+    </div>
+
+    <div class="d-flex justify-content-end mb-2">
+
+        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+           title="Choisir une nouvelle religion"
+           href="{{ path('participant.religion.add',{'participant': participant.id}) }}">
+            <i class="fa-solid fa-person-praying"></i>
+            Nouvelle</a>
+    </div>
+
+    <div class="card">
+        <div class="list-group">
+            {% for personnageReligion in personnage.personnagesReligions %}
+                <div class="card-header bg-body-secondary" id="religion_{{ personnageReligion.religion.id }}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="card-title">
+                                {% if personnageReligion.religion.secret %}
+                                    <i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
+                                       title="Secret"></i> -
+                                {% endif %}
+                                {{ personnageReligion.religion.label }}
+                            <span class="badge display-6 rounded-pill text-bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="btn-group">
+                                <a href="{{ path('personnage.admin.delete.religion', {'personnage': personnage.id, 'personnageReligion': personnageReligion.id }) }}"
+                                   class="btn btn-sm btn-secondary" title="supprimer" data-toggle="tooltip"
+                                   data-placement="top"><i class="fa-solid fa-eraser"></i> supprimer</a>
+                                {% if tab is defined %}
+                                    <a href="#sommaire_religion" class="btn btn-sm btn-secondary" title="sommaire"
+                                       data-toggle="tooltip"
+                                       data-placement="top"><i class="fa-solid fa-arrow-up"></i> sommaire</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-text">
+                    <ul class="list-group list-group-flush">
+                        <li class="fw-bold text-center list-group-item list-group-item-secondary">Description</li>
+                        <li class="list-group-item">
+                            {{ personnageReligion.religion.description|markdown_to_html }}
+                        </li>
+
+                        {% if personnageReligion.religionLevel.index >= 1 %}
+                            <li class="fw-bold text-center list-group-item list-group-item-secondary">
+                                Informations supplémentaires pour les Pratiquants
+                            </li>
+                            <li class="list-group-item">
+                                {{ personnageReligion.religion.descriptionPratiquant|markdown_to_html }}
+                            </li>
+                        {% endif %}
+
+                        {% if personnageReligion.religionLevel.index >= 2 %}
+                            <li class="fw-bold text-center list-group-item list-group-item-secondary">
+                                Informations supplémentaires pour les Fervents
+                            </li>
+                            <li class="list-group-item">
+                                {{ personnageReligion.religion.descriptionFervent|markdown_to_html }}
+                            </li>
+                        {% endif %}
+
+                        {% if personnageReligion.religionLevel.index >= 3 %}
+                            <li class="fw-bold text-center list-group-item list-group-item-secondary">
+                                Informations supplémentaires pour les Fanatiques
+                            </li>
+                            <li class="list-group-item">
+                                {{ personnageReligion.religion.descriptionFervent|markdown_to_html }}
+                            </li>
+                        {% endif %}
+
+                    </ul>
+
+                </div>
+            {% else %}
+                {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucune'} %}
+            {% endfor %}
+        </div>
+    </div>
+</div>

@@ -197,15 +197,18 @@
                     {% endfor %}
                 </ul>
                 <a href="{{ path('groupeGn.list', {'groupe': groupe.id}) }}">Gestion des sessions de jeu</a><br/>
+                <div id="groupe_lock">
                 {% if groupe.lock %}
                 Le groupe est <strong class="text-warning">fermé</strong>.
                 <a data-toggle="tooltip" data-placement="top" title="Ouvrir le groupe"
                    href="{{ path('groupe.unlock', {'groupe' : groupe.id}) }}"><i class="fa fa-pencil"></i></a>
-            {% else %}
+                {% else %}
                 Le groupe est <strong class="text-success">ouvert</strong>.
                 <a data-toggle="tooltip" data-placement="top" title="Fermer le groupe"
                    href="{{ path('groupe.lock', {'groupe' : groupe.id}) }}"><i class="fa fa-pencil"></i></a>
-                {% endif %}<br/>
+                {% endif %}
+                </div>
+                <br/>
                 <strong>Scénariste : </strong>
                 {% if not groupe.scenariste %}
                     <span class="fa fa-exclamation-triangle"
