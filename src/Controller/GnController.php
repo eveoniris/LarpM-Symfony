@@ -146,8 +146,9 @@ class GnController extends AbstractController
         #[MapEntity] Gn $gn,
         Environment $twig,
     ): RedirectResponse|Response {
-        $participant = $this->getUser()->getParticipant($gn);
-        $personnage = $participant->getPersonnage();
+        $participant = $this->getUser()?->getParticipant($gn);
+        $personnage = $participant?->getPersonnage();
+
         if (!$personnage) {
             $this->addFlash('error', "Vous n'avez pas encore de personnage.");
 

@@ -52,7 +52,7 @@ class GroupeController extends AbstractController
     public function compositionAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $originalGroupeClasses = new ArrayCollection();
 
@@ -108,7 +108,7 @@ class GroupeController extends AbstractController
     public function descriptionAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $form = $this->createForm(GroupeDescriptionForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
@@ -138,7 +138,7 @@ class GroupeController extends AbstractController
     public function scenaristeAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $form = $this->createForm(GroupeScenaristeForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
@@ -168,7 +168,7 @@ class GroupeController extends AbstractController
     public function quetesAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
     ) {
         $repo = $entityManager->getRepository(Groupe::class);
         $groupes = $repo->findAllOrderByNumero();
@@ -265,7 +265,7 @@ class GroupeController extends AbstractController
     public function queteAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): Response {
         $ressourceRares = new ArrayCollection($entityManager->getRepository(Ressource::class)->findRare());
         $ressourceCommunes = new ArrayCollection($entityManager->getRepository(Ressource::class)->findCommun());
@@ -287,7 +287,7 @@ class GroupeController extends AbstractController
     public function adminIngredientAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $originalGroupeHasIngredients = new ArrayCollection();
 
@@ -362,7 +362,7 @@ class GroupeController extends AbstractController
     public function adminRessourceAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $originalGroupeHasRessources = new ArrayCollection();
 
@@ -456,7 +456,7 @@ class GroupeController extends AbstractController
     public function adminRichesseAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $form = $this->createForm(GroupeRichesseForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
@@ -486,7 +486,7 @@ class GroupeController extends AbstractController
     public function adminDocumentAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $form = $this->createForm(GroupeDocumentForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
@@ -516,7 +516,7 @@ class GroupeController extends AbstractController
     public function adminItemAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $form = $this->createForm(GroupeItemForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
@@ -546,7 +546,7 @@ class GroupeController extends AbstractController
     public function envelopeAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $form = $this->createForm(GroupeEnvelopeForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
@@ -586,7 +586,7 @@ class GroupeController extends AbstractController
     public function lockAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse {
         $groupe->setLock(true);
         $entityManager->persist($groupe);
@@ -607,7 +607,7 @@ class GroupeController extends AbstractController
     public function unlockAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse {
         $groupe->setLock(false);
         $entityManager->persist($groupe);
@@ -624,7 +624,7 @@ class GroupeController extends AbstractController
     public function availableAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Groupe $groupe
+        Groupe $groupe,
     ): RedirectResponse {
         $groupe->setFree(true);
         $entityManager->persist($groupe);
@@ -641,7 +641,7 @@ class GroupeController extends AbstractController
     public function unvailableAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Groupe $groupe
+        Groupe $groupe,
     ): RedirectResponse {
         $groupe->setFree(false);
         $entityManager->persist($groupe);
@@ -659,7 +659,7 @@ class GroupeController extends AbstractController
     public function paysAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $form = $this->createForm()
             ->add('territoire', 'entity', [
@@ -707,7 +707,7 @@ class GroupeController extends AbstractController
     public function territoireAddAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $form = $this->createForm(GroupeForm::class)
             ->add('territoire', 'entity', [
@@ -755,7 +755,7 @@ class GroupeController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Groupe $groupe,
-        Territoire $territoire
+        Territoire $territoire,
     ): RedirectResponse|Response {
         $form = $this->createForm()
             ->add('remove', SubmitType::class, ['label' => 'Retirer le territoire']);
@@ -787,7 +787,7 @@ class GroupeController extends AbstractController
     public function restaurationAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Groupe $groupe
+        Groupe $groupe,
     ): RedirectResponse|Response {
         $availableTaverns = GroupeManager::getAvailableTaverns();
 
@@ -850,7 +850,7 @@ class GroupeController extends AbstractController
     public function printMaterielAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): Response {
         // recherche les personnages du prochains GN membre du groupe
         $session = $groupe->getNextSession();
@@ -869,7 +869,7 @@ class GroupeController extends AbstractController
     public function printBackgroundAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): Response {
         return $this->render('groupe/printBackground.twig', [
             'groupe' => $groupe,
@@ -910,7 +910,7 @@ class GroupeController extends AbstractController
     public function printMaterielGroupeAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): Response {
         // recherche les personnages du prochains GN membre du groupe
         $session = $groupe->getNextSession();
@@ -935,7 +935,7 @@ class GroupeController extends AbstractController
     public function printPersoAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): Response {
         // recherche les personnages du prochains GN membre du groupe
         $session = $groupe->getNextSession();
@@ -1009,7 +1009,7 @@ class GroupeController extends AbstractController
     public function listAction(
         Request $request,
         PagerService $pagerService,
-        GroupeRepository $groupeRepository
+        GroupeRepository $groupeRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($groupeRepository);
 
@@ -1064,7 +1064,7 @@ class GroupeController extends AbstractController
      */
     public function adminParticipantAddAction(
         Request $request,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
         $groupe = $request->get('groupe');
 
@@ -1122,7 +1122,7 @@ class GroupeController extends AbstractController
      */
     public function adminParticipantRemoveAction(
         Request $request,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
         $participantId = $request->get('participant');
         $groupe = $request->get('groupe');
@@ -1242,7 +1242,7 @@ class GroupeController extends AbstractController
      */
     public function addBackgroundAction(
         Request $request,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
         $id = $request->get('index');
         $groupe = $entityManager->find(Groupe::class, $id);
@@ -1272,7 +1272,7 @@ class GroupeController extends AbstractController
      */
     public function updateBackgroundAction(
         Request $request,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
         $id = $request->get('index');
         $groupe = $entityManager->find(Groupe::class, $id);
@@ -1352,7 +1352,7 @@ class GroupeController extends AbstractController
     public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $originalGroupeClasses = new ArrayCollection();
         $originalTerritoires = new ArrayCollection();
@@ -1464,7 +1464,7 @@ class GroupeController extends AbstractController
     public function detailAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         /*
          * Si le groupe existe, on affiche son détail
@@ -1477,7 +1477,6 @@ class GroupeController extends AbstractController
         $this->addFlash('error', 'Le groupe n\'a pas été trouvé.');
 
         return $this->redirectToRoute('groupe');
-
     }
 
     #[Route('/{groupe}/delete', name: 'delete', requirements: ['groupe' => Requirement::DIGITS], methods: [
@@ -1547,7 +1546,7 @@ class GroupeController extends AbstractController
         array $breadcrumb = [],
         array $routes = [],
         array $msg = [],
-        ?callable $entityCallback = null
+        ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         $routes['root'] = 'groupe.';
 

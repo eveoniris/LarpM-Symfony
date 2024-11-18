@@ -3,6 +3,9 @@
 {% block title %}{{ groupe.nom }}{% endblock title %}
 {% block body %}
 
+    {% if tab is not defined %}
+        {% set tab = 'detail' %}
+    {% endif %}
     {% set isAdmin = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
 
     {% set breadcrumb = [] %}

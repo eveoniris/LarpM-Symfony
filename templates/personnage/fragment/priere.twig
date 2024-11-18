@@ -1,21 +1,197 @@
 {% if css is not defined %}
     {% set css = 'well' %}
 {% endif %}
-{% if personnage.hasCompetence('Prêtrise') %}
-    <div class="{{ css }}">
-        <div class="header">
-            <h5>Prêtrise</h5>
-        </div>
 
-        <h6>Liste de vos prières</h6>
-        <div class="list-group">
-            {% for priere in personnage.prieres %}
-                <a class="list-group-item"
-                   href="{{ path('participant.priere.detail', {'participant': participant.id, 'priere': priere.id}) }}">{{ priere.sphere.label }}
-                    - Niveau {{ priere.niveau }} ({{ priere.label }})</a>
-            {% else %}
-                {% include '_partials/noResult.twig' with {'content' : 'Aucune', 'css' : 'w-100'} %}
-            {% endfor %}
-        </div>
-    </div>
-{% endif %}
+ {% if personnage.isPriest() %}
+     <div class="{{ css }}">
+         <div class="header mt-4">
+             <h5 id="priest_">Prêtrise religieuses</h5>
+         </div>
+
+         {% if tab is defined %}
+             <div class="d-flex justify-content-end mb-2">
+                 <a href="#sommaire_religion" class="btn btn-sm btn-secondary" title="sommaire" data-toggle="tooltip"
+                    data-placement="top"><i class="fa-solid fa-arrow-up"></i></a>
+             </div>
+         {% endif %}
+
+         <div class="list-group">
+
+             {# accés à toutes les descriptions pour pratiquants des religions de leur pays #}
+             {% if personnage.hasCompetenceLevel(
+                 constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD'),
+                 constant('App\\Enum\\LevelType::APPRENTICE'),
+             ) %}
+
+                 {% include '_partials/cardNotif.twig' with {
+                     'type' : 'info',
+                     'content' : 'La compétence Prêtrise permet de connaitre les informations des religions du pays d\'origine.'
+                 } %}
+
+                 {% if  personnage.territoire.religion %}
+                     <div class="card">
+
+                         <div class="card-header bg-body-secondary">
+                             <div class="d-flex justify-content-between">
+                                 <h5 class="card-title" id="t_religion_{{ personnage.territoire.religion.id }}">
+                                     {% if personnage.territoire.religion.secret %}
+                                         <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Secret"></i> -
+                                     {% endif %}
+                                     {{ personnage.territoire.religion.label }}
+                                 </h5>
+                                 {% if tab is defined %}
+                                     <a href="#sommaire_religion" class="btn btn-sm btn-secondary" title="sommaire"
+                                        data-toggle="tooltip"
+                                        data-placement="top"><i class="fa-solid fa-arrow-up"></i> sommaire</a>
+                                 {% endif %}
+                             </div>
+                         </div>
+
+                         <div class="card-text">
+                             <ul class="list-group list-group-flush">
+                                 <li class="fw-bold text-center list-group-item list-group-item-secondary">Description
+                                 </li>
+                                 <li class="list-group-item">
+                                     {{ personnage.territoire.religion.description|markdown_to_html }}
+                                 </li>
+
+                                 <li class="fw-bold text-center list-group-item list-group-item-secondary">
+                                     Informations supplémentaires pour les Pratiquants
+                                 </li>
+                                 <li class="list-group-item">
+                                     {{ personnage.territoire.religion.descriptionPratiquant|markdown_to_html }}
+                                 </li>
+
+                                 {# LH 7 : Apprenti - Vous connaissez le niveau Fervent de toutes les Religions liées à votre Origine. #}
+
+                                 <li class="fw-bold text-center list-group-item list-group-item-secondary">
+                                     Informations supplémentaires pour les Fervents
+                                 </li>
+                                 <li class="list-group-item">
+                                     {{ personnage.territoire.religion.descriptionFervent|markdown_to_html }}
+                                 </li>
+                             </ul>
+                         </div>
+                     </div>
+
+                 {% else %}
+                     {% include '_partials/noResult.twig' with {'content': 'Le pays d\'origine ne dispose pas de religion principale'} %}
+                 {% endif %}
+
+                 {% for religion in personnage.territoire.religions %}
+
+                     <div class="card mt-2">
+                         <div class="card-header bg-body-secondary">
+                             <div class="d-flex justify-content-between">
+                                 <h5 class="card-title" id="territory_religion_{{ religion.id }}">
+                                     {% if religion.secret %}
+                                         <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Secret"></i> -
+                                     {% endif %}
+                                     {{ religion.label }}
+                                 </h5>
+                                 {% if tab is defined %}
+                                     <a href="#sommaire_religion" class="btn btn-sm btn-secondary" title="sommaire"
+                                        data-toggle="tooltip"
+                                        data-placement="top"><i class="fa-solid fa-arrow-up"></i> sommaire</a>
+                                 {% endif %}
+                             </div>
+                         </div>
+
+                         <div class="card-text">
+                             <ul class="list-group list-group-flush">
+                                 <li class="fw-bold text-center list-group-item list-group-item-secondary">Description
+                                 </li>
+                                 <li class="list-group-item">
+                                     {{ religion.description|markdown_to_html }}
+                                 </li>
+
+                                 <li class="fw-bold text-center list-group-item list-group-item-secondary">
+                                     Informations supplémentaires pour les Pratiquants
+                                 </li>
+                                 <li class="list-group-item">
+                                     {{ religion.descriptionPratiquant|markdown_to_html }}
+                                 </li>
+
+                                 <li class="fw-bold text-center list-group-item list-group-item-secondary">
+                                     Informations supplémentaires pour les Fervents
+                                 </li>
+                                 <li class="list-group-item">
+                                     {{ religion.descriptionFervent|markdown_to_html }}
+                                 </li>
+                             </ul>
+                         </div>
+                     </div>
+                 {% else %}
+                     {% include '_partials/noResult.twig' with {'content': 'Le pays d\'origine ne dispose pas de religion secondaire'} %}
+                 {% endfor %}
+
+             {% endif %}
+
+             {# Peuvent choisir 3 religions pour acceder à leur description pour pratiquants #}
+             {# LH7 prêtre initié : Vous connaissez le niveau fervent d'une Religion supplémentaire. #}
+             {% if personnage.hasCompetenceLevel(
+                 constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD'),
+                 constant('App\\Enum\\LevelType::INITIATED'),
+             ) %}
+
+                 {% include '_partials/cardNotif.twig' with {
+                     'type' : 'info',
+                     'content' : 'La connaissance de Prêtrise permet de connaitre des informations de religions supplémentaires.',
+                     'css' : 'mt-4'
+                 } %}
+
+                 {% for religion in personnage.religions %}
+
+                     <div class="card mt-2">
+                         <div class="card-header bg-body-secondary">
+                             <div class="d-flex justify-content-between">
+                                 <h5 class="card-title" id="priest_{{ religion.id }}">
+                                     {% if religion.secret %}
+                                         <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Secret"></i> - {% endif %}
+                                     {{ religion.label }}
+                                 </h5>
+                                 {% if tab is defined %}
+                                     <a href="#sommaire_religion" class="btn btn-sm btn-secondary" title="sommaire"
+                                        data-toggle="tooltip"
+                                        data-placement="top"><i class="fa-solid fa-arrow-up"></i> sommaire</a>
+                                 {% endif %}
+                             </div>
+                         </div>
+
+                         <div class="card-text">
+                             <ul class="list-group list-group-flush">
+                                 <li class="fw-bold text-center list-group-item list-group-item-secondary">Description
+                                 </li>
+                                 <li class="list-group-item">
+                                     {{ religion.description|markdown_to_html }}
+                                 </li>
+
+                                 <li class="fw-bold text-center list-group-item list-group-item-secondary">
+                                     Informations supplémentaires pour les Pratiquants
+                                 </li>
+                                 <li class="list-group-item">
+                                     {{ religion.descriptionPratiquant|markdown_to_html }}
+                                 </li>
+
+                                 <li class="fw-bold text-center list-group-item list-group-item-secondary">
+                                     Informations supplémentaires pour les Fervents
+                                 </li>
+                                 <li class="list-group-item">
+                                     {{ religion.descriptionFervent|markdown_to_html }}
+                                 </li>
+                             </ul>
+                         </div>
+                     </div>
+                 {% endfor %}
+             {% else %}
+                 {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucune'} %}
+             {% endif %}
+         </div>
+     </div>
+ {% endif %}

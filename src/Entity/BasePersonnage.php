@@ -479,7 +479,7 @@ abstract class BasePersonnage
     /**
      * Get the value of age_reel.
      */
-    public function getAgeReel(): int
+    public function getAgeReel(): ?int
     {
         return $this->age_reel;
     }

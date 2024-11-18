@@ -102,7 +102,7 @@ class ReligionController extends AbstractController
      * Ajoute une religion.
      */
     #[Route('/religion/add', name: 'religion.add')]
-    public function addAction(EntityManagerInterface $entityManager, Request $request, TopicRepository $topicRepository): Response
+    public function addAction(EntityManagerInterface $entityManager, Request $request): Response
     {
         $religion = new Religion();
 
