@@ -2455,36 +2455,29 @@ class PersonnageController extends AbstractController
     /**
      * Retire une religion d'un personnage.
      */
-    #[Route('/{personnage}/deleteReligion', name: 'admin.delete.religion')]
+    #[Route('/{personnage}/religion/{personnageReligion}/delete', name: 'admin.delete.religion')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemoveReligionAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
+        #[MapEntity] PersonnagesReligions $personnageReligion,
     ): RedirectResponse|Response {
-        $personnageReligion = $request->get('personnageReligion');
-
-        $form = $this->createForm()
-            ->add('save', SubmitType::class, ['label' => 'Retirer la religion']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-
-            $entityManager->remove($personnageReligion);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le personnage a été sauvegardé.');
-
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
-        }
-
-        return $this->render('personnage/removeReligion.twig', [
-            'form' => $form->createView(),
-            'personnage' => $personnage,
-            'personnageReligion' => $personnageReligion,
-        ]);
+        return $this->genericDelete(
+            $personnageReligion,
+            'Supprimer une religion',
+            'La religion a été supprimée',
+            $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'biographie']),
+            [
+                // it's an admin view, do not need to test role for this breadcrumb
+                ['route' => $this->generateUrl('personnage.list'), 'name' => 'Liste des personnages'],
+                [
+                    'route' => $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'religions']),
+                    'name' => $personnage->getPublicName(),
+                ],
+                ['name' => 'Supprimer une religion'],
+            ],
+        );
     }
 
     /**

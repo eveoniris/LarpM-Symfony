@@ -18,7 +18,7 @@
         {% include 'personnage/fragment/technologie.twig' with {'personnage': personnage, 'participant': participant} %}
         {% include 'personnage/fragment/connaissance.twig' with {'personnage': personnage, 'participant': participant} %}
         {% include 'personnage/fragment/politique.twig' with {'personnage': personnage, 'participant': participant, 'lois': participant.personnage.origine.lois} %}
-        {% include 'personnage/fragment/priere.twig' with {'personnage': personnage, 'participant': participant} %}
+        {# in Religions tab include 'personnage/fragment/priere.twig' with {'personnage': personnage, 'participant': participant} #}
         {% include 'personnage/fragment/document.twig' with {'personnage': personnage, 'participant': participant} %}
         {% include 'personnage/fragment/item.twig' with {'personnage': personnage, 'participant': participant} %}
     </div>
