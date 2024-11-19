@@ -29,8 +29,11 @@
                  } %}
 
                  {% if  personnage.territoire.religion %}
-                     <div class="card">
 
+                     <div class="card">
+                         <div class="card-header card-title">
+                             <h5 id="territory_religion_principale">Religion principale du pays d'origine</h5>
+                         </div>
                          <div class="card-header bg-body-secondary">
                              <div class="d-flex justify-content-between">
                                  <h5 class="card-title" id="t_religion_{{ personnage.territoire.religion.id }}">
@@ -83,6 +86,9 @@
                  {% for religion in personnage.territoire.religions %}
 
                      <div class="card mt-2">
+                         <div class="card-header card-title">
+                             <h5 id="territory_religions">Religions secondaires du pays d'origine</h5>
+                         </div>
                          <div class="card-header bg-body-secondary">
                              <div class="d-flex justify-content-between">
                                  <h5 class="card-title" id="territory_religion_{{ religion.id }}">
@@ -147,6 +153,10 @@
                  {% for religion in personnage.religions %}
 
                      <div class="card mt-2">
+                         <div class="card-header card-title">
+                             <h5 id="priest_religions">Religions choisies par la prêtrise</h5>
+                         </div>
+
                          <div class="card-header bg-body-secondary">
                              <div class="d-flex justify-content-between">
                                  <h5 class="card-title" id="priest_{{ religion.id }}">

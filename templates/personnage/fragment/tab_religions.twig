@@ -13,7 +13,7 @@
                 <div class="card-text">
                     <div class="list-group">
                         <div class="list-group-item border-0">
-                            <a href="#religions_head">Religions</a>
+                            <a href="#religions_head">Religions du personnage</a>
                         </div>
                         {% for personnageReligion in personnage.personnagesReligions %}
                             <div class="list-group-item border-0 ms-2">
@@ -22,6 +22,7 @@
                                        title="Secret"></i> -
                                 {% endif %} <a
                                         href="#religion_{{ personnageReligion.religion.id }}">{{ personnageReligion.religion.label }}</a>
+                                <span class="badge display-6 rounded-pill text-bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
                             </div>
                         {% endfor %}
 
@@ -33,7 +34,11 @@
                                 constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD'),
                                 constant('App\\Enum\\LevelType::APPRENTICE'),
                             ) %}
+                                {# principal du pays d'origine #}
                                 {% if personnage.territoire.religion %}
+                                    <div class="list-group-item border-0">
+                                        <a href="#territory_religion_principale">Religion principale du pays d'origine</a>
+                                    </div>
                                     <div class="list-group-item border-0 ms-2">
                                         {% if personnage.territoire.religion.secret %}
                                             <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
@@ -42,7 +47,14 @@
                                         <a href="#t_religion_{{ personnage.territoire.religion.id }}">{{ personnage.territoire.religion.label }}</a>
                                     </div>
                                 {% endif %}
+
+                                {# secondaire du pays d'origine #}
                                 {% for religion in personnage.territoire.religions %}
+                                    {% if loop.first %}
+                                        <div class="list-group-item border-0">
+                                            <a href="#territory_religions">Religions secondaires du pays d'origine</a>
+                                        </div>
+                                    {% endif %}
                                     <div class="list-group-item border-0 ms-2">
                                         {% if religion.secret %}
                                             <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
@@ -56,7 +68,13 @@
                             constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD'),
                             constant('App\\Enum\\LevelType::INITIATED'),
                         ) %}
+                            {# Via choix de prêtrise #}
                             {% for religion in personnage.religions %}
+                                {% if loop.first %}
+                                    <div class="list-group-item border-0">
+                                        <a href="#priest_religions">Religions choisies par la prêtrise</a>
+                                    </div>
+                                {% endif %}
                                 <div class="list-group-item border-0 ms-2">
                                     {% if religion.secret %}
                                         <i class="fa fa-user-secret text-warning" data-toggle="tooltip"

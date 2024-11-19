@@ -1445,6 +1445,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
+        PersonnageService $personnageService,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -1486,32 +1487,28 @@ class ParticipantController extends AbstractController
         $personnageReligion->setPersonnage($personnage);
 
         // ne proposer que les religions que le personnage ne pratique pas déjà ...
-        $availableReligions = $app['personnage.manager']->getAvailableReligions($personnage);
+        $availableReligions = $personnageService->getAvailableReligions($personnage);
 
-        if (0 == $availableReligions->count()) {
+        if (0 === $availableReligions->count()) {
             $this->addFlash(
                 'error',
-                'Désolé, il n\'y a plus de religion disponibles ( Sérieusement ? vous êtes éclectique, c\'est bien, mais ... faudrait savoir ce que vous voulez non ? L\'heure n\'est-il pas venu de faire un choix parmi tous ces dieux ?)'
+                'Désolé, il n\'y a plus de religion disponnibles (Sérieusement ? vous êtes éclectique, c\'est bien, mais ... faudrait savoir ce que vous voulez non ? L\'heure n\'est-il pas venu de faire un choix parmi tous ces dieux ?)'
             );
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        // construit le tableau de choix
-        $choices = [];
-        foreach ($availableReligions as $religion) {
-            $choices[] = $religion;
-        }
+        // TODO Player add and ADMIN add
 
         $form = $this->createForm(PersonnageReligionForm::class, $personnageReligion)
-            ->add('religion', 'entity', [
+            ->add('religion', EntityType::class, [
                 'required' => true,
                 'label' => 'Votre religion',
                 'class' => Religion::class,
                 'choices' => $availableReligions,
                 'choice_label' => 'label',
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre religion']);
+            ->add('save', SubmitType::class, ['label' => 'Valider votre religion', 'attr' => ['class' => 'btn btn-secondary']]);
 
         $form->handleRequest($request);
 
@@ -1520,12 +1517,12 @@ class ParticipantController extends AbstractController
 
             // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
             // n'autoriser que un Fervent que si l'utilisateur n'a pas encore Fervent.
-            if (3 == $personnageReligion->getReligionLevel()->getIndex()) {
+            if (3 === $personnageReligion->getReligionLevel()->getIndex()) {
                 $personnagesReligions = $personnage->getPersonnagesReligions();
                 foreach ($personnagesReligions as $oldReligion) {
                     $entityManager->remove($oldReligion);
                 }
-            } elseif (2 == $personnageReligion->getReligionLevel()->getIndex()) {
+            } elseif (2 === $personnageReligion->getReligionLevel()->getIndex()) {
                 if ($personnage->isFervent()) {
                     $this->addFlash(
                         'error',
@@ -1541,7 +1538,7 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId(), 'tab' => 'religions'], 303);
         }
 
         return $this->render('personnage/religion_add.twig', [

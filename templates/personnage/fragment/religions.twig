@@ -4,7 +4,7 @@
 
 <div class="{{ css }}">
     <div class="header" id="religions_head">
-        <h5>Religions</h5>
+        <h5>Religions du personnage</h5>
     </div>
 
     <div class="d-flex justify-content-end mb-2">
@@ -84,7 +84,17 @@
 
                 </div>
             {% else %}
-                {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucune'} %}
+            <div class="card-header bg-body-secondary" id="religion_no">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="card-title">
+                            Sans
+                            <span class="badge display-6 rounded-pill text-bg-secondary">Fervent</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {% endfor %}
         </div>
     </div>

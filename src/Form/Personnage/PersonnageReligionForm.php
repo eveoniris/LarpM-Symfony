@@ -3,15 +3,13 @@
 
 namespace App\Form\Personnage;
 
+use App\Entity\PersonnagesReligions;
+use App\Entity\ReligionLevel;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Personnage\PersonnageReligionForm.
- *
- * @author kevin
- */
 class PersonnageReligionForm extends AbstractType
 {
     /**
@@ -19,10 +17,10 @@ class PersonnageReligionForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('religionLevel', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+        $builder->add('religionLevel', EntityType::class, [
             'required' => true,
             'label' => 'Votre degré de fanatisme',
-            'class' => \App\Entity\ReligionLevel::class,
+            'class' => ReligionLevel::class,
             'choice_label' => 'label',
         ]);
     }
@@ -33,7 +31,7 @@ class PersonnageReligionForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\PersonnagesReligions::class,
+            'data_class' => PersonnagesReligions::class,
         ]);
     }
 
