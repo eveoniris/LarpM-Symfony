@@ -105,7 +105,13 @@
         </li>
         <li class="list-group-item">
             <div class="head">Origine</div>
-            <div class="text">{{ personnage.territoire|default("non définie") }}</div>
+            <div class="text">
+                {% if personnage.territoire %}
+                    <a href="{{ path('territoire.detail', {'territoire':personnage.territoire.id}) }}">{{ personnage.territoire }}</a>
+                {% else %}
+                    non définie
+                {% endif %}
+            </div>
         </li>
         <li class="list-group-item">
             <div class="head">Intrigue</div>

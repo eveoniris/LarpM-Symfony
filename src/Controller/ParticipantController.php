@@ -70,6 +70,7 @@ use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Gd\Imagine;
+use JetBrains\PhpStorm\Deprecated;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -454,7 +455,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(PersonnageEditForm::class, $personnage)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder', 'attr' => ['class' => 'btn-secondary']]);
 
         $form->handleRequest($request);
 
@@ -465,7 +466,7 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vos modifications ont été prises en compte.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/edit.twig', [
@@ -1470,7 +1471,7 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('error', $message);
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         // refUser la demande si le personnage est Fanatique
@@ -1480,7 +1481,7 @@ class ParticipantController extends AbstractController
                 'Désolé, vous êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. Veuillez contacter votre orga en cas de problème.'
             );
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId(), 'tab' => 'religions'], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'religions'], 303);
         }
 
         $personnageReligion = new PersonnagesReligions();
@@ -1495,10 +1496,8 @@ class ParticipantController extends AbstractController
                 'Désolé, il n\'y a plus de religion disponnibles (Sérieusement ? vous êtes éclectique, c\'est bien, mais ... faudrait savoir ce que vous voulez non ? L\'heure n\'est-il pas venu de faire un choix parmi tous ces dieux ?)'
             );
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
-
-        // TODO Player add and ADMIN add
 
         $form = $this->createForm(PersonnageReligionForm::class, $personnageReligion)
             ->add('religion', EntityType::class, [
@@ -1516,7 +1515,7 @@ class ParticipantController extends AbstractController
             $personnageReligion = $form->getData();
 
             // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
-            // n'autoriser que un Fervent que si l'utilisateur n'a pas encore Fervent.
+            // n'autoriser qu'un Fervent que si l'utilisateur n'a pas encore Fervent.
             if (3 === $personnageReligion->getReligionLevel()->getIndex()) {
                 $personnagesReligions = $personnage->getPersonnagesReligions();
                 foreach ($personnagesReligions as $oldReligion) {
@@ -1529,7 +1528,7 @@ class ParticipantController extends AbstractController
                         'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.'
                     );
 
-                    return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+                    return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
                 }
             }
 
@@ -1538,7 +1537,7 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId(), 'tab' => 'religions'], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'religions'], 303);
         }
 
         return $this->render('personnage/religion_add.twig', [
@@ -2929,6 +2928,7 @@ class ParticipantController extends AbstractController
      * Ajoute une compétence au personnage.
      */
     #[Route('/participant/{participant}/competence/add', name: 'participant.competence.add')]
+    #[Deprecated]
     public function competenceAddAction(
         Request $request,
         EntityManagerInterface $entityManager,

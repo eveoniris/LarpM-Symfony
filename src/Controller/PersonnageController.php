@@ -66,6 +66,7 @@ use App\Manager\PersonnageManager;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use JetBrains\PhpStorm\Deprecated;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -2372,6 +2373,7 @@ class PersonnageController extends AbstractController
      */
     #[Route('/{personnage}/addReligion', name: 'admin.add.religion')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[Deprecated] // TODO import from Participant::religionAddAction()
     public function adminAddReligionAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -2446,7 +2448,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
-        return $this->render('personnage/addReligion.twig', [
+        return $this->render('personnage/religion_add.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -2467,7 +2469,7 @@ class PersonnageController extends AbstractController
             $personnageReligion,
             'Supprimer une religion',
             'La religion a été supprimée',
-            $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'biographie']),
+            $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'religions']),
             [
                 // it's an admin view, do not need to test role for this breadcrumb
                 ['route' => $this->generateUrl('personnage.list'), 'name' => 'Liste des personnages'],
@@ -2655,7 +2657,7 @@ class PersonnageController extends AbstractController
                 'label' => 'Choisissez une nouvelle compétence',
                 'choices' => $choices,
             ])
-            ->add('save', SubmitType::class, ['label' => 'Ajouter la compétence'])->getForm();
+            ->add('save', SubmitType::class, ['label' => 'Ajouter la compétence', 'attr' => ['class' => 'btn btn-secondary']])->getForm();
 
         $form->handleRequest($request);
 

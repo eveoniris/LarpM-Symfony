@@ -1,5 +1,5 @@
 <div class="card text-bg mb-3">
-    {% if session.getParticipant.getId() == participant.getId() %}
+    {% if session.getParticipant is not null and session.getParticipant.getId() == participant.getId() %}
         <div class="card-header text-center text-bg-primary">
             <i class="fa-solid fa-crown text-warning"></i> Chef de groupe
         </div>

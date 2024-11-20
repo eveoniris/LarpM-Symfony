@@ -8,23 +8,26 @@
         {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Choix d'une religion"} %}
 
         <div class="well">
-
-            <p class="text-warning">Attention ! une fois votre religion choisie, vous ne pourrez plus revenir sur votre
-                choix.</p>
-            <p class="list-group-item-text">
-                Vous pouvez choisir autant de religions que vous voulez. Attention toutefois, les règles suivantes
-                s'appliquent :
-            <ul>
-                <li>Vous ne pouvez avoir qu'une seule religion au niveau "Fervent"</li>
-                <li>Si vous choisissez une religion au niveau "Fanatique", vous perdez toutes vos autres religions (un
-                    Fanatique n'a qu'une seule religion).
-                </li>
-            </ul>
-            </p>
-
             <div class="header">
                 <h5>Ajouter une religion</h5>
             </div>
+
+            {% include '_partials/cardNotif.twig' with {
+                'type' : 'warning',
+                'content' : 'une fois votre religion choisie, vous ne pourrez plus revenir sur votre choix'} %}
+
+            <div class="list-group-item-text">
+                Vous pouvez choisir autant de religions que vous voulez. Attention toutefois, les règles suivantes
+                s'appliquent :
+                <ul>
+                    <li>Vous ne pouvez avoir qu'une seule religion au niveau "Fervent"</li>
+                    <li>Si vous choisissez une religion au niveau "Fanatique", vous perdez toutes vos autres religions
+                        (un
+                        Fanatique n'a qu'une seule religion).
+                    </li>
+                </ul>
+            </div>
+
             {{ form(form) }}
         </div>
     </div>
