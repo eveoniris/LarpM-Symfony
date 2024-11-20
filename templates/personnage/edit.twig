@@ -4,20 +4,14 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Page d'accueil</a></li>
-		<li><a href="{{ path('gn.detail', {'gn' : participant.gn.id}) }}">{{ participant.gn.label }}</a></li>
-		<li><a href="{{ path('gn.personnage', {'gn': participant.gn.id}) }}">{{ participant.personnage.nom }}</a></li>
-		<li class="active">Modification</li>
-	</ol>
+	{% include 'personnage/fragment/breadcrumb.twig' with {'name': "Modifier le personnage"} %}
 	
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('participant.personnage.edit', {'participant': participant.id}) }}) }}
-			<fieldset>
-				
-				{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
+	<div class="well">
+		<div class="header">
+			<h5>Modifier le personnage</h5>
+		</div>
+
+		{{ form(form) }}
 	</div>
 	
 {% endblock body %}

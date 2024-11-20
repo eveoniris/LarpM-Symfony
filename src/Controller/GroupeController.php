@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Background;
+use App\Entity\Gn;
 use App\Entity\Groupe;
 use App\Entity\GroupeAllie;
 use App\Entity\GroupeEnemy;
@@ -1461,10 +1462,12 @@ class GroupeController extends AbstractController
      * Affiche le détail d'un groupe.
      */
     #[Route('/{groupe}', name: 'detail')]
+    #[Route('/{groupe}/gn/{gn}', name: 'detail.gn')]
     public function detailAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Groupe $groupe,
+        #[MapEntity] ?Gn $gn = null,
     ): RedirectResponse|Response {
         /*
          * Si le groupe existe, on affiche son détail

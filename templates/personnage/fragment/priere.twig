@@ -8,7 +8,7 @@
              <h5 id="priest_">Prêtrise religieuses</h5>
          </div>
 
-         {% if tab is defined %}
+         {% if tab is defined and personnage.personnagesReligions|length>0 %}
              <div class="d-flex justify-content-end mb-2">
                  <a href="#sommaire_religion" class="btn btn-sm btn-secondary" title="sommaire" data-toggle="tooltip"
                     data-placement="top"><i class="fa-solid fa-arrow-up"></i></a>

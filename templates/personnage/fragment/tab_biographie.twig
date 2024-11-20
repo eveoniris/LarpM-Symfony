@@ -1,10 +1,11 @@
-{% include 'personnage/fragment/background.twig' with {'personnage': personnage, 'participant': participant, css: 'panel'} %}
 
 <div class="row">
     <div class="col-md-6">
-        {% include 'personnage/fragment/chronologie.twig' with {'personnage': personnage, 'participant': participant, css: 'well'} %}
+        {% include 'personnage/fragment/chronologie.twig' with {'personnage': personnage, 'participant': participant, css: 'panel'} %}
     </div>
     <div class="col-md-6">
-        {% include 'personnage/fragment/lignee.twig' with {'personnage': personnage, 'participant': participant, css: 'well'} %}
+        {% include 'personnage/fragment/lignee.twig' with {'personnage': personnage, 'participant': participant, css: 'panel'} %}
     </div>
 </div>
+
+{% include 'personnage/fragment/background.twig' with {'personnage': personnage, 'participant': participant, css: 'well'} %}

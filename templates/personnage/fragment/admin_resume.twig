@@ -1,0 +1,216 @@
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
+
+ {% if isAdmin %}
+     <div class="{{ css }}">
+         <div class="header">
+             <h5>Informations scénariste</h5>
+         </div>
+
+         {% if isAdmin %}
+             {% include '_partials/dropDown.twig' with {
+                 'title' : 'Action',
+                 'actions' :
+                 [
+                     {'path' : path('personnage.admin.update.renomme', {'personnage': personnage.id}), 'label': 'Modifier la Renomée' },
+                     {'path' : path('personnage.admin.update.heroisme', {'personnage': personnage.id}), 'label': 'Modifier l\'Héroïsme' },
+                     {'path' : path('personnage.admin.update.pugilat', {'personnage': personnage.id}), 'label': 'Modifier le Pugilat' },
+                     {'path' : path('personnage.admin.update.domaine', {'personnage': personnage.id}), 'label': 'Modifier la liste des domaines de magie' },
+                     {'path' : path('personnage.admin.add.religion', {'personnage': personnage.id}), 'label': 'Ajouter une religion' },
+                     {'path' : path('personnage.admin.update.origine', {'personnage': personnage.id}), 'label': 'Modifier l\'origine' },
+                     {'path' : path('personnage.admin.update.langue', {'personnage': personnage.id}), 'label': 'Modifier les langages' },
+                     {'path' : path('personnage.admin.update.sort', {'personnage': personnage.id}), 'label': 'Modifier la liste des sorts' },
+                     {'path' : path('personnage.admin.update.potion', {'personnage': personnage.id}), 'label': 'Modifier la liste des potions' },
+                     {'path' : path('personnage.admin.update.priere', {'personnage': personnage.id}), 'label': 'Modifier la liste des prieres' },
+                     {'path' : path('personnage.admin.update.technologie', {'personnage': personnage.id}), 'label': 'Modifier la liste des technologies' },
+                     {'path' : path('personnage.admin.update.connaissance', {'personnage': personnage.id}), 'label': 'Modifier la liste des connaissances' },
+                 ]
+             } %}
+         {% endif %}
+
+         <div class="panel">
+             <div class="card mb-4">
+                 <div class="card-header">
+                     <h6>Religions</h6>
+                 </div>
+                 <div class="list-group border-0">
+                     {% for personnageReligion in personnage.personnagesReligions %}
+                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                             <div>
+                                 {% if personnageReligion.religion.secret %}
+                                     <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Secret"></i> -
+                                 {% endif %}
+                                 {{ personnageReligion.religion.label }}
+                                 <span class="badge display-6 rounded-pill text-bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
+                             </div>
+                             <a class="btn btn-sm btn-secondary"
+                                href="{{ path('personnage.admin.delete.religion', {'personnage': personnage.id, 'personnageReligion': personnageReligion.id }) }}">Supprimer</a>
+                         </div>
+                     {% else %}
+                         <div class="list-group-item-text">
+                             Sans - <span class="badge display-6 rounded-pill text-bg-secondary">Fervent</span>
+                         </div>
+                     {% endfor %}
+                 </div>
+             </div>
+
+             <div class="card mb-4">
+                 <div class="card-header">
+                     <h6>Langues connues</h6>
+                 </div>
+                 {% set languesAnomalie = personnage.getLanguesAnomaliesMessage() %}
+                 {% if languesAnomalie != "" %}
+                     {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : languesAnomalie } %}
+                 {% endif %}
+                 <div class="list-group border-0">
+                     {% for personnageLangue in personnage.personnageLangues %}
+                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                             <div>
+                                 {% if personnageLangue.langue.secret %}
+                                     <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Secret"></i> -
+                                 {% endif %}
+                                 <strong>{{ personnageLangue.langue }}</strong> ({{ personnageLangue.source }})
+                             </div>
+                             <a class="btn btn-sm btn-secondary"
+                                href="{{ path('personnage.admin.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Supprimer</a>
+                         </div>
+                     {% endfor %}
+                 </div>
+             </div>
+
+             <div class="card mb-4">
+                 <div class="card-header">
+                     <h6>Domaines de magie</h6>
+                 </div>
+                 <div class="list-group border-0">
+                     {% for domaine in personnage.domaines %}
+                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">{{ domaine.label }}</div>
+                     {% else %}
+                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                             Aucun
+                         </div>
+                     {% endfor %}
+                 </div>
+             </div>
+
+             <div class="card mb-4">
+                 <div class="card-header">
+                     <h6>Sorts</h6>
+                 </div>
+                 {% set sortAnomalie = personnage.getSortAnomalieMessage() %}
+                 {% if sortAnomalie != "" %}
+                     <div class="text-warning">{{ sortAnomalie }}</div>
+                 {% endif %}
+                 <div class="list-group border-0">
+                     {% for sort in personnage.sorts %}
+                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                             <div class="list-group-item-text">
+                                 {% if sort.secret %}
+                                     <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Secret"></i> -
+                                 {% endif %}{{ sort.label }}
+                                 - {{ sort.domaine.label }} Niveau {{ sort.niveau }}</div>
+                         </div>
+                     {% else %}
+                         <div class="list-group-item rounded-top-0">Aucun</div>
+                     {% endfor %}
+                 </div>
+             </div>
+
+             <div class="card mb-4">
+                 <div class="card-header">
+
+                     <h6>Potions</h6>
+                 </div>
+                 {% set potionsAnomalie = personnage.getPotionAnomalieMessage() %}
+                 {% if potionsAnomalie != "" %}
+                     <div class="text-warning">{{ potionsAnomalie }}</div>
+                 {% endif %}
+                 <div class="list-group border-0">
+                     {% for potion in personnage.potions %}
+                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                             <div class="list-group-item-text">
+                                 {% if potion.secret %}
+                                     <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Secret"></i> -
+                                 {% endif %}{{ potion.label }} -
+                                 Niveau {{ potion.niveau }}</div>
+                         </div>
+                     {% else %}
+                         <div class="list-group-item rounded-top-0">Aucune</div>
+                     {% endfor %}
+                 </div>
+             </div>
+
+             <div class="card mb-4">
+                 <div class="card-header">
+                     <h6>Prières</h6>
+                 </div>
+                 {% set sortAnomalie = personnage.getPrieresAnomalieMessage() %}
+                 {% if sortAnomalie != "" %}
+                     <div class="text-warning">{{ sortAnomalie }}</div>
+                 {% endif %}
+                 <div class="list-group border-0">
+                     {% for priere in personnage.prieres %}
+                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                             <div class="list-group-item-text">{{ priere.sphere.label }} -
+                                 Niveau {{ priere.niveau }} ({{ priere.label }})
+                             </div>
+                         </div>
+                     {% else %}
+                         <div class="list-group-item rounded-top-0">Aucune</div>
+                     {% endfor %}
+                 </div>
+             </div>
+
+             <div class="card mb-4">
+                 <div class="card-header">
+                     <h6>Technologies</h6>
+                 </div>
+                 <div class="list-group border-0">
+                     {% for technologie in personnage.technologies %}
+                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                             <div class="list-group-item-text">
+                                 {% if technologie.secret %}
+                                     <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Secret"></i> -
+                                 {% endif %}{{ technologie.label }}
+                             </div>
+                         </div>
+                     {% else %}
+                         <div class="list-group-item rounded-top-0">Aucune</div>
+                     {% endfor %}
+                 </div>
+             </div>
+
+             <div class="card mb-4">
+                 <div class="card-header">
+                     <h6>Connaissances</h6>
+                 </div>
+                 <div class="list-group border-0">
+                     {% for connaissance in personnage.connaissances %}
+                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                             <div class="list-group-item-text">
+                                 {% if connaissance.secret %}
+                                     <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Secret"></i> -
+                                 {% endif %}{{ connaissance.label }}
+                             </div>
+                         </div>
+                     {% else %}
+                         <div class="list-group-item rounded-top-0">Aucune</div>
+                     {% endfor %}
+                 </div>
+             </div>
+         </div>
+     </div>
+ {% endif %}
