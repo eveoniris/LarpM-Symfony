@@ -2,6 +2,7 @@
 
 namespace App\Trait;
 
+use App\Entity\Photo;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Service\FileUploader;
@@ -21,7 +22,7 @@ trait EntityFileUploadTrait
             'groups' => ['pdf', 'file'],
         ]
     )]
-    protected ?UploadedFile $file;
+    protected UploadedFile|null $file;
     protected ?int $filenameMaxLength;
     protected bool $useUniqueId = true;
     protected ?string $filename;
@@ -42,7 +43,7 @@ trait EntityFileUploadTrait
 
     public function getDocumentType(): DocumentType
     {
-        return $this->documentType ?? DocumentType::Documents;
+        return $this->documentType ?? $this->initFile()->documentType ?? DocumentType::Documents;
     }
 
     public function setDocumentType(DocumentType $documentType): static
@@ -76,7 +77,7 @@ trait EntityFileUploadTrait
         return $this;
     }
 
-    public function getFile(): ?UploadedFile
+    public function getFile(): UploadedFile|null
     {
         return $this->file ?? null;
     }
@@ -90,7 +91,7 @@ trait EntityFileUploadTrait
 
     public function getFolderType(): FolderType
     {
-        return $this->folderType ?? FolderType::Private;
+        return $this->folderType ?? $this->initFile()->folderType ?? FolderType::Private;
     }
 
     public function setFolderType(FolderType $folderType): static

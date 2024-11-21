@@ -31,6 +31,7 @@ use App\Entity\Ressource;
 use App\Entity\Sort;
 use App\Entity\Technologie;
 use App\Entity\Token;
+use App\Entity\User;
 use App\Enum\FolderType;
 use App\Enum\Role;
 use App\Form\Personnage\PersonnageChronologieForm;
@@ -66,6 +67,8 @@ use App\Manager\PersonnageManager;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Imagine\Gd\Imagine;
+use Imagine\Image\Box;
 use JetBrains\PhpStorm\Deprecated;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -74,9 +77,11 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -303,6 +308,43 @@ class PersonnageController extends AbstractController
         EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): Response {
+        // PROD path https://larpmanager.eveoniris.com/ => ???
+        // PROD lARPV2 https://larpm.eveoniris.com/ => ???
+        $miniature = $request->get('miniature');
+
+        $trombine = $personnage->getTrombine($this->fileUploader->getProjectDirectory());
+        if (!$trombine) {
+            return $this->sendNoImageAvailable();
+        }
+
+        $filename = $personnage->getTrombine($this->fileUploader->getProjectDirectory()) ;
+        if (!file_exists($filename)) {
+            // get old ?
+
+            return $this->sendNoImageAvailable();
+        }
+
+        if ($miniature) {
+            try {
+                $image = (new Imagine())->open($filename);
+            } catch (\RuntimeException $e) {
+                return $this->sendNoImageAvailable();
+            }
+
+            $response = new StreamedResponse();
+            $response->headers->set('Content-Control', 'private');
+            $response->headers->set('Content-Type', 'image/jpeg');
+            $response->setCallback(static function () use ($image): void {
+                echo $image->thumbnail(new Box(200, 200))->get('jpeg');
+                flush();
+            });
+        } else {
+            $response = new BinaryFileResponse($filename);
+            $response->headers->set('Content-Control', 'private');
+        }
+
+        return $response->send();
+        /* OLD
         $trombine = $personnage->getTrombineUrl();
         $filename = $this->fileUploader->getDirectory(FolderType::Photos).$trombine;
 
@@ -319,52 +361,54 @@ class PersonnageController extends AbstractController
         $response->headers->set('Content-Type', 'image/png');
         $response->headers->set('cache-control', 'private');
 
-        return $response;
+        return $response; */
     }
 
     /**
      * Mise à jour de la photo.
      */
-    #[Route('/{personnage}/updateTrombine', name: 'trombine.update')]
+    #[Route('/{personnage}/trombine/update', name: 'trombine.update')]
+    #[IsGranted('ROLE_USER')]
     public function updateTrombineAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Personnage $personnage,
+        Personnage $personnage,
     ): RedirectResponse|Response {
-        $form = $this->createForm(TrombineForm::class, [])
-            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
+        /** @var User $user */
+        $user = $this->getUser();
+
+        // Admin or self USER
+        if (!$user) {
+            $this->addFlash('error', 'Désolé, vous devez être identifié pour accéder à cette page');
+            $this->redirectToRoute('app_login', [], 303);
+        }
+
+        if (
+            !($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_SCENARISTE'))
+            && $user->getId() !== $personnage->getUser()?->getId()
+        ) {
+            $this->addFlash('error', "Vous n'avez pas les permissions requises pour modifier une trombine");
+            $this->redirect($request->headers->get('referer'));
+            $this->redirectToRoute('homepage', [], 303);
+        }
+
+        $form = $this->createForm(TrombineForm::class, $personnage)
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer', 'attr' => ['class' => 'btn btn-secondary']]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $files = $request->files->get($form->getName());
+            /** @var Personnage $personnage */
+            $personnage = $form->getData();
 
-            $path = __DIR__.'/../../assets/img/';
-            $filename = $files['trombine']->getClientOriginalName();
-            $extension = $files['trombine']->guessExtension();
+            $personnage->handleUpload($this->fileUploader);
 
-            if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
-                $this->addFlash(
-                    'error',
-                    'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)'
-                );
-
-                return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
-            }
-
-            $trombineFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
-
-            $image = $app['imagine']->open($files['trombine']->getPathname());
-            $image->resize($image->getSize()->widen(160));
-            $image->save($path.$trombineFilename);
-
-            $personnage->setTrombineUrl($trombineFilename);
             $entityManager->persist($personnage);
             $entityManager->flush();
 
-            $this->addFlash('success', 'La photo a été enregistrée');
+            $this->addFlash('success', 'Votre photo a été enregistrée');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/trombine.twig', [
@@ -1241,7 +1285,11 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le background a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId(), 'tab' => 'biographie'], 303);
+            return $this->redirectToRoute(
+                'personnage.admin.detail',
+                ['personnage' => $personnage->getId(), 'tab' => 'biographie'],
+                303
+            );
         }
 
         return $this->render('personnage/updateBackground.twig', [
@@ -1276,7 +1324,6 @@ class PersonnageController extends AbstractController
                 ],
                 ['name' => 'Supprimer un background'],
             ],
-
         );
     }
 
@@ -1291,7 +1338,11 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $form = $this->createForm(PersonnageUpdateRenommeForm::class)
-            ->add('save', SubmitType::class, ['label' => 'Valider les modifications', 'attr' => ['class' => 'btn btn-secondary']]);
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => 'Valider les modifications', 'attr' => ['class' => 'btn btn-secondary']]
+            );
 
         $form->handleRequest($request);
 
@@ -2474,7 +2525,10 @@ class PersonnageController extends AbstractController
                 // it's an admin view, do not need to test role for this breadcrumb
                 ['route' => $this->generateUrl('personnage.list'), 'name' => 'Liste des personnages'],
                 [
-                    'route' => $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'religions']),
+                    'route' => $this->generateUrl(
+                        'personnage.detail',
+                        ['personnage' => $personnage->getId(), 'tab' => 'religions']
+                    ),
                     'name' => $personnage->getPublicName(),
                 ],
                 ['name' => 'Supprimer une religion'],
@@ -2657,7 +2711,11 @@ class PersonnageController extends AbstractController
                 'label' => 'Choisissez une nouvelle compétence',
                 'choices' => $choices,
             ])
-            ->add('save', SubmitType::class, ['label' => 'Ajouter la compétence', 'attr' => ['class' => 'btn btn-secondary']])->getForm();
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => 'Ajouter la compétence', 'attr' => ['class' => 'btn btn-secondary']]
+            )->getForm();
 
         $form->handleRequest($request);
 
@@ -2816,7 +2874,11 @@ class PersonnageController extends AbstractController
         $personnageLignee->setPersonnage($personnage);
 
         $form = $this->createForm(PersonnageLigneeForm::class, $personnageLignee)
-            ->add('save', SubmitType::class, ['label' => 'Valider les modifications', 'attr' => ['class' => 'btn btn-secondary']]);
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => 'Valider les modifications', 'attr' => ['class' => 'btn btn-secondary']]
+            );
 
         $form->handleRequest($request);
 
