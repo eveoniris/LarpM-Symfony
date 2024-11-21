@@ -32,6 +32,7 @@ use App\Entity\Sort;
 use App\Entity\Technologie;
 use App\Entity\Token;
 use App\Entity\User;
+use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Enum\Role;
 use App\Form\Personnage\PersonnageChronologieForm;
@@ -316,12 +317,18 @@ class PersonnageController extends AbstractController
         if (!$trombine) {
             return $this->sendNoImageAvailable();
         }
-
-        $filename = $personnage->getTrombine($this->fileUploader->getProjectDirectory()) ;
+        $path = $this->fileUploader->getProjectDirectory().FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
+        
+        $filename = $personnage->getTrombine($this->fileUploader->getProjectDirectory());
         if (!file_exists($filename)) {
             // get old ?
+            // $path = __DIR__.'/../../private/img/';
+            $path = $this->fileUploader->getProjectDirectory().FolderType::Private->value.DocumentType::Image->value.'/';
+            $filename = $path.$personnage->getTrombineUrl();
 
-            return $this->sendNoImageAvailable();
+            if (!file_exists($filename)) {
+                return $this->sendNoImageAvailable();
+            }
         }
 
         if ($miniature) {
