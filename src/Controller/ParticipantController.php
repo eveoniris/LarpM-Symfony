@@ -480,6 +480,7 @@ class ParticipantController extends AbstractController
      * Modification de la photo lié à un personnage.
      */
     #[Route('/participant/{participant}/personnage/{personnage}/trombine', name: 'participant.personnage.trombine')]
+    #[Deprecated]
     public function personnageTrombineAction(
         Request $request,
         EntityManagerInterface $entityManager,

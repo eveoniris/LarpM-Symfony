@@ -3,18 +3,31 @@
 namespace App\Entity;
 
 use App\Enum\CompetenceFamilyType;
+use App\Enum\DocumentType;
+use App\Enum\FolderType;
 use App\Enum\LevelType;
 use App\Repository\PersonnageRepository;
+use App\Service\FileUploader;
 use App\Trait\EntityFileUploadTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
+use Imagine\Gd\Imagine;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[Entity(repositoryClass: PersonnageRepository::class)]
 class Personnage extends BasePersonnage implements \Stringable
 {
     use EntityFileUploadTrait;
+
+    #[Assert\File(['maxSize' => 6000000])]
+    #[Assert\Image(
+        minWidth: 200,
+        minHeight: 200,
+    )]
+    protected null|UploadedFile $file;
 
     // For some FormBuilder search
     public Personnage $personnageChoosen;
@@ -28,6 +41,17 @@ class Personnage extends BasePersonnage implements \Stringable
         parent::__construct();
         $this->setXp(0);
         $this->setVivant(true);
+        $this->initFile();
+    }
+
+    public function initFile(): self
+    {
+        $this->setDocumentType(DocumentType::Photos)
+            ->setFolderType(FolderType::Trombine)
+            // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
+            ->setFilenameMaxLength(45 - 24 - 4);
+
+        return $this;
     }
 
     /**
@@ -35,7 +59,48 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function __toString(): string
     {
-        return (string) $this->getPublicName();
+        return (string)$this->getPublicName();
+    }
+
+    public function handleUpload(
+        FileUploader $fileUploader,
+        DocumentType $docType = DocumentType::Photos,
+        FolderType $folderType = FolderType::Trombine,
+    ): void {
+        // la propriété « file » peut être vide si le champ n'est pas requis
+        if (empty($this->file)) {
+            return;
+        }
+
+        $fileUploader->upload($this->file, $folderType, $docType, null, 70);
+
+        // Try Rezise
+        try {
+            $image = (new Imagine())->open($fileUploader->getStoredFileWithPath());
+            $image->resize($image->getSize()->widen(480));
+            $image->save($fileUploader->getStoredFileWithPath());
+        } catch (\RuntimeException $e) {
+            dump($e);
+        }
+
+        $this->setTrombineUrl($fileUploader->getStoredFileName());
+
+        // « nettoie » la propriété « file » comme vous n'en aurez plus besoin
+        $this->file = null;
+    }
+
+    public function getTrombine(string $projectDir): string
+    {
+        if (!isset($this->documentType)) {
+            $this->initFile();
+        }
+
+        return $this->getDocumentFilePath($projectDir).$this->getTrombineUrl();
+    }
+
+    public function getFilename(): ?string
+    {
+        return $this->getTrombineUrl();
     }
 
     /**
@@ -133,7 +198,7 @@ class Personnage extends BasePersonnage implements \Stringable
             $pugilat += 5;
         }
 
-        // Sauvegerie au niveau Initié ajoute 5 points
+        // Sauvagerie au niveau Initié ajoute 5 points
         if ($this->getCompetenceNiveau('Sauvagerie') >= 2) {
             $pugilat += 5;
         }
@@ -207,8 +272,8 @@ class Personnage extends BasePersonnage implements \Stringable
         foreach ($this->getCompetencesFromFamilyType($famillyType) as $competence) {
             $index = $competence->getLevel()?->getIndex();
 
-            if (null === $level || $niveau < (int) $index) {
-                $niveau = (int) $index;
+            if (null === $level || $niveau < (int)$index) {
+                $niveau = (int)$index;
                 $level = $competence->getLevel();
             }
         }
@@ -525,9 +590,9 @@ class Personnage extends BasePersonnage implements \Stringable
 
     public function getLigneeIdentity(bool $withId = true, bool $full = false): string
     {
-        return $this->getIdentity($withId, $full) . ' (' . $this->getAge()->getLabel() . ')';
+        return $this->getIdentity($withId, $full).' ('.$this->getAge()->getLabel().')';
     }
-    
+
     public function getIdName(): string
     {
         return $this->getId().' - '.$this->getNameSurname();
@@ -926,7 +991,7 @@ class Personnage extends BasePersonnage implements \Stringable
     {
         $total = 0;
         foreach ($this->getExperienceGains() as $gain) {
-            $pos = strpos((string) $gain->getExplanation(), 'Suppression de la compétence');
+            $pos = strpos((string)$gain->getExplanation(), 'Suppression de la compétence');
             if (false === $pos) {
                 $total += $gain->getXpGain();
             }
@@ -961,7 +1026,7 @@ class Personnage extends BasePersonnage implements \Stringable
         $label = '';
         foreach ($this->getPersonnageLangues() as $personnageLangue) {
             $label = $label.' '.$personnageLangue->getLangue();
-            if (str_starts_with((string) $personnageLangue->getLangue(), 'Ancien')) {
+            if (str_starts_with((string)$personnageLangue->getLangue(), 'Ancien')) {
                 ++$compteLangueAncienne;
             } else {
                 ++$compteLangue;

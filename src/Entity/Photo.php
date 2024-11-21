@@ -14,15 +14,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Photo extends BasePhoto
 {
     #[Assert\File(['maxSize' => 6000000])]
+    #[Assert\Image(
+        minWidth: 200,
+        minHeight: 200,
+    )]
     protected ?UploadedFile $file;
 
     public function handleUpload(
         FileUploader $fileUploader,
         DocumentType $docType = DocumentType::Photos,
-        FolderType $folderType = FolderType::Photos
+        FolderType $folderType = FolderType::Photos,
     ): void {
         // la propriété « file » peut être vide si le champ n'est pas requis
-        if (!isset($this->file) || null === $this->file) {
+        if (empty($this->file)) {
             return;
         }
 
