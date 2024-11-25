@@ -1,4 +1,8 @@
-<div class="well">
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
+
+<div class="{{ css }}">
     <div class="header">
         <h5>Historique des participations</h5>
     </div>
@@ -8,31 +12,45 @@
                 {% if participant.personnage %}
                     {% if participant.groupeGn %}
                         {% if participant.groupeGn.groupe %}
-                            <a class="list-group-item"
-                               href="{{ path('groupe.detail', {'groupe': participant.groupeGn.groupe.id}) }}">#{{ participant.personnage.id }} {{ participant.personnage.nom }}
-                                - {{ participant.gn }} -
-                                #{{ participant.groupeGn.groupe.numero }} {{ participant.groupeGn.groupe.nom }}</a>
+                            <div class="list-group-item">
+                                <a class="fw-bold"
+                                   href="{{ path('gn.detail', {'gn': participant.gn.id}) }}">{{ participant.gn }}</a> :
+                                {#  TODO group's title #}
+                                <a href="{{ path('groupe.detail', {'groupe': participant.groupeGn.groupe.id}) }}">#{{ participant.groupeGn.groupe.numero }} {{ participant.groupeGn.groupe.nom }}</a>
+                                -
+                                <a href="{{ path('personnage.detail', {'personnage': participant.personnage.id}) }}">#{{ participant.personnage.id }} {{ participant.personnage.nom }}</a>
+                            </div>
                         {% else %}
-                            <a class="list-group-item">{{ participant.personnage.nom }} - {{ participant.gn }} - N'est
-                                pas lié à un groupe</a>
+                            <div class="list-group-item">
+                                <a>{{ participant.personnage.nom }} - {{ participant.gn }} - N'est
+                                    pas lié à un groupe</a>
+                            </div>
                         {% endif %}
                     {% else %}
-                        <a class="list-group-item">#{{ participant.personnage.id }} {{ participant.personnage.nom }}
-                            - {{ participant.gn }} - N'est pas lié à un groupe</a>
+                        <div class="list-group-item">
+                            <a href="{{ path('personage.detail', {'personnage': participant.personnage.id}) }}">#{{ participant.personnage.id }} {{ participant.personnage.nom }}
+                                - {{ participant.gn }} - N'est pas lié à un groupe</a>
+                        </div>
                     {% endif %}
                 {% else %}
                     {% if participant.groupeGn %}
-                        <a class="list-group-item">Personnage #{{ personnage.id }} {{ personnage.nom }} non récupéré
-                            - {{ participant.gn }} -
-                            #{{ participant.groupeGn.groupe.numero }} {{ participant.groupeGn.groupe.nom }}</a>
+                        <div class="list-group-item">
+                            <a href="{{ path('personage.detail', {'personnage': personnage.id}) }}">Personnage
+                                #{{ personnage.id }} {{ personnage.nom }} non récupéré
+                                - {{ participant.gn }} -
+                                #{{ participant.groupeGn.groupe.numero }} {{ participant.groupeGn.groupe.nom }}</a>
+                        </div>
                     {% else %}
-                        <a class="list-group-item">Personnage #{{ personnage.id }} {{ personnage.nom }} non récupéré
-                            - {{ participant.gn }} - N'est pas lié à un groupe</a>
+                        <div class="list-group-item">
+                            <a href="{{ path('personage.detail', {'personnage': personnage.id}) }}">Personnage
+                                #{{ personnage.id }} {{ personnage.nom }} non récupéré
+                                - {{ participant.gn }} - N'est pas lié à un groupe</a>
+                        </div>
                     {% endif %}
                 {% endif %}
             {% endfor %}
         {% else %}
-            <li class="list-group-item">Ce personnage ne fait pas partie d'un groupe.</li>
+            <div class="list-group-item">Ce personnage ne fait pas partie d'un groupe.</div>
         {% endif %}
     </div>
 </div>
