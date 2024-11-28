@@ -2619,12 +2619,12 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Participant $participant,
     ): Response {
-        $repo = $entityManager->getRepository('\\'.SecondaryGroup::class);
+        $repo = $entityManager->getRepository(SecondaryGroup::class);
         $groupeSecondaires = $repo->findAllPublic();
 
         return $this->render('groupeSecondaire/list.twig', [
             'groupeSecondaires' => $groupeSecondaires,
-            'participant' => $participant,
+            //'participant' => $participant,
         ]);
     }
 
