@@ -1,23 +1,30 @@
-
 {% if title is not defined %}
     {% set title = 'Action' %}
 {% endif %}
 
-<div class="btn-toolbar d-flex justify-content-end" role="toolbar">
-    <div class="btn-group dropdown" role="group" aria-label="...">
-        <button type="button" class="btn btn-dark dropdown-toggle " data-bs-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-            {{ title }}
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu p-0 border-2 rounded-3 border-dark" data-turbo="false">
-            {% for action in actions %}
-            <li class="d-grid gap-2">
-                <a class="btn btn-small btn-dark rounded-0{% if loop.first %} rounded-top-2{% endif %}{% if loop.last %} rounded-bottom-2{% endif %}" href="{{ action.path }}">
-                    {{ action.label }}
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
+{% set display = true %}
+{% if isAdmin is defined and not isAdmin %}
+    {% set display = false %}
+{% endif %}
+
+{% if display %}
+    <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
+        <div class="btn-group dropdown" role="group" aria-label="...">
+            <button type="button" class="btn btn-dark dropdown-toggle " data-bs-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                {{ title }}
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu p-0 border-2 rounded-3 border-dark" data-turbo="false">
+                {% for action in actions %}
+                    <li class="d-grid gap-2">
+                        <a class="btn btn-small btn-dark rounded-0{% if loop.first %} rounded-top-2{% endif %}{% if loop.last %} rounded-bottom-2{% endif %}"
+                           href="{{ action.path }}">
+                            {{ action.label }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
-</div>
+{% endif %}

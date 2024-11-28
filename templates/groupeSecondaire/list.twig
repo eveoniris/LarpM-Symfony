@@ -4,112 +4,69 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Liste des groupes secondaires</li>
-	</ol>
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des groupe secondaires' }
+        ]
+    } %}
 
-	<div class="well well-sm">
+    <div class="well well-sm">
 
-		<div class="header">
-			<h5>Liste des groupes secondaires</h5>
-		</div>
+        <div class="header">
+            <h5>Liste des groupes secondaires</h5>
+        </div>
 
-		<ul class="list-group">
-			<li class="list-group-item">
-				<div class="btn-toolbar" role="toolbar" aria-label="...">
-					{{ form_start(form, {"action": path('groupeSecondaire.admin.list')}) }}
-						<div class="form-group">
-							<div class="input-group">
-								{{ form_widget(form.value) }}
-								{{ form_widget(form.type) }}
-								<div class="input-group-btn">
-									<button type="submit" class="btn btn-default" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
-									<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('groupeSecondaire.admin.list') }}"><i class="fa fa-refresh"></i></a>
-									<div class="btn-group pull-right" role="group" aria-label="...">
-										<a href="{{ path('groupeSecondaire.admin.add') }}" class="btn btn-secondary" role="button"><i class="fa fa-plus"></i> Ajouter</a>
-										<a href="{{ path('groupeSecondaireType.admin.add') }}" class="btn btn-secondary" role="button"><i class="fa fa-plus"></i> Ajouter Type</a>
-										<a href="{{ path('groupeSecondaire.materiel.printAll') }}" class="btn btn-secondary" role="button"><i class="fa fa-print"></i> Imprimer les enveloppes</a>
-									</div>
-								</div>
-							</div>
-						</div>
-						{{ form_rest(form) }}
-			   		{{ form_end(form) }}
-				</div>
-			</li>
-	    </ul>
-	</div>
-		 
-	{% include '_partials/pagination.html.twig' %}
+        {# Todo merge usage of buttons with btnGroup view and this options #}
+        {% include '_partials/formListSearch.twig' with {
+            'actionPath' : path('groupeSecondaire.list'),
+            'buttons' : [
+                {'title': "Ajouter un groupe secondaire", 'route': path('groupeSecondaire.admin.add'), 'icon': 'fa fa-plus'},
+                {'title': "Ajouter un type de groupe secondaire", 'route': path('groupeSecondaireType.admin.add'), 'icon': 'fa fa-folder-plus'},
+                {'title': "Imprimer les enveloppes", 'route': path('groupeSecondaire.materiel.printAll'), 'icon': 'fa fa-print'}
+            ]
+        } %}
 
-	<table class="table table-striped table-bordered table-condensed table-hover">
-		<thead>
-			<tr>
-				<th>
-					{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'id' %}
-						<a href="{{ path('groupeSecondaire.admin.list', {'order_by': 'id', 'order_dir': 'DESC'}) }}">
-					{%  else %}
-						<a href="{{ path('groupeSecondaire.admin.list', {'order_by': 'id', 'order_dir': 'ASC'}) }}">
-					{% endif %}
-						#	
-					{% if app.request.get('order_by') == 'id'  %}
-						{% if app.request.get('order_dir') == 'ASC' %}
-							<span class="caret"></span>
-						{%else%}
-								<span class="dropup">
-									<span class="caret"></span>
-								</span>
-							{% endif %}
-					{% endif %}
-					</a>
-				</th>
-				<th>
-					Secret
-				</th>
-				<th>
-					{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'label' %}
-						<a href="{{ path('groupeSecondaire.admin.list', {'order_by': 'label', 'order_dir': 'DESC'}) }}">
-					{%  else %}
-						<a href="{{ path('groupeSecondaire.admin.list', {'order_by': 'label', 'order_dir': 'ASC'}) }}">
-					{% endif %}
-						Label	
-					{% if app.request.get('order_by') == 'label'  %}
-						{% if app.request.get('order_dir') == 'ASC' %}
-							<span class="caret"></span>
-						{%else%}
-								<span class="dropup">
-									<span class="caret"></span>
-								</span>
-							{% endif %}
-					{% endif %}
-					</a>
-				</th>
-				<th>
-					Description
-				</th>
-				<th>
-					Type
-				</th>
-				<th>
-					Membres
-				</th>
-			</tr>
-		</thead>
-		<tbody>
-		{% for groupeSecondaire in paginator %}
-			<tr>
-				<td><a href="{{ path('groupeSecondaire.admin.update', {'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.id }}</td>
-				<td>{% if groupeSecondaire.secret %}<span style="color:red;">Secret</span>{% else %} -- {% endif %}</td>
-				<td><a href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.label }}</td>
-				<td>{{ groupeSecondaire.description|markdown_to_html }}</td>
-				<td>{{ groupeSecondaire.secondaryGroupType.label }}</td>
-				<td>{{ groupeSecondaire.membres|length }}</td>
-			</tr>
-		{% endfor %}
-		</tbody>
-	</table>
-		
-	{% include '_partials/pagination.html.twig' %}
+        {# isAdmin is from Controller and check in the template
+        {% include '_partials/btnGroup.twig' with {
+            'title' : 'Action',
+            'actions' :
+            [
+                {'path' : path('groupeSecondaire.admin.add'), 'label': 'Ajouter', 'title':'Ajouter un groupe secondaire', 'icon': 'fa-plus' },
+                {'path' : path('groupeSecondaireType.admin.add'), 'label': 'Ajouter type', 'title':'Ajouter un type de groupe secondaire', 'icon': 'fa-folder-plus' },
+                {'path' : path('groupeSecondaire.materiel.printAll'), 'label': 'Imprimer', 'title':'Imprimer les enveloppes', 'icon': 'fa-print' },
+            ]
+        } %}#}
+    </div>
+
+    {% include '_partials/pagination.html.twig' %}
+
+    <table class="table table-striped table-bordered table-condensed table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'technologie.list', 'rows': [
+            {'name' : 'Id', 'field' : 'id', 'css' : 'text-center'},
+            {'name' : 'Secret', 'field' : 'secret', 'css' : 'text-center'},
+            {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
+            {'name' : 'Description', 'css' : 'text-center'},
+            {'name' : 'Type requises', 'css' : 'text-center'},
+            {'name' : 'Membres', 'css' : 'text-center'},
+        ]} %}
+        <tbody>
+        {% for groupeSecondaire in paginator %}
+            <tr>
+                <td>
+                    <a href="{{ path('groupeSecondaire.admin.update', {'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.id }}
+                </td>
+                <td>{% if groupeSecondaire.secret %}<span style="color:red;">Secret</span>{% else %} -- {% endif %}</td>
+                <td>
+                    <a href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.label }}
+                </td>
+                <td>{{ groupeSecondaire.description|markdown_to_html|highlight(pagerService.searchValue) }}</td>
+                <td>{{ groupeSecondaire.secondaryGroupType.label }}</td>
+                <td>{{ groupeSecondaire.membres|length }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include '_partials/pagination.html.twig' %}
 
 {% endblock body %}

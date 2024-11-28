@@ -1,0 +1,39 @@
+{# display is for the whole bloc, may we want to display some public button and not admin one #}
+{% if isAdmin is defined and not isAdmin and display is not defined %}
+    {% set display = false %}
+{% endif %}
+
+{% if display is not defined %}
+    {% set display = true %}
+{% endif %}
+
+{% if cssBtn is not defined %}
+    {% set cssBtn = [] %}
+{% endif %}
+
+{% if small is defined and small %}
+    {% set cssBtn = cssBtn|merge(["btn-sm"]) %}
+{% endif %}
+
+{% if display and actions|length > 0 %}
+    <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
+        <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+            <div class="btn-group" role="group">
+
+                {% for action in actions %}
+                    {# may only some button are admin reserved #}
+                    {% if action.isAdmin is not defined or not action.isAdmin or (action.isAdmin and isAdmin) %}
+                        <a class="btn btn-secondary{% if cssBtn is defined %} {{ cssBtn|join(' ') }}{% endif %}"
+                           data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                {% if action.title is defined %} title="{{ action.title }}" {% endif %}
+                           href="{{ action.path }}">
+                            {% if action.icon is defined %}<i class="fa {{ action.icon }}"></i> {% endif %}
+                            {{ action.label }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+{% endif %}
