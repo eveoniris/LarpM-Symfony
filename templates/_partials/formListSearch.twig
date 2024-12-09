@@ -18,8 +18,9 @@
                                 // TODO add form inputs from searchCriterias
                             {% endfor %}
                         {% endif %}
-                        <div class="input-group-btn {% if buttons is defined %}me-2{% endif %}">
-                            <button type="submit" class="btn btn-default"
+
+                        <div class="input-group-btn border-1 border rounded-end-2{% if buttons is defined %} me-2{% endif %}">
+                            <button type="submit" class="btn btn-default "
                                     data-bs-toggle="tooltip" data-bs-placement="bottom"
                                     title="Lancer la recherche"><i class="fa fa-search"></i>
                             </button>
@@ -28,38 +29,26 @@
                                href="{{ actionPath }}"><i class="fa fa-refresh"></i>
                             </a>
                         </div>
-                        <div class="input-group-btn btn-group" role="group">
-                            {% if canAdd is defined and canAdd %}
-                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
-                                   title="{{ canAdd.title }}" href="{{ canAdd.path }}">
-                                    <i class="fa fa-plus"></i> Ajouter
-                                </a>
-                            {% endif %}
-                            {% if print is defined and print %}
-                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
-                                   title="{{ print.title }}" href="{{ print.path }}">
-                                    <i class="fa fa-print"></i> Imprimer
-                                </a>
-                            {% endif %}
-                            {% if buttons is defined %}
-                                {% for button in buttons %}
-                                    <a class="btn {% if button.css is defined %}{{ button.css }}{% else %}btn-secondary{% endif %}"
-                                       data-toggle="tooltip" data-placement="bottom"
-                                       {% if button.title is defined %}title="{{ button.title }}"{% endif %}
-                                            {% if button.target is defined %}target="{{ button.target }}"{% endif %}
-                                       href="{{ button.route }}">
-                                        {% if button.icon is defined %}<i
-                                            class="fa {{ button.icon }}"></i>{% endif %}
-                                        {% if button.label is defined %}{{ button.label }}{% endif %}
-                                    </a>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
+
+                        {% if buttons is not defined %}
+                            {% set buttons = {} %}
+                        {% endif %}
+
+                        {% if canAdd is defined and canAdd %}
+                            {% set buttons = buttons|merge([{'title': canAdd.title, 'route': canAdd.path, 'icon': 'fa-plus', 'label': 'Ajouter'}]) %}
+                        {% endif %}
+
+                        {% if print is defined and print %}
+                            {% set buttons = buttons|merge([{'title': print.title, 'route': print.path, 'icon': 'fa-print', 'label': 'Imprimer'}]) %}
+                        {% endif %}
+
+                        {% include '_partials/btnGroup.twig' with {'butons' : buttons, 'css': 'input-group'} %}
+
                     </div>
                 </div>
-                {{ form_rest(form) }}
-                {{ form_end(form) }}
             </div>
+            {{ form_rest(form) }}
+            {{ form_end(form) }}
         </li>
     </ul>
 </div>

@@ -2,9 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Membre;
 use App\Entity\Personnage;
 use App\Entity\SecondaryGroup;
-use App\Entity\Technologie;
+use App\Entity\User;
 use App\Service\OrderBy;
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Deprecated;
@@ -97,6 +98,66 @@ class SecondaryGroupRepository extends BaseRepository
         }
 
         return $query->setParameter('value', $secret);
+    }
+
+    public function visibleForUser(User $user): QueryBuilder
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                SELECT DISTINCT sg
+                FROM App\Entity\User u 
+                INNER JOIN App\Entity\Personnage p
+                LEFT JOIN App\Entity\SecondaryGroup sg
+                LEFT JOIN App\Entity\membre m
+                WHERE u.id = :uid AND (sg.id IS NOT NULL OR m.id IS NOT NULL)
+                DQL
+            );
+
+        return $query->setParameter('uid', $user->getId())->getScalarResult();
+    }
+
+    public function userIsGroupLeader(User $user, SecondaryGroup $secondaryGroup): bool
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                SELECT DISTINCT sg
+                FROM App\Entity\User u 
+                INNER JOIN App\Entity\Personnage p
+                INNER JOIN App\Entity\SecondaryGroup sg
+                WHERE u.id = :uid AND sg.id = :sgid
+                DQL
+            );
+
+        return $query
+            ->setParameter('uid', $user->getId())
+            ->setParameter('sgid', $secondaryGroup->getId())
+            ->getScalarResult();
+
+    }
+
+    public function isMember(SecondaryGroup $secondaryGroup, ?Membre $membre = null, ?Personnage $personnage = null): bool
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                SELECT 1 FROM App\Entity\membre m 
+                WHERE (m.personnage.id = :pid OR id = :m.id) AND secondary_groupe_id = :sgid
+                DQL
+            );
+
+        return $query
+            ->setParameter('pid', $personnage?->getId())
+            ->setParameter('mid', $membre?->getId())
+            ->setParameter('sgid', $secondaryGroup->getId())
+            ->getScalarResult();
+    }
+
+    public function visibleForPersonnage(QueryBuilder $queryBuilder, array $personnagesIds): QueryBuilder
+    {
+        return $queryBuilder->andWhere($this->alias.'.personnage_id IN (:personnagesIds)')
+                ->setParameter('personnagesIds', $personnagesIds);
     }
 
     public function searchAttributes(): array

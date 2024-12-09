@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\NonUniqueResultException;
 use JetBrains\PhpStorm\Deprecated;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -79,6 +79,9 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         return $query->getResult();
     }
 
+    /**
+     * @throws NonUniqueResultException
+     */
     public function findOneByConfirmationToken(string $token): ?User
     {
         return $this->createQueryBuilder('u')
@@ -88,6 +91,20 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
                 ->getOneOrNullResult();
     }
 
+    public function getPersonnagesIds(User $user): array
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                SELECT p.id
+                FROM App\Entity\User u 
+                INNER JOIN App\Entity\Personnage p
+                WHERE u.id = :uid
+                DQL
+            );
+
+        return $query->setParameter('uid', $user->getId())->getScalarResult();
+    }
 
     //    /**
     //     * @return User[] Returns an array of User objects

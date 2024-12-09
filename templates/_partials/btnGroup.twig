@@ -7,28 +7,25 @@
     {% set display = true %}
 {% endif %}
 
-{% if cssBtn is not defined %}
-    {% set cssBtn = [] %}
+{% if buttons is not defined %}
+    {% set buttons = [] %}
 {% endif %}
 
-{% if small is defined and small %}
-    {% set cssBtn = cssBtn|merge(["btn-sm"]) %}
-{% endif %}
+{% if display and buttons|length > 0 %}
+    <div data-turbo="false">
+        <div class="d-flex justify-content-between" role="toolbar">
+            <div class="btn-group{% if css is defined %} {{ css|join(' ') }}{% endif %}" role="group">
 
-{% if display and actions|length > 0 %}
-    <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
-        <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
-            <div class="btn-group" role="group">
-
-                {% for action in actions %}
+                {% for button in buttons %}
                     {# may only some button are admin reserved #}
-                    {% if action.isAdmin is not defined or not action.isAdmin or (action.isAdmin and isAdmin) %}
-                        <a class="btn btn-secondary{% if cssBtn is defined %} {{ cssBtn|join(' ') }}{% endif %}"
+                    {% if button.isAdmin is not defined or not button.isAdmin or (button.isAdmin and isAdmin) %}
+                        <a class="btn {% if button.css is defined %} {{ button.css|join(' ') }}{% else %}btn-secondary{% endif %}"
                            data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                {% if action.title is defined %} title="{{ action.title }}" {% endif %}
-                           href="{{ action.path }}">
-                            {% if action.icon is defined %}<i class="fa {{ action.icon }}"></i> {% endif %}
-                            {{ action.label }}
+                                {% if button.title is defined %} title="{{ button.title }}" {% endif %}
+                                {% if button.target is defined %}target="{{ button.target }}"{% endif %}
+                                {% if button.route is defined %}href="{{ button.route }}"{% endif %}>
+                            {% if button.icon is defined %}<i class="fa {{ button.icon }}"></i>{% endif %}
+                            {% if button.label is defined %}{{ button.label }}{% endif %}
                         </a>
                     {% endif %}
                 {% endfor %}
