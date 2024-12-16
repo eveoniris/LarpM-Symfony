@@ -104,7 +104,7 @@
                  </div>
                  {% set sortAnomalie = personnage.getSortAnomalieMessage() %}
                  {% if sortAnomalie != "" %}
-                     <div class="text-warning">{{ sortAnomalie }}</div>
+                     {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : sortAnomalie } %}
                  {% endif %}
                  <div class="list-group border-0">
                      {% for sort in personnage.sorts %}
@@ -130,7 +130,7 @@
                  </div>
                  {% set potionsAnomalie = personnage.getPotionAnomalieMessage() %}
                  {% if potionsAnomalie != "" %}
-                     <div class="text-warning">{{ potionsAnomalie }}</div>
+                     {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : potionsAnomalie } %}
                  {% endif %}
                  <div class="list-group border-0">
                      {% for potion in personnage.potions %}
@@ -155,7 +155,7 @@
                  </div>
                  {% set sortAnomalie = personnage.getPrieresAnomalieMessage() %}
                  {% if sortAnomalie != "" %}
-                     <div class="text-warning">{{ sortAnomalie }}</div>
+                     {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : sortAnomalie } %}
                  {% endif %}
                  <div class="list-group border-0">
                      {% for priere in personnage.prieres %}

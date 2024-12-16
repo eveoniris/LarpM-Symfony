@@ -4,22 +4,12 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('personnage.admin.list') }}">Liste des personnages</a></li>
-		<li><a href="{{ path('personnage.admin.detail', {'personnage': personnage.id}) }}">Détail de {{ personnage.publicName }}</a></li>
-		<li class="active">Retrait d'une langue</li>
-	</ol>
+    {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Retrait d'une langue"} %}
 
-	<div class="well bs-component">	
-		{{ form_start(form, {"attr": {"action": path('personnage.admin.delete.langue', {'personnage': personnage.id,'personnageLangue': personnageLangue.id}) }}) }}
-			<fieldset>
-				<legend>Retrait d'une langue</legend>
-				
-				Attention, vous vous appretez à retirer la langue <b>{{ personnageLangue.langue }}</b> du personnage {{ personnage.publicName }}.
-				{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
-	</div>
-	
+    <div class="well bs-component">
+    {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Attention, vous vous appretez à retirer la langue <b>#{personnageLangue.langue}</b> du personnage #{personnage.publicName}"} %}
+
+        {{ form(form) }}
+    </div>
+
 {% endblock body %}
