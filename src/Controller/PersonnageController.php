@@ -2546,25 +2546,23 @@ class PersonnageController extends AbstractController
     /**
      * Retire une langue d'un personnage.
      */
-    #[Route('/{personnage}/deleteLangue', name: 'admin.delete.langue')]
+    #[Route('/{personnage}/deleteLangue/{personnageLangue}', name: 'admin.delete.langue')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemoveLangueAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
+        #[MapEntity] PersonnageLangues $personnageLangue,
     ): RedirectResponse|Response {
-        $personnageLangue = $request->get('personnageLangue');
 
-        $form = $this->createForm()
-            ->add('save', SubmitType::class, ['label' => 'Retirer la langue']);
+        $form = $this->createFormBuilder()
+            ->add('save', SubmitType::class, ['label' => 'Retirer la langue', 'attr' => ['class' => 'btn btn-secondary']])
+            ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-
-            $entityManager->remove($personnageLangue);
-            $entityManager->flush();
+            $this->entityManager->remove($personnageLangue);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
