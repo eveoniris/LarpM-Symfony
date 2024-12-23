@@ -3,15 +3,14 @@
 
 namespace App\Form\Personnage;
 
+use App\Entity\Personnage;
+use App\Entity\Territoire;
+use App\Repository\TerritoireRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Personnage\PersonnageOriginForm.
- *
- * @author kevin
- */
 class PersonnageOriginForm extends AbstractType
 {
     /**
@@ -19,12 +18,12 @@ class PersonnageOriginForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+        $builder->add('territoire', EntityType::class, [
             'required' => true,
             'label' => 'Votre origine',
-            'class' => \App\Entity\Territoire::class,
+            'class' => Territoire::class,
             'choice_label' => 'nom',
-            'query_builder' => static function (\LarpManager\Repository\TerritoireRepository $er) {
+            'query_builder' => static function (TerritoireRepository $er) {
                 $qb = $er->createQueryBuilder('t');
                 $qb->andWhere('t.territoire IS NULL');
                 $qb->orderBy('t.nom', 'ASC');
@@ -40,7 +39,7 @@ class PersonnageOriginForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Personnage::class,
+            'data_class' => Personnage::class,
         ]);
     }
 
