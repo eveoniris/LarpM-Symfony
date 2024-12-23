@@ -91,7 +91,11 @@
                  <div class="list-group border-0">
                      {% for domaine in personnage.domaines %}
                          <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
-                             <a href="{{ path('magie.domaine.detail', {'domaine': domaine.id }) }}">{{ domaine.label }}</a>
+                             <div>
+                                 <a href="{{ path('magie.domaine.detail', {'domaine': domaine.id }) }}">{{ domaine.label }}</a>
+                             </div>
+                             <a class="btn btn-sm btn-secondary"
+                                href="{{ path('personnage.admin.delete.domaine', {'personnage': personnage.id, 'domaine': domaine.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">

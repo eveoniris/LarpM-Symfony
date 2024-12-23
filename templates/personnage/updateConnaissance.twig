@@ -5,14 +5,13 @@
 {% block body %}
 <div class="container-fluid">
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('personnage.admin.list') }}">Liste des personnages</a></li>
-		<li><a href="{{ path('personnage.admin.detail', {'personnage': personnage.id}) }}">Détail de {{ personnage.publicName }}</a></li>
-		<li class="active">Choix des connaissances</li>
-	</ol>
+	{% include 'personnage/fragment/breadcrumb.twig' with {'name': "Modification de #{personnage.publicName}"} %}
 	
 	<div class="well bs-component">
+		<div class="header">
+			<h5>Choix des connaissances</h5>
+		</div>
+
 		<table class="table table-striped table-bordered table-condensed">
 			<thead>
 				<tr>
@@ -37,7 +36,7 @@
 					<td>{{ connaissance.contraintes|markdown_to_html}}</td>
 					<td>{% if personnage in connaissance.personnages  %}
 						<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Retirer cette connaissance"
-							href="{{ path('personnage.admin.remove.connaissance',{'personnage':personnage.id, 'connaissance':connaissance.id}) }}">
+							href="{{ path('personnage.admin.delete.connaissance',{'personnage':personnage.id, 'connaissance':connaissance.id}) }}">
 							<i class="fa fa-minus" style="color: red"></i></a>
 						{% else %}
 							<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter cette connaissance"

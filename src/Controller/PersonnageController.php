@@ -7,6 +7,7 @@ use App\Entity\Background;
 use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\Connaissance;
+use App\Entity\Domaine;
 use App\Entity\ExperienceGain;
 use App\Entity\HeroismeHistory;
 use App\Entity\Ingredient;
@@ -32,6 +33,7 @@ use App\Entity\Sort;
 use App\Entity\Technologie;
 use App\Entity\Token;
 use App\Entity\User;
+use App\Enum\CompetenceFamilyType;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Enum\Role;
@@ -566,10 +568,9 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateTechnologieAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
-        $technologies = $entityManager->getRepository(Technologie::class)->findAllOrderedByLabel();
+        $technologies = $this->entityManager->getRepository(Technologie::class)->findAllOrderedByLabel();
         $competences = $personnage->getCompetences();
 
         /*
@@ -589,16 +590,16 @@ class PersonnageController extends AbstractController
         $message = $personnage->getNom()." n'est pas au moins Initié en Artisanat.";
         $limit = 1;
         foreach ($competences as $competence) {
-            if ('Artisanat' == $competence->getCompetenceFamily()->getLabel()) {
-                if ($competence->getLevel()->getIndex() >= 2) {
+            if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily()?->getCompetenceFamilyType()?->value) {
+                if ($competence->getLevel()?->getIndex() >= 2) {
                     $message = false;
                 }
 
-                if (3 == $competence->getLevel()->getIndex()) {
+                if (3 === $competence->getLevel()?->getIndex()) {
                     ++$limit;
                 }
 
-                if ($competence->getLevel()->getIndex() >= 4) {
+                if ($competence->getLevel()?->getIndex() >= 4) {
                     $limit += 1000;
                 }
             }
@@ -616,8 +617,8 @@ class PersonnageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
 
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été sauvegardé');
 
@@ -1342,7 +1343,6 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateRenommeAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $form = $this->createForm(PersonnageUpdateRenommeForm::class)
@@ -1365,16 +1365,16 @@ class PersonnageController extends AbstractController
             $renomme_history->setPersonnage($personnage);
             $personnage->addRenomme($renomme);
 
-            $entityManager->persist($renomme_history);
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($renomme_history);
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
-        return $this->render('personnage/updateRenomme.twig', [
+        return $this->render('personnage/update.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1387,7 +1387,6 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateHeroismeAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $form = $this->createForm(PersonnageUpdateHeroismeForm::class)
@@ -1406,16 +1405,16 @@ class PersonnageController extends AbstractController
             $heroisme_history->setPersonnage($personnage);
             $personnage->addHeroisme($heroisme);
 
-            $entityManager->persist($heroisme_history);
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($heroisme_history);
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
-        return $this->render('personnage/updateHeroisme.twig', [
+        return $this->render('personnage/update.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1428,11 +1427,14 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdatePugilatAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $form = $this->createForm(PersonnageUpdatePugilatForm::class)
-            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => 'Valider les modifications', 'attr' => ['class' => 'btn btn-secondary']]
+            );
 
         $form->handleRequest($request);
 
@@ -1447,16 +1449,16 @@ class PersonnageController extends AbstractController
             $pugilat_history->setPersonnage($personnage);
             $personnage->addPugilat($pugilat);
 
-            $entityManager->persist($pugilat_history);
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($pugilat_history);
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
-        return $this->render('personnage/updatePugilat.twig', [
+        return $this->render('personnage/update.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1633,7 +1635,6 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateDomaineAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $originalDomaines = new ArrayCollection();
@@ -1642,7 +1643,11 @@ class PersonnageController extends AbstractController
         }
 
         $form = $this->createForm(PersonnageUpdateDomaineForm::class, $personnage)
-            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => 'Valider les modifications', 'attr' => ['class' => 'btn btn-secondary']]
+            );
 
         $form->handleRequest($request);
 
@@ -1661,18 +1666,39 @@ class PersonnageController extends AbstractController
                 }
             }
 
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
-        return $this->render('personnage/updateDomaine.twig', [
+        return $this->render('personnage/update.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
+    }
+
+    #[Route('/{personnage}/domaine/{domaine}/delete', name: 'admin.delete.domaine')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    public function adminRemoveDomaineAction(
+        Request $request,
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Domaine $domaine,
+    ): RedirectResponse {
+        $nomDomaine = $domaine->getLabel();
+
+        $domaine->removePersonnage($personnage);
+
+        $this->entityManager->flush();
+
+        $this->addFlash('success', $nomDomaine.' a été retirée.');
+
+        return $this->redirectToReferer($request) ?? $this->redirectToRoute(
+            'personnage.admin.update.domaine',
+            ['personnage' => $personnage->getId(), 303]
+        );
     }
 
     /**
@@ -1682,10 +1708,9 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateLangueAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
-        $langues = $entityManager->getRepository(Langue::class)->findBy([],
+        $langues = $this->entityManager->getRepository(Langue::class)->findBy([],
             ['secret' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC']);
 
         $originalLanguages = [];
@@ -1693,8 +1718,8 @@ class PersonnageController extends AbstractController
             $originalLanguages[] = $languages;
         }
 
-        $form = $this->createForm()
-            ->add('langues', 'entity', [
+        $form = $this->createFormBuilder()
+            ->add('langues', EntityType::class, [
                 'required' => true,
                 'label' => 'Choisissez les langues du personnage',
                 'multiple' => true,
@@ -1704,7 +1729,12 @@ class PersonnageController extends AbstractController
                 'choice_label' => 'label',
                 'data' => $originalLanguages,
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider vos modifications']);
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => 'Valider vos modifications', 'attr' => ['class' => 'btn btn-secondary']]
+            )
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -1719,14 +1749,14 @@ class PersonnageController extends AbstractController
                     $personnageLangue->setPersonnage($personnage);
                     $personnageLangue->setLangue($langue);
                     $personnageLangue->setSource('ADMIN');
-                    $entityManager->persist($personnageLangue);
+                    $this->entityManager->persist($personnageLangue);
                 }
             }
 
-            if (0 == count($langues)) {
+            if (0 === count($langues)) {
                 foreach ($personnage->getLanguages() as $langue) {
                     $personnageLangue = $personnage->getPersonnageLangue($langue);
-                    $entityManager->remove($personnageLangue);
+                    $this->entityManager->remove($personnageLangue);
                 }
             } else {
                 foreach ($personnage->getLanguages() as $langue) {
@@ -1739,20 +1769,20 @@ class PersonnageController extends AbstractController
 
                     if (!$found) {
                         $personnageLangue = $personnage->getPersonnageLangue($langue);
-                        $entityManager->remove($personnageLangue);
+                        $this->entityManager->remove($personnageLangue);
                     }
                 }
             }
 
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
-        return $this->render('personnage/updateLangue.twig', [
+        return $this->render('personnage/update.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -1765,7 +1795,6 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdatePriereAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): Response {
         $order_by = $request->get('order_by', 'label');
@@ -1786,7 +1815,7 @@ class PersonnageController extends AbstractController
             $value = $data['value'];
         }
 
-        $repo = $entityManager->getRepository('\\'.Priere::class);
+        $repo = $this->entityManager->getRepository(Priere::class);
         $prieres = $repo->findList(
             $type,
             $value,
@@ -1797,21 +1826,21 @@ class PersonnageController extends AbstractController
 
         $numResults = $repo->findCount($type, $value);
 
-        $url = $app['url_generator']->generate('personnage.admin.update.priere', ['personnage' => $personnage->getId()]
-        );
-        $paginator = new Paginator(
-            $numResults,
-            $limit,
-            $page,
-            $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
-        );
+        /* $url = $app['url_generator']->generate('personnage.admin.update.priere', ['personnage' => $personnage->getId()]
+         );
+         $paginator = new Paginator(
+             $numResults,
+             $limit,
+             $page,
+             $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
+         );*/
 
         return $this->render(
             'personnage/updatePriere.twig',
             [
                 'prieres' => $prieres,
                 'personnage' => $personnage,
-                'paginator' => $paginator,
+                // 'paginator' => $paginator,
                 'form' => $form->createView(),
             ]
         );
@@ -1820,23 +1849,18 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute une priere à un personnage.
      */
-    #[Route('/{personnage}/addPriere', name: 'admin.add.priere')]
+    #[Route('/{personnage}/priere/{priere}/add', name: 'admin.add.priere')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminAddPriereAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
+        #[MapEntity] Priere $priere,
     ): RedirectResponse {
-        $priereID = $request->get('priere');
-
-        $priere = $entityManager->getRepository(Priere::class)
-            ->find($priereID);
-
         $nomPriere = $priere->getLabel();
 
         $priere->addPersonnage($personnage);
 
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         $this->addFlash('success', $nomPriere.' a été ajoutée.');
 
@@ -1854,21 +1878,18 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Priere $priere,
     ): RedirectResponse {
-        $priereID = $request->get('priere');
-        $personnage = $request->get('personnage');
-
-        $priere = $entityManager->getRepository(Priere::class)
-            ->find($priereID);
-
         $nomPriere = $priere->getLabel();
 
         $priere->removePersonnage($personnage);
 
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         $this->addFlash('success', $nomPriere.' a été retirée.');
 
-        return $this->redirectToRoute('personnage.admin.update.priere', ['personnage' => $personnage->getId(), 303]);
+        return $this->redirectToReferer($request) ?? $this->redirectToRoute(
+            'personnage.admin.update.priere',
+            ['personnage' => $personnage->getId(), 303]
+        );
     }
 
     /**
@@ -1951,12 +1972,11 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateSortAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): Response {
         $order_by = $request->get('order_by', 'label');
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int)$request->get('limit', 50);
+        $limit = (int)$request->get('limit', 500);
         $page = (int)$request->get('page', 1);
         $offset = ($page - 1) * $limit;
         $type = null;
@@ -1972,7 +1992,7 @@ class PersonnageController extends AbstractController
             $value = $data['value'];
         }
 
-        $repo = $entityManager->getRepository(Sort::class);
+        $repo = $this->entityManager->getRepository(Sort::class);
         $sorts = $repo->findList(
             $type,
             $value,
@@ -2005,28 +2025,26 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute un sort à un personnage.
      */
-    #[Route('/{personnage}/addSort', name: 'admin.add.sort')]
+    #[Route('/{personnage}/sort/{sort}/add', name: 'admin.add.sort')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminAddSortAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
+        #[MapEntity] Sort $sort,
     ): RedirectResponse {
-        $sortID = $request->get('sort');
-
-        $sort = $entityManager->getRepository(Sort::class)
-            ->find($sortID);
-
         $nomSort = $sort->getLabel();
         $niveauSort = $sort->getNiveau();
 
         $personnage->addSort($sort);
 
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         $this->addFlash('success', $nomSort.' '.$niveauSort.' a été ajouté.');
 
-        return $this->redirectToRoute('personnage.admin.update.sort', ['personnage' => $personnage->getId(), 303]);
+        return $this->redirectToReferer($request) ?? $this->redirectToRoute(
+            'personnage.admin.update.sort',
+            ['personnage' => $personnage->getId(), 303]
+        );
     }
 
     /**
@@ -2060,7 +2078,6 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdatePotionAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): Response {
         $order_by = $request->get('order_by', 'label');
@@ -2081,7 +2098,7 @@ class PersonnageController extends AbstractController
             $value = $data['value'];
         }
 
-        $repo = $entityManager->getRepository(Potion::class);
+        $repo = $this->entityManager->getRepository(Potion::class);
         $potions = $repo->findList(
             $type,
             $value,
@@ -2092,21 +2109,22 @@ class PersonnageController extends AbstractController
 
         $numResults = $repo->findCount($type, $value);
 
-        $url = $app['url_generator']->generate('personnage.admin.update.potion', ['personnage' => $personnage->getId()]
-        );
-        $paginator = new Paginator(
-            $numResults,
-            $limit,
-            $page,
-            $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
-        );
+        /*
+                $url = $app['url_generator']->generate('personnage.admin.update.potion', ['personnage' => $personnage->getId()]
+                );
+                $paginator = new Paginator(
+                    $numResults,
+                    $limit,
+                    $page,
+                    $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
+                );*/
 
         return $this->render(
             'personnage/updatePotion.twig',
             [
                 'potions' => $potions,
                 'personnage' => $personnage,
-                'paginator' => $paginator,
+                // 'paginator' => $paginator,
                 'form' => $form->createView(),
             ]
         );
@@ -2583,11 +2601,14 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateOriginAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $form = $this->createForm(PersonnageOriginForm::class, $personnage)
-            ->add('save', SubmitType::class, ['label' => "Valider l'origine du personnage"]);
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => "Valider l'origine du personnage", 'attr' => ['class' => 'btn btn-secondary']]
+            );
 
         $form->handleRequest($request);
 
@@ -2595,12 +2616,12 @@ class PersonnageController extends AbstractController
             $personnage = $form->getData();
 
             // le personnage doit perdre les langues de son ancienne origine
-            // et récupérer les langue de sa nouvelle origine
+            // et récupérer les langues de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
-                if ('ORIGINE' == $personnageLangue->getSource() || 'ORIGINE SECONDAIRE' == $personnageLangue->getSource(
-                    )) {
+                if ('ORIGINE' === $personnageLangue->getSource(
+                    ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
                     $personnage->removePersonnageLangues($personnageLangue);
-                    $entityManager->remove($personnageLangue);
+                    $this->entityManager->remove($personnageLangue);
                 }
             }
 
@@ -2611,19 +2632,19 @@ class PersonnageController extends AbstractController
                 $personnageLangue->setSource('ORIGINE SECONDAIRE');
                 $personnageLangue->setLangue($langue);
 
-                $entityManager->persist($personnageLangue);
+                $this->entityManager->persist($personnageLangue);
                 $personnage->addPersonnageLangues($personnageLangue);
             }
 
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
         }
 
-        return $this->render('personnage/updateOrigine.twig', [
+        return $this->render('personnage/update.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
