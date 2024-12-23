@@ -43,7 +43,7 @@
                                         data-placement="top"
                                         title="Secret"></i> -
                                  {% endif %}
-                                 {{ personnageReligion.religion.label }}
+                                 <a href="{{ path('religion.detail', {'religion': personnageReligion.religion.id }) }}">{{ personnageReligion.religion.label }}</a>
                                  <span class="badge display-6 rounded-pill text-bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
                              </div>
                              <a class="btn btn-sm btn-secondary"
@@ -74,7 +74,8 @@
                                         data-placement="top"
                                         title="Secret"></i> -
                                  {% endif %}
-                                 <strong>{{ personnageLangue.langue }}</strong> ({{ personnageLangue.source }})
+                                 <a href="{{ path('langue.detail', {'langue': personnageLangue.langue.id }) }}"><strong>{{ personnageLangue.langue }}</strong></a>
+                                 ({{ personnageLangue.source }})
                              </div>
                              <a class="btn btn-sm btn-secondary"
                                 href="{{ path('personnage.admin.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Supprimer</a>
@@ -89,7 +90,9 @@
                  </div>
                  <div class="list-group border-0">
                      {% for domaine in personnage.domaines %}
-                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">{{ domaine.label }}</div>
+                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                             <a href="{{ path('magie.domaine.detail', {'domaine': domaine.id }) }}">{{ domaine.label }}</a>
+                         </div>
                      {% else %}
                          <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              Aucun
@@ -114,8 +117,12 @@
                                      <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
                                         data-placement="top"
                                         title="Secret"></i> -
-                                 {% endif %}{{ sort.label }}
-                                 - {{ sort.domaine.label }} Niveau {{ sort.niveau }}</div>
+                                 {% endif %}
+                                 <a href="{{ path('magie.sort.detail', {'sort': sort.id }) }}">{{ sort.label }}</a>
+                                 - {{ sort.domaine.label }} Niveau {{ sort.niveau }}
+                             </div>
+                             <a class="btn btn-sm btn-secondary"
+                                href="{{ path('personnage.admin.delete.sort', {'personnage': personnage.id, 'sort': sort.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucun</div>
@@ -140,8 +147,12 @@
                                      <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
                                         data-placement="top"
                                         title="Secret"></i> -
-                                 {% endif %}{{ potion.label }} -
-                                 Niveau {{ potion.niveau }}</div>
+                                 {% endif %}
+                                 <a href="{{ path('magie.potion.detail', {'potion': potion.id }) }}">{{ potion.label }}</a>
+                                 - Niveau {{ potion.niveau }}
+                             </div>
+                             <a class="btn btn-sm btn-secondary"
+                                href="{{ path('personnage.admin.delete.potion', {'personnage': personnage.id, 'potion': potion.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucune</div>
@@ -153,16 +164,19 @@
                  <div class="card-header">
                      <h6>Prières</h6>
                  </div>
-                 {% set sortAnomalie = personnage.getPrieresAnomalieMessage() %}
-                 {% if sortAnomalie != "" %}
-                     {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : sortAnomalie } %}
+                 {% set priereAnomalie = personnage.getPrieresAnomalieMessage() %}
+                 {% if priereAnomalie != "" %}
+                     {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : priereAnomalie } %}
                  {% endif %}
                  <div class="list-group border-0">
                      {% for priere in personnage.prieres %}
                          <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
-                             <div class="list-group-item-text">{{ priere.sphere.label }} -
-                                 Niveau {{ priere.niveau }} ({{ priere.label }})
+                             <div class="list-group-item-text">
+                                 <a href="{{ path('magie.priere.detail', {'priere': priere.id }) }}">{{ priere.sphere.label }}</a>
+                                 - Niveau {{ priere.niveau }} ({{ priere.label }})
                              </div>
+                             <a class="btn btn-sm btn-secondary"
+                                href="{{ path('personnage.admin.priere.delete', {'personnage': personnage.id, 'priere': priere.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucune</div>
@@ -182,8 +196,11 @@
                                      <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
                                         data-placement="top"
                                         title="Secret"></i> -
-                                 {% endif %}{{ technologie.label }}
+                                 {% endif %}
+                                 <a href="{{ path('technologie.detail', {'technologie': technologie.id }) }}">{{ technologie.label }}</a>
                              </div>
+                             <a class="btn btn-sm btn-secondary"
+                                href="{{ path('personnage.admin.priere.delete', {'personnage': personnage.id, 'priere': priere.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucune</div>
@@ -203,8 +220,11 @@
                                      <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
                                         data-placement="top"
                                         title="Secret"></i> -
-                                 {% endif %}{{ connaissance.label }}
+                                 {% endif %}
+                                 <a href="{{ path('connaissance.detail', {'connaissance': connaissance.id }) }}">{{ connaissance.label }}</a>
                              </div>
+                             <a class="btn btn-sm btn-secondary"
+                                href="{{ path('connaissance.admin.delete', {'personnage': personnage.id, 'connaissance': connaissance.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucune</div>

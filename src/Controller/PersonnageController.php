@@ -163,8 +163,8 @@ class PersonnageController extends AbstractController
         $orderBy = $request->get('order_by') ?: 'id';
         $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
         $isAsc = 'ASC' == $orderDir;
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
+        $limit = (int)($request->get('limit') ?: 50);
+        $page = (int)($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
@@ -267,13 +267,13 @@ class PersonnageController extends AbstractController
         }
 
         return array_merge([
-            'personnages' => $personnages,
-            'paginator' => $paginator,
-            'form' => $form->createView(),
-            'optionalParameters' => $optionalParameters,
-            'columnDefinitions' => $columnDefinitions,
-            'formPath' => $routeName,
-        ]
+                'personnages' => $personnages,
+                'paginator' => $paginator,
+                'form' => $form->createView(),
+                'optionalParameters' => $optionalParameters,
+                'columnDefinitions' => $columnDefinitions,
+                'formPath' => $routeName,
+            ]
         );
     }
 
@@ -317,13 +317,15 @@ class PersonnageController extends AbstractController
         if (!$trombine) {
             return $this->sendNoImageAvailable();
         }
-        $path = $this->fileUploader->getProjectDirectory().FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
-        
+        $path = $this->fileUploader->getProjectDirectory(
+            ).FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
+
         $filename = $personnage->getTrombine($this->fileUploader->getProjectDirectory());
         if (!file_exists($filename)) {
             // get old ?
             // $path = __DIR__.'/../../private/img/';
-            $path = $this->fileUploader->getProjectDirectory().FolderType::Private->value.DocumentType::Image->value.'/';
+            $path = $this->fileUploader->getProjectDirectory(
+                ).FolderType::Private->value.DocumentType::Image->value.'/';
             $filename = $path.$personnage->getTrombineUrl();
 
             if (!file_exists($filename)) {
@@ -656,26 +658,25 @@ class PersonnageController extends AbstractController
     /**
      * Retire une technologie à un personnage.
      */
+    #[Route('/{personnage}/technologie/{technologie}/delete', name: 'admin.delete.technologie')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemoveTechnologieAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Technologie $technologie,
     ): RedirectResponse {
-        $technologieId = $request->get('technologie');
-        $personnage = $request->get('personnage');
-
-        $technologie = $entityManager->getRepository(Technologie::class)
-            ->find($technologieId);
-
         $nomTechnologie = $technologie->getLabel();
 
         $personnage->removeTechnologie($technologie);
 
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         $this->addFlash('success', $nomTechnologie.' a été retirée.');
 
-        return $this->redirectToRoute('personnage.technologie.update', ['personnage' => $personnage->getId(), 303]);
+        return $this->redirectToReferer($request) ?? $this->redirectToRoute(
+            'personnage.technologie.update',
+            ['personnage' => $personnage->getId(), 303]
+        );
     }
 
     /**
@@ -686,7 +687,7 @@ class PersonnageController extends AbstractController
         $langueMateriel = [];
         foreach ($personnage->getPersonnageLangues() as $langue) {
             if ($langue->getLangue()->getGroupeLangue()->getId() > 0 && $langue->getLangue()->getGroupeLangue()->getId(
-            ) < 6) {
+                ) < 6) {
                 if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel)) {
                     $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
                 }
@@ -1769,8 +1770,8 @@ class PersonnageController extends AbstractController
     ): Response {
         $order_by = $request->get('order_by', 'label');
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) $request->get('limit', 50);
-        $page = (int) $request->get('page', 1);
+        $limit = (int)$request->get('limit', 50);
+        $page = (int)$request->get('page', 1);
         $offset = ($page - 1) * $limit;
         $type = null;
         $value = null;
@@ -1845,9 +1846,14 @@ class PersonnageController extends AbstractController
     /**
      * Retire une priere à un personnage.
      */
+    #[Route('/{personnage}/priere/{priere}/delete', name: 'admin.priere.delete')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
-    public function adminRemovePriereAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse
-    {
+    public function adminRemovePriereAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Priere $priere,
+    ): RedirectResponse {
         $priereID = $request->get('priere');
         $personnage = $request->get('personnage');
 
@@ -1916,28 +1922,23 @@ class PersonnageController extends AbstractController
     /**
      * Retire une connaissance à un personnage.
      */
-    #[Route('/{personnage}/deleteConnaissance', name: 'admin.delete.connaissance')]
+    #[Route('/{personnage}/connaissance/{connaissance}/delete', name: 'admin.delete.connaissance')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemoveConnaissanceAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
+        #[MapEntity] Connaissance $connaissance,
     ): RedirectResponse {
-        $connaissanceID = $request->get('connaissance');
-
-        $connaissance = $entityManager->getRepository(Connaissance::class)
-            ->find($connaissanceID);
-
         $nomConnaissance = $connaissance->getLabel();
         $niveauConnaissance = $connaissance->getNiveau();
 
         $personnage->removeConnaissance($connaissance);
 
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         $this->addFlash('success', $nomConnaissance.' '.$niveauConnaissance.' a été retiré.');
 
-        return $this->redirectToRoute(
+        return $this->redirectToReferer($request) ?? $this->redirectToRoute(
             'personnage.admin.update.connaissance',
             ['personnage' => $personnage->getId(), 303]
         );
@@ -1955,8 +1956,8 @@ class PersonnageController extends AbstractController
     ): Response {
         $order_by = $request->get('order_by', 'label');
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) $request->get('limit', 50);
-        $page = (int) $request->get('page', 1);
+        $limit = (int)$request->get('limit', 50);
+        $page = (int)$request->get('page', 1);
         $offset = ($page - 1) * $limit;
         $type = null;
         $value = null;
@@ -1971,7 +1972,7 @@ class PersonnageController extends AbstractController
             $value = $data['value'];
         }
 
-        $repo = $entityManager->getRepository('\\'.Sort::class);
+        $repo = $entityManager->getRepository(Sort::class);
         $sorts = $repo->findList(
             $type,
             $value,
@@ -1982,20 +1983,20 @@ class PersonnageController extends AbstractController
 
         $numResults = $repo->findCount($type, $value);
 
-        $url = $app['url_generator']->generate('personnage.admin.update.sort', ['personnage' => $personnage->getId()]);
-        $paginator = new Paginator(
-            $numResults,
-            $limit,
-            $page,
-            $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
-        );
+        $url = '';//$app['url_generator']->generate('personnage.admin.update.sort', ['personnage' => $personnage->getId()]);
+        /* $paginator = new Paginator(
+             $numResults,
+             $limit,
+             $page,
+             $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
+         );*/
 
         return $this->render(
             'personnage/updateSort.twig',
             [
                 'sorts' => $sorts,
                 'personnage' => $personnage,
-                'paginator' => $paginator,
+                //'paginator' => $paginator,
                 'form' => $form->createView(),
             ]
         );
@@ -2031,28 +2032,25 @@ class PersonnageController extends AbstractController
     /**
      * Retire un sort à un personnage.
      */
-    #[Route('/{personnage}/deleteSort', name: 'admin.delete.sort')]
+    #[Route('/{personnage}/sort/{sort}/delete', name: 'admin.delete.sort')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemoveSortAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
+        #[MapEntity] Sort $sort,
     ): RedirectResponse {
-        $sortID = $request->get('sort');
-
-        $sort = $entityManager->getRepository(Sort::class)
-            ->find($sortID);
-
         $nomSort = $sort->getLabel();
         $niveauSort = $sort->getNiveau();
-
         $personnage->removeSort($sort);
 
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         $this->addFlash('success', $nomSort.' '.$niveauSort.' a été retiré.');
 
-        return $this->redirectToRoute('personnage.admin.update.sort', ['personnage' => $personnage->getId(), 303]);
+        return $this->redirectToReferer($request) ?? $this->redirectToRoute(
+            'personnage.admin.update.sort',
+            ['personnage' => $personnage->getId(), 303]
+        );
     }
 
     /**
@@ -2067,8 +2065,8 @@ class PersonnageController extends AbstractController
     ): Response {
         $order_by = $request->get('order_by', 'label');
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) $request->get('limit', 50);
-        $page = (int) $request->get('page', 1);
+        $limit = (int)$request->get('limit', 50);
+        $page = (int)$request->get('page', 1);
         $offset = ($page - 1) * $limit;
         $type = null;
         $value = null;
@@ -2083,7 +2081,7 @@ class PersonnageController extends AbstractController
             $value = $data['value'];
         }
 
-        $repo = $entityManager->getRepository('\\'.Potion::class);
+        $repo = $entityManager->getRepository(Potion::class);
         $potions = $repo->findList(
             $type,
             $value,
@@ -2143,27 +2141,25 @@ class PersonnageController extends AbstractController
     /**
      * Retire une potion à un personnage.
      */
-    #[Route('/{personnage}/deletePotion', name: 'admin.delete.potion')]
+    #[Route('/{personnage}/potion/{potion}/delete', name: 'admin.delete.potion')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemovePotionAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
+        #[MapEntity] Potion $potion,
     ): RedirectResponse {
-        $potionID = $request->get('potion');
-
-        $potion = $entityManager->getRepository(Potion::class)
-            ->find($potionID);
 
         $nomPotion = $potion->getLabel();
-
         $personnage->removePotion($potion);
 
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         $this->addFlash('success', $nomPotion.' a été retirée.');
 
-        return $this->redirectToRoute('personnage.admin.update.potion', ['personnage' => $personnage->getId(), 303]);
+        return $this->redirectToReferer($request) ?? $this->redirectToRoute(
+            'personnage.admin.update.potion',
+            ['personnage' => $personnage->getId(), 303]
+        );
     }
 
     /**
@@ -2555,7 +2551,11 @@ class PersonnageController extends AbstractController
     ): RedirectResponse|Response {
 
         $form = $this->createFormBuilder()
-            ->add('save', SubmitType::class, ['label' => 'Retirer la langue', 'attr' => ['class' => 'btn btn-secondary']])
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => 'Retirer la langue', 'attr' => ['class' => 'btn btn-secondary']]
+            )
             ->getForm();
 
         $form->handleRequest($request);
@@ -2598,7 +2598,7 @@ class PersonnageController extends AbstractController
             // et récupérer les langue de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 if ('ORIGINE' == $personnageLangue->getSource() || 'ORIGINE SECONDAIRE' == $personnageLangue->getSource(
-                )) {
+                    )) {
                     $personnage->removePersonnageLangues($personnageLangue);
                     $entityManager->remove($personnageLangue);
                 }

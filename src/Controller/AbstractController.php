@@ -410,4 +410,15 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
      * ]
      * );
      */
+
+    protected function redirectToReferer(Request $request) : ?RedirectResponse
+    {
+        $referer = $request->headers->get('referer');
+
+        if ($referer) {
+            return $this->redirect($referer, 303);
+        }
+
+        return null;
+    }
 }
