@@ -10,6 +10,7 @@ use App\Form\Groupe\GroupeLangueForm;
 use App\Repository\LangueRepository;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -31,8 +32,8 @@ class LangueController extends AbstractController
     #[Route('/langue', name: 'langue.index')]
     public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $langues = $entityManager->getRepository('\\'.\App\Entity\Langue::class)->findAllOrderedByLabel();
-        $groupeLangues = $entityManager->getRepository('\\'.\App\Entity\GroupeLangue::class)->findAllOrderedByLabel();
+        $langues = $entityManager->getRepository(Langue::class)->findAllOrderedByLabel();
+        $groupeLangues = $entityManager->getRepository(GroupeLangue::class)->findAllOrderedByLabel();
 
         return $this->render('langue/index.twig', ['langues' => $langues, 'groupeLangues' => $groupeLangues]);
     }
@@ -41,7 +42,7 @@ class LangueController extends AbstractController
      * Detail d'une langue.
      */
     #[Route('/langue/{langue}/detail', name: 'langue.detail')]
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Langue $langue): Response
+    public function detailAction(Langue $langue): Response
     {
         return $this->render('langue/detail.twig', ['langue' => $langue]);
     }
@@ -55,8 +56,8 @@ class LangueController extends AbstractController
         $langue = new Langue();
 
         $form = $this->createForm(LangueForm::class, $langue)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -101,8 +102,8 @@ class LangueController extends AbstractController
         $deleteTooltip = $canBeDeleted ? '' : 'Cette langue est référencée par '.$langue->getPersonnageLangues()->count().' personnages, '.$langue->getTerritoires()->count().' territoires et '.$langue->getDocuments()->count().' documents et ne peut pas être supprimée';
 
         $formBuilder = $this->createForm(LangueForm::class, $langue, ['hasDocumentUrl' => $hasDocumentUrl])
-            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer', 'disabled' => !$canBeDeleted, 'attr' => ['title' => $deleteTooltip]]);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer', 'disabled' => !$canBeDeleted, 'attr' => ['title' => $deleteTooltip]]);
 
         $form = $formBuilder;
 
@@ -199,11 +200,11 @@ class LangueController extends AbstractController
     #[Route('/langue/groupe/add', name: 'langue.addGroup')]
     public function addGroupAction(Request $request,  EntityManagerInterface $entityManager): Response|RedirectResponse
     {
-        $groupeLangue = new \App\Entity\GroupeLangue();
+        $groupeLangue = new GroupeLangue();
 
         $form = $this->createForm(GroupeLangueForm::class, $groupeLangue)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -241,8 +242,8 @@ class LangueController extends AbstractController
         $deleteTooltip = $canBeDeleted ? '' : 'Ce groupe est référencé par '.$groupeLangue->getLangues()->count().' langues et ne peut pas être supprimé';
 
         $formBuilder = $this->createForm(GroupeLangueForm::class, $groupeLangue)
-            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer', 'disabled' => !$canBeDeleted, 'attr' => ['title' => $deleteTooltip]]);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer', 'disabled' => !$canBeDeleted, 'attr' => ['title' => $deleteTooltip]]);
 
         $form = $formBuilder;
 
