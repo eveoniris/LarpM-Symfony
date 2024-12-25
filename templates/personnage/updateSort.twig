@@ -3,118 +3,59 @@
 {% block title %}{{ personnage.publicName }} liste de sorts{% endblock title %}
 
 {% block body %}
-    <div class="container-fluid">
+    {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Modification de #{personnage.publicName}"} %}
 
-        {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Modification de #{personnage.publicName}"} %}
-
-        <div class="well bs-component">
-            <div class="header">
-                <h5>Choix des sortilèges</h5>
-            </div>
-
-            <ul class="list-group">
-                <li class="list-group-item">
-                    <div class="btn-toolbar" role="toolbar" aria-label="...">
-
-                        {{ form(form) }}
-
-                    </div>
-                </li>
-
-            </ul>
-
-
-            <table class="table table-striped table-bordered table-condensed">
-                <thead>
-                <tr>
-                    <th>
-                        {% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'label' %}
-                        <a href="{{ path('personnage.admin.update.sort', {'personnage':personnage.id, 'order_by': 'label', 'order_dir': 'DESC'}) }}">
-                            {% else %}
-                            <a href="{{ path('personnage.admin.update.sort', {'personnage':personnage.id, 'order_by': 'label', 'order_dir': 'ASC'}) }}">
-                                {% endif %}
-                                Nom
-                                {% if app.request.get('order_by') == 'label' %}
-                                    {% if app.request.get('order_dir') == 'ASC' %}
-                                        <span class="caret"></span>
-                                    {% else %}
-                                        <span class="dropup">
-                                    <span class="caret"></span>
-                                </span>
-                                    {% endif %}
-                                {% endif %}
-                            </a>
-                    </th>
-                    <th>
-                        {% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'niveau' %}
-                        <a href="{{ path('personnage.admin.update.sort', {'personnage':personnage.id, 'order_by': 'niveau', 'order_dir': 'DESC'}) }}">
-                            {% else %}
-                            <a href="{{ path('personnage.admin.update.sort', {'personnage':personnage.id, 'order_by': 'niveau', 'order_dir': 'ASC'}) }}">
-                                {% endif %}
-                                Niveau
-                                {% if app.request.get('order_by') == 'niveau' %}
-                                    {% if app.request.get('order_dir') == 'ASC' %}
-                                        <span class="caret"></span>
-                                    {% else %}
-                                        <span class="dropup">
-                                    <span class="caret"></span>
-                                </span>
-                                    {% endif %}
-                                {% endif %}
-                            </a>
-                    </th>
-                    <th>Secret</th>
-                    <th>
-                        {% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'domaine' %}
-                        <a href="{{ path('personnage.admin.update.sort', {'personnage':personnage.id, 'order_by': 'domaine', 'order_dir': 'DESC'}) }}">
-                            {% else %}
-                            <a href="{{ path('personnage.admin.update.sort', {'personnage':personnage.id, 'order_by': 'domaine', 'order_dir': 'ASC'}) }}">
-                                {% endif %}
-                                Domaine
-                                {% if app.request.get('order_by') == 'domaine' %}
-                                    {% if app.request.get('order_dir') == 'ASC' %}
-                                        <span class="caret"></span>
-                                    {% else %}
-                                        <span class="dropup">
-                                    <span class="caret"></span>
-                                </span>
-                                    {% endif %}
-                                {% endif %}
-                            </a>
-                    </th>
-                    <th>Description</th>
-                    <th>Ajouter/Retirer</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for sort in sorts %}
-                    <tr>
-                        <td>{{ sort.label }}</td>
-                        <td>{{ sort.niveau }}</td>
-                        <td>{% if sort.secret %}
-                                <span style="color:red;">Secret</span>
-                            {% else %}
-                                Non
-                            {% endif %}
-                        </td>
-                        <td>{{ sort.domaine.label }}</td>
-                        <td>{{ sort.description|markdown_to_html }}</td>
-                        <td>{% if personnage in sort.personnages %}
-                                <a class="btn btn-default" data-toggle="tooltip" data-placement="top"
-                                   title="Retirer ce sort"
-                                   href="{{ path('personnage.admin.delete.sort',{'personnage':personnage.id, 'sort':sort.id}) }}">
-                                    <i class="fa fa-minus" style="color: red"></i></a>
-                            {% else %}
-                                <a class="btn btn-default" data-toggle="tooltip" data-placement="top"
-                                   title="Ajouter ce sort"
-                                   href="{{ path('personnage.admin.add.sort',{'personnage':personnage.id, 'sort':sort.id}) }}">
-                                    <i class="fa fa-plus" style="color: green"></i></a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+    <div class="well bs-component">
+        <div class="header">
+            <h5>Choix des sortilèges</h5>
         </div>
+
+        {% include '_partials/formListSearch.twig' with {'actionPath' : path('personnage.admin.update.sort', {'personnage': personnage.id})} %}
     </div>
+
+    {% include '_partials/pagination.html.twig' %}
+
+
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'personnage.admin.update.sort', 'routeOptions': {'personnage': personnage.id}, 'rows': [
+            {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
+            {'name' : 'Niveau', 'field' : 'niveau', 'css' : 'text-center'},
+            {'name' : 'Secret', 'field' : 'secret', 'css' : 'text-center'},
+            {'name' : 'Domaine', 'field' : 'domaine.label', 'css' : 'text-center'},
+            {'name' : 'Description', 'css' : 'text-center'},
+            {'name' : 'Actions', 'css' : 'text-center'},
+        ]} %}
+        <tbody>
+        {% for sort in paginator %}
+            <tr>
+                <td class="text-center">{{ sort.label|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center">{{ sort.niveau|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center">
+                    {% if sort.secret %}
+                        <i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
+                           title="Secret"></i>
+                    {% else %}
+                        Non
+                    {% endif %}
+                </td>
+                <td>{{ sort.domaine.label|highlight(pagerService.searchValue) }}</td>
+                <td>{{ sort.description|markdown_to_html|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center">
+                    {% if personnage in sort.personnages %}
+                        <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                           title="Retirer ce sort"
+                           href="{{ path('personnage.admin.delete.sort',{'personnage':personnage.id, 'sort':sort.id}) }}">
+                            <i class="fa fa-minus text-danger"></i></a>
+                    {% else %}
+                        <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                           title="Ajouter ce sort"
+                           href="{{ path('personnage.admin.add.sort',{'personnage':personnage.id, 'sort':sort.id}) }}">
+                            <i class="fa fa-plus text-info"></i></a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
 {% endblock body %}

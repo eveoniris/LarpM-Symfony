@@ -67,6 +67,12 @@ use App\Form\TriggerForm;
 use App\Form\TrombineForm;
 use App\Manager\GroupeManager;
 use App\Manager\PersonnageManager;
+use App\Repository\ConnaissanceRepository;
+use App\Repository\PotionRepository;
+use App\Repository\PriereRepository;
+use App\Repository\SortRepository;
+use App\Repository\TechnologieRepository;
+use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -568,31 +574,22 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateTechnologieAction(
         Request $request,
+        PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
-    ): RedirectResponse|Response {
-        $technologies = $this->entityManager->getRepository(Technologie::class)->findAllOrderedByLabel();
+        TechnologieRepository $technologieRepository
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($technologieRepository)->setLimit(50);
+
         $competences = $personnage->getCompetences();
 
-        /*
-                $competenceFamilies = array();
-                $competencesExpert = array();
-
-                foreach ($competences as $competence){
-                        $competenceFamilies[] = $competence->getCompetenceFamily()->getId();
-                }
-                $competencesNiveaux = array_count_values($competenceFamilies);
-                foreach ($competencesNiveaux as $competence => $count){
-                        if ($count > 2) {
-                                $competencesExpert [] = $competence;
-                        }
-                }
-        */
+        $errorLevel = 1;
         $message = $personnage->getNom()." n'est pas au moins Initié en Artisanat.";
         $limit = 1;
         foreach ($competences as $competence) {
             if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily()?->getCompetenceFamilyType()?->value) {
                 if ($competence->getLevel()?->getIndex() >= 2) {
                     $message = false;
+                    $errorLevel = 0;
                 }
 
                 if (3 === $competence->getLevel()?->getIndex()) {
@@ -606,54 +603,37 @@ class PersonnageController extends AbstractController
         }
 
         if (count($personnage->getTechnologies()) >= $limit) {
+            $errorLevel = 2;
             $message = $personnage->getNom().' connait déjà au moins '.$limit.' Technologie(s).';
         }
 
-        $form = $this->createForm(PersonnageTechnologieForm::class, $personnage)
-            ->add('valider', SubmitType::class, ['label' => 'Valider']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $personnage = $form->getData();
-
-            $this->entityManager->persist($personnage);
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'Le personnage a été sauvegardé');
-
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
-        }
-
         return $this->render('personnage/updateTechnologie.twig', [
+            'errorLevel' => $errorLevel,
             'personnage' => $personnage,
-            'technologies' => $technologies,
             'message' => $message,
-            'form' => $form->createView(),
+            'pagerService' => $pagerService,
+            'paginator' => $technologieRepository->searchPaginated($pagerService),
         ]);
     }
 
     /**
      * Ajoute une technologie à un personnage.
      */
+    #[Route('/{personnage}/technologie/{technologie}/add', name: 'admin.add.technologie')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
-    public function adminAddTechnologieAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse
+    public function adminAddTechnologieAction(
+        Request $request,
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Technologie $technologie,
+    ): RedirectResponse
     {
-        $technologieId = $request->get('technologie');
-        $personnage = $request->get('personnage');
-
-        $technologie = $entityManager->getRepository(Technologie::class)
-            ->find($technologieId);
-
-        $nomTechnologie = $technologie->getLabel();
-
         $personnage->addTechnologie($technologie);
 
-        $entityManager->flush();
+        $this->entityManager->flush();
 
-        $this->addFlash('success', $nomTechnologie.' a été ajoutée.');
+        $this->addFlash('success', $technologie->getLabel().' a été ajoutée.');
 
-        return $this->redirectToRoute('personnage.technologie.update', ['personnage' => $personnage->getId(), 303]);
+        return $this->redirectToReferer($request) ?? $this->redirectToRoute('personnage.admin.update.technologie', ['personnage' => $personnage->getId(), 303]);
     }
 
     /**
@@ -666,16 +646,14 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Technologie $technologie,
     ): RedirectResponse {
-        $nomTechnologie = $technologie->getLabel();
-
         $personnage->removeTechnologie($technologie);
 
         $this->entityManager->flush();
 
-        $this->addFlash('success', $nomTechnologie.' a été retirée.');
+        $this->addFlash('success', $technologie->getLabel().' a été retirée.');
 
         return $this->redirectToReferer($request) ?? $this->redirectToRoute(
-            'personnage.technologie.update',
+            'personnage.update.technologie',
             ['personnage' => $personnage->getId(), 303]
         );
     }
@@ -1791,57 +1769,22 @@ class PersonnageController extends AbstractController
     /**
      * Affiche la liste des prières pour modifications.
      */
-    #[Route('/{personnage}/updatePriere', name: 'admin.update.priere')]
+    #[Route('/{personnage}/priere/update', name: 'admin.update.priere')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdatePriereAction(
         Request $request,
+        PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
+        PriereRepository $priereRepository
     ): Response {
-        $order_by = $request->get('order_by', 'label');
-        $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int)$request->get('limit', 50);
-        $page = (int)$request->get('page', 1);
-        $offset = ($page - 1) * $limit;
-        $type = null;
-        $value = null;
-
-        $form = $this->createForm(PriereFindForm::class);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $type = $data['type'];
-            $value = $data['value'];
-        }
-
-        $repo = $this->entityManager->getRepository(Priere::class);
-        $prieres = $repo->findList(
-            $type,
-            $value,
-            ['by' => $order_by, 'dir' => $order_dir],
-            $limit,
-            $offset
-        );
-
-        $numResults = $repo->findCount($type, $value);
-
-        /* $url = $app['url_generator']->generate('personnage.admin.update.priere', ['personnage' => $personnage->getId()]
-         );
-         $paginator = new Paginator(
-             $numResults,
-             $limit,
-             $page,
-             $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
-         );*/
+        $pagerService->setRequest($request)->setRepository($priereRepository)->setLimit(50);
 
         return $this->render(
             'personnage/updatePriere.twig',
             [
-                'prieres' => $prieres,
                 'personnage' => $personnage,
-                // 'paginator' => $paginator,
-                'form' => $form->createView(),
+                'pagerService' => $pagerService,
+                'paginator' => $priereRepository->searchPaginated($pagerService),
             ]
         );
     }
@@ -1856,15 +1799,13 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Priere $priere,
     ): RedirectResponse {
-        $nomPriere = $priere->getLabel();
-
         $priere->addPersonnage($personnage);
 
         $this->entityManager->flush();
 
-        $this->addFlash('success', $nomPriere.' a été ajoutée.');
+        $this->addFlash('success', $priere->getLabel().' a été ajoutée.');
 
-        return $this->redirectToRoute('personnage.admin.update.priere', ['personnage' => $personnage->getId(), 303]);
+        return $this->redirectToReferer($request) ?? $this->redirectToRoute('personnage.admin.update.priere', ['personnage' => $personnage->getId(), 303]);
     }
 
     /**
@@ -1874,19 +1815,16 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemovePriereAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Priere $priere,
     ): RedirectResponse {
-        $nomPriere = $priere->getLabel();
-
         $priere->removePersonnage($personnage);
 
         $this->entityManager->flush();
 
-        $this->addFlash('success', $nomPriere.' a été retirée.');
+        $this->addFlash('success', $priere->getLabel().' a été retirée.');
 
-        return $this->redirectToReferer($request) ?? $this->redirectToRoute(
+        return $this->redirectToReferer($request) ?? $this->redirectToReferer($request) ?? $this->redirectToRoute(
             'personnage.admin.update.priere',
             ['personnage' => $personnage->getId(), 303]
         );
@@ -1899,40 +1837,32 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateConnaissanceAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+        PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
+        ConnaissanceRepository $connaissanceRepository
     ): Response {
-        $connaissances = $entityManager->getRepository(Connaissance::class)->findAllOrderedByLabel();
+        $pagerService->setRequest($request)->setRepository($connaissanceRepository)->setLimit(50);
 
         return $this->render('personnage/updateConnaissance.twig', [
             'personnage' => $personnage,
-            'connaissances' => $connaissances,
+            'pagerService' => $pagerService,
+            'paginator' => $connaissanceRepository->searchPaginated($pagerService),
         ]);
     }
 
     /**
      * Ajoute une connaissance à un personnage.
      */
-    #[Route('/{personnage}/addConnaissance', name: 'admin.add.connaissance')]
+    #[Route('/{personnage}/connaissance/{connaissance}/add', name: 'admin.add.connaissance')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminAddConnaissanceAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
+        #[MapEntity] Connaissance $connaissance,
     ): RedirectResponse {
-        $connaissanceID = $request->get('connaissance');
-
-        $connaissance = $entityManager->getRepository(Connaissance::class)
-            ->find($connaissanceID);
-
-        $nomConnaissance = $connaissance->getLabel();
-        $niveauConnaissance = $connaissance->getNiveau();
-
         $personnage->addConnaissance($connaissance);
+        $this->entityManager->flush();
 
-        $entityManager->flush();
-
-        $this->addFlash('success', $nomConnaissance.' '.$niveauConnaissance.' a été ajouté.');
+        $this->addFlash('success', $connaissance->getLabel().' '.$connaissance->getNiveau().' a été ajouté.');
 
         return $this->redirectToRoute(
             'personnage.admin.update.connaissance',
@@ -1950,14 +1880,10 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Connaissance $connaissance,
     ): RedirectResponse {
-        $nomConnaissance = $connaissance->getLabel();
-        $niveauConnaissance = $connaissance->getNiveau();
-
         $personnage->removeConnaissance($connaissance);
-
         $this->entityManager->flush();
 
-        $this->addFlash('success', $nomConnaissance.' '.$niveauConnaissance.' a été retiré.');
+        $this->addFlash('success', $connaissance->getLabel().' '.$connaissance->getNiveau().' a été retiré.');
 
         return $this->redirectToReferer($request) ?? $this->redirectToRoute(
             'personnage.admin.update.connaissance',
@@ -1972,52 +1898,18 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateSortAction(
         Request $request,
+        PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
+        SortRepository $sortRepository
     ): Response {
-        $order_by = $request->get('order_by', 'label');
-        $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int)$request->get('limit', 500);
-        $page = (int)$request->get('page', 1);
-        $offset = ($page - 1) * $limit;
-        $type = null;
-        $value = null;
-
-        $form = $this->createForm(SortFindForm::class);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $type = $data['type'];
-            $value = $data['value'];
-        }
-
-        $repo = $this->entityManager->getRepository(Sort::class);
-        $sorts = $repo->findList(
-            $type,
-            $value,
-            ['by' => $order_by, 'dir' => $order_dir],
-            $limit,
-            $offset
-        );
-
-        $numResults = $repo->findCount($type, $value);
-
-        $url = '';//$app['url_generator']->generate('personnage.admin.update.sort', ['personnage' => $personnage->getId()]);
-        /* $paginator = new Paginator(
-             $numResults,
-             $limit,
-             $page,
-             $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
-         );*/
+        $pagerService->setRequest($request)->setRepository($sortRepository)->setLimit(50);
 
         return $this->render(
             'personnage/updateSort.twig',
             [
-                'sorts' => $sorts,
                 'personnage' => $personnage,
-                //'paginator' => $paginator,
-                'form' => $form->createView(),
+                'pagerService' => $pagerService,
+                'paginator' => $sortRepository->searchPaginated($pagerService),
             ]
         );
     }
@@ -2032,14 +1924,11 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Sort $sort,
     ): RedirectResponse {
-        $nomSort = $sort->getLabel();
-        $niveauSort = $sort->getNiveau();
-
         $personnage->addSort($sort);
 
         $this->entityManager->flush();
 
-        $this->addFlash('success', $nomSort.' '.$niveauSort.' a été ajouté.');
+        $this->addFlash('success', $sort->getLabel().' '.$sort->getNiveau().' a été ajouté.');
 
         return $this->redirectToReferer($request) ?? $this->redirectToRoute(
             'personnage.admin.update.sort',
@@ -2057,13 +1946,11 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Sort $sort,
     ): RedirectResponse {
-        $nomSort = $sort->getLabel();
-        $niveauSort = $sort->getNiveau();
         $personnage->removeSort($sort);
 
         $this->entityManager->flush();
 
-        $this->addFlash('success', $nomSort.' '.$niveauSort.' a été retiré.');
+        $this->addFlash('success', $sort->getLabel().' '.$sort->getNiveau().' a été retiré.');
 
         return $this->redirectToReferer($request) ?? $this->redirectToRoute(
             'personnage.admin.update.sort',
@@ -2078,54 +1965,19 @@ class PersonnageController extends AbstractController
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdatePotionAction(
         Request $request,
+        PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
+        PotionRepository $potionRepository
     ): Response {
-        $order_by = $request->get('order_by', 'label');
-        $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int)$request->get('limit', 50);
-        $page = (int)$request->get('page', 1);
-        $offset = ($page - 1) * $limit;
-        $type = null;
-        $value = null;
-
-        $form = $this->createForm(PotionFindForm::class);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $type = $data['type'];
-            $value = $data['value'];
-        }
-
-        $repo = $this->entityManager->getRepository(Potion::class);
-        $potions = $repo->findList(
-            $type,
-            $value,
-            ['by' => $order_by, 'dir' => $order_dir],
-            $limit,
-            $offset
-        );
-
-        $numResults = $repo->findCount($type, $value);
-
-        /*
-                $url = $app['url_generator']->generate('personnage.admin.update.potion', ['personnage' => $personnage->getId()]
-                );
-                $paginator = new Paginator(
-                    $numResults,
-                    $limit,
-                    $page,
-                    $url.'?page=(:num)&limit='.$limit.'&order_by='.$order_by.'&order_dir='.$order_dir
-                );*/
+        $pagerService->setRequest($request)->setRepository($potionRepository)->setLimit(50);
 
         return $this->render(
             'personnage/updatePotion.twig',
             [
-                'potions' => $potions,
+                'pagerService' => $pagerService,
+                'paginator' => $potionRepository->searchPaginated($pagerService),
+
                 'personnage' => $personnage,
-                // 'paginator' => $paginator,
-                'form' => $form->createView(),
             ]
         );
     }

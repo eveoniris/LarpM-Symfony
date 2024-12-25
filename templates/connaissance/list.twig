@@ -32,7 +32,7 @@
         {% for connaissance in paginator %}
             <tr>
                 <td class="text-center">
-                    {% if connaissance.secret %}<span class="text-danger">Oui</span>{% else %}<span class="text-info">Non</span>{% endif %}
+                    {% if connaissance.secret %}<span class="text-warning">Oui</span>{% else %}<span class="text-info">Non</span>{% endif %}
                 </td>
                 <td>{{ connaissance.label|highlight(pagerService.searchValue) }}</td>
                 <td>
