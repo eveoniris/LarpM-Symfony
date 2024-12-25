@@ -204,7 +204,7 @@
                                  <a href="{{ path('technologie.detail', {'technologie': technologie.id }) }}">{{ technologie.label }}</a>
                              </div>
                              <a class="btn btn-sm btn-secondary"
-                                href="{{ path('personnage.admin.priere.delete', {'personnage': personnage.id, 'priere': priere.id }) }}">Supprimer</a>
+                                href="{{ path('personnage.admin.delete.technologie', {'personnage': personnage.id, 'technologie': technologie.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucune</div>
@@ -228,7 +228,7 @@
                                  <a href="{{ path('connaissance.detail', {'connaissance': connaissance.id }) }}">{{ connaissance.label }}</a>
                              </div>
                              <a class="btn btn-sm btn-secondary"
-                                href="{{ path('connaissance.admin.delete', {'personnage': personnage.id, 'connaissance': connaissance.id }) }}">Supprimer</a>
+                                href="{{ path('personnage.admin.delete.connaissance', {'personnage': personnage.id, 'connaissance': connaissance.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucune</div>
