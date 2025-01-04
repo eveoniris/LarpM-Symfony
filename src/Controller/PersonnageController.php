@@ -39,6 +39,7 @@ use App\Enum\FolderType;
 use App\Enum\Role;
 use App\Form\Personnage\PersonnageChronologieForm;
 use App\Form\Personnage\PersonnageDocumentForm;
+use App\Form\Personnage\PersonnageEditForm;
 use App\Form\Personnage\PersonnageIngredientForm;
 use App\Form\Personnage\PersonnageItemForm;
 use App\Form\Personnage\PersonnageLigneeForm;
@@ -68,6 +69,7 @@ use App\Form\TrombineForm;
 use App\Manager\GroupeManager;
 use App\Manager\PersonnageManager;
 use App\Repository\ConnaissanceRepository;
+use App\Repository\DomaineRepository;
 use App\Repository\PotionRepository;
 use App\Repository\PriereRepository;
 use App\Repository\SortRepository;
@@ -586,7 +588,8 @@ class PersonnageController extends AbstractController
         $message = $personnage->getNom()." n'est pas au moins Initié en Artisanat.";
         $limit = 1;
         foreach ($competences as $competence) {
-            if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily()?->getCompetenceFamilyType()?->value) {
+            if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily(
+                )?->getCompetenceFamilyType()?->value) {
                 if ($competence->getLevel()?->getIndex() >= 2) {
                     $message = false;
                     $errorLevel = 0;
@@ -625,15 +628,17 @@ class PersonnageController extends AbstractController
         Request $request,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Technologie $technologie,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $personnage->addTechnologie($technologie);
 
         $this->entityManager->flush();
 
         $this->addFlash('success', $technologie->getLabel().' a été ajoutée.');
 
-        return $this->redirectToReferer($request) ?? $this->redirectToRoute('personnage.admin.update.technologie', ['personnage' => $personnage->getId(), 303]);
+        return $this->redirectToReferer($request) ?? $this->redirectToRoute(
+            'personnage.admin.update.technologie',
+            ['personnage' => $personnage->getId(), 303]
+        );
     }
 
     /**
@@ -682,11 +687,8 @@ class PersonnageController extends AbstractController
     }
 
     #[Route('/{personnage}/enveloppe/print', name: 'enveloppe.print')]
-    public function enveloppePrintAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Personnage $personnage,
-    ): Response {
+    public function enveloppePrintAction(#[MapEntity] Personnage $personnage): Response
+    {
         return $this->render('personnage/enveloppe.twig', [
             'personnage' => $personnage,
             'langueMateriel' => $this->getLangueMateriel($personnage),
@@ -1173,14 +1175,20 @@ class PersonnageController extends AbstractController
     /**
      * Modification du personnage.
      */
-    #[Route('/{personnage}/update', name: 'admin.update')]
+    #[Route('/{personnage}/update', name: 'update')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
-        $form = $this->createForm(PersonnageUpdateForm::class, $personnage)
+
+        $editClass = PersonnageEditForm::class;
+        if ($this->isGranted(Role::SCENARISTE->value)) {
+            $editClass = PersonnageUpdateForm::class;
+        }
+
+        $form = $this->createForm($editClass, $personnage)
             ->add('save', SubmitType::class, [
                 'label' => 'Valider les modifications',
                 'attr' => [
@@ -1805,7 +1813,10 @@ class PersonnageController extends AbstractController
 
         $this->addFlash('success', $priere->getLabel().' a été ajoutée.');
 
-        return $this->redirectToReferer($request) ?? $this->redirectToRoute('personnage.admin.update.priere', ['personnage' => $personnage->getId(), 303]);
+        return $this->redirectToReferer($request) ?? $this->redirectToRoute(
+            'personnage.admin.update.priere',
+            ['personnage' => $personnage->getId(), 303]
+        );
     }
 
     /**
@@ -2289,6 +2300,17 @@ class PersonnageController extends AbstractController
         return $this->render('personnage/items.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{personnage}/magie', name: 'magie')]
+    public function magieAction(
+        #[MapEntity] Personnage $personnage,
+        DomaineRepository $domaineRepository,
+    ): RedirectResponse|Response {
+        return $this->render('personnage/magie.twig', [
+            'domaines' => $domaineRepository->findAll(),
+            'personnage' => $personnage,
         ]);
     }
 
