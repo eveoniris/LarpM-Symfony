@@ -1,4 +1,4 @@
-{% extends "layout_print.twig" %}
+{% extends "base.print.twig" %}
 
 {% block style %}
 <style>
@@ -8,7 +8,7 @@ body {
 </style>
 {% endblock style %}
 
-{% block body %}
+{% block content %}
 
 <div class="print-center">
 	<h2>#{{ personnage.id }} - {{ personnage.identity }}</h2>
@@ -131,4 +131,4 @@ body {
 	</ul>
 {% endif %}
 
-{% endblock body %}
+{% endblock content %}

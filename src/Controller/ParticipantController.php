@@ -66,6 +66,7 @@ use App\Form\RequestAllianceForm;
 use App\Form\RequestPeaceForm;
 use App\Form\TrombineForm;
 use App\Manager\GroupeManager;
+use App\Repository\DomaineRepository;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -440,6 +441,7 @@ class ParticipantController extends AbstractController
     /**
      * Modification de quelques informations concernant le personnage.
      */
+    #[deprecated()]
     #[Route('/participant/{participant}/personnageEdit', name: 'participant.personnage.edit')]
     public function personnageEditAction(
         Request $request,
@@ -2434,9 +2436,8 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/magie', name: 'participant.magie')]
     public function magieAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
+        DomaineRepository $domaineRepository
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2446,10 +2447,8 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $domaines = $entityManager->getRepository('\\'.Domaine::class)->findAll();
-
         return $this->render('magie/index.twig', [
-            'domaines' => $domaines,
+            'domaines' => $domaineRepository->findAll(),
             'personnage' => $personnage,
             'participant' => $participant,
         ]);

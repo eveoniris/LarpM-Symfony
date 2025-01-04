@@ -1,0 +1,75 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Magie{% endblock title %}
+
+{% block body %}
+
+    {% include 'personnage/fragment/breadcrumb.twig' with {'name': "La Magie pour #{personnage.publicName}"} %}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="well well-sm">
+
+                <div class="header">
+                    <h5>Coût de lancement des sorts</h5>
+                </div>
+
+                <table class="table table-condensed table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Niveau du sort</th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th>Coût en Perles dans le domaine du mage</th>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <th>Coût en Perles en dehors du domaine du mage</th>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <p>Exemple : Un sort de niveau 2 coutera 3 Perles au mage connaissant le domaine de magie du sort, et 4
+                    Perles au mage ne connaissant pas le domaine de magie.</p>
+            </div>
+
+
+            {% for domaine in domaines %}
+
+                <div class="well well-sm">
+                    <div class="header">
+                        <h5>{{ domaine.label }}</h5>
+                    </div>
+                    <p>{{ domaine.description|markdown_to_html }}</p>
+                    <div class="list-group">
+                        {# il ne fait afficher que les sorts correspondant au niveau du mage #}
+                        {% for sort in domaine.sorts %}
+                            {% if sort.niveau <= personnage.competenceNiveau('Magie') %}
+                                <div class="list-group-item">
+                                    <div class="list-group-item-heading">{{ sort.label }} -
+                                        Niveau {{ sort.niveau }}</div>
+                                    <div class="list-group-item-text">{{ sort.description|markdown_to_html }}</div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+    </div> <!-- end row -->
+
+{% endblock body %}
