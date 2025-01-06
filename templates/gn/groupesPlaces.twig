@@ -15,7 +15,6 @@
             <h5>{{ groupes|length }} groupes recherche des membres sur {{ gn.label }}</h5>
         </div>
 
-
         {% for groupe in groupes %}
             {% if groupe.pj %}
                 {% set session = groupe.getSession(gn) %}

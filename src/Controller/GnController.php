@@ -28,7 +28,8 @@ use Twig\Environment;
 class GnController extends AbstractController
 {
     #[Route('', name: 'list')]
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access tho this page.')]
+    // #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access tho this page.')]
+    #[IsGranted('ROLE_USER', message: 'You are not allowed to access tho this page.')]
     public function listAction(Request $request, GnRepository $gnRepository): Response
     {
         $page = $request->query->getInt('page', 1);
@@ -790,11 +791,7 @@ class GnController extends AbstractController
      * Liste des groupes recherchant des joueurs.
      */
     #[Route('/{gn}/groupes/avecPlace', name: 'groupesPlaces')]
-    public function groupesPlacesAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn
-    ): Response {
+    public function groupesPlacesAction(#[MapEntity] Gn $gn): Response {
         $groupesPlaces = new ArrayCollection();
         $groupes = $gn->getGroupes();
         foreach ($groupes as $groupe) {
@@ -810,7 +807,7 @@ class GnController extends AbstractController
         });
         $groupesPlaces = new ArrayCollection(iterator_to_array($iterator));
 
-        return $this->render('gn/groupesPlaces.twig', [
+        return $this->render('gn/groupes.twig', [
             'groupes' => $groupesPlaces,
             'gn' => $gn,
         ]);

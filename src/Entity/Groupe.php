@@ -36,7 +36,7 @@ class Groupe extends BaseGroupe implements \Stringable
     public function getSession(Gn $gn)
     {
         foreach ($this->getGroupeGns() as $groupeGn) {
-            if ($groupeGn->getGn() == $gn) {
+            if ($groupeGn->getGn() === $gn) {
                 return $groupeGn;
             }
         }

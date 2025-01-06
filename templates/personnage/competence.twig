@@ -105,7 +105,7 @@
                                 {# TODO APPRENTISSAGE #}
                             </h6>
                         </div>
-                        <div class="list-group-item-text">{{ competence.description }}</div>
+                        <div class="list-group-item-text">{{ competence.description|markdown_to_html }}</div>
                     </div>
                     </div>
                 {% endfor %}
