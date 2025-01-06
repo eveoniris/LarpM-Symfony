@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OrderBy;
 
 #[Entity]
 #[ORM\Table(name: 'groupe')]
@@ -91,6 +92,7 @@ class BaseGroupe
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeGn::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
+    #[OrderBy(["groupe" => "ASC"])]
     protected Collection $groupeGns;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeHasIngredient::class, cascade: ['persist', 'remove'])]

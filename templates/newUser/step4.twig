@@ -3,17 +3,21 @@
 {% block title %}Configuration du compte - Etape 5{% endblock title %}
 
 {% block body %}
-<div class="jumbotron">
-  <h1><i class="fa fa-thumbs-up" aria-hidden="true"></i> Merci !</h1>
-  <hr />
-  <p>Votre compte est maintenant complet.</p>
-  <div class="clearfix">
-  	<div class="pull-right">
-  		<p>
-  			<a class="btn btn-primary btn-lg" href="{{ path('newUser.step3') }}" role="button"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Etape précédente</a>
-  			<a class="btn btn-primary btn-lg" href="{{ path('homepage') }}" role="button">Fin <i class="fa fa-exclamation" aria-hidden="true"></i></a>
-  		</p>
-  	</div>
-  </div>
-</div>
+    <div class="well well-sm" data-turbo="false">
+        <div class="header">
+            <h5><i class="fa fa-thumbs-up" aria-hidden="true"></i> Merci !</h5>
+        </div>
+
+        <p>Votre compte est maintenant complet.</p>
+        <div class="clearfix">
+            <div class="pull-right">
+                <p>
+                    <a class="btn btn-secondary btn-lg" href="{{ path('user.new-step3') }}" role="button"><i
+                                class="fa fa-angle-double-left" aria-hidden="true"></i> Étape précédente</a>
+                    <a class="btn btn-secondary btn-lg" href="{{ path('homepage') }}" role="button">Fin <i
+                                class="fa fa-exclamation" aria-hidden="true"></i></a>
+                </p>
+            </div>
+        </div>
+    </div>
 {% endblock body %}

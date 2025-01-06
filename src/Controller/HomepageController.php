@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\When;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,133 +25,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class HomepageController extends AbstractController
 {
-    public function indexAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
-    {
-        if (!$this->getUser()) {
-            return $this->notConnectedIndexAction();
-        }
-
-        if (!$this->getUser()->getEtatCivil()) {
-            return $this->redirectToRoute('newUser.step1', [], 303);
-        }
-
-        $repoAnnonce = $entityManager->getRepository(Annonce::class);
-        $annonces = $repoAnnonce->findBy(['archive' => false, 'gn' => null], ['update_date' => 'DESC']);
-
-        return $this->render('homepage/index.twig', [
-            'annonces' => $annonces,
-            'user' => $this->getUser(),
-        ]);
-    }
-
-    /**
-     * Page d'acceuil pour les utilisateurs non connecté.
-     */
-    public function notConnectedIndexAction(): Response
-    {
-        return $this->render('homepage/not_connected.twig');
-    }
-
-    /**
-     * Première étape pour un nouvel utilisateur.
-     */
-    // TODO : migrate to UserController?
-    #[Route('/user/new/step1', name: 'user.new-step1')]
-    public function newUserStep1Action(EntityManagerInterface $entityManager): Response
-    {
-        if ($this->getUser()?->getEtatCivil()) {
-            $repoAnnonce = $entityManager->getRepository(Annonce::class);
-            $annonces = $repoAnnonce->findBy(['archive' => false, 'gn' => null], ['update_date' => 'DESC']);
-
-            return $this->render('homepage/index.twig', [
-                'annonces' => $annonces,
-                'user' => $this->getUser(),
-            ]);
-        }
-
-        // Todo : in homepage/new-user/step1 or in user/new/step
-        return $this->render('newUser/step1.twig', []);
-    }
-
-    /**
-     * Seconde étape pour un nouvel utilisateur : enregistrer les informations administratives.
-     */
-    #[Route('/user/new/step2', name: 'user.new-step2')]
-    public function newUserStep2Action(Request $request): RedirectResponse|Response
-    {
-        $etatCivil = $this->getUser()?->getEtatCivil();
-        if (!$etatCivil) {
-            $etatCivil = new EtatCivil();
-        }
-
-        $form = $this->createForm(EtatCivilForm::class, $etatCivil);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $etatCivil = $form->getData();
-            $this->getUser()->setEtatCivil($etatCivil);
-
-            $this->entityManager->persist($this->getUser());
-            $this->entityManager->flush();
-
-            return $this->redirectToRoute('newUser.step3', [], 303);
-        }
-
-        return $this->render('newUser/step2.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Troisième étape pour un nouvel utilisateur : les restrictions alimentaires.
-     */
-    public function newUserStep3Action(Request $request, EntityManagerInterface $entityManager)
-    {
-        $form = $this->createForm(UserRestrictionForm::class, $this->getUser());
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $User = $form->getData();
-            $newRestriction = $form->get('new_restriction')->getData();
-            if ($newRestriction) {
-                $restriction = new Restriction();
-                $restriction->setUserRelatedByAuteurId($this->getUser());
-                $restriction->setLabel($newRestriction);
-
-                $entityManager->persist($restriction);
-                $User->addRestriction($restriction);
-            }
-
-            $entityManager->persist($User);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('newUser.step4', [], 303);
-        }
-
-        return $this->render('newUser/step3.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Quatrième étape pour un nouvel utilisateur : choisir un GN.
-     */
-    public function newUserStep4Action(Request $request, EntityManagerInterface $entityManager)
-    {
-        return $this->render('newUser/step4.twig');
-    }
-
-    /**
-     * Affiche une carte du monde.
-     */
-    #[Route('/world', name: 'world')]
-    public function worldAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        return $this->render('world.twig');
-    }
-
     /**
      * Fourni la liste des pays, leur geographie et leur description.
      */
@@ -158,6 +32,74 @@ class HomepageController extends AbstractController
     public function countriesAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         return $this->getWorldTerritoireGeoData('countries');
+    }
+
+    private function getWorldTerritoireGeoData(string $type): JsonResponse
+    {
+        $repoTerritoire = $this->entityManager->getRepository(Territoire::class);
+
+        $territoires = match ($type) {
+            'fiefs' => $repoTerritoire->findFiefs(),
+            'countries' => $repoTerritoire->findRoot(),
+            'regions' => $repoTerritoire->findRegions(),
+            default => throw new \Exception('Unkonw territoire type : '.$type),
+        };
+
+        $data = [];
+        foreach ($territoires as $territoire) {
+            $data[] = $this->addGeoData($territoire);
+        }
+
+        return new JsonResponse($data);
+    }
+
+    private function addGeoData($data): array
+    {
+        return [
+            'id' => $data->getId(),
+            'geom' => $data->getGeojson(),
+            'name' => $data->getNom(),
+            'color' => $data->getColor(),
+            'description' => strip_tags((string)$data->getDescription()),
+            'groupes' => array_values($data->getGroupesPj()),
+            'desordre' => $data->getStatutIndex(),
+            'langue' => $data->getLanguePrincipale(),
+        ];
+    }
+
+    /**
+     * Affiche les informations de dev.
+     */
+    #[Route('/dev', name: 'dev')]
+    #[When(env: 'dev')]
+    public function devAction(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        return $this->render('homepage/dev.twig');
+    }
+
+    /**
+     * Affiche une page récapitulatif des liens pour discuter.
+     */
+    public function discuterAction(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        return $this->render('discuter.twig');
+    }
+
+    /**
+     * Affiche une page récapitulatif des événements.
+     */
+    public function evenementAction(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        return $this->render('evenement.twig');
+    }
+
+    /**
+     * Fourni la liste des fiefs.
+     */
+    #[Route('/world/fiefs.json', name: 'world.fiefs.json')]
+    public function fiefsAction(): JsonResponse
+    {
+        return $this->getWorldTerritoireGeoData('fiefs');
     }
 
     #[Route('/api/{gn}/gdata', name: 'api.gdata', requirements: ['gn' => Requirement::DIGITS])]
@@ -203,61 +145,83 @@ class HomepageController extends AbstractController
         return new JsonResponse($results, empty($results) ? 204 : 200);
     }
 
-    private function getWorldTerritoireGeoData(string $type): JsonResponse
+    /**
+     * Fourni la liste des groupes.
+     */
+    public function groupesAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $repoTerritoire = $this->entityManager->getRepository(Territoire::class);
+        // recherche le prochain GN
+        $gnRepo = $entityManager->getRepository(Gn::class);
+        $gn = $gnRepo->findNext();
 
-        $territoires = match ($type) {
-            'fiefs' => $repoTerritoire->findFiefs(),
-            'countries' => $repoTerritoire->findRoot(),
-            'regions' => $repoTerritoire->findRegions(),
-            default => throw new \Exception('Unkonw territoire type : '.$type),
-        };
+        $groupeGnList = $gn->getGroupeGns();
 
-        $data = [];
-        foreach ($territoires as $territoire) {
-            $data[] = $this->addGeoData($territoire);
+        $groupes = [];
+        foreach ($groupeGnList as $groupeGn) {
+            $groupe = $groupeGn->getGroupe();
+            if (true === $groupe->getPj()) {
+                $geom = null;
+                if ($groupe->getTerritoires()->count() > 0) {
+                    $territoire = $groupe->getTerritoires()->first();
+                    $geom = $territoire->getGeojson();
+                }
+
+                // mettre en surbrillance le groupe de l'utilisateur
+                $highlight = false;
+                if ($this->getUser()) {
+                    foreach ($this->getUser()->getParticipants() as $participant) {
+                        if ($participant->getGn() == $gn && $participant->getGroupeGn()) {
+                            if ($participant->getGroupeGn()->getGroupe() == $groupe) {
+                                $highlight = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                $groupes[] = [
+                    'id' => $groupe->getId(),
+                    'nom' => $groupe->getNom(),
+                    'geom' => $geom,
+                    'highlight' => $highlight,
+                ];
+            }
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse($groupes);
     }
 
-    private function addGeoData($data): array
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        return [
-            'id' => $data->getId(),
-            'geom' => $data->getGeojson(),
-            'name' => $data->getNom(),
-            'color' => $data->getColor(),
-            'description' => strip_tags((string) $data->getDescription()),
-            'groupes' => array_values($data->getGroupesPj()),
-            'desordre' => $data->getStatutIndex(),
-            'langue' => $data->getLanguePrincipale(),
-        ];
-    }
+        if (!$this->getUser()) {
+            return $this->notConnectedIndexAction();
+        }
 
-    /**
-     * Fourni la liste des régions.
-     */
-    #[Route('/world/regions.json', name: 'world.regions.json')]
-    public function regionsAction(EntityManagerInterface $entityManager)
-    {
-        return $this->getWorldTerritoireGeoData('regions');
+        if (!$this->getUser()->getEtatCivil()) {
+            return $this->redirectToRoute('newUser.step1', [], 303);
+        }
+
+        $repoAnnonce = $entityManager->getRepository(Annonce::class);
+        $annonces = $repoAnnonce->findBy(['archive' => false, 'gn' => null], ['update_date' => 'DESC']);
+
+        return $this->render('homepage/index.twig', [
+            'annonces' => $annonces,
+            'user' => $this->getUser(),
+        ]);
     }
 
     /**
-     * Fourni la liste des fiefs.
+     * Page d'acceuil pour les utilisateurs non connecté.
      */
-    #[Route('/world/fiefs.json', name: 'world.fiefs.json')]
-    public function fiefsAction(): JsonResponse
+    public function notConnectedIndexAction(): Response
     {
-        return $this->getWorldTerritoireGeoData('fiefs');
+        return $this->render('homepage/not_connected.twig');
     }
 
     /**
      * Fourni la liste des langues.
      */
-    public function languesAction(Request $request, EntityManagerInterface $entityManager)
+    public function languesAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $langueList = $entityManager->getRepository(Langue::class)->findAll();
 
@@ -326,55 +290,35 @@ class HomepageController extends AbstractController
     }
 
     /**
-     * Fourni la liste des groupes.
+     * Affiche les mentions légales.
      */
-    public function groupesAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/legal', name: 'legal')]
+    public function legalAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        // recherche le prochain GN
-        $gnRepo = $entityManager->getRepository(Gn::class);
-        $gn = $gnRepo->findNext();
+        return $this->render('homepage/legal.twig');
+    }
 
-        $groupeGnList = $gn->getGroupeGns();
+    /**
+     * Statistiques du projet.
+     */
+    public function metricsAction(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        return $this->render('homepage/metrics/report.html');
+    }
 
-        $groupes = [];
-        foreach ($groupeGnList as $groupeGn) {
-            $groupe = $groupeGn->getGroupe();
-            if (true === $groupe->getPj()) {
-                $geom = null;
-                if ($groupe->getTerritoires()->count() > 0) {
-                    $territoire = $groupe->getTerritoires()->first();
-                    $geom = $territoire->getGeojson();
-                }
-
-                // mettre en surbrillance le groupe de l'utilisateur
-                $highlight = false;
-                if ($this->getUser()) {
-                    foreach ($this->getUser()->getParticipants() as $participant) {
-                        if ($participant->getGn() == $gn && $participant->getGroupeGn()) {
-                            if ($participant->getGroupeGn()->getGroupe() == $groupe) {
-                                $highlight = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                $groupes[] = [
-                    'id' => $groupe->getId(),
-                    'nom' => $groupe->getNom(),
-                    'geom' => $geom,
-                    'highlight' => $highlight,
-                ];
-            }
-        }
-
-        return new JsonResponse($groupes);
+    /**
+     * Fourni la liste des régions.
+     */
+    #[Route('/world/regions.json', name: 'world.regions.json')]
+    public function regionsAction(EntityManagerInterface $entityManager): JsonResponse
+    {
+        return $this->getWorldTerritoireGeoData('regions');
     }
 
     /**
      * Met à jour la geographie d'un pays.
      */
-    public function updateCountryGeomAction(Request $request, EntityManagerInterface $entityManager)
+    public function updateCountryGeomAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $territoire = $request->get('territoire');
         $geom = $request->get('geom');
@@ -390,7 +334,7 @@ class HomepageController extends AbstractController
             'id' => $territoire->getId(),
             'geom' => $territoire->getGeojson(),
             'name' => $territoire->getNom(),
-            'description' => strip_tags((string) $territoire->getDescription()),
+            'description' => strip_tags((string)$territoire->getDescription()),
             'groupes' => array_values($territoire->getGroupesPj()),
         ];
 
@@ -398,45 +342,11 @@ class HomepageController extends AbstractController
     }
 
     /**
-     * Affiche une page récapitulatif des liens pour discuter.
+     * Affiche une carte du monde.
      */
-    public function discuterAction(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/world', name: 'world')]
+    public function worldAction(): Response
     {
-        return $this->render('discuter.twig');
-    }
-
-    /**
-     * Affiche une page récapitulatif des événements.
-     */
-    public function evenementAction(Request $request, EntityManagerInterface $entityManager)
-    {
-        return $this->render('evenement.twig');
-    }
-
-    /**
-     * Affiche les mentions légales.
-     */
-    #[Route('/legal', name: 'legal')]
-    public function legalAction(Request $request, EntityManagerInterface $entityManager)
-    {
-        return $this->render('homepage/legal.twig');
-    }
-
-    /**
-     * Affiche les informations de dev.
-     */
-    #[Route('/dev', name: 'dev')]
-    #[When(env: 'dev')]
-    public function devAction(Request $request, EntityManagerInterface $entityManager)
-    {
-        return $this->render('homepage/dev.twig');
-    }
-
-    /**
-     * Statistiques du projet.
-     */
-    public function metricsAction(Request $request, EntityManagerInterface $entityManager)
-    {
-        return $this->render('homepage/metrics/report.html');
+        return $this->render('world.twig');
     }
 }

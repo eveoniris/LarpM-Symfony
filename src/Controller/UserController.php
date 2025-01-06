@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Annonce;
+use App\Entity\EtatCivil;
 use App\Entity\Gn;
 use App\Entity\Participant;
 use App\Entity\Restriction;
@@ -48,28 +50,120 @@ class UserController extends AbstractController
     private bool $isPasswordResetEnabled = true;
 
     /**
-     * Genere un mot de passe aléatoire.
-     *
-     * @param number $length
-     *
-     * @return string $password
+     * Affiche le détail d'un billet d'un utilisateur.
      */
-    protected function generatePassword($length = 10): string
-    {
-        $alphabets = range('A', 'Z');
-        $numbers = range('0', '9');
-        $additional_characters = ['_', '.'];
+    public function UserHasBilletDetailAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        UserHasBillet $UserHasBillet
+    ) {
+        if ($UserHasBillet->getUser() != $this->getUser()) {
+            $this->addFlash('error', 'Vous ne pouvez pas acceder à cette information');
 
-        $final_array = array_merge($alphabets, $numbers, $additional_characters);
-
-        $password = '';
-
-        while ($length--) {
-            $key = array_rand($final_array);
-            $password .= $final_array[$key];
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $password;
+        return $this->render('UserHasBillet/detail.twig', [
+            'UserHasBillet' => $UserHasBillet,
+        ]);
+    }
+
+    /**
+     * Affiche la liste des billets de l'utilisateur.
+     */
+    public function UserHasBilletListAction(EntityManagerInterface $entityManager, Request $request): Response
+    {
+        $UserHasBillets = $this->getUser()->getUserHasBillets();
+
+        return $this->render('UserHasBillet/list.twig', [
+            'UserHasBillets' => $UserHasBillets,
+        ]);
+    }
+
+    /**
+     * Liste des utilisateurs.
+     * Todo voir pour lien vers Personnages, Groupes et Participation (ou sur le détail).
+     */
+    #[Route('/user/admin/list', name: 'user.admin.list')]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    public function adminListAction(Request $request, UserRepository $userRepository): Response
+    {
+        $type = null;
+        $value = null;
+
+        $userSearch = new ListSearch();
+        $form = $this->createForm(UserFindForm::class, $userSearch);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $type = $data->getType();
+            $value = $data->getValue();
+        }
+
+        /** Sample with QUERY
+         * $query = $userRepository->createQueryBuilder('u')
+         * ->orderBy('u.'.$orderBy, $orderDir);.
+         *
+         * if ($type) {
+         * $query->where($type.' = :type');
+         * $query->setParameter('type', $value);
+         * }
+         * $paginator = $userRepository->findPaginatedQuery(
+         * $query->getQuery()
+         * );
+         */
+        $alias = UserRepository::getEntityAlias();
+
+        $criterias = [];
+        if (!empty($value)) {
+            if (empty($type) || '*' === $type) {
+                if (is_numeric($value)) {
+                    $criterias[] = Criteria::create()->where(
+                        Criteria::expr()?->contains($alias.'.id', $value)
+                    );
+                } else {
+                    $criterias[] = Criteria::create()->where(
+                        Criteria::expr()?->contains($alias.'.username', $value)
+                    )->orWhere(
+                        Criteria::expr()?->contains($alias.'.email', $value)
+                    )->orWhere(
+                        Criteria::expr()?->contains($alias.'.roles', $value)
+                    )/*->orWhere(
+                        Criteria::expr()?->contains('ec'.'.nom', $value)
+                    )->orWhere(
+                        Criteria::expr()?->contains('ec'.'.prenom', $value)
+                    )*/
+                    ;
+                }
+            } else {
+                $criterias[] = Criteria::create()->andWhere(
+                    Criteria::expr()?->contains($alias.'.'.$type, $value)
+                );
+            }
+        }
+
+        $orderBy = $this->getRequestOrder(
+            defOrderBy: 'username',
+            alias: $alias,
+            allowedFields: $userRepository->getFieldNames()
+        );
+
+        $paginator = $userRepository->getPaginator(
+            limit: $this->getRequestLimit(),
+            page: $this->getRequestPage(),
+            orderBy: $orderBy,
+            alias: $alias,
+            criterias: $criterias
+        );
+
+        return $this->render(
+            'user/list.twig',
+            [
+                'paginator' => $paginator,
+                'form' => $form->createView(),
+            ]
+        );
     }
 
     /**
@@ -133,25 +227,159 @@ class UserController extends AbstractController
     }
 
     /**
-     * Choix du personnage par défaut de l'utilisateur.
+     * Genere un mot de passe aléatoire.
+     *
+     * @param number $length
+     *
+     * @return string $password
      */
-    public function personnageDefaultAction(EntityManagerInterface $entityManager, Request $request, User $User)
+    protected function generatePassword($length = 10): string
     {
-        if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN') && !$User == $this->getUser()) {
-            $this->addFlash('error', 'Vous n\'avez pas les droits necessaires pour cette opération.');
+        $alphabets = range('A', 'Z');
+        $numbers = range('0', '9');
+        $additional_characters = ['_', '.'];
 
-            return $this->redirectToRoute('homepage', [], 303);
+        $final_array = array_merge($alphabets, $numbers, $additional_characters);
+
+        $password = '';
+
+        while ($length--) {
+            $key = array_rand($final_array);
+            $password .= $final_array[$key];
         }
 
-        $form = $this->createForm(UserPersonnageDefaultForm::class, $this->getUser(), ['User_id' => $User->getId()])
+        return $password;
+    }
+
+    #[Route('/user/{user}/confirm/{token}', name: 'user.confirm-email')]
+    public function confirmEmailAction(
+        EntityManagerInterface $entityManager,
+        $token,
+        #[MapEntity] User $user,
+        Security $security
+    ): RedirectResponse {
+        if ($user->getConfirmationToken() !== $token) {
+            $this->addFlash('alert', 'Désolé, votre lien de confirmation a expiré.');
+
+            return $this->redirectToRoute('app_login');
+        }
+
+        $user->setConfirmationToken(null);
+        $user->setEnabled(true);
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        $security->login(
+            $user,
+            'form_login',
+            'main',
+            [(new RememberMeBadge())->enable()]
+        );
+
+        $this->addFlash('alert', 'Merci ! Votre compte a été activé.');
+
+        return $this->redirectToRoute('user.new-step1', ['user' => $user->getId()]);
+    }
+
+    /**
+     * Edit User action.
+     *
+     * @throws NotFoundHttpException if no User is found with that ID
+     */
+    #[Route('/user/{user}/edit', name: 'user.edit')]
+    public function editAction(
+        Request $request,
+        #[MapEntity] ?User $user,
+        UserPasswordHasherInterface $passwordHasher,
+        UserRepository $repository
+    ): Response {
+        $errors = [];
+
+        if (!$user) {
+            throw new NotFoundHttpException('No User was found with that ID.');
+        }
+
+        if ($request->isMethod('POST')) {
+            $user->setEmail($request->request->get('email'));
+            if ($request->request->has('username')) {
+                $user->setUsername($request->request->get('username'));
+            }
+
+            $password = $request->request->get('password');
+            if ($password) {
+                $hashedPassword = $passwordHasher->hashPassword($user, $password);
+
+                if ($password !== $request->request->get('confirm_password')) {
+                    $errors['password'] = "Passwords don't match.";
+                } elseif ($error = $user->validatePasswordStrength($password)) {
+                    $errors['password'] = $error;
+                } else {
+                    $user->setPassword($hashedPassword);
+                }
+            }
+
+            $roles = $request->request->all('roles');
+            if (
+                !empty($roles)
+                && $this->isGranted(User::ROLE_ADMIN)
+            ) {
+                $user->setRoles($roles);
+            }
+
+            if ($repository->emailExists($user)) {
+                $errors[] = "L'adresse e-mail existe déjà";
+            }
+
+            if ($repository->usernameExists($user)) {
+                $errors[] = "Nom d'utilisateur existe déjà";
+            }
+
+            if ([] === $errors) {
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+                $msg = 'Saved account information.'.($request->request->get('password') ? ' Changed password.' : '');
+                $this->addFlash('alert', $msg);
+            }
+        }
+
+        $availableLabels = [];
+        foreach (User::getAvailableRoles() as $availableLabel) {
+            $availableLabels[] = ['label' => $availableLabel, 'value' => $availableLabel];
+        }
+
+        return $this->render(
+            'user/update.twig',
+            [
+                'error' => implode("\n", $errors),
+                'user' => $user,
+                'available_roles' => $availableLabels,
+            ]
+        );
+    }
+
+    /**
+     * Enregistrement de l'état-civil.
+     */
+    #[Route('/user/etatCivil', name: 'user.etatCivil')]
+    public function etatCivilAction(EntityManagerInterface $entityManager, Request $request)
+    {
+        $etatCivil = $this->getUser()->getEtatCivil();
+
+        if (!$etatCivil) {
+            $etatCivil = new \App\Entity\EtatCivil();
+        }
+
+        $form = $this->createForm(EtatCivilForm::class, $etatCivil)
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $User = $form->getData();
+            $etatCivil = $form->getData();
+            $this->getUser()->setEtatCivil($etatCivil);
 
-            $entityManager->persist($User);
+            $entityManager->persist($this->getUser());
+            $entityManager->persist($etatCivil);
             $entityManager->flush();
 
             $this->addFlash('success', 'Vos informations ont été enregistrées.');
@@ -159,9 +387,26 @@ class UserController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $this->render('user/personnageDefault.twig', [
+        return $this->render('user/etatCivil.twig', [
             'form' => $form->createView(),
-            'User' => $User,
+        ]);
+    }
+
+    /**
+     * Affiche les informations de la fédéGN.
+     */
+    #[Route('/user/fedegn', name: 'user.fedegn')]
+    public function fedegnAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        FedegnManager $fedegnManager
+    ): Response {
+        $etatCivil = $this->getUser()->getEtatCivil();
+
+        // $statutEtatCivil = $fedegnManager->test($etatCivil);
+        return $this->render('user/fedegn.twig', [
+            'etatCivil' => $etatCivil,
+            'fedegnManager' => $fedegnManager,
         ]);
     }
 
@@ -277,42 +522,6 @@ class UserController extends AbstractController
     }
 
     /**
-     * Choix des restrictions alimentaires par l'utilisateur.
-     */
-    #[Route('/user/restriction', name: 'user.restriction')]
-    public function restrictionAction(EntityManagerInterface $entityManager, Request $request)
-    {
-        $form = $this->createForm(UserRestrictionForm::class, $this->getUser())
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $User = $form->getData();
-            $newRestriction = $form->get('new_restriction')->getData();
-            if ($newRestriction) {
-                $restriction = new Restriction();
-                $restriction->setUserRelatedByAuteurId($this->getUser());
-                $restriction->setLabel($newRestriction);
-
-                $entityManager->persist($restriction);
-                $User->addRestriction($restriction);
-            }
-
-            $entityManager->persist($User);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Vos informations ont été enregistrées.');
-
-            return $this->redirectToRoute('homepage', [], 303);
-        }
-
-        return $this->render('user/restriction.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
      * Formulaire de participation à un jeu.
      */
     #[Route('/user/{gn}/participe', name: 'user.gn.participe')]
@@ -324,7 +533,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid() && (!$gn->getBesoinValidationCi(
-        ) || 'ok' == $request->request->get('acceptCi'))) {
+                ) || 'ok' == $request->request->get('acceptCi'))) {
             $participant = new Participant();
             $participant->setUser($this->getUser());
             $participant->setGn($gn);
@@ -375,176 +584,8 @@ class UserController extends AbstractController
         ]);
     }
 
-    /**
-     * Affiche le détail d'un billet d'un utilisateur.
-     */
-    public function UserHasBilletDetailAction(
-        EntityManagerInterface $entityManager,
-        Request $request,
-        UserHasBillet $UserHasBillet
-    ) {
-        if ($UserHasBillet->getUser() != $this->getUser()) {
-            $this->addFlash('error', 'Vous ne pouvez pas acceder à cette information');
-
-            return $this->redirectToRoute('homepage', [], 303);
-        }
-
-        return $this->render('UserHasBillet/detail.twig', [
-            'UserHasBillet' => $UserHasBillet,
-        ]);
-    }
-
-    /**
-     * Affiche la liste des billets de l'utilisateur.
-     */
-    public function UserHasBilletListAction(EntityManagerInterface $entityManager, Request $request)
-    {
-        $UserHasBillets = $this->getUser()->getUserHasBillets();
-
-        return $this->render('UserHasBillet/list.twig', [
-            'UserHasBillets' => $UserHasBillets,
-        ]);
-    }
-
-    /**
-     * Affiche les informations de la fédéGN.
-     */
-    #[Route('/user/fedegn', name: 'user.fedegn')]
-    public function fedegnAction(EntityManagerInterface $entityManager, Request $request, FedegnManager $fedegnManager)
-    {
-        $etatCivil = $this->getUser()->getEtatCivil();
-
-        // $statutEtatCivil = $fedegnManager->test($etatCivil);
-        return $this->render('user/fedegn.twig', [
-            'etatCivil' => $etatCivil,
-            'fedegnManager' => $fedegnManager,
-        ]);
-    }
-
-    /**
-     * Enregistrement de l'état-civil.
-     */
-    #[Route('/user/etatCivil', name: 'user.etatCivil')]
-    public function etatCivilAction(EntityManagerInterface $entityManager, Request $request)
-    {
-        $etatCivil = $this->getUser()->getEtatCivil();
-
-        if (!$etatCivil) {
-            $etatCivil = new \App\Entity\EtatCivil();
-        }
-
-        $form = $this->createForm(EtatCivilForm::class, $etatCivil)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $etatCivil = $form->getData();
-            $this->getUser()->setEtatCivil($etatCivil);
-
-            $entityManager->persist($this->getUser());
-            $entityManager->persist($etatCivil);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Vos informations ont été enregistrées.');
-
-            return $this->redirectToRoute('homepage', [], 303);
-        }
-
-        return $this->render('user/etatCivil.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Création d'un utilisateur.
-     *
-     * @return User
-     *
-     * @throws \InvalidArgumentException
-     */
-    protected function createUserFromRequest(EntityManagerInterface $entityManager, Request $request)
-    {
-        if ($request->request->get('password') != $request->request->get('confirm_password')) {
-            throw new \InvalidArgumentException("Passwords don't match.");
-        }
-
-        $user = new User();
-        if (!empty($plainPassword)) {
-            $this->setUserPassword($user, $plainPassword);
-        }
-
-        if (null !== $name) {
-            $user->setUsername($name);
-        }
-
-        if (!empty($roles)) {
-            $user->setRoles($roles);
-        }
-
-        $User = $app['User.manager']->createUser(
-            $request->request->get('email'),
-            $request->request->get('password'),
-            $request->request->get('name') ?: null,
-            ['ROLE_USER']
-        );
-
-        if ($Username = $request->request->get('Username')) {
-            $User->setUsername($Username);
-        }
-
-        $errors = $app['User.manager']->validate($User);
-
-        if (!empty($errors)) {
-            throw new \InvalidArgumentException(implode("\n", $errors));
-        }
-
-        return $User;
-    }
-
-    /**
-     * Affiche le détail de l'utilisateur courant.
-     */
-    #[Route('/self', name: 'user.self')]
-    public function viewSelfAction(Request $request): Response|RedirectResponse
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        return $this->forward(
-            'App\Controller\UserController::viewAction',
-            [
-                'id' => $user->getId(),
-            ]
-        );
-    }
-
-    /**
-     * View User action.
-     *
-     * @throws NotFoundHttpException if no User is found with that ID
-     */
-    #[Route('/user/{user}', name: 'user.view', requirements: ['user' => Requirement::DIGITS])]
-    #[Route('/user/{user}', name: 'user.detail', requirements: ['user' => Requirement::DIGITS])]
-    public function viewAction(Request $request, #[MapEntity] User $user): Response
-    {
-        if (!$user) {
-            throw new NotFoundHttpException('No user was found with that ID.');
-        }
-
-        if (!$user->isEnabled() && !$this->isGranted('ROLE_ADMIN')) {
-            throw new NotFoundHttpException('That User is disabled (pending email confirmation).');
-        }
-
-        return $this->render('user/detail.twig', ['user' => $user]);
-    }
-
     #[Route('/user/like', name: 'user.like')]
-    public function likeAction(EntityManagerInterface $entityManager, Request $request, User $User)
+    public function likeAction(EntityManagerInterface $entityManager, Request $request, User $User): RedirectResponse
     {
         if ($User == $this->getUser()) {
             $this->addFlash(
@@ -562,84 +603,8 @@ class UserController extends AbstractController
         return $this->redirectToRoute('User.view', ['id' => $User->getId()]);
     }
 
-    /**
-     * Edit User action.
-     *
-     * @throws NotFoundHttpException if no User is found with that ID
-     */
-    #[Route('/user/{user}/edit', name: 'user.edit')]
-    public function editAction(
-        Request $request,
-        #[MapEntity] ?User $user,
-        UserPasswordHasherInterface $passwordHasher,
-        UserRepository $repository
-    ): Response {
-        $errors = [];
-
-        if (!$user) {
-            throw new NotFoundHttpException('No User was found with that ID.');
-        }
-
-        if ($request->isMethod('POST')) {
-            $user->setEmail($request->request->get('email'));
-            if ($request->request->has('username')) {
-                $user->setUsername($request->request->get('username'));
-            }
-
-            $password = $request->request->get('password');
-            if ($password) {
-                $hashedPassword = $passwordHasher->hashPassword($user, $password);
-
-                if ($password !== $request->request->get('confirm_password')) {
-                    $errors['password'] = "Passwords don't match.";
-                } elseif ($error = $user->validatePasswordStrength($password)) {
-                    $errors['password'] = $error;
-                } else {
-                    $user->setPassword($hashedPassword);
-                }
-            }
-
-            $roles = $request->request->all('roles');
-            if (
-                !empty($roles)
-                && $this->isGranted(User::ROLE_ADMIN)
-            ) {
-                $user->setRoles($roles);
-            }
-
-            if ($repository->emailExists($user)) {
-                $errors[] = "L'adresse e-mail existe déjà";
-            }
-
-            if ($repository->usernameExists($user)) {
-                $errors[] = "Nom d'utilisateur existe déjà";
-            }
-
-            if ([] === $errors) {
-                $this->entityManager->persist($user);
-                $this->entityManager->flush();
-                $msg = 'Saved account information.'.($request->request->get('password') ? ' Changed password.' : '');
-                $this->addFlash('alert', $msg);
-            }
-        }
-
-        $availableLabels = [];
-        foreach (User::getAvailableRoles() as $availableLabel) {
-            $availableLabels[] = ['label' => $availableLabel, 'value' => $availableLabel];
-        }
-
-        return $this->render(
-            'user/update.twig',
-            [
-                'error' => implode("\n", $errors),
-                'user' => $user,
-                'available_roles' => $availableLabels,
-            ]
-        );
-    }
-
     #[Route('/user', name: 'user.login')]
-    public function loginAction(EntityManagerInterface $entityManager, Request $request)
+    public function loginAction(EntityManagerInterface $entityManager, Request $request): Response
     {
         $authException = $app['User.last_auth_exception']($request);
 
@@ -663,90 +628,133 @@ class UserController extends AbstractController
         ]);
     }
 
-    /**
-     * Liste des utilisateurs.
-     * Todo voir pour lien vers Personnages, Groupes et Participation (ou sur le détail).
-     */
-    #[Route('/user/admin/list', name: 'user.admin.list')]
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
-    public function adminListAction(Request $request, UserRepository $userRepository): Response
+    #[Route('/user/new/step1', name: 'user.new-step1')]
+    public function newUserStep1Action(EntityManagerInterface $entityManager): Response
     {
-        $type = null;
-        $value = null;
+        if ($this->getUser()?->getEtatCivil()) {
+            $repoAnnonce = $entityManager->getRepository(Annonce::class);
+            $annonces = $repoAnnonce->findBy(['archive' => false, 'gn' => null], ['update_date' => 'DESC']);
 
-        $userSearch = new ListSearch();
-        $form = $this->createForm(UserFindForm::class, $userSearch);
+            return $this->render('homepage/index.twig', [
+                'annonces' => $annonces,
+                'user' => $this->getUser(),
+            ]);
+        }
+
+        // Todo : in homepage/new-user/step1 or in user/new/step
+        return $this->render('newUser/step1.twig', []);
+    }
+
+    /**
+     * Seconde étape pour un nouvel utilisateur : enregistrer les informations administratives.
+     */
+    #[Route('/user/new/step2', name: 'user.new-step2')]
+    public function newUserStep2Action(Request $request): RedirectResponse|Response
+    {
+        $etatCivil = $this->getUser()?->getEtatCivil();
+        if (!$etatCivil) {
+            $etatCivil = new EtatCivil();
+        }
+
+        $form = $this->createForm(EtatCivilForm::class, $etatCivil)
+            ->add(
+                'valider',
+                SubmitType::class,
+                ['label' => 'Étape suivante', 'attr' => ['class' => 'btn btn-secondary']]
+            );
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $type = $data->getType();
-            $value = $data->getValue();
+            $etatCivil = $form->getData();
+            $this->getUser()->setEtatCivil($etatCivil);
+
+            $this->entityManager->persist($this->getUser());
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('user.new-step3', [], 303);
         }
 
-        /** Sample with QUERY
-         * $query = $userRepository->createQueryBuilder('u')
-         * ->orderBy('u.'.$orderBy, $orderDir);.
-         *
-         * if ($type) {
-         * $query->where($type.' = :type');
-         * $query->setParameter('type', $value);
-         * }
-         * $paginator = $userRepository->findPaginatedQuery(
-         * $query->getQuery()
-         * );
-         */
-        $alias = UserRepository::getEntityAlias();
+        return $this->render('newUser/step2.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
 
-        $criterias = [];
-        if (!empty($value)) {
-            if (empty($type) || '*' === $type) {
-                if (is_numeric($value)) {
-                    $criterias[] = Criteria::create()->where(
-                        Criteria::expr()?->contains($alias.'.id', $value)
-                    );
-                } else {
-                    $criterias[] = Criteria::create()->where(
-                        Criteria::expr()?->contains($alias.'.username', $value)
-                    )->orWhere(
-                        Criteria::expr()?->contains($alias.'.email', $value)
-                    )->orWhere(
-                        Criteria::expr()?->contains($alias.'.roles', $value)
-                    )/*->orWhere(
-                        Criteria::expr()?->contains('ec'.'.nom', $value)
-                    )->orWhere(
-                        Criteria::expr()?->contains('ec'.'.prenom', $value)
-                    )*/
-                    ;
-                }
-            } else {
-                $criterias[] = Criteria::create()->andWhere(
-                    Criteria::expr()?->contains($alias.'.'.$type, $value)
-                );
+    #[Route('/user/new/step3', name: 'user.new-step3')]
+    public function newUserStep3Action(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    {
+        $form = $this->createForm(UserRestrictionForm::class, $this->getUser())
+            ->add(
+                'valider',
+                SubmitType::class,
+                ['label' => 'Étape suivante', 'attr' => ['class' => 'btn btn-secondary']]
+            );
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $User = $form->getData();
+            $newRestriction = $form->get('new_restriction')->getData();
+            if ($newRestriction) {
+                $restriction = new Restriction();
+                $restriction->setUserRelatedByAuteurId($this->getUser());
+                $restriction->setLabel($newRestriction);
+
+                $entityManager->persist($restriction);
+                $User->addRestriction($restriction);
             }
+
+            $entityManager->persist($User);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('user.new-step4', [], 303);
         }
 
-        $orderBy = $this->getRequestOrder(
-            defOrderBy: 'username',
-            alias: $alias,
-            allowedFields: $userRepository->getFieldNames()
-        );
+        return $this->render('newUser/step3.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
 
-        $paginator = $userRepository->getPaginator(
-            limit: $this->getRequestLimit(),
-            page: $this->getRequestPage(),
-            orderBy: $orderBy,
-            alias: $alias,
-            criterias: $criterias
-        );
+    /**
+     * Quatrième étape pour un nouvel utilisateur : choisir un GN.
+     */
+    #[Route('/user/new/step4', name: 'user.new-step4')]
+    public function newUserStep4Action(): Response
+    {
+        return $this->render('newUser/step4.twig');
+    }
 
-        return $this->render(
-            'user/list.twig',
-            [
-                'paginator' => $paginator,
-                'form' => $form->createView(),
-            ]
-        );
+    /**
+     * Choix du personnage par défaut de l'utilisateur.
+     */
+    public function personnageDefaultAction(EntityManagerInterface $entityManager, Request $request, User $User)
+    {
+        if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN') && !$User == $this->getUser()) {
+            $this->addFlash('error', 'Vous n\'avez pas les droits necessaires pour cette opération.');
+
+            return $this->redirectToRoute('homepage', [], 303);
+        }
+
+        $form = $this->createForm(UserPersonnageDefaultForm::class, $this->getUser(), ['User_id' => $User->getId()])
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $User = $form->getData();
+
+            $entityManager->persist($User);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Vos informations ont été enregistrées.');
+
+            return $this->redirectToRoute('homepage', [], 303);
+        }
+
+        return $this->render('user/personnageDefault.twig', [
+            'form' => $form->createView(),
+            'User' => $User,
+        ]);
     }
 
     #[Route('/user/register ', name: 'user.register')]
@@ -807,6 +815,7 @@ class UserController extends AbstractController
                         'success',
                         'Votre compte a été créé ! vous pouvez maintenant rejoindre un groupe et créer votre personnage'
                     );
+
                     return $this->redirectToRoute('homepage');
                 }
 
@@ -824,42 +833,12 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/user/{user}/confirm/{token}', name: 'user.confirm-email')]
-    public function confirmEmailAction(
-        EntityManagerInterface $entityManager,
-        $token,
-        #[MapEntity] User $user,
-        Security $security
-    ): RedirectResponse {
-        if ($user->getConfirmationToken() !== $token) {
-            $this->addFlash('alert', 'Désolé, votre lien de confirmation a expiré.');
-
-            return $this->redirectToRoute('app_login');
-        }
-
-        $user->setConfirmationToken(null);
-        $user->setEnabled(true);
-        $entityManager->persist($user);
-        $entityManager->flush();
-
-        $security->login(
-            $user,
-            'form_login',
-            'main',
-            [(new RememberMeBadge())->enable()]
-        );
-
-        $this->addFlash('alert', 'Merci ! Votre compte a été activé.');
-
-        return $this->redirectToRoute('user.new-step1', ['user' => $user->getId()]);
-    }
-
     /**
      * Renvoyer un email de confirmation.
      *
      * @throws NotFoundHttpException
      */
-    public function resendConfirmationAction(EntityManagerInterface $entityManager, Request $request)
+    public function resendConfirmationAction(EntityManagerInterface $entityManager, Request $request): Response
     {
         $email = $request->request->get('email');
 
@@ -913,7 +892,7 @@ class UserController extends AbstractController
 
         $user = $userRepository->findOneByConfirmationToken($token);
 
-        if (!$user || $user->isPasswordResetRequestExpired((int) $params->get('passwordTokenTTL'))) {
+        if (!$user || $user->isPasswordResetRequestExpired((int)$params->get('passwordTokenTTL'))) {
             $this->addFlash('alert', 'Sorry, your password reset link has expired.');
 
             // throw new GoneHttpException('This action is expired');
@@ -965,9 +944,45 @@ class UserController extends AbstractController
     }
 
     /**
+     * Choix des restrictions alimentaires par l'utilisateur.
+     */
+    #[Route('/user/restriction', name: 'user.restriction')]
+    public function restrictionAction(EntityManagerInterface $entityManager, Request $request)
+    {
+        $form = $this->createForm(UserRestrictionForm::class, $this->getUser())
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $User = $form->getData();
+            $newRestriction = $form->get('new_restriction')->getData();
+            if ($newRestriction) {
+                $restriction = new Restriction();
+                $restriction->setUserRelatedByAuteurId($this->getUser());
+                $restriction->setLabel($newRestriction);
+
+                $entityManager->persist($restriction);
+                $User->addRestriction($restriction);
+            }
+
+            $entityManager->persist($User);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Vos informations ont été enregistrées.');
+
+            return $this->redirectToRoute('homepage', [], 303);
+        }
+
+        return $this->render('user/restriction.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
      * Met a jours les droits des utilisateurs.
      */
-    public function rightAction(EntityManagerInterface $entityManager, Request $request)
+    public function rightAction(EntityManagerInterface $entityManager, Request $request): Response
     {
         $Users = $app['User.manager']->findAll();
 
@@ -984,9 +999,96 @@ class UserController extends AbstractController
 
         // trouve tous les rôles
         return $this->render('user/right.twig', [
-            'Users' => $Users,
-            'roles' => $app['larp.manager']->getAvailableRoles(),
-        ]
+                'Users' => $Users,
+                'roles' => $app['larp.manager']->getAvailableRoles(),
+            ]
         );
+    }
+
+    /**
+     * View User action.
+     *
+     * @throws NotFoundHttpException if no User is found with that ID
+     */
+    #[Route('/user/{user}', name: 'user.view', requirements: ['user' => Requirement::DIGITS])]
+    #[Route('/user/{user}', name: 'user.detail', requirements: ['user' => Requirement::DIGITS])]
+    public function viewAction(Request $request, #[MapEntity] User $user): Response
+    {
+        if (!$user) {
+            throw new NotFoundHttpException('No user was found with that ID.');
+        }
+
+        if (!$user->isEnabled() && !$this->isGranted('ROLE_ADMIN')) {
+            throw new NotFoundHttpException('That User is disabled (pending email confirmation).');
+        }
+
+        return $this->render('user/detail.twig', ['user' => $user]);
+    }
+
+    /**
+     * Affiche le détail de l'utilisateur courant.
+     */
+    #[Route('/self', name: 'user.self')]
+    public function viewSelfAction(Request $request): Response|RedirectResponse
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        return $this->forward(
+            'App\Controller\UserController::viewAction',
+            [
+                'id' => $user->getId(),
+            ]
+        );
+    }
+
+    /**
+     * Création d'un utilisateur.
+     *
+     * @return User
+     *
+     * @throws \InvalidArgumentException
+     */
+    protected function createUserFromRequest(EntityManagerInterface $entityManager, Request $request): User
+    {
+        if ($request->request->get('password') != $request->request->get('confirm_password')) {
+            throw new \InvalidArgumentException("Passwords don't match.");
+        }
+
+        $user = new User();
+        if (!empty($plainPassword)) {
+            $this->setUserPassword($user, $plainPassword);
+        }
+
+        if (null !== $name) {
+            $user->setUsername($name);
+        }
+
+        if (!empty($roles)) {
+            $user->setRoles($roles);
+        }
+
+        $User = $app['User.manager']->createUser(
+            $request->request->get('email'),
+            $request->request->get('password'),
+            $request->request->get('name') ?: null,
+            ['ROLE_USER']
+        );
+
+        if ($Username = $request->request->get('Username')) {
+            $User->setUsername($Username);
+        }
+
+        $errors = $app['User.manager']->validate($User);
+
+        if (!empty($errors)) {
+            throw new \InvalidArgumentException(implode("\n", $errors));
+        }
+
+        return $User;
     }
 }
