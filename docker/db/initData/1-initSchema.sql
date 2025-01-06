@@ -592,6 +592,7 @@ create table if not exists personnage
     richesse      int          null,
     heroisme      int          null,
     sensible      tinyint(1)   null,
+    bracelet      tinyint(1)   null,
     constraint FK_6AEA486D4296D31F
         foreign key (genre_id) references genre (id),
     constraint FK_6AEA486D7A45358C

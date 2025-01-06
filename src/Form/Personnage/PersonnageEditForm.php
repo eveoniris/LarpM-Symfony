@@ -3,15 +3,13 @@
 
 namespace App\Form\Personnage;
 
+use App\Entity\Personnage;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Personnage\PersonnageEditForm.
- *
- * @author kevin
- */
 class PersonnageEditForm extends AbstractType
 {
     /**
@@ -19,19 +17,25 @@ class PersonnageEditForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('surnom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('surnom', TextType::class, [
             'required' => false,
             'label' => '',
         ])
-            ->add('intrigue', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('intrigue', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['Oui' => true, false => 'Non'],
                 'label' => 'Participer aux intrigues',
             ])
-            ->add('sensible', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('sensible', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['Non' => false, true => 'Oui'],
                 'label' => 'Personnage sensible',
+            ])
+            ->add('bracelet', ChoiceType::class, [
+                'required' => true,
+                'choices' => ['Non' => false, true => 'Oui'],
+                'label' => 'Possédez-vous votre bracelet de langue',
+                'help' => 'Si vous cochez Oui. Vous ne recevrez pas de bracelet de langue dans votre enveloppe personnage ',
             ]);
     }
 
@@ -41,7 +45,7 @@ class PersonnageEditForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Personnage::class,
+            'data_class' => Personnage::class,
         ]);
     }
 

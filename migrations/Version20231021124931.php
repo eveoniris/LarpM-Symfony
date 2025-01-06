@@ -23,6 +23,7 @@ final class Version20231021124931 extends AbstractMigration
         $this->addSql('ALTER TABLE user ADD is_enabled TINYINT');
         $this->addSql('ALTER TABLE user ADD pwd VARCHAR(255)');
         $this->addSql('UPDATE user SET is_enabled = isEnabled WHERE is_enabled <> isEnabled');
+        $this->addSql('ALTER TABLE personnage ADD bracelet TINYINT');
     }
 
     public function down(Schema $schema): void
@@ -30,5 +31,6 @@ final class Version20231021124931 extends AbstractMigration
         $this->addSql('ALTER TABLE user DROP roles');
         $this->addSql('ALTER TABLE user DROP pwd');
         $this->addSql('ALTER TABLE user DROP COLUMN is_enabled');
+        $this->addSql('ALTER TABLE user DROP COLUMN bracelet');
     }
 }

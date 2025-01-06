@@ -70,11 +70,18 @@
                 {% endif %}
                 <div class="list-group-item">
                     <h6 class="list-group-item-heading">Lié aux langues :</h6>
-                    {% for materiel in personnage.langueMateriel %}
-                        <div class="list-group-item-text"><strong>{{ materiel }}</strong></div>
+                    {% if personnage.bracelet %}
+                        <div class="list-group-item-text">Aucun:
+                            <i class="fa fa-warning text-warning"></i> Le joueur/La joueuse gère ses bracelets de
+                            langue
+                        </div>
                     {% else %}
-                        <div class="list-group-item-text">Aucun</div>
-                    {% endfor %}
+                        {% for materiel in personnage.langueMateriel %}
+                            <div class="list-group-item-text"><strong>{{ materiel }}</strong></div>
+                        {% else %}
+                            <div class="list-group-item-text">Aucun</div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
 
                 <div class="list-group-item">

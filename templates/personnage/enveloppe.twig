@@ -1,134 +1,142 @@
 {% extends "base.print.twig" %}
 
 {% block style %}
-<style>
-body {
-	font-size:12px;
-}
-</style>
+    <style>
+        body {
+            font-size: 12px;
+        }
+    </style>
 {% endblock style %}
 
 {% block content %}
 
-<div class="print-center">
-	<h2>#{{ personnage.id }} - {{ personnage.identity }}</h2>
-</div>
-<br />
-{% if personnage.user %}
-	{% set participant = personnage.user.participants|last %}
-		<strong>Personnage Secondaire : </strong>
-		{% if participant.personnageSecondaire %}
-			{{ participant.personnageSecondaire.classe.label }}
-		{% else %}
-			PAS DE PERSONNAGE SECONDAIRE
-		{% endif %}
-{% endif %}
-<br/>
-{% if personnage.renomme|default(0) > 4 %}
-<strong>Renommée :</strong> {{ personnage.renomme|default(0) }}<br />
-{% endif %}
+    <div class="print-center">
+        <h2>#{{ personnage.id }} - {{ personnage.identity }}</h2>
+    </div>
+    <br/>
+    {% if personnage.user %}
+        {% set participant = personnage.user.participants|last %}
+        <strong>Personnage Secondaire : </strong>
+        {% if participant.personnageSecondaire %}
+            {{ participant.personnageSecondaire.classe.label }}
+        {% else %}
+            PAS DE PERSONNAGE SECONDAIRE
+        {% endif %}
+    {% endif %}
+    <br/>
+    {% if personnage.renomme|default(0) > 4 %}
+        <strong>Renommée :</strong> {{ personnage.renomme|default(0) }}<br/>
+    {% endif %}
 
-{% if personnage.richesse|default(0) > 0 %}
-<strong>Richesse :</strong> {{ personnage.richesse|default(0) }} pièces d'argent<br />
-{% endif %}
+    {% if personnage.richesse|default(0) > 0 %}
+        <strong>Richesse :</strong> {{ personnage.richesse|default(0) }} pièces d'argent<br/>
+    {% endif %}
 
-<strong>Lié aux compétences</strong>
-<ul>
-{% set hasMateriel = 0 %}
-{% for competence in personnage.competences %}
-	{% if competence.materiel %}
-		<li><strong>{{ competence.competenceFamily.label }}&nbsp({{ competence.level.label }}) : </strong>{{ competence.materielRaw }}</li>
-		{% set hasMateriel = 1  %}
-	{% endif %}
-{% endfor %}
-{% if hasMateriel == 0 %}
-	<li>Aucun matériel</li>
-{% endif %}
-</ul>
-{% if personnage.hasCompetence('Prêtrise') %}
-	{% set enoughReligion = 0 %}
-	{% for religion in personnage.personnagesReligions %}
-	{% if religion.religionLevel.index >= 2 %}
-		{% set enoughReligion = 1 %}
-		<strong>Divinité principale : </strong>{{ religion.religion }} ({{ religion.religionLevel.label }})<br />
-		<br />
-	{% endif %}
-	{% endfor %}
-	{% if enoughReligion == 0 %}
-		CE PRÊTRE N'A PAS ASSEZ DE FERVEUR
-	{% endif %}
-{% endif %}
-<strong>Lié aux langues</strong>
-<ul>
-	{% set bracelets = [] %}
-	{% for personnageLangue in personnage.personnageLangues %}
-		{% if personnageLangue.langue.diffusion > 0 and personnageLangue.langue.secret == 0 %}
-			{% set mykey = personnageLangue.langue.groupeLangue.couleur %}
-			{% if mykey not in bracelets|keys %}
-				{% set bracelets = bracelets|merge({(mykey): (personnageLangue.langue.label)}) %}
-				<li>Bracelet {{ personnageLangue.langue.groupeLangue.couleur }} ({{ personnageLangue.langue.label }})</li>
-			{% endif %}
-		{% endif %}
-	{% endfor %}
-</ul>
-																
-{# documents #}
-{% if personnage.documents|length > 0 %}
-	<strong>Documents</strong>
-	<ul>
-	{% for document in personnage.documents %}
-		<li><strong>{{ document.code }}</strong> - {{ document.titre }}</li>
-	{% endfor %}
-	</ul>
-{% endif %}
+    <strong>Lié aux compétences</strong>
+    <ul>
+        {% set hasMateriel = 0 %}
+        {% for competence in personnage.competences %}
+            {% if competence.materiel %}
+                <li><strong>{{ competence.competenceFamily.label }}&nbsp({{ competence.level.label }})
+                        : </strong>{{ competence.materielRaw }}</li>
+                {% set hasMateriel = 1 %}
+            {% endif %}
+        {% endfor %}
+        {% if hasMateriel == 0 %}
+            <li>Aucun matériel</li>
+        {% endif %}
+    </ul>
+    {% if personnage.hasCompetence('Prêtrise') %}
+        {% set enoughReligion = 0 %}
+        {% for religion in personnage.personnagesReligions %}
+            {% if religion.religionLevel.index >= 2 %}
+                {% set enoughReligion = 1 %}
+                <strong>Divinité principale : </strong>{{ religion.religion }} ({{ religion.religionLevel.label }})<br/>
+                <br/>
+            {% endif %}
+        {% endfor %}
+        {% if enoughReligion == 0 %}
+            CE PRÊTRE N'A PAS ASSEZ DE FERVEUR
+        {% endif %}
+    {% endif %}
+    <strong>Lié aux langues</strong>
+    <ul>
+        {% set bracelets = [] %}
+        {% if personnage.bracelet %}
+            Géré par l'interprète du personnage
+        {% else %}
+            {% for personnageLangue in personnage.personnageLangues %}
+                {% if personnageLangue.langue.diffusion > 0 and personnageLangue.langue.secret == 0 %}
+                    {% set mykey = personnageLangue.langue.groupeLangue.couleur %}
+                    {% if mykey not in bracelets|keys %}
+                        {% set bracelets = bracelets|merge({(mykey): (personnageLangue.langue.label)}) %}
+                        <li>Bracelet {{ personnageLangue.langue.groupeLangue.couleur }}
+                            ({{ personnageLangue.langue.label }})
+                        </li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </ul>
 
-{# objets #}
-{% if personnage.items|length > 0 %}
-	<strong>Objets</strong>
-	<ul>
-	{% for item in personnage.items %}
-		<li><strong>{{ item.numero }}</strong> - {{ item.label }}</li>
-	{% endfor %}
-	</ul>
-{% endif %}
+    {# documents #}
+    {% if personnage.documents|length > 0 %}
+        <strong>Documents</strong>
+        <ul>
+            {% for document in personnage.documents %}
+                <li><strong>{{ document.code }}</strong> - {{ document.titre }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
-{# ingredients #}
-{% if personnage.personnageIngredients|length > 0 %}
-	<strong>Ingrédients</strong>
-	<ul>
-		{% for personnageIngredient in personnage.personnageIngredients %}
-			<li>{{personnageIngredient.nombre}} {{ personnageIngredient.ingredient }} - {{ personnageIngredient.ingredient.color }} : {{ personnageIngredient.ingredient.dose }}</li>
-		{% endfor %}
-	</ul>
-{% endif %}
+    {# objets #}
+    {% if personnage.items|length > 0 %}
+        <strong>Objets</strong>
+        <ul>
+            {% for item in personnage.items %}
+                <li><strong>{{ item.numero }}</strong> - {{ item.label }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
-{# ressources #}
-{% if personnage.personnageRessources|length > 0 %}
-	<strong>Ressources</strong>
-	<ul>
-		{% for personnageRessource in personnage.personnageRessources %}
-			<li>{{personnageRessource.nombre}} {{ personnageRessource.ressource }}</li>
-		{% endfor %}
-	</ul>
-{% endif %}
+    {# ingredients #}
+    {% if personnage.personnageIngredients|length > 0 %}
+        <strong>Ingrédients</strong>
+        <ul>
+            {% for personnageIngredient in personnage.personnageIngredients %}
+                <li>{{ personnageIngredient.nombre }} {{ personnageIngredient.ingredient }}
+                    - {{ personnageIngredient.ingredient.color }} : {{ personnageIngredient.ingredient.dose }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
-{# Matériel supplémentaire #}
-<strong>Matériel supplémentaire</strong>
-<ul>
-	<li>1 Bandeau blanc</li>
-	<li>1 Bandeau rougeâtre (ou blanc tâché de rouge)</li>
-	<li>1 Fiche de personnage (dans une pochette plastifiée)</li>
-	<li>1 Fiche retour de personnage</li>
-	{% if personnage.materiel|length > 0 %}
-	<li>{{ personnage.materiel }}</li>
-	{% endif %}
-</ul>
+    {# ressources #}
+    {% if personnage.personnageRessources|length > 0 %}
+        <strong>Ressources</strong>
+        <ul>
+            {% for personnageRessource in personnage.personnageRessources %}
+                <li>{{ personnageRessource.nombre }} {{ personnageRessource.ressource }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
-{% if personnage.isSensible %}
-	<strong>Personnage sensible</strong>
-	<ul>
-		<li>Brassard jaune avec un poing gravé</li>
-	</ul>
-{% endif %}
+    {# Matériel supplémentaire #}
+    <strong>Matériel supplémentaire</strong>
+    <ul>
+        <li>1 Bandeau blanc</li>
+        <li>1 Bandeau rougeâtre (ou blanc tâché de rouge)</li>
+        <li>1 Fiche de personnage (dans une pochette plastifiée)</li>
+        <li>1 Fiche retour de personnage</li>
+        {% if personnage.materiel|length > 0 %}
+            <li>{{ personnage.materiel }}</li>
+        {% endif %}
+    </ul>
+
+    {% if personnage.isSensible %}
+        <strong>Personnage sensible</strong>
+        <ul>
+            <li>Brassard jaune avec un poing gravé</li>
+        </ul>
+    {% endif %}
 
 {% endblock content %}
