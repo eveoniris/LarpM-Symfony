@@ -70,6 +70,9 @@ abstract class BasePersonnage
     #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $sensible = null;
 
+    #[Column(type: Types::BOOLEAN, nullable: true)]
+    private ?bool $bracelet = null;
+
     #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceGain::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
     protected Collection $experienceGains;
@@ -1505,5 +1508,17 @@ abstract class BasePersonnage
         sort($langueMateriel);
 
         return $langueMateriel;
+    }
+
+    public function isBracelet(): ?bool
+    {
+        return $this->bracelet;
+    }
+
+    public function setBracelet(?bool $bracelet): static
+    {
+        $this->bracelet = $bracelet;
+
+        return $this;
     }
 }

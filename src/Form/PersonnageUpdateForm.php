@@ -62,8 +62,14 @@ class PersonnageUpdateForm extends AbstractType
             ])
             ->add('sensible', ChoiceType::class, [
                 'required' => true,
-                'choices' => ['Non' => false, true => 'Oui'],
+                'choices' => ['Non' => false, 'Oui' => true],
                 'label' => 'Personnage sensible',
+            ])
+            ->add('bracelet', ChoiceType::class, [
+                'required' => true,
+                'choices' => ['Non' => false, 'Oui' => true],
+                'label' => 'Possédez-vous votre bracelet de langue',
+                'help' => 'Si vous cochez Oui. Vous ne recevrez pas de bracelet de langue dans votre enveloppe personnage ',
             ]);
     }
 

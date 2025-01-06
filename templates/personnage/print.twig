@@ -104,17 +104,21 @@
             <td>
                 <ul>
                     {% set bracelets = [] %}
-                    {% for personnageLangue in personnage.personnageLangues %}
-                        {% if personnageLangue.langue.diffusion > 0 and personnageLangue.langue.secret == 0 %}
-                            {% set mykey = personnageLangue.langue.groupeLangue.couleur %}
-                            {% if mykey not in bracelets|keys %}
-                                {% set bracelets = bracelets|merge({(mykey): (personnageLangue.langue.label)}) %}
-                                <strong>Bracelet {{ personnageLangue.langue.groupeLangue.couleur }}</strong><br/>
-                            {% endif %}
-                        {% endif %}
+                    {% if personnage.bracelet %}
+                        Géré par l'interprète du personnage
                     {% else %}
-                        Aucun bracelet
-                    {% endfor %}
+                        {% for personnageLangue in personnage.personnageLangues %}
+                            {% if personnageLangue.langue.diffusion > 0 and personnageLangue.langue.secret == 0 %}
+                                {% set mykey = personnageLangue.langue.groupeLangue.couleur %}
+                                {% if mykey not in bracelets|keys %}
+                                    {% set bracelets = bracelets|merge({(mykey): (personnageLangue.langue.label)}) %}
+                                    <strong>Bracelet {{ personnageLangue.langue.groupeLangue.couleur }}</strong><br/>
+                                {% endif %}
+                            {% endif %}
+                        {% else %}
+                            Aucun bracelet
+                        {% endfor %}
+                    {% endif %}
                 </ul>
             </td>
             {% if qrCode is defined %}
