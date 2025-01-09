@@ -3,15 +3,17 @@
 
 namespace App\Form\GroupeGn;
 
+use App\Entity\Gn;
+use App\Entity\GroupeGn;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\GroupeGn\GroupeGnForm.
- *
- * @author kevin
- */
 class GroupeGnForm extends AbstractType
 {
     /**
@@ -19,13 +21,13 @@ class GroupeGnForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+        $builder->add('gn', EntityType::class, [
             'label' => 'Jeu',
             'required' => true,
-            'class' => \App\Entity\Gn::class,
+            'class' => Gn::class,
             'choice_label' => 'label',
         ])
-            ->add('free', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('free', ChoiceType::class, [
                 'label' => 'Groupe disponible ou réservé ?',
                 'required' => false,
                 'choices' => [
@@ -33,15 +35,31 @@ class GroupeGnForm extends AbstractType
                     'Groupe réservé' => false,
                 ],
             ])
-            ->add('code', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('code', TextType::class, [
                 'required' => false,
             ])
-            ->add('jeuStrategique', \Symfony\Component\Form\Extension\Core\Type\CheckboxType::class, [
+            ->add('jeuStrategique', CheckboxType::class, [
                 'label' => 'Participe au jeu stratégique',
                 'required' => false,
             ])
-            ->add('jeuMaritime', \Symfony\Component\Form\Extension\Core\Type\CheckboxType::class, [
+            ->add('jeuMaritime', CheckboxType::class, [
                 'label' => 'Participe au jeu maritime',
+                'required' => false,
+            ])
+            ->add('agents', IntegerType::class, [
+                'label' => "Nombre d'agents",
+                'required' => false,
+            ])
+            ->add('bateaux', IntegerType::class, [
+                'label' => "Nombre de bateaux",
+                'required' => false,
+            ])
+            ->add('sieges', IntegerType::class, [
+                'label' => "Nombre d'ordres de sieges",
+                'required' => false,
+            ])
+            ->add('initiative', IntegerType::class, [
+                'label' => "Initiative",
                 'required' => false,
             ]);
     }
@@ -52,7 +70,7 @@ class GroupeGnForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'class' => \App\Entity\GroupeGn::class,
+            'class' => GroupeGn::class,
         ]);
     }
 

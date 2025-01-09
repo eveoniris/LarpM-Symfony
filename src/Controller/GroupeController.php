@@ -14,6 +14,7 @@ use App\Entity\Participant;
 use App\Entity\Ressource;
 use App\Entity\Territoire;
 use App\Entity\Topic;
+use App\Enum\Role;
 use App\Form\BackgroundForm;
 use App\Form\Groupe\GroupeCompositionForm;
 use App\Form\Groupe\GroupeDescriptionForm;
@@ -30,6 +31,7 @@ use App\Manager\GroupeManager;
 use App\Repository\GroupeRepository;
 use App\Repository\TerritoireRepository;
 use App\Service\PagerService;
+use Deprecated;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -315,7 +317,7 @@ class GroupeController extends AbstractController
             }
 
             /*
-             *  supprime la relation entre groupeHasIngredient et le groupe
+             * supprime la relation entre groupeHasIngredient et le groupe
              */
             foreach ($originalGroupeHasIngredients as $groupeHasIngredient) {
                 if (false == $groupe->getGroupeHasIngredients()->contains($groupeHasIngredient)) {
@@ -880,6 +882,7 @@ class GroupeController extends AbstractController
     /**
      * Imprimmer toutes les enveloppes de tous les groupes.
      */
+    #[Deprecated] // see GnController
     #[Route('/print', name: 'print')]
     public function printAllAction(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -1465,7 +1468,6 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/gn/{gn}', name: 'detail.gn')]
     public function detailAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Groupe $groupe,
         #[MapEntity] ?Gn $gn = null,
     ): RedirectResponse|Response {
@@ -1473,13 +1475,37 @@ class GroupeController extends AbstractController
          * Si le groupe existe, on affiche son détail
          * Sinon on envoie une erreur
          */
-        if ($groupe) {
-            return $this->render('groupe/detail.twig', ['groupe' => $groupe, 'tab' => $request->get('tab', 'detail')]);
+        if (!$groupe) {
+            $this->addFlash('error', 'Le groupe n\'a pas été trouvé.');
+
+            return $this->redirectToRoute('groupe');
         }
 
-        $this->addFlash('error', 'Le groupe n\'a pas été trouvé.');
+        $canSeePrivateDetail = $this->isGranted(Role::SCENARISTE->value);
+        // Est-ce un membre du groupe ?
+        if (!$canSeePrivateDetail) {
+            $responsable = $groupe->getUserRelatedByResponsableId();
+            $user = $this->getUser();
+            if ($responsable && $user && $responsable?->getId() === $user?->getId()) {
+                $canSeePrivateDetail = true;
+            } else {
+                /** @var Participant $participant */
+                $participant = $this->getUser()?->getLastParticipant();
+                if ($participant) {
+                    $canSeePrivateDetail = $participant->getGroupeGn()?->getGroupe()->getId() === $groupe->getId();
+                }
+            }
+        }
 
-        return $this->redirectToRoute('groupe');
+        return $this->render(
+            'groupe/detail.twig',
+            [
+                'groupe' => $groupe,
+                'tab' => $request->get('tab', 'detail'),
+                'canSeePrivateDetail' => $canSeePrivateDetail,
+                'gn' => $gn,
+            ]
+        );
     }
 
     #[Route('/{groupe}/delete', name: 'delete', requirements: ['groupe' => Requirement::DIGITS], methods: [

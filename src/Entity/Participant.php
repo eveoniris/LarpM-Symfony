@@ -37,10 +37,10 @@ class Participant extends BaseParticipant implements \Stringable
     /**
      * Vérifie si le joueur est responsable du groupe.
      */
-    public function isResponsable(Groupe $groupe): bool
+    public function isResponsable(Groupe $groupe, GroupeGn $groupeGn): bool
     {
         foreach ($groupe->getGroupeGns() as $session) {
-            if ($this->getGroupeGns()->contains($session)) {
+            if ($groupeGn->getId() === $session->getId() && $this->getGroupeGns()->contains($session)) {
                 return true;
             }
         }

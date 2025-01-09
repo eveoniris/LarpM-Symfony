@@ -39,12 +39,16 @@ abstract class BaseGroupeGn
     #[Column(type: Types::INTEGER)]
     protected ?int $place_available = 0;
 
+    #[Column(type: Types::INTEGER)]
     protected int $agents = 0;
 
+    #[Column(type: Types::INTEGER)]
     protected int $bateaux = 0;
 
+    #[Column(type: Types::INTEGER)]
     protected int $sieges = 0;
 
+    #[Column(type: Types::INTEGER)]
     protected int $initiative = 0;
 
     #[ORM\OneToMany(mappedBy: 'groupeGn', targetEntity: Participant::class)]

@@ -1,3 +1,7 @@
+{% if session is not defined %}
+    {% set session = groupe.getGroupeGnById(app.request.query.get('gn')) %}
+{% endif %}
+
 <div class="row">
 	{% for session in groupe.groupeGns|reverse %}
 		<div class="col-md-4">
@@ -9,7 +13,7 @@
 		    			<h6>Suzerain</h6>
                         <a role="button" data-toggle="collapse" href="#renommee-{{ session.gn }}" aria-expanded="false" aria-controls="collapseExample">
                             <i class="fa fa-info-circle" aria-hidden="true"></i>
-                        </a></p>
+                        </a>
                         <div class="collapse" id="renommee-{{ session.gn }}">
                             <div class="list-group">
                                 <table class="list-group-item">

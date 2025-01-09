@@ -47,7 +47,7 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Fourni la prochaine session de jeu.
      */
-    public function getNextSession()
+    public function getNextSession(): ?GroupeGn
     {
         return $this->getGroupeGns()->last();
     }
@@ -74,10 +74,11 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Fourni les informations pour une session de jeu.
      */
-    public function getGroupeGnById($gnId)
+    public function getGroupeGnById(int $gnId): ?GroupeGn
     {
+
         foreach ($this->getGroupeGns() as $groupeGn) {
-            if ($groupeGn->getGn()->getId() == $gnId) {
+            if ((int) $groupeGn->getGn()->getId() === $gnId) {
                 return $groupeGn;
             }
         }
@@ -435,9 +436,9 @@ class Groupe extends BaseGroupe implements \Stringable
     /**
      * Trouve le personnage de l'utilisateur dans ce groupe.
      */
-    public function getPersonnage(User $User)
+    public function getPersonnage(User $user)
     {
-        $participant = $User->getParticipantByGroupe($this);
+        $participant = $user->getParticipantByGroupe($this);
         if ($participant) {
             return $participant->getPersonnage();
         }

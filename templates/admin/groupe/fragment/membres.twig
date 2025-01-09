@@ -1,4 +1,7 @@
-{% set session = groupe.getGroupeGnById(app.request.query.get('gn')) %}
+{% if session is not defined %}
+    {% set session = groupe.getGroupeGnById(app.request.query.get('gn')) %}
+{% endif %}
+
 {% if session %}
     <div class="row mt-2">
         <div class="col-md-12">
