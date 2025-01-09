@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\Gn;
 use App\Entity\Loi;
 use App\Entity\Personnage;
+use App\Entity\Ressource;
 use App\Entity\Topic;
 use App\Form\Gn\GnDeleteForm;
 use App\Form\Gn\GnForm;
+use App\Manager\GroupeManager;
 use App\Repository\GnRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\QuestionRepository;
@@ -227,10 +229,34 @@ class GnController extends AbstractController
         );
     }
 
+    #[Route('/groupes/enveloppes', name: 'groupes.enveloppes')]
+    public function printAllAction(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $gn = GroupeManager::getGnActif($entityManager);
+        $groupeGns = $gn->getGroupeGns();
+
+        $ressourceRares = new ArrayCollection($entityManager->getRepository(Ressource::class)->findRare());
+        $ressourceCommunes = new ArrayCollection($entityManager->getRepository(Ressource::class)->findCommun());
+
+        $groupes = new ArrayCollection();
+        foreach ($groupeGns as $groupeGn) {
+            $groupe = $groupeGn->getGroupe();
+            $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
+            $groupes[] = [
+                'groupe' => $groupe,
+                'quete' => $quete,
+            ];
+        }
+
+        return $this->render('groupe/printAll.twig', [
+            'groupes' => $groupes,
+        ]);
+    }
+
     /**
      * Impression des backgrounds des chefs de groupe.
      */
-    #[Route('/background/chef', name: 'background.chef')]
+    #[Route('/backgrounds/chefs', name: 'groupes.backgrounds.chefs')]
     public function backgroundsChefAction(Request $request, EntityManagerInterface $entityManager, Gn $gn): Response
     {
         $groupes = $gn->getGroupes();
@@ -249,7 +275,7 @@ class GnController extends AbstractController
     /**
      * Impression des backgrounds des groupes.
      */
-    #[Route('/background/groupe', name: 'background.groupe')]
+    #[Route('/backgrounds/groupes', name: 'groupes.backgrounds.groupes')]
     public function backgroundsGroupeAction(Request $request, EntityManagerInterface $entityManager, Gn $gn): Response
     {
         $groupes = $gn->getGroupes();
@@ -268,7 +294,7 @@ class GnController extends AbstractController
     /**
      * Impression des backgrounds des chefs de groupe.
      */
-    #[Route('/background/membres', name: 'background.membre')]
+    #[Route('/backgrounds/membres', name: 'groupes.backgrounds.membres')]
     public function backgroundsMembresAction(Request $request, EntityManagerInterface $entityManager, Gn $gn): Response
     {
         $groupes = $gn->getGroupes();

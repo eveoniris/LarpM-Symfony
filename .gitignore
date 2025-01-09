@@ -57,3 +57,4 @@ docker/mailpit/
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
 /tests/rest/http-client.private.env.json
+/migrations/old/

@@ -12,13 +12,17 @@
     {% if isAdmin %}
         {% set breadcrumb = breadcrumb|merge([{'name' : 'Liste des groupes', 'route': path('groupe.list') }]) %}
     {% endif %}
-    {% set breadcrumb = breadcrumb|merge( [{'name' : 'Détail d\'un groupe' }]) %}
+    {% set breadcrumb = breadcrumb|merge( [{'name': groupe.label, 'route': path('groupe.detail', {'groupe': groupe.id})},{'name' : 'Détail d\'un groupe' }]) %}
 
     {% include '_partials/breadcrumb.twig' with {'items' :breadcrumb} %}
 
+    {% if canSeePrivateDetail is not defined %}
+        {% set canSeePrivateDetail = false %}
+    {% endif %}
+
     <div class="d-flex justify-content-end">
         <div class="w-auto mb-2 p-0">
-            {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+            {% if is_granted('ROLE_SCENARISTE', app.user) %}
                 <div class="d-flex justify-content-end">
                     <div class="btn-toolbar d-flex justify-content-between m-0 p-0" role="toolbar">
                         <div class="btn-group m-0 p-0" role="group">
@@ -78,7 +82,7 @@
 
         <h4 class="bold">{{ groupe.label }}</h4>
 
-        <div class="row">
+        <div class="row" style="min-height:300px;">
             <div class="col-md-12">
                 <div>
                     <ul class="nav nav-tabs">
@@ -87,6 +91,7 @@
                                href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'detail'})) }}"
                             >Détail</a>
                         </li>
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle{% if tab == 'membres' %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button"
                                aria-expanded="false">Membres</a>
@@ -100,6 +105,7 @@
                             </ul>
                         </li>
 
+                        {% if canSeePrivateDetail %}
                         <li class="nav-item">
                             <a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
                                href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'enveloppe'})) }}"
@@ -133,6 +139,7 @@
                                href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'debriefings'})) }}"
                             >Debriefings</a>
                         </li>
+                        {% endif %}
                     </ul>
 
                     <!-- Tab panes -->

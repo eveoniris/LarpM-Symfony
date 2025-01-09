@@ -2211,6 +2211,10 @@ create table if not exists groupe_gn
     jeu_maritime    tinyint(1)   null,
     jeu_strategique tinyint(1)   null,
     place_available int          null,
+    agents          int          not null default 0,
+    bateaux         int          not null default 0,
+    sieges          int          not null default 0,
+    initiative      int          not null default 0,
     constraint FK_413F11C7A45358C
         foreign key (groupe_id) references groupe (id),
     constraint FK_413F11CAFC9C052
