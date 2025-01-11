@@ -48,14 +48,14 @@
                 {% if session.participant %}
                     {% set leadId = session.participant.getId %}
                     <div class="col-md-6">
-                        {% include 'admin/groupe/fragment/membre.twig' with {'participant' :session.participant, 'session': session} %}
+                        {% include 'groupe/fragment/membre.twig' with {'participant' :session.participant, 'session': session} %}
                     </div>
                 {% endif %}
 
                 {% for participant in session.participants %}
                     {% if leadId != participant.getId() %}
                         <div class="col-md-6">
-                            {% include 'admin/groupe/fragment/membre.twig' with {'participant': participant, 'session': session} %}
+                            {% include 'groupe/fragment/membre.twig' with {'participant': participant, 'session': session} %}
                         </div>
                     {% endif %}
                 {% endfor %}
