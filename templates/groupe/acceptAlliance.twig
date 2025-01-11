@@ -1,0 +1,28 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Accepter une alliance{% endblock title %}
+
+{% block body %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Page d'accueil</a></li>
+		<li><a href="{{ path('participant.index', {'participant' : participant.id}) }}">{{ participant.gn.label }}</a></li>
+		<li><a href="{{ path('groupeGn.groupe', {'groupeGn' : groupeGn.id}) }}">{{ groupe.nom }}</a></li>
+		<li class="active">Accepter une demande d'alliance</li>
+	</ol>
+
+	{% set cardContent %}
+		<p>Vous allez accepter une demande d'alliance faite par <strong>{{ alliance.groupe.nom }}</strong>.</p>
+		<p>Etes-vous certain ?</p>
+
+		{{ form(form) }}
+
+		<p>Le chef de groupe recevra une notification pour le prévenir de votre choix.</p>
+	{% endset %}
+
+	{{ include("_partials/form.twig",{
+		'title': 'Accepter une demande d\'alliance',
+		'data': {'content': cardContent},
+		'form' : form}) }}
+	
+{% endblock %}
