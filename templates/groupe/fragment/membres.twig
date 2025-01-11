@@ -1,72 +1,67 @@
-<div class="row">
-	{% for session in groupe.groupeGns|reverse %}
-		<div class="col-md-4">
-	   		<h6><i class="fa fa-circle"></i> {{ session.gn }}</h6>
+{% if session is not defined %}
+    {% set session = groupe.getGroupeGnById(app.request.query.get('gn')) %}
+{% endif %}
 
-			<p>
-			{% if not session.code %}
-			Le groupe n'a pas encore de code.
-			{% else %}
-			Le code du groupe est : <strong>{{ session.code }}</strong>
-			{% endif %}
-			</p>
+{% if session %}
+    <div class="row mt-2">
+        <div class="col-md-12">
+            <div class="header"><h5>Participations au GN {{ session.gn }}</h5></div>
 
-	   		<div class="white-box">
-	   		{% for participant in session.participants %}
-	   			{{ participant.user.email }},&nbsp;
-	   		{% endfor %}
-	   		</div>
+            <div class="card mb-2">
+                <div class="card-body">
+                    {% if not session.code %}
+                        Le groupe n'a pas encore de code.
+                    {% else %}
+                        Code du groupe : <strong>{{ session.code }}</strong>
+                    {% endif %}
+                </div>
+            </div>
 
-	   		<ul class="media-list">
-			{% for participant in session.participants %}
-				<li class="media">
-		    		<div class="media-left">
-		    			{% if participant.personnage %}
-		    				<a href="{{ path('personnage.admin.detail', {'personnage': participant.personnage.id}) }}">
-			    			{% if participant.personnage.trombineUrl %}
-								<img class="media-object" height="96" width="96" src="{{ path('personnage.trombine', {'personnage' : participant.personnage.id }) }}" />
-							{% else %}
-								<img class="media-object" height="96" width="96" src="{{ app.request.basepath }}/img/no_trombine.png" />
-							{% endif %}
-							</a>
-						{% else %}
-							<img class="media-object" height="96" width="96" src="{{ app.request.basepath }}/img/no_trombine.png" />
-						{% endif %}
-		    		</div>
-		    		<div class="media-body">
-		    			<h6>
-		    				{% if participant.user.etatCivil %}
-								{{ participant.user.etatCivil.nom }} {{ participant.user.etatCivil.prenom }}
-							{% else %}
-								N'a pas encore rempli ses informations administratives
-							{% endif %}
-							-- {{ participant.user.email }}
-						</h6>
+            <div class="card mb-2">
+                <div class="card-header d-flex justify-content-between">
+                    <h6>Liste des emails du groupe</h6>
+                    <div class="btn-group">
+                        <a class="btn btn-small btn-secondary" type="button" data-bs-toggle="collapse"
+                           data-bs-placement="bottom" title="Afficher"
+                           data-bs-target="#{{ session.gn|replace({' ': '_'}) }}_emailsCollapse" aria-expanded="false">
+                            <i class="fa fa-caret-down"></i> Afficher
+                        </a>
+                        <a class="btn btn-small btn-secondary copyToClipBoard" type="button"
+                           data-target="#{{ session.gn|replace({' ': '_'}) }}_emails" data-bs-toggle="tooltip"
+                           data-bs-placement="bottom" title="Copier">
+                            <i class="fa fa-copy"></i> Copier
+                        </a>
+                    </div>
+                </div>
+                <div class="collapse" id="{{ session.gn|replace({' ': '_'}) }}_emailsCollapse">
+                    <div class="card-body" id="{{ session.gn|replace({' ': '_'}) }}_emails">
+                        {% for participant in session.participants %}
+                            {{ participant.user.email }},&nbsp;
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
 
-						<p>
-							{% if participant.personnage %}
-								#{{ participant.personnage.id }} - {{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}
-								- {{ participant.personnage.classeName }} <a href="{{ path('participant.personnage.remove', {'participant': participant.id, 'personnage': participant.personnage.id}) }}">Retirer le personnage (cela ne retirera pas le joueur du groupe)</a>
-							{% else %}
-								N'a pas encore créé son personnage
-							{% endif %}
-						</p>
-						<p>
-							{% if participant.billet %}
-								<span class="text-success">{{ participant.billet }}</span>
-							{% else %}
-								<span class="text-danger">Ce joueur n'a pas encore de billet.</span>
-							{% endif %}
-						</p>
-						<p>
-							{% if session in participant.groupeGns %}
-								<span class="text-success">Chef de groupe</span>
-							{% endif %}
-						</p>
-		    		</div>
-		    	</li>
-			{% endfor %}
-			</ul>
-		</div>
-	{% endfor %}
-</div>
+            {# Ensure lead on top (not simple in SQL due to inverse relation #}
+            <div class="row">
+                {% set leadId = 0 %}
+                {% if session.participant %}
+                    {% set leadId = session.participant.getId %}
+                    <div class="col-md-6">
+                        {% include 'admin/groupe/fragment/membre.twig' with {'participant' :session.participant, 'session': session} %}
+                    </div>
+                {% endif %}
+
+                {% for participant in session.participants %}
+                    {% if leadId != participant.getId() %}
+                        <div class="col-md-6">
+                            {% include 'admin/groupe/fragment/membre.twig' with {'participant': participant, 'session': session} %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% else %}
+    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucune participation'} %}
+{% endif %}
