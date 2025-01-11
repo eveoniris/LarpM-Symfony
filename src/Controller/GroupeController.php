@@ -20,7 +20,6 @@ use App\Form\Groupe\GroupeCompositionForm;
 use App\Form\Groupe\GroupeDescriptionForm;
 use App\Form\Groupe\GroupeDocumentForm;
 use App\Form\Groupe\GroupeEnvelopeForm;
-use App\Form\Groupe\GroupeFindForm;
 use App\Form\Groupe\GroupeForm;
 use App\Form\Groupe\GroupeIngredientForm;
 use App\Form\Groupe\GroupeItemForm;
@@ -31,7 +30,6 @@ use App\Manager\GroupeManager;
 use App\Repository\GroupeRepository;
 use App\Repository\TerritoireRepository;
 use App\Service\PagerService;
-use Deprecated;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -882,7 +880,7 @@ class GroupeController extends AbstractController
     /**
      * Imprimmer toutes les enveloppes de tous les groupes.
      */
-    #[Deprecated] // see GnController
+    /** @deprecated:  see GnController**/
     #[Route('/print', name: 'print')]
     public function printAllAction(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -1262,7 +1260,7 @@ class GroupeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->addFlash('success', 'Le background du groupe a été créé');
 
-            return $this->redirectToRoute('groupe.admin.detail', ['index' => $groupe->getId()], 303);
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()], 303);
         }
 
         return $this->render('groupe/background/add.twig', [
@@ -1294,7 +1292,7 @@ class GroupeController extends AbstractController
 
             $this->addFlash('success', 'Le background du groupe a été mis à jour');
 
-            return $this->redirectToRoute('groupe.admin.detail', ['index' => $groupe->getId()], 303);
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()], 303);
         }
 
         return $this->render('groupe/background/update.twig', [
@@ -1455,7 +1453,7 @@ class GroupeController extends AbstractController
             }
         }
 
-        return $this->render('admin/groupe/update.twig', [
+        return $this->render('groupe/update.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
