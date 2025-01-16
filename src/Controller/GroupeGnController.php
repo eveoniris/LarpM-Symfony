@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Entity\Groupe;
 use App\Entity\GroupeGn;
 use App\Entity\Participant;
+use App\Enum\Role;
 use App\Form\GroupeGn\GroupeGnForm;
 use App\Form\GroupeGn\GroupeGnOrdreForm;
 use App\Form\GroupeGn\GroupeGnPlaceAvailableForm;
@@ -17,6 +18,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -34,7 +36,7 @@ class GroupeGnController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Groupe $groupe
-    ): \Symfony\Component\HttpFoundation\Response {
+    ): Response {
         return $this->render('groupeGn/list.twig', [
             'groupe' => $groupe,
         ]);
@@ -48,7 +50,7 @@ class GroupeGnController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Groupe $groupe
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response {
+    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
         $groupeGn = new GroupeGn();
         $groupeGn->setGroupe($groupe);
 
@@ -91,7 +93,7 @@ class GroupeGnController extends AbstractController
         EntityManagerInterface $entityManager,
         Groupe $groupe,
         GroupeGn $groupeGn
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response {
+    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
         $redirect = $request->get('redirect');
 
         $form = $this->createForm(GroupeGnForm::class, $groupeGn, ['allow_extra_fields' => true])
@@ -135,7 +137,7 @@ class GroupeGnController extends AbstractController
         EntityManagerInterface $entityManager,
         Groupe $groupe,
         GroupeGn $groupeGn
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response {
+    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
         $form = $this->createForm(GroupeGnResponsableForm::class, $groupeGn)
             ->add('responsable', EntityType::class, [
                 'label' => 'Responsable',
@@ -190,7 +192,7 @@ class GroupeGnController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         GroupeGn $groupeGn
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response {
+    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
         $form = $this->createForm(GroupeGnForm::class, $groupeGn)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
@@ -250,7 +252,7 @@ class GroupeGnController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         GroupeGn $groupeGn
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response {
+    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
         $form = $this->createFormBuilder()
@@ -313,7 +315,7 @@ class GroupeGnController extends AbstractController
         EntityManagerInterface $entityManager,
         GroupeGn $groupeGn,
         Participant $participant
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response {
+    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
         $form = $this->createFormBuilder()
             ->add('submit', SubmitType::class, ['label' => 'Retirer'])
             ->getForm();
@@ -350,7 +352,7 @@ class GroupeGnController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         GroupeGn $groupeGn
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response {
+    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
         $form = $this->createForm(GroupeGnPlaceAvailableForm::class, $groupeGn)
@@ -379,18 +381,42 @@ class GroupeGnController extends AbstractController
     /**
      * Détail d'un groupe.
      */
+    #[Route('/groupeGn/{groupeGn}/detail', name: 'groupeGn.detail')]
     #[Route('/groupeGn/{groupeGn}', name: 'groupeGn.groupe')]
     public function groupeAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] GroupeGn $groupeGn
-    ): \Symfony\Component\HttpFoundation\Response {
-        $participant = $this->getUser()->getParticipant($groupeGn->getGn());
+    ): Response {
+        $participant = $this->getUser()?->getParticipant($groupeGn->getGn());
+
+        if (!$participant) {
+            $this->redirectToRoute('app_login');
+        }
+
+        $groupe = $groupeGn->getGroupe();
+        $canSeePrivateDetail = $this->isGranted(Role::SCENARISTE->value);
+        // Est-ce un membre du groupe ?
+        if (!$canSeePrivateDetail) {
+            $responsable = $groupe->getUserRelatedByResponsableId();
+            $user = $this->getUser();
+            if ($responsable && $user && $responsable?->getId() === $user?->getId()) {
+                $canSeePrivateDetail = true;
+            } else {
+                /** @var Participant $participant */
+                $participant = $this->getUser()?->getLastParticipant();
+                if ($participant) {
+                    $canSeePrivateDetail = $participant->getGroupeGn()?->getGroupe()->getId() === $groupe->getId();
+                }
+            }
+        }
 
         return $this->render('groupe/detail.twig', [
             'groupe' => $groupeGn->getGroupe(),
+            'tab' => $request->get('tab', 'detail'),
             'participant' => $participant,
             'groupeGn' => $groupeGn,
+            'canSeePrivateDetail' => $canSeePrivateDetail,
+            'gn' => $groupeGn->getGn(),
         ]);
     }
 
@@ -403,7 +429,7 @@ class GroupeGnController extends AbstractController
         EntityManagerInterface $entityManager,
         Groupe $groupe,
         GroupeGn $groupeGn
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response {
+    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
         $form = $this->createForm(GroupeGnOrdreForm::class, $groupeGn, ['groupeGnId' => $groupeGn->getId()])
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
