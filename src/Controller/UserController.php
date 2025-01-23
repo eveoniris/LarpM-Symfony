@@ -8,6 +8,7 @@ use App\Entity\Gn;
 use App\Entity\Participant;
 use App\Entity\Restriction;
 use App\Entity\User;
+use App\Enum\Role;
 use App\Form\Entity\ListSearch;
 use App\Form\EtatCivilForm;
 use App\Form\User\UserForgotPasswordForm;
@@ -918,9 +919,29 @@ class UserController extends AbstractController
                     $user,
                     $password
                 );
+
+                // First set : importing from VA
+                $roles = [];
+                if (!$user->getPwd() && $rights = explode(',', $user->getRights())) {
+                    // Get role from V1
+                    foreach ($rights as $right) {
+                        if (empty($right)) {
+                            continue;
+                        }
+
+                        if (Role::tryFrom($right)) {
+                            $roles[] = $right;
+                        }
+                    }
+                }
+                $user->setRoles($roles);
+
                 $user->setPassword($hashedPassword);
                 $user->setConfirmationToken(null);
                 $user->setEnabled(true);
+
+
+
                 $entityManager->persist($user);
                 $entityManager->flush();
                 $security->login(

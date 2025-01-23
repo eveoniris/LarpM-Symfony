@@ -42,7 +42,7 @@ class HomepageController extends AbstractController
             'fiefs' => $repoTerritoire->findFiefs(),
             'countries' => $repoTerritoire->findRoot(),
             'regions' => $repoTerritoire->findRegions(),
-            default => throw new \Exception('Unkonw territoire type : '.$type),
+            default => throw new \Exception('Unknown territoire type : '.$type),
         };
 
         $data = [];
