@@ -43,7 +43,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     ) {
     }
 
-    protected function sendNoImageAvailable(): BinaryFileResponse
+    protected function sendNoImageAvailable($path = 'no'): BinaryFileResponse
     {
         $response = new BinaryFileResponse(
             $this->fileUploader->getDirectory(
@@ -52,6 +52,9 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         );
         $response->headers->set('Content-Type', 'image/jpeg');
         $response->headers->set('Content-Control', 'private');
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $response->headers->set('Content-X-Path', $path);
+        }
 
         return $response->send();
     }

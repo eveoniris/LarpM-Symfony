@@ -333,13 +333,19 @@ class PersonnageController extends AbstractController
         $filename = $personnage->getTrombine($this->fileUploader->getProjectDirectory());
         if (!file_exists($filename)) {
             // get old ?
-            // $path = __DIR__.'/../../private/img/';
+            //
             $path = $this->fileUploader->getProjectDirectory(
                 ).FolderType::Private->value.DocumentType::Image->value.'/';
             $filename = $path.$personnage->getTrombineUrl();
 
             if (!file_exists($filename)) {
-                return $this->sendNoImageAvailable();
+                $path = $path = $this->fileUploader->getProjectDirectory(
+                    ).'/../larpmanager/private/img/';
+                $filename = $path.$personnage->getTrombineUrl();
+                if (!file_exists($filename)) {
+
+                    return $this->sendNoImageAvailable($filename);
+                }
             }
         }
 
