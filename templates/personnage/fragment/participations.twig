@@ -28,21 +28,21 @@
                         {% endif %}
                     {% else %}
                         <div class="list-group-item">
-                            <a href="{{ path('personage.detail', {'personnage': participant.personnage.id}) }}">#{{ participant.personnage.id }} {{ participant.personnage.nom }}
+                            <a href="{{ path('personnage.detail', {'personnage': participant.personnage.id}) }}">#{{ participant.personnage.id }} {{ participant.personnage.nom }}
                                 - {{ participant.gn }} - N'est pas lié à un groupe</a>
                         </div>
                     {% endif %}
                 {% else %}
                     {% if participant.groupeGn %}
                         <div class="list-group-item">
-                            <a href="{{ path('personage.detail', {'personnage': personnage.id}) }}">Personnage
+                            <a href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">Personnage
                                 #{{ personnage.id }} {{ personnage.nom }} non récupéré
                                 - {{ participant.gn }} -
                                 #{{ participant.groupeGn.groupe.numero }} {{ participant.groupeGn.groupe.nom }}</a>
                         </div>
                     {% else %}
                         <div class="list-group-item">
-                            <a href="{{ path('personage.detail', {'personnage': personnage.id}) }}">Personnage
+                            <a href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">Personnage
                                 #{{ personnage.id }} {{ personnage.nom }} non récupéré
                                 - {{ participant.gn }} - N'est pas lié à un groupe</a>
                         </div>
