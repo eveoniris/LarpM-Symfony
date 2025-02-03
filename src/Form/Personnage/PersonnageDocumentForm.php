@@ -3,16 +3,13 @@
 
 namespace App\Form\Personnage;
 
-use LarpManager\Repository\DocumentRepository;
+use App\Entity\Personnage;
+use App\Repository\DocumentRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\PersonnageDocumentForm.
- *
- * @author kevin
- */
 class PersonnageDocumentForm extends AbstractType
 {
     /**
@@ -20,8 +17,8 @@ class PersonnageDocumentForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('documents', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-            'label' => 'Choisissez les documents possédé par le personnage en début de jeu',
+        $builder->add('documents', EntityType::class, [
+            'label' => 'Choisissez les documents possédés par le personnage en début de jeu',
             'multiple' => true,
             'expanded' => true,
             'required' => false,
@@ -39,7 +36,7 @@ class PersonnageDocumentForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Personnage::class,
+            'data_class' => Personnage::class,
         ]);
     }
 

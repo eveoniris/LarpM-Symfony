@@ -2259,7 +2259,7 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $form = $this->createForm(PersonnageDocumentForm::class, $personnage)
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn-secondary']]);
 
         $form->handleRequest($request);
 
