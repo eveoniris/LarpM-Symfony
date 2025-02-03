@@ -4,17 +4,15 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('personnage.admin.list') }}">Liste des personnages</a></li>
-		<li><a href="{{ path('personnage.admin.detail', {'personnage': personnage.id}) }}">Détail de {{ personnage.publicName }}</a></li>
-		<li class="active">Modifier la liste des documents du personnage {{ personnage.nom }}</li>
-	</ol>
-	
-	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('personnage.documents',{'personnage': personnage.id}) }}" method="POST">
-					
-			{{ form(form) }}
-		{{ form_end(form) }}
-	</div>
+    {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Modifier la liste des documents du personnage"} %}
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Modifier la liste des documents du personnage</h5>
+        </div>
+
+        <div class="well well-sm">
+            {{ form(form) }}
+        </div>
+    </div>
 {% endblock %}
