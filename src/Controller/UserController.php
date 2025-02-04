@@ -20,6 +20,7 @@ use App\Form\UserRegisterForm;
 use App\Form\UserRestrictionForm;
 use App\Manager\FedegnManager;
 use App\Repository\UserRepository;
+use App\Service\PagerService;
 use Carbon\Carbon;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -87,7 +88,20 @@ class UserController extends AbstractController
      */
     #[Route('/user/admin/list', name: 'user.admin.list')]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
-    public function adminListAction(Request $request, UserRepository $userRepository): Response
+    public function adminListAction(
+        Request $request,
+        PagerService $pagerService,
+        UserRepository $userRepository,
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($userRepository);
+
+        return $this->render('user/list.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $userRepository->searchPaginated($pagerService),
+        ]);
+    }
+
+    public function adminListActionOld(Request $request, UserRepository $userRepository): Response
     {
         $type = null;
         $value = null;
