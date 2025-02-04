@@ -45,13 +45,13 @@
         <tbody>
         {% for participant in paginator %}
             <tr>
-                <td>{{ participant.user.etatCivil.nom }} {{ participant.user.etatCivil.prenom }}</td>
-                <td>{{ participant.user.email }}</td>
+                <td>{{ participant.user.etatCivil.nom|highlight(pagerService.searchValue) }} {{ participant.user.etatCivil.prenom|highlight(pagerService.searchValue) }}</td>
+                <td>{{ participant.user.email|highlight(pagerService.searchValue) }}</td>
                 <td>
                     {% if not participant.billet %}
                         <span class="text-danger">Ce participant n'a pas de billet !</span>
                     {% else %}
-                        {{ participant.billet }}
+                        {{ participant.billet|highlight(pagerService.searchValue) }}
                     {% endif %}
                 </td>
                 <td>

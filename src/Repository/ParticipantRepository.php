@@ -211,9 +211,9 @@ class ParticipantRepository extends BaseRepository
 
     public function gn(QueryBuilder $query, Gn $gn): QueryBuilder
     {
-        $query->andWhere($this->alias.'.gn = :value');
+        $query->andWhere($this->alias.'.gn = :gnId');
 
-        return $query->setParameter('value', $gn->getId());
+        return $query->setParameter('gnId', $gn->getId());
     }
 
     public function getPersonnages(Participant $participant): QueryBuilder
