@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Service\OrderBy;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Deprecated;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -130,4 +132,43 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function search(
+        mixed $search = null,
+        string|array|null $attributes = self::SEARCH_NOONE,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null
+    ): QueryBuilder {
+        $alias ??= static::getEntityAlias();
+        $query ??= $this->createQueryBuilder($alias);
+        $query->join($alias.'.etatCivil', 'etatCivil');
+
+        return parent::search($search, $attributes, $orderBy, $alias, $query);
+    }
+    public function searchAttributes(): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            self::SEARCH_ALL,
+            $alias.'.email',
+            $alias.'.roles',
+            $alias.'.username',
+            'etatCivil.nom as nom',
+            'etatCivil.prenom as prenom',
+        ];
+    }
+
+    public function translateAttributes(): array
+    {
+        return [
+            'email' => $this->translator->trans('Email', domain: 'repository'),
+            'roles' => $this->translator->trans('Roles', domain: 'repository'),
+            'username' => $this->translator->trans('Pseudo', domain: 'repository'),
+            'etatCivil.nom', 'nom' => $this->translator->trans('Nom', domain: 'repository'),
+            'etatCivil.prenom', 'prenom' => $this->translator->trans('Prenom', domain: 'repository'),
+        ];
+    }
+
 }

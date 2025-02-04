@@ -500,6 +500,7 @@ class GnController extends AbstractController
     /**
      * Liste des participants à un jeu.
      */
+    #[IsGranted('ROLE_ORGA')]
     #[Route('/{gn}/participants', name: 'participants')]
     public function participantsAction(
         Request $request,
