@@ -301,6 +301,7 @@ class UserController extends AbstractController
      *
      * @throws NotFoundHttpException if no User is found with that ID
      */
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access to this.')]
     #[Route('/user/{user}/edit', name: 'user.edit')]
     public function editAction(
         Request $request,
