@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,11 +20,11 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseParticipantHasRestauration', 'extended' => 'ParticipantHasRestauration'])]
 abstract class BaseParticipantHasRestauration
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
-    protected \DateTime $date;
+    #[Column(type: Types::DATETIME_MUTABLE)]
+    protected DateTime $date;
 
     #[ManyToOne(targetEntity: Participant::class, inversedBy: 'participantHasRestaurations', cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: 'false')]
@@ -31,6 +33,11 @@ abstract class BaseParticipantHasRestauration
     #[ManyToOne(targetEntity: Restauration::class, inversedBy: 'participantHasRestaurations', cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'restauration_id', referencedColumnName: 'id', nullable: 'false')]
     protected Restauration $restauration;
+
+    public function __construct()
+    {
+        $this->setDate(new \DateTime('NOW'));
+    }
 
     /**
      * Set the value of id.
@@ -53,7 +60,7 @@ abstract class BaseParticipantHasRestauration
     /**
      * Set the value of date.
      */
-    public function setDate(\DateTime $date): static
+    public function setDate(DateTime $date): static
     {
         $this->date = $date;
 
@@ -63,7 +70,7 @@ abstract class BaseParticipantHasRestauration
     /**
      * Get the value of date.
      */
-    public function getDate(): \DateTime
+    public function getDate(): DateTime
     {
         return $this->date;
     }
