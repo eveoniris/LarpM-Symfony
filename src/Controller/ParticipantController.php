@@ -331,14 +331,14 @@ class ParticipantController extends AbstractController
         $originalParticipantHasRestaurations = new ArrayCollection();
 
         /*
-         *  Crée un tableau contenant les objets ParticipantHasRestauration du participant
+         * Créer un tableau contenant les objets ParticipantHasRestauration du participant
          */
         foreach ($participant->getParticipantHasRestaurations() as $participantHasRestauration) {
             $originalParticipantHasRestaurations->add($participantHasRestauration);
         }
 
         $form = $this->createForm(ParticipantRestaurationForm::class, $participant)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder', 'attr' => ['class' => 'btn btn-secondary']]);
 
         $form->handleRequest($request);
 
@@ -356,7 +356,7 @@ class ParticipantController extends AbstractController
              *  supprime la relation entre participantHasRestauration et le participant
              */
             foreach ($originalParticipantHasRestaurations as $participantHasRestauration) {
-                if (false == $participant->getParticipantHasRestaurations()->contains($participantHasRestauration)) {
+                if (false === $participant->getParticipantHasRestaurations()->contains($participantHasRestauration)) {
                     $entityManager->remove($participantHasRestauration);
                 }
             }

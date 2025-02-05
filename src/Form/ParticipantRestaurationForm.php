@@ -3,16 +3,13 @@
 
 namespace App\Form;
 
+use App\Entity\Participant;
 use App\Form\Type\ParticipantHasRestaurationType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\ParticipantRestaurationForm.
- *
- * @author kevin
- */
 class ParticipantRestaurationForm extends AbstractType
 {
     /**
@@ -20,7 +17,7 @@ class ParticipantRestaurationForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('participantHasRestaurations', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+        $builder->add('participantHasRestaurations', CollectionType::class, [
             'label' => 'Lieux de restauration',
             'required' => false,
             'allow_add' => true,
@@ -36,7 +33,7 @@ class ParticipantRestaurationForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'class' => \App\Entity\Participant::class,
+            'class' => Participant::class,
         ]);
     }
 
