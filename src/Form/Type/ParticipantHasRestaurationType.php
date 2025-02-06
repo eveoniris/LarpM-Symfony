@@ -3,23 +3,21 @@
 
 namespace App\Form\Type;
 
+use App\Entity\ParticipantHasRestauration;
+use App\Entity\Restauration;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Type\ParticipantHasRestaurationType.
- *
- * @author kevin
- */
 class ParticipantHasRestaurationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('restauration', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+        $builder->add('restauration', EntityType::class, [
             'label' => 'Choisissez le lieu de restauration',
             'required' => true,
-            'class' => \App\Entity\Restauration::class,
+            'class' => Restauration::class,
             'choice_label' => 'label',
         ]);
     }
@@ -27,7 +25,7 @@ class ParticipantHasRestaurationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\ParticipantHasRestauration::class,
+            'data_class' => ParticipantHasRestauration::class,
         ]);
     }
 

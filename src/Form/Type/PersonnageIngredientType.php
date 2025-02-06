@@ -3,29 +3,28 @@
 
 namespace App\Form\Type;
 
-use LarpManager\Repository\IngredientRepository;
+use App\Entity\Ingredient;
+use App\Entity\PersonnageIngredient;
+use App\Repository\IngredientRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Type\PersonnageIngredientType.
- *
- * @author kevin
- */
 class PersonnageIngredientType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('nombre', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            ->add('nombre', IntegerType::class, [
                 'label' => 'quantite',
                 'required' => true,
             ])
-            ->add('ingredient', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('ingredient', EntityType::class, [
                 'label' => "Choisissez l'ingredient",
                 'required' => true,
-                'class' => \App\Entity\Ingredient::class,
+                'class' => Ingredient::class,
                 'choice_label' => 'fullLabel',
                 'query_builder' => static function (IngredientRepository $er) {
                     $qb = $er->createQueryBuilder('c');
@@ -39,7 +38,7 @@ class PersonnageIngredientType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\PersonnageIngredient::class,
+            'data_class' => PersonnageIngredient::class,
         ]);
     }
 

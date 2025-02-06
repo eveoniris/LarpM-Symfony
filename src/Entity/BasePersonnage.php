@@ -101,7 +101,7 @@ abstract class BasePersonnage
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
     protected Collection $personnageHasTokens;
 
-    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageIngredient::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageIngredient::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
     protected Collection $personnageIngredients;
 
