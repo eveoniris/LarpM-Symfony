@@ -47,7 +47,6 @@ use App\Form\Personnage\PersonnageOriginForm;
 use App\Form\Personnage\PersonnageReligionForm;
 use App\Form\Personnage\PersonnageRessourceForm;
 use App\Form\Personnage\PersonnageRichesseForm;
-use App\Form\Personnage\PersonnageTechnologieForm;
 use App\Form\Personnage\PersonnageUpdateHeroismeForm;
 use App\Form\Personnage\PersonnageUpdatePugilatForm;
 use App\Form\Personnage\PersonnageUpdateRenommeForm;
@@ -60,9 +59,6 @@ use App\Form\PersonnageUpdateAgeForm;
 use App\Form\PersonnageUpdateDomaineForm;
 use App\Form\PersonnageUpdateForm;
 use App\Form\PersonnageXpForm;
-use App\Form\PotionFindForm;
-use App\Form\PriereFindForm;
-use App\Form\SortFindForm;
 use App\Form\TriggerDeleteForm;
 use App\Form\TriggerForm;
 use App\Form\TrombineForm;
@@ -173,8 +169,8 @@ class PersonnageController extends AbstractController
         $orderBy = $request->get('order_by') ?: 'id';
         $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
         $isAsc = 'ASC' == $orderDir;
-        $limit = (int)($request->get('limit') ?: 50);
-        $page = (int)($request->get('page') ?: 1);
+        $limit = (int) ($request->get('limit') ?: 50);
+        $page = (int) ($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
@@ -277,13 +273,13 @@ class PersonnageController extends AbstractController
         }
 
         return array_merge([
-                'personnages' => $personnages,
-                'paginator' => $paginator,
-                'form' => $form->createView(),
-                'optionalParameters' => $optionalParameters,
-                'columnDefinitions' => $columnDefinitions,
-                'formPath' => $routeName,
-            ]
+            'personnages' => $personnages,
+            'paginator' => $paginator,
+            'form' => $form->createView(),
+            'optionalParameters' => $optionalParameters,
+            'columnDefinitions' => $columnDefinitions,
+            'formPath' => $routeName,
+        ]
         );
     }
 
@@ -328,22 +324,21 @@ class PersonnageController extends AbstractController
             return $this->sendNoImageAvailable();
         }
         $path = $this->fileUploader->getProjectDirectory(
-            ).FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
+        ).FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
 
         $filename = $personnage->getTrombine($this->fileUploader->getProjectDirectory());
         if (!file_exists($filename)) {
             // get old ?
             //
             $path = $this->fileUploader->getProjectDirectory(
-                ).FolderType::Private->value.DocumentType::Image->value.'/';
+            ).FolderType::Private->value.DocumentType::Image->value.'/';
             $filename = $path.$personnage->getTrombineUrl();
 
             if (!file_exists($filename)) {
                 $path = $path = $this->fileUploader->getProjectDirectory(
-                    ).'/../larpmanager/private/img/';
+                ).'/../larpmanager/private/img/';
                 $filename = $path.$personnage->getTrombineUrl();
                 if (!file_exists($filename)) {
-
                     return $this->sendNoImageAvailable($filename);
                 }
             }
@@ -584,7 +579,7 @@ class PersonnageController extends AbstractController
         Request $request,
         PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
-        TechnologieRepository $technologieRepository
+        TechnologieRepository $technologieRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($technologieRepository)->setLimit(50);
 
@@ -595,7 +590,7 @@ class PersonnageController extends AbstractController
         $limit = 1;
         foreach ($competences as $competence) {
             if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily(
-                )?->getCompetenceFamilyType()?->value) {
+            )?->getCompetenceFamilyType()?->value) {
                 if ($competence->getLevel()?->getIndex() >= 2) {
                     $message = false;
                     $errorLevel = 0;
@@ -677,7 +672,7 @@ class PersonnageController extends AbstractController
         $langueMateriel = [];
         foreach ($personnage->getPersonnageLangues() as $langue) {
             if ($langue->getLangue()->getGroupeLangue()->getId() > 0 && $langue->getLangue()->getGroupeLangue()->getId(
-                ) < 6) {
+            ) < 6) {
                 if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel)) {
                     $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
                 }
@@ -1188,7 +1183,6 @@ class PersonnageController extends AbstractController
         EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
-
         $editClass = PersonnageEditForm::class;
         if ($this->isGranted(Role::SCENARISTE->value)) {
             $editClass = PersonnageUpdateForm::class;
@@ -1789,7 +1783,7 @@ class PersonnageController extends AbstractController
         Request $request,
         PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
-        PriereRepository $priereRepository
+        PriereRepository $priereRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($priereRepository)->setLimit(50);
 
@@ -1856,7 +1850,7 @@ class PersonnageController extends AbstractController
         Request $request,
         PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
-        ConnaissanceRepository $connaissanceRepository
+        ConnaissanceRepository $connaissanceRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($connaissanceRepository)->setLimit(50);
 
@@ -1917,7 +1911,7 @@ class PersonnageController extends AbstractController
         Request $request,
         PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
-        SortRepository $sortRepository
+        SortRepository $sortRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($sortRepository)->setLimit(50);
 
@@ -1984,7 +1978,7 @@ class PersonnageController extends AbstractController
         Request $request,
         PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
-        PotionRepository $potionRepository
+        PotionRepository $potionRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($potionRepository)->setLimit(50);
 
@@ -2035,7 +2029,6 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Potion $potion,
     ): RedirectResponse {
-
         $nomPotion = $potion->getLabel();
         $personnage->removePotion($potion);
 
@@ -2447,7 +2440,6 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         #[MapEntity] PersonnageLangues $personnageLangue,
     ): RedirectResponse|Response {
-
         $form = $this->createFormBuilder()
             ->add(
                 'save',
@@ -2499,7 +2491,7 @@ class PersonnageController extends AbstractController
             // et récupérer les langues de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 if ('ORIGINE' === $personnageLangue->getSource(
-                    ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
+                ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
                     $personnage->removePersonnageLangues($personnageLangue);
                     $this->entityManager->remove($personnageLangue);
                 }
