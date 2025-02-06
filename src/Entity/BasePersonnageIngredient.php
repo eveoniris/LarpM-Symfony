@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -17,10 +18,10 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageIngredient', 'extended' => 'PersonnageIngredient'])]
 abstract class BasePersonnageIngredient
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $nombre = null;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageIngredients')]
@@ -44,7 +45,7 @@ abstract class BasePersonnageIngredient
     /**
      * Get the value of id.
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

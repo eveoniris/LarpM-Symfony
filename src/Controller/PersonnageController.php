@@ -2055,7 +2055,7 @@ class PersonnageController extends AbstractController
         $originalPersonnageIngredients = new ArrayCollection();
 
         /*
-         *  Crée un tableau contenant les objets personnageIngredient du groupe
+         * Crée un tableau contenant les objets personnageIngredient du groupe
          */
         foreach ($personnage->getPersonnageIngredients() as $personnageIngredient) {
             $originalPersonnageIngredients->add($personnageIngredient);
@@ -2072,14 +2072,18 @@ class PersonnageController extends AbstractController
              * Pour tous les ingredients
              */
             foreach ($personnage->getPersonnageIngredients() as $personnageIngredient) {
-                $personnageIngredient->setPersonnage($personnage);
+                if ($personnageIngredient->getNombre() < 1) {
+                    $entityManager->remove($personnageIngredient);
+                } else {
+                    $personnageIngredient->setPersonnage($personnage);
+                }
             }
 
             /*
              *  supprime la relation entre personnageIngredient et le personnage
              */
             foreach ($originalPersonnageIngredients as $personnageIngredient) {
-                if (false == $personnage->getPersonnageIngredients()->contains($personnageIngredient)) {
+                if (false === $personnage->getPersonnageIngredients()->contains($personnageIngredient)) {
                     $entityManager->remove($personnageIngredient);
                 }
             }

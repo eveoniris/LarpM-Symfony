@@ -3,16 +3,15 @@
 
 namespace App\Form\Personnage;
 
+use App\Entity\Personnage;
 use App\Form\Type\PersonnageIngredientType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\PersonnageIngredientForm.
- *
- * @author kevin
- */
 class PersonnageIngredientForm extends AbstractType
 {
     /**
@@ -20,7 +19,7 @@ class PersonnageIngredientForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('personnageIngredients', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+        $builder->add('personnageIngredients', CollectionType::class, [
             'label' => 'Ingredients',
             'required' => false,
             'allow_add' => true,
@@ -28,7 +27,7 @@ class PersonnageIngredientForm extends AbstractType
             'by_reference' => false,
             'entry_type' => PersonnageIngredientType::class,
         ])
-            ->add('random', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            ->add('random', IntegerType::class, [
                 'mapped' => false,
                 'label' => 'X ingrédients choisis au hasard',
                 'required' => false,
@@ -36,7 +35,7 @@ class PersonnageIngredientForm extends AbstractType
                     'help' => 'Indiquez combien d\'ingrédient il faut ajouter à ce personnage.',
                 ],
             ])
-            ->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
+            ->add('valider', SubmitType::class, ['label' => 'Valider']);
     }
 
     /**
@@ -45,7 +44,7 @@ class PersonnageIngredientForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Personnage::class,
+            'data_class' => Personnage::class,
         ]);
     }
 
