@@ -513,11 +513,11 @@ class PersonnageController extends AbstractController
                 $personnage->addPersonnageHasToken($personnageHasToken);
                 $entityManager->persist($personnageHasToken);
 
-                if (true == $personnage->getVivant()) {
+                if ($personnage->getVivant()) {
                     $personnage->setAgeReel($personnage->getAgeReel() + 5); // ajoute 5 ans à l'age réél
                 }
 
-                if (0 == $personnage->getPersonnageHasTokens()->count() % 2 && true == $personnage->getVivant()) {
+                if (0 == $personnage->getPersonnageHasTokens()->count() % 2 && $personnage->getVivant()) {
                     if ($personnage->getAge()->getId() < 5) {
                         $personnage->setAge($ages[$personnage->getAge()->getId()]);
                     } elseif (5 == $personnage->getAge()->getId()) {
@@ -749,7 +749,7 @@ class PersonnageController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
-            $evenement = false == $personnage->getVivant() ? 'Mort violente' : 'Résurrection';
+            $evenement = !$personnage->getVivant() ? 'Mort violente' : 'Résurrection';
 
             // TODO: Trouver comment avoir la date du GN
             /*
@@ -2112,7 +2112,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'], 303);
         }
 
         return $this->render('personnage/ingredients.twig', [
@@ -2155,10 +2155,10 @@ class PersonnageController extends AbstractController
             }
 
             /*
-             *  supprime la relation entre personnageRessource et le personnage
+             * supprime la relation entre personnageRessource et le personnage
              */
             foreach ($originalPersonnageRessources as $personnageRessource) {
-                if (false == $personnage->getPersonnageRessources()->contains($personnageRessource)) {
+                if (false === $personnage->getPersonnageRessources()->contains($personnageRessource)) {
                     $entityManager->remove($personnageRessource);
                 }
             }
@@ -2206,7 +2206,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'], 303);
         }
 
         return $this->render('personnage/ressources.twig', [
@@ -2237,7 +2237,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'], 303);
         }
 
         return $this->render('personnage/richesse.twig', [
@@ -2267,7 +2267,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le document a été ajouté au personnage.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'], 303);
         }
 
         return $this->render('personnage/documents.twig', [
@@ -2297,7 +2297,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'L\'objet a été ajouté au personnage.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'], 303);
         }
 
         return $this->render('personnage/items.twig', [

@@ -110,7 +110,7 @@ abstract class BasePersonnage
     #[OrderBy(['langue' => 'ASC'])]
     protected Collection $personnageLangues;
 
-    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageRessource::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageRessource::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
     protected Collection $personnageRessources;
 
