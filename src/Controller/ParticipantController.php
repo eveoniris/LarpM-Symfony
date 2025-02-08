@@ -67,6 +67,8 @@ use App\Form\RequestPeaceForm;
 use App\Form\TrombineForm;
 use App\Manager\GroupeManager;
 use App\Repository\DomaineRepository;
+use App\Repository\SecondaryGroupRepository;
+use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -441,7 +443,7 @@ class ParticipantController extends AbstractController
     /**
      * Modification de quelques informations concernant le personnage.
      */
-    #[deprecated()]
+    #[Deprecated()]
     #[Route('/participant/{participant}/personnageEdit', name: 'participant.personnage.edit')]
     public function personnageEditAction(
         Request $request,
@@ -1484,7 +1486,11 @@ class ParticipantController extends AbstractController
                 'Désolé, vous êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. Veuillez contacter votre orga en cas de problème.'
             );
 
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'religions'], 303);
+            return $this->redirectToRoute(
+                'personnage.detail',
+                ['personnage' => $personnage->getId(), 'tab' => 'religions'],
+                303
+            );
         }
 
         $personnageReligion = new PersonnagesReligions();
@@ -1510,7 +1516,11 @@ class ParticipantController extends AbstractController
                 'choices' => $availableReligions,
                 'choice_label' => 'label',
             ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre religion', 'attr' => ['class' => 'btn btn-secondary']]);
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => 'Valider votre religion', 'attr' => ['class' => 'btn btn-secondary']]
+            );
 
         $form->handleRequest($request);
 
@@ -1540,7 +1550,11 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'religions'], 303);
+            return $this->redirectToRoute(
+                'personnage.detail',
+                ['personnage' => $personnage->getId(), 'tab' => 'religions'],
+                303
+            );
         }
 
         return $this->render('personnage/religion_add.twig', [
@@ -2437,7 +2451,7 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/magie', name: 'participant.magie')]
     public function magieAction(
         Participant $participant,
-        DomaineRepository $domaineRepository
+        DomaineRepository $domaineRepository,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2615,15 +2629,19 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/groupeSecondaire/list', name: 'participant.groupeSecondaire.list')]
     public function groupeSecondaireListAction(
         Request $request,
+        PagerService $pagerService,
+        SecondaryGroupRepository $secondaryGroupRepository,
         EntityManagerInterface $entityManager,
         Participant $participant,
     ): Response {
-        $repo = $entityManager->getRepository(SecondaryGroup::class);
-        $groupeSecondaires = $repo->findAllPublic();
+        $alias = $secondaryGroupRepository->getAlias();
+        $queryBuilder = $secondaryGroupRepository->createQueryBuilder($alias);
+        $queryBuilder = $secondaryGroupRepository->secret($queryBuilder, false);
 
         return $this->render('groupeSecondaire/list.twig', [
-            'groupeSecondaires' => $groupeSecondaires,
-            //'participant' => $participant,
+            'participant' => $participant,
+            'pagerService' => $pagerService,
+            'paginator' => $secondaryGroupRepository->searchPaginated($pagerService, $queryBuilder),
         ]);
     }
 
