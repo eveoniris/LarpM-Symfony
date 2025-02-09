@@ -37,6 +37,7 @@ use App\Entity\Sort;
 use App\Entity\Technologie;
 use App\Entity\Territoire;
 use App\Entity\User;
+use App\Enum\Role;
 use App\Form\AcceptAllianceForm;
 use App\Form\AcceptPeaceForm;
 use App\Form\BreakAllianceForm;
@@ -2739,6 +2740,7 @@ class ParticipantController extends AbstractController
         #[MapEntity] SecondaryGroup $groupeSecondaire,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
+        $isAdmin = $this->isGranted(Role::SCENARISTE->value);
 
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage !');
@@ -2757,6 +2759,7 @@ class ParticipantController extends AbstractController
         return $this->render('groupeSecondaire/detail.twig', [
             'groupeSecondaire' => $groupeSecondaire,
             'membre' => $membre,
+            'isAdmin' => $isAdmin,
             'participant' => $participant,
             'gn' => $participant->getGn(),
         ]);
