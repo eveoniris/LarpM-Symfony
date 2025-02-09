@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Gn;
 use App\Entity\Loi;
 use App\Entity\Personnage;
-use App\Entity\Ressource;
 use App\Entity\Topic;
 use App\Form\Gn\GnDeleteForm;
 use App\Form\Gn\GnForm;
@@ -13,6 +12,7 @@ use App\Manager\GroupeManager;
 use App\Repository\GnRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\QuestionRepository;
+use App\Repository\RessourceRepository;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -32,8 +32,10 @@ class GnController extends AbstractController
     #[Route('', name: 'list')]
     // #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access tho this page.')]
     #[IsGranted('ROLE_USER', message: 'You are not allowed to access tho this page.')]
-    public function listAction(Request $request, GnRepository $gnRepository): Response
-    {
+    public function listAction(
+        Request $request,
+        GnRepository $gnRepository,
+    ): Response {
         $page = $request->query->getInt('page', 1);
         $limit = 10;
 
@@ -229,14 +231,13 @@ class GnController extends AbstractController
         );
     }
 
-    #[Route('/groupes/enveloppes', name: 'groupes.enveloppes')]
-    public function printAllAction(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/{gn}/groupes/enveloppes', name: 'groupes.enveloppes')]
+    public function printAllAction(#[MapEntity] Gn $gn, RessourceRepository $ressourceRepository): Response
     {
-        $gn = GroupeManager::getGnActif($entityManager);
         $groupeGns = $gn->getGroupeGns();
 
-        $ressourceRares = new ArrayCollection($entityManager->getRepository(Ressource::class)->findRare());
-        $ressourceCommunes = new ArrayCollection($entityManager->getRepository(Ressource::class)->findCommun());
+        $ressourceRares = new ArrayCollection($ressourceRepository->findRare());
+        $ressourceCommunes = new ArrayCollection($ressourceRepository->findCommun());
 
         $groupes = new ArrayCollection();
         foreach ($groupeGns as $groupeGn) {
@@ -256,8 +257,8 @@ class GnController extends AbstractController
     /**
      * Impression des backgrounds des chefs de groupe.
      */
-    #[Route('/backgrounds/chefs', name: 'groupes.backgrounds.chefs')]
-    public function backgroundsChefAction(Request $request, EntityManagerInterface $entityManager, Gn $gn): Response
+    #[Route('/{gn}/backgrounds/chefs', name: 'groupes.backgrounds.chefs')]
+    public function backgroundsChefAction(#[MapEntity] Gn $gn): Response
     {
         $groupes = $gn->getGroupes();
         $iterator = $groupes->getIterator();
@@ -275,8 +276,8 @@ class GnController extends AbstractController
     /**
      * Impression des backgrounds des groupes.
      */
-    #[Route('/backgrounds/groupes', name: 'groupes.backgrounds.groupes')]
-    public function backgroundsGroupeAction(Request $request, EntityManagerInterface $entityManager, Gn $gn): Response
+    #[Route('/{gn}/backgrounds/groupes', name: 'groupes.backgrounds.groupes')]
+    public function backgroundsGroupeAction(#[MapEntity] Gn $gn): Response
     {
         $groupes = $gn->getGroupes();
         $iterator = $groupes->getIterator();
@@ -294,8 +295,8 @@ class GnController extends AbstractController
     /**
      * Impression des backgrounds des chefs de groupe.
      */
-    #[Route('/backgrounds/membres', name: 'groupes.backgrounds.membres')]
-    public function backgroundsMembresAction(Request $request, EntityManagerInterface $entityManager, Gn $gn): Response
+    #[Route('/{gn}/backgrounds/membres', name: 'groupes.backgrounds.membres')]
+    public function backgroundsMembresAction(#[MapEntity] Gn $gn): Response
     {
         $groupes = $gn->getGroupes();
         $iterator = $groupes->getIterator();
@@ -387,15 +388,15 @@ class GnController extends AbstractController
         foreach ($participants as $participant) {
             $line = [];
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string)$participant->getUser()->getEtatCivil()->getNom(),
+                (string) $participant->getUser()->getEtatCivil()->getNom(),
                 'ISO-8859-1'
             ) : '';
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string)$participant->getUser()->getEtatCivil()->getPrenom(),
+                (string) $participant->getUser()->getEtatCivil()->getPrenom(),
                 'ISO-8859-1'
             ) : '';
             $line[] = $participant->getUser() ? mb_convert_encoding(
-                (string)$participant->getUser()->getEmail(),
+                (string) $participant->getUser()->getEmail(),
                 'ISO-8859-1'
             ) : '';
 
@@ -413,7 +414,7 @@ class GnController extends AbstractController
     public function participantsWithoutBilletCSVAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn
+        #[MapEntity] Gn $gn,
     ): void {
         $participants = $gn->getParticipantsWithoutBillet();
         header('Content-Type: text/csv');
@@ -430,15 +431,15 @@ class GnController extends AbstractController
         foreach ($participants as $participant) {
             $line = [];
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string)$participant->getUser()->getEtatCivil()->getNom(),
+                (string) $participant->getUser()->getEtatCivil()->getNom(),
                 'ISO-8859-1'
             ) : '';
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string)$participant->getUser()->getEtatCivil()->getPrenom(),
+                (string) $participant->getUser()->getEtatCivil()->getPrenom(),
                 'ISO-8859-1'
             ) : '';
             $line[] = $participant->getUser() ? mb_convert_encoding(
-                (string)$participant->getUser()->getEmail(),
+                (string) $participant->getUser()->getEmail(),
                 'ISO-8859-1'
             ) : '';
 
@@ -456,7 +457,7 @@ class GnController extends AbstractController
     public function participantsWithoutPersoCSVAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Gn $gn
+        Gn $gn,
     ): void {
         $participants = $gn->getParticipantsWithoutPerso();
 
@@ -478,15 +479,15 @@ class GnController extends AbstractController
             $line = [];
 
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string)$participant->getUser()->getEtatCivil()->getNom(),
+                (string) $participant->getUser()->getEtatCivil()->getNom(),
                 'ISO-8859-1'
             ) : '';
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string)$participant->getUser()->getEtatCivil()->getPrenom(),
+                (string) $participant->getUser()->getEtatCivil()->getPrenom(),
                 'ISO-8859-1'
             ) : '';
             $line[] = $participant->getUser() ? mb_convert_encoding(
-                (string)$participant->getUser()->getEmail(),
+                (string) $participant->getUser()->getEmail(),
                 'ISO-8859-1'
             ) : '';
 
@@ -506,7 +507,7 @@ class GnController extends AbstractController
         Request $request,
         PagerService $pagerService,
         ParticipantRepository $participantRepository,
-        #[MapEntity] Gn $gn
+        #[MapEntity] Gn $gn,
     ): Response {
         $pagerService->setRequest($request)->setRepository($participantRepository);
 
@@ -529,7 +530,7 @@ class GnController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Gn $gn,
-        GnRepository $gnRepository
+        GnRepository $gnRepository,
     ): void {
         $participants = $gn->getParticipants();
 
@@ -558,17 +559,17 @@ class GnController extends AbstractController
         foreach ($participants as $participant) {
             $line = [];
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string)$participant->getUser()->getEtatCivil()->getPrenom().' '.$participant->getUser()->getEtatCivil(
+                (string) $participant->getUser()->getEtatCivil()->getPrenom().' '.$participant->getUser()->getEtatCivil(
                 )->getNom(),
                 'ISO-8859-1'
             ) : '';
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string)$participant->getUser()->getEmail(),
+                (string) $participant->getUser()->getEmail(),
                 'ISO-8859-1'
             ) : '';
 
             $line[] = $participant->getBillet() ? mb_convert_encoding(
-                (string)$participant->getBillet()->getLabel(),
+                (string) $participant->getBillet()->getLabel(),
                 'ISO-8859-1'
             ) : '';
 
@@ -580,10 +581,10 @@ class GnController extends AbstractController
                     $restauration_string = $restauration_string.', '.$restauration->getRestauration()->getLabel();
                 }
             }
-            $line[] = mb_convert_encoding((string)$restauration_string, 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $restauration_string, 'ISO-8859-1');
 
             $line[] = $participant->getGroupeGn() ? mb_convert_encoding(
-                (string)$participant->getGroupeGn()->getGroupe()->getNom(),
+                (string) $participant->getGroupeGn()->getGroupe()->getNom(),
                 'ISO-8859-1'
             ) : '';
 
@@ -618,23 +619,23 @@ class GnController extends AbstractController
         foreach ($participants as $participant) {
             $line = [];
             $line[] = mb_convert_encoding(
-                (string)$participant->getUser()
+                (string) $participant->getUser()
                     ->getEtatCivil()
                     ->getNom(),
                 'ISO-8859-1'
             );
             $line[] = mb_convert_encoding(
-                (string)$participant->getUser()
+                (string) $participant->getUser()
                     ->getEtatCivil()
                     ->getPrenom(),
                 'ISO-8859-1'
             );
-            $line[] = mb_convert_encoding((string)$participant->getUser()->getEmail(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $participant->getUser()->getEmail(), 'ISO-8859-1');
             if ($participant->getUser()
                 ->getEtatCivil()
                 ->getDateNaissance()) {
                 $line[] = mb_convert_encoding(
-                    (string)$participant->getUser()
+                    (string) $participant->getUser()
                         ->getEtatCivil()
                         ->getDateNaissance()
                         ->format('Y-m-d'),
@@ -648,7 +649,7 @@ class GnController extends AbstractController
                 ->getEtatCivil()
                 ->getFedeGn()) {
                 $line[] = mb_convert_encoding(
-                    (string)$participant->getUser()
+                    (string) $participant->getUser()
                         ->getEtatCivil()
                         ->getFedeGn(),
                     'ISO-8859-1'
@@ -669,7 +670,7 @@ class GnController extends AbstractController
     public function deleteAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn
+        #[MapEntity] Gn $gn,
     ): RedirectResponse|Response {
         $form = $this->createForm(GnDeleteForm::class, $gn)
             ->add('delete', SubmitType::class, [
@@ -696,7 +697,7 @@ class GnController extends AbstractController
     public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn
+        #[MapEntity] Gn $gn,
     ): RedirectResponse|Response {
         $form = $this->createForm(GnForm::class, $gn)
             ->add('update', SubmitType::class, [
@@ -725,7 +726,7 @@ class GnController extends AbstractController
     public function billetterieAction(
         EntityManagerInterface $entityManager,
         Request $request,
-        #[MapEntity] Gn $gn
+        #[MapEntity] Gn $gn,
     ): Response {
         $groupeGns = $gn->getGroupeGnsPj();
         $iterator = $groupeGns->getIterator();
@@ -774,11 +775,8 @@ class GnController extends AbstractController
      * Liste des groupes prévu sur le jeu.
      */
     #[Route('/{gn}/groupes', name: 'groupes')]
-    public function groupesAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn
-    ): Response {
+    public function groupesAction(#[MapEntity] Gn $gn): Response
+    {
         $groupes = $gn->getGroupes();
         $iterator = $groupes->getIterator();
         $iterator->uasort(static function ($a, $b): int {
@@ -796,11 +794,8 @@ class GnController extends AbstractController
      * Liste des groupes réservés.
      */
     #[Route('/{gn}/groupes/reserves', name: 'groupesReserves')]
-    public function groupesReservesAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn
-    ): Response {
+    public function groupesReservesAction(#[MapEntity] Gn $gn): Response
+    {
         $groupes = $gn->getGroupesReserves();
         $iterator = $groupes->getIterator();
         $iterator->uasort(static function ($a, $b): int {
@@ -818,7 +813,8 @@ class GnController extends AbstractController
      * Liste des groupes recherchant des joueurs.
      */
     #[Route('/{gn}/groupes/avecPlace', name: 'groupesPlaces')]
-    public function groupesPlacesAction(#[MapEntity] Gn $gn): Response {
+    public function groupesPlacesAction(#[MapEntity] Gn $gn): Response
+    {
         $groupesPlaces = new ArrayCollection();
         $groupes = $gn->getGroupes();
         foreach ($groupes as $groupe) {
@@ -847,7 +843,7 @@ class GnController extends AbstractController
     public function printPersoAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn
+        #[MapEntity] Gn $gn,
     ): Response {
         $participants = $gn->getParticipantsWithBillet();
         $quetes = new ArrayCollection();
@@ -866,7 +862,7 @@ class GnController extends AbstractController
     public function printInterAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn
+        #[MapEntity] Gn $gn,
     ): Response {
         $participants = $gn->getParticipantsInterGN();
         $quetes = new ArrayCollection();

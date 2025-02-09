@@ -1,25 +1,19 @@
-{% extends "layout_print.twig" %}
-
-{% block style %}
-<style>
-body {
-	font-size:12px;
-}
-</style>
-{% endblock style %}
+{% extends "base.print.twig" %}
 
 {% block content %}
 
-{%  for groupe in groupes %}
+    {% for groupe in groupes %}
 
-{% for background in groupe.backs('GROUPE_OWNER') if background.gn == gn %}
-	
-	<h2>#{{ groupe.numero }} -- {{ groupe.nom }}</h2>
-	<h3>Ce background est destiné au chef du groupe</h3>
-	{{ background.text|markdown }}
-	<hr style="page-break-after: always;" />	
-{% endfor %}
+        {% for background in groupe.backs('GROUPE_OWNER') %}
+            {% if background.gn == gn %}
 
-{% endfor %}
+                <h2>#{{ groupe.numero }} -- {{ groupe.nom }}</h2>
+                <h3>Ce background est destiné au chef du groupe</h3>
+                {{ background.text|markdown_to_html }}
+                <hr style="page-break-after: always;"/>
+            {% endif %}
+        {% endfor %}
+
+    {% endfor %}
 
 {% endblock content %}
