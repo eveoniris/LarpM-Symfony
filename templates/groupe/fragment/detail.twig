@@ -67,29 +67,32 @@
             </div>
         {% endif %}
 
-        <div class="card text-bg mb-3 overflow-auto">
-            <div class="card-header">Jeu stratégique</div>
-            <div class="card-body">
-                {% if groupe.jeuStrategique %}
-                    <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
-                    participe au jeu stratégique.
-                {% else %}
-                    ne participe pas au jeu stratégique.
-                {% endif %}
+        {# disabled for now #}
+        {% if false %}
+            <div class="card text-bg mb-3 overflow-auto">
+                <div class="card-header">Jeu stratégique</div>
+                <div class="card-body">
+                    {% if groupe.jeuStrategique %}
+                        <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+                        participe au jeu stratégique.
+                    {% else %}
+                        ne participe pas au jeu stratégique.
+                    {% endif %}
+                </div>
             </div>
-        </div>
 
-        <div class="card text-bg mb-3 overflow-auto">
-            <div class="card-header">Jeu maritime</div>
-            <div class="card-body">
-                {% if groupe.jeuMaritime %}
-                    <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
-                    participe au jeu maritime.
-                {% else %}
-                    ne participe pas au jeu maritime.
-                {% endif %}
+            <div class="card text-bg mb-3 overflow-auto">
+                <div class="card-header">Jeu maritime</div>
+                <div class="card-body">
+                    {% if groupe.jeuMaritime %}
+                        <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+                        participe au jeu maritime.
+                    {% else %}
+                        ne participe pas au jeu maritime.
+                    {% endif %}
+                </div>
             </div>
-        </div>
+        {% endif %}
 
         {% if canSeePrivateDetail %}
             <div class="card text-bg mb-3 overflow-auto">
@@ -145,7 +148,8 @@
                             {% endfor %}
                         {% endfor %}
                     </ul>
-                    {% if is_granted('ROLE_SCENARISTE', app.user) %}
+                    {# disabled for now #}
+                    {% if is_granted('ROLE_SCENARISTE', app.user) and false %}
                         <div class="d-flex justify-content-end">
                             <a class="btn btn-secondary" href="{{ path('groupe.quete',{'groupe': groupe.id}) }}">
                                 <i class="fa fa-balance-scale" aria-hidden="true"></i> Générer une quête commerciale
@@ -156,35 +160,38 @@
             </div>
         {% endif %}
 
-        <div class="card text-bg mb-3 overflow-auto">
-            <div class="card-header"><h6> Composition du groupe</h6></div>
-            <div class="card-body">
-                <p class="list-group-item-text"><strong>Nombre de places ouvertes
-                        : </strong>{{ groupe.classeOpen }}
-                </p>
+        {# disabled for now #}
+        {% if false %}
+            <div class="card text-bg mb-3 overflow-auto">
+                <div class="card-header"><h6> Composition du groupe</h6></div>
+                <div class="card-body">
+                    <p class="list-group-item-text"><strong>Nombre de places ouvertes
+                            : </strong>{{ groupe.classeOpen }}
+                    </p>
 
-                {% if groupe.classes|length == 0 %}
-                    <i class="fa fa-exclamation-triangle"
-                       aria-hidden="true"></i> Attention, ce groupe n'a pas de classes définies.
-                {% else %}
-                    <ul>
-                        {% for classe in groupe.classes %}
-                            <li>
-                                <a href="{{ path('classe.detail', {'classe': classe.id}) }}">{{ classe.label }}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+                    {% if groupe.classes|length == 0 %}
+                        <i class="fa fa-exclamation-triangle"
+                           aria-hidden="true"></i> Attention, ce groupe n'a pas de classes définies.
+                    {% else %}
+                        <ul>
+                            {% for classe in groupe.classes %}
+                                <li>
+                                    <a href="{{ path('classe.detail', {'classe': classe.id}) }}">{{ classe.label }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
 
-                {% if is_granted('ROLE_SCENARISTE', app.user) %}
-                    <div class="d-flex justify-content-end mt-2">
-                        <a class="btn btn-secondary" href="{{ path('groupe.composition', {'groupe': groupe.id}) }}">
-                            <i class="fa fa-pencil"></i> Modifier la composition du groupe
-                        </a>
-                    </div>
-                {% endif %}
+                    {% if is_granted('ROLE_SCENARISTE', app.user) %}
+                        <div class="d-flex justify-content-end mt-2">
+                            <a class="btn btn-secondary" href="{{ path('groupe.composition', {'groupe': groupe.id}) }}">
+                                <i class="fa fa-pencil"></i> Modifier la composition du groupe
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-        </div>
+        {% endif %}
 
     </div>
     <div class="col-md-6 pt-2">
@@ -259,7 +266,8 @@
             </div>
         </div>
 
-        {% if canSeePrivateDetail %}
+        {# diplomatie is off for now #}
+        {% if canSeePrivateDetail and false %}
             <div class="card text-bg mb-3 overflow-auto">
                 <div class="card-header"><h6> Diplomatie</h6></div>
                 <div class="card-body">
