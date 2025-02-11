@@ -2629,7 +2629,6 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/groupeSecondaire/list', name: 'participant.groupeSecondaire.list')]
     public function groupeSecondaireListAction(
-        Request $request,
         PagerService $pagerService,
         SecondaryGroupRepository $secondaryGroupRepository,
         EntityManagerInterface $entityManager,

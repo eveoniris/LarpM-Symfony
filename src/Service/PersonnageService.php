@@ -347,7 +347,7 @@ class PersonnageService
         return false;
     }
 
-    public function addClasseCompetencesFamilyCreation(Personnage $personnage): ?CompetenceHandler
+    public function addClasseCompetencesFamilyCreation(Personnage $personnage): ?CompetenceService
     {
         $personnage->setIsCreation(true);
 
