@@ -304,7 +304,6 @@ class CompetenceService
 
         foreach ($rule as $tagName => $nb) {
             while ($nb-- > 0) {
-
                 // TODO FIND & REMOVE TRIGGER
                 /*
                 $trigger = new PersonnageTrigger();
@@ -361,11 +360,40 @@ class CompetenceService
     {
     }
 
+    public function getOrigineBonus(): int
+    {
+        // TODO
+        $this->getPersonnage()->getOrigine();
+
+        return 0;
+    }
+
+    public function getMerveilleBonus(): int
+    {
+        // TODO
+
+        return 0;
+    }
+
+    public function getApprentissageBonus(): int
+    {
+        // TODO
+
+        return 0;
+    }
+
+    public function getBonus(): int
+    {
+        return $this->getOrigineBonus() + $this->getMerveilleBonus() + $this->getApprentissageBonus();
+    }
+
     /**
      * Calcul le cout d'une compétence en fonction de la classe du personnage.
      */
     public function getCompetenceCout(): int
     {
+        $bonusCout = $this->getBonus();
+
         if (Level::NIVEAU_1 === $this->getCompetenceLevel()->getIndex()
             && $this->getClasse()->getCompetenceFamilyCreations()->contains($this->getCompetenceFamily())
         ) {
@@ -373,14 +401,14 @@ class CompetenceService
         }
 
         if ($this->getClasse()->getCompetenceFamilyFavorites()->contains($this->getCompetenceFamily())) {
-            return $this->getCompetenceLevel()->getCoutFavori();
+            return $this->getCompetenceLevel()->getCoutFavori() - $bonusCout;
         }
 
         if ($this->getClasse()->getCompetenceFamilyNormales()->contains($this->getCompetenceFamily())) {
-            return $this->getCompetenceLevel()->getCout();
+            return $this->getCompetenceLevel()->getCout() - $bonusCout;
         }
 
-        return $this->getCompetenceLevel()->getCoutMeconu();
+        return $this->getCompetenceLevel()->getCoutMeconu() - $bonusCout;
     }
 
     /**

@@ -59,7 +59,7 @@
 
                 <div class="list-group-item">
                     <div class="list-group-item-heading">
-                        <h6>Responsable</h6>
+                        <h6>Recruteur</h6>
                     </div>
                     <div class="list-group-item-text">
                         {% if groupeSecondaire.responsable %}
@@ -95,7 +95,7 @@
     </div>
 
     <div class="well well-sm">
-        <div class="header"><h5>Liste des postulant</h5></div>
+        <div class="header"><h5>Liste des postulants</h5></div>
         <div class="panel-body">
 
             <div class="list-group">
@@ -198,6 +198,11 @@
                                 {% endif %}
                             </div>
                             <div>
+                                {% if membre.personnage.id == groupeSecondaire.responsable.id %}
+                                    <div class="list-group-item-text">
+                                        <p class="text-info">Recruteur du groupe</p>
+                                    </div>
+                                {% endif %}
                                 <div class="list-group-item-heading">
                                     <h6 class="list-group-item-heading">
                                         {% if membre.personnage.vivant == 0 %}<i class="fa-solid fa-skull" title="Mort"
