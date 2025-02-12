@@ -14,7 +14,7 @@
     <div class="well well-sm">
 
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
 
                 <div class="header">
                     <h5>{{ user.displayName }}</h5>
@@ -46,9 +46,12 @@
 
             <div class="col-md-6">
 
-                {% if is_granted('EDIT_USER', user) %}
+                {% if is_granted('ROLE_ORGA', user) %}
 
-                    <h6>Participations</h6>
+                    <div class="header">
+                        <h5>Participations</h5>
+                    </div>
+
 
                     <div class="list-group">
                         {% for participant in user.participants %}
@@ -61,7 +64,7 @@
                                     <div>
                                         Membre du groupe :
                                         {% if is_granted('ROLE_ORGA', app.user) %}
-                                            <a href="{{ path('groupe.detail',{'index':participant.groupeGn.groupe.id}) }}">#{{ participant.groupeGn.groupe.numero }}
+                                            <a href="{{ path('groupe.detail',{'groupe':participant.groupeGn.groupe.id}) }}">#{{ participant.groupeGn.groupe.numero }}
                                                 - {{ participant.groupeGn.groupe.nom }}</a>
                                         {% else %}
                                             <a href="{{ path('groupeGn.groupe',{'groupeGn':participant.groupeGn.id}) }}">#{{ participant.groupeGn.groupe.numero }}
@@ -84,13 +87,11 @@
                         {% endfor %}
                     </div>
 
-                    <div>
-                        <a href="{{ path('user.edit', {'id': user.id}) }}"><span class="glyphicon glyphicon-edit"
+                    <div class="m-2 d-flex justify-content-between">
+                        <a class="btn btn-secondary" href="{{ path('user.edit', {'user': user.id}) }}"><span class="fa fa-edit"
                                                                                  style="margin-right: 5px;"></span>Modifier</a>
-                    </div>
-                    <div>
-                        <a href="{{ path('user.personnageDefault', {'user': user.id}) }}"><span
-                                    class="glyphicon glyphicon-edit" style="margin-right: 5px;"></span>Choisir mon
+                        <a class="btn btn-secondary"  href="{{ path('user.personnageDefault', {'user': user.id}) }}"><span
+                                    class="fa fa-users" style="margin-right: 5px;"></span>Choisir mon
                             personnage par défaut</a>
                     </div>
                 {% endif %}
