@@ -14,8 +14,8 @@ use App\Form\EtatCivilForm;
 use App\Form\User\UserForgotPasswordForm;
 use App\Form\User\UserNewForm;
 use App\Form\User\UserNewPasswordForm;
+use App\Form\User\UserPersonnageDefaultForm;
 use App\Form\UserFindForm;
-use App\Form\UserPersonnageDefaultForm;
 use App\Form\UserRegisterForm;
 use App\Form\UserRestrictionForm;
 use App\Manager\FedegnManager;
@@ -743,15 +743,16 @@ class UserController extends AbstractController
     /**
      * Choix du personnage par défaut de l'utilisateur.
      */
+    #[Route('/user/personage/default', name: 'user.personnageDefault')]
     public function personnageDefaultAction(EntityManagerInterface $entityManager, Request $request, User $User)
     {
-        if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN') && !$User == $this->getUser()) {
+        if (!$this->isGranted('ROLE_ADMIN') && !$User === $this->getUser()) {
             $this->addFlash('error', 'Vous n\'avez pas les droits necessaires pour cette opération.');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        $form = $this->createForm(UserPersonnageDefaultForm::class, $this->getUser(), ['User_id' => $User->getId()])
+        $form = $this->createForm(UserPersonnageDefaultForm::class, $this->getUser(), ['user_id' => $User->getId()])
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
