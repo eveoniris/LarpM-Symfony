@@ -4,18 +4,15 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Mes personnage par défaut</li>
-	</ol>
-	
-	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('user.personnageDefault', {'user': user.id}) }}) }}
-			<fieldset>
-				
-				{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
-	</div>
-	
-{% endblock content%}
+    {% include '_partials/breadcrumb.twig' with {'items' :[{'name' : "Mes personnage par défaut" }]} %}
+
+    <div class="well well-sm">
+        {{ form_start(form, {"attr": {"action": path('user.personnageDefault', {'user': user.id}) }}) }}
+        <fieldset>
+
+            {{ form(form) }}
+        </fieldset>
+        {{ form_end(form) }}
+    </div>
+
+{% endblock body %}

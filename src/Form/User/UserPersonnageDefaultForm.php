@@ -3,16 +3,14 @@
 
 namespace App\Form\User;
 
+use App\Entity\Personnage;
+use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\User\UserPersonnageDefaultForm.
- *
- * @author kevin
- */
 class UserPersonnageDefaultForm extends AbstractType
 {
     /**
@@ -20,20 +18,20 @@ class UserPersonnageDefaultForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('personnage', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+        $builder->add('personnage', EntityType::class, [
             'required' => false,
             'label' => 'Choisissez votre personnage par défaut. Ce personnage sera utilisé pour signer vos messages',
             'multiple' => false,
             'expanded' => true,
-            'class' => \App\Entity\Personnage::class,
+            'class' => Personnage::class,
             'choice_label' => 'identity',
             'placeholder' => 'Aucun',
             'empty_data' => null,
             'query_builder' => static function (EntityRepository $er) use ($options) {
                 return $er->createQueryBuilder('p')
                     ->join('p.user', 'u')
-                    ->where('u.id = :UserId')
-                    ->setParameter('UserId', $options['User_id']);
+                    ->where('u.id = :userId')
+                    ->setParameter('userId', $options['user_id']);
             },
         ]);
     }
@@ -44,8 +42,8 @@ class UserPersonnageDefaultForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\User::class,
-            'User_id' => null,
+            'data_class' => User::class,
+            'user_id' => null,
         ]);
     }
 
@@ -54,6 +52,6 @@ class UserPersonnageDefaultForm extends AbstractType
      */
     public function getName(): string
     {
-        return 'UserPersonnageDefault';
+        return 'userPersonnageDefault';
     }
 }
