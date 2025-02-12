@@ -179,7 +179,11 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function getPugilat(): int|float
     {
-        $pugilat = 1
+        if (isset($this->pugilat)) {
+            return $this->pugilat;
+        }
+
+        $this->pugilat = 1
             + $this->getCompetencePugilat('Agilité')
             + $this->getCompetencePugilat('Armes à distance')
             + $this->getCompetencePugilat('Armes à 1 main')
@@ -195,19 +199,19 @@ class Personnage extends BasePersonnage implements \Stringable
 
         // Forge au niveau Initié ajoute 5 points
         if ($this->getCompetenceNiveau('Forge') >= 2) {
-            $pugilat += 5;
+            $this->pugilat += 5;
         }
 
         // Sauvagerie au niveau Initié ajoute 5 points
         if ($this->getCompetenceNiveau('Sauvagerie') >= 2) {
-            $pugilat += 5;
+            $this->pugilat += 5;
         }
 
         foreach ($this->getPugilatHistories() as $pugilatHistory) {
-            $pugilat += $pugilatHistory->getPugilat();
+            $this->pugilat += $pugilatHistory->getPugilat();
         }
 
-        return $pugilat;
+        return $this->pugilat;
     }
 
     /**

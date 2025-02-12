@@ -26,7 +26,7 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnage', 'extended' => 'Personnage'])]
 abstract class BasePersonnage
 {
-    public int $pugilat = 1;
+    protected int $pugilat;
 
     #[ORM\Id, Column(type: Types::INTEGER), ORM\GeneratedValue]
     protected int $id;
