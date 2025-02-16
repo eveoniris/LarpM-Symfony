@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseAge', 'extended' => 'Age'])]
 abstract class BaseAge
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 100)]
@@ -34,7 +34,7 @@ abstract class BaseAge
     #[Column(name: 'enableCreation', type: Types::BOOLEAN)]
     protected bool $enableCreation = false;
 
-    #[Column(name: 'minimumValue', type: Types::INTEGER)]
+    #[Column(name: 'minimumValue', type: Types::INTEGER, options: ['default' => 0])]
     protected int $minimumValue = 0;
 
     /**

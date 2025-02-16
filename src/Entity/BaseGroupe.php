@@ -19,14 +19,13 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\Table(name: 'groupe')]
 #[ORM\Index(columns: ['scenariste_id'], name: 'fk_groupe_users1_idx')]
 #[ORM\Index(columns: ['responsable_id'], name: 'fk_groupe_user2_idx')]
-#[ORM\Index(columns: ['topic_id'], name: 'fk_groupe_topic1_idx')]
 #[ORM\Index(columns: ['territoire_id'], name: 'fk_groupe_territoire1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupe', 'extended' => 'Groupe'])]
 class BaseGroupe
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 100, nullable: true)]
@@ -122,10 +121,6 @@ class BaseGroupe
     #[ManyToOne(targetEntity: User::class, inversedBy: 'groupeRelatedByResponsableIds')]
     #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id')]
     protected ?User $userRelatedByResponsableId = null;
-
-    #[ManyToOne(targetEntity: Topic::class, inversedBy: 'groupes')]
-    #[JoinColumn(name: 'topic_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Topic $topic;
 
     #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'groupes')]
     #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: 'false')]
@@ -781,24 +776,6 @@ class BaseGroupe
     }
 
     /**
-     * Set Topic entity (many to one).
-     */
-    public function setTopic(?Topic $topic = null): static
-    {
-        $this->topic = $topic;
-
-        return $this;
-    }
-
-    /**
-     * Get Topic entity (many to one).
-     */
-    public function getTopic(): ?Topic
-    {
-        return $this->topic;
-    }
-
-    /**
      * Set Territoire entity (many to one).
      */
     public function setTerritoire(?Territoire $territoire = null): static
@@ -875,9 +852,4 @@ class BaseGroupe
     {
         return $this->items;
     }
-
-    /*public function __sleep()
-    {
-        return ['id', 'nom', 'description', 'numero', 'code', 'jeu_maritime', 'jeu_strategique', 'scenariste_id', 'classe_open', 'responsable_id', 'topic_id', 'pj', 'materiel', 'lock', 'territoire_id', 'richesse'];
-    }*/
 }

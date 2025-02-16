@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Gn;
 use App\Entity\Loi;
 use App\Entity\Personnage;
-use App\Entity\Topic;
 use App\Form\Gn\GnDeleteForm;
 use App\Form\Gn\GnForm;
 use App\Manager\GroupeManager;
@@ -87,23 +86,6 @@ class GnController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $gn = $form->getData();
-            /**
-             * Création du topic associé à ce gn.
-             *
-             * @var Topic $topic
-             */
-            $topic = new Topic();
-            $topic->setTitle($gn->getLabel());
-            $topic->setDescription($gn->getDescription());
-            $topic->setUser(
-                $this->getUser()
-            ); // défini les droits d'accés à ce forum // (les participants au GN ont le droits d'accéder à ce forum)
-            $topic->setRight('GN_PARTICIPANT');
-            $gn->setTopic($topic);
-            $entityManager->persist($gn);
-            $entityManager->flush();
-            $entityManager->persist($topic);
-            $topic->setObjectId($gn->getId());
             $entityManager->persist($gn);
             $entityManager->flush();
             $this->addFlash('success', 'Le gn a été ajouté.');

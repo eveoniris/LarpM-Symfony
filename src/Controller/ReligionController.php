@@ -4,13 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Religion;
 use App\Entity\ReligionLevel;
-use App\Entity\Topic;
 use App\Form\Religion\ReligionBlasonForm;
 use App\Form\Religion\ReligionDeleteForm;
 use App\Form\Religion\ReligionForm;
 use App\Form\Religion\ReligionLevelForm;
 use App\Repository\ReligionRepository;
-use App\Repository\TopicRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Gd\Imagine;
@@ -116,28 +114,7 @@ class ReligionController extends AbstractController
         // si l'utilisateur soumet une nouvelle religion
         if ($form->isSubmitted() && $form->isValid()) {
             $religion = $form->getData();
-
-            /**
-             * Création du topic associés à cette religion
-             * Ce topic doit être placé dans le topic "culte".
-             *
-             * @var Topic $topic
-             */
-            $topic = new Topic();
-            $topic->setTitle($religion->getLabel());
-            $topic->setDescription($religion->getDescription());
-            $topic->setUser($this->getUser());
-            $topic->setTopic($topicRepository->findOneBy(['key' => 'TOPIC_CULTE']));
-            $topic->setRight('CULTE');
-
-            $entityManager->persist($topic);
-            $entityManager->flush();
-
-            $religion->setTopic($topic);
             $entityManager->persist($religion);
-            $entityManager->flush();
-
-            $topic->setObjectId($religion->getId());
             $entityManager->flush();
 
             $this->addFlash('success', 'La religion a été ajoutée.');

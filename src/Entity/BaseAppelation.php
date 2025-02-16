@@ -15,11 +15,12 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\Entity]
 #[ORM\Table(name: 'appelation')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\Index(columns: ['appelation_id'], name: 'fk_territoire_denomination_territoire_denomination1_idx')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseAppelation', 'extended' => 'Appelation'])]
 class BaseAppelation
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]

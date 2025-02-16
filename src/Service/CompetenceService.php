@@ -49,8 +49,8 @@ class CompetenceService
     public function init(?Personnage $personnage = null, ?Competence $competence = null): self
     {
         $this->reset()
-        ->setPersonnage($personnage)
-        ->setCompetence($competence);
+            ->setPersonnage($personnage)
+            ->setCompetence($competence);
 
         return $this;
     }
@@ -158,7 +158,7 @@ class CompetenceService
         // Consommation d'expérience et historisation
         $this->consumeXP($cout);
 
-        // Attribution des bonus
+        // Attribution des bonus spécifique à la compétence
         $this->giveBonus();
 
         // Enregistrement en base du lot
@@ -345,7 +345,10 @@ class CompetenceService
 
         // Si un personnage à un XP négatif. Il ne peut apprendre que des gratuites
         if ($cout > 0 && $this->getPersonnage()->getXp() - $cout < 0) {
-            $this->addError("Vous n'avez pas suffisamment de points d'expérience pour acquérir cette compétence.", self::ERR_CODE_XP);
+            $this->addError(
+                "Vous n'avez pas suffisamment de points d'expérience pour acquérir cette compétence.",
+                self::ERR_CODE_XP
+            );
         }
 
         $this->validateApprendre();
@@ -360,31 +363,58 @@ class CompetenceService
     {
     }
 
-    public function getOrigineBonus(): int
+    public function getOrigineBonusCout(): ?object // PersonnageApprentissage
     {
-        // TODO
+        /*
+        * TODO
+        * Table origin_bonus [id PK, origin_id, bonus_id, status, date_creation, date_expiration]
+         * La date d'expiration fonction du status doit permettre de conservé ou non un bonus sur un personnage qui
+         * à eu ce bonus qui ne serait plus disponible pour de nouveau joueur
+
+         * A voir si le gain XP en bonus est depuis "bonus" ou depuis origin_bonus ?
+        *
+        * */
+
         $this->getPersonnage()->getOrigine();
 
-        return 0;
+        return null;
     }
 
-    public function getMerveilleBonus(): int
+    public function getMerveilleBonusCout(): ?object // PersonnageApprentissage
     {
-        // TODO
-
-        return 0;
+        /*
+        * TODO
+        * Table merveille_bonus [id PK, merveille_id, bonus_id, status, date_creation, date_expiration, status, ?admin_id]
+         * La date d'expiration fonction du status doit permettre de conservé ou non un bonus sur un personnage qui
+         * à eu ce bonus qui ne serait plus disponible pour de nouveau joueur
+         *
+         * Table bonus []
+         * Permet de définir les bonus du jeu (redondante avec) getOrigineBonusCout()
+         *
+         *  Table merveille [] // TODO
+         *
+         * A voir si le gain XP en bonus est depuis "bonus" ou depuis origin_bonus ?
+        *
+        * */
+        return null;
     }
 
-    public function getApprentissageBonus(): int
+    public function getApprentissageBonusCout(): ?object // PersonnageApprentissage
     {
-        // TODO
+        /*
+         * TODO
+         * Table personnage_apprentissage [id PK, date, personnage_id, teacher_id FK, admin_id FK, competence_family_id, status, date_usage, bonus_xp, ?gn_id, ?participant_id]
+         * S'il existe un apprentissage pas encore utilisé retourner son Objet (il sera à mettre à jour
+         *
+         * */
 
-        return 0;
+        return null;
     }
 
-    public function getBonus(): int
+    public function getBonusCout(): int
     {
-        return $this->getOrigineBonus() + $this->getMerveilleBonus() + $this->getApprentissageBonus();
+        return $this->getOrigineBonusCout()?->getBonusXp() + $this->getMerveilleBonusCout()?->getBonusXp(
+            ) + $this->getApprentissageBonusCout()?->getBonusXp();
     }
 
     /**
@@ -392,7 +422,7 @@ class CompetenceService
      */
     public function getCompetenceCout(): int
     {
-        $bonusCout = $this->getBonus();
+        $bonusCout = $this->getBonusCout();
 
         if (Level::NIVEAU_1 === $this->getCompetenceLevel()->getIndex()
             && $this->getClasse()->getCompetenceFamilyCreations()->contains($this->getCompetenceFamily())

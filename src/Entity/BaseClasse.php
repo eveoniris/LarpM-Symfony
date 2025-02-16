@@ -24,7 +24,7 @@ use Doctrine\ORM\Mapping\InverseJoinColumn;
 #[ORM\DiscriminatorMap(['base' => 'BaseClasse', 'extended' => 'Classe'])]
 abstract class BaseClasse
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'label_masculin', type: Types::STRING, length: 45, nullable: true)]
@@ -65,13 +65,6 @@ abstract class BaseClasse
     #[OneToMany(mappedBy: 'classe', targetEntity: PersonnageSecondaire::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
     protected Collection $personnageSecondaires;
-
-    /**
-     * @var Collection<int, CultureHasClasse>
-     */
-    #[OneToMany(mappedBy: 'classe', targetEntity: CultureHasClasse::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
-    protected Collection $cultureHasClasses;
 
     #[JoinTable(name: 'classe_competence_family_favorite')]
     #[JoinColumn(name: 'classe_id', referencedColumnName: 'id')]
@@ -241,25 +234,6 @@ abstract class BaseClasse
     public function getPersonnageSecondaires(): Collection
     {
         return $this->personnageSecondaires;
-    }
-
-    public function addCultureHasClasses(CultureHasClasse $cultureHasClasses): static
-    {
-        $this->cultureHasClasses[] = $cultureHasClasses;
-
-        return $this;
-    }
-
-    public function removeCultureHasClasse(CultureHasClasse $cultureHasClasses): static
-    {
-        $this->cultureHasClasses->removeElement($cultureHasClasses);
-
-        return $this;
-    }
-
-    public function getCultureHasClasse(): Collection
-    {
-        return $this->cultureHasClasses;
     }
 
     public function addCompetenceFamilyFavorite(CompetenceFamily $competenceFamily): static

@@ -17,13 +17,12 @@ use Symfony\Contracts\Service\Attribute\Required;
 
 #[Entity]
 #[ORM\Table(name: 'gn')]
-#[ORM\Index(columns: ['topic_id'], name: 'fk_gn_topic1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseGn', 'extended' => 'Gn'])]
 class BaseGn
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -98,10 +97,6 @@ class BaseGn
     #[OneToMany(mappedBy: 'gn', targetEntity: Rumeur::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
     protected Collection $rumeurs;
-
-    #[ORM\ManyToOne(targetEntity: Topic::class, cascade: ['persist'], inversedBy: 'gns')]
-    #[JoinColumn(name: 'topic_id', referencedColumnName: 'id')]
-    protected Topic $topic;
 
     public function __construct()
     {
@@ -422,21 +417,4 @@ class BaseGn
     {
         return $this->rumeurs;
     }
-
-    public function setTopic(Topic $topic = null): static
-    {
-        $this->topic = $topic;
-
-        return $this;
-    }
-
-    public function getTopic(): Topic
-    {
-        return $this->topic;
-    }
-
-    /* public function __sleep()
-    {
-        return ['id', 'label', 'xp_creation', 'description', 'date_debut', 'date_fin', 'date_installation_joueur', 'date_fin_orga', 'adresse', 'topic_id', 'actif', 'billetterie', 'conditions_inscription'];
-    } */
 }

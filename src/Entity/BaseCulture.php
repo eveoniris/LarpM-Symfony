@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseCulture', 'extended' => 'Culture'])]
 abstract class BaseCulture
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
@@ -35,14 +35,9 @@ abstract class BaseCulture
     #[JoinColumn(name: 'id', referencedColumnName: 'culture_id', nullable: 'false')]
     protected Collection $territoires;
 
-    #[OneToMany(mappedBy: 'culture', targetEntity: CultureHasClasse::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'culture_id', nullable: 'false')]
-    protected Collection $cultureHasClasses;
-
     public function __construct()
     {
         $this->territoires = new ArrayCollection();
-        $this->cultureHasClasses = new ArrayCollection();
     }
 
     public function setId(int $id): static
@@ -111,28 +106,4 @@ abstract class BaseCulture
     {
         return $this->territoires;
     }
-
-    public function addCultureHasClasses(CultureHasClasse $cultureHasClasses): static
-    {
-        $this->cultureHasClasses[] = $cultureHasClasses;
-
-        return $this;
-    }
-
-    public function removeCultureHasClasse(CultureHasClasse $cultureHasClasses): static
-    {
-        $this->cultureHasClasses->removeElement($cultureHasClasses);
-
-        return $this;
-    }
-
-    public function getCultureHasClasse(): Collection
-    {
-        return $this->cultureHasClasses;
-    }
-
-    /* public function __sleep()
-    {
-        return ['id', 'label', 'description', 'description_complete'];
-    } */
 }

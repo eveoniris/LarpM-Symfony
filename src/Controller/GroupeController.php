@@ -13,7 +13,6 @@ use App\Entity\Ingredient;
 use App\Entity\Participant;
 use App\Entity\Ressource;
 use App\Entity\Territoire;
-use App\Entity\Topic;
 use App\Enum\Role;
 use App\Form\BackgroundForm;
 use App\Form\Groupe\GroupeCompositionForm;
@@ -1313,37 +1312,6 @@ class GroupeController extends AbstractController
 
             GroupeForm::class
         );
-        /*
-         * OLD :
-         * Création des topics associés à ce groupe
-         * un topic doit être créé par GN auquel ce groupe est inscrit.
-         *
-         * @var Topic $topic
-         *
-         * $topic = new Topic();
-         * $topic->setTitle($groupe->getNom());
-         * $topic->setDescription($groupe->getDescription());
-         * $topic->setUser($this->getUser());
-         * // défini les droits d'accés à ce forum
-         * // (les membres du groupe ont le droit d'accéder à ce forum)
-         * $topic->setRight('GROUPE_MEMBER');
-         *
-         * // $topic->setTopic(GroupeManager::findTopic('TOPIC_GROUPE'));
-         * $topicRepo = $entityManager->getRepository(Topic::class);
-         * $topic->setTopic($topicRepo->findOneByKey('TOPIC_GROUPE'));
-         *
-         * $groupe->setTopic($topic);
-         *
-         * $entityManager->persist($topic);
-         * $entityManager->flush();
-         *
-         * $entityManager->persist($groupe);
-         * $entityManager->flush();
-         *
-         * $topic->setObjectId($groupe->getId());
-         * $entityManager->persist($topic);
-         * $entityManager->flush();
-         */
     }
 
     /**
@@ -1576,27 +1544,6 @@ class GroupeController extends AbstractController
         ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         $routes['root'] = 'groupe.';
-
-        $entityCallback ??= function ($entity, $form) {
-            // Todo to remove
-            $topic = new Topic();
-            $topic->setTitle($entity->getNom());
-            $topic->setDescription($entity->getDescription());
-            $topic->setUser($this->getUser());
-            $topic->setRight('GROUPE_MEMBER');
-
-            // $topic->setTopic(GroupeManager::findTopic('TOPIC_GROUPE'));
-            $topicRepo = $this->entityManager->getRepository(Topic::class);
-            $topic->setTopic($topicRepo->findOneByKey('TOPIC_GROUPE'));
-
-            $entity->setTopic($topic);
-
-            $this->entityManager->persist($topic);
-            $this->entityManager->flush();
-
-            return $entity;
-            // END todo to remove
-        };
 
         return parent::handleCreateOrUpdate(
             request: $request,

@@ -19,7 +19,7 @@ use Symfony\Component\Mime\Encoder\QpEncoder;
 #[ORM\DiscriminatorMap(['base' => 'BaseReponse', 'extended' => 'Reponse'])]
 abstract class BaseReponse
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]

@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['base' => 'BaseConnaissance', 'extended' => 'Connaissance'])]
 abstract class BaseConnaissance
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -36,7 +36,7 @@ abstract class BaseConnaissance
     #[Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl;
 
-    #[Column(type: Types::INTEGER, options: ['unsigned' => true])]
+    #[Column(type: Types::INTEGER, )]
     protected int $niveau;
 
     #[Column(type: Types::BOOLEAN, nullable: false, options: ['default' => 0])]

@@ -24,7 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[DiscriminatorMap(['base' => 'BaseCompetenceFamily', 'extended' => 'CompetenceFamily'])]
 class BaseCompetenceFamily
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]

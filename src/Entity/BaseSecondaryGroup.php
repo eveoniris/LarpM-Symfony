@@ -16,13 +16,12 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\Table(name: 'secondary_group')]
 #[ORM\Index(columns: ['secondary_group_type_id'], name: 'fk_secondary_groupe_secondary_group_type1_idx')]
 #[ORM\Index(columns: ['personnage_id'], name: 'fk_secondary_group_personnage1_idx')]
-#[ORM\Index(columns: ['topic_id'], name: 'fk_secondary_group_topic1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseSecondaryGroup', 'extended' => 'SecondaryGroup'])]
 abstract class BaseSecondaryGroup
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
@@ -60,10 +59,6 @@ abstract class BaseSecondaryGroup
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'secondaryGroups')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?Personnage $personnage = null;
-
-    #[ManyToOne(targetEntity: Topic::class, inversedBy: 'secondaryGroups')]
-    #[JoinColumn(name: 'topic_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Topic $topic;
 
     public function __construct()
     {
@@ -267,7 +262,7 @@ abstract class BaseSecondaryGroup
     /**
      * Set SecondaryGroupType entity (many to one).
      */
-    public function setSecondaryGroupType(SecondaryGroupType $secondaryGroupType = null): static
+    public function setSecondaryGroupType(?SecondaryGroupType $secondaryGroupType = null): static
     {
         $this->secondaryGroupType = $secondaryGroupType;
 
@@ -285,7 +280,7 @@ abstract class BaseSecondaryGroup
     /**
      * Set Personnage entity (many to one).
      */
-    public function setPersonnage(Personnage $personnage = null): static
+    public function setPersonnage(?Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -299,27 +294,4 @@ abstract class BaseSecondaryGroup
     {
         return $this->personnage;
     }
-
-    /**
-     * Set Topic entity (many to one).
-     */
-    public function setTopic(Topic $topic = null): static
-    {
-        $this->topic = $topic;
-
-        return $this;
-    }
-
-    /**
-     * Get Topic entity (many to one).
-     */
-    public function getTopic(): Topic
-    {
-        return $this->topic;
-    }
-
-    /* public function __sleep()
-    {
-        return ['id', 'label', 'description', 'secondary_group_type_id', 'personnage_id', 'topic_id', 'description_secrete', 'secret', 'materiel'];
-    } */
 }

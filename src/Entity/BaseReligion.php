@@ -14,13 +14,12 @@ use Doctrine\ORM\Mapping\OneToMany;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'religion')]
-#[ORM\Index(columns: ['topic_id'], name: 'fk_religion_topic1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseReligion', 'extended' => 'Religion'])]
 abstract class BaseReligion
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
@@ -58,10 +57,6 @@ abstract class BaseReligion
     #[OneToMany(mappedBy: 'religion', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: 'false')]
     protected Collection $territoires;
-
-    #[ManyToOne(targetEntity: Topic::class, inversedBy: 'religions')]
-    #[JoinColumn(name: 'topic_id', referencedColumnName: 'id', nullable: 'false')]
-    protected Topic $topic;
 
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'religions')]
     protected Collection $personnages;
@@ -329,24 +324,6 @@ abstract class BaseReligion
     }
 
     /**
-     * Set Topic entity (many to one).
-     */
-    public function setTopic(Topic $topic = null): static
-    {
-        $this->topic = $topic;
-
-        return $this;
-    }
-
-    /**
-     * Get Topic entity (many to one).
-     */
-    public function getTopic(): Topic
-    {
-        return $this->topic;
-    }
-
-    /**
      * Add Personnage entity to collection.
      */
     public function addPersonnage(Personnage $personnage): static
@@ -429,10 +406,4 @@ abstract class BaseReligion
 
         return $this;
     }
-
-
-    /* public function __sleep()
-    {
-        return ['id', 'label', 'description', 'topic_id', 'blason', 'description_orga', 'description_fervent', 'description_pratiquant', 'description_fanatique', 'secret'];
-    } */
 }
