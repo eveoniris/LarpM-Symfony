@@ -68,7 +68,7 @@ abstract class BaseUser
     #[Column(name: 'confirmationToken', type: Types::STRING, length: 100, nullable: true)]
     protected ?string $confirmationToken = null;
 
-    #[Column(name: 'timePasswordResetRequested', type: Types::INTEGER, nullable: true, options: ['unsigned' => true])]
+    #[Column(name: 'timePasswordResetRequested', type: Types::INTEGER, nullable: true, )]
     protected ?int $timePasswordResetRequested = null;
 
     protected ?string $trombineUrl = null;
@@ -144,14 +144,6 @@ abstract class BaseUser
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
     protected Collection $personnageBackgrounds;
 
-    #[OneToMany(mappedBy: 'userRelatedByUserId', targetEntity: Post::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
-    protected Collection $postRelatedByUserIds;
-
-    #[OneToMany(mappedBy: 'user', targetEntity: PostView::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
-    protected Collection $postViews;
-
     #[OneToMany(mappedBy: 'user', targetEntity: Question::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
     protected Collection $questions;
@@ -167,10 +159,6 @@ abstract class BaseUser
     #[OneToMany(mappedBy: 'user', targetEntity: Rumeur::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
     protected Collection $rumeurs;
-
-    #[OneToMany(mappedBy: 'user', targetEntity: Topic::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
-    protected Collection $topics;
 
     #[ORM\OneToOne(inversedBy: 'user', targetEntity: EtatCivil::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'etat_civil_id', referencedColumnName: 'id')]
@@ -190,9 +178,6 @@ abstract class BaseUser
     #[ORM\InverseJoinColumn(name: 'restriction_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $restrictions;
 
-    #[ORM\ManyToMany(targetEntity: Post::class, mappedBy: 'users')]
-    protected Collection $posts;
-
     public function __construct()
     {
         $this->backgrounds = new ArrayCollection();
@@ -210,15 +195,11 @@ abstract class BaseUser
         $this->participants = new ArrayCollection();
         $this->personnages = new ArrayCollection();
         $this->personnageBackgrounds = new ArrayCollection();
-        $this->postRelatedByUserIds = new ArrayCollection();
-        $this->postViews = new ArrayCollection();
         $this->questions = new ArrayCollection();
         $this->relectures = new ArrayCollection();
         $this->restrictionRelatedByAuteurIds = new ArrayCollection();
         $this->rumeurs = new ArrayCollection();
-        $this->topics = new ArrayCollection();
         $this->restrictions = new ArrayCollection();
-        $this->posts = new ArrayCollection();
     }
 
     public function setId(int $id): static
@@ -968,64 +949,6 @@ abstract class BaseUser
     }
 
     /**
-     * Add Post entity related by `User_id` to collection (one to many).
-     */
-    public function addPostRelatedByUserId(Post $post): static
-    {
-        $this->postRelatedByUserIds[] = $post;
-
-        return $this;
-    }
-
-    /**
-     * Remove Post entity related by `User_id` from collection (one to many).
-     */
-    public function removePostRelatedByUserId(Post $post): static
-    {
-        $this->postRelatedByUserIds->removeElement($post);
-
-        return $this;
-    }
-
-    /**
-     * Get Post entity related by `user_id` collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getPostRelatedByUserIds()
-    {
-        return $this->postRelatedByUserIds;
-    }
-
-    /**
-     * Add PostView entity to collection (one to many).
-     */
-    public function addPostView(PostView $postView): static
-    {
-        $this->postViews[] = $postView;
-
-        return $this;
-    }
-
-    /**
-     * Remove PostView entity from collection (one to many).
-     */
-    public function removePostView(PostView $postView): static
-    {
-        $this->postViews->removeElement($postView);
-
-        return $this;
-    }
-
-    /**
-     * Get PostView entity collection (one to many).
-     */
-    public function getPostViews(): Collection
-    {
-        return $this->postViews;
-    }
-
-    /**
      * Add Question entity to collection (one to many).
      */
     public function addQuestion(Question $question): static
@@ -1135,25 +1058,6 @@ abstract class BaseUser
         return $this->rumeurs;
     }
 
-    public function addTopic(Topic $topic): static
-    {
-        $this->topics->add($topic);
-
-        return $this;
-    }
-
-    public function removeTopic(Topic $topic): static
-    {
-        $this->topics->removeElement($topic);
-
-        return $this;
-    }
-
-    public function getTopics(): Collection
-    {
-        return $this->topics;
-    }
-
     public function setEtatCivil(EtatCivil $etatCivil): static
     {
         $this->etatCivil = $etatCivil;
@@ -1216,28 +1120,4 @@ abstract class BaseUser
     {
         return $this->restrictions;
     }
-
-    public function addPost(Post $post): static
-    {
-        $this->posts->add($post);
-
-        return $this;
-    }
-
-    public function removePost(Post $post): static
-    {
-        $this->posts->removeElement($post);
-
-        return $this;
-    }
-
-    public function getPosts(): Collection
-    {
-        return $this->posts;
-    }
-
-    /* public function __sleep()
-    {
-        return ['id', 'email', 'password', 'salt', 'rights', 'creation_date', 'username', 'is_enabled', 'confirmationToken', 'timePasswordResetRequested', 'etatCivil', 'trombineUrl', 'personnageSecondaire', 'lastConnectionDate', 'personnage', 'roles'];
-    } */
 }

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -9,29 +10,30 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
+#[ORM\Entity]
 #[ORM\Table(name: 'annonce')]
-#[ORM\Index(columns: ['gn_id'], name: 'fk_annonce_gn1')]
+#[ORM\Index(columns: ['gn_id'], name: 'fk_annonce_gn1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseAnnonce', 'extended' => 'Annonce'])]
 class BaseAnnonce
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'title', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(name: 'title', type: Types::STRING, length: 45)]
     protected string $title = '';
 
-    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::TEXT)]
+    #[Column(name: 'text', type: Types::TEXT)]
     protected string $text = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected ?\DateTime $creation_date = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected ?\DateTime $update_date = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[Column(type: Types::BOOLEAN)]
     protected bool $archive = false;
 
     #[ManyToOne(targetEntity: Gn::class, inversedBy: 'annonces')]
@@ -110,7 +112,7 @@ class BaseAnnonce
         return $this->archive;
     }
 
-    public function setGn(Gn $gn = null): self
+    public function setGn(?Gn $gn = null): self
     {
         $this->gn = $gn;
 

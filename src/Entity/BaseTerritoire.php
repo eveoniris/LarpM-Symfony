@@ -26,7 +26,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\Index(columns: ['territoire_guerre_id'], name: 'fk_territoire_territoire_guerre1_idx')]
 #[ORM\Index(columns: ['appelation_id'], name: 'fk_territoire_appelation1_idx')]
 #[ORM\Index(columns: ['langue_id'], name: 'fk_territoire_langue1_idx')]
-#[ORM\Index(columns: ['topic_id'], name: 'fk_territoire_topic1_idx')]
 #[ORM\Index(columns: ['religion_id'], name: 'fk_territoire_religion1_idx')]
 #[ORM\Index(columns: ['groupe_id'], name: 'fk_territoire_groupe1_idx')]
 #[ORM\Index(columns: ['culture_id'], name: 'fk_territoire_culture1_idx')]
@@ -35,7 +34,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseTerritoire', 'extended' => 'Territoire'])]
 class BaseTerritoire
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -151,10 +150,6 @@ class BaseTerritoire
     #[JoinColumn(name: 'langue_id', referencedColumnName: 'id')]
     protected ?Langue $langue;
 
-    #[ORM\ManyToOne(targetEntity: Topic::class, inversedBy: 'territoires')]
-    #[JoinColumn(name: 'topic_id', referencedColumnName: 'id')]
-    protected Topic $topic;
-
     #[ORM\ManyToOne(targetEntity: Religion::class, inversedBy: 'territoires')]
     #[JoinColumn(name: 'religion_id', referencedColumnName: 'id')]
     protected ?Religion $religion;
@@ -218,6 +213,13 @@ class BaseTerritoire
     #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $religions;
 
+    /**
+     * @var Collection<int, Bonus>
+     */
+    #[ORM\ManyToMany(targetEntity: Bonus::class, mappedBy: 'origines', cascade: ['persist'])]
+    #[ORM\JoinTable(name: 'origine_bonus')]
+    private Collection $origineBonus;
+
     public function __construct()
     {
         $this->chronologies = new ArrayCollection();
@@ -235,6 +237,34 @@ class BaseTerritoire
         $this->exportations = new ArrayCollection();
         $this->langues = new ArrayCollection();
         $this->religions = new ArrayCollection();
+        $this->origineBonus = new ArrayCollection();
+    }
+
+    public function addOrigineBonu(Bonus $origineBonu): static
+    {
+        if (!$this->origineBonus->contains($origineBonu)) {
+            $this->origineBonus->add($origineBonu);
+            $origineBonu->addOrigine($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrigineBonu(Bonus $origineBonu): static
+    {
+        if ($this->origineBonus->removeElement($origineBonu)) {
+            $origineBonu->removeOrigine($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Bonus>
+     */
+    public function getOrigineBonus(): Collection
+    {
+        return $this->origineBonus;
     }
 
     /**
@@ -307,6 +337,11 @@ class BaseTerritoire
     public function getCapitale(): string
     {
         return $this->capitale ?? '';
+    }
+
+    public function getOriginesBonus(): Collection
+    {
+        return $this->originesBonus;
     }
 
     /**
@@ -972,24 +1007,6 @@ class BaseTerritoire
     }
 
     /**
-     * Set Topic entity (many to one).
-     */
-    public function setTopic(?Topic $topic = null): static
-    {
-        $this->topic = $topic;
-
-        return $this;
-    }
-
-    /**
-     * Get Topic entity (many to one).
-     */
-    public function getTopic(): Topic
-    {
-        return $this->topic;
-    }
-
-    /**
      * Set Religion entity (many to one).
      */
     public function setReligion(?Religion $religion = null): static
@@ -1196,6 +1213,13 @@ class BaseTerritoire
     public function setGroupeNull(): static
     {
         $this->groupe = null;
+
+        return $this;
+    }
+
+    public function setOriginesBonus(Collection $originesBonus): self
+    {
+        $this->origineBonus = $originesBonus;
 
         return $this;
     }

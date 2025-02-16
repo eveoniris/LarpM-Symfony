@@ -81,6 +81,10 @@ abstract class BasePersonnage
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
     protected Collection $experienceUsages;
 
+    #[OneToMany(mappedBy: 'personnage', targetEntity: Trigger::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'true')]
+    protected Collection $triggers;
+
     #[OneToMany(mappedBy: 'personnage', targetEntity: HeroismeHistory::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
     protected Collection $heroismeHistories;

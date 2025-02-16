@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
@@ -15,13 +16,13 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseCompetenceAttribute', 'extended' => 'CompetenceAttribute'])]
 class BaseCompetenceAttribute
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true], columnDefinition: 'INT AUTO_INCREMENT')]
+    #[Id, Column(type: Types::INTEGER, columnDefinition: 'INT AUTO_INCREMENT')]
     protected int $competence_id;
 
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true])]
+    #[Id, Column(type: Types::INTEGER)]
     protected int $attribute_type_id;
 
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, options: ['unsigned' => true])]
+    #[Id, Column(type: Types::INTEGER)]
     protected int $value;
 
     #[ORM\ManyToOne(targetEntity: Competence::class, inversedBy: 'competenceAttributes')]
@@ -35,7 +36,7 @@ class BaseCompetenceAttribute
     /**
      * Set the value of competence_id.
      *
-     * @return \App\Entity\CompetenceAttribute
+     * @return CompetenceAttribute
      */
     public function setCompetenceId(int $competence_id): static
     {
@@ -55,7 +56,7 @@ class BaseCompetenceAttribute
     /**
      * Set the value of attribute_type_id.
      *
-     * @return \App\Entity\CompetenceAttribute
+     * @return CompetenceAttribute
      */
     public function setAttributeTypeId(int $attribute_type_id): static
     {
@@ -75,7 +76,7 @@ class BaseCompetenceAttribute
     /**
      * Set the value of value.
      *
-     * @return \App\Entity\CompetenceAttribute
+     * @return CompetenceAttribute
      */
     public function setValue(int $value): static
     {
@@ -95,9 +96,9 @@ class BaseCompetenceAttribute
     /**
      * Set Competence entity (many to one).
      *
-     * @return \App\Entity\CompetenceAttribute
+     * @return CompetenceAttribute
      */
-    public function setCompetence(Competence $competence = null): static
+    public function setCompetence(?Competence $competence = null): static
     {
         $this->competence = $competence;
 
@@ -115,9 +116,9 @@ class BaseCompetenceAttribute
     /**
      * Set AttributeType entity (many to one).
      *
-     * @return \App\Entity\CompetenceAttribute
+     * @return CompetenceAttribute
      */
-    public function setAttributeType(AttributeType $attributeType = null): static
+    public function setAttributeType(?AttributeType $attributeType = null): static
     {
         $this->attributeType = $attributeType;
 

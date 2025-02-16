@@ -25,7 +25,7 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BaseCompetence', 'extended' => 'Competence'])]
 class BaseCompetence
 {
-    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::TEXT, nullable: true)]
@@ -70,6 +70,10 @@ class BaseCompetence
     #[JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: 'false')]
     #[OrderBy(['competence_family_label' => Criteria::ASC])]
     protected CompetenceFamily $competenceFamily;
+
+    #[ManyToOne(targetEntity: Bonus::class, cascade: ['persist'], inversedBy: 'competence')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'true')]
+    protected Bonus $bonus;
 
     #[ManyToOne(targetEntity: Level::class, cascade: ['persist'], inversedBy: 'competences')]
     #[JoinColumn(name: 'level_id', referencedColumnName: 'id')]

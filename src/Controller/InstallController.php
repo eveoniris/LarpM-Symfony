@@ -7,7 +7,6 @@ use App\Entity\Etat;
 use App\Entity\Genre;
 use App\Entity\Level;
 use App\Entity\Rarete;
-use App\Entity\Topic;
 use App\Entity\User;
 use App\Form\InstallDatabaseForm;
 use App\Form\InstallUserAdminForm;
@@ -273,13 +272,6 @@ class InstallController extends AbstractController
             $age->setLabel('Ancien');
             $age->setEnableCreation(false);
             $entityManager->persist($age);
-
-            // Création du topic culte
-            $topic = new Topic();
-            $topic->setKey('TOPIC_CULTE');
-            $topic->setTitle('Cultes');
-            $topic->setDescription('Discussion à propos des cultes');
-            $entityManager->persist($topic);
 
             $entityManager->flush();
 

@@ -1,0 +1,70 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Ages{% endblock title %}
+
+{% block body %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Gestion des bonus'}]} %}
+
+	<div class="well well-sm">
+
+		<div class="header">
+			<h5>Gestion des bonus <small>({{ paginator|length }})</small></h5>
+		</div>
+
+		{% include '_partials/formListSearch.twig' with
+			{
+				'canAdd': {'title': 'Ajouter un bonus', 'path': path('bonus.add')},
+				'actionPath' : path('bonus.list')
+			} %}
+	</div>
+
+	{% include '_partials/pagination.html.twig' %}
+	<table class="table table-striped table-bordered table-condensed table-hover">
+		{% include '_partials/thead.twig' with  { 'route': 'bonus.list', 'rows': [
+			{'name' : 'Id', 'field' : 'id'},
+			{'name' : 'Titre', 'field' : 'titre'},
+			{'name' : 'Description', 'field' : 'description'},
+			{'name' : 'Type', 'field' : 'type'},
+			{'name' : 'Valeur', 'field' : 'valeur'},
+			{'name' : 'Periode', 'field' : 'periode'},
+			{'name' : 'Application', 'field' : 'application'},
+			{'name' : 'Actions'},
+		]} %}
+		<tbody>
+		{% for bonus in paginator %}
+			<tr>
+				<td><a href="{{ path('bonus.detail', {'bonus':bonus.id}) }}">{{ bonus.id }}</a></td>
+				<td>{{ bonus.titre|highlight(pagerService.searchValue) }}</td>
+				<td>{{ bonus.description|highlight(pagerService.searchValue) }}</td>
+				<td>{{ bonus.type|highlight(pagerService.searchValue) }}</td>
+				<td>{{ bonus.valeur }}</td>
+				<td>{{ bonus.periode }}</td>
+				<td>{{ bonus.application }}</td>
+				<td>
+					<div class="btn-toolbar d-flex justify-content-center" role="toolbar">
+						<div class="btn-group" role="group">
+							<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+							   title="Détail"
+							   href="{{ path('bonus.detail',{'bonus':bonus.id}) }}"><i
+										class="fa fa-eye"></i></a>
+							<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+							   title="Modifier"
+							   href="{{ path('bonus.update',{'bonus':bonus.id}) }}"><i
+										class="fa fa-pencil"></i></a>
+							<a class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="bottom"
+							   title="Supprimer"
+							   href="{{ path('bonus.delete',{'bonus':bonus.id}) }}"><i
+										class="fa fa-eraser"></i></a>
+						</div>
+					</div>
+				</td>
+			</tr>
+		{% else %}
+			{% include '_partials/noResultTableRow.twig' %}
+		{% endfor %}
+		</tbody>
+	</table>
+	{% include '_partials/pagination.html.twig' %}
+
+{% endblock %}

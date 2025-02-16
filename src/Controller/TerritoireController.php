@@ -332,24 +332,6 @@ class TerritoireController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $territoire = $form->getData();
 
-            /**
-             * Création des topics associés à ce groupe
-             * un topic doit être créé par GN auquel ce groupe est inscrit.
-             *
-             * @var \App\Entity\Topic $topic
-             */
-            $topic = new \App\Entity\Topic();
-            $topic->setTitle($territoire->getNom());
-            $topic->setDescription($territoire->getDescription());
-            $topic->setUser($this->getUser());
-            // défini les droits d'accés à ce forum
-            // (les membres du groupe ont le droit d'accéder à ce forum)
-            $topic->setRight('TERRITOIRE_MEMBER');
-            $topic->setTopic($app['larp.manager']->findTopic('TOPIC_TERRITOIRE'));
-
-            $territoire->setTopic($topic);
-
-            $entityManager->persist($topic);
             $entityManager->persist($territoire);
             $entityManager->flush();
 
@@ -357,7 +339,8 @@ class TerritoireController extends AbstractController
 
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('territoire.list', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
+            }
+            if ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('territoire.add', [], 303);
             }
         }
@@ -608,57 +591,6 @@ class TerritoireController extends AbstractController
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
-    }
-
-    /**
-     * Ajout d'un topic pour un territoire.
-     */
-    #[Route('/territoire/{territoire}/addTopic', name: 'territoire.addTopic')]
-    public function addTopicAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
-    {
-        $territoire = $request->get('territoire');
-
-        $topic = new \App\Entity\Topic();
-        $topic->setTitle($territoire->getNom());
-        $topic->setDescription($territoire->getDescription());
-        $topic->setUser($this->getUser());
-        $topic->setRight('TERRITOIRE_MEMBER');
-        $topic->setObjectId($territoire->getId());
-        $topic->addTerritoire($territoire);
-        $topic->setTopic($app['larp.manager']->findTopic('TOPIC_TERRITOIRE'));
-
-        $territoire->setTopic($topic);
-
-        $entityManager->persist($topic);
-        $entityManager->persist($territoire);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Le topic a été ajouté.');
-
-        return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
-    }
-
-    /**
-     * Supression d'un topic pour un territoire.
-     */
-    #[Route('/territoire/{territoire}/deleteTopic', name: 'territoire.deleteTopic')]
-    public function deleteTopicAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): RedirectResponse
-    {
-        $territoire = $request->get('territoire');
-
-        $topic = $territoire->getTopic();
-
-        if ($topic) {
-            $territoire->setTopic(null);
-
-            $entityManager->persist($territoire);
-            $entityManager->remove($topic);
-            $entityManager->flush();
-        }
-
-        $this->addFlash('success', 'Le topic a été supprimé.');
-
-        return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
     }
 
     /**

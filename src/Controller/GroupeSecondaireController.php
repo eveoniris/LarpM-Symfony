@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Groupe;
 use App\Entity\Membre;
 use App\Entity\SecondaryGroup;
-use App\Entity\Topic;
 use App\Entity\User;
 use App\Enum\Role;
 use App\Form\GroupeSecondaire\GroupeSecondaireForm;
@@ -81,32 +80,8 @@ class GroupeSecondaireController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $groupeSecondaire = $form->getData();
-
-            /**
-             * Création des topics associés à ce groupe
-             * un topic doit être créé par GN auquel ce groupe est inscrit.
-             *
-             * @var Topic $topic
-             */
-            $topic = new Topic();
-            $topic->setTitle($groupeSecondaire->getLabel());
-            $topic->setDescription($groupeSecondaire->getDescription());
-            $topic->setUser($this->getUser());
-
-            // $topic->setTopic($app['larp.manager']->findTopic('TOPIC_GROUPE_SECONDAIRE'));
-            $topicRepo = $entityManager->getRepository('\\'.Topic::class);
-            $topic->setTopic($topicRepo->findOneByKey('TOPIC_GROUPE_SECONDAIRE'));
-
-            $entityManager->persist($topic);
-
-            $groupeSecondaire->setTopic($topic);
             $entityManager->persist($groupeSecondaire);
             $entityManager->flush();
-
-            // défini les droits d'accés à ce forum
-            // (les membres du groupe ont le droit d'accéder à ce forum)
-            $topic->setObjectId($groupeSecondaire->getId());
-            $topic->setRight('GROUPE_SECONDAIRE_MEMBER');
 
             /**
              * Ajoute le responsable du groupe dans le groupe si il n'y est pas déjà.
@@ -122,7 +97,6 @@ class GroupeSecondaireController extends AbstractController
                 $groupeSecondaire->addMembre($membre);
             }
 
-            $entityManager->persist($topic);
             $entityManager->persist($groupeSecondaire);
             $entityManager->flush();
 
@@ -130,7 +104,8 @@ class GroupeSecondaireController extends AbstractController
 
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('groupeSecondaire.admin.list', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
+            }
+            if ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('groupeSecondaire.admin.add', [], 303);
             }
         }
