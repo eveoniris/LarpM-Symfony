@@ -173,8 +173,7 @@
     				</p>
     			</div>
     			
-    			
-	    		
+
 	    		{% if territoire.territoire %}	
 	    		<div class="list-group-item">
 		    		<h4 class="list-group-item-heading">Ce territoire dépend de</h4>
@@ -183,6 +182,17 @@
     				</p>
     			</div>
     			{% endif %}
+
+				<div class="list-group-item">
+					<h4 class="list-group-item-heading">Bonus d'origine des personnages </h4>
+					<p class="list-group-item-text">
+						<a href="{{ path('bonus.detail',{'bonus': territoire.getActiveValideOrigineBonus.id}) }}">{{ territoire.getActiveValideOrigineBonus.titre|markdown_to_html }}</a>
+						<br />
+						{{ territoire.getActiveValideOrigineBonus.description|markdown_to_html }}
+						<br />
+						<a href="{{ path('territoire.updateBonus', {'territoire': territoire.id}) }}">Modifier le bonus</a>
+					</p>
+				</div>
     			
 	    		<div class="list-group-item">
 		    		<h4 class="list-group-item-heading">Liste des territoires rattachés à ce territoire ({{ territoire.territoires|length }} territoires)</h4>
@@ -199,13 +209,6 @@
   					<div class="btn-group" role="group" aria-label="...">
   						<a  class="btn btn-primary" role="button" href="{{ path('territoire.update', {'territoire' : territoire.id}) }}">Modifier</a>
   						<a  class="btn btn-danger" role="button" href="{{ path('territoire.delete', {'territoire' : territoire.id}) }}">Supprimer</a>
-  						
-  						{% if territoire.topic %}
-  							<a class="btn btn-default" href="{{ path('territoire.deleteTopic', {'territoire':territoire.id}) }}">Supprimer le topic</a>
-  						{% else %}
-							<a class="btn btn-default" href="{{ path('territoire.addTtopic', {'territoire':territoire.id}) }}">Ajouter un topic</a>  											
-  						{% endif %}
-  						
 					</div>
   				</div>
 			</div>

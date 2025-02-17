@@ -78,14 +78,6 @@ class HomepageController extends AbstractController
     }
 
     /**
-     * Affiche une page récapitulatif des liens pour discuter.
-     */
-    public function discuterAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        return $this->render('discuter.twig');
-    }
-
-    /**
      * Affiche une page récapitulatif des événements.
      */
     public function evenementAction(Request $request, EntityManagerInterface $entityManager): Response

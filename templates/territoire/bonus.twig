@@ -1,0 +1,16 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Territoire{% endblock title %}
+
+{% block body %}
+
+	<div class="well bs-component">
+
+
+		<div class="header"><h5>Modifier le bonus d'origine pour le territoire {{ territoire.nom }}</h5></div>
+
+		{{ form(form) }}
+
+	</div>
+
+{% endblock body %}

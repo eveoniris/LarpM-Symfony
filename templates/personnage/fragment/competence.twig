@@ -22,7 +22,7 @@
     <ul class="list-group">
         {% set currentFamillyId = null %}
 
-        {% for competence in personnage.competences %}
+        {% for competence in personnageService.allCompetences(personnage) %}
 
             {% if currentFamillyId != competence.competenceFamily.id %}
                 {% if not true and FakeLiForIDE is defined %}<li> Shouldn't be used{% endif %}
