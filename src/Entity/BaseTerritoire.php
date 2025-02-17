@@ -32,9 +32,11 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseTerritoire', 'extended' => 'Territoire'])]
-class BaseTerritoire
+abstract class BaseTerritoire
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    private ArrayCollection $valideOrigineBonus;
+
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -218,7 +220,8 @@ class BaseTerritoire
      */
     #[ORM\ManyToMany(targetEntity: Bonus::class, mappedBy: 'origines', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'origine_bonus')]
-    private Collection $origineBonus;
+    #[ORM\OrderBy(['id' => 'DESC'])]
+    private Collection $originesBonus;
 
     public function __construct()
     {
@@ -237,23 +240,24 @@ class BaseTerritoire
         $this->exportations = new ArrayCollection();
         $this->langues = new ArrayCollection();
         $this->religions = new ArrayCollection();
-        $this->origineBonus = new ArrayCollection();
+        $this->originesBonus = new ArrayCollection();
+        $this->valideOrigineBonus = new ArrayCollection();
     }
 
-    public function addOrigineBonu(Bonus $origineBonu): static
+    public function addOrigineBonus(Bonus $origineBonus): static
     {
-        if (!$this->origineBonus->contains($origineBonu)) {
-            $this->origineBonus->add($origineBonu);
-            $origineBonu->addOrigine($this);
+        if (!$this->originesBonus->contains($origineBonus)) {
+            $this->originesBonus->add($origineBonus);
+            $origineBonus->addOrigine($this);
         }
 
         return $this;
     }
 
-    public function removeOrigineBonu(Bonus $origineBonu): static
+    public function removeOrigineBonus(Bonus $origineBonus): static
     {
-        if ($this->origineBonus->removeElement($origineBonu)) {
-            $origineBonu->removeOrigine($this);
+        if ($this->originesBonus->removeElement($origineBonus)) {
+            $origineBonus->removeOrigine($this);
         }
 
         return $this;
@@ -264,7 +268,32 @@ class BaseTerritoire
      */
     public function getOrigineBonus(): Collection
     {
-        return $this->origineBonus;
+        return $this->originesBonus;
+    }
+
+    /**
+     * @return Collection<int, Bonus>
+     */
+    public function getValideOrigineBonus(): Collection
+    {
+        if (isset($this->valideOrigineBonus) && !$this->valideOrigineBonus->isEmpty()) {
+            return $this->valideOrigineBonus;
+        }
+
+        $this->valideOrigineBonus = new ArrayCollection();
+
+        foreach ($this->getOrigineBonus() as $origineBonus) {
+            if ($origineBonus->isValid()) {
+                $this->valideOrigineBonus->add($origineBonus);
+            }
+        }
+
+        return $this->valideOrigineBonus;
+    }
+
+    public function getActiveValideOrigineBonus(): Bonus
+    {
+        return $this->getValideOrigineBonus()->first();
     }
 
     /**

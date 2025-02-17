@@ -2,8 +2,10 @@
 
 namespace App\Service;
 
+use App\Entity\Bonus;
 use App\Entity\Classe;
 use App\Entity\Competence;
+use App\Entity\CompetenceAttribute;
 use App\Entity\CompetenceFamily;
 use App\Entity\ExperienceGain;
 use App\Entity\ExperienceUsage;
@@ -18,6 +20,8 @@ use App\Service\Competence\LitteratureService;
 use App\Service\Competence\MagieService;
 use App\Service\Competence\NoblesseService;
 use App\Service\Competence\PretriseService;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -363,21 +367,35 @@ class CompetenceService
     {
     }
 
-    public function getOrigineBonusCout(): ?object // PersonnageApprentissage
+    public function getOrigineBonusCout(): int
     {
-        /*
-        * TODO
-        * Table origin_bonus [id PK, origin_id, bonus_id, status, date_creation, date_expiration]
-         * La date d'expiration fonction du status doit permettre de conservé ou non un bonus sur un personnage qui
-         * à eu ce bonus qui ne serait plus disponible pour de nouveau joueur
+        $count = 0;
 
-         * A voir si le gain XP en bonus est depuis "bonus" ou depuis origin_bonus ?
-        *
-        * */
+        // On ne prend que les bonus encore actif
+        foreach ($this->getPersonnage()->getOrigine()->getValideOrigineBonus() as $bonus) {
+            // Dans ce service, nous ne traitons que les bonus de type XP
+            // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non
+            if ($bonus->isXp() && (null === $bonus->getCompetence() || $this->getCompetence()->getId() === $bonus->getCompetence()->getId())) {
+                $count += $bonus->getValeur();
+            }
+        }
 
-        $this->getPersonnage()->getOrigine();
+        return $count;
+    }
 
-        return null;
+    /**
+     * @return Collection<int, Competence>
+     */
+    public function getOrigineBonusCompetences(?Personnage $personnage = null): ArrayCollection
+    {
+        $competences = new ArrayCollection();
+        foreach (($personnage ?? $this->getPersonnage())->getOrigine()->getValideOrigineBonus() as $bonus) {
+            if ($bonus->isCompetence() && (null !== $bonus->getCompetence())) {
+                $competences->add($bonus->getCompetence());
+            }
+        }
+
+        return $competences;
     }
 
     public function getMerveilleBonusCout(): ?object // PersonnageApprentissage
@@ -387,10 +405,6 @@ class CompetenceService
         * Table merveille_bonus [id PK, merveille_id, bonus_id, status, date_creation, date_expiration, status, ?admin_id]
          * La date d'expiration fonction du status doit permettre de conservé ou non un bonus sur un personnage qui
          * à eu ce bonus qui ne serait plus disponible pour de nouveau joueur
-         *
-         * Table bonus []
-         * Permet de définir les bonus du jeu (redondante avec) getOrigineBonusCout()
-         *
          *  Table merveille [] // TODO
          *
          * A voir si le gain XP en bonus est depuis "bonus" ou depuis origin_bonus ?
@@ -413,8 +427,9 @@ class CompetenceService
 
     public function getBonusCout(): int
     {
-        return $this->getOrigineBonusCout()?->getBonusXp() + $this->getMerveilleBonusCout()?->getBonusXp(
-            ) + $this->getApprentissageBonusCout()?->getBonusXp();
+        return $this->getOrigineBonusCout()
+            + $this->getMerveilleBonusCout()?->getBonusXp()
+            + $this->getApprentissageBonusCout()?->getBonusXp();
     }
 
     /**
@@ -431,14 +446,14 @@ class CompetenceService
         }
 
         if ($this->getClasse()->getCompetenceFamilyFavorites()->contains($this->getCompetenceFamily())) {
-            return $this->getCompetenceLevel()->getCoutFavori() - $bonusCout;
+            return max($this->getCompetenceLevel()->getCoutFavori() - $bonusCout, 0);
         }
 
         if ($this->getClasse()->getCompetenceFamilyNormales()->contains($this->getCompetenceFamily())) {
-            return $this->getCompetenceLevel()->getCout() - $bonusCout;
+            return max($this->getCompetenceLevel()->getCout() - $bonusCout, 0);
         }
 
-        return $this->getCompetenceLevel()->getCoutMeconu() - $bonusCout;
+        return max($this->getCompetenceLevel()->getCoutMeconu() - $bonusCout, 0);
     }
 
     /**

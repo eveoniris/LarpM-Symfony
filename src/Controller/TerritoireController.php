@@ -8,6 +8,7 @@ use App\Entity\Loi;
 use App\Entity\Territoire;
 use App\Form\Territoire\FiefForm;
 use App\Form\Territoire\TerritoireBlasonForm;
+use App\Form\Territoire\TerritoireBonusForm;
 use App\Form\Territoire\TerritoireCiblesForm;
 use App\Form\Territoire\TerritoireConstructionForm;
 use App\Form\Territoire\TerritoireCultureForm;
@@ -34,8 +35,11 @@ class TerritoireController extends AbstractController
      */
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     #[Route('/territoire/{territoire}/updateCibles', name: 'territoire.updateCibles')]
-    public function updateCiblesAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): RedirectResponse|Response
-    {
+    public function updateCiblesAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
         $form = $this->createForm(TerritoireCiblesForm::class, $territoire)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -75,11 +79,12 @@ class TerritoireController extends AbstractController
             ->select('t')
             ->from(Territoire::class, 't')
             ->where('t.territoire IS NULL')
-            ->orderBy(key($orderBy), current($orderBy))
-        ;
+            ->orderBy(key($orderBy), current($orderBy));
 
         $paginator = $territoirenRepository->findPaginatedQuery(
-            $qb->getQuery(), $this->getRequestLimit(10), $this->getRequestPage()
+            $qb->getQuery(),
+            $this->getRequestLimit(10),
+            $this->getRequestPage()
         );
 
         return $this->render('territoire/list.twig', ['paginator' => $paginator]);
@@ -100,7 +105,10 @@ class TerritoireController extends AbstractController
 
         $formData = $request->query->get('personnageFind');
         $pays = isset($formData['pays']) ? $entityManager->find(Territoire::class, $formData['pays']) : null;
-        $province = isset($formData['provinces']) ? $entityManager->find(Territoire::class, $formData['provinces']) : null;
+        $province = isset($formData['provinces']) ? $entityManager->find(
+            Territoire::class,
+            $formData['provinces']
+        ) : null;
         $groupe = isset($formData['groupe']) ? $entityManager->find(Groupe::class, $formData['groupe']) : null;
         $optionalParameters = '';
 
@@ -109,7 +117,8 @@ class TerritoireController extends AbstractController
         $listePays = $entityManager->getRepository('\\'.Territoire::class)->findRoot();
         $listeProvinces = $entityManager->getRepository('\\'.Territoire::class)->findProvinces();
 
-        $form = $this->createForm(FiefForm::class,
+        $form = $this->createForm(
+            FiefForm::class,
             null,
             [
                 'data' => [
@@ -231,8 +240,11 @@ class TerritoireController extends AbstractController
      * Ajoute une loi à un territoire.
      */
     #[Route('/territoire/{territoire}/updateLoi', name: 'territoire.updateLoi')]
-    public function updateLoiAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): RedirectResponse|Response
-    {
+    public function updateLoiAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
         $form = $this->createForm(TerritoireLoiForm::class, $territoire)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -255,12 +267,43 @@ class TerritoireController extends AbstractController
         ]);
     }
 
+    #[Route('/territoire/{territoire}/updateBonus', name: 'territoire.updateBonus')]
+    public function updateBonusAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(TerritoireBonusForm::class, $territoire)
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder', 'attr' => ['class' => 'btn btn-secondary']]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $territoire = $form->getData();
+
+            $entityManager->persist($territoire);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le territoire a été mis à jour');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/bonus.twig', [
+            'territoire' => $territoire,
+            'form' => $form->createView(),
+        ]);
+    }
+
     /**
      * Ajoute une construction dans un territoire.
      */
     #[Route('/territoire/{territoire}/constructionAdd', name: 'territoire.constructionAdd')]
-    public function constructionAddAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): RedirectResponse|Response
-    {
+    public function constructionAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
         $form = $this->createForm(TerritoireConstructionForm::class, $territoire)
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -288,8 +331,12 @@ class TerritoireController extends AbstractController
      * Retire une construction d'un territoire.
      */
     #[Route('/territoire/{territoire}/constructionRemove/{construction}', name: 'territoire.constructionRemove')]
-    public function constructionRemoveAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire, #[MapEntity] Construction $construction): RedirectResponse|Response
-    {
+    public function constructionRemoveAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+        #[MapEntity] Construction $construction,
+    ): RedirectResponse|Response {
         $form = $this->createFormBuilder($territoire)
             ->add('save', SubmitType::class, ['label' => 'Retirer la construction'])
             ->getForm();
@@ -354,8 +401,11 @@ class TerritoireController extends AbstractController
      * Mise à jour de la liste des ingrédients fourni par un territoire.
      */
     #[Route('/territoire/{territoire}/updateIngredients', name: 'territoire.updateIngredients')]
-    public function updateIngredientsAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): RedirectResponse|Response
-    {
+    public function updateIngredientsAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
         $form = $this->createForm(TerritoireIngredientsForm::class, $territoire)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -383,8 +433,11 @@ class TerritoireController extends AbstractController
      */
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     #[Route('/territoire/{territoire}/update', name: 'territoire.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): RedirectResponse|Response
-    {
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
         $form = $this->createForm(TerritoireForm::class, $territoire)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -411,8 +464,11 @@ class TerritoireController extends AbstractController
      */
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     #[Route('/territoire/{territoire}/updateCulture', name: 'territoire.updateCulture')]
-    public function updateCultureAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): RedirectResponse|Response
-    {
+    public function updateCultureAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
         $form = $this->createForm(TerritoireCultureForm::class, $territoire)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -438,8 +494,11 @@ class TerritoireController extends AbstractController
      */
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     #[Route('/territoire/{territoire}/updateStatut', name: 'territoire.updateStatut')]
-    public function updateStatutAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
-    {
+    public function updateStatutAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ) {
         $form = $this->createForm(TerritoireStatutForm::class, $territoire)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -464,8 +523,11 @@ class TerritoireController extends AbstractController
      * Récupération de l'image du blason d'un territoire.
      */
     #[Route('/territoire/{territoire}/blason', name: 'territoire.blason', methods: ['GET'])]
-    public function blasonAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire): Response
-    {
+    public function blasonAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): Response {
         $blason = $territoire->getBlason();
         $filename = __DIR__.'/../../assets/img/blasons/'.$blason;
 
@@ -480,8 +542,11 @@ class TerritoireController extends AbstractController
      */
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     #[Route('/territoire/{territoire}/updateBlason', name: 'territoire.updateBlason')]
-    public function updateBlasonAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
-    {
+    public function updateBlasonAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ) {
         $form = $this->createForm(TerritoireBlasonForm::class, $territoire)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -495,7 +560,10 @@ class TerritoireController extends AbstractController
             $extension = $files['blason']->guessExtension();
 
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
-                $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
+                $this->addFlash(
+                    'error',
+                    'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)'
+                );
 
                 return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
             }
@@ -527,8 +595,11 @@ class TerritoireController extends AbstractController
      */
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     #[Route('/territoire/{territoire}/update/strategie', name: 'territoire.updateStrategie')]
-    public function updateStrategieAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
-    {
+    public function updateStrategieAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ) {
         $form = $this->createForm(TerritoireStrategieForm::class, $territoire)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -554,8 +625,11 @@ class TerritoireController extends AbstractController
      * Supression d'un territoire.
      */
     #[Route('/territoire/{territoire}/delete', name: 'territoire.delete')]
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
-    {
+    public function deleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ) {
         $form = $this->createForm(TerritoireDeleteForm::class, $territoire)
             ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
@@ -597,8 +671,11 @@ class TerritoireController extends AbstractController
      * Ajoute un événement à un territoire.
      */
     #[Route('/territoire/{territoire}/eventAdd', name: 'territoire.eventAdd')]
-    public function eventAddAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
-    {
+    public function eventAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ) {
         $event = $request->get('event');
 
         $event = new \App\Entity\Chronologie();
@@ -629,8 +706,11 @@ class TerritoireController extends AbstractController
      * Met à jour un événement.
      */
     #[Route('/territoire/{territoire}/eventUpdate', name: 'territoire.eventUpdate')]
-    public function eventUpdateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
-    {
+    public function eventUpdateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ) {
         $event = $request->get('event');
 
         $form = $this->createForm(ChronologieForm::class, $event)
@@ -659,8 +739,11 @@ class TerritoireController extends AbstractController
      * Supprime un événement.
      */
     #[Route('/territoire/{territoire}/eventDelete', name: 'territoire.eventDelete')]
-    public function eventDeleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Territoire $territoire)
-    {
+    public function eventDeleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ) {
         $territoire = $request->get('territoire');
         $event = $request->get('event');
 
@@ -694,5 +777,4 @@ class TerritoireController extends AbstractController
     {
         return $this->render('territoire/detail.twig', ['territoire' => $territoire]);
     }
-
 }

@@ -6,10 +6,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\JoinColumn;
 
-#[Entity]
+#[ORM\Entity]
 #[ORM\Table(name: 'bonus')]
 #[ORM\Index(columns: ['competence_id'], name: 'fk_personnage_groupe1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
@@ -41,20 +40,17 @@ abstract class BaseBonus
     private ?string $application = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $competence_id = null;
-
-    #[ORM\Column(nullable: true)]
     private ?array $json_data = null;
 
-    #[ORM\ManyToMany(targetEntity: Competence::class, mappedBy: 'competences')]
-    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'true')]
-    protected Collection $competences;
+    #[ORM\OneToOne(targetEntity: Competence::class, cascade: ['persist'])]
+    protected Competence $competence;
 
     /**
      * @var Collection<int, Territoire>
      */
     #[ORM\ManyToMany(targetEntity: Territoire::class, inversedBy: 'origineBonus', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'origine_bonus')]
+    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: false)]
     private Collection $origines;
 
     /**
@@ -83,13 +79,12 @@ abstract class BaseBonus
 
     public function __construct()
     {
-        $this->competences = new ArrayCollection();
         $this->origines = new ArrayCollection();
     }
 
-    public function getCompetence(): Collection
+    public function getCompetence(): ?Competence
     {
-        return $this->competence;
+        return $this->competence ?? null;
     }
 
     public function getId(): ?int
@@ -176,18 +171,6 @@ abstract class BaseBonus
         return $this;
     }
 
-    public function getCompetenceId(): ?int
-    {
-        return $this->competence_id;
-    }
-
-    public function setCompetenceId(?int $competence_id): static
-    {
-        $this->competence_id = $competence_id;
-
-        return $this;
-    }
-
     public function getJsonData(): ?array
     {
         return $this->json_data;
@@ -196,13 +179,6 @@ abstract class BaseBonus
     public function setJsonData(?array $json_data): static
     {
         $this->json_data = $json_data;
-
-        return $this;
-    }
-
-    public function setCompetence(Collection $competence): BaseBonus
-    {
-        $this->competence = $competence;
 
         return $this;
     }

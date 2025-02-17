@@ -71,17 +71,13 @@ class BaseCompetence
     #[OrderBy(['competence_family_label' => Criteria::ASC])]
     protected CompetenceFamily $competenceFamily;
 
-    #[ManyToOne(targetEntity: Bonus::class, cascade: ['persist'], inversedBy: 'competence')]
-    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'true')]
-    protected Bonus $bonus;
-
     #[ManyToOne(targetEntity: Level::class, cascade: ['persist'], inversedBy: 'competences')]
     #[JoinColumn(name: 'level_id', referencedColumnName: 'id')]
     protected ?Level $level = null;
 
     #[ManyToMany(targetEntity: Personnage::class, inversedBy: 'competences')]
     #[ORM\JoinTable(name: 'personnages_competences')]
-    #[ORM\JoinColumn(name: 'competence_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'competence_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
     protected Collection $personnages;
 
@@ -200,7 +196,7 @@ class BaseCompetence
         return $this->personnageSecondaireCompetences;
     }
 
-    public function setCompetenceFamily(CompetenceFamily $competenceFamily = null): static
+    public function setCompetenceFamily(?CompetenceFamily $competenceFamily = null): static
     {
         $this->competenceFamily = $competenceFamily;
 
@@ -212,7 +208,7 @@ class BaseCompetence
         return $this->competenceFamily;
     }
 
-    public function setLevel(Level $level = null): static
+    public function setLevel(?Level $level = null): static
     {
         $this->level = $level;
 

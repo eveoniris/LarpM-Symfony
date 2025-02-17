@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
 use App\Entity\Domaine;
+use App\Entity\Level;
 use App\Entity\Personnage;
 use App\Entity\Religion;
 use App\Form\PersonnageFindForm;
@@ -403,6 +404,32 @@ class PersonnageService
     public function getCompetenceHandler(Personnage $personnage, Competence $competence): CompetenceService
     {
         return $this->competenceService->getCompetenceService($competence)->setPersonnage($personnage);
+    }
+
+    /**
+     * @return Collection<int, Competence>
+     */
+    public function getAllCompetences(Personnage $personnage): Collection
+    {
+        $allCompetences = $personnage->getCompetences();
+        foreach ($personnage->getOrigine()->getValideOrigineBonus() as $bonus) {
+            if ($bonus->isCompetence()) {
+                if ($bonus->getCompetence()) {
+                    $allCompetences->add($bonus->getCompetence());
+                } else {
+                    // On utilise les données brute du bonus en attendant leur existence en réel "Competence"
+                    $competence = new Competence();
+                    $competence->setDescription($bonus->getDescription());
+                    $competence->setLevel($this->entityManager->getRepository(Level::class)->findOneBy(['index' => Level::NIVEAU_1]));
+                    $family = new CompetenceFamily();
+                    $family->setLabel($bonus->getTitre() ?: "Bonus d'origine : ".$personnage->getOrigine()->getNom());
+                    $competence->setCompetenceFamily($family);
+                    $allCompetences->add($competence);
+                }
+            }
+        }
+
+        return $allCompetences;
     }
 
     /**

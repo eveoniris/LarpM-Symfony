@@ -27,7 +27,7 @@ class Personnage extends BasePersonnage implements \Stringable
         minWidth: 200,
         minHeight: 200,
     )]
-    protected null|UploadedFile $file;
+    protected ?UploadedFile $file;
 
     // For some FormBuilder search
     public Personnage $personnageChoosen;
@@ -59,7 +59,7 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function __toString(): string
     {
-        return (string)$this->getPublicName();
+        return (string) $this->getPublicName();
     }
 
     public function handleUpload(
@@ -276,8 +276,8 @@ class Personnage extends BasePersonnage implements \Stringable
         foreach ($this->getCompetencesFromFamilyType($famillyType) as $competence) {
             $index = $competence->getLevel()?->getIndex();
 
-            if (null === $level || $niveau < (int)$index) {
-                $niveau = (int)$index;
+            if (null === $level || $niveau < (int) $index) {
+                $niveau = (int) $index;
                 $level = $competence->getLevel();
             }
         }
@@ -995,7 +995,7 @@ class Personnage extends BasePersonnage implements \Stringable
     {
         $total = 0;
         foreach ($this->getExperienceGains() as $gain) {
-            $pos = strpos((string)$gain->getExplanation(), 'Suppression de la compétence');
+            $pos = strpos((string) $gain->getExplanation(), 'Suppression de la compétence');
             if (false === $pos) {
                 $total += $gain->getXpGain();
             }
@@ -1030,7 +1030,7 @@ class Personnage extends BasePersonnage implements \Stringable
         $label = '';
         foreach ($this->getPersonnageLangues() as $personnageLangue) {
             $label = $label.' '.$personnageLangue->getLangue();
-            if (str_starts_with((string)$personnageLangue->getLangue(), 'Ancien')) {
+            if (str_starts_with((string) $personnageLangue->getLangue(), 'Ancien')) {
                 ++$compteLangueAncienne;
             } else {
                 ++$compteLangue;

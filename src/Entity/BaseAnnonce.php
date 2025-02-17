@@ -16,9 +16,9 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseAnnonce', 'extended' => 'Annonce'])]
-class BaseAnnonce
+abstract class BaseAnnonce
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'title', type: Types::STRING, length: 45)]

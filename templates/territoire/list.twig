@@ -57,16 +57,6 @@
 								<p class="text-warning">Attention, ce territoire n'a pas description</p>
 							{%  endif %}
 						</p>
-						<p class="list-group-item-text">
-							{% if territoire.topic and territoire.topic.id != 0 %}
-								<a href="{{ path('forum.topic', {'index': territoire.topic.id}) }}">
-									<i class="fa fa-comment"></i>
-									Forum du territoire "{{ territoire.nom }}"
-								</a><br />
-							{% else %}
-								<a href="{{ path('territoire.topic.add', {'territoire': territoire.id}) }}">Créer un forum pour ce territoire</a>
-							{% endif %}
-						</p>
 						{%  if territoire.territoires|length > 0 %}
 							<p class="list-group-item-text">
 								Contient les territoires suivants : {{ territoire.territoires|join(', ') }}
@@ -91,16 +81,7 @@
 									<p class="text-warning">Attention, ce territoire n'a pas description</p>
 								{%  endif %}
 							</p>
-							<p class="list-group-item-text">
-								{% if region.topic and region.topic.id != 0 %}
-									<a href="{{ path('forum.topic', {'index': region.topic.id}) }}">
-										<i class="fa fa-comment"></i>
-										Forum du territoire "{{ region.nom }}"
-									</a><br />
-								{% else %}
-									<a href="{{ path('territoire.topic.add', {'territoire': region.id}) }}">Créer un forum pour ce territoire</a>
-								{% endif %}
-							</p>
+
 							{%  if region.territoires|length > 0 %}
 								<p class="list-group-item-text">
 									Contient les territoires suivants : {{ region.territoires|join(', ') }}
@@ -125,16 +106,7 @@
 										<p class="text-warning">Attention, ce territoire n'a pas description</p>
 									{%  endif %}
 								</p>
-								<p class="list-group-item-text">
-									{% if fief.topic and fief.topic.id != 0 %}
-										<a href="{{ path('forum.topic', {'index': fief.topic.id}) }}">
-											<i class="fa fa-comment"></i>
-											Forum du territoire "{{ fief.nom }}"
-										</a><br />
-									{% else %}
-										<a href="{{ path('territoire.topic.add', {'territoire': fief.id}) }}">Créer un forum pour ce territoire</a>
-									{% endif %}TerRepo
-								</p>
+
 								{%  if fief.territoires|length > 0 %}
 									<p class="list-group-item-text">
 										Contient les territoires suivants : {{ fief.territoires|join(', ') }}
