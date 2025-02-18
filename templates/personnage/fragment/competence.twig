@@ -38,6 +38,9 @@
                     {% if personnage.classe.isFavoriteCompetenceFamily(competence.competenceFamily) %}
                         <i class="fa fa-star text-success" data-toggle="tooltip" data-placement="top"
                            title="Favorite"></i>
+                    {% elseif competence.competenceFamily.isSecretCompetenceFamily() %}
+                        <i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
+                           title="Secrète"></i>
                     {% elseif not personnage.classe.isCommonCompetenceFamily(competence.competenceFamily) %}
                         <i class="fa fa-face-tired text-danger" data-toggle="tooltip" data-placement="top"
                            title="Méconnue"></i>

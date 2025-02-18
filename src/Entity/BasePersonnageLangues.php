@@ -47,9 +47,9 @@ abstract class BasePersonnageLangues
     /**
      * Get the value of id.
      */
-    public function getId(): int
+    public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     /**
