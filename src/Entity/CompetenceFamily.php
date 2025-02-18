@@ -65,7 +65,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
 
     public function isSecretCompetenceFamily(): bool
     {
-        return $this->getId() < 0 || CompetenceFamilyType::SECRET->value === $this->getCompetenceFamilyType()->value;
+        return $this->getId() < 0 || CompetenceFamilyType::SECRET->value === $this->getCompetenceFamilyType()?->value;
     }
 
     /**

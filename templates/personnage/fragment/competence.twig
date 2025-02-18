@@ -34,7 +34,6 @@
             {% if loop.first or currentFamillyId != competence.competenceFamily.id %}
                 <li class="list-group-item">
                 <h5>
-                    {{ competence.competenceFamily.label }}
                     {% if personnage.classe.isFavoriteCompetenceFamily(competence.competenceFamily) %}
                         <i class="fa fa-star text-success" data-toggle="tooltip" data-placement="top"
                            title="Favorite"></i>

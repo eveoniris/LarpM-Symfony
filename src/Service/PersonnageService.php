@@ -450,6 +450,7 @@ class PersonnageService
 
     public function getAllLangues(Personnage $personnage): Collection
     {
+        /** @var Collection<int, PersonnageLangues> $allLanguages **/
         $allLanguages = $personnage->getPersonnageLangues();
 
         /** @var Bonus $bonus */
@@ -490,9 +491,14 @@ class PersonnageService
                 if ($langue) {
                     $personnageLangueTmp = clone $personnageLangue;
                     $personnageLangueTmp->setLangue($langue);
-                    if (!$allLanguages->contains($personnageLangueTmp)) {
-                        $allLanguages->add($personnageLangueTmp);
+                    // $allLanguages->contains() will not work here
+                    foreach ($allLanguages as $languages) {
+                        if ($languages->getLangue()?->getId() === (int) $langue->getId()) {
+                            // skip to next langue
+                            continue 2;
+                        }
                     }
+                    $allLanguages->add($personnageLangueTmp);
                 }
                 continue;
             }
@@ -530,11 +536,16 @@ class PersonnageService
                         ->findOneBy(['id' => $langue['id']]);
 
                     if ($langue) {
+                        // $allLanguages->contains() will not work here
+                        foreach ($allLanguages as $languages) {
+                            if ($languages->getLangue()?->getId() === (int) $langue->getId()) {
+                                // skip to next langue
+                                continue 2;
+                            }
+                        }
                         $personnageLangueTmp = clone $personnageLangue;
                         $personnageLangueTmp->setLangue($langue);
-                        if (!$allLanguages->contains($personnageLangueTmp)) {
-                            $allLanguages->add($personnageLangueTmp);
-                        }
+                        $allLanguages->add($personnageLangueTmp);
                     }
                 }
             }
@@ -585,17 +596,23 @@ class PersonnageService
 
         if (
             'ORIGINE' === $condition['type']
-            && $personnage->getOrigine()->getId() === $condition['value']
+            && $personnage->getOrigine()->getId() === (int) $condition['value']
         ) {
             return true;
         }
 
         // Parmis les langues "basique" du personnage (sinon boucle infinie)
         if ('LANGUE' === $condition['type']) {
-            foreach ($personnage->getPersonnageLangues() as $langue) {
-                if ($langue->getId() === $condition['value']) {
-                    return true;
+            /** @var PersonnageLangues $languePersonnage */
+            $hasRequired = false;
+            foreach ($personnage->getPersonnageLangues() as $languePersonnage) {
+                if ($languePersonnage->getLangue()?->getId() === (int) $condition['value']) {
+                    // Do not return yet : if personnage had already the bonus langue
+                    $hasRequired = true;
                 }
+            }
+            if ($hasRequired) {
+                return true;
             }
         }
 
