@@ -39,6 +39,7 @@ enum CompetenceFamilyType: string
     case TORTURE = 'Torture'; // Torture
     case TWO_HANDED_WEAPON = '2-handed weapons'; // Armes à 2 mains
     case WEALTH = 'Wealth'; // Richesse
+    case SECRET = 'SECRET';
 
     public function getId(): int
     {

@@ -2,12 +2,17 @@
 
 namespace App\Service;
 
+use App\Entity\Bonus;
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
 use App\Entity\Domaine;
+use App\Entity\GroupeLangue;
+use App\Entity\Langue;
 use App\Entity\Level;
 use App\Entity\Personnage;
+use App\Entity\PersonnageLangues;
 use App\Entity\Religion;
+use App\Enum\BonusType;
 use App\Form\PersonnageFindForm;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -378,8 +383,11 @@ class PersonnageService
      *
      * Si cela est impossible remonte un tableau d'erreur
      */
-    public function addCompetence(Personnage $personnage, Competence $competence, bool $gratuite = false): CompetenceService
-    {
+    public function addCompetence(
+        Personnage $personnage,
+        Competence $competence,
+        bool $gratuite = false,
+    ): CompetenceService {
         return $this->getCompetenceHandler($personnage, $competence)
             ->addCompetence(
                 $gratuite
@@ -388,8 +396,11 @@ class PersonnageService
             );
     }
 
-    public function removeCompetence(Personnage $personnage, Competence $competence, bool $gratuite = false): CompetenceService
-    {
+    public function removeCompetence(
+        Personnage $personnage,
+        Competence $competence,
+        bool $gratuite = false,
+    ): CompetenceService {
         return $this->getCompetenceHandler($personnage, $competence)
             ->removeCompetence(
                 $gratuite
@@ -412,24 +423,215 @@ class PersonnageService
     public function getAllCompetences(Personnage $personnage): Collection
     {
         $allCompetences = $personnage->getCompetences();
-        foreach ($personnage->getOrigine()->getValideOrigineBonus() as $bonus) {
+        foreach ($this->getAllBonus($personnage, BonusType::COMPETENCE) as $bonus) {
             if ($bonus->isCompetence()) {
                 if ($bonus->getCompetence()) {
                     $allCompetences->add($bonus->getCompetence());
                 } else {
-                    // On utilise les données brute du bonus en attendant leur existence en réel "Competence"
+                    // On utilise les données brutes du bonus en attendant leur existence en réel "Competence"
                     $competence = new Competence();
                     $competence->setDescription($bonus->getDescription());
-                    $competence->setLevel($this->entityManager->getRepository(Level::class)->findOneBy(['index' => Level::NIVEAU_1]));
+                    $competence->setLevel(
+                        $this->entityManager->getRepository(Level::class)->findOneBy(['index' => Level::NIVEAU_1])
+                    );
                     $family = new CompetenceFamily();
+                    $family->setId(-1);
                     $family->setLabel($bonus->getTitre() ?: "Bonus d'origine : ".$personnage->getOrigine()->getNom());
                     $competence->setCompetenceFamily($family);
-                    $allCompetences->add($competence);
+                    if (!$allCompetences->contains($competence)) {
+                        $allCompetences->add($competence);
+                    }
                 }
             }
         }
 
         return $allCompetences;
+    }
+
+    public function getAllLangues(Personnage $personnage): Collection
+    {
+        $allLanguages = $personnage->getPersonnageLangues();
+
+        /** @var Bonus $bonus */
+        foreach ($this->getAllBonus($personnage, BonusType::LANGUE) as $bonus) {
+            if (!$bonus->isLanguage()) {
+                continue;
+            }
+
+            $langue = new Langue();
+            $langue->setDescription($bonus->getDescription());
+            $langue->setLabel($bonus->getTitre());
+            $langue->setSecret(true);
+            $groupeLangue = new GroupeLangue();
+            $groupeLangue->setCouleur('Aucune');
+            $langue->setGroupeLangue($groupeLangue);
+            $personnageLangue = new PersonnageLangues();
+            $personnageLangue->setLangue($langue);
+            $personnageLangue->setPersonnage($personnage);
+            $personnageLangue->setSource($bonus->getSourceTmp() ?: 'BONUS');
+
+            /**
+             * Possibilité de donnée $bonus->getJsonData()['langue']
+             * 1: un id simple : on aura la langue directement
+             * 2: un tableau d'une dimension : la langue à une condition
+             * 3: un tableau de liste : des langues avec possiblement des conditions.
+             */
+            $langueJson = $bonus->getJsonData()['langue'] ?? null;
+
+            if (!$langueJson) {
+                continue;
+            }
+
+            // Mode 1 convertir en mode 3
+            if (is_numeric($langueJson)) {
+                $langue = $this->entityManager
+                    ->getRepository(Langue::class)
+                    ->findOneBy(['id' => $langueJson]);
+                if ($langue) {
+                    $personnageLangueTmp = clone $personnageLangue;
+                    $personnageLangueTmp->setLangue($langue);
+                    if (!$allLanguages->contains($personnageLangueTmp)) {
+                        $allLanguages->add($personnageLangueTmp);
+                    }
+                }
+                continue;
+            }
+
+            // Bad data => bye
+            if (!is_array($langueJson)) {
+                continue;
+            }
+
+            foreach ($langueJson as $langueData) {
+                // Mode 2 => convertir en mode 3
+                if (is_numeric($langueData)) {
+                    $langueData = [['id' => $langueData]];
+                }
+
+                // full mode 3
+                if (isset($langueData['id'])) {
+                    $langueData = [$langueData];
+                }
+
+                // Mode 3
+                foreach ($langueData as $langue) {
+                    if (!isset($langue['id']) || !is_numeric($langue['id'])) {
+                        continue;
+                    }
+
+                    if (!$this->isValidConditions($personnage, $langue['condition'] ?? [])) {
+                        // on passe à la langue suivante
+                        continue;
+                    }
+
+                    // Attribution
+                    $langue = $this->entityManager
+                        ->getRepository(Langue::class)
+                        ->findOneBy(['id' => $langue['id']]);
+
+                    if ($langue) {
+                        $personnageLangueTmp = clone $personnageLangue;
+                        $personnageLangueTmp->setLangue($langue);
+                        if (!$allLanguages->contains($personnageLangueTmp)) {
+                            $allLanguages->add($personnageLangueTmp);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $allLanguages;
+    }
+
+    protected function isValidConditions(Personnage $personnage, array $conditions): bool
+    {
+        if (empty($conditions)) {
+            return true;
+        }
+
+        // Tout en liste
+        if (isset($conditions['type'])) {
+            $conditions = [$conditions];
+        }
+
+        $mode = 'AND';
+        foreach ($conditions as $condition) {
+            // Par défaut les conditions sont des AND
+            if ('OR' === $condition) {
+                $mode = 'OR';
+                continue;
+            }
+
+            if ($this->isValidCondition($personnage, $condition)) {
+                // First OR mean TRUE
+                if ('OR' === $mode) {
+                    return true;
+                }
+            // In AND mode it's mean we only have a valid one, and we need to test others
+            } elseif ('AND' === $mode) {
+                // Any false condition in AND mode mean FALSE
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected function isValidCondition(Personnage $personnage, array $condition): bool
+    {
+        if (!$condition['type'] || !$condition['value']) {
+            return true; // condition non testable
+        }
+
+        if (
+            'ORIGINE' === $condition['type']
+            && $personnage->getOrigine()->getId() === $condition['value']
+        ) {
+            return true;
+        }
+
+        // Parmis les langues "basique" du personnage (sinon boucle infinie)
+        if ('LANGUE' === $condition['type']) {
+            foreach ($personnage->getPersonnageLangues() as $langue) {
+                if ($langue->getId() === $condition['value']) {
+                    return true;
+                }
+            }
+        }
+
+        // other type ?
+
+        return false;
+    }
+
+    public function getAllBonus(Personnage $personnage, ?BonusType $type = null, bool $withDisabled = false): Collection
+    {
+        $all = new ArrayCollection();
+
+        // Ajout des bonus lié à l'origine / territoire
+        $origineBonus = $withDisabled
+            ? $personnage->getOrigine()->getOriginesBonus()
+            : $personnage->getOrigine()->getValideOrigineBonus();
+
+        foreach ($origineBonus as $bonus) {
+            // On évite les types non désirés
+            if ($type && $bonus->getType() !== $type->value) {
+                continue;
+            }
+
+            $bonus->setSourceTmp('BONUS ORIGINE');
+            $all->add($bonus);
+        }
+
+        // TODO Ajout des bonus lié au groupe
+
+        // TODO Ajout des bonus lié aux merveilles
+
+        // TODO Ajout des bonus lié aux apprentissage
+
+        // TODO Ajout des bonus lié au personnage
+
+        return $all;
     }
 
     /**

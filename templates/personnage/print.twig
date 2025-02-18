@@ -84,7 +84,7 @@
                 {% endfor %}
             </td>
             <td>
-                {% for personnageLangue in personnage.personnageLangues %}
+                {% for personnageLangue in personnageService.allLangues(personnage) %}
                     <strong>{{ personnageLangue.langue }}</strong> ({{ personnageLangue.source }})<br/>
                 {% endfor %}
             </td>
@@ -94,7 +94,7 @@
                     {% if personnage.bracelet %}
                         Géré par l'interprète du personnage
                     {% else %}
-                        {% for personnageLangue in personnage.personnageLangues %}
+                        {% for personnageLangue in personnageService.allLangues(personnage) %}
                             {% if personnageLangue.langue.diffusion > 0 and personnageLangue.langue.secret == 0 %}
                                 {% set mykey = personnageLangue.langue.groupeLangue.couleur %}
                                 {% if mykey not in bracelets|keys %}

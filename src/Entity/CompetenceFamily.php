@@ -63,6 +63,11 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
         return (string) $this->description;
     }
 
+    public function isSecretCompetenceFamily(): bool
+    {
+        return $this->getId() < 0 || CompetenceFamilyType::SECRET->value === $this->getCompetenceFamilyType()->value;
+    }
+
     /**
      * Fourni la compétence de premier niveau d'une famille de compétence.
      *

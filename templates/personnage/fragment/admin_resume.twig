@@ -66,7 +66,7 @@
                      {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : languesAnomalie } %}
                  {% endif %}
                  <div class="list-group border-0">
-                     {% for personnageLangue in personnage.personnageLangues %}
+                     {% for personnageLangue in personnageService.allLangues(personnage) %}
                          <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              <div>
                                  {% if personnageLangue.langue.secret %}
@@ -74,11 +74,15 @@
                                         data-placement="top"
                                         title="Secret"></i> -
                                  {% endif %}
-                                 <a href="{{ path('langue.detail', {'langue': personnageLangue.langue.id }) }}"><strong>{{ personnageLangue.langue }}</strong></a>
-                                 ({{ personnageLangue.source }})
+                                 {% if personnageLangue.langue.id is defined %}
+                                     <a href="{{ path('langue.detail', {'langue': personnageLangue.langue.id }) }}"><strong>{{ personnageLangue.langue }}</strong></a>
+                                     ({{ personnageLangue.source }})
+                                 {% endif %}
                              </div>
+                             {% if personnageLangue.id is defined and personnageLangue.id %}
                              <a class="btn btn-sm btn-secondary"
                                 href="{{ path('personnage.admin.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Supprimer</a>
+                             {% endif %}
                          </div>
                      {% endfor %}
                  </div>
