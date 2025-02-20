@@ -1,12 +1,5 @@
 {% extends "base.print.twig" %}
 
-{% block style %}
-    <style>
-        body {
-            font-size: 12px;
-        }
-    </style>
-{% endblock style %}
 
 {% block content %}
 
@@ -24,18 +17,18 @@
         {% endif %}
     {% endif %}
     <br/>
-    {% if personnage.renomme|default(0) > 4 %}
-        <strong>Renommée :</strong> {{ personnage.renomme|default(0) }}<br/>
+    {% if personnageService.allRenomme|default(0) > 4 %}
+        <strong>Renommée :</strong> {{ personnageService.allRenomme(personnage)|default(0) }}<br/>
     {% endif %}
 
     {% if personnage.richesse|default(0) > 0 %}
-        <strong>Richesse :</strong> {{ personnage.richesse|default(0) }} pièces d'argent<br/>
+        <strong>Richesse :</strong> {{ personnageService.allRichesse(personnage)e|default(0) }} pièces d'argent<br/>
     {% endif %}
 
     <strong>Lié aux compétences</strong>
     <ul>
         {% set hasMateriel = 0 %}
-        {% for competence in personnage.competences %}
+        {% for competence in personnageService.allCompetences(personnage) %}
             {% if competence.materiel %}
                 <li><strong>{{ competence.competenceFamily.label }}&nbsp({{ competence.level.label }})
                         : </strong>{{ competence.materielRaw }}</li>
@@ -65,7 +58,7 @@
         {% if personnage.bracelet %}
             Géré par l'interprète du personnage
         {% else %}
-            {% for personnageLangue in personnage.personnageLangues %}
+            {% for personnageLangue in personnageService.allLangues(personnage) %}
                 {% if personnageLangue.langue.diffusion > 0 and personnageLangue.langue.secret == 0 %}
                     {% set mykey = personnageLangue.langue.groupeLangue.couleur %}
                     {% if mykey not in bracelets|keys %}
@@ -90,20 +83,21 @@
     {% endif %}
 
     {# objets #}
-    {% if personnage.items|length > 0 %}
+    {% set items = personnageService.allItems(personnage) %}
+    {% if items|length > 0 %}
         <strong>Objets</strong>
         <ul>
-            {% for item in personnage.items %}
+            {% for item in items %}
                 <li><strong>{{ item.numero }}</strong> - {{ item.label }}</li>
             {% endfor %}
         </ul>
     {% endif %}
 
     {# ingredients #}
-    {% if personnage.personnageIngredients|length > 0 %}
+    {% if personnageService.allIngredients(personnage)|length > 0 %}
         <strong>Ingrédients</strong>
         <ul>
-            {% for personnageIngredient in personnage.personnageIngredients %}
+            {% for personnageIngredient in personnageService.allIngredients(personnage) %}
                 <li>{{ personnageIngredient.nombre }} {{ personnageIngredient.ingredient }}
                     - {{ personnageIngredient.ingredient.color }} : {{ personnageIngredient.ingredient.dose }}</li>
             {% endfor %}
@@ -111,10 +105,10 @@
     {% endif %}
 
     {# ressources #}
-    {% if personnage.personnageRessources|length > 0 %}
+    {% if personnageService.allRessource(personnage)|length > 0 %}
         <strong>Ressources</strong>
         <ul>
-            {% for personnageRessource in personnage.personnageRessources %}
+            {% for personnageRessource in personnageService.allRessource(personnage) %}
                 <li>{{ personnageRessource.nombre }} {{ personnageRessource.ressource }}</li>
             {% endfor %}
         </ul>
@@ -127,9 +121,9 @@
         <li>1 Bandeau rougeâtre (ou blanc tâché de rouge)</li>
         <li>1 Fiche de personnage (dans une pochette plastifiée)</li>
         <li>1 Fiche retour de personnage</li>
-        {% if personnage.materiel|length > 0 %}
-            <li>{{ personnage.materiel }}</li>
-        {% endif %}
+        {% for materiel in personnageService.allMateriel(personnage) %}
+            <li>{{ materiel }}</li>
+        {% endfor %}
     </ul>
 
     {% if personnage.isSensible %}
