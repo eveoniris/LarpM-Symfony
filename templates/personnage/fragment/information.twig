@@ -233,7 +233,7 @@
             <div class="head">Renommée</div>
             <div class="text">
                 <div>
-                    {{ personnage.renomme|default(0) }}
+                    {{ personnageService.allRenomme(personnage)|default(0) }}
                 </div>
                 <button class="btn btn-sm btn-secondary ms-2" role="button"
                         data-bs-toggle="collapse"
@@ -246,7 +246,7 @@
             </div>
             <div class="collapse w-100" id="renommeHistory">
                 <div class="list-group">
-                    {% for historique in personnage.renommeHistories %}
+                    {% for historique in personnageService.getAllRenommeDisplay(personnage) %}
                         <div class="list-group-item">{{ historique.date|date("Y-m-d H:i:s") }}
                             : {% if historique.renomme > 0 %}+{% endif %}{{ historique.renomme }}  {% if historique.explication %} pour la raison suivante : "{{ historique.explication }}"{% endif %}
                             .
@@ -261,7 +261,7 @@
             <div class="head">Héroïsme</div>
             <div class="text">
                 <div>
-                    {{ personnage.heroisme|default(0) }}
+                    {{ personnageService.allHeroisme(personnage)|default(0) }}
                 </div>
                 <button class="btn btn-sm btn-secondary ms-2" role="button"
                         data-bs-toggle="collapse"
@@ -274,7 +274,7 @@
             </div>
             <div class="collapse w-100" id="heroismeHistory">
                 <div class="list-group">
-                    {% for historique in personnage.displayHeroisme %}
+                    {% for historique in personnageService.allHeroismeDisplay(personnage) %}
                         <div class="list-group-item">{{ historique.date|date("Y-m-d H:i:s") }}
                             : {% if historique.heroisme > 0 %}+{% endif %}{{ historique.heroisme }}  {% if historique.explication %} pour la raison suivante : "{{ historique.explication }}"{% endif %}
                             .
@@ -289,7 +289,7 @@
             <div class="head">Pugilat</div>
             <div class="text">
                 <div>
-                    {{ personnage.getPugilat|default(0) }}
+                    {{ personnageService.allPugilat(personnage)|default(0) }}
                 </div>
                 <button class="btn btn-sm btn-secondary ms-2" role="button"
                         data-bs-toggle="collapse"
@@ -311,7 +311,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for historique in personnage.displayPugilat %}
+                        {% for historique in personnageService.allPugilatDisplay(personnage) %}
                             <tr>
                                 <td>{{ historique.date|date("Y-m-d H:i:s") }}</td>
                                 <td>{% if historique.pugilat > 0 %}+{% endif %}{{ historique.pugilat }}</td>

@@ -25,7 +25,7 @@
                      {'path' : path('personnage.admin.update.priere', {'personnage': personnage.id}), 'label': 'Modifier la liste des prieres' },
                      {'path' : path('personnage.admin.update.technologie', {'personnage': personnage.id}), 'label': 'Modifier la liste des technologies' },
                      {'path' : path('personnage.admin.update.connaissance', {'personnage': personnage.id}), 'label': 'Modifier la liste des connaissances' },
-                 ]
+                    ]
              } %}
          {% endif %}
 
@@ -236,6 +236,26 @@
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucune</div>
+                     {% endfor %}
+                 </div>
+             </div>
+
+             <div class="card mb-4">
+                 <div class="card-header">
+                     <h6>Bonus</h6>
+                 </div>
+                 <div class="list-group border-0">
+                     {% for bonus in personnageService.getAllBonus(personnage) %}
+                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                             <div class="list-group-item-text">
+                                 <a href="{{ path('bonus.detail', {'bonus': bonus.id }) }}">{{ bonus.titre }}</a><br :>
+                                 {{ bonus.description }}
+                             </div>
+                            {# Todo see how to display "type: origin/groupe/merveille/... #}
+                            {# see how to delete #}
+                         </div>
+                     {% else %}
+                         <div class="list-group-item rounded-top-0">Aucun</div>
                      {% endfor %}
                  </div>
              </div>

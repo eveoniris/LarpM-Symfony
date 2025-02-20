@@ -1,0 +1,34 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Ages{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des bonus', 'route': path('bonus.list') },
+            {'name' : bonus.titre, 'route': path('bonus.detail', {'bonus':bonus.id})  },
+            {'name' : 'Détail' },
+        ]
+    } %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Détail d'un bonus</h5>
+        </div>
+
+        <h4>{{ bonus.titre }}</h4>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                {% if not bonus.description %}
+                    {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Attention, ce bonus n'a pas de description."} %}
+                {% else %}
+                    {{ bonus.description|markdown_to_html }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

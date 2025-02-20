@@ -121,7 +121,7 @@ class Personnage extends BasePersonnage implements \Stringable
      *
      * @param unknown $heroisme
      */
-    public function addHeroisme($heroisme): static
+    public function addHeroisme(int $heroisme): static
     {
         $this->setHeroisme($this->getHeroisme() + $heroisme);
 
@@ -167,9 +167,9 @@ class Personnage extends BasePersonnage implements \Stringable
      *
      * @param unknown $pugilat
      */
-    public function addPugilat($pugilat): static
+    public function addPugilat(int $pugilat): static
     {
-        $this->setPugilat($this->getPugilat() + $pugilat);
+        $this->setPugilat($this->getPugilat() + (int) $pugilat);
 
         return $this;
     }
@@ -468,6 +468,8 @@ class Personnage extends BasePersonnage implements \Stringable
             $pugilatHistory->setExplication('Compétence Survie niveau '.$this->getCompetenceNiveau('Survie'));
             $pugilatHistories[] = $pugilatHistory;
         }
+
+
 
         return $pugilatHistories;
     }
