@@ -26,7 +26,7 @@ final class Version20250216202635 extends AbstractMigration
         $this->addSql('ALTER TABLE groupe DROP FOREIGN KEY FK_4B98C211F55203D');
         $this->addSql('ALTER TABLE gn DROP FOREIGN KEY FK_C16FA3C01F55203D');
         $this->addSql(
-            'CREATE TABLE origine_bonus (bonus_id INT NOT NULL, territoire_id INT NOT NULL, INDEX IDX_BE69354723BFF59E (base_bonus_id), INDEX IDX_BE693547D0F97A8 (territoire_id), PRIMARY KEY(base_bonus_id, territoire_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB'
+            'CREATE TABLE origine_bonus (id INT AUTO_INCREMENT NOT NULL, bonus_id INT NOT NULL, territoire_id INT NOT NULL, creation_date DATETIME NOT NULL, status VARCHAR(32) not null, INDEX IDX_BE69354723BFF59E (base_bonus_id), INDEX IDX_BE693547D0F97A8 (territoire_id), PRIMARY KEY(base_bonus_id, territoire_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB'
         );
         $this->addSql(
             'CREATE TABLE groupe_gn_ordre (id INT AUTO_INCREMENT NOT NULL, groupe_gn_id INT DEFAULT NULL, cible_id INT DEFAULT NULL, ordre VARCHAR(255) NOT NULL, extra VARCHAR(255) NOT NULL, discr VARCHAR(255) NOT NULL, INDEX IDX_BDA495F5FA640E02 (groupe_gn_id), INDEX IDX_BDA495F5A96E5E09 (cible_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB'

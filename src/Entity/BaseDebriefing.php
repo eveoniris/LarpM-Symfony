@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 #[ORM\Table(name: 'debriefing')]
 #[ORM\Index(columns: ['groupe_id'], name: 'fk_debriefing_groupe1_idx')]
-#[ORM\Index(columns: ['User_id'], name: 'fk_debriefing_User1_idx')]
+#[ORM\Index(columns: ['User_id'], name: 'fk_debriefing_user1_idx')]
 #[ORM\Index(columns: ['gn_id'], name: 'fk_debriefing_gn1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]

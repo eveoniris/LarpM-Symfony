@@ -91,7 +91,7 @@ class BaseGroupe
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeGn::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
-    #[OrderBy(["groupe" => "ASC"])]
+    #[OrderBy(['groupe' => 'ASC'])]
     protected Collection $groupeGns;
 
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeHasIngredient::class, cascade: ['persist', 'remove'])]
@@ -130,15 +130,23 @@ class BaseGroupe
     #[ORM\JoinTable(name: 'groupe_has_document')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\OrderBy(['code' => 'ASC'])]
+    #[OrderBy(['code' => 'ASC'])]
     protected Collection $documents;
 
     #[ORM\ManyToMany(targetEntity: Item::class, inversedBy: 'groupes')]
     #[ORM\JoinTable(name: 'groupe_has_item')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'item_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\OrderBy(['label' => 'ASC'])]
+    #[OrderBy(['label' => 'ASC'])]
     protected Collection $items;
+
+    /**
+     * @var Collection<int, GroupeBonus>|null
+     */
+    #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeBonus::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinTable(name: 'groupe_bonus')]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
+    private ?Collection $groupeBonus;
 
     public function __construct()
     {
@@ -157,6 +165,7 @@ class BaseGroupe
         $this->territoires = new ArrayCollection();
         $this->documents = new ArrayCollection();
         $this->items = new ArrayCollection();
+        $this->groupeBonus = new ArrayCollection();
     }
 
     /**
@@ -851,5 +860,30 @@ class BaseGroupe
     public function getItems(): Collection
     {
         return $this->items;
+    }
+
+    public function getGroupeBonus(): ?Collection
+    {
+        return $this->groupeBonus;
+    }
+
+    public function addGroupeBonus(GroupeBonus $groupeBonus): static
+    {
+        if (!$this->groupeBonus->contains($groupeBonus)) {
+            $this->groupeBonus->add($groupeBonus);
+            $groupeBonus->setGroupe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupeBonus(GroupeBonus $groupeBonus): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->groupeBonus->removeElement($groupeBonus) && $groupeBonus->getGroupe() === $this) {
+            $groupeBonus->setGroupe(null);
+        }
+
+        return $this;
     }
 }

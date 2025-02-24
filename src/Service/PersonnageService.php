@@ -6,6 +6,7 @@ use App\Entity\Bonus;
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
 use App\Entity\Domaine;
+use App\Entity\GroupeBonus;
 use App\Entity\GroupeLangue;
 use App\Entity\HeroismeHistory;
 use App\Entity\Ingredient;
@@ -20,6 +21,7 @@ use App\Entity\PugilatHistory;
 use App\Entity\Religion;
 use App\Entity\RenommeHistory;
 use App\Entity\Ressource;
+use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use App\Form\PersonnageFindForm;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -239,18 +241,13 @@ class PersonnageService
                 continue;
             }
 
-            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [])) {
+            if (!$this->isValidConditions($personnage, $bonus->getConditions(), $bonus)) {
                 // on passe à l'item suivant
                 continue;
             }
 
             // May need to add later a list of competence ?
-            $data = $this->ensureBonusJsonToConditionnalList(
-                $bonus->getJsonData()['competences']
-                ?? $bonus->getJsonData()['competence']
-                ?? $bonus->getJsonData()
-                ?? []
-            );
+            $data = $bonus->getDataAsList('competence');
 
             if ($bonus->getCompetence()) {
                 $all->add($bonus->getCompetence());
@@ -283,31 +280,128 @@ class PersonnageService
         Personnage $personnage,
         ?BonusType $type = null,
         bool $withDisabled = false,
+        ?BonusPeriode $periode = null,
     ): Collection {
         $all = new ArrayCollection();
 
-        // Ajout des bonus lié à l'origine / territoire
-        $origineBonus = $withDisabled
-            ? $personnage->getOrigine()->getOriginesBonus()
-            : $personnage->getOrigine()->getValideOrigineBonus();
+        // Todo voir les appel pour mieux gérer les "periodes" selon les type "once/unique" et constant
 
-        foreach ($origineBonus as $bonus) {
-            // On évite les types non désirés
-            if ($type && $bonus->getType() !== $type->value) {
-                continue;
-            }
+        // Origine/territoire
+        $this->getOrigineBonus($personnage, $type, $withDisabled, $periode, $all);
 
-            $bonus->setSourceTmp('BONUS ORIGINE');
-            $all->add($bonus);
-        }
+        $this->getGroupeBonus($personnage, $type, $withDisabled, $periode, $all);
 
-        // TODO Ajout des bonus lié au groupe
+        // Ajout des bonus liés au personnage
+        $this->getPersonnageBonus($personnage, $type, $withDisabled, $periode, $all);
 
         // TODO Ajout des bonus lié aux merveilles
 
         // TODO Ajout des bonus lié aux apprentissage
 
-        // TODO Ajout des bonus lié au personnage
+        return $all;
+    }
+
+    public function getOrigineBonus(
+        Personnage $personnage,
+        ?BonusType $type = null,
+        bool $withDisabled = false,
+        ?BonusPeriode $periode = null,
+        ?Collection &$all = null,
+    ): ArrayCollection {
+        $all ??= new ArrayCollection();
+
+        // Ajout des bonus lié à l'origine / territoire
+        $origineBonus = $withDisabled
+            ? $personnage->getOrigine()?->getOriginesBonus()
+            : $personnage->getOrigine()?->getValideOrigineBonus();
+
+        $origineBonus ??= []; // avoid null on foreach
+        foreach ($origineBonus as $bonus) {
+            // On évite les non désirés
+            if (!$bonus->isTypeAndPeriode($type, $periode)) {
+                continue;
+            }
+
+            if (!$withDisabled && !$bonus->isValid()) {
+                continue;
+            }
+
+            // TODO tant que on a pas fait de reprise  pour les placer en crétion dans personnage_bonus
+            // Le bonus n'est actif que si le personnage est natif d'un territoire dont son 1er groupe est à l'origine.
+            if (BonusPeriode::NATIVE === $bonus->getPeriode()
+                && !$personnage->getFirstParticipantGnGroupe()?->getTerritoire()?->getId() === $personnage->getOrigine(
+                )?->getId()
+            ) {
+                continue;
+            }
+            unset($origineBonus);
+
+            $bonus->setSourceTmp('BONUS ORIGINE');
+
+            if (!$all->containsKey($bonus->getId())) {
+                $all->offsetSet($bonus, $bonus->getId());
+            }
+        }
+
+        return $all;
+    }
+
+    public function getGroupeBonus(
+        Personnage $personnage,
+        ?BonusType $type = null,
+        bool $withDisabled = false,
+        ?BonusPeriode $periode = null,
+        ?Collection &$all = null,
+    ): ArrayCollection {
+        $all ??= new ArrayCollection();
+
+        // On ne prend que celui du dernier groupe actif
+        if ($groupe = $personnage->getLastParticipantGnGroupe()) {
+            /** @var GroupeBonus $groupeBonus */
+            foreach ($groupe->getGroupeBonus() as $groupeBonus) {
+                // On évite les types non désirés
+                if (!$withDisabled && !$groupeBonus->isValid()) {
+                    continue;
+                }
+
+                $bonus = $groupeBonus->getBonus();
+                if (!$bonus || !$bonus->isTypeAndPeriode($type, $periode)) {
+                    continue;
+                }
+
+                if (!$all->containsKey($bonus->getId())) {
+                    $all->offsetSet($bonus, $bonus->getId());
+                }
+            }
+
+            return $all;
+        }
+    }
+
+    public function getPersonnageBonus(
+        Personnage $personnage,
+        ?BonusType $type = null,
+        bool $withDisabled = false,
+        ?BonusPeriode $periode = null,
+        ?Collection &$all = null,
+    ): ArrayCollection {
+        $all ??= new ArrayCollection();
+
+        foreach ($personnage->getPersonnageBonus() as $personnageBonus) {
+            // On évite les types non désirés
+            if (!$withDisabled && !$personnageBonus->isValid()) {
+                continue;
+            }
+
+            $bonus = $personnageBonus->getBonus();
+            if (!$bonus || !$bonus->isTypeAndPeriode($type, $periode)) {
+                continue;
+            }
+
+            if (!$all->containsKey($bonus->getId())) {
+                $all->offsetSet($bonus, $bonus->getId());
+            }
+        }
 
         return $all;
     }
@@ -315,6 +409,7 @@ class PersonnageService
     protected function isValidConditions(
         Personnage $personnage,
         array $conditions,
+        Bonus $bonus,
     ): bool {
         if (empty($conditions)) {
             return true;
@@ -333,7 +428,7 @@ class PersonnageService
                 continue;
             }
 
-            if ($this->isValidCondition($personnage, $condition)) {
+            if ($this->isValidCondition($personnage, $condition, $bonus)) {
                 // First OR mean TRUE
                 if ('OR' === $mode) {
                     return true;
@@ -351,11 +446,14 @@ class PersonnageService
     protected function isValidCondition(
         Personnage $personnage,
         array $condition,
+        Bonus $bonus,
     ): bool {
+        // condition non testable
         if (!$condition['type'] || !$condition['value']) {
-            return true; // condition non testable
+            return true;
         }
 
+        // Le personnage doit avoir cette origine pour que le bonus soit actif
         if (
             'ORIGINE' === $condition['type']
             && $personnage->getOrigine()->getId() === (int) $condition['value']
@@ -378,51 +476,11 @@ class PersonnageService
             }
         }
 
+        // TODO : Unique et ID déjà présent dans personnage_bonus > false
+
         // other type ?
 
         return false;
-    }
-
-    /**
-     * Possibilité de données issus de Bonus->getJsonData()['{TYPE}}'].
-     *
-     * 1 : un id simple : on aura le model directement
-     * 2 : un tableau d'une dimension : le model à une condition
-     * 3 : un tableau d'id : les models directement
-     * 4 : un tableau de liste : les models avec possiblement des conditions.
-     *
-     * Ici ont converti tout en mode 4.
-     */
-    private function ensureBonusJsonToConditionnalList(int|string|array $data, string $requiredParam = 'id'): array
-    {
-        if (empty($data)) {
-            // rien de valide
-            return [];
-        }
-
-        // Mode 1
-        if (is_numeric($data)) {
-            return [[$requiredParam => $data]];
-        }
-
-        if (!is_array($data)) {
-            // rien de valide
-            return [];
-        }
-
-        // Mode 2
-        if (isset($data[$requiredParam])) {
-            return [$data];
-        }
-
-        foreach ($data as $row) {
-            // Mode 3
-            if (is_numeric($row)) {
-                return [[$requiredParam => $row]];
-            }
-        }
-
-        return [];
     }
 
     private function addCompetenceToAll(Competence $competence, Collection $all): void
@@ -437,6 +495,53 @@ class PersonnageService
         $all->add($competence);
     }
 
+    public function getAllHeroisme(Personnage $personnage): int
+    {
+        $all = $personnage->getHeroisme();
+
+        foreach ($this->getAllBonus($personnage, BonusType::HEROISME) as $bonus) {
+            if (!$bonus->isHeroisme()) {
+                continue;
+            }
+
+            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [], $bonus)) {
+                // on passe à l'item suivant
+                continue;
+            }
+
+            $all += (int) $bonus->getValeur();
+        }
+
+        return $all;
+    }
+
+    public function getAllHeroismeDisplay(Personnage $personnage): Collection
+    {
+        $history = $personnage->getHeroismeHistories();
+
+        foreach ($this->getAllBonus($personnage, BonusType::HEROISME) as $bonus) {
+            if (!$bonus->isHeroisme()) {
+                continue;
+            }
+
+            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [], $bonus)) {
+                // on passe au bonus suivant
+                continue;
+            }
+
+            $heroismeHistory = new HeroismeHistory();
+            $heroismeHistory->setHeroisme((int) $bonus->getValeur());
+            $heroismeHistory->setExplication($bonus->getTitre());
+
+            // test if this contains work well
+            if (!$history->contains($heroismeHistory)) {
+                $history->add($heroismeHistory);
+            }
+        }
+
+        return $history;
+    }
+
     /**
      * @return Collection<int, PersonnageIngredient>
      */
@@ -449,19 +554,18 @@ class PersonnageService
                 continue;
             }
 
-            $data = $this->ensureBonusJsonToConditionnalList(
-                $bonus->getJsonData()['ingredients']
-                ?? $bonus->getJsonData()['ingredient']
-                ?? $bonus->getJsonData()
-                ?? []
-            );
+            $data = $bonus->getDataAsList('ingredients');
 
             foreach ($data as $ingredientData) {
                 if (!isset($ingredientData['id']) || !is_numeric($ingredientData['id'])) {
                     continue;
                 }
 
-                if (!$this->isValidConditions($personnage, $ingredientData['condition'] ?? [])) {
+                if (!$this->isValidConditions(
+                    $personnage,
+                    $bonus->getConditions($ingredientData['condition']),
+                    $bonus
+                )) {
                     // on passe à l'item suivant
                     continue;
                 }
@@ -513,19 +617,14 @@ class PersonnageService
                 continue;
             }
 
-            $data = $this->ensureBonusJsonToConditionnalList(
-                $bonus->getJsonData()['items']
-                ?? $bonus->getJsonData()['item']
-                ?? $bonus->getJsonData()
-                ?? []
-            );
+            $data = $bonus->getDataAsList('items');
 
             foreach ($data as $itemData) {
                 if (!isset($itemData['id']) || !is_numeric($itemData['id'])) {
                     continue;
                 }
 
-                if (!$this->isValidConditions($personnage, $itemData['condition'] ?? [])) {
+                if (!$this->isValidConditions($personnage, $itemData['condition'] ?? [], $bonus)) {
                     // on passe à l'item suivant
                     continue;
                 }
@@ -577,26 +676,21 @@ class PersonnageService
                 continue;
             }
 
-            $data = $this->ensureBonusJsonToConditionnalList(
-                $bonus->getJsonData()['langues']
-                ?? $bonus->getJsonData()['langue']
-                ?? $bonus->getJsonData()
-                ?? []
-            );
+            $data = $bonus->getDataAsList('langues');
 
             foreach ($data as $row) {
                 if (!isset($row['id']) || !is_numeric($row['id'])) {
                     continue;
                 }
 
-                if (!$this->isValidConditions($personnage, $row['condition'] ?? [])) {
+                if (!$this->isValidConditions($personnage, $row['condition'] ?? [], $bonus)) {
                     // on passe à l'item suivant
                     continue;
                 }
 
                 // Attribution
                 $langue = $this->entityManager
-                    ->getRepository(Ingredient::class)
+                    ->getRepository(Langue::class)
                     ->findOneBy(['id' => $row['id']]);
 
                 if (!$langue) {
@@ -642,7 +736,7 @@ class PersonnageService
                 continue;
             }
 
-            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [])) {
+            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [], $bonus)) {
                 // on passe à l'item suivant
                 continue;
             }
@@ -662,7 +756,7 @@ class PersonnageService
                 continue;
             }
 
-            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [])) {
+            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [], $bonus)) {
                 // on passe à l'item suivant
                 continue;
             }
@@ -682,7 +776,7 @@ class PersonnageService
                 continue;
             }
 
-            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [])) {
+            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [], $bonus)) {
                 // on passe au bonus suivant
                 continue;
             }
@@ -706,7 +800,7 @@ class PersonnageService
                 continue;
             }
 
-            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [])) {
+            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [], $bonus)) {
                 // on passe à l'item suivant
                 continue;
             }
@@ -726,7 +820,7 @@ class PersonnageService
                 continue;
             }
 
-            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [])) {
+            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [], $bonus)) {
                 // on passe au bonus suivant
                 continue;
             }
@@ -738,53 +832,6 @@ class PersonnageService
             // test if this contains work well
             if (!$history->contains($renommeHistory)) {
                 $history->add($renommeHistory);
-            }
-        }
-
-        return $history;
-    }
-
-    public function getAllHeroisme(Personnage $personnage): int
-    {
-        $all = $personnage->getHeroisme();
-
-        foreach ($this->getAllBonus($personnage, BonusType::HEROISME) as $bonus) {
-            if (!$bonus->isHeroisme()) {
-                continue;
-            }
-
-            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [])) {
-                // on passe à l'item suivant
-                continue;
-            }
-
-            $all += (int) $bonus->getValeur();
-        }
-
-        return $all;
-    }
-
-    public function getAllHeroismeDisplay(Personnage $personnage): Collection
-    {
-        $history = $personnage->getHeroismeHistories();
-
-        foreach ($this->getAllBonus($personnage, BonusType::HEROISME) as $bonus) {
-            if (!$bonus->isHeroisme()) {
-                continue;
-            }
-
-            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [])) {
-                // on passe au bonus suivant
-                continue;
-            }
-
-            $heroismeHistory = new HeroismeHistory();
-            $heroismeHistory->setHeroisme((int) $bonus->getValeur());
-            $heroismeHistory->setExplication($bonus->getTitre());
-
-            // test if this contains work well
-            if (!$history->contains($heroismeHistory)) {
-                $history->add($heroismeHistory);
             }
         }
 
@@ -804,17 +851,12 @@ class PersonnageService
             }
 
             // this condition is tested before JSON value if we use bonus value only
-            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [])) {
+            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [], $bonus)) {
                 // on passe au bonus suivant
                 continue;
             }
 
-            $data = $this->ensureBonusJsonToConditionnalList(
-                $bonus->getJsonData()['ressources']
-                ?? $bonus->getJsonData()['ressource']
-                ?? $bonus->getJsonData()
-                ?? []
-            );
+            $data = $bonus->getDataAsList('ressources');
 
             // If we prefer Json instead of Bonus value
             foreach ($data as $row) {
@@ -822,7 +864,7 @@ class PersonnageService
                     continue;
                 }
 
-                if (!$this->isValidConditions($personnage, $row['condition'] ?? [])) {
+                if (!$this->isValidConditions($personnage, $row['condition'] ?? [], $bonus)) {
                     // on passe à l'item suivant
                     continue;
                 }
@@ -882,7 +924,7 @@ class PersonnageService
                 continue;
             }
 
-            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [])) {
+            if (!$this->isValidConditions($personnage, $bonus->getJsonData()['condition'] ?? [], $bonus)) {
                 // on passe à l'item suivant
                 continue;
             }

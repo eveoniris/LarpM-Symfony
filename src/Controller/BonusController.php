@@ -5,7 +5,10 @@ namespace App\Controller;
 use App\Entity\Bonus;
 use App\Form\Bonus\BonusForm;
 use App\Repository\BonusRepository;
+use App\Repository\PersonnageBonusRepository;
 use App\Service\PagerService;
+use App\Service\PersonnageService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -29,7 +32,7 @@ class BonusController extends AbstractController
         PagerService $pagerService,
         BonusRepository $bonusRepository,
     ): Response {
-        $pagerService->setRequest($request)->setRepository($bonusRepository);
+        $pagerService->setRequest($request)->setRepository($bonusRepository)->setLimit(50);
 
         return $this->render('bonus/list.twig', [
             'pagerService' => $pagerService,
@@ -38,7 +41,7 @@ class BonusController extends AbstractController
     }
 
     /**
-     * Ajout d'une bonus.
+     * Ajout d'un bonus.
      */
     #[Route('/add', name: 'add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
@@ -47,17 +50,18 @@ class BonusController extends AbstractController
             $request,
             new Bonus(),
             BonusForm::class,
-            routes: [
-                'root' => 'bonus.',
-                'entityAlias' => 'bonus',
+            breadcrumb: [
+                ['route' => $this->generateUrl('bonus.list'), 'name' => 'Liste des bonus'],
+                ['name' => 'Ajouter un bonus'],
             ],
         );
     }
 
     /**
-     * Détail d'une bonus.
+     * Détail d'un bonus.
      */
     #[Route('/{bonus}/detail', name: 'detail', requirements: ['bonus' => Requirement::DIGITS])]
+    #[Route('/{bonus}', name: 'detail', requirements: ['bonus' => Requirement::DIGITS])]
     public function detailAction(#[MapEntity] Bonus $bonus): Response
     {
         return $this->render('bonus\detail.twig', [
@@ -66,7 +70,7 @@ class BonusController extends AbstractController
     }
 
     /**
-     * Mise à jour d'une bonus.
+     * Mise à jour d'un bonus.
      */
     #[Route('/{bonus}/udpate', name: 'update', requirements: ['bonus' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Bonus $bonus): RedirectResponse|Response
@@ -74,7 +78,15 @@ class BonusController extends AbstractController
         return $this->handleCreateOrUpdate(
             $request,
             $bonus,
-            BonusForm::class
+            BonusForm::class,
+            breadcrumb: [
+                ['route' => $this->generateUrl('bonus.list'), 'name' => 'Liste des bonus'],
+                [
+                    'route' => $this->generateUrl('bonus.detail', ['bonus' => $bonus->getId()]),
+                    'name' => $bonus->getLabel(),
+                ],
+                ['name' => 'Modifier un bonus'],
+            ],
         );
     }
 
@@ -99,6 +111,65 @@ class BonusController extends AbstractController
                 ],
                 ['name' => 'Supprimer un bonus'],
             ]
+        );
+    }
+
+    #[Route('/{bonus}/personnages', name: 'personnages', requirements: ['bonus' => Requirement::DIGITS])]
+    public function personnagesAction(
+        Request $request,
+        #[MapEntity] Bonus $bonus,
+        PersonnageService $personnageService,
+        BonusRepository $bonusRepository,
+        PersonnageBonusRepository $personnageBonusRepository,
+    ): Response {
+        $routeName = 'bonus.personnages';
+        $routeParams = ['bonus' => $bonus->getId()];
+        $twigFilePath = 'bonus/personnages.twig';
+        $columnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser'];
+        $personnages = new ArrayCollection();//todo $bonus->getPersonnages();
+        $additionalViewParams = [
+            'bonus' => $bonus,
+        ];
+
+        $viewParams = $personnageService->getSearchViewParameters(
+            $request,
+            $routeName,
+            $routeParams,
+            $columnKeys,
+            $additionalViewParams,
+            $personnages,
+            $bonusRepository->getPersonnages($bonus)
+        );
+
+        return $this->render(
+            $twigFilePath,
+            $viewParams
+        );
+    }
+
+    protected function handleCreateOrUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
+        ?callable $entityCallback = null,
+    ): RedirectResponse|Response {
+        return parent::handleCreateOrUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                'entity' => $this->translator->trans('bonus'),
+                'entity_added' => $this->translator->trans('Le bonus a été ajoutée'),
+                'entity_updated' => $this->translator->trans('Le bonus a été mise à jour'),
+                'entity_deleted' => $this->translator->trans('Le bonus a été supprimé'),
+                'title_add' => $this->translator->trans('Ajouter un bonus'),
+                'title_update' => $this->translator->trans('Modifier un bonus'),
+            ],
         );
     }
 }

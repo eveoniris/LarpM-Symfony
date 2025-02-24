@@ -260,6 +260,14 @@ abstract class BasePersonnage
     #[JoinColumn(name: 'id', referencedColumnName: 'parent2_id', nullable: 'false')]
     protected Collection $PersonnageLigneeParent2;
 
+    /**
+     * @var Collection<int, PersonnageBonus>|null
+     */
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageBonus::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinTable(name: 'personnage_bonus')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    private ?Collection $personnageBonus;
+
     public function __construct()
     {
         $this->experienceGains = new ArrayCollection();
@@ -291,6 +299,7 @@ abstract class BasePersonnage
         $this->pugilatHistories = new ArrayCollection();
         $this->personnageChronologie = new ArrayCollection();
         $this->personnageLignee = new ArrayCollection();
+        $this->personnageBonus = new ArrayCollection();
     }
 
     /**
@@ -1123,9 +1132,9 @@ abstract class BasePersonnage
     /**
      * Get Territoire entity (many to one).
      */
-    public function getTerritoire(): Territoire
+    public function getTerritoire(): ?Territoire
     {
-        return $this->territoire;
+        return $this->territoire ?? null;
     }
 
     /**
@@ -1522,6 +1531,33 @@ abstract class BasePersonnage
     public function setBracelet(?bool $bracelet): static
     {
         $this->bracelet = $bracelet;
+
+        return $this;
+    }
+
+    public function getPersonnageBonus(): ?Collection
+    {
+        return $this->personnageBonus;
+    }
+
+    public function addPersonnageBonus(PersonnageBonus $personnageBonus): static
+    {
+        if (!$this->personnageBonus->contains($personnageBonus)) {
+            $this->personnageBonus->add($personnageBonus);
+            $personnageBonus->setPersonnage($this);
+        }
+
+        return $this;
+    }
+
+    public function removePersonnageBonus(PersonnageBonus $personnageBonus): static
+    {
+        if ($this->personnageBonus->removeElement($personnageBonus)) {
+            // set the owning side to null (unless already changed)
+            if ($personnageBonus->getPersonnage() === $this) {
+                $personnageBonus->setPersonnage(null);
+            }
+        }
 
         return $this;
     }

@@ -34,8 +34,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseTerritoire', 'extended' => 'Territoire'])]
 abstract class BaseTerritoire
 {
-    private ArrayCollection $valideOrigineBonus;
-
     #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
@@ -216,12 +214,13 @@ abstract class BaseTerritoire
     protected Collection $religions;
 
     /**
-     * @var Collection<int, Bonus>
+     * @var Collection<int, OrigineBonus>|null
      */
-    #[ORM\ManyToMany(targetEntity: Bonus::class, mappedBy: 'origines', cascade: ['persist'])]
+    #[OneToMany(mappedBy: 'territoire', targetEntity: OrigineBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'origine_bonus')]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: 'false')]
     #[ORM\OrderBy(['id' => 'DESC'])]
-    private Collection $originesBonus;
+    private ?Collection $originesBonus;
 
     public function __construct()
     {
@@ -241,59 +240,6 @@ abstract class BaseTerritoire
         $this->langues = new ArrayCollection();
         $this->religions = new ArrayCollection();
         $this->originesBonus = new ArrayCollection();
-        $this->valideOrigineBonus = new ArrayCollection();
-    }
-
-    public function addOrigineBonus(Bonus $origineBonus): static
-    {
-        if (!$this->originesBonus->contains($origineBonus)) {
-            $this->originesBonus->add($origineBonus);
-            $origineBonus->addOrigine($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOrigineBonus(Bonus $origineBonus): static
-    {
-        if ($this->originesBonus->removeElement($origineBonus)) {
-            $origineBonus->removeOrigine($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Bonus>
-     */
-    public function getOrigineBonus(): Collection
-    {
-        return $this->originesBonus;
-    }
-
-    /**
-     * @return Collection<int, Bonus>
-     */
-    public function getValideOrigineBonus(): Collection
-    {
-        if (isset($this->valideOrigineBonus) && !$this->valideOrigineBonus->isEmpty()) {
-            return $this->valideOrigineBonus;
-        }
-
-        $this->valideOrigineBonus = new ArrayCollection();
-
-        foreach ($this->getOrigineBonus() as $origineBonus) {
-            if ($origineBonus->isValid()) {
-                $this->valideOrigineBonus->add($origineBonus);
-            }
-        }
-
-        return $this->valideOrigineBonus;
-    }
-
-    public function getActiveValideOrigineBonus(): Bonus
-    {
-        return $this->getValideOrigineBonus()->first();
     }
 
     /**
@@ -366,11 +312,6 @@ abstract class BaseTerritoire
     public function getCapitale(): string
     {
         return $this->capitale ?? '';
-    }
-
-    public function getOriginesBonus(): Collection
-    {
-        return $this->originesBonus;
     }
 
     /**
@@ -1246,9 +1187,29 @@ abstract class BaseTerritoire
         return $this;
     }
 
-    public function setOriginesBonus(Collection $originesBonus): self
+    public function getOriginesBonus(): ?Collection
     {
-        $this->origineBonus = $originesBonus;
+        return $this->originesBonus;
+    }
+
+    public function addOrigineBonus(OrigineBonus $origineBonus): static
+    {
+        if (!$this->originesBonus->contains($origineBonus)) {
+            $this->originesBonus->add($origineBonus);
+            $origineBonus->setTerritoire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrigineBonus(OrigineBonus $origineBonus): static
+    {
+        if ($this->originesBonus->removeElement($origineBonus)) {
+            // set the owning side to null (unless already changed)
+            if ($origineBonus->getTerritoire() === $this) {
+                $origineBonus->setTerritoire(null);
+            }
+        }
 
         return $this;
     }

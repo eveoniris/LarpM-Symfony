@@ -2,6 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Personnage;
+use App\Entity\PersonnageBonus;
+use App\Enum\BonusPeriode;
+use App\Repository\PersonnageRepository;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -232,5 +236,40 @@ class AdminController extends AbstractController
             'admin/rappels.twig',
             ['paginator' => $paginator, 'orderDir' => $this->getRequestOrderDir()]
         );
+    }
+
+    #[Route('/originebonus', name: 'originebonus')]
+    public function bonusOrigineAction(PersonnageRepository $rep): void
+    {
+        /** @var Personnage $personnage */
+        foreach ($rep->findBy(['vivant' => true]) as $personnage) {
+            if (!$territoire = $personnage->getTerritoire()) {
+                continue;
+            }
+            if (!$groupe = $personnage->getFirstParticipantGnGroupe()) {
+                continue;
+            }
+
+            if (!$origine = $groupe->getTerritoire()) {
+                continue;
+            }
+
+            if ($territoire->getId() !== $groupe->getTerritoire()?->getId()) {
+                continue;
+            }
+
+            foreach ($origine->getValideOrigineBonus() as $bonus) {
+                if (BonusPeriode::NATIVE === $bonus->getPeriode()) {
+                    $pBonus = new PersonnageBonus();
+                    $pBonus->setPersonnage($personnage);
+                    $pBonus->setBonus($bonus);
+                    $this->entityManager->persist($pBonus);
+                    $this->entityManager->flush($pBonus);
+                }
+            }
+        }
+
+        echo 'ok';
+        exit;
     }
 }
