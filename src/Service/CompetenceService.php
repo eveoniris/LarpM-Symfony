@@ -389,7 +389,7 @@ class CompetenceService
     public function getOrigineBonusCompetences(?Personnage $personnage = null): ArrayCollection
     {
         $competences = new ArrayCollection();
-        foreach (($personnage ?? $this->getPersonnage())->getOrigine()->getValideOrigineBonus() as $bonus) {
+        foreach (($personnage ?? $this->getPersonnage())->getOrigine()?->getValideOrigineBonus() as $bonus) {
             if ($bonus->isCompetence() && (null !== $bonus->getCompetence())) {
                 $competences->add($bonus->getCompetence());
             }

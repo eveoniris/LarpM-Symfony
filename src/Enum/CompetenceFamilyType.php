@@ -88,47 +88,47 @@ enum CompetenceFamilyType: string
 
     public static function getFromLabel(string $label): ?CompetenceFamilyType
     {
-        if ($type = static::tryFrom($label)) {
+        if ($type = self::tryFrom($label)) {
             return $type;
         }
 
-        return CompetenceFamilyType::tryFromOlder($label);
+        return self::tryFromOlder($label);
     }
 
     public static function tryFromOlder(string $value): ?CompetenceFamilyType
     {
         return match ($value) {
-            'AgilitÃ©' => static::AGILITY,
-            'Armes d\'hast' => static::POLEARMS,
-            'Armes Ã  1 main', 'Armes à 1 main' => static::ONE_HANDED_WEAPON,
-            'Armes Ã  2 mains', 'Armes à 2 mains' => static::TWO_HANDED_WEAPON,
-            'Armes Ã  distance', 'Amres à distance' => static::RANGED_WEAPONS,
-            'Armure' => static::ARMOR,
-            'Artisanat' => static::CRAFTSMANSHIP,
-            'Arts' => static::ARTS,
-            'Attaque sournoise' => static::SNEAK_ATTACK,
-            'Cartographie' => static::MAPPING,
-            'Charisme' => static::CHARISMA,
-            'Commerce' => static::BUSINESS,
-            'DiscrÃ©tion', 'Discrétion' => static::DISCRETION,
-            'Espionnage' => static::SPYING,
-            'Forge' => static::FORGE,
-            'GuÃ©rison', 'Guérison' => static::HEALING,
-            'LittÃ©rature', 'Littérature' => static::LITERATURE,
-            'Magie' => static::MAGIC,
-            'Noblesse' => static::NOBILITY,
-            'Observation' => static::OBSERVATION,
-            'Politique' => static::POLITICAL,
-            'Protection' => static::PROTECTION,
-            'Prêtrise', 'PrÃªtrise' => static::PRIESTHOOD,
-            'Richesse' => static::WEALTH,
-            'Ritualisme' => static::RITUALISM,
-            'RÃ©sistance', 'Résistance' => static::RESISTANCE,
-            'Sauvagerie' => static::SAVAGERY,
-            'StratÃ©gie', 'Stratégie' => static::STRATEGY,
-            'Survie' => static::SURVIVAL,
-            'Torture' => static::TORTURE,
-            'Vol' => static::THEFT,
+            'AgilitÃ©' => self::AGILITY,
+            'Armes d\'hast' => self::POLEARMS,
+            'Armes Ã  1 main', 'Armes à 1 main' => self::ONE_HANDED_WEAPON,
+            'Armes Ã  2 mains', 'Armes à 2 mains' => self::TWO_HANDED_WEAPON,
+            'Armes Ã  distance', 'Amres à distance' => self::RANGED_WEAPONS,
+            'Armure' => self::ARMOR,
+            'Artisanat' => self::CRAFTSMANSHIP,
+            'Arts' => self::ARTS,
+            'Attaque sournoise' => self::SNEAK_ATTACK,
+            'Cartographie' => self::MAPPING,
+            'Charisme' => self::CHARISMA,
+            'Commerce' => self::BUSINESS,
+            'DiscrÃ©tion', 'Discrétion' => self::DISCRETION,
+            'Espionnage' => self::SPYING,
+            'Forge' => self::FORGE,
+            'GuÃ©rison', 'Guérison' => self::HEALING,
+            'LittÃ©rature', 'Littérature' => self::LITERATURE,
+            'Magie' => self::MAGIC,
+            'Noblesse' => self::NOBILITY,
+            'Observation' => self::OBSERVATION,
+            'Politique' => self::POLITICAL,
+            'Protection' => self::PROTECTION,
+            'Prêtrise', 'PrÃªtrise' => self::PRIESTHOOD,
+            'Richesse' => self::WEALTH,
+            'Ritualisme' => self::RITUALISM,
+            'RÃ©sistance', 'Résistance' => self::RESISTANCE,
+            'Sauvagerie' => self::SAVAGERY,
+            'StratÃ©gie', 'Stratégie' => self::STRATEGY,
+            'Survie' => self::SURVIVAL,
+            'Torture' => self::TORTURE,
+            'Vol' => self::THEFT,
             default => null,
         };
     }

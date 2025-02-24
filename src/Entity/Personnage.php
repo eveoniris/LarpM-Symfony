@@ -680,6 +680,16 @@ class Personnage extends BasePersonnage implements \Stringable
         return null;
     }
 
+    public function getFirstParticipantGnGroupe(): ?Groupe
+    {
+        $participant = $this->getFirstParticipant();
+        if ($participant?->getGn()?->getLabel() === $participant?->getGroupeGn()?->getGn()?->getLabel()) {
+            return $participant?->getGroupeGn()?->getGroupe();
+        }
+
+        return null;
+    }
+
     /**
      * Retourne le dernier participant du personnage.
      */
@@ -687,6 +697,15 @@ class Personnage extends BasePersonnage implements \Stringable
     {
         if (!$this->getParticipants()->isEmpty()) {
             return $this->getParticipants()->last();
+        }
+
+        return null;
+    }
+
+    public function getFirstParticipant(): ?Participant
+    {
+        if (!$this->getParticipants()->isEmpty()) {
+            return $this->getParticipants()->first();
         }
 
         return null;

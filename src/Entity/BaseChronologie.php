@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\BaseChronologieRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,26 +19,26 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseChronologie', 'extended' => 'Chronologie'])]
 class BaseChronologie
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'description', type: \Doctrine\DBAL\Types\Types::STRING)]
+    #[Column(name: 'description', type: Types::TEXT)]
     protected string $description = '';
 
-    #[Column(name: 'year', type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(name: 'year', type: Types::INTEGER)]
     protected int $year = 2020;
 
-    #[Column(name: 'month', type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(name: 'month', type: Types::INTEGER, nullable: true)]
     protected ?int $month = null;
 
-    #[Column(name: 'day', type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(name: 'day', type: Types::INTEGER, nullable: true)]
     protected ?int $day = null;
 
-    #[Column(name: 'visibilite', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(name: 'visibilite', type: Types::STRING, length: 45)]
     protected string $visibilite = '';
 
-    #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'chronologies')]
-    #[JoinColumn(name: 'zone_politique_id', referencedColumnName: 'id', nullable: 'false')]
+    #[ManyToOne(targetEntity: Territoire::class, cascade: ['persist'], inversedBy: 'chronologies')]
+    #[JoinColumn(name: 'zone_politique_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
     protected Territoire $territoire;
 
     public function __construct()

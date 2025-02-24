@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\TerritoireRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 
 /**
@@ -15,13 +16,38 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity(repositoryClass: TerritoireRepository::class)]
 class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringable
 {
+
+
+    private ArrayCollection $valideOrigineBonus;
+
     /**
      * Constructeur.
      */
     public function __construct()
     {
         $this->setOrdreSocial(3);
+        $this->valideOrigineBonus = new ArrayCollection();
         parent::__construct();
+    }
+
+    /**
+     * @return Collection<int, Bonus>
+     */
+    public function getValideOrigineBonus(): Collection
+    {
+        if (isset($this->valideOrigineBonus) && !$this->valideOrigineBonus->isEmpty()) {
+            return $this->valideOrigineBonus;
+        }
+
+        $this->valideOrigineBonus = new ArrayCollection();
+
+        foreach ($this->getOriginesBonus() as $origineBonus) {
+            if ($origineBonus->isValid()) {
+                $this->valideOrigineBonus->add($origineBonus);
+            }
+        }
+
+        return $this->valideOrigineBonus;
     }
 
     /**
@@ -431,16 +457,18 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
      */
     public function getGroupesPj(): array
     {
-        $groupes = [];
+        $groupes = new ArrayCollection();
         if ($this->getGroupe() && $this->getGroupe()->getPj()) {
-            $groupes[] = $this->getGroupe()->getNom();
+            $groupes->add($this->getGroupe()->getNom());
         }
 
         foreach ($this->getTerritoires() as $territoire) {
-            $groupes = array_merge($groupes, $territoire->getGroupesPj());
+            if (!$groupes->contains($territoire - $this->getGroupesPj())) {
+                $groupes->add($territoire->getGroupesPj());
+            }
         }
 
-        return array_unique($groupes);
+        return $groupes->toArray();
     }
 
     /**

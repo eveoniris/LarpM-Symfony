@@ -74,7 +74,7 @@
                                         data-placement="top"
                                         title="Secret"></i> -
                                  {% endif %}
-                                 {% if personnageLangue.langue.id is defined %}
+                                 {% if personnageLangue.langue.id %}
                                      <a href="{{ path('langue.detail', {'langue': personnageLangue.langue.id }) }}"><strong>{{ personnageLangue.langue }}</strong></a>
                                      ({{ personnageLangue.source }})
                                  {% endif %}

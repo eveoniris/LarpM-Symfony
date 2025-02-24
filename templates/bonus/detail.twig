@@ -1,6 +1,6 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Ages{% endblock title %}
+{% block title %}Bonus{% endblock title %}
 
 {% block body %}
 
@@ -18,17 +18,77 @@
             <h5>Détail d'un bonus</h5>
         </div>
 
+        <div class="d-flex justify-content-end">
+
+            <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+                <div class="btn-group" role="group">
+                    <!--a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Personnages associés"
+                       href="{{ path('bonus.personnages',{'bonus':bonus.id}) }}"><i
+                                class="fa fa-users"></i> Personnages</a-->
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Ajouter"
+                       href="{{ path('bonus.add') }}"><i
+                                class="fa fa-plus"></i> Ajouter</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier"
+                       href="{{ path('bonus.update',{'bonus':bonus.id}) }}"><i
+                                class="fa fa-pencil"></i> Modifier</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Supprimer"
+                       href="{{ path('bonus.delete',{'bonus':bonus.id}) }}"><i
+                                class="fa fa-eraser"></i> Supprimer</a>
+                </div>
+            </div>
+        </div>
+
+
         <h4>{{ bonus.titre }}</h4>
 
         <div class="panel panel-default">
             <div class="panel-body">
-                {% if not bonus.description %}
-                    {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Attention, ce bonus n'a pas de description."} %}
-                {% else %}
-                    {{ bonus.description|markdown_to_html }}
-                {% endif %}
+                <div class="list-group">
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Titre</div>
+                        <div class="list-group-item-text ps-1">{{ bonus.titre }}</div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Description</div>
+                        <div class="list-group-item-text ps-1">
+                            {% if not bonus.description %}
+                                {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Attention, ce bonus n'a pas de description."} %}
+                            {% else %}
+                                {{ bonus.description|markdown_to_html }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Type</div>
+                        <div class="list-group-item-text ps-1">{{ bonus.type }}</div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Périodicité</div>
+                        <div class="list-group-item-text ps-1">{{ bonus.periode }}</div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Domaine d'application</div>
+                        <div class="list-group-item-text ps-1">{{ bonus.application }}</div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Données fonctionnel développeur</div>
+                        <div class="list-group-item-text ps-1"><code>{{ bonus.dataAsString| nl2br }}</code></div>
+                    </div>
+
+                </div>
             </div>
         </div>
+
     </div>
 
 {% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Bonus{% endblock title %}
+
+{% block body %}
+
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des bonus', 'route': path('bonus.list') },
+            {'name' : bonus.titre , 'route': path('bonus.detail', {'bonus': bonus.id}) },
+            {'name' : "Personnages ayant le bonus #{bonus.label}" },
+        ]
+    } %}
+
+    {{ include('admin/personnage/search.twig',
+        {
+            displayAdminToolbar: false,
+            displaySearchFilter: false,
+        }
+    ) }}
+
+{% endblock body %}

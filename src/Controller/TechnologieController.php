@@ -33,7 +33,7 @@ class TechnologieController extends AbstractController
     public function indexAction(
         Request $request,
         PagerService $pagerService,
-        TechnologieRepository $technologieRepository
+        TechnologieRepository $technologieRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($technologieRepository);
 
@@ -85,7 +85,7 @@ class TechnologieController extends AbstractController
      */
     #[Route('/{technologie}/delete', name: 'delete', requirements: ['technologie' => Requirement::DIGITS])]
     public function deleteAction(
-        #[MapEntity] Technologie $technologie
+        #[MapEntity] Technologie $technologie,
     ): RedirectResponse|Response {
         return $this->genericDelete(
             $technologie,
@@ -114,7 +114,7 @@ class TechnologieController extends AbstractController
         Request $request,
         #[MapEntity] Technologie $technologie,
         PersonnageService $personnageService,
-        TechnologieRepository $technologieRepository
+        TechnologieRepository $technologieRepository,
     ): Response {
         $routeName = 'technologie.personnages';
         $routeParams = ['technologie' => $technologie->getId()];
@@ -147,7 +147,7 @@ class TechnologieController extends AbstractController
     #[Route('/{technologie}/ressource/add', name: 'ressource.add', requirements: ['technologie' => Requirement::DIGITS])]
     public function addRessourceAction(
         Request $request,
-        #[MapEntity] Technologie $technologie
+        #[MapEntity] Technologie $technologie,
     ): RedirectResponse|Response {
         return $this->handleCreateOrUpdate(
             $request,
@@ -184,7 +184,7 @@ class TechnologieController extends AbstractController
     public function updateRessourceAction(
         Request $request,
         #[MapEntity] Technologie $technologie,
-        #[MapEntity] TechnologiesRessources $technologiesRessources
+        #[MapEntity] TechnologiesRessources $technologiesRessources,
     ): RedirectResponse|Response {
         return $this->handleCreateOrUpdate(
             $request,
@@ -224,7 +224,7 @@ class TechnologieController extends AbstractController
     )]
     public function removeRessourceAction(
         #[MapEntity] Technologie $technologie,
-        #[MapEntity] TechnologiesRessources $technologiesRessources
+        #[MapEntity] TechnologiesRessources $technologiesRessources,
     ): RedirectResponse|Response {
         return $this->genericDelete(
             $technologiesRessources,
@@ -260,7 +260,7 @@ class TechnologieController extends AbstractController
         array $breadcrumb = [],
         array $routes = [],
         array $msg = [],
-        ?callable $entityCallback = null
+        ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         if (!$entityCallback) {
             /** @var Technologie $technologie */

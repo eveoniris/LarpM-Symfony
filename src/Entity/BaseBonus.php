@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Enum\BonusPeriode;
+use App\Enum\BonusType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -10,7 +12,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'bonus')]
-#[ORM\Index(columns: ['competence_id'], name: 'fk_personnage_groupe1_idx')]
+#[ORM\Index(columns: ['competence_id'], name: 'fk_competence_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseBonus', 'extended' => 'Bonus'])]
@@ -48,38 +50,118 @@ abstract class BaseBonus
     /**
      * @var Collection<int, Territoire>
      */
-    #[ORM\ManyToMany(targetEntity: Territoire::class, inversedBy: 'origineBonus', cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: OrigineBonus::class, mappedBy: 'bonus', cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'origine_bonus')]
     #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: false)]
-    private Collection $origines;
+    private Collection $origineBonus;
+
+    /**
+     * @var Collection<int, Personnage>|null
+     */
+    #[ORM\ManyToMany(targetEntity: PersonnageBonus::class, mappedBy: 'bonus', cascade: ['persist', 'remove'])]
+    #[ORM\JoinTable(name: 'personnage_bonus')]
+    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: 'false')]
+    private ?Collection $personnageBonus;
+
+    /**
+     * @var Collection<int, GroupeBonus>|null
+     */
+    #[ORM\ManyToMany(targetEntity: GroupeBonus::class, mappedBy: 'bonus', cascade: ['persist', 'remove'])]
+    #[ORM\JoinTable(name: 'groupe_bonus')]
+    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: 'false')]
+    private ?Collection $groupeBonus;
+
+    public function __construct()
+    {
+        $this->personnageBonus = new ArrayCollection();
+        $this->groupeBonus = new ArrayCollection();
+        $this->origineBonus = new ArrayCollection();
+    }
 
     /**
      * @return Collection<int, Territoire>
      */
-    public function getOrigines(): Collection
+    public function getOrigineBonus(): Collection
     {
-        return $this->origines;
+        return $this->origineBonus;
     }
 
-    public function addOrigine(Territoire $origine): static
+    public function addOrigineBonus(OrigineBonus $origine): static
     {
-        if (!$this->origines->contains($origine)) {
-            $this->origines->add($origine);
+        if (!$this->origineBonus->contains($origine)) {
+            $this->origineBonus->add($origine);
+            $origine->setBonus($this);
         }
 
         return $this;
     }
 
-    public function removeOrigine(Territoire $origine): static
+    public function removeOrigineBonus(OrigineBonus $origine): static
     {
-        $this->origines->removeElement($origine);
+        $this->origineBonus->removeElement($origine);
+        if ($origine->getBonus() === $this) {
+            $origine->setBonus(null);
+        }
 
         return $this;
     }
 
-    public function __construct()
+    /**
+     * @return Collection<int, GroupeBonus>
+     */
+    public function getGroupeBonus(): Collection
     {
-        $this->origines = new ArrayCollection();
+        return $this->groupeBonus;
+    }
+
+    public function addGroupeBonus(GroupeBonus $groupeBonus): static
+    {
+        if (!$this->groupeBonus->contains($groupeBonus)) {
+            $this->groupeBonus->add($groupeBonus);
+            $groupeBonus->setBonus($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupeBonus(GroupeBonus $groupeBonus): static
+    {
+        if ($this->groupeBonus->removeElement($groupeBonus)) {
+            // set the owning side to null (unless already changed)
+            if ($groupeBonus->getGroupe() === $this) {
+                $groupeBonus->setBonus(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PersonnageBonus>
+     */
+    public function getPersonnageBonus(): Collection
+    {
+        return $this->personnageBonus;
+    }
+
+    public function addPersonnageBonus(PersonnageBonus $personnageBonus): static
+    {
+        if (!$this->personnageBonus->contains($personnageBonus)) {
+            $this->personnageBonus->add($personnageBonus);
+            $personnageBonus->setBonus($this);
+        }
+
+        return $this;
+    }
+
+    public function removePersonnageBonus(PersonnageBonus $personnageBonus): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->groupeBonus->removeElement($personnageBonus) && $personnageBonus->getPersonnage() === $this) {
+            $personnageBonus->setBonus(null);
+        }
+
+        return $this;
     }
 
     public function getCompetence(): ?Competence
@@ -123,18 +205,6 @@ abstract class BaseBonus
         return $this;
     }
 
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(?string $type): static
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
     public function getValeur(): ?int
     {
         return $this->valeur;
@@ -147,14 +217,38 @@ abstract class BaseBonus
         return $this;
     }
 
-    public function getPeriode(): ?string
+    public function getType(): ?BonusType
     {
-        return $this->periode;
+        return BonusType::tryFrom($this->type);
     }
 
-    public function setPeriode(?string $periode): static
+    public function setType(string|BonusType|null $type): static
     {
-        $this->periode = $periode;
+        if ($type instanceof BonusType) {
+            $this->type = $type->value;
+
+            return $this;
+        }
+
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getPeriode(): ?BonusPeriode
+    {
+        return BonusPeriode::tryFrom($this->periode);
+    }
+
+    public function setPeriode(string|BonusPeriode|null $periode): static
+    {
+        if ($periode instanceof BonusPeriode) {
+            $this->type = $periode->value;
+
+            return $this;
+        }
+
+        $this->type = $periode;
 
         return $this;
     }

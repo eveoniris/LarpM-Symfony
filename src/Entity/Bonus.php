@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use App\Repository\BonusRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -19,7 +20,7 @@ class Bonus extends BaseBonus
 
     public function isValid(): bool
     {
-        // TODO only not expired and status = active => create the JOIN TABLE
+        // TODO if extend column like status
 
         return true;
     }
@@ -50,9 +51,68 @@ class Bonus extends BaseBonus
         return BonusType::RENOMME->value === $this->getType();
     }
 
+    public function getConditions(?array $row = null): array
+    {
+        return ($row ?? $this->getJsonData())['condition'] ?? [];
+    }
+
+    /**
+     * 1 : un id simple : on aura le model directement
+     * 2 : un tableau d'une dimension : le model à une condition
+     * 3 : un tableau d'id : les models directement
+     * 4 : un tableau de liste : les models avec possiblement des conditions.
+     *
+     * Ici ont converti tout en mode 4.
+     */
+    public function getData(?string $key = null): mixed
+    {
+        $data = $this->getJsonData() ?? [];
+
+        return $data[$key] ?? $data[$key.'s'] ?? $data[rtrim($key, 's')] ?? $data;
+    }
+
+    public function getDataAsString(): string
+    {
+        return json_encode($this->getJsonData(), JSON_THROW_ON_ERROR) ?? '';
+    }
+
+    public function getDataAsList(?string $key = null, string $requiredParam = 'id'): array
+    {
+        $data = $this->getData($key);
+
+        if (empty($data)) {
+            // rien de valide
+            return [];
+        }
+
+        // Mode 1
+        if (is_numeric($data)) {
+            return [[$requiredParam => $data]];
+        }
+
+        if (!is_array($data)) {
+            // rien de valide
+            return [];
+        }
+
+        // Mode 2
+        if (isset($data[$requiredParam])) {
+            return [$data];
+        }
+
+        foreach ($data as $row) {
+            // Mode 3
+            if (is_numeric($row)) {
+                return [[$requiredParam => $row]];
+            }
+        }
+
+        return [];
+    }
+
     public function isHeroisme(): bool
     {
-    return BonusType::HEROISME->value === $this->getType();
+        return BonusType::HEROISME->value === $this->getType();
     }
 
     public function isRessource(): bool
@@ -95,5 +155,36 @@ class Bonus extends BaseBonus
         $this->sourceTmp = $sourceTmp;
 
         return $this;
+    }
+
+    public function isTypeAndPeriode(array|BonusType|null $types, array|BonusPeriode|null $periodes): bool
+    {
+        if (!is_array($types)) {
+            $types = [$types];
+        }
+
+        if (!is_array($periodes)) {
+            $periodes = [$periodes];
+        }
+
+        foreach ($types as $type) {
+            if (!$type instanceof BonusType) {
+                $type = BonusType::tryFrom($type);
+            }
+            if ($this->getType() !== $type) {
+                return false;
+            }
+        }
+
+        foreach ($periodes as $periode) {
+            if (!$periode instanceof BonusPeriode) {
+                $periode = BonusPeriode::tryFrom($periode);
+            }
+            if ($this->getType() !== $periode) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
