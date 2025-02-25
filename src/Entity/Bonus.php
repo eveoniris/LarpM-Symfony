@@ -13,67 +13,9 @@ class Bonus extends BaseBonus
     // Pour faire voyager une éventuelle source
     private string $sourceTmp = '';
 
-    public function getSourceTmp(): string
-    {
-        return $this->sourceTmp;
-    }
-
-    public function isValid(): bool
-    {
-        // TODO if extend column like status
-
-        return true;
-    }
-
-    /** Alias Interface purpose */
-    public function getLabel(): string
-    {
-        return $this->getTitre();
-    }
-
-    public function isXp(): bool
-    {
-        return BonusType::XP->value === $this->getType();
-    }
-
-    public function isCompetence(): bool
-    {
-        return BonusType::COMPETENCE->value === $this->getType();
-    }
-
-    public function isLanguage(): bool
-    {
-        return BonusType::LANGUE->value === $this->getType();
-    }
-
-    public function isRenomme(): bool
-    {
-        return BonusType::RENOMME->value === $this->getType();
-    }
-
     public function getConditions(?array $row = null): array
     {
         return ($row ?? $this->getJsonData())['condition'] ?? [];
-    }
-
-    /**
-     * 1 : un id simple : on aura le model directement
-     * 2 : un tableau d'une dimension : le model à une condition
-     * 3 : un tableau d'id : les models directement
-     * 4 : un tableau de liste : les models avec possiblement des conditions.
-     *
-     * Ici ont converti tout en mode 4.
-     */
-    public function getData(?string $key = null): mixed
-    {
-        $data = $this->getJsonData() ?? [];
-
-        return $data[$key] ?? $data[$key.'s'] ?? $data[rtrim($key, 's')] ?? $data;
-    }
-
-    public function getDataAsString(): string
-    {
-        return json_encode($this->getJsonData(), JSON_THROW_ON_ERROR) ?? '';
     }
 
     public function getDataAsList(?string $key = null, string $requiredParam = 'id'): array
@@ -110,44 +52,35 @@ class Bonus extends BaseBonus
         return [];
     }
 
-    public function isHeroisme(): bool
+    /**
+     * 1 : un id simple : on aura le model directement
+     * 2 : un tableau d'une dimension : le model à une condition
+     * 3 : un tableau d'id : les models directement
+     * 4 : un tableau de liste : les models avec possiblement des conditions.
+     *
+     * Ici ont converti tout en mode 4.
+     */
+    public function getData(?string $key = null, mixed $default = null): mixed
     {
-        return BonusType::HEROISME->value === $this->getType();
+        $data = $this->getJsonData() ?: [];
+
+        return $data[$key] ?? $data[$key.'s'] ?? $data[rtrim($key, 's')] ?? ($default ?? $data);
     }
 
-    public function isRessource(): bool
+    public function getDataAsString(): string
     {
-        return BonusType::RESSOURCE->value === $this->getType();
+        return json_encode($this->getJsonData(), JSON_THROW_ON_ERROR) ?? '';
     }
 
-    public function isIngredient(): bool
+    /** Alias Interface purpose */
+    public function getLabel(): string
     {
-        return BonusType::INGREDIENT->value === $this->getType();
+        return $this->getTitre();
     }
 
-    public function isRichesse(): bool
+    public function getSourceTmp(): string
     {
-        return BonusType::RICHESSE->value === $this->getType();
-    }
-
-    public function isMateriel(): bool
-    {
-        return BonusType::MATERIEL->value === $this->getType();
-    }
-
-    public function isItem(): bool
-    {
-        return BonusType::ITEM->value === $this->getType();
-    }
-
-    public function isMissionCommercial(): bool
-    {
-        return BonusType::MISSION_COMMERCIAL->value === $this->getType();
-    }
-
-    public function isPugilat(): bool
-    {
-        return BonusType::PUGILAT->value === $this->getType();
+        return $this->sourceTmp;
     }
 
     public function setSourceTmp(string $sourceTmp): static
@@ -157,34 +90,111 @@ class Bonus extends BaseBonus
         return $this;
     }
 
-    public function isTypeAndPeriode(array|BonusType|null $types, array|BonusPeriode|null $periodes): bool
+    public function isCompetence(): bool
     {
-        if (!is_array($types)) {
-            $types = [$types];
+        return BonusType::COMPETENCE->value === $this->getType()->value;
+    }
+
+    public function isHeroisme(): bool
+    {
+        return BonusType::HEROISME->value === $this->getType()->value;
+    }
+
+    public function isIngredient(): bool
+    {
+        return BonusType::INGREDIENT->value === $this->getType()->value;
+    }
+
+    public function isItem(): bool
+    {
+        return BonusType::ITEM->value === $this->getType()->value;
+    }
+
+    public function isLanguage(): bool
+    {
+        return BonusType::LANGUE->value === $this->getType()->value;
+    }
+
+    public function isMateriel(): bool
+    {
+        return BonusType::MATERIEL->value === $this->getType()->value;
+    }
+
+    public function isMissionCommercial(): bool
+    {
+        return BonusType::MISSION_COMMERCIAL->value === $this->getType()->value;
+    }
+
+    public function isPugilat(): bool
+    {
+        return BonusType::PUGILAT->value === $this->getType()->value;
+    }
+
+    public function isRenomme(): bool
+    {
+        return BonusType::RENOMME->value === $this->getType()->value;
+    }
+
+    public function isRessource(): bool
+    {
+        return BonusType::RESSOURCE->value === $this->getType()->value;
+    }
+
+    public function isRichesse(): bool
+    {
+        return BonusType::RICHESSE->value === $this->getType()->value;
+    }
+
+    public function isTypeAndPeriode(array|BonusType|null $types, array|BonusPeriode|null $periodes = null): bool
+    {
+        if ($types) {
+            if (!is_array($types)) {
+                $types = [$types];
+            }
+
+            foreach ($types as $type) {
+                if (!$type instanceof BonusType) {
+                    $type = BonusType::tryFrom($type);
+                }
+                if (!$type instanceof BonusType) {
+                    continue;
+                }
+                if ($this->getType()->value !== $type->value) {
+                    return false;
+                }
+            }
         }
 
-        if (!is_array($periodes)) {
-            $periodes = [$periodes];
-        }
+        if ($periodes) {
+            if (!is_array($periodes)) {
+                $periodes = [$periodes];
+            }
 
-        foreach ($types as $type) {
-            if (!$type instanceof BonusType) {
-                $type = BonusType::tryFrom($type);
-            }
-            if ($this->getType() !== $type) {
-                return false;
-            }
-        }
-
-        foreach ($periodes as $periode) {
-            if (!$periode instanceof BonusPeriode) {
-                $periode = BonusPeriode::tryFrom($periode);
-            }
-            if ($this->getType() !== $periode) {
-                return false;
+            foreach ($periodes as $periode) {
+                if (!$periode instanceof BonusPeriode) {
+                    $periode = BonusPeriode::tryFrom($periode);
+                }
+                if (!$periode instanceof BonusPeriode) {
+                    continue;
+                }
+                if ($this->getType()->value !== $periode->value) {
+                    return false;
+                }
             }
         }
 
         return true;
+    }
+
+    public function isValid(): bool
+    {
+        // TODO if extend column like status
+
+        return true;
+    }
+
+    public function isXp(): bool
+    {
+        return BonusType::XP->value === $this->getType()->value;
     }
 }

@@ -13,11 +13,13 @@ use App\Entity\Ingredient;
 use App\Entity\Item;
 use App\Entity\Langue;
 use App\Entity\Level;
+use App\Entity\OrigineBonus;
 use App\Entity\Personnage;
 use App\Entity\PersonnageIngredient;
 use App\Entity\PersonnageLangues;
 use App\Entity\PersonnageRessource;
 use App\Entity\PugilatHistory;
+use App\Entity\Rarete;
 use App\Entity\Religion;
 use App\Entity\RenommeHistory;
 use App\Entity\Ressource;
@@ -259,9 +261,14 @@ class PersonnageService
             $competence->setDescription($bonus->getDescription());
             $competence->setLevel(
                 $this->entityManager->getRepository(Level::class)->findOneBy(
-                    ['index' => $data['index'] ?? Level::NIVEAU_1]
+                    ['index' => $bonus->getData('index', Level::NIVEAU_1)]
                 )
             );
+
+            $materiel = $bonus->getData('materiel', null);
+            if ($materiel) {
+                $competence->setMateriel(1 === $materiel ? $bonus->getDescription() : $materiel);
+            }
             $family = new CompetenceFamily();
             $family->setId(-1);
             $family->setLabel($bonus->getTitre() ?: "Bonus d'origine : ".$personnage->getOrigine()->getNom());
@@ -311,18 +318,20 @@ class PersonnageService
         $all ??= new ArrayCollection();
 
         // Ajout des bonus lié à l'origine / territoire
-        $origineBonus = $withDisabled
+        $originesBonus = $withDisabled
             ? $personnage->getOrigine()?->getOriginesBonus()
             : $personnage->getOrigine()?->getValideOrigineBonus();
-
-        $origineBonus ??= []; // avoid null on foreach
-        foreach ($origineBonus as $bonus) {
-            // On évite les non désirés
-            if (!$bonus->isTypeAndPeriode($type, $periode)) {
+        $originesBonus ??= []; // avoid null on foreach
+        /** @var OrigineBonus $origineBonus */
+        foreach ($originesBonus as $origineBonus) {
+            if (!$withDisabled && !$origineBonus->isValid()) {
                 continue;
             }
 
-            if (!$withDisabled && !$bonus->isValid()) {
+            $bonus = $origineBonus->getBonus();
+
+            // On évite les non désirés
+            if (!$bonus || !$bonus->isTypeAndPeriode($type, $periode)) {
                 continue;
             }
 
@@ -339,7 +348,7 @@ class PersonnageService
             $bonus->setSourceTmp('BONUS ORIGINE');
 
             if (!$all->containsKey($bonus->getId())) {
-                $all->offsetSet($bonus, $bonus->getId());
+                $all->offsetSet($bonus->getId(), $bonus);
             }
         }
 
@@ -370,7 +379,7 @@ class PersonnageService
                 }
 
                 if (!$all->containsKey($bonus->getId())) {
-                    $all->offsetSet($bonus, $bonus->getId());
+                    $all->offsetSet($bonus->getId(), $bonus);
                 }
             }
 
@@ -399,7 +408,7 @@ class PersonnageService
             }
 
             if (!$all->containsKey($bonus->getId())) {
-                $all->offsetSet($bonus, $bonus->getId());
+                $all->offsetSet($bonus->getId(), $bonus);
             }
         }
 
@@ -456,12 +465,12 @@ class PersonnageService
         // Le personnage doit avoir cette origine pour que le bonus soit actif
         if (
             'ORIGINE' === $condition['type']
-            && $personnage->getOrigine()->getId() === (int) $condition['value']
+            && $personnage->getOrigine()?->getId() === (int) $condition['value']
         ) {
             return true;
         }
 
-        // Parmis les langues "basique" du personnage (sinon boucle infinie)
+        // Parmi les langues "basique" du personnage (sinon boucle infinie)
         if ('LANGUE' === $condition['type']) {
             /** @var PersonnageLangues $languePersonnage */
             $hasRequired = false;
@@ -474,6 +483,17 @@ class PersonnageService
             if ($hasRequired) {
                 return true;
             }
+        }
+
+        // Parmi les langues "basique" du personnage (sinon boucle infinie)
+        if ('COMPETENCE' === $condition['type']) {
+            // todo by label and level ?
+            return $personnage->hasCompetenceId((int) $condition['value']);
+        }
+
+        // Parmi les langues "basique" du personnage (sinon boucle infinie)
+        if ('RELIGION' === $condition['type']) {
+            return $personnage->hasReligionId((int) $condition['value'], (int) ($condition['level'] ?? null) ?: null);
         }
 
         // TODO : Unique et ID déjà présent dans personnage_bonus > false
@@ -878,7 +898,9 @@ class PersonnageService
                     // Generate one
                     $ressource = new Ressource();
                     $ressource->setLabel($data['titre'] ?? $bonus->getTitre());
-                    $ressource->setRarete($data['rarete'] ?? 'Commun');
+                    $rarete = new Rarete();
+                    $rarete->setLabel($data['rarete'] ?? 'Commun');
+                    $ressource->setRarete($rarete);
                 }
 
                 $ressourcePersonnage = new PersonnageRessource();
@@ -893,8 +915,10 @@ class PersonnageService
             $ressourcePersonnage = new PersonnageRessource();
             $ressourcePersonnage->setNombre((int) $bonus->getValeur());
             $ressource = new Ressource();
-            $ressource->setLabel($bonus->getTitre());
-            $ressource->setRarete('Commun');
+            $ressource->setLabel($bonus->getTitre().' - '.$bonus->getDescription());
+            $rarete = new Rarete();
+            $rarete->setLabel($data['rarete'] ?? 'Commun');
+            $ressource->setRarete($rarete);
             $ressourcePersonnage->setRessource($ressource);
 
             $this->addRessourceToAll($ressourcePersonnage, $all);
