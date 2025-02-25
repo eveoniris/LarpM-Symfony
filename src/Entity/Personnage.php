@@ -469,8 +469,6 @@ class Personnage extends BasePersonnage implements \Stringable
             $pugilatHistories[] = $pugilatHistory;
         }
 
-
-
         return $pugilatHistories;
     }
 
@@ -1277,6 +1275,24 @@ class Personnage extends BasePersonnage implements \Stringable
         return false;
     }
 
+    public function hasReligionId(int $religionId, ?int $levelId = null): bool
+    {
+        /** @var PersonnagesReligions $religion */
+        foreach ($this->getPersonnagesReligions() as $religion) {
+            if ($religion->getReligion()?->getId() === $religionId) {
+                if (null === $levelId) {
+                    return true;
+                }
+
+                if ((int) $religion->getReligionLevel()?->getId() === $levelId) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Vérifie si le personnage dispose d'un trigger.
      *
@@ -1497,6 +1513,20 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         return null !== $this->getCompetencesFromFamilyType($type);
+    }
+
+    public function hasCompetenceId(int $id): bool
+    {
+        try {
+            foreach ($this->getCompetences() as $competence) {
+                if ($competence->getId() === $id) {
+                    return true;
+                }
+            }
+        } catch (\Exception $e) {
+        }
+
+        return false;
     }
 
     /**
