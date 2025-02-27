@@ -3,12 +3,15 @@
 namespace App\Form\Bonus;
 
 use App\Entity\Bonus;
+use App\Entity\Competence;
 use App\Enum\BonusApplication;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -29,18 +32,17 @@ class BonusForm extends AbstractType
             ->add('description', TextareaType::class, [
                 'required' => false,
                 'label' => 'Description succinte',
+                'help' => "Sera afficher sur les fiches. Cela peut-être le descriptif de ce que fait la compétence",
             ])
-            ->add('type', ChoiceType::class, [
+            ->add('type', EnumType::class, [
                 'required' => false,
-                'choices' => [
-                    'Aucun' => null,
-                    ...BonusType::toArray(),
-                ],
+                'class' => BonusType::class,
                 'label' => 'Type de bonus',
-                ])
+            ])
             ->add('valeur', IntegerType::class, [
                 'required' => false,
                 'label' => 'Valeur du bonus',
+                'help' => '1 pour: une compétence, une langue. 3 pour: trois XP, trois ressources',
             ])
             ->add('application', ChoiceType::class, [
                 'required' => false,
@@ -49,20 +51,30 @@ class BonusForm extends AbstractType
                     ...BonusApplication::toArray(),
                 ],
                 'label' => "Dommaine d'application du bonus",
+                'help' => "Peu usuel, où devrait s'afficher ou être pris en compte le bonus",
             ])
-            ->add('periode', ChoiceType::class, [
+            ->add('periode', EnumType::class, [
                 'required' => false,
-                'choices' => [
-                    'Aucun' => null,
-                    ...BonusPeriode::toArray(),
-
-                ],
+                'class' => BonusPeriode::class,
                 'label' => "Dommaine d'application du bonus",
-                'help' => "Pour un bonus d'origine choisir NATIVE: Le bonus ne sera donné que fonction du 1er groupe de participation. Si le personage est natif du pays du groupe",
+                'help' => "Pour un bonus d'origine choisir NATIVE: Le bonus ne sera donné que si le personage est natif du pays du groupe de sa première participation",
             ])
+        ->add('competence', EntityType::class, [
+            'required' => false,
+            'label' => 'Choisissez la compétence à donner pour type COMPETENCE',
+            'multiple' => false,
+            'autocomplete' => true,
+            'expanded' => false,
+            'class' => Competence::class,
+            'choice_label' => 'label',
+            'placeholder' => 'Aucune',
+            'empty_data' => null,
+        ])
             ->add('json_data', TextareaType::class, [
                 'required' => false,
                 'label' => 'Données fonctionnel (pour un dev)',
+                'help' => "C'est en JSON, via une liste de mot clé et ID. LANGUE, INGREDIENT, GROUPE. Et un mot clé 'condition' pour un tableau de valeur AND. Regarder les bonus existants",
+
             ])->get('json_data')
             ->addModelTransformer(
                 new CallbackTransformer(

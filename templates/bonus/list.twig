@@ -37,9 +37,9 @@
 				<td><a href="{{ path('bonus.detail', {'bonus':bonus.id}) }}">{{ bonus.id }}</a></td>
 				<td>{{ bonus.titre|highlight(pagerService.searchValue) }}</td>
 				<td>{{ bonus.description|highlight(pagerService.searchValue) }}</td>
-				<td>{{ bonus.type|highlight(pagerService.searchValue) }}</td>
+				<td>{{ bonus.type.value|highlight(pagerService.searchValue) }}</td>
 				<td>{{ bonus.valeur }}</td>
-				<td>{{ bonus.periode }}</td>
+				<td>{{ bonus.periode.value }}</td>
 				<td>{{ bonus.application }}</td>
 				<td>
 					<div class="btn-toolbar d-flex justify-content-center" role="toolbar">
