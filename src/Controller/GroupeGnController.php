@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Groupe;
@@ -11,12 +10,13 @@ use App\Form\GroupeGn\GroupeGnForm;
 use App\Form\GroupeGn\GroupeGnOrdreForm;
 use App\Form\GroupeGn\GroupeGnPlaceAvailableForm;
 use App\Form\GroupeGn\GroupeGnResponsableForm;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ParticipantRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -35,7 +35,7 @@ class GroupeGnController extends AbstractController
     public function listAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Groupe $groupe
+        Groupe $groupe,
     ): Response {
         return $this->render('groupeGn/list.twig', [
             'groupe' => $groupe,
@@ -49,8 +49,8 @@ class GroupeGnController extends AbstractController
     public function addAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Groupe $groupe
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
+        Groupe $groupe,
+    ): RedirectResponse|Response {
         $groupeGn = new GroupeGn();
         $groupeGn->setGroupe($groupe);
 
@@ -92,8 +92,8 @@ class GroupeGnController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Groupe $groupe,
-        GroupeGn $groupeGn
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
+        GroupeGn $groupeGn,
+    ): RedirectResponse|Response {
         $redirect = $request->get('redirect');
 
         $form = $this->createForm(GroupeGnForm::class, $groupeGn, ['allow_extra_fields' => true])
@@ -106,7 +106,6 @@ class GroupeGnController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $groupeGn = $form->getData();
             $entityManager->persist($groupeGn);
             $entityManager->flush();
@@ -115,10 +114,10 @@ class GroupeGnController extends AbstractController
             $this->addFlash('success', 'La participation au jeu a été enregistré.');
 
             if ($redirect) {
-                return $this->redirect($redirect);
+                return $this->redirect($redirect . '&tab=domaine&gn='.$groupeGn->getGn()->getId());
             }
 
-            return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupe->getId()]);
+            return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupe->getId(), 'tab' => 'domaine', 'gn' => $groupeGn->getGn()->getId()]);
         }
 
         return $this->render('groupeGn/update.twig', [
@@ -136,8 +135,8 @@ class GroupeGnController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Groupe $groupe,
-        GroupeGn $groupeGn
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
+        GroupeGn $groupeGn,
+    ): RedirectResponse|Response {
         $form = $this->createForm(GroupeGnResponsableForm::class, $groupeGn)
             ->add('responsable', EntityType::class, [
                 'label' => 'Responsable',
@@ -156,7 +155,7 @@ class GroupeGnController extends AbstractController
                     return $qb;
                 },
                 'attr' => [
-                    //'class' => 'selectpicker',
+                    // 'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Responsable',
                 ],
@@ -191,8 +190,8 @@ class GroupeGnController extends AbstractController
     public function participantAddAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        GroupeGn $groupeGn
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
+        GroupeGn $groupeGn,
+    ): RedirectResponse|Response {
         $form = $this->createForm(GroupeGnForm::class, $groupeGn)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
@@ -215,7 +214,7 @@ class GroupeGnController extends AbstractController
                     return $qb;
                 },
                 'attr' => [
-                    ////'class' => 'selectpicker',
+                    // //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Participant',
                 ],
@@ -251,8 +250,8 @@ class GroupeGnController extends AbstractController
     public function joueurAddAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        GroupeGn $groupeGn
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
+        GroupeGn $groupeGn,
+    ): RedirectResponse|Response {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
         $form = $this->createFormBuilder()
@@ -274,7 +273,7 @@ class GroupeGnController extends AbstractController
                     return $qb;
                 },
                 'attr' => [
-                    ////'class' => 'selectpicker',
+                    // //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Participant',
                 ],
@@ -314,8 +313,8 @@ class GroupeGnController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         GroupeGn $groupeGn,
-        Participant $participant
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
+        Participant $participant,
+    ): RedirectResponse|Response {
         $form = $this->createFormBuilder()
             ->add('submit', SubmitType::class, ['label' => 'Retirer'])
             ->getForm();
@@ -351,8 +350,8 @@ class GroupeGnController extends AbstractController
     public function placeAvailableAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        GroupeGn $groupeGn
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
+        GroupeGn $groupeGn,
+    ): RedirectResponse|Response {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
         $form = $this->createForm(GroupeGnPlaceAvailableForm::class, $groupeGn)
@@ -385,7 +384,7 @@ class GroupeGnController extends AbstractController
     #[Route('/groupeGn/{groupeGn}', name: 'groupeGn.groupe')]
     public function groupeAction(
         Request $request,
-        #[MapEntity] GroupeGn $groupeGn
+        #[MapEntity] GroupeGn $groupeGn,
     ): Response {
         $participant = $this->getUser()?->getParticipant($groupeGn->getGn());
 
@@ -428,8 +427,8 @@ class GroupeGnController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Groupe $groupe,
-        GroupeGn $groupeGn
-    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
+        GroupeGn $groupeGn,
+    ): RedirectResponse|Response {
         $form = $this->createForm(GroupeGnOrdreForm::class, $groupeGn, ['groupeGnId' => $groupeGn->getId()])
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 

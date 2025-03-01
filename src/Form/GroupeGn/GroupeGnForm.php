@@ -1,15 +1,17 @@
 <?php
 
-
 namespace App\Form\GroupeGn;
 
 use App\Entity\Gn;
 use App\Entity\GroupeGn;
+use App\Entity\Personnage;
+use App\Repository\PersonnageRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -38,20 +40,24 @@ class GroupeGnForm extends AbstractType
             ->add('code', TextType::class, [
                 'required' => false,
             ])
-            ->add('jeuStrategique', CheckboxType::class, [
+            /*->add('jeuStrategique', CheckboxType::class, [
                 'label' => 'Participe au jeu stratégique',
                 'required' => false,
             ])
             ->add('jeuMaritime', CheckboxType::class, [
                 'label' => 'Participe au jeu maritime',
                 'required' => false,
-            ])
+            ])*/
             ->add('agents', IntegerType::class, [
                 'label' => "Nombre d'agents",
                 'required' => false,
             ])
             ->add('bateaux', IntegerType::class, [
-                'label' => "Nombre de bateaux",
+                'label' => 'Nombre de bateaux',
+                'required' => false,
+            ])
+            ->add('bateaux_localisation', TextareaType::class, [
+                'label' => 'Emplacement des bateaux',
                 'required' => false,
             ])
             ->add('sieges', IntegerType::class, [
@@ -59,8 +65,93 @@ class GroupeGnForm extends AbstractType
                 'required' => false,
             ])
             ->add('initiative', IntegerType::class, [
-                'label' => "Initiative",
+                'label' => 'Initiative',
                 'required' => false,
+            ])
+            ->add('suzerin', EntityType::class, [
+                'label' => 'Suzerin',
+                'choice_label' => 'nom',
+                'autocomplete' => true,
+                'required' => false,
+                'class' => Personnage::class,
+                // On veut tous les personnages vivant du GN (pas que ceux du groupe)
+                'query_builder' => static fn (PersonnageRepository $personnageRepository,
+                ) => $personnageRepository
+                    ->createQueryBuilder('p')
+                    ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
+                    ->innerjoin('parti.groupeGns', 'g', Join::WITH, 'g.id = parti.groupeGn')
+                    ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
+                    ->setParameter('vivant', true)
+                    ->setParameter('groupe_gn_id', $builder->getData()->getId())
+                    ->orderBy('p.nom', 'ASC'),
+            ])
+            ->add('connetable', EntityType::class, [
+                'label' => 'Chef de guerre',
+                'choice_label' => 'nom',
+                'autocomplete' => true,
+                'required' => false,
+                'class' => Personnage::class,
+                // On veut tous les personnages vivant du GN (pas que ceux du groupe)
+                'query_builder' => static fn (PersonnageRepository $personnageRepository,
+                ) => $personnageRepository
+                    ->createQueryBuilder('p')
+                    ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
+                    ->innerjoin('parti.groupeGns', 'g', Join::WITH, 'g.id = parti.groupeGn')
+                    ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
+                    ->setParameter('vivant', true)
+                    ->setParameter('groupe_gn_id', $builder->getData()->getId())
+                    ->orderBy('p.nom', 'ASC'),
+            ])
+            ->add('intendant', EntityType::class, [
+                'label' => 'Intendant',
+                'choice_label' => 'nom',
+                'autocomplete' => true,
+                'required' => false,
+                'class' => Personnage::class,
+                // On veut tous les personnages vivant du GN (pas que ceux du groupe)
+                'query_builder' => static fn (PersonnageRepository $personnageRepository,
+                ) => $personnageRepository
+                    ->createQueryBuilder('p')
+                    ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
+                    ->innerjoin('parti.groupeGns', 'g', Join::WITH, 'g.id = parti.groupeGn')
+                    ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
+                    ->setParameter('vivant', true)
+                    ->setParameter('groupe_gn_id', $builder->getData()->getId())
+                    ->orderBy('p.nom', 'ASC'),
+            ])
+            ->add('navigateur', EntityType::class, [
+                'label' => 'Navigateur',
+                'choice_label' => 'nom',
+                'autocomplete' => true,
+                'required' => false,
+                'class' => Personnage::class,
+                // On veut tous les personnages vivant du GN (pas que ceux du groupe)
+                'query_builder' => static fn (PersonnageRepository $personnageRepository,
+                ) => $personnageRepository
+                    ->createQueryBuilder('p')
+                    ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
+                    ->innerjoin('parti.groupeGns', 'g', Join::WITH, 'g.id = parti.groupeGn')
+                    ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
+                    ->setParameter('vivant', true)
+                    ->setParameter('groupe_gn_id', $builder->getData()->getId())
+                    ->orderBy('p.nom', 'ASC'),
+            ])
+            ->add('camarilla', EntityType::class, [
+                'label' => 'Eminence grise',
+                'choice_label' => 'nom',
+                'autocomplete' => true,
+                'required' => false,
+                'class' => Personnage::class,
+                // On veut tous les personnages vivant du GN (pas que ceux du groupe)
+                'query_builder' => static fn (PersonnageRepository $personnageRepository,
+                ) => $personnageRepository
+                    ->createQueryBuilder('p')
+                    ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
+                    ->innerjoin('parti.groupeGns', 'g', Join::WITH, 'g.id = parti.groupeGn')
+                    ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
+                    ->setParameter('vivant', true)
+                    ->setParameter('groupe_gn_id', $builder->getData()->getId())
+                    ->orderBy('p.nom', 'ASC'),
             ]);
     }
 

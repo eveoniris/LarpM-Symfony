@@ -40,7 +40,16 @@
 
                     <div class="card text-bg mb-3 overflow-auto">
                         <div class="card-header d-flex justify-content-between">
-                            <h4>Suzerain</h4>
+                            <h4>
+                                Suzerain : <small>
+                                    {% if session.suzerin is not null %}
+                                        <a href="{{ path('personnage.detail', {'personnage':session.suzerin.id}) }}">{{ session.suzerin.nom }}</a>
+                                    {% else %}Aucun{% endif %}
+                                </small>
+                            </h4>
+                            <div>
+
+                            </div>
                             <a class="btn btn-secondary"
                                data-bs-toggle="collapse"
                                href="#renommee-{{ session.gn }}"
@@ -83,6 +92,62 @@
                             </table>
                         </div>
                     </div>
+
+                    <div class="card text-bg mb-3 overflow-auto">
+                        <div class="card-header d-flex justify-content-between">
+                            <h4>
+                                Intendant :
+                                {% if session.intendant is not null %}
+                                    <a href="{{ path('personnage.detail', {'personnage':session.intendant.id}) }}">{{ session.intendant.nom }}</a>
+                                {% elseif session.suzerin is not null %}
+                                    <a href="{{ path('personnage.detail', {'personnage':session.suzerin.id}) }}">{{ session.suzerin.nom }}</a>
+                                {% else %}Aucun{% endif %}
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="card text-bg mb-3 overflow-auto">
+                        <div class="card-header d-flex justify-content-between">
+                            <h4>
+                                Chef de guerre :
+                                {% if session.connetable is not null %}
+                                    <a href="{{ path('personnage.detail', {'personnage':session.connetable.id}) }}">{{ session.connetable.nom }}</a>
+                                {% elseif session.suzerin is not null %}
+                                    <a href="{{ path('personnage.detail', {'personnage':session.suzerin.id}) }}">{{ session.suzerin.nom }}</a>
+                                {% else %}Aucun{% endif %}
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="card text-bg mb-3 overflow-auto">
+                        <div class="card-header d-flex justify-content-between">
+                            <h4>
+                               Navigateur :
+                                {% if session.navigateur is not null %}
+                                    <a href="{{ path('personnage.detail', {'personnage':session.navigateur.id}) }}">{{ session.navigateur.nom }}</a>
+                                {% elseif session.suzerin is not null %}
+                                    <a href="{{ path('personnage.detail', {'personnage':session.suzerin.id}) }}">{{ session.suzerin.nom }}</a>
+                                {% else %}Aucun{% endif %}
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="card text-bg mb-3 overflow-auto">
+                        <div class="card-header d-flex justify-content-between">
+                            <h4>
+                                Eminence grice :
+                                {% if session.camarilla is not null %}
+                                    <a href="{{ path('personnage.detail', {'personnage':session.camarilla.id}) }}">{{ session.camarilla.nom }}</a>
+                                {% elseif session.suzerin is not null %}
+                                    <a href="{{ path('personnage.detail', {'personnage':session.suzerin.id}) }}">{{ session.suzerin.nom }}</a>
+                                {% else %}Aucun{% endif %}
+                            </h4>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 pt-2">
 
                     <div class="card text-bg mb-3 overflow-auto">
                         <div class="card-header d-flex justify-content-between">
@@ -134,44 +199,44 @@
                         </div>
                     </div>
 
-                </div>
-
-                <div class="col-md-6 pt-2">
-
                     <div class="card text-bg mb-3 overflow-auto">
                         <div class="card-header d-flex justify-content-between">
                             <h4>Nombre d'agents : {{ session.agents }}</h4>
-                            <a class="btn btn-secondary"
-                               data-bs-toggle="collapse"
-                               href="#agents-{{ session.gn }}"
-                               aria-expanded="false" aria-controls="agents-{{ session.gn }}"
-                               role="button">
-                                <i class="fa-solid fa-circle-info text-info"></i>
-                            </a>
-                        </div>
-
-                        <div class="card-body collapse p-0 collapse" id="agents-{{ session.gn }}">
-                            <p class="m-2 text-info">La fonctionnalité pour obtenir le détail et la position
-                                des bateaux est en cours de développement.</p>
+                            {% if session.agents > 0 %}
+                                <a class="btn btn-secondary"
+                                   data-bs-toggle="collapse"
+                                   href="#agents-{{ session.gn }}"
+                                   aria-expanded="false" aria-controls="agents-{{ session.gn }}"
+                                   role="button">
+                                    <i class="fa-solid fa-circle-info text-info"></i>
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
 
                     <div class="card text-bg mb-3 overflow-auto">
                         <div class="card-header d-flex justify-content-between">
                             <h4>Nombre de bateaux : {{ session.bateaux }}</h4>
-                            <a class="btn btn-secondary"
-                               data-bs-toggle="collapse"
-                               href="#bateaux-{{ session.gn }}"
-                               aria-expanded="false" aria-controls="bateaux-{{ session.gn }}"
-                               role="button">
-                                <i class="fa-solid fa-circle-info text-info"></i>
-                            </a>
+                            {% if session.bateaux > 0 %}
+                                <a class="btn btn-secondary"
+                                   data-bs-toggle="collapse"
+                                   href="#bateaux-{{ session.gn }}"
+                                   aria-expanded="false" aria-controls="bateaux-{{ session.gn }}"
+                                   role="button">
+                                    <i class="fa-solid fa-circle-info text-info"></i>
+                                </a>
+                            {% endif %}
                         </div>
 
-                        <div class="card-body collapse p-0 collapse" id="bateaux-{{ session.gn }}">
-                            <p class="m-2 text-info">La fonctionnalité pour obtenir le détail et la position
-                                des bateaux est en cours de développement.</p>
-                        </div>
+                        {% if session.bateaux > 0 %}
+                            <div class="card-body collapse collapse" id="bateaux-{{ session.gn }}">
+                                {% if session.BateauxLocalisation is not empty %}
+                                    {{ session.BateauxLocalisation }}
+                                {% else %}
+                                    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Aucune localisation connue"} %}
+                                {% endif %}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <div class="card text-bg mb-3 overflow-auto">
