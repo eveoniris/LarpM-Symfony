@@ -73,6 +73,23 @@ abstract class BaseGroupeGn
     #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?Participant $participant;
 
+    #[Column(length: 255, nullable: true)]
+    private ?string $bateaux_localisation = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Personnage $suzerin = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Personnage $connetable = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Personnage $intendant = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Personnage $navigateur = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Personnage $camarilla = null;
     /*
     #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'suzerain_id', referencedColumnName: 'id', nullable: 'false')]
@@ -394,8 +411,75 @@ abstract class BaseGroupeGn
         return $this->groupeGnOrdres;
     }
 
-    /* public function __sleep()
+    public function getBateauxLocalisation(): ?string
     {
-        return ['id', 'groupe_id', 'gn_id', 'responsable_id', 'free', 'code', 'jeu_maritime', 'jeu_strategique', 'place_available'];
-    } */
+        return $this->bateaux_localisation;
+    }
+
+    public function setBateauxLocalisation(?string $bateaux_localisation): static
+    {
+        $this->bateaux_localisation = $bateaux_localisation;
+
+        return $this;
+    }
+
+    public function getSuzerin(): ?Personnage
+    {
+        return $this->suzerin;
+    }
+
+    public function setSuzerin(?Personnage $suzerin): static
+    {
+        $this->suzerin = $suzerin;
+
+        return $this;
+    }
+
+    public function getConnetable(): ?Personnage
+    {
+        return $this->connetable;
+    }
+
+    public function setConnetable(?Personnage $connetable): static
+    {
+        $this->connetable = $connetable;
+
+        return $this;
+    }
+
+    public function getIntendant(): ?Personnage
+    {
+        return $this->intendant;
+    }
+
+    public function setIntendant(?Personnage $intendant): static
+    {
+        $this->intendant = $intendant;
+
+        return $this;
+    }
+
+    public function getNavigateur(): ?Personnage
+    {
+        return $this->navigateur;
+    }
+
+    public function setNavigateur(?Personnage $navigateur): static
+    {
+        $this->navigateur = $navigateur;
+
+        return $this;
+    }
+
+    public function getCamarilla(): ?Personnage
+    {
+        return $this->camarilla;
+    }
+
+    public function setCamarilla(?Personnage $camarilla): static
+    {
+        $this->camarilla = $camarilla;
+
+        return $this;
+    }
 }
