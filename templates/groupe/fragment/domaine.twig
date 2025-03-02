@@ -9,7 +9,7 @@
 
             <div class="d-flex justify-content-end">
                 <div class="w-auto mb-2 p-0">
-                    {% if is_granted('ROLE_SCENARISTE', app.user) %}
+                    {% if canEdit %}
                         <div class="d-flex justify-content-end">
                             <div class="btn-toolbar d-flex justify-content-between m-0 p-0" role="toolbar">
                                 <div class="btn-group m-0 p-0" role="group">
@@ -99,8 +99,6 @@
                                 Intendant :
                                 {% if session.intendant is not null %}
                                     <a href="{{ path('personnage.detail', {'personnage':session.intendant.id}) }}">{{ session.intendant.nom }}</a>
-                                {% elseif session.suzerin is not null %}
-                                    <a href="{{ path('personnage.detail', {'personnage':session.suzerin.id}) }}">{{ session.suzerin.nom }}</a>
                                 {% else %}Aucun{% endif %}
                             </h4>
                         </div>
@@ -112,8 +110,6 @@
                                 Chef de guerre :
                                 {% if session.connetable is not null %}
                                     <a href="{{ path('personnage.detail', {'personnage':session.connetable.id}) }}">{{ session.connetable.nom }}</a>
-                                {% elseif session.suzerin is not null %}
-                                    <a href="{{ path('personnage.detail', {'personnage':session.suzerin.id}) }}">{{ session.suzerin.nom }}</a>
                                 {% else %}Aucun{% endif %}
                             </h4>
                         </div>
@@ -125,8 +121,6 @@
                                Navigateur :
                                 {% if session.navigateur is not null %}
                                     <a href="{{ path('personnage.detail', {'personnage':session.navigateur.id}) }}">{{ session.navigateur.nom }}</a>
-                                {% elseif session.suzerin is not null %}
-                                    <a href="{{ path('personnage.detail', {'personnage':session.suzerin.id}) }}">{{ session.suzerin.nom }}</a>
                                 {% else %}Aucun{% endif %}
                             </h4>
                         </div>
@@ -138,8 +132,6 @@
                                 Eminence grice :
                                 {% if session.camarilla is not null %}
                                     <a href="{{ path('personnage.detail', {'personnage':session.camarilla.id}) }}">{{ session.camarilla.nom }}</a>
-                                {% elseif session.suzerin is not null %}
-                                    <a href="{{ path('personnage.detail', {'personnage':session.suzerin.id}) }}">{{ session.suzerin.nom }}</a>
                                 {% else %}Aucun{% endif %}
                             </h4>
                         </div>

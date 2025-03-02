@@ -6,6 +6,7 @@ use App\Repository\GroupeGnRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[Entity(repositoryClass: GroupeGnRepository::class)]
 class GroupeGn extends BaseGroupeGn
@@ -59,6 +60,15 @@ class GroupeGn extends BaseGroupeGn
         }
 
         return $personnages;
+    }
+
+    public function hasTitle(User|UserInterface $user): bool
+    {
+        return $this->getSuzerin()?->getId() === $user->getId()
+            || $this->getConnetable()?->getId() === $user->getId()
+            || $this->getIntendant()?->getId() === $user->getId()
+            || $this->getCamarilla()?->getId() === $user->getId()
+            || $this->getNavigateur()?->getId() === $user->getId();
     }
 
     public function addAgent(): static

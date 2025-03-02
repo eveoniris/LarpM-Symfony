@@ -404,7 +404,7 @@ class PersonnageController extends AbstractController
         }
 
         if (
-            !($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_SCENARISTE'))
+            !($this->isGranted('ROLE_ADMIN') || $this->isGranted(Role::SCENARISTE->value))
             && $user->getId() !== $personnage->getUser()?->getId()
         ) {
             $this->addFlash('error', "Vous n'avez pas les permissions requises pour modifier une trombine");

@@ -425,7 +425,8 @@ abstract class BaseGroupeGn
 
     public function getSuzerin(): ?Personnage
     {
-        return $this->suzerin;
+        // Par défaut le chef de groupe
+        return $this->suzerin ?? $this->getParticipant()?->getPersonnage();
     }
 
     public function setSuzerin(?Personnage $suzerin): static
@@ -437,7 +438,7 @@ abstract class BaseGroupeGn
 
     public function getConnetable(): ?Personnage
     {
-        return $this->connetable;
+        return $this->connetable ?? $this->getSuzerin();
     }
 
     public function setConnetable(?Personnage $connetable): static
@@ -449,7 +450,7 @@ abstract class BaseGroupeGn
 
     public function getIntendant(): ?Personnage
     {
-        return $this->intendant;
+        return $this->intendant ?? $this->getSuzerin();
     }
 
     public function setIntendant(?Personnage $intendant): static
@@ -461,7 +462,7 @@ abstract class BaseGroupeGn
 
     public function getNavigateur(): ?Personnage
     {
-        return $this->navigateur;
+        return $this->navigateur ?? $this->getSuzerin();
     }
 
     public function setNavigateur(?Personnage $navigateur): static
@@ -473,7 +474,7 @@ abstract class BaseGroupeGn
 
     public function getCamarilla(): ?Personnage
     {
-        return $this->camarilla;
+        return $this->camarilla ?? $this->getSuzerin();
     }
 
     public function setCamarilla(?Personnage $camarilla): static
