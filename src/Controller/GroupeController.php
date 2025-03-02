@@ -7,6 +7,7 @@ use App\Entity\Gn;
 use App\Entity\Groupe;
 use App\Entity\GroupeAllie;
 use App\Entity\GroupeEnemy;
+use App\Entity\GroupeGn;
 use App\Entity\GroupeHasIngredient;
 use App\Entity\GroupeHasRessource;
 use App\Entity\Ingredient;
@@ -1434,7 +1435,7 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/gn/{gn}', name: 'detail.gn')]
     public function detailAction(
         Request $request,
-        #[MapEntity] Groupe $groupe,
+        #[MapEntity] ?Groupe $groupe,
         #[MapEntity] ?Gn $gn = null,
     ): RedirectResponse|Response {
         /*
@@ -1448,6 +1449,7 @@ class GroupeController extends AbstractController
         }
 
         $canSeePrivateDetail = $this->isGranted(Role::SCENARISTE->value);
+        $canEdit = $this->isGranted(Role::SCENARISTE->value);
         // Est-ce un membre du groupe ?
         if (!$canSeePrivateDetail) {
             $responsable = $groupe->getUserRelatedByResponsableId();
@@ -1463,12 +1465,23 @@ class GroupeController extends AbstractController
             }
         }
 
+        // est-ce un personnage titré (peut être extérieur au groupe)
+        if (!$canSeePrivateDetail) {
+            /** @var GroupeGn $groupeGn */
+            $groupeGn = $groupe->getGroupeGns()->last();
+            if ($groupeGn) {
+                $canSeePrivateDetail = $groupeGn->hasTitle($this->getUser());
+                $canEdit = $groupeGn->hasTitle($this->getUser());
+            }
+        }
+
         return $this->render(
             'groupe/detail.twig',
             [
                 'groupe' => $groupe,
                 'tab' => $request->get('tab', 'detail'),
                 'canSeePrivateDetail' => $canSeePrivateDetail,
+                'canEdit' => $canEdit,
                 'gn' => $gn,
             ]
         );

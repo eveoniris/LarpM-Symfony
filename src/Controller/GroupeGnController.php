@@ -29,20 +29,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class GroupeGnController extends AbstractController
 {
     /**
-     * Liste des sessions de jeu pour un groupe.
-     */
-    #[Route('/groupeGn/{groupe}/list/', name: 'groupeGn.list')]
-    public function listAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        Groupe $groupe,
-    ): Response {
-        return $this->render('groupeGn/list.twig', [
-            'groupe' => $groupe,
-        ]);
-    }
-
-    /**
      * Ajout d'un groupe à un jeu.
      */
     #[Route('/groupeGn/{groupe}/add/', name: 'groupeGn.add')]
@@ -85,81 +71,58 @@ class GroupeGnController extends AbstractController
     }
 
     /**
-     * Modification de la participation à un jeu du groupe.
+     * Détail d'un groupe.
      */
-    #[Route('/groupeGn/{groupe}/update/{groupeGn}/', name: 'groupeGn.update')]
-    public function updateAction(
+    #[Route('/groupeGn/{groupeGn}/detail', name: 'groupeGn.detail')]
+    #[Route('/groupeGn/{groupeGn}', name: 'groupeGn.groupe')]
+    public function groupeAction(
         Request $request,
-        EntityManagerInterface $entityManager,
-        Groupe $groupe,
-        GroupeGn $groupeGn,
-    ): RedirectResponse|Response {
-        $redirect = $request->get('redirect');
+        #[MapEntity] GroupeGn $groupeGn,
+    ): Response {
+        $participant = $this->getUser()?->getParticipant($groupeGn->getGn());
 
-        $form = $this->createForm(GroupeGnForm::class, $groupeGn, ['allow_extra_fields' => true])
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
-
-        if ($redirect) {
-            $form->add('redirect', HiddenType::class, ['data' => $redirect, 'mapped' => false]);
+        if (!$participant) {
+            $this->redirectToRoute('app_login');
         }
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $groupeGn = $form->getData();
-            $entityManager->persist($groupeGn);
-            $entityManager->flush();
-            $redirect = $form->getExtraData()['redirect'] ?? null;
-
-            $this->addFlash('success', 'La participation au jeu a été enregistré.');
-
-            if ($redirect) {
-                return $this->redirect($redirect . '&tab=domaine&gn='.$groupeGn->getGn()->getId());
+        $groupe = $groupeGn->getGroupe();
+        $canSeePrivateDetail = $this->isGranted(Role::SCENARISTE->value);
+        // Est-ce un membre du groupe ?
+        if (!$canSeePrivateDetail) {
+            $responsable = $groupe->getUserRelatedByResponsableId();
+            $user = $this->getUser();
+            if ($responsable && $user && $responsable?->getId() === $user?->getId()) {
+                $canSeePrivateDetail = true;
+            } else {
+                /** @var Participant $participant */
+                $participant = $this->getUser()?->getLastParticipant();
+                if ($participant) {
+                    $canSeePrivateDetail = $participant->getGroupeGn()?->getGroupe()->getId() === $groupe->getId();
+                }
             }
-
-            return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupe->getId(), 'tab' => 'domaine', 'gn' => $groupeGn->getGn()->getId()]);
         }
 
-        return $this->render('groupeGn/update.twig', [
-            'groupe' => $groupe,
+        return $this->render('groupe/detail.twig', [
+            'groupe' => $groupeGn->getGroupe(),
+            'tab' => $request->get('tab', 'detail'),
+            'participant' => $participant,
             'groupeGn' => $groupeGn,
-            'form' => $form->createView(),
+            'canSeePrivateDetail' => $canSeePrivateDetail,
+            'gn' => $groupeGn->getGn(),
         ]);
     }
 
     /**
-     * Choisir le responsable.
+     * Modification du jeu de domaine du groupe.
      */
-    #[Route('/groupeGn/{groupe}/responsable/{groupeGn}/', name: 'groupeGn.responsable')]
-    public function responsableAction(
+    #[Route('/groupeGn/{groupe}/jeudedomaine/{groupeGn}', name: 'groupeGn.jeudedomaine')]
+    public function jeudedomaineAction(
         Request $request,
         EntityManagerInterface $entityManager,
         Groupe $groupe,
         GroupeGn $groupeGn,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeGnResponsableForm::class, $groupeGn)
-            ->add('responsable', EntityType::class, [
-                'label' => 'Responsable',
-                'required' => false,
-                'class' => Participant::class,
-                'choice_label' => 'user.etatCivil',
-                'query_builder' => static function (ParticipantRepository $er) use ($groupeGn) {
-                    $qb = $er->createQueryBuilder('p');
-                    $qb->join('p.user', 'u');
-                    $qb->join('p.groupeGn', 'gg');
-                    $qb->join('u.etatCivil', 'ec');
-                    $qb->orderBy('ec.nom', 'ASC');
-                    $qb->where('gg.id = :groupeGnId');
-                    $qb->setParameter('groupeGnId', $groupeGn->getId());
-
-                    return $qb;
-                },
-                'attr' => [
-                    // 'class' => 'selectpicker',
-                    'data-live-search' => 'true',
-                    'placeholder' => 'Responsable',
-                ],
-            ])
+        $form = $this->createForm(GroupeGnOrdreForm::class, $groupeGn, ['groupeGnId' => $groupeGn->getId()])
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -169,75 +132,13 @@ class GroupeGnController extends AbstractController
             $entityManager->persist($groupeGn);
             $entityManager->flush();
 
-            // NOTIFY $app['notify']->newResponsable($groupeGn->getResponsable()->getUser(), $groupeGn);
+            $this->addFlash('success', 'Le jeu de domaine a été enregistré.');
 
-            $this->addFlash('success', 'Le responsable du groupe a été enregistré.');
-
-            return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
         }
 
-        return $this->render('groupeGn/responsable.twig', [
+        return $this->render('groupeGn/jeudedomaine.twig', [
             'groupe' => $groupe,
-            'groupeGn' => $groupeGn,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Ajoute un participant à un groupe.
-     */
-    #[Route('/groupeGn/{groupeGn}/participants/add/', name: 'groupeGn.participants.add')]
-    public function participantAddAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        GroupeGn $groupeGn,
-    ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeGnForm::class, $groupeGn)
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
-
-        $form = $this->createFormBuilder()
-            ->add('participant', EntityType::class, [
-                'label' => 'Nouveau participant',
-                'required' => true,
-                'class' => Participant::class,
-                'choice_label' => 'user.etatCivil',
-                'query_builder' => static function (ParticipantRepository $er) use ($groupeGn) {
-                    $qb = $er->createQueryBuilder('p');
-                    $qb->join('p.user', 'u');
-                    $qb->join('p.gn', 'gn');
-                    $qb->join('u.etatCivil', 'ec');
-                    $qb->where($qb->expr()->isNull('p.groupeGn'));
-                    $qb->andWhere('gn.id = :gnId');
-                    $qb->setParameter('gnId', $groupeGn->getGn()->getId());
-                    $qb->orderBy('ec.nom', 'ASC');
-
-                    return $qb;
-                },
-                'attr' => [
-                    // //'class' => 'selectpicker',
-                    'data-live-search' => 'true',
-                    'placeholder' => 'Participant',
-                ],
-            ])
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer'])
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $data['participant']->setGroupeGn($groupeGn);
-            $entityManager->persist($data['participant']);
-            $entityManager->flush();
-
-            // NOTIFY $app['notify']->newMembre($data['participant']->getUser(), $groupeGn);
-
-            $this->addFlash('success', 'Le joueur a été ajouté à cette session.');
-
-            return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
-        }
-
-        return $this->render('groupeGn/participantAdd.twig', [
             'groupeGn' => $groupeGn,
             'form' => $form->createView(),
         ]);
@@ -301,6 +202,80 @@ class GroupeGnController extends AbstractController
         return $this->render('groupeGn/add.twig', [
             'groupeGn' => $groupeGn,
             'participant' => $participant,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Liste des sessions de jeu pour un groupe.
+     */
+    #[Route('/groupeGn/{groupe}/list/', name: 'groupeGn.list')]
+    public function listAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Groupe $groupe,
+    ): Response {
+        return $this->render('groupeGn/list.twig', [
+            'groupe' => $groupe,
+        ]);
+    }
+
+    /**
+     * Ajoute un participant à un groupe.
+     */
+    #[Route('/groupeGn/{groupeGn}/participants/add/', name: 'groupeGn.participants.add')]
+    public function participantAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        GroupeGn $groupeGn,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(GroupeGnForm::class, $groupeGn)
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+
+        $form = $this->createFormBuilder()
+            ->add('participant', EntityType::class, [
+                'label' => 'Nouveau participant',
+                'required' => true,
+                'class' => Participant::class,
+                'choice_label' => 'user.etatCivil',
+                'query_builder' => static function (ParticipantRepository $er) use ($groupeGn) {
+                    $qb = $er->createQueryBuilder('p');
+                    $qb->join('p.user', 'u');
+                    $qb->join('p.gn', 'gn');
+                    $qb->join('u.etatCivil', 'ec');
+                    $qb->where($qb->expr()->isNull('p.groupeGn'));
+                    $qb->andWhere('gn.id = :gnId');
+                    $qb->setParameter('gnId', $groupeGn->getGn()->getId());
+                    $qb->orderBy('ec.nom', 'ASC');
+
+                    return $qb;
+                },
+                'attr' => [
+                    // //'class' => 'selectpicker',
+                    'data-live-search' => 'true',
+                    'placeholder' => 'Participant',
+                ],
+            ])
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $data['participant']->setGroupeGn($groupeGn);
+            $entityManager->persist($data['participant']);
+            $entityManager->flush();
+
+            // NOTIFY $app['notify']->newMembre($data['participant']->getUser(), $groupeGn);
+
+            $this->addFlash('success', 'Le joueur a été ajouté à cette session.');
+
+            return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
+        }
+
+        return $this->render('groupeGn/participantAdd.twig', [
+            'groupeGn' => $groupeGn,
             'form' => $form->createView(),
         ]);
     }
@@ -378,58 +353,38 @@ class GroupeGnController extends AbstractController
     }
 
     /**
-     * Détail d'un groupe.
+     * Choisir le responsable.
      */
-    #[Route('/groupeGn/{groupeGn}/detail', name: 'groupeGn.detail')]
-    #[Route('/groupeGn/{groupeGn}', name: 'groupeGn.groupe')]
-    public function groupeAction(
-        Request $request,
-        #[MapEntity] GroupeGn $groupeGn,
-    ): Response {
-        $participant = $this->getUser()?->getParticipant($groupeGn->getGn());
-
-        if (!$participant) {
-            $this->redirectToRoute('app_login');
-        }
-
-        $groupe = $groupeGn->getGroupe();
-        $canSeePrivateDetail = $this->isGranted(Role::SCENARISTE->value);
-        // Est-ce un membre du groupe ?
-        if (!$canSeePrivateDetail) {
-            $responsable = $groupe->getUserRelatedByResponsableId();
-            $user = $this->getUser();
-            if ($responsable && $user && $responsable?->getId() === $user?->getId()) {
-                $canSeePrivateDetail = true;
-            } else {
-                /** @var Participant $participant */
-                $participant = $this->getUser()?->getLastParticipant();
-                if ($participant) {
-                    $canSeePrivateDetail = $participant->getGroupeGn()?->getGroupe()->getId() === $groupe->getId();
-                }
-            }
-        }
-
-        return $this->render('groupe/detail.twig', [
-            'groupe' => $groupeGn->getGroupe(),
-            'tab' => $request->get('tab', 'detail'),
-            'participant' => $participant,
-            'groupeGn' => $groupeGn,
-            'canSeePrivateDetail' => $canSeePrivateDetail,
-            'gn' => $groupeGn->getGn(),
-        ]);
-    }
-
-    /**
-     * Modification du jeu de domaine du groupe.
-     */
-    #[Route('/groupeGn/{groupe}/jeudedomaine/{groupeGn}', name: 'groupeGn.jeudedomaine')]
-    public function jeudedomaineAction(
+    #[Route('/groupeGn/{groupe}/responsable/{groupeGn}/', name: 'groupeGn.responsable')]
+    public function responsableAction(
         Request $request,
         EntityManagerInterface $entityManager,
         Groupe $groupe,
         GroupeGn $groupeGn,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeGnOrdreForm::class, $groupeGn, ['groupeGnId' => $groupeGn->getId()])
+        $form = $this->createForm(GroupeGnResponsableForm::class, $groupeGn)
+            ->add('responsable', EntityType::class, [
+                'label' => 'Responsable',
+                'required' => false,
+                'class' => Participant::class,
+                'choice_label' => 'user.etatCivil',
+                'query_builder' => static function (ParticipantRepository $er) use ($groupeGn) {
+                    $qb = $er->createQueryBuilder('p');
+                    $qb->join('p.user', 'u');
+                    $qb->join('p.groupeGn', 'gg');
+                    $qb->join('u.etatCivil', 'ec');
+                    $qb->orderBy('ec.nom', 'ASC');
+                    $qb->where('gg.id = :groupeGnId');
+                    $qb->setParameter('groupeGnId', $groupeGn->getId());
+
+                    return $qb;
+                },
+                'attr' => [
+                    // 'class' => 'selectpicker',
+                    'data-live-search' => 'true',
+                    'placeholder' => 'Responsable',
+                ],
+            ])
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -439,12 +394,89 @@ class GroupeGnController extends AbstractController
             $entityManager->persist($groupeGn);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Le jeu de domaine a été enregistré.');
+            // NOTIFY $app['notify']->newResponsable($groupeGn->getResponsable()->getUser(), $groupeGn);
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            $this->addFlash('success', 'Le responsable du groupe a été enregistré.');
+
+            return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
-        return $this->render('groupeGn/jeudedomaine.twig', [
+        return $this->render('groupeGn/responsable.twig', [
+            'groupe' => $groupe,
+            'groupeGn' => $groupeGn,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Modification de la participation à un jeu du groupe.
+     */
+    #[Route('/groupeGn/{groupe}/update/{groupeGn}/', name: 'groupeGn.update')]
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Groupe $groupe,
+        GroupeGn $groupeGn,
+    ): RedirectResponse|Response {
+        $redirect = $request->get('redirect');
+
+        // Seul un admin ou le suzerin peu changer cela
+        if (!$this->isGranted(Role::REGLE->value) || !$this->getUser()?->getId() === $groupeGn->getSuzerin()?->getId()) {
+            $this->addFlash('success', "Vous n'êtes pas autorisé à accéder à cette page");
+
+            if ($redirect) {
+                return $this->redirect($redirect.'&tab=domaine&gn='.$groupeGn->getGn()->getId());
+            }
+
+            return $this->redirectToRoute(
+                'groupeGn.list',
+                ['groupe' => $groupe->getId(), 'tab' => 'domaine', 'gn' => $groupeGn->getGn()->getId()]
+            );
+        }
+
+        $form = $this->createForm(GroupeGnForm::class, $groupeGn, ['allow_extra_fields' => true])
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
+
+        if ($redirect) {
+            $form->add('redirect', HiddenType::class, ['data' => $redirect, 'mapped' => false]);
+        }
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var GroupeGn $groupeGn */
+            $groupeGn = $form->getData();
+
+            // Titre si territoire
+            if (null === $groupeGn->getGroupe()->getTerritoire()) {
+                if ($groupeGn->getSuzerin() || $groupeGn->getIntendant() || $groupeGn->getCamarilla() || $groupeGn->getConnetable() || $groupeGn->getNavigateur()) {
+                    $this->addFlash('error', 'Les titres ne sont possibles que si le groupe à un territoire');
+                }
+                $groupeGn->setSuzerin(null);
+                $groupeGn->setIntendant(null);
+                $groupeGn->setCamarilla(null);
+                $groupeGn->setConnetable(null);
+                $groupeGn->setNavigateur(null);
+            }
+
+
+            $entityManager->persist($groupeGn);
+            $entityManager->flush();
+            $redirect = $form->getExtraData()['redirect'] ?? null;
+
+            $this->addFlash('success', 'La participation au jeu a été enregistré.');
+
+            if ($redirect) {
+                return $this->redirect($redirect.'&tab=domaine&gn='.$groupeGn->getGn()->getId());
+            }
+
+            return $this->redirectToRoute(
+                'groupeGn.list',
+                ['groupe' => $groupe->getId(), 'tab' => 'domaine', 'gn' => $groupeGn->getGn()->getId()]
+            );
+        }
+
+        return $this->render('groupeGn/update.twig', [
             'groupe' => $groupe,
             'groupeGn' => $groupeGn,
             'form' => $form->createView(),
