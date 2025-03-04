@@ -1007,7 +1007,6 @@ class GroupeController extends AbstractController
      * Liste des groupes.
      */
     #[Route('', name: 'list')]
-    #[IsGranted('ROLE_ADMIN')]
     public function listAction(
         Request $request,
         PagerService $pagerService,
