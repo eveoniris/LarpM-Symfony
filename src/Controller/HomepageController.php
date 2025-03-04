@@ -293,6 +293,7 @@ class HomepageController extends AbstractController
     /**
      * Statistiques du projet.
      */
+    #[Route('/metrics', name: 'dev.metrics')]
     public function metricsAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         return $this->render('homepage/metrics/report.html');
