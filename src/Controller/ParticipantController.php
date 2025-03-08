@@ -851,7 +851,7 @@ class ParticipantController extends AbstractController
         // j'ajoute ici certains champs du formulaires (les classes)
         // car j'ai besoin des informations du groupe pour les alimenter
         $form = $this->createForm(PersonnageForm::class, $personnage)
-            ->add('classe', 'entity', [
+            ->add('classe', EntityType::class, [
                 'label' => 'Classes disponibles',
                 'choice_label' => 'label',
                 'class' => Classe::class,
@@ -909,9 +909,9 @@ class ParticipantController extends AbstractController
             $entityManager->persist($historique);
 
             // ajout des compétences acquises à la création
-            $personnageService->addClasseCompetencesFamilyCreation($personnage);
-            if ($personnageService->hasErrors()) {
-                $this->addFlash('success', $personnageService->getErrorsAsString());
+            $competenceHandler = $personnageService->addClasseCompetencesFamilyCreation($personnage);
+            if ($competenceHandler?->hasErrors()) {
+                $this->addFlash('success', $competenceHandler?->getErrorsAsString());
 
                 return $this->redirectToRoute('homepage', [], 303);
             }
@@ -1060,9 +1060,9 @@ class ParticipantController extends AbstractController
             $entityManager->persist($historique);
 
             // ajout des compétences acquises à la création
-            $personnageService->addClasseCompetencesFamilyCreation($personnage);
-            if ($personnageService->hasErrors()) {
-                $this->addFlash('success', $personnageService->getErrorsAsString());
+            $competenceHandler = $personnageService->addClasseCompetencesFamilyCreation($personnage);
+            if ($competenceHandler?->hasErrors()) {
+                $this->addFlash('success', $competenceHandler?->getErrorsAsString());
 
                 return $this->redirectToRoute('homepage', [], 303);
             }

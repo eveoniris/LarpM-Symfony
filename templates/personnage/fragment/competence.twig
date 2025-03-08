@@ -17,6 +17,12 @@
                 {'path' : path('personnage.admin.delete.competence', {'personnage': personnage.id}), 'label': 'Retirer la dernière compétence acquise' },
             ]
         } %}
+    {% else %}
+        <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
+            <a class="btn btn-secondary"  data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ajouter une compétence"
+               href="{{ path('personnage.admin.add.competence', {'personnage': personnage.id}) }}"><i
+                        class="fa fa-plus"></i> Ajouter</a>
+        </div>
     {% endif %}
 
     <ul class="list-group">
@@ -34,6 +40,7 @@
             {% if loop.first or currentFamillyId != competence.competenceFamily.id %}
                 <li class="list-group-item">
                 <h5>
+                    {{ competence.competenceFamily.label }}
                     {% if personnage.classe.isFavoriteCompetenceFamily(competence.competenceFamily) %}
                         <i class="fa fa-star text-success" data-toggle="tooltip" data-placement="top"
                            title="Favorite"></i>

@@ -28,7 +28,9 @@
                     <tr>
                         <th class="text-center col-sm-2">Année</th>
                         <th class="text-center">Évènement</th>
+                        {% if isAdmin %}
                         <th class="text-center">Action</th>
+                        {% endif %}
                     </tr>
                     </thead>
                     <tbody>
@@ -36,12 +38,14 @@
                         <tr>
                             <td class="text-center">{{ personnageChronologie.annee }}</td>
                             <td>{{ personnageChronologie.evenement }}</td>
+                            {% if isAdmin %}
                             <td class="text-center">
                                 <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                    title="Supprimer"
                                    href="{{ path('personnage.admin.delete.chronologie', {'personnage':personnage.id, 'personnageChronologie': personnageChronologie.id}) }}"><i
                                             class="fa fa-eraser"></i></a>
                             </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>

@@ -41,6 +41,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\DisabledException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
@@ -57,7 +58,7 @@ class UserController extends AbstractController
     public function UserHasBilletDetailAction(
         EntityManagerInterface $entityManager,
         Request $request,
-        UserHasBillet $UserHasBillet
+        UserHasBillet $UserHasBillet,
     ) {
         if ($UserHasBillet->getUser() != $this->getUser()) {
             $this->addFlash('error', 'Vous ne pouvez pas acceder à cette information');
@@ -190,7 +191,7 @@ class UserController extends AbstractController
         Request $request,
         UserRepository $userRepository,
         UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
         $form = $this->createForm(UserNewForm::class, [])
             ->add('save', SubmitType::class, ['label' => "Créer l'utilisateur"]);
@@ -271,7 +272,7 @@ class UserController extends AbstractController
         EntityManagerInterface $entityManager,
         $token,
         #[MapEntity] User $user,
-        Security $security
+        Security $security,
     ): RedirectResponse {
         if ($user->getConfirmationToken() !== $token) {
             $this->addFlash('alert', 'Désolé, votre lien de confirmation a expiré.');
@@ -301,19 +302,22 @@ class UserController extends AbstractController
      *
      * @throws NotFoundHttpException if no User is found with that ID
      */
-    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access to this.')]
+    #[IsGranted('ROLE_USER', message: 'You are not allowed to access to this.')]
     #[Route('/user/{user}/edit', name: 'user.edit')]
     public function editAction(
         Request $request,
         #[MapEntity] ?User $user,
         UserPasswordHasherInterface $passwordHasher,
-        UserRepository $repository
+        UserRepository $repository,
     ): Response {
+
         $errors = [];
 
         if (!$user) {
             throw new NotFoundHttpException('No User was found with that ID.');
         }
+
+        $this->hasAccess($user);
 
         if ($request->isMethod('POST')) {
             $user->setEmail($request->request->get('email'));
@@ -382,7 +386,7 @@ class UserController extends AbstractController
         $etatCivil = $this->getUser()->getEtatCivil();
 
         if (!$etatCivil) {
-            $etatCivil = new \App\Entity\EtatCivil();
+            $etatCivil = new EtatCivil();
         }
 
         $form = $this->createForm(EtatCivilForm::class, $etatCivil)
@@ -415,7 +419,7 @@ class UserController extends AbstractController
     public function fedegnAction(
         EntityManagerInterface $entityManager,
         Request $request,
-        FedegnManager $fedegnManager
+        FedegnManager $fedegnManager,
     ): Response {
         $etatCivil = $this->getUser()->getEtatCivil();
 
@@ -431,7 +435,7 @@ class UserController extends AbstractController
         EntityManagerInterface $entityManager,
         Request $request,
         MailerInterface $mailer,
-        ContainerBagInterface $params
+        ContainerBagInterface $params,
     ): RedirectResponse|Response {
         if (false !== $this->isGranted('ROLE_USER') && null !== $this->getUser()?->getId()) {
             $this->addFlash(
@@ -549,7 +553,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid() && (!$gn->getBesoinValidationCi(
-                ) || 'ok' == $request->request->get('acceptCi'))) {
+        ) || 'ok' == $request->request->get('acceptCi'))) {
             $participant = new Participant();
             $participant->setUser($this->getUser());
             $participant->setGn($gn);
@@ -744,7 +748,7 @@ class UserController extends AbstractController
      * Choix du personnage par défaut de l'utilisateur.
      */
     #[Route('/user/{user}/personage/default', name: 'user.personnageDefault')]
-    public function personnageDefaultAction(EntityManagerInterface $entityManager, Request $request,#[MapEntity] User $user)
+    public function personnageDefaultAction(EntityManagerInterface $entityManager, Request $request, #[MapEntity] User $user)
     {
         if (!$this->isGranted('ROLE_ADMIN') && !$user === $this->getUser()) {
             $this->addFlash('error', 'Vous n\'avez pas les droits nécessaires pour cette opération.');
@@ -835,7 +839,6 @@ class UserController extends AbstractController
 
                     return $this->redirectToRoute('homepage');
                 }
-
             } catch (\InvalidArgumentException $e) {
                 $error = $e->getMessage();
             }
@@ -887,7 +890,7 @@ class UserController extends AbstractController
         string $token,
         ContainerBagInterface $params,
         UserPasswordHasherInterface $passwordHasher,
-        Security $security
+        Security $security,
     ): Response {
         if (!$this->isPasswordResetEnabled) {
             throw new NotFoundHttpException('Password resetting is not enabled.');
@@ -909,7 +912,7 @@ class UserController extends AbstractController
 
         $user = $userRepository->findOneByConfirmationToken($token);
 
-        if (!$user || $user->isPasswordResetRequestExpired((int)$params->get('passwordTokenTTL'))) {
+        if (!$user || $user->isPasswordResetRequestExpired((int) $params->get('passwordTokenTTL'))) {
             $this->addFlash('alert', 'Sorry, your password reset link has expired.');
 
             // throw new GoneHttpException('This action is expired');
@@ -955,8 +958,6 @@ class UserController extends AbstractController
                 $user->setPassword($hashedPassword);
                 $user->setConfirmationToken(null);
                 $user->setEnabled(true);
-
-
 
                 $entityManager->persist($user);
                 $entityManager->flush();
@@ -1036,9 +1037,9 @@ class UserController extends AbstractController
 
         // trouve tous les rôles
         return $this->render('user/right.twig', [
-                'Users' => $Users,
-                'roles' => $app['larp.manager']->getAvailableRoles(),
-            ]
+            'Users' => $Users,
+            'roles' => $app['larp.manager']->getAvailableRoles(),
+        ]
         );
     }
 
@@ -1086,8 +1087,6 @@ class UserController extends AbstractController
     /**
      * Création d'un utilisateur.
      *
-     * @return User
-     *
      * @throws \InvalidArgumentException
      */
     protected function createUserFromRequest(EntityManagerInterface $entityManager, Request $request): User
@@ -1127,5 +1126,49 @@ class UserController extends AbstractController
         }
 
         return $User;
+    }
+
+    protected function hasAccess(User $user, array $roles = []): void
+    {
+        /** @var User $loggedUser */
+        $loggedUser = $this->getUser();
+        // Doit être connecté
+        if (!$loggedUser || !$this->isGranted(Role::USER->value)) {
+            throw new AccessDeniedException();
+        }
+
+        // Est l'interprète du personnage
+        if ($user->getId() === $loggedUser->getId()) {
+            return;
+        }
+
+        // Est un niveau admin suffisant
+        if ($roles) {
+            /** @var Role $role */
+            foreach ($roles as $role) {
+                if ($this->isGranted($role->value)) {
+                    return;
+                }
+            }
+        }
+
+        /*
+         * Autre option :
+         * if (!$user) {
+         * $this->addFlash('error', 'Désolé, vous devez être identifié pour accéder à cette page');
+         * $this->redirectToRoute('app_login', [], 303);
+         * }
+         *
+         * if (
+         * !($this->isGranted('ROLE_ADMIN') || $this->isGranted(Role::SCENARISTE->value))
+         * && $user->getId() !== $personnage->getUser()?->getId()
+         * ) {
+         * $this->addFlash('error', "Vous n'avez pas les permissions requises pour modifier une trombine");
+         * $this->redirect($request->headers->get('referer'));
+         * $this->redirectToRoute('homepage', [], 303);
+         * }
+         */
+
+        throw new AccessDeniedException();
     }
 }

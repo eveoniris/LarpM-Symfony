@@ -91,6 +91,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Twig\Environment;
 
@@ -911,16 +912,19 @@ class PersonnageController extends AbstractController
     /**
      * Affiche le détail d'un personnage (pour les orgas).
      */
+    // #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     #[Route('/{personnage}/admin', name: 'admin.detail')]
     #[Route('/{personnage}', name: 'detail')]
     #[Route('/admin/{personnage}/detail', name: 'admin.detail')] // larp V1 url
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
-    public function adminDetailAction(
+    #[IsGranted(Role::USER->value)]
+    public function detailAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
         Environment $twig,
     ): Response {
+        $this->hasAccess($personnage); // TODO une version "résumer pour tous" ?
+
         $descendants = $entityManager->getRepository(Personnage::class)->findDescendants($personnage);
         $tab = $request->get('tab', 'general');
         if (!$twig->getLoader()->exists('personnage/fragment/tab_'.$tab.'.twig')) {
@@ -1043,9 +1047,9 @@ class PersonnageController extends AbstractController
             $entityManager->persist($historique);
 
             // ajout des compétences acquises à la création
-            $personnageService->addClasseCompetencesFamilyCreation($personnage);
-            if ($personnageService->hasErrors()) {
-                $this->addFlash('success', $personnageService->getErrorsAsString());
+            $competenceHandler = $personnageService->addClasseCompetencesFamilyCreation($personnage);
+            if ($competenceHandler?->hasErrors()) {
+                $this->addFlash('success', $competenceHandler?->getErrorsAsString());
 
                 return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
             }
@@ -1177,14 +1181,16 @@ class PersonnageController extends AbstractController
      * Modification du personnage.
      */
     #[Route('/{personnage}/update', name: 'update')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(Role::USER->value)]
     public function adminUpdateAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
+
         $editClass = PersonnageEditForm::class;
-        if ($this->isGranted(Role::SCENARISTE->value)) {
+        if ($this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value)) {
             $editClass = PersonnageUpdateForm::class;
         }
 
@@ -2578,13 +2584,15 @@ class PersonnageController extends AbstractController
     #[Route('/{personnage}/addCompetence', name: 'admin.add.competence')]
     #[Route('/{personnage}/addCompetence', name: 'add.competence')]
     #[Route('/{personnage}/competence/add', name: 'add.competence')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(Role::USER->value)]
     public function adminAddCompetenceAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
         PersonnageService $personnageService,
     ): RedirectResponse|Response {
+        $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
+
         $availableCompetences = $personnageService->getAvailableCompetences($personnage);
         $referer = $request->headers->get('referer');
 
@@ -2869,5 +2877,49 @@ class PersonnageController extends AbstractController
             ],
             entityCallback: $entityCallback
         );
+    }
+
+    protected function hasAccess(Personnage $personnage, array $roles = []): void
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        // Doit être connecté
+        if (!$user || !$this->isGranted(Role::USER->value)) {
+            throw new AccessDeniedException();
+        }
+
+        // Est l'interprète du personnage
+        if ($personnage->getUser()?->getId() === $user->getId()) {
+            return;
+        }
+
+        // Est un niveau admin suffisant
+        if ($roles) {
+            /** @var Role $role */
+            foreach ($roles as $role) {
+                if ($this->isGranted($role->value)) {
+                    return;
+                }
+            }
+        }
+
+        /*
+         * Autre option :
+         * if (!$user) {
+         * $this->addFlash('error', 'Désolé, vous devez être identifié pour accéder à cette page');
+         * $this->redirectToRoute('app_login', [], 303);
+         * }
+         *
+         * if (
+         * !($this->isGranted('ROLE_ADMIN') || $this->isGranted(Role::SCENARISTE->value))
+         * && $user->getId() !== $personnage->getUser()?->getId()
+         * ) {
+         * $this->addFlash('error', "Vous n'avez pas les permissions requises pour modifier une trombine");
+         * $this->redirect($request->headers->get('referer'));
+         * $this->redirectToRoute('homepage', [], 303);
+         * }
+         */
+
+        throw new AccessDeniedException();
     }
 }
