@@ -28,14 +28,16 @@
                                        title="Secret"></i> -
                                 {% endif %}
                                 {{ personnageReligion.religion.label }}
-                            <span class="badge display-6 rounded-pill text-bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
+                                <span class="badge display-6 rounded-pill text-bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
                             </div>
                         </div>
                         <div>
                             <div class="btn-group">
-                                <a href="{{ path('personnage.admin.delete.religion', {'personnage': personnage.id, 'personnageReligion': personnageReligion.id }) }}"
-                                   class="btn btn-sm btn-secondary" title="supprimer" data-toggle="tooltip"
-                                   data-placement="top"><i class="fa-solid fa-eraser"></i> supprimer</a>
+                                {% if isAdmin %}
+                                    <a href="{{ path('personnage.admin.delete.religion', {'personnage': personnage.id, 'personnageReligion': personnageReligion.id }) }}"
+                                       class="btn btn-sm btn-secondary" title="supprimer" data-toggle="tooltip"
+                                       data-placement="top"><i class="fa-solid fa-eraser"></i> supprimer</a>
+                                {% endif %}
                                 {% if tab is defined %}
                                     <a href="#sommaire_religion" class="btn btn-sm btn-secondary" title="sommaire"
                                        data-toggle="tooltip"
@@ -84,16 +86,16 @@
 
                 </div>
             {% else %}
-            <div class="card-header bg-body-secondary" id="religion_no">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <div class="card-title">
-                            Sans
-                            <span class="badge display-6 rounded-pill text-bg-secondary">Fervent</span>
+                <div class="card-header bg-body-secondary" id="religion_no">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="card-title">
+                                Sans
+                                <span class="badge display-6 rounded-pill text-bg-secondary">Fervent</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
             {% endfor %}
         </div>

@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\Bonus;
 use App\Entity\Classe;
 use App\Entity\Competence;
-use App\Entity\CompetenceAttribute;
 use App\Entity\CompetenceFamily;
 use App\Entity\ExperienceGain;
 use App\Entity\ExperienceUsage;
@@ -59,29 +58,6 @@ class CompetenceService
         return $this;
     }
 
-    public function getService(string $class): self
-    {
-        return new $class(
-            $this->entityManager,
-            $this->urlGenerator,
-        );
-    }
-
-    public function getCompetenceService(Competence $competence): self
-    {
-        $service = match ($competence->getCompetenceFamily()?->getLabel()) {
-            CompetenceFamilyType::PRIESTHOOD->value => $this->getService(PretriseService::class),
-            CompetenceFamilyType::NOBILITY->value => $this->getService(NoblesseService::class),
-            CompetenceFamilyType::ALCHEMY->value => $this->getService(AlchimieService::class),
-            CompetenceFamilyType::MAGIC->value => $this->getService(MagieService::class),
-            CompetenceFamilyType::CRAFTSMANSHIP->value => $this->getService(ArtisantService::class),
-            CompetenceFamilyType::LITERATURE->value => $this->getService(LitteratureService::class),
-            default => $this,
-        };
-
-        return $service->setCompetence($competence);
-    }
-
     public function reset(): self
     {
         return $this->resetErrors()
@@ -92,59 +68,9 @@ class CompetenceService
             ->setCompetenceFamily(null);
     }
 
-    /**
-     * Consomme les points d'xp d'un personnage et historise l'usage
-     * Si le cout vaut 0 alors la compétence a été offerte.
-     */
-    public function consumeXP(int $cout): self
+    final public function resetErrors(): self
     {
-        $this->getPersonnage()->setXp($this->getPersonnage()->getXp() - $cout);
-
-        $historique = new ExperienceUsage();
-        $historique->setOperationDate(new \DateTime('NOW'));
-        $historique->setXpUse($cout);
-        $historique->setCompetence($this->getCompetence());
-        $historique->setPersonnage($this->getPersonnage());
-        $this->entityManager->persist($historique);
-
-        return $this;
-    }
-
-    public function giveXP(int $cout, string $explanation): self
-    {
-        $this->getPersonnage()->setXp($this->getPersonnage()->getXp() + $cout);
-
-        $historique = new ExperienceGain();
-        $historique->setOperationDate(new \DateTime('NOW'));
-        $historique->setXpGain($cout);
-        $historique->setExplanation($explanation);
-        $historique->setPersonnage($this->getPersonnage());
-        $this->entityManager->persist($historique);
-
-        return $this;
-    }
-
-    public function addRenomme(int $value, string $explication): self
-    {
-        $this->getPersonnage()->addRenomme($value);
-        $renommeHistory = new RenommeHistory();
-        $renommeHistory->setRenomme($value);
-        $renommeHistory->setExplication($explication);
-        $renommeHistory->setPersonnage($this->getPersonnage());
-        $this->entityManager->persist($renommeHistory);
-
-        return $this;
-    }
-
-    public function removeRenomme(int $value, string $explication): self
-    {
-        $this->getPersonnage()->removeRenomme($value);
-        $renommeHistory = new RenommeHistory();
-        $renommeHistory->setDate(new \DateTime('NOW'));
-        $renommeHistory->setRenomme($value);
-        $renommeHistory->setExplication($explication);
-        $renommeHistory->setPersonnage($this->getPersonnage());
-        $this->entityManager->persist($renommeHistory);
+        $this->errors = [];
 
         return $this;
     }
@@ -173,33 +99,77 @@ class CompetenceService
         return $this;
     }
 
-    public function removeCompetence(int $cout = self::COUT_DEFAUT): self
+    /**
+     * Indique si une class de compétence héritée peut être apprise
+     * Si le cout n'est pas précisé, on prend le cout par défaut de la compétence pour la classe du personnage
+     * Si le cout vaut 0 on considère alors que la compétence est gratuite ou offerte.
+     */
+    final public function canLearn(int $cout = self::COUT_DEFAUT): bool
     {
-        // Pré-update en base
-        $this->getPersonnage()->removeCompetence($this->getCompetence());
-        $this->getCompetence()->removePersonnage($this->getPersonnage());
-
-        // Consommation d'expérience et historisation
-        $this->giveXP($cout, 'Suppression de la compétence '.$this->getCompetence()->getLabel());
-
-        // Retrait des bonus
-        $this->removeBonus();
-
-        // Enregistrement en base du lot
-        $this->entityManager->persist($this->getCompetence());
-        $this->entityManager->persist($this->getPersonnage());
-        $this->entityManager->flush();
-
-        return $this;
-    }
-
-    public function getClasse(): Classe
-    {
-        if (!isset($this->classe)) {
-            throw new \RuntimeException('Classe is not set');
+        if ($cout < 0) {
+            $cout = $this->getCompetenceCout();
         }
 
-        return $this->classe;
+        // Si un personnage à un XP négatif. Il ne peut apprendre que des gratuites
+        if ($cout > 0 && $this->getPersonnage()->getXp() - $cout < 0) {
+            $this->addError(
+                "Vous n'avez pas suffisamment de points d'expérience pour acquérir cette compétence.",
+                self::ERR_CODE_XP
+            );
+        }
+
+        $this->validateApprendre();
+
+        return !$this->hasErrors();
+    }
+
+    /**
+     * Calcul le cout d'une compétence en fonction de la classe du personnage.
+     */
+    public function getCompetenceCout(): int
+    {
+        $bonusCout = $this->getBonusCout();
+
+        if (Level::NIVEAU_1 === $this->getCompetenceLevel()->getIndex()
+            && $this->getClasse()->getCompetenceFamilyCreations()->contains($this->getCompetenceFamily())
+        ) {
+            return 0;
+        }
+
+        if ($this->getClasse()->getCompetenceFamilyFavorites()->contains($this->getCompetenceFamily())) {
+            return max($this->getCompetenceLevel()->getCoutFavori() - $bonusCout, 0);
+        }
+
+        if ($this->getClasse()->getCompetenceFamilyNormales()->contains($this->getCompetenceFamily())) {
+            return max($this->getCompetenceLevel()->getCout() - $bonusCout, 0);
+        }
+
+        return max($this->getCompetenceLevel()->getCoutMeconu() - $bonusCout, 0);
+    }
+
+    public function getBonusCout(): int
+    {
+        return $this->getOrigineBonusCout()
+            + $this->getMerveilleBonusCout()?->getBonusXp()
+            + $this->getApprentissageBonusCout()?->getBonusXp();
+    }
+
+    public function getOrigineBonusCout(): int
+    {
+        $count = 0;
+
+        // On ne prend que les bonus encore actif
+        foreach ($this->getPersonnage()->getOrigine()?->getValideOrigineBonus() as $origineBonus) {
+            $bonus = $origineBonus->getBonus();
+            // Dans ce service, nous ne traitons que les bonus de type XP
+            // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
+            if ($bonus->isXp() && (null === $bonus->getCompetence() || $this->getCompetence()->getId(
+            ) === $bonus->getCompetence()->getId())) {
+                $count += $bonus->getValeur();
+            }
+        }
+
+        return $count;
     }
 
     public function getCompetence(): Competence
@@ -211,13 +181,58 @@ class CompetenceService
         return $this->competence;
     }
 
-    public function getCompetenceFamily(): CompetenceFamily
+    public function setCompetence(?Competence $competence): self
     {
-        if (!isset($this->competenceFamily)) {
-            throw new \RuntimeException('Competence family is not set');
+        $this->competence = $competence;
+        if ($competence) {
+            $this->setCompetenceFamily($competence->getCompetenceFamily());
+            $this->setCompetenceLevel($competence->getLevel());
         }
 
-        return $this->competenceFamily;
+        return $this;
+    }
+
+    public function getMerveilleBonusCout(): ?object // PersonnageApprentissage
+    {
+        /*
+        * TODO
+        * Table merveille_bonus [id PK, merveille_id, bonus_id, status, date_creation, date_expiration, status, ?admin_id]
+         * La date d'expiration fonction du status doit permettre de conservé ou non un bonus sur un personnage qui
+         * à eu ce bonus qui ne serait plus disponible pour de nouveau joueur
+         *  Table merveille [] // TODO
+         *
+         * A voir si le gain XP en bonus est depuis "bonus" ou depuis origin_bonus ?
+        *
+        * */
+        return null;
+    }
+
+    public function getApprentissageBonusCout(): ?object // PersonnageApprentissage
+    {
+        /*
+         * TODO
+         * Table personnage_apprentissage [id PK, date, personnage_id, teacher_id FK, admin_id FK, competence_family_id, status, date_usage, bonus_xp, ?gn_id, ?participant_id]
+         * S'il existe un apprentissage pas encore utilisé retourner son Objet (il sera à mettre à jour
+         *
+         * */
+
+        return null;
+    }
+
+    public function getClasse(): Classe
+    {
+        if (!isset($this->classe)) {
+            throw new \RuntimeException('Classe is not set');
+        }
+
+        return $this->classe;
+    }
+
+    public function setClasse(?Classe $classe): self
+    {
+        $this->classe = $classe;
+
+        return $this;
     }
 
     public function getCompetenceLevel(): Level
@@ -227,6 +242,93 @@ class CompetenceService
         }
 
         return $this->competenceLevel;
+    }
+
+    public function setCompetenceLevel(?Level $competenceLevel): self
+    {
+        $this->competenceLevel = $competenceLevel;
+
+        return $this;
+    }
+
+    final public function addError($error, ?int $code = null): void
+    {
+        $code ? $this->errors[$code] = $error : $this->errors[] = $error;
+    }
+
+    /**
+     * Étendre cette méthode et appeler $this->addError() au besoin.
+     */
+    protected function validateApprendre(): void
+    {
+    }
+
+    final public function hasErrors(): bool
+    {
+        return !empty($this->errors);
+    }
+
+    /**
+     * Consomme les points d'xp d'un personnage et historise l'usage
+     * Si le cout vaut 0 alors la compétence a été offerte.
+     */
+    public function consumeXP(int $cout): self
+    {
+        $this->getPersonnage()->setXp($this->getPersonnage()->getXp() - $cout);
+
+        $historique = new ExperienceUsage();
+        $historique->setOperationDate(new \DateTime('NOW'));
+        $historique->setXpUse($cout);
+        $historique->setCompetence($this->getCompetence());
+        $historique->setPersonnage($this->getPersonnage());
+        $this->entityManager->persist($historique);
+
+        return $this;
+    }
+
+    /**
+     * Donne les bonus de la compétence au personnage.
+     */
+    final public function giveBonus(): void
+    {
+        if (!$this->canGetBonus()) {
+            return;
+        }
+
+        $this->give();
+    }
+
+    /**
+     * Détermine si le personnage peut recevoir des bonus.
+     */
+    public function canGetBonus(): bool
+    {
+        return $this->hasBonus();
+    }
+
+    /**
+     * Indique si une class de compétence héritée donne droit à des bonus.
+     */
+    public function hasBonus(): bool
+    {
+        return $this->hasBonus;
+    }
+
+    protected function give(): void
+    {
+        throw new \RuntimeException('Method "give" is not implemented for competence:'.static::class);
+    }
+
+    public function addRenomme(int $value, string $explication): self
+    {
+        $this->getPersonnage()->addRenomme($value);
+        $renommeHistory = new RenommeHistory();
+        $renommeHistory->setRenomme($value);
+        $renommeHistory->setExplication($explication);
+        $renommeHistory->setPersonnage($this->getPersonnage());
+        $this->entityManager->persist($renommeHistory);
+
+        return $this;
     }
 
     public function getPersonnage(): Personnage
@@ -249,34 +351,128 @@ class CompetenceService
         return $this;
     }
 
-    public function setCompetenceLevel(?Level $competenceLevel): self
+    public function getCompetenceService(Competence $competence): self
     {
-        $this->competenceLevel = $competenceLevel;
+        $service = match ($competence->getCompetenceFamily()?->getLabel()) {
+            CompetenceFamilyType::PRIESTHOOD->value => $this->getService(PretriseService::class),
+            CompetenceFamilyType::NOBILITY->value => $this->getService(NoblesseService::class),
+            CompetenceFamilyType::ALCHEMY->value => $this->getService(AlchimieService::class),
+            CompetenceFamilyType::MAGIC->value => $this->getService(MagieService::class),
+            CompetenceFamilyType::CRAFTSMANSHIP->value => $this->getService(ArtisantService::class),
+            CompetenceFamilyType::LITERATURE->value => $this->getService(LitteratureService::class),
+            default => $this,
+        };
 
-        return $this;
+        return $service->setCompetence($competence);
     }
 
-    public function setClasse(?Classe $classe): self
+    public function getCompetenceFamily(): CompetenceFamily
     {
-        $this->classe = $classe;
-
-        return $this;
-    }
-
-    public function setCompetence(?Competence $competence): self
-    {
-        $this->competence = $competence;
-        if ($competence) {
-            $this->setCompetenceFamily($competence->getCompetenceFamily());
-            $this->setCompetenceLevel($competence->getLevel());
+        if (!isset($this->competenceFamily)) {
+            throw new \RuntimeException('Competence family is not set');
         }
 
-        return $this;
+        return $this->competenceFamily;
     }
 
     public function setCompetenceFamily(?CompetenceFamily $competenceFamily): self
     {
         $this->competenceFamily = $competenceFamily;
+
+        return $this;
+    }
+
+    public function getService(string $class): self
+    {
+        return new $class(
+            $this->entityManager,
+            $this->urlGenerator,
+        );
+    }
+
+    final public function getErrors(): array
+    {
+        return $this->errors;
+    }
+
+    final public function getErrorsAsString(): string
+    {
+        return implode(', '.PHP_EOL, $this->errors);
+    }
+
+    /**
+     * @return Collection<int, Competence>
+     */
+    public function getOrigineBonusCompetences(?Personnage $personnage = null): ArrayCollection
+    {
+        $competences = new ArrayCollection();
+        foreach (($personnage ?? $this->getPersonnage())->getOrigine()?->getValideOrigineBonus() as $origineBonus) {
+            $bonus = $origineBonus->getBonus();
+            if ($bonus->isCompetence() && (null !== $bonus->getCompetence())) {
+                $competences->add($bonus->getCompetence());
+            }
+        }
+
+        return $competences;
+    }
+
+    public function removeCompetence(int $cout = self::COUT_DEFAUT): self
+    {
+        // Pré-update en base
+        $this->getPersonnage()->removeCompetence($this->getCompetence());
+        $this->getCompetence()->removePersonnage($this->getPersonnage());
+
+        // Consommation d'expérience et historisation
+        $this->giveXP($cout, 'Suppression de la compétence '.$this->getCompetence()->getLabel());
+
+        // Retrait des bonus
+        $this->removeBonus();
+
+        // Enregistrement en base du lot
+        $this->entityManager->persist($this->getCompetence());
+        $this->entityManager->persist($this->getPersonnage());
+        $this->entityManager->flush();
+
+        return $this;
+    }
+
+    public function giveXP(int $cout, string $explanation): self
+    {
+        $this->getPersonnage()->setXp($this->getPersonnage()->getXp() + $cout);
+
+        $historique = new ExperienceGain();
+        $historique->setOperationDate(new \DateTime('NOW'));
+        $historique->setXpGain($cout);
+        $historique->setExplanation($explanation);
+        $historique->setPersonnage($this->getPersonnage());
+        $this->entityManager->persist($historique);
+
+        return $this;
+    }
+
+    final public function removeBonus(): void
+    {
+        if (!$this->canGetBonus()) {
+            return;
+        }
+
+        $this->remove();
+    }
+
+    protected function remove(): void
+    {
+        throw new \RuntimeException('Method "remove" is not implemented for competence:'.static::class);
+    }
+
+    public function removeRenomme(int $value, string $explication): self
+    {
+        $this->getPersonnage()->removeRenomme($value);
+        $renommeHistory = new RenommeHistory();
+        $renommeHistory->setDate(new \DateTime('NOW'));
+        $renommeHistory->setRenomme($value);
+        $renommeHistory->setExplication($explication);
+        $renommeHistory->setPersonnage($this->getPersonnage());
+        $this->entityManager->persist($renommeHistory);
 
         return $this;
     }
@@ -318,201 +514,5 @@ class CompetenceService
                 */
             }
         }
-    }
-
-    /**
-     * Indique si une class de compétence héritée donne droit à des bonus.
-     */
-    public function hasBonus(): bool
-    {
-        return $this->hasBonus;
-    }
-
-    /**
-     * Détermine si le personnage peut recevoir des bonus.
-     */
-    public function canGetBonus(): bool
-    {
-        return $this->hasBonus();
-    }
-
-    /**
-     * Indique si une class de compétence héritée peut être apprise
-     * Si le cout n'est pas précisé, on prend le cout par défaut de la compétence pour la classe du personnage
-     * Si le cout vaut 0 on considère alors que la compétence est gratuite ou offerte.
-     */
-    final public function canLearn(int $cout = self::COUT_DEFAUT): bool
-    {
-        if ($cout < 0) {
-            $cout = $this->getCompetenceCout();
-        }
-
-        // Si un personnage à un XP négatif. Il ne peut apprendre que des gratuites
-        if ($cout > 0 && $this->getPersonnage()->getXp() - $cout < 0) {
-            $this->addError(
-                "Vous n'avez pas suffisamment de points d'expérience pour acquérir cette compétence.",
-                self::ERR_CODE_XP
-            );
-        }
-
-        $this->validateApprendre();
-
-        return !$this->hasErrors();
-    }
-
-    /**
-     * Étendre cette méthode et appeler $this->addError() au besoin.
-     */
-    protected function validateApprendre(): void
-    {
-    }
-
-    public function getOrigineBonusCout(): int
-    {
-        $count = 0;
-
-        // On ne prend que les bonus encore actif
-        foreach ($this->getPersonnage()->getOrigine()?->getValideOrigineBonus() as $origineBonus) {
-            $bonus = $origineBonus->getBonus();
-            // Dans ce service, nous ne traitons que les bonus de type XP
-            // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
-            if ($bonus->isXp() && (null === $bonus->getCompetence() || $this->getCompetence()->getId() === $bonus->getCompetence()->getId())) {
-                $count += $bonus->getValeur();
-            }
-        }
-
-        return $count;
-    }
-
-    /**
-     * @return Collection<int, Competence>
-     */
-    public function getOrigineBonusCompetences(?Personnage $personnage = null): ArrayCollection
-    {
-        $competences = new ArrayCollection();
-        foreach (($personnage ?? $this->getPersonnage())->getOrigine()?->getValideOrigineBonus() as $origineBonus) {
-            $bonus = $origineBonus->getBonus();
-            if ($bonus->isCompetence() && (null !== $bonus->getCompetence())) {
-                $competences->add($bonus->getCompetence());
-            }
-        }
-
-        return $competences;
-    }
-
-    public function getMerveilleBonusCout(): ?object // PersonnageApprentissage
-    {
-        /*
-        * TODO
-        * Table merveille_bonus [id PK, merveille_id, bonus_id, status, date_creation, date_expiration, status, ?admin_id]
-         * La date d'expiration fonction du status doit permettre de conservé ou non un bonus sur un personnage qui
-         * à eu ce bonus qui ne serait plus disponible pour de nouveau joueur
-         *  Table merveille [] // TODO
-         *
-         * A voir si le gain XP en bonus est depuis "bonus" ou depuis origin_bonus ?
-        *
-        * */
-        return null;
-    }
-
-    public function getApprentissageBonusCout(): ?object // PersonnageApprentissage
-    {
-        /*
-         * TODO
-         * Table personnage_apprentissage [id PK, date, personnage_id, teacher_id FK, admin_id FK, competence_family_id, status, date_usage, bonus_xp, ?gn_id, ?participant_id]
-         * S'il existe un apprentissage pas encore utilisé retourner son Objet (il sera à mettre à jour
-         *
-         * */
-
-        return null;
-    }
-
-    public function getBonusCout(): int
-    {
-        return $this->getOrigineBonusCout()
-            + $this->getMerveilleBonusCout()?->getBonusXp()
-            + $this->getApprentissageBonusCout()?->getBonusXp();
-    }
-
-    /**
-     * Calcul le cout d'une compétence en fonction de la classe du personnage.
-     */
-    public function getCompetenceCout(): int
-    {
-        $bonusCout = $this->getBonusCout();
-
-        if (Level::NIVEAU_1 === $this->getCompetenceLevel()->getIndex()
-            && $this->getClasse()->getCompetenceFamilyCreations()->contains($this->getCompetenceFamily())
-        ) {
-            return 0;
-        }
-
-        if ($this->getClasse()->getCompetenceFamilyFavorites()->contains($this->getCompetenceFamily())) {
-            return max($this->getCompetenceLevel()->getCoutFavori() - $bonusCout, 0);
-        }
-
-        if ($this->getClasse()->getCompetenceFamilyNormales()->contains($this->getCompetenceFamily())) {
-            return max($this->getCompetenceLevel()->getCout() - $bonusCout, 0);
-        }
-
-        return max($this->getCompetenceLevel()->getCoutMeconu() - $bonusCout, 0);
-    }
-
-    /**
-     * Donne les bonus de la compétence au personnage.
-     */
-    final public function giveBonus(): void
-    {
-        if (!$this->canGetBonus()) {
-            return;
-        }
-
-        $this->give();
-    }
-
-    final public function removeBonus(): void
-    {
-        if (!$this->canGetBonus()) {
-            return;
-        }
-
-        $this->remove();
-    }
-
-    protected function give(): void
-    {
-        throw new \RuntimeException('Method "give" is not implemented for competence:'.static::class);
-    }
-
-    protected function remove(): void
-    {
-        throw new \RuntimeException('Method "remove" is not implemented for competence:'.static::class);
-    }
-
-    final public function getErrors(): array
-    {
-        return $this->errors;
-    }
-
-    final public function getErrorsAsString(): string
-    {
-        return implode(', '.PHP_EOL, $this->errors);
-    }
-
-    final public function hasErrors(): bool
-    {
-        return !empty($this->errors);
-    }
-
-    final public function addError($error, ?int $code = null): void
-    {
-        $code ? $this->errors[$code] = $error : $this->errors[] = $error;
-    }
-
-    final public function resetErrors(): self
-    {
-        $this->errors = [];
-
-        return $this;
     }
 }

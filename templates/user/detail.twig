@@ -6,7 +6,7 @@
 
     <ol class="breadcrumb">
         <li><a href="{{ path('homepage') }}">Accueil</a></li>
-        {% if is_granted('ROLE_ADMIN', app.user) %}
+        {% if is_granted('ROLE_ORGA', app.user) %}
             <li><a href="{{ path('user.admin.list') }}">Liste des utilisateurs</a></li>{% endif %}
         <li class="active">Détail d'un utilisateur</li>
     </ol>
@@ -14,7 +14,7 @@
     <div class="well well-sm">
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="{% if is_granted('ROLE_ORGA', user) or app.user.id == user.id %}col-md-6{% else %}col-md-12{% endif %}">
 
                 <div class="header">
                     <h5>{{ user.displayName }}</h5>
@@ -24,7 +24,7 @@
                     Date d'enregistrement {{ user.creationDate|date('d/m/Y') }}
                 </div>
 
-                {% if is_granted('ROLE_ADMIN', app.user) %}
+                {% if is_granted('ROLE_ORGA', app.user) %}
                     {% if not user.isEnabled %}
                         <div style="margin-bottom: 5px;">
                             <span class="label label-danger">Pending email confirmation</span>
@@ -44,9 +44,9 @@
 
             </div>
 
-            <div class="col-md-6">
+            {% if is_granted('ROLE_ORGA', user) or app.user.id == user.id %}
+                <div class="col-md-6">
 
-                {% if is_granted('ROLE_ORGA', user) %}
 
                     <div class="header">
                         <h5>Participations</h5>
@@ -88,15 +88,17 @@
                     </div>
 
                     <div class="m-2 d-flex justify-content-between">
-                        <a class="btn btn-secondary" href="{{ path('user.edit', {'user': user.id}) }}"><span class="fa fa-edit"
-                                                                                 style="margin-right: 5px;"></span>Modifier</a>
-                        <a class="btn btn-secondary"  href="{{ path('user.personnageDefault', {'user': user.id}) }}"><span
+                        <a class="btn btn-secondary" href="{{ path('user.edit', {'user': user.id}) }}"><span
+                                    class="fa fa-edit"
+                                    style="margin-right: 5px;"></span>Modifier</a>
+                        <a class="btn btn-secondary"
+                           href="{{ path('user.personnageDefault', {'user': user.id}) }}"><span
                                     class="fa fa-users" style="margin-right: 5px;"></span>Choisir mon
                             personnage par défaut</a>
                     </div>
-                {% endif %}
 
-            </div>
+                </div>
+            {% endif %}
         </div>
 
 

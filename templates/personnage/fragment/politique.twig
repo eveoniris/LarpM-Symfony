@@ -7,10 +7,12 @@
             <h5>Vos connaissances politiques</h5>
         </div>
 
+        {% set hasOne = false %}
         <div class="row">
             <div class="col-sm-12">
                 {# Liste des relations entre les pays #}
                 {% if personnage.getCompetenceNiveau('Politique') >= 1 %}
+                    {% set hasOne = true %}
                     <p>
                         Votre compétence Politique Apprenti vous permet de connaître les relations entre les fiefs :
                         <a href="{{ path('participant.politique', {'participant': participant.id}) }}">Voir les liens
@@ -26,6 +28,7 @@
                     <ul>
                         {% set hasLoi = false %}
                         {% for territoire in participant.groupeGn.groupe.territoires %}
+                            {% set hasOne = true %}
                             {% for fief in territoire.ancestors %}
                                 {% for loi in fief.lois %}
                                     <li>{{ loi.label }} : <a href="{{ path('loi.document',{'loi' : loi.id}) }}">Téléchargez
@@ -45,17 +48,23 @@
 
                 {# Toutes les lois #}
                 {% if personnage.getCompetenceNiveau('Politique') >= 3 %}
-                    <p>
+                    <div>
                         Votre compétence Politique Expert vous permet de connaître toutes les lois:
-                    <ul>
-                        {% for loi in lois %}
-                            <li>{{ loi.label }} : <a href="{{ path('loi.document',{'loi' : loi.id}) }}">Téléchargez le
-                                    document</a></li>
-                        {% else %}
-                            {% include '_partials/noResult.twig' with {'content' : 'Aucune', 'css' : 'w-100'} %}
-                        {% endfor %}
-                    </ul>
-                    </p>
+                        <ul>
+                            {% for loi in lois %}
+                                {% set hasOne = true %}
+                                <li>{{ loi.label }} : <a href="{{ path('loi.document',{'loi' : loi.id}) }}">Téléchargez
+                                        le
+                                        document</a></li>
+                            {% else %}
+                                {% include '_partials/noResult.twig' with {'content' : 'Aucune', 'css' : 'w-100'} %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if hasOne == false %}
+                    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucune'} %}
                 {% endif %}
             </div>
         </div>
