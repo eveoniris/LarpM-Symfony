@@ -1,0 +1,22 @@
+{% for item in items %}
+
+    {% set visible = true %}
+    {% if item.visible is defined %}
+        {% set visible = item.visible %}
+    {% endif %}
+
+    {% if visible == true %}
+        {% if loop.first %}
+            {% include '_partials/listRowHead.twig' with {'title': item.title, 'text': item.text} %}
+        {% endif %}
+
+        {% if not loop.first and not loop.last %}
+            {% include '_partials/listRow.twig' with {'title': item.title, 'text': item.text} %}
+        {% endif %}
+
+        {% if loop.last %}
+            {% include '_partials/listRowBottom.twig' with {'title': item.title, 'text': item.text} %}
+        {% endif %}
+    {% endif %}
+
+{% endfor %}
