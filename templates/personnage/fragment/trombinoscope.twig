@@ -1,6 +1,11 @@
 {% if css is not defined %}
     {% set css = 'well' %}
 {% endif %}
+
+{% if isAdmin is not defined %}
+    {% set isAdmin = false %}
+{% endif %}
+
 {# Trombinoscope #}
 <div class="{{ css }}">
     <div class="header">
