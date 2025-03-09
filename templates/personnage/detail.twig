@@ -104,11 +104,13 @@
 							>Groupes</a>
 						</li>
 
+						{% if isAdmin %}
 						<li class="nav-item">
 							<a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
 							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'enveloppe'})) }}"
 							>Enveloppe</a>
 						</li>
+						{% endif %}
 
 					</ul>
 

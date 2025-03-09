@@ -2415,14 +2415,6 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         Environment $twig,
     ): Response {
-        return $this->render(
-            'personnage/publicResume.twig',
-            [
-                'personnage' => $personnage,
-                'participant' => $personnage->getLastParticipant(),
-            ]
-        );
-
         // Fiche public
         $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
         if (!$isAdmin && $personnage->getUser()?->getId() !== $this->getUser()?->getId()) {
@@ -2440,6 +2432,9 @@ class PersonnageController extends AbstractController
         $descendants = $entityManager->getRepository(Personnage::class)->findDescendants($personnage);
         $tab = $request->get('tab', 'general');
         if (!$twig->getLoader()->exists('personnage/fragment/tab_'.$tab.'.twig')) {
+            $tab = 'general';
+        }
+        if (!$isAdmin && $tab === 'enveloppe') {
             $tab = 'general';
         }
 
@@ -2534,6 +2529,7 @@ class PersonnageController extends AbstractController
     }
 
     #[Route('/{personnage}/enveloppe/print', name: 'enveloppe.print')]
+    #[IsGranted(Role::ORGA->value)]
     public function enveloppePrintAction(#[MapEntity] Personnage $personnage): Response
     {
         return $this->render('personnage/enveloppe.twig', [

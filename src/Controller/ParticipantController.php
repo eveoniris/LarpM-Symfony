@@ -2636,9 +2636,15 @@ class ParticipantController extends AbstractController
     ): Response {
         $alias = $secondaryGroupRepository->getAlias();
         $queryBuilder = $secondaryGroupRepository->createQueryBuilder($alias);
-        $queryBuilder = $secondaryGroupRepository->secret($queryBuilder, false);
+        $isAdmin = $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::SCENARISTE->value);
+
+        // TODO : FIX query it's show secret groupe !
+        if (!$isAdmin) {
+            $queryBuilder = $secondaryGroupRepository->secret($queryBuilder, false);
+        }
 
         return $this->render('groupeSecondaire/list.twig', [
+            'isAdmin' => $isAdmin,
             'participant' => $participant,
             'pagerService' => $pagerService,
             'paginator' => $secondaryGroupRepository->searchPaginated($pagerService, $queryBuilder),
@@ -2733,13 +2739,14 @@ class ParticipantController extends AbstractController
     /**
      * Affichage à destination d'un membre du groupe secondaire.
      */
+    // TODO Fix access if SECRET and not a member !
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/detail', name: 'participant.groupeSecondaire.detail')]
     public function groupeSecondaireDetailAction(
         #[MapEntity] Participant $participant,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
-        $isAdmin = $this->isGranted(Role::SCENARISTE->value);
+        $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
 
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage !');

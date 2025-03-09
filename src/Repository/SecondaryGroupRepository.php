@@ -77,7 +77,7 @@ class SecondaryGroupRepository extends BaseRepository
         $orderBy ??= $this->orderBy;
 
         if ('secret' === $attributes) {
-            $query = $this->createQueryBuilder($alias)
+            $query ??= $this->createQueryBuilder($alias)
                 ->orderBy($orderBy->getSort(), $orderBy->getOrderBy());
 
             return $this->secret(
@@ -86,7 +86,7 @@ class SecondaryGroupRepository extends BaseRepository
             );
         }
 
-        return parent::search($search, $attributes, $orderBy, $alias);
+        return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
     public function secret(QueryBuilder $query, bool $secret): QueryBuilder
@@ -122,7 +122,7 @@ class SecondaryGroupRepository extends BaseRepository
         $query = $this->getEntityManager()
             ->createQuery(
                 <<<DQL
-                SELECT DISTINCT sg
+                SELECT MAX(sg) as exists
                 FROM App\Entity\User u 
                 INNER JOIN App\Entity\Personnage p
                 INNER JOIN App\Entity\SecondaryGroup sg
@@ -130,10 +130,10 @@ class SecondaryGroupRepository extends BaseRepository
                 DQL
             );
 
-        return $query
+        return (bool) $query
             ->setParameter('uid', $user->getId())
             ->setParameter('sgid', $secondaryGroup->getId())
-            ->getScalarResult();
+            ->getSingleScalarResult();
 
     }
 
