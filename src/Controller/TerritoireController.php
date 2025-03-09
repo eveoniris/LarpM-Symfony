@@ -27,6 +27,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted(Role::USER->value)]
@@ -205,7 +206,7 @@ class TerritoireController extends AbstractController
     /**
      * Detail d'un territoire pour les joueurs.
      */
-    #[Route('/territoire/{territoire}', name: 'territoire.detail')]
+    #[Route('/territoire/{territoire}', name: 'territoire.detail', requirements: ['territoire' => Requirement::DIGITS])]
     public function detailAction(
         #[MapEntity] Territoire $territoire,
     ): Response {
@@ -213,7 +214,7 @@ class TerritoireController extends AbstractController
         $canSeeDetail = $isAdmin;
 
         if (!$canSeeDetail) {
-            foreach ($territoire->getGroupe()?->getPersonnages() as $personnage) {
+            foreach ($territoire->getGroupe()?->getPersonnages() ?? [] as $personnage) {
                 if ($personnage->getUser()?->getId() === $this->getUser()?->getId()) {
                     $canSeeDetail = true;
                 }
@@ -335,7 +336,8 @@ class TerritoireController extends AbstractController
      * Liste des fiefs.
      */
     #[Route('/territoire/fief', name: 'territoire.fief')]
-    public function fiefAction(Request $request, EntityManagerInterface $entityManager)
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    public function fiefAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -354,9 +356,9 @@ class TerritoireController extends AbstractController
         $optionalParameters = '';
 
         // $listeGroupes = $entityManager->getRepository('\\'.Groupe::class)->findList(null, null, ['by' => 'nom', 'dir' => 'ASC'], 1000, 0);
-        $listeGroupes = $entityManager->getRepository('\\'.Groupe::class)->findBy([], ['nom' => 'ASC']);
-        $listePays = $entityManager->getRepository('\\'.Territoire::class)->findRoot();
-        $listeProvinces = $entityManager->getRepository('\\'.Territoire::class)->findProvinces();
+        $listeGroupes = $entityManager->getRepository(Groupe::class)->findBy([], ['nom' => 'ASC']);
+        $listePays = $entityManager->getRepository(Territoire::class)->findRoot();
+        $listeProvinces = $entityManager->getRepository(Territoire::class)->findProvinces();
 
         $form = $this->createForm(
             FiefForm::class,
@@ -413,7 +415,7 @@ class TerritoireController extends AbstractController
         }
 
         /* @var TerritoireRepository $repo */
-        $repo = $entityManager->getRepository('\\'.Territoire::class);
+        $repo = $entityManager->getRepository(Territoire::class);
         $fiefs = $repo->findFiefsList(
             $limit,
             $offset,
@@ -433,10 +435,13 @@ class TerritoireController extends AbstractController
             $this->getRequestPage()
         );
 
+        $isAdmin = $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::CARTOGRAPHE->value);
+
         return $this->render('territoire/fief.twig', [
             'fiefs' => $fiefs,
             'form' => $form->createView(),
             'paginator' => $paginator,
+            'isAdmin' => $isAdmin,
             'optionalParameters' => $optionalParameters,
         ]);
     }
@@ -466,7 +471,9 @@ class TerritoireController extends AbstractController
             $this->getRequestPage()
         );
 
-        return $this->render('territoire/list.twig', ['paginator' => $paginator]);
+        $isAdmin = $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::CARTOGRAPHE->value);
+
+        return $this->render('territoire/list.twig', ['paginator' => $paginator, 'isAdmin' => $isAdmin]);
     }
 
     /**

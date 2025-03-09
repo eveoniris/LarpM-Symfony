@@ -16,6 +16,12 @@
         {% set options = options|merge({"field":row.field}) %}
     {% endif %}
 
+    {% if row.visible is defined %}
+        {% set options = options|merge({"visible":row.visible}) %}
+    {% else %}
+        {% set options = options|merge({"visible":true}) %}
+    {% endif %}
+
     {% if row.name is not defined and row.field is defined %}
         {% set row = row|merge({"name":row.field|trans}) %}
     {% endif %}
@@ -23,6 +29,7 @@
     {% if row.name is defined %}
         {% set options = options|merge({"name":row.name}) %}
     {% endif %}
+
 
     {% if row.route is defined %}
         {% set options = options|merge({"route":row.route}) %}
@@ -37,10 +44,12 @@
         {% set css = row.css %}
     {% endif %}
 
-    {% if options.field is defined %}
-        <th class="{{ css }}" scope="col">{% include '_partials/orderBy.twig' with options %}</th>
-    {% elseif row.name is defined %}
-        <th class="{{ css }}" scope="col">{{ row.name }}</th>
+    {% if options.visible == true %}
+        {% if options.field is defined %}
+            <th class="{{ css }}" scope="col">{% include '_partials/orderBy.twig' with options %}</th>
+        {% elseif row.name is defined %}
+            <th class="{{ css }}" scope="col">{{ row.name }}</th>
+        {% endif %}
     {% endif %}
 
     {% if loop.last %}

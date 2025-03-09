@@ -93,7 +93,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         int $limit = 10,
         string $orderby = 'id',
         string $orderdir = 'ASC',
-        string $where = ''
+        string $where = '',
     ): Paginator {
         $limit = min(10, $limit);
         $page = max(1, $page);
@@ -147,7 +147,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         int $page = 1,
         array $orderBy = [],
         ?string $alias = null,
-        array $criterias = []
+        array $criterias = [],
     ): Paginator {
         $alias ??= static::getEntityAlias();
         $limit = min(100, max(1, $limit));
@@ -176,7 +176,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         Query|QueryBuilder|null $query = null,
         int $batchSize = 100,
         ?string $alias = null,
-        string $iterableMode = self::ITERATE_EXPORT_HEADER
+        string $iterableMode = self::ITERATE_EXPORT_HEADER,
     ): \Generator {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
@@ -235,7 +235,7 @@ abstract class BaseRepository extends ServiceEntityRepository
             $this->getAlias(),
             $queryBuilder
         )->getQuery();
-      //  $query->setHydrationMode(Query::HYDRATE_SCALAR);
+        //  $query->setHydrationMode(Query::HYDRATE_SCALAR);
 
         return $this->findPaginatedQuery(
             $query,
@@ -261,7 +261,7 @@ abstract class BaseRepository extends ServiceEntityRepository
     public function findPaginatedQuery(
         Query $query,
         ?int $limit = null,
-        $offset = null
+        $offset = null,
     ): Paginator {
         $limit = min(100, max(1, $limit));
         $offset = max(1, $offset);
@@ -269,7 +269,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         $query->setMaxResults($limit)
             ->setFirstResult(($offset - 1) * $limit);
 
-            return new Paginator($query, false);
+        return new Paginator($query, false);
     }
 
     /**
@@ -283,13 +283,12 @@ abstract class BaseRepository extends ServiceEntityRepository
         string|array|null $attributes = self::SEARCH_NOONE,
         ?OrderBy $orderBy = null,
         ?string $alias = null,
-        ?QueryBuilder $query = null
+        ?QueryBuilder $query = null,
     ): QueryBuilder {
         $orderBy ??= $this->orderBy;
         $alias ??= static::getEntityAlias();
 
         $query ??= $this->createQueryBuilder($alias);
-
         // Order only if allowed and if exists
         $this->addOrderBy($query, $orderBy, $alias);
         // Any search to perform ?
@@ -355,7 +354,7 @@ abstract class BaseRepository extends ServiceEntityRepository
     public function addOrderBy(
         Query|QueryBuilder|null $query = null,
         ?OrderBy $orderBy = null,
-        ?string $alias = null
+        ?string $alias = null,
     ): Query|QueryBuilder {
         $orderBy ??= $this->orderBy;
         $alias ??= static::getEntityAlias();
