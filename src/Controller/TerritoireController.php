@@ -6,6 +6,7 @@ use App\Entity\Construction;
 use App\Entity\Groupe;
 use App\Entity\Loi;
 use App\Entity\Territoire;
+use App\Enum\Role;
 use App\Form\Territoire\FiefForm;
 use App\Form\Territoire\TerritoireBlasonForm;
 use App\Form\Territoire\TerritoireBonusForm;
@@ -20,6 +21,7 @@ use App\Form\Territoire\TerritoireStatutForm;
 use App\Form\Territoire\TerritoireStrategieForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,13 +29,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_CARTOGRAPHE')]
+#[IsGranted(Role::USER->value)]
 class TerritoireController extends AbstractController
 {
     /**
      * Modifier les listes de cibles pour les quêtes commerciales.
      */
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    //#[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/{territoire}/updateCibles', name: 'territoire.updateCibles')]
     public function updateCiblesAction(
         Request $request,
@@ -203,7 +206,7 @@ class TerritoireController extends AbstractController
     /**
      * Impression des territoires.
      */
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/print', name: 'territoire.print')]
     public function printAction(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -215,7 +218,7 @@ class TerritoireController extends AbstractController
     /**
      * Liste des fiefs pour les quêtes.
      */
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/quete', name: 'territoire.quete')]
     public function queteAction(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -227,7 +230,7 @@ class TerritoireController extends AbstractController
     /**
      * Liste des pays avec le nombre de noble.
      */
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/noble', name: 'territoire.noble')]
     public function nobleAction(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -239,6 +242,7 @@ class TerritoireController extends AbstractController
     /**
      * Ajoute une loi à un territoire.
      */
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/{territoire}/updateLoi', name: 'territoire.updateLoi')]
     public function updateLoiAction(
         Request $request,
@@ -267,6 +271,7 @@ class TerritoireController extends AbstractController
         ]);
     }
 
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/{territoire}/updateBonus', name: 'territoire.updateBonus')]
     public function updateBonusAction(
         Request $request,
@@ -298,6 +303,7 @@ class TerritoireController extends AbstractController
     /**
      * Ajoute une construction dans un territoire.
      */
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/{territoire}/constructionAdd', name: 'territoire.constructionAdd')]
     public function constructionAddAction(
         Request $request,
@@ -330,6 +336,7 @@ class TerritoireController extends AbstractController
     /**
      * Retire une construction d'un territoire.
      */
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/{territoire}/constructionRemove/{construction}', name: 'territoire.constructionRemove')]
     public function constructionRemoveAction(
         Request $request,
@@ -365,7 +372,7 @@ class TerritoireController extends AbstractController
     /**
      * Ajoute un territoire.
      */
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/add', name: 'territoire.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
@@ -400,6 +407,7 @@ class TerritoireController extends AbstractController
     /**
      * Mise à jour de la liste des ingrédients fourni par un territoire.
      */
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/{territoire}/updateIngredients', name: 'territoire.updateIngredients')]
     public function updateIngredientsAction(
         Request $request,
@@ -431,7 +439,7 @@ class TerritoireController extends AbstractController
     /**
      * Modifie un territoire.
      */
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/{territoire}/update', name: 'territoire.update')]
     public function updateAction(
         Request $request,
@@ -462,7 +470,7 @@ class TerritoireController extends AbstractController
     /**
      * Met à jour la culture d'un territoire.
      */
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/{territoire}/updateCulture', name: 'territoire.updateCulture')]
     public function updateCultureAction(
         Request $request,
@@ -492,7 +500,7 @@ class TerritoireController extends AbstractController
     /**
      * Met à jour le statut d'un territoire.
      */
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/{territoire}/updateStatut', name: 'territoire.updateStatut')]
     public function updateStatutAction(
         Request $request,
@@ -540,7 +548,7 @@ class TerritoireController extends AbstractController
     /**
      * Met à jour le blason d'un territoire.
      */
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/{territoire}/updateBlason', name: 'territoire.updateBlason')]
     public function updateBlasonAction(
         Request $request,
@@ -593,7 +601,7 @@ class TerritoireController extends AbstractController
     /**
      * Modifie le jeu strategique d'un territoire.
      */
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     #[Route('/territoire/{territoire}/update/strategie', name: 'territoire.updateStrategie')]
     public function updateStrategieAction(
         Request $request,
@@ -625,6 +633,7 @@ class TerritoireController extends AbstractController
      * Supression d'un territoire.
      */
     #[Route('/territoire/{territoire}/delete', name: 'territoire.delete')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
     public function deleteAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -773,6 +782,7 @@ class TerritoireController extends AbstractController
      * Detail d'un territoire pour les joueurs.
      */
     #[Route('/territoire/{territoire}', name: 'territoire.detail')]
+    // TODO allow user to read it ! BUT NOT EDIT IT
     public function detailAction(#[MapEntity] Territoire $territoire): Response
     {
         return $this->render('territoire/detail.twig', ['territoire' => $territoire]);
