@@ -35,16 +35,15 @@ class TerritoireController extends AbstractController
     /**
      * Modifier les listes de cibles pour les quêtes commerciales.
      */
-    //#[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    // #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
-    #[Route('/territoire/{territoire}/updateCibles', name: 'territoire.updateCibles')]
-    public function updateCiblesAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-    ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireCiblesForm::class, $territoire)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
+    #[Route('/territoire/add', name: 'territoire.add')]
+    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    {
+        $territoire = new Territoire();
+        $form = $this->createForm(TerritoireForm::class, $territoire)
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -54,43 +53,282 @@ class TerritoireController extends AbstractController
             $entityManager->persist($territoire);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Le territoire a été mis à jour');
+            $this->addFlash('success', 'Le territoire a été ajouté.');
+
+            if ($form->get('save')->isClicked()) {
+                return $this->redirectToRoute('territoire.list', [], 303);
+            }
+            if ($form->get('save_continue')->isClicked()) {
+                return $this->redirectToRoute('territoire.add', [], 303);
+            }
+        }
+
+        return $this->render('territoire/add.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Récupération de l'image du blason d'un territoire.
+     */
+    #[Route('/territoire/{territoire}/blason', name: 'territoire.blason', methods: ['GET'])]
+    public function blasonAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): Response {
+        $blason = $territoire->getBlason();
+        $filename = __DIR__.'/../../assets/img/blasons/'.$blason;
+
+        $response = new Response(file_get_contents($filename));
+        $response->headers->set('Content-Type', 'image/png');
+
+        return $response;
+    }
+
+    /**
+     * Ajoute une construction dans un territoire.
+     */
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[Route('/territoire/{territoire}/constructionAdd', name: 'territoire.constructionAdd')]
+    public function constructionAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(TerritoireConstructionForm::class, $territoire)
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $territoire = $form->getData();
+
+            // $territoire->addConstruction($data['constructions']);
+            $entityManager->persist($territoire);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'La construction a été ajoutée.');
 
             return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
         }
 
-        return $this->render('territoire/cibles.twig', [
+        return $this->render('territoire/addConstruction.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
     }
 
     /**
-     * Liste des territoires.
+     * Retire une construction d'un territoire.
      */
-    #[Route('/territoire', name: 'territoire.list')]
-    public function listAction(Request $request, EntityManagerInterface $entityManager)
-    {
-        $territoirenRepository = $entityManager->getRepository(Territoire::class);
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[Route('/territoire/{territoire}/constructionRemove/{construction}', name: 'territoire.constructionRemove')]
+    public function constructionRemoveAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+        #[MapEntity] Construction $construction,
+    ): RedirectResponse|Response {
+        $form = $this->createFormBuilder($territoire)
+            ->add('save', SubmitType::class, ['label' => 'Retirer la construction'])
+            ->getForm();
 
-        $orderBy = $this->getRequestOrder(
-            alias: 't',
-            allowedFields: $territoirenRepository->getFieldNames()
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
+            $territoire->removeConstruction($construction);
+            $entityManager->persist($territoire);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'La construction a été retirée.');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/removeConstruction.twig', [
+            'territoire' => $territoire,
+            'construction' => $construction,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Supression d'un territoire.
+     */
+    #[Route('/territoire/{territoire}/delete', name: 'territoire.delete')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    public function deleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ) {
+        $form = $this->createForm(TerritoireDeleteForm::class, $territoire)
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $territoire = $form->getData();
+
+            foreach ($territoire->getPersonnages() as $personnage) {
+                $personnage->setTerritoire(null);
+                $entityManager->persist($personnage);
+            }
+
+            foreach ($territoire->getGroupes() as $groupe) {
+                $groupe->removeTerritoire($territoire);
+                $entityManager->persist($groupe);
+            }
+
+            if ($territoire->getGroupe()) {
+                $groupe = $territoire->getGroupe();
+                $groupe->setTerritoire(null);
+                $entityManager->persist($groupe);
+            }
+
+            $entityManager->remove($territoire);
+            $entityManager->flush();
+            $this->addFlash('success', 'Le territoire a été supprimé.');
+
+            return $this->redirectToRoute('territoire.list', [], 303);
+        }
+
+        return $this->render('territoire/delete.twig', [
+            'territoire' => $territoire,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Detail d'un territoire pour les joueurs.
+     */
+    #[Route('/territoire/{territoire}', name: 'territoire.detail')]
+    public function detailAction(
+        #[MapEntity] Territoire $territoire,
+    ): Response {
+        $isAdmin = $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::CARTOGRAPHE->value);
+        $canSeeDetail = $isAdmin;
+
+        if (!$canSeeDetail) {
+            foreach ($territoire->getGroupe()?->getPersonnages() as $personnage) {
+                if ($personnage->getUser()?->getId() === $this->getUser()?->getId()) {
+                    $canSeeDetail = true;
+                }
+            }
+        }
+
+        return $this->render(
+            'territoire/detail.twig',
+            [
+                'territoire' => $territoire,
+                'isAdmin' => $isAdmin,
+                'canSeeDetail' => $canSeeDetail,
+            ]
         );
+    }
 
-        $qb = $entityManager->createQueryBuilder('t')
-            ->select('t')
-            ->from(Territoire::class, 't')
-            ->where('t.territoire IS NULL')
-            ->orderBy(key($orderBy), current($orderBy));
+    /**
+     * Ajoute un événement à un territoire.
+     */
+    #[Route('/territoire/{territoire}/eventAdd', name: 'territoire.eventAdd')]
+    public function eventAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ) {
+        $event = $request->get('event');
 
-        $paginator = $territoirenRepository->findPaginatedQuery(
-            $qb->getQuery(),
-            $this->getRequestLimit(10),
-            $this->getRequestPage()
-        );
+        $event = new \App\Entity\Chronologie();
 
-        return $this->render('territoire/list.twig', ['paginator' => $paginator]);
+        $form = $this->createForm(EventForm::class, $event)
+            ->add('add', SubmitType::class, ['label' => 'Ajouter']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $event = $form->getData();
+
+            $entityManager->persist($event);
+            $entityManager->flush();
+            $this->addFlash('success', 'L\'evenement a été ajouté.');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/addEvent.twig', [
+            'territoire' => $territoire,
+            'event' => $event,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Supprime un événement.
+     */
+    #[Route('/territoire/{territoire}/eventDelete', name: 'territoire.eventDelete')]
+    public function eventDeleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ) {
+        $event = $request->get('event');
+
+        $form = $this->createForm(ChronologieDeleteForm::class, $event)
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $event = $form->getData();
+
+            $entityManager->remove($event);
+            $entityManager->flush();
+            $this->addFlash('success', 'L\'evenement a été supprimé.');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/deleteEvent.twig', [
+            'territoire' => $territoire,
+            'event' => $event,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Met à jour un événement.
+     */
+    #[Route('/territoire/{territoire}/eventUpdate', name: 'territoire.eventUpdate')]
+    public function eventUpdateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ) {
+        $event = $request->get('event');
+
+        $form = $this->createForm(ChronologieForm::class, $event)
+            ->add('update', SubmitType::class, ['label' => 'Mettre à jour']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $event = $form->getData();
+
+            $entityManager->persist($event);
+            $entityManager->flush();
+            $this->addFlash('success', 'L\'evenement a été modifié.');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/updateEvent.twig', [
+            'territoire' => $territoire,
+            'event' => $event,
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
@@ -101,8 +339,8 @@ class TerritoireController extends AbstractController
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
+        $limit = (int)($request->get('limit') ?: 50);
+        $page = (int)($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
@@ -204,6 +442,46 @@ class TerritoireController extends AbstractController
     }
 
     /**
+     * Liste des territoires.
+     */
+    #[Route('/territoire', name: 'territoire.list')]
+    public function listAction(Request $request, EntityManagerInterface $entityManager)
+    {
+        $territoirenRepository = $entityManager->getRepository(Territoire::class);
+
+        $orderBy = $this->getRequestOrder(
+            alias: 't',
+            allowedFields: $territoirenRepository->getFieldNames()
+        );
+
+        $qb = $entityManager->createQueryBuilder('t')
+            ->select('t')
+            ->from(Territoire::class, 't')
+            ->where('t.territoire IS NULL')
+            ->orderBy(key($orderBy), current($orderBy));
+
+        $paginator = $territoirenRepository->findPaginatedQuery(
+            $qb->getQuery(),
+            $this->getRequestLimit(10),
+            $this->getRequestPage()
+        );
+
+        return $this->render('territoire/list.twig', ['paginator' => $paginator]);
+    }
+
+    /**
+     * Liste des pays avec le nombre de noble.
+     */
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[Route('/territoire/noble', name: 'territoire.noble')]
+    public function nobleAction(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $territoires = $entityManager->getRepository(Territoire::class)->findRoot();
+
+        return $this->render('territoire/noble.twig', ['territoires' => $territoires]);
+    }
+
+    /**
      * Impression des territoires.
      */
     #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
@@ -225,215 +503,6 @@ class TerritoireController extends AbstractController
         $territoires = $entityManager->getRepository('\\'.Territoire::class)->findFiefs();
 
         return $this->render('territoire/quete.twig', ['territoires' => $territoires]);
-    }
-
-    /**
-     * Liste des pays avec le nombre de noble.
-     */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
-    #[Route('/territoire/noble', name: 'territoire.noble')]
-    public function nobleAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $territoires = $entityManager->getRepository(Territoire::class)->findRoot();
-
-        return $this->render('territoire/noble.twig', ['territoires' => $territoires]);
-    }
-
-    /**
-     * Ajoute une loi à un territoire.
-     */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
-    #[Route('/territoire/{territoire}/updateLoi', name: 'territoire.updateLoi')]
-    public function updateLoiAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-    ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireLoiForm::class, $territoire)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $territoire = $form->getData();
-
-            $entityManager->persist($territoire);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le territoire a été mis à jour');
-
-            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
-        }
-
-        return $this->render('territoire/loi.twig', [
-            'territoire' => $territoire,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
-    #[Route('/territoire/{territoire}/updateBonus', name: 'territoire.updateBonus')]
-    public function updateBonusAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-    ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireBonusForm::class, $territoire)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder', 'attr' => ['class' => 'btn btn-secondary']]);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $territoire = $form->getData();
-
-            $entityManager->persist($territoire);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le territoire a été mis à jour');
-
-            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
-        }
-
-        return $this->render('territoire/bonus.twig', [
-            'territoire' => $territoire,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Ajoute une construction dans un territoire.
-     */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
-    #[Route('/territoire/{territoire}/constructionAdd', name: 'territoire.constructionAdd')]
-    public function constructionAddAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-    ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireConstructionForm::class, $territoire)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $territoire = $form->getData();
-
-            // $territoire->addConstruction($data['constructions']);
-            $entityManager->persist($territoire);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La construction a été ajoutée.');
-
-            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
-        }
-
-        return $this->render('territoire/addConstruction.twig', [
-            'territoire' => $territoire,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Retire une construction d'un territoire.
-     */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
-    #[Route('/territoire/{territoire}/constructionRemove/{construction}', name: 'territoire.constructionRemove')]
-    public function constructionRemoveAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-        #[MapEntity] Construction $construction,
-    ): RedirectResponse|Response {
-        $form = $this->createFormBuilder($territoire)
-            ->add('save', SubmitType::class, ['label' => 'Retirer la construction'])
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-
-            $territoire->removeConstruction($construction);
-            $entityManager->persist($territoire);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La construction a été retirée.');
-
-            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
-        }
-
-        return $this->render('territoire/removeConstruction.twig', [
-            'territoire' => $territoire,
-            'construction' => $construction,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Ajoute un territoire.
-     */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
-    #[Route('/territoire/add', name: 'territoire.add')]
-    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
-    {
-        $territoire = new Territoire();
-        $form = $this->createForm(TerritoireForm::class, $territoire)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $territoire = $form->getData();
-
-            $entityManager->persist($territoire);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le territoire a été ajouté.');
-
-            if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('territoire.list', [], 303);
-            }
-            if ($form->get('save_continue')->isClicked()) {
-                return $this->redirectToRoute('territoire.add', [], 303);
-            }
-        }
-
-        return $this->render('territoire/add.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Mise à jour de la liste des ingrédients fourni par un territoire.
-     */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
-    #[Route('/territoire/{territoire}/updateIngredients', name: 'territoire.updateIngredients')]
-    public function updateIngredientsAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-    ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireIngredientsForm::class, $territoire)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $territoire = $form->getData();
-
-            $entityManager->persist($territoire);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le territoire a été mis à jour.');
-
-            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
-        }
-
-        return $this->render('territoire/updateIngredients.twig', [
-            'territoire' => $territoire,
-            'form' => $form->createView(),
-        ]);
     }
 
     /**
@@ -465,84 +534,6 @@ class TerritoireController extends AbstractController
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
-    }
-
-    /**
-     * Met à jour la culture d'un territoire.
-     */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
-    #[Route('/territoire/{territoire}/updateCulture', name: 'territoire.updateCulture')]
-    public function updateCultureAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-    ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireCultureForm::class, $territoire)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($territoire);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le territoire a été mis à jour');
-
-            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
-        }
-
-        return $this->render('territoire/culture.twig', [
-            'territoire' => $territoire,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Met à jour le statut d'un territoire.
-     */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
-    #[Route('/territoire/{territoire}/updateStatut', name: 'territoire.updateStatut')]
-    public function updateStatutAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-    ) {
-        $form = $this->createForm(TerritoireStatutForm::class, $territoire)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($territoire);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le territoire a été mis à jour');
-
-            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
-        }
-
-        return $this->render('territoire/updateStatut.twig', [
-            'territoire' => $territoire,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Récupération de l'image du blason d'un territoire.
-     */
-    #[Route('/territoire/{territoire}/blason', name: 'territoire.blason', methods: ['GET'])]
-    public function blasonAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-    ): Response {
-        $blason = $territoire->getBlason();
-        $filename = __DIR__.'/../../assets/img/blasons/'.$blason;
-
-        $response = new Response(file_get_contents($filename));
-        $response->headers->set('Content-Type', 'image/png');
-
-        return $response;
     }
 
     /**
@@ -598,6 +589,188 @@ class TerritoireController extends AbstractController
         ]);
     }
 
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[Route('/territoire/{territoire}/updateBonus', name: 'territoire.updateBonus')]
+    public function updateBonusAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(TerritoireBonusForm::class, $territoire)
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder', 'attr' => ['class' => 'btn btn-secondary']]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $territoire = $form->getData();
+
+            $entityManager->persist($territoire);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le territoire a été mis à jour');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/bonus.twig', [
+            'territoire' => $territoire,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[Route('/territoire/{territoire}/updateCibles', name: 'territoire.updateCibles')]
+    public function updateCiblesAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(TerritoireCiblesForm::class, $territoire)
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $territoire = $form->getData();
+
+            $entityManager->persist($territoire);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le territoire a été mis à jour');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/cibles.twig', [
+            'territoire' => $territoire,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Met à jour la culture d'un territoire.
+     */
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[Route('/territoire/{territoire}/updateCulture', name: 'territoire.updateCulture')]
+    public function updateCultureAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(TerritoireCultureForm::class, $territoire)
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($territoire);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le territoire a été mis à jour');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/culture.twig', [
+            'territoire' => $territoire,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Mise à jour de la liste des ingrédients fourni par un territoire.
+     */
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[Route('/territoire/{territoire}/updateIngredients', name: 'territoire.updateIngredients')]
+    public function updateIngredientsAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(TerritoireIngredientsForm::class, $territoire)
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $territoire = $form->getData();
+
+            $entityManager->persist($territoire);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le territoire a été mis à jour.');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/updateIngredients.twig', [
+            'territoire' => $territoire,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Ajoute une loi à un territoire.
+     */
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[Route('/territoire/{territoire}/updateLoi', name: 'territoire.updateLoi')]
+    public function updateLoiAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(TerritoireLoiForm::class, $territoire)
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $territoire = $form->getData();
+
+            $entityManager->persist($territoire);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le territoire a été mis à jour');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/loi.twig', [
+            'territoire' => $territoire,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Met à jour le statut d'un territoire.
+     */
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[Route('/territoire/{territoire}/updateStatut', name: 'territoire.updateStatut')]
+    public function updateStatutAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ) {
+        $form = $this->createForm(TerritoireStatutForm::class, $territoire)
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($territoire);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le territoire a été mis à jour');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/updateStatut.twig', [
+            'territoire' => $territoire,
+            'form' => $form->createView(),
+        ]);
+    }
+
     /**
      * Modifie le jeu strategique d'un territoire.
      */
@@ -627,164 +800,5 @@ class TerritoireController extends AbstractController
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
-    }
-
-    /**
-     * Supression d'un territoire.
-     */
-    #[Route('/territoire/{territoire}/delete', name: 'territoire.delete')]
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
-    public function deleteAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-    ) {
-        $form = $this->createForm(TerritoireDeleteForm::class, $territoire)
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $territoire = $form->getData();
-
-            foreach ($territoire->getPersonnages() as $personnage) {
-                $personnage->setTerritoire(null);
-                $entityManager->persist($personnage);
-            }
-
-            foreach ($territoire->getGroupes() as $groupe) {
-                $groupe->removeTerritoire($territoire);
-                $entityManager->persist($groupe);
-            }
-
-            if ($territoire->getGroupe()) {
-                $groupe = $territoire->getGroupe();
-                $groupe->setTerritoire(null);
-                $entityManager->persist($groupe);
-            }
-
-            $entityManager->remove($territoire);
-            $entityManager->flush();
-            $this->addFlash('success', 'Le territoire a été supprimé.');
-
-            return $this->redirectToRoute('territoire.list', [], 303);
-        }
-
-        return $this->render('territoire/delete.twig', [
-            'territoire' => $territoire,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Ajoute un événement à un territoire.
-     */
-    #[Route('/territoire/{territoire}/eventAdd', name: 'territoire.eventAdd')]
-    public function eventAddAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-    ) {
-        $event = $request->get('event');
-
-        $event = new \App\Entity\Chronologie();
-
-        $form = $this->createForm(EventForm::class, $event)
-            ->add('add', SubmitType::class, ['label' => 'Ajouter']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $event = $form->getData();
-
-            $entityManager->persist($event);
-            $entityManager->flush();
-            $this->addFlash('success', 'L\'evenement a été ajouté.');
-
-            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
-        }
-
-        return $this->render('territoire/addEvent.twig', [
-            'territoire' => $territoire,
-            'event' => $event,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Met à jour un événement.
-     */
-    #[Route('/territoire/{territoire}/eventUpdate', name: 'territoire.eventUpdate')]
-    public function eventUpdateAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-    ) {
-        $event = $request->get('event');
-
-        $form = $this->createForm(ChronologieForm::class, $event)
-            ->add('update', SubmitType::class, ['label' => 'Mettre à jour']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $event = $form->getData();
-
-            $entityManager->persist($event);
-            $entityManager->flush();
-            $this->addFlash('success', 'L\'evenement a été modifié.');
-
-            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
-        }
-
-        return $this->render('territoire/updateEvent.twig', [
-            'territoire' => $territoire,
-            'event' => $event,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Supprime un événement.
-     */
-    #[Route('/territoire/{territoire}/eventDelete', name: 'territoire.eventDelete')]
-    public function eventDeleteAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-    ) {
-        $territoire = $request->get('territoire');
-        $event = $request->get('event');
-
-        $form = $this->createForm(ChronologieDeleteForm::class, $event)
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $event = $form->getData();
-
-            $entityManager->remove($event);
-            $entityManager->flush();
-            $this->addFlash('success', 'L\'evenement a été supprimé.');
-
-            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
-        }
-
-        return $this->render('territoire/deleteEvent.twig', [
-            'territoire' => $territoire,
-            'event' => $event,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Detail d'un territoire pour les joueurs.
-     */
-    #[Route('/territoire/{territoire}', name: 'territoire.detail')]
-    // TODO allow user to read it ! BUT NOT EDIT IT
-    public function detailAction(#[MapEntity] Territoire $territoire): Response
-    {
-        return $this->render('territoire/detail.twig', ['territoire' => $territoire]);
     }
 }
