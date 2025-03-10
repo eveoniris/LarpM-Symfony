@@ -6,6 +6,8 @@ use App\Entity\Construction;
 use App\Entity\Groupe;
 use App\Entity\Loi;
 use App\Entity\Territoire;
+use App\Enum\DocumentType;
+use App\Enum\FolderType;
 use App\Enum\Role;
 use App\Form\Territoire\FiefForm;
 use App\Form\Territoire\TerritoireBlasonForm;
@@ -78,8 +80,23 @@ class TerritoireController extends AbstractController
         EntityManagerInterface $entityManager,
         #[MapEntity] Territoire $territoire,
     ): Response {
-        $blason = $territoire->getBlason();
-        $filename = __DIR__.'/../../assets/img/blasons/'.$blason;
+        $filename = __DIR__.'/../../assets/img/blasons/'.$territoire->getBlason();
+
+        // TODO check PersonnageController for Document management
+        if (!file_exists($filename)) {
+            // get old ?
+            $path = $this->fileUploader->getProjectDirectory(
+            ).FolderType::Photos->value.DocumentType::Blason->value.'/';
+            $filename = $path.$territoire->getBlason();
+
+            if (!file_exists($filename)) {
+                $path = $path = $this->fileUploader->getProjectDirectory().'/../larpmanager/assets/img/blasons/';
+                $filename = $path.$territoire->getBlason();
+                if (!file_exists($filename)) {
+                    return $this->sendNoImageAvailable($filename);
+                }
+            }
+        }
 
         $response = new Response(file_get_contents($filename));
         $response->headers->set('Content-Type', 'image/png');
@@ -341,8 +358,8 @@ class TerritoireController extends AbstractController
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int)($request->get('limit') ?: 50);
-        $page = (int)($request->get('page') ?: 1);
+        $limit = (int) ($request->get('limit') ?: 50);
+        $page = (int) ($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 

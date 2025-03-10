@@ -2608,7 +2608,6 @@ class PersonnageController extends AbstractController
         $filename = $personnage->getTrombine($this->fileUploader->getProjectDirectory());
         if (!file_exists($filename)) {
             // get old ?
-            //
             $path = $this->fileUploader->getProjectDirectory(
             ).FolderType::Private->value.DocumentType::Image->value.'/';
             $filename = $path.$personnage->getTrombineUrl();
