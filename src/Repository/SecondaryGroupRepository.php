@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Service\OrderBy;
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Deprecated;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class SecondaryGroupRepository extends BaseRepository
 {
@@ -117,16 +118,37 @@ class SecondaryGroupRepository extends BaseRepository
         return $query->setParameter('uid', $user->getId())->getScalarResult();
     }
 
-    public function userIsGroupLeader(User $user, SecondaryGroup $secondaryGroup): bool
+    public function userIsGroupLeader(UserInterface|User $user, SecondaryGroup $secondaryGroup): bool
     {
         $query = $this->getEntityManager()
             ->createQuery(
                 <<<DQL
                 SELECT MAX(sg) as exists
                 FROM App\Entity\User u 
-                INNER JOIN App\Entity\Personnage p
-                INNER JOIN App\Entity\SecondaryGroup sg
+                INNER JOIN u.personnages as p
+                INNER JOIN p.secondaryGroups as sg
                 WHERE u.id = :uid AND sg.id = :sgid
+                DQL
+            );
+
+        return (bool) $query
+            ->setParameter('uid', $user->getId())
+            ->setParameter('sgid', $secondaryGroup->getId())
+            ->getSingleScalarResult();
+
+    }
+
+    public function userCanSeeSecret(UserInterface|User $user, SecondaryGroup $secondaryGroup): bool
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                SELECT MAX(sg) as exists
+                FROM App\Entity\User u 
+                INNER JOIN u.personnages as p
+                INNER JOIN p.secondaryGroups as sg
+                INNER JOIN sg.membres as m
+                WHERE u.id = :uid AND sg.id = :sgid AND m.secret = 1
                 DQL
             );
 
@@ -142,16 +164,16 @@ class SecondaryGroupRepository extends BaseRepository
         $query = $this->getEntityManager()
             ->createQuery(
                 <<<DQL
-                SELECT 1 FROM App\Entity\membre m 
-                WHERE (m.personnage.id = :pid OR id = :m.id) AND secondary_groupe_id = :sgid
+                SELECT max(m.id) FROM App\Entity\membre m 
+                WHERE (m.personnage = :pid OR m.id = :mid) AND m.secondaryGroup = :sgid
                 DQL
             );
 
-        return $query
+        return (bool) $query
             ->setParameter('pid', $personnage?->getId())
             ->setParameter('mid', $membre?->getId())
             ->setParameter('sgid', $secondaryGroup->getId())
-            ->getScalarResult();
+            ->getSingleScalarResult();
     }
 
     public function visibleForPersonnage(QueryBuilder $queryBuilder, array $personnagesIds): QueryBuilder

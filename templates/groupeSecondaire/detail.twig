@@ -31,30 +31,41 @@
                     <h5>Description (publique)</h5>
                     <p>{{ groupeSecondaire.description|markdown_to_html }}</p>
                 </div>
-                <div class="list-group-item">
-                    <h6>Description (secrete)</h6>
-                    <p>{{ groupeSecondaire.descriptionSecrete|markdown_to_html }}</p>
-                </div>
+                {% if canSeeSecret %}
+                    <div class="list-group-item">
+                        <h6>Description (secrete)</h6>
+                        <p>{{ groupeSecondaire.descriptionSecrete|markdown_to_html }}</p>
+                    </div>
+                {% endif %}
+
+                {% if isAdmin %}
+                    <div class="list-group-item">
+                        <h5>Matériel</h5>
+                        <p>{{ groupeSecondaire.materiel }}</p>
+                        {% if isAdmin %}
+                            <div class="btn-group ">
+                                <a href="{{ path('groupeSecondaire.materiel.update', {'groupeSecondaire': groupeSecondaire.id}) }}"
+                                   class="btn btn-secondary">Modifier</a><br/>
+                                <a href="{{ path('groupeSecondaire.materiel.print', {'groupeSecondaire': groupeSecondaire.id}) }}"
+                                   class="btn btn-secondary">Impression</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
 
                 <div class="list-group-item">
-                    <h5>Matériel</h5>
-                    <p>{{ groupeSecondaire.materiel }}</p>
-                    {% if is_granted('ROLE_SCENARISTE', app.user) %}
-                        <div class="btn-group ">
-                            <a href="{{ path('groupeSecondaire.materiel.update', {'groupeSecondaire': groupeSecondaire.id}) }}"
-                               class="btn btn-secondary">Modifier</a><br/>
-                            <a href="{{ path('groupeSecondaire.materiel.print', {'groupeSecondaire': groupeSecondaire.id}) }}"
-                               class="btn btn-secondary">Impression</a>
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="list-group-item">
                     <h6>Documents</h6>
-                    Ajouter
+
+                    {% if isAdmin %}
+                        Ajouter (à venir)
+                    {% endif %}
+
                 </div>
                 <div class="list-group-item">
                     <h6>Objets</h6>
-                    Ajouter
+                    {% if isAdmin %}
+                        Ajouter (à venir)
+                    {% endif %}
                 </div>
 
                 <div class="list-group-item">
@@ -116,7 +127,7 @@
                         {% if not postulant.personnage.participeTo(gn) %}
                             <p class="list-group-item-text text-warning">Ne participe pas à {{ gn.label }}</p>
                         {% endif %}
-                        {% if isAdmin %}
+                        {% if canLead %}
                             <div class="list-group-item-text d-flex justify-content-center">
                                 <a class="btn btn-secondary me-2"
                                    href="{{ path('groupeSecondaire.acceptPostulant', {'groupeSecondaire': groupeSecondaire.id,'postulant': postulant.id}) }}">Accepter
@@ -160,25 +171,60 @@
             <div class="card mb-2">
                 <div class="card-header d-flex justify-content-between">
                     <h6>Liste des emails des membres du groupe</h6>
+
                     <div class="btn-group">
                         <a class="btn btn-small btn-secondary" type="button" data-bs-toggle="collapse"
                            data-bs-placement="bottom" title="Afficher"
-                           data-bs-target="#{{ groupeSecondaire.id|replace({' ': '_'}) }}_emailsCollapse"
-                           aria-expanded="false">
+                           data-bs-target="#group_membre_emails_emailsCollapse" aria-expanded="false">
                             <i class="fa fa-caret-down"></i> Afficher
                         </a>
                         <a class="btn btn-small btn-secondary copyToClipBoard" type="button"
-                           data-target="#{{ groupeSecondaire.id|replace({' ': '_'}) }}_emails" data-bs-toggle="tooltip"
+                           data-target="#group_membre_emails_emails" data-bs-toggle="tooltip"
                            data-bs-placement="bottom" title="Copier">
                             <i class="fa fa-copy"></i> Copier
                         </a>
                     </div>
                 </div>
-                <div class="collapse" id="{{ groupeSecondaire.id|replace({' ': '_'}) }}_emailsCollapse">
-                    <div class="card-body" id="{{ groupeSecondaire.id|replace({' ': '_'}) }}_emails">
+                <div class="collapse" id="group_membre_emails_emailsCollapse">
+                    <div class="card-body" id="group_membre_emails">
                         {% for membre in groupeSecondaire.membres %}
                             {{ membre.personnage.user.email }},&nbsp;
+                        {% else %}
+                            {% include '_partials/noResult.twig' %}
                         {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-2">
+                <div class="card-header d-flex justify-content-between">
+                    <h6>Liste des emails des membres du groupe participant à {{ gn.label }}</h6>
+
+                    <div class="btn-group">
+                        <a class="btn btn-small btn-secondary" type="button" data-bs-toggle="collapse"
+                           data-bs-placement="bottom" title="Afficher"
+                           data-bs-target="#group_membre_in_gn_emails_emailsCollapse" aria-expanded="false">
+                            <i class="fa fa-caret-down"></i> Afficher
+                        </a>
+                        <a class="btn btn-small btn-secondary copyToClipBoard" type="button"
+                           data-target="#group_membre_in_gn_emails_emails" data-bs-toggle="tooltip"
+                           data-bs-placement="bottom" title="Copier">
+                            <i class="fa fa-copy"></i> Copier
+                        </a>
+                    </div>
+                </div>
+                <div class="collapse" id="group_membre_in_gn_emails_emailsCollapse">
+                    <div class="card-body" id="group_membre_in_gn_emails">
+                        {% set hasMember = false %}
+                        {% for membre in groupeSecondaire.membres %}
+                            {% if membre.personnage.participeTo(gn) %}
+                                {% set hasMember = true %}
+                                {{ membre.personnage.user.email }},&nbsp&nbsp;
+                            {% endif %}
+                        {% endfor %}
+                        {% if not hasMember %}
+                            {% include '_partials/noResult.twig' %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -218,93 +264,34 @@
                                         <br/>
                                     {% endif %}
                                 </div>
-                                <div class="list-group-item-text">
-                                    {% if membre.secret %}
-                                        <p class="text-danger">À accès aux secrets du groupe</p>
+                                {% if canLead %}
+                                    <div class="list-group-item-text">
+                                        {% if membre.secret %}
+                                            <p class="text-danger">À accès aux secrets du groupe</p>
+                                            <a class="btn btn-secondary"
+                                               href="{{ path('groupeSecondaire.admin.secret.off', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
+                                                Retirer l'accès aux secrets
+                                            </a>
+                                        {% else %}
+                                            <p>N'à pas accès aux secrets du groupe</p>
+                                            <a class="btn btn-secondary"
+                                               href="{{ path('groupeSecondaire.admin.secret.on', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
+                                                Donner accès aux secrets
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="list-group-item-text mt-2">
                                         <a class="btn btn-secondary"
-                                           href="{{ path('groupeSecondaire.admin.secret.off', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
-                                            Retirer l'accès aux secrets
+                                           href="{{ path('groupeSecondaire.admin.member.remove', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}">
+                                            Retirer ce membre
                                         </a>
-                                    {% else %}
-                                        <p>N'à pas accès aux secrets du groupe</p>
-                                        <a class="btn btn-secondary"
-                                           href="{{ path('groupeSecondaire.admin.secret.on', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
-                                            Donner accès aux secrets
-                                        </a>
-                                    {% endif %}
-                                </div>
-                                <div class="list-group-item-text mt-2">
-                                    <a class="btn btn-secondary"
-                                       href="{{ path('groupeSecondaire.admin.member.remove', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}">
-                                        Retirer ce membre
-                                    </a>
-                                </div>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
 
                     </div>
                 {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <div class="card mb-2">
-        <div class="card-header d-flex justify-content-between">
-            <h6>Liste des emails des membres du groupe</h6>
-
-            <div class="btn-group">
-                <a class="btn btn-small btn-secondary" type="button" data-bs-toggle="collapse"
-                   data-bs-placement="bottom" title="Afficher"
-                   data-bs-target="#group_membre_emails_emailsCollapse" aria-expanded="false">
-                    <i class="fa fa-caret-down"></i> Afficher
-                </a>
-                <a class="btn btn-small btn-secondary copyToClipBoard" type="button"
-                   data-target="#group_membre_emails_emails" data-bs-toggle="tooltip"
-                   data-bs-placement="bottom" title="Copier">
-                    <i class="fa fa-copy"></i> Copier
-                </a>
-            </div>
-        </div>
-        <div class="collapse" id="group_membre_emails_emailsCollapse">
-            <div class="card-body" id="group_membre_emails">
-                {% for membre in groupeSecondaire.membres %}
-                    {{ membre.personnage.user.email }},&nbsp;
-                {% else %}
-                    {% include '_partials/noResult.twig' %}
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <div class="card mb-2">
-        <div class="card-header d-flex justify-content-between">
-            <h6>Liste des emails des membres du groupe participant à {{ gn.label }}</h6>
-
-            <div class="btn-group">
-                <a class="btn btn-small btn-secondary" type="button" data-bs-toggle="collapse"
-                   data-bs-placement="bottom" title="Afficher"
-                   data-bs-target="#group_membre_in_gn_emails_emailsCollapse" aria-expanded="false">
-                    <i class="fa fa-caret-down"></i> Afficher
-                </a>
-                <a class="btn btn-small btn-secondary copyToClipBoard" type="button"
-                   data-target="#group_membre_in_gn_emails_emails" data-bs-toggle="tooltip"
-                   data-bs-placement="bottom" title="Copier">
-                    <i class="fa fa-copy"></i> Copier
-                </a>
-            </div>
-        </div>
-        <div class="collapse" id="group_membre_in_gn_emails_emailsCollapse">
-            <div class="card-body" id="group_membre_in_gn_emails">
-                {% set hasMember = false %}
-                {% for membre in groupeSecondaire.membres %}
-                    {% if membre.personnage.participeTo(gn) %}
-                        {% set hasMember = true %}
-                        {{ membre.personnage.user.email }},&nbsp&nbsp;
-                    {% endif %}
-                {% endfor %}
-                {% if not hasMember %}
-                    {% include '_partials/noResult.twig' %}
-                {% endif %}
             </div>
         </div>
     </div>

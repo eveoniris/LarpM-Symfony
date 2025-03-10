@@ -23,6 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_USER')]
 class GroupeSecondaireController extends AbstractController
 {
     /**
@@ -176,17 +177,19 @@ class GroupeSecondaireController extends AbstractController
         ]);
     }
 
-    /**
-     * Met à jour un de groupe secondaire.
-     */
-    #[IsGranted('ROLE_USER')]
     #[Route('/groupeSecondaire/{groupeSecondaire}/update', name: 'groupeSecondaire.admin.update')]
-    public function adminUpdateAction(
+    #[Route('/groupeSecondaire/{groupeSecondaire}/update', name: 'groupeSecondaire.update')]
+    public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
     ): RedirectResponse|Response {
         $this->canManageGroup($groupeSecondaire);
+
+        // TODO form for LEADER
+        if (!$this->isGranted('ROLE_SCENARISTE')) {
+            //   throw new AccessDeniedException();
+        }
 
         $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
@@ -274,14 +277,12 @@ class GroupeSecondaireController extends AbstractController
      */
     #[IsGranted('ROLE_USER')]
     #[Route('/groupeSecondaire/{groupeSecondaire}/detail', name: 'groupeSecondaire.admin.detail')]
-    public function adminDetailAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
+    #[Route('/groupeSecondaire/{groupeSecondaire}/detail', name: 'groupeSecondaire.detail')]
+    public function detailAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
     ): Response {
         $this->canSeeGroup($groupeSecondaire);
 
-        // Todo send to twig with an isAdmin
         try {
             $this->canManageGroup($groupeSecondaire);
             $canLead = true;
@@ -289,9 +290,15 @@ class GroupeSecondaireController extends AbstractController
             $canLead = false;
         }
 
+        $isAdmin = $this->isGranted(Role::SCENARISTE->value);
+        $canSeeSecret = $this->canSeeSecret($groupeSecondaire);
+
         return $this->render(
             'groupeSecondaire/detail.twig',
-            $this->buildContextDetailTwig($groupeSecondaire,  ['isAdmin' => $canLead])
+            $this->buildContextDetailTwig(
+                $groupeSecondaire,
+                ['isAdmin' => $isAdmin, 'canLead' => $canLead, 'canSeeSecret' => $canSeeSecret]
+            )
         );
     }
 
@@ -300,7 +307,8 @@ class GroupeSecondaireController extends AbstractController
      */
     #[IsGranted('ROLE_USER')]
     #[Route('/groupeSecondaire/{groupeSecondaire}/addMember', name: 'groupeSecondaire.admin.newMembre')]
-    public function adminNewMembreAction(
+    #[Route('/groupeSecondaire/{groupeSecondaire}/addMember', name: 'groupeSecondaire.newMembre')]
+    public function newMembreAction(
         Request $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
     ): RedirectResponse|Response {
@@ -347,12 +355,8 @@ class GroupeSecondaireController extends AbstractController
         );
     }
 
-    /**
-     * Retire un postulant du groupe.
-     */
-    #[IsGranted('ROLE_USER')]
     #[Route('/groupeSecondaire/{groupeSecondaire}/removePostulant', name: 'groupeSecondaire.removePostulant')]
-    public function adminRemovePostulantAction(
+    public function removePostulantAction(
         Request $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
     ): Response {
@@ -371,12 +375,8 @@ class GroupeSecondaireController extends AbstractController
         );
     }
 
-    /**
-     * Accepte un postulant dans le groupe.
-     */
-    #[IsGranted('ROLE_USER')]
     #[Route('/groupeSecondaire/{groupeSecondaire}/acceptPostulant', name: 'groupeSecondaire.acceptPostulant')]
-    public function adminAcceptPostulantAction(
+    public function acceptPostulantAction(
         Request $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
     ): Response {
@@ -408,12 +408,9 @@ class GroupeSecondaireController extends AbstractController
         );
     }
 
-    /**
-     * Retire un membre du groupe.
-     */
-    #[IsGranted('ROLE_USER')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/removeMember/{membre}', name: 'groupeSecondaire.member.remove')]
     #[Route('/groupeSecondaire/{groupeSecondaire}/removeMember/{membre}', name: 'groupeSecondaire.admin.member.remove')]
-    public function adminRemoveMembreAction(
+    public function removeMembreAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
         #[MapEntity] Membre $membre,
     ): Response {
@@ -430,10 +427,7 @@ class GroupeSecondaireController extends AbstractController
         );
     }
 
-    /**
-     * Retirer le droit de lire les secrets à un utilisateur.
-     */
-    #[IsGranted('ROLE_USER')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/secretOff/{membre}', name: 'groupeSecondaire.secret.off')]
     #[Route('/groupeSecondaire/{groupeSecondaire}/secretOff/{membre}', name: 'groupeSecondaire.admin.secret.off')]
     public function adminSecretOffAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
@@ -451,12 +445,9 @@ class GroupeSecondaireController extends AbstractController
         );
     }
 
-    /**
-     * Active le droit de lire les secrets à un utilisateur.
-     */
-    #[IsGranted('ROLE_USER')]
     #[Route('/groupeSecondaire/{groupeSecondaire}/secretOn/{membre}', name: 'groupeSecondaire.admin.secret.on')]
-    public function adminSecretOnAction(
+    #[Route('/groupeSecondaire/{groupeSecondaire}/secretOn/{membre}', name: 'groupeSecondaire.secret.on')]
+    public function secretOnAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
         #[MapEntity] Membre $membre,
     ): Response {
@@ -474,14 +465,17 @@ class GroupeSecondaireController extends AbstractController
 
     protected function canManageGroup(?SecondaryGroup $secondaryGroup = null, ?Membre $membre = null): void
     {
+        // Admin
         if ($this->isGranted('ROLE_SCENARISTE')) {
             return;
         }
 
-        if ($membre?->getPersonnage()?->getId() === $secondaryGroup?->getPersonnage()?->getId()) {
+        // Leadder from Membre
+        if ($membre && $secondaryGroup && $membre?->getPersonnage()?->getId() === $secondaryGroup?->getPersonnage(
+        )?->getId()) {
             return;
         }
-
+        // Leader from logged
         if (!$membre && $secondaryGroup) {
             /** @var SecondaryGroupRepository $secondaryGroupRepository */
             $secondaryGroupRepository = $this->entityManager->getRepository(SecondaryGroup::class);
@@ -510,5 +504,25 @@ class GroupeSecondaireController extends AbstractController
         }
 
         throw new AccessDeniedException();
+    }
+
+    protected function canSeeSecret(SecondaryGroup $secondaryGroup, ?Membre $membre = null): bool
+    {
+        if ($membre && $membre->getSecret()) {
+            return true;
+        }
+
+        try {
+            $this->canManageGroup($secondaryGroup, $membre);
+
+            return true;
+        } catch (AccessDeniedException $e) {
+        }
+
+        /** @var SecondaryGroupRepository $sgRepository */
+        $sgRepository = $this->entityManager->getRepository(SecondaryGroup::class);
+        $sgRepository->userCanSeeSecret($this->getUser(), $secondaryGroup);
+
+        return false;
     }
 }
