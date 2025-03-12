@@ -2638,7 +2638,6 @@ class ParticipantController extends AbstractController
         $queryBuilder = $secondaryGroupRepository->createQueryBuilder($alias);
         $isAdmin = $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::SCENARISTE->value);
 
-        // TODO : FIX query it's show secret groupe !
         if (!$isAdmin) {
             $queryBuilder = $secondaryGroupRepository->secret($queryBuilder, false);
         }

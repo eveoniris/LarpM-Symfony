@@ -1,8 +1,10 @@
 <div class="panel panel-default">
+    {% if isAdmin %}
     <div class="panel-heading d-flex justify-content-end mb-2">
         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter"
            href="{{ path('debriefing.add', {'groupe': groupe.id}) }}"><i class="fa fa-plus"></i> Ajouter</a>
     </div>
+    {% endif %}
     <div class="panel-body">
         <div class="list-group">
             {% for debriefing in groupe.debriefings %}
@@ -14,6 +16,7 @@
                             {% endif %}
                             <a href="{{ path('debriefing.detail', {'debriefing': debriefing.id}) }}">{{ debriefing.titre|default('Pas de titre') }}</a>
 
+                            {% if isAdmin %}
                             <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
                                 <div class="btn-group" role="group" aria-label="...">
                                     <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
@@ -26,6 +29,7 @@
                                                 class="fa fa-eraser"></i></a>
                                 </div>
                             </div>
+                            {% endif %}
                         </h3>
                     </div>
                     <p class="list-group-item-text text-warning">
@@ -49,6 +53,8 @@
                         Dernière modification : {{ debriefing.updateDate|date('Y-m-d H:i:s') }}
                     </p>
                 </div>
+            {% else %}
+                {% include '_partials/noResult.twig' with {'content': "Le groupe de dispose d'aucun debriefing"} %}
             {% endfor %}
         </div>
     </div>

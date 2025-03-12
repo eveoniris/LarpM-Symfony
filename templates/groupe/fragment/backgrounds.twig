@@ -1,8 +1,10 @@
 <div class="panel panel-default">
-    <div class="panel-heading d-flex justify-content-end mb-2">
-        <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter"
-           href="{{ path('background.add', {'groupe': groupe.id}) }}"><i class="fa fa-plus"></i></a>
-    </div>
+    {% if isAdmin %}
+        <div class="panel-heading d-flex justify-content-end mb-2">
+            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter"
+               href="{{ path('background.add', {'groupe': groupe.id}) }}"><i class="fa fa-plus"></i></a>
+        </div>
+    {% endif %}
     <div class="panel-body">
         <div class="list-group">
             {% for background in groupe.backgrounds %}
@@ -14,18 +16,20 @@
                             {% endif %}
                             <a href="{{ path('background.detail', {'background': background.id}) }}">{{ background.titre|default('Pas de titre') }}</a>
 
-                            <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
-                                <div class="btn-group" role="group" aria-label="...">
-                                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
-                                       title="Modifier"
-                                       href="{{ path('background.update', {'background': background.id}) }}"><i
-                                                class="fa fa-pencil"></i></a>
-                                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
-                                       title="Supprimer"
-                                       href="{{ path('background.delete', {'background': background.id}) }}"><i
-                                                class="fa fa-eraser"></i></a>
+                            {% if isAdmin %}
+                                <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                                    <div class="btn-group" role="group" aria-label="...">
+                                        <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                           title="Modifier"
+                                           href="{{ path('background.update', {'background': background.id}) }}"><i
+                                                    class="fa fa-pencil"></i></a>
+                                        <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                           title="Supprimer"
+                                           href="{{ path('background.delete', {'background': background.id}) }}"><i
+                                                    class="fa fa-eraser"></i></a>
+                                    </div>
                                 </div>
-                            </div>
+                            {% endif %}
                         </h4>
                     </div>
                     <p class="list-group-item-text text-warning">
@@ -41,6 +45,8 @@
                         Dernière modification : {{ background.updateDate|date('Y-m-d H:i:s') }}
                     </p>
                 </div>
+            {% else %}
+                {% include '_partials/noResult.twig' with {'content': "Le groupe de dispose d'aucun background"} %}
             {% endfor %}
         </div>
     </div>

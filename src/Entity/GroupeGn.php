@@ -78,6 +78,60 @@ class GroupeGn extends BaseGroupeGn
         return $this;
     }
 
+    public function isSuzerin(Personnage|Participant $personnage): bool
+    {
+        if ($personnage instanceof Participant) {
+            $personnage = $personnage->getPersonnage();
+        }
+
+        return $this->getSuzerin()?->getId() === $personnage->getId();
+    }
+
+    public function isConnetable(Personnage|Participant $personnage): bool
+    {
+        if ($personnage instanceof Participant) {
+            $personnage = $personnage->getPersonnage();
+        }
+
+        return $this->getConnetable()?->getId() === $personnage->getId();
+    }
+
+    public function isCamarilla(Personnage|Participant $personnage): bool
+    {
+        if ($personnage instanceof Participant) {
+            $personnage = $personnage->getPersonnage();
+        }
+
+        return $this->getCamarilla()?->getId() === $personnage->getId();
+    }
+
+    public function isIntendant(Personnage|Participant $personnage): bool
+    {
+        if ($personnage instanceof Participant) {
+            $personnage = $personnage->getPersonnage();
+        }
+
+        return $this->getIntendant()?->getId() === $personnage->getId();
+    }
+
+    public function isNavigateur(Personnage|Participant $personnage): bool
+    {
+        if ($personnage instanceof Participant) {
+            $personnage = $personnage->getPersonnage();
+        }
+
+        return $this->getNavigateur()?->getId() === $personnage->getId();
+    }
+
+    public function isResponsable(Personnage|Participant $personnage): bool
+    {
+        if ($personnage instanceof Participant) {
+            return $this->getParticipant()?->getId() === $personnage->getId();
+        }
+
+        return $this->getParticipant()?->getPersonnage()?->getId() === $personnage->getId();
+    }
+
     public function addBateau(): static
     {
         ++$this->bateaux;

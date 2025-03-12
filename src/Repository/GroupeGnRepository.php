@@ -1,15 +1,11 @@
 <?php
 
-
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use App\Entity\GroupeGn;
+use App\Entity\User;
+use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * LarpManager\Repository\GroupeGnRepository.
- *
- * @author kevin
- */
 class GroupeGnRepository extends BaseRepository
 {
     /**
@@ -35,5 +31,24 @@ class GroupeGnRepository extends BaseRepository
             ->createQuery('SELECT g FROM App\Entity\GroupeGn g JOIN g.gn gn WHERE gn.id = :gnId')
             ->setParameter('gnId', $gnId)
             ->getResult();
+    }
+
+    public function userIsMemberOfGroupe(UserInterface|User $user, GroupeGn $groupeGn): bool
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                SELECT MAX(grp.id) as exists
+                FROM App\Entity\User u 
+                INNER JOIN u.participants as part
+                INNER JOIN part.groupeGn as grp
+                WHERE u.id = :uid AND grp.id = :gid
+                DQL
+            );
+
+        return (bool) $query
+            ->setParameter('uid', $user->getId())
+            ->setParameter('gid', $groupeGn->getId())
+            ->getSingleScalarResult();
     }
 }

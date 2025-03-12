@@ -1,13 +1,39 @@
 <div class="card text-bg mb-3">
-    {% if session.getParticipant is not null and session.getParticipant.getId() == participant.getId() %}
-        <div class="card-header text-center text-bg-primary">
-            <i class="fa-solid fa-crown text-warning"></i> Chef de groupe
-        </div>
-    {% else %}
-        <div class="card-header text-center text-bg-secondary">
-            Membre {# Todo role ? #}
-        </div>
-    {% endif %}
+    {% set hasTitre = false %}
+    <div class="card-header text-center bg-body-secondary d-flex justify-content-around">
+        {% if session.getParticipant is not null and session.isResponsable(participant) %}
+            {% set hasTitre = true %}
+            <span><i class="fa-solid fa-user-tie text-warning"></i> Chef de groupe</span>
+        {% endif %}
+        {% if session.isSuzerin(participant) %}
+            <span>
+                <i class="fa-solid fa-crown text-warning"></i> Suzerin
+        </span>
+            {% set hasTitre = true %}
+        {% else %}
+            {% if session.getCamarilla.getId == participant.getPersonnage().getId() %}
+                <span><i class="fa-solid fa-brain text-warning"></i> Eminence grise</span>
+                {% set hasTitre = true %}
+            {% endif %}
+            {% if session.getNavigateur.getId == participant.getPersonnage().getId() %}
+                <span><i class="fa-solid fa-compass text-warning"></i> Navigateur</span>
+                {% set hasTitre = true %}
+            {% endif %}
+            {% if session.getConnetable.getId == participant.getPersonnage().getId() %}
+                <span><i class="fa-solid fa-chess-rook text-warning"></i> Chef de guerre</span>
+                {% set hasTitre = true %}
+            {% endif %}
+            {% if session.getIntendant.getId == participant.getPersonnage().getId() %}
+                <span><i class="fa-solid fa-boxes text-warning"></i> Intendant</span>
+                {% set hasTitre = true %}
+            {% endif %}
+            {% if hasTitre == false %}
+                Membre
+            {% endif %}
+        {% endif %}
+    </div>
+
+
     <div class="card-img text-center">
         {# TODO get good trombine ? #}
         {% if participant.personnage %}
@@ -46,14 +72,16 @@
             </div>
         </li>
 
-        <li class="list-group-item list-group-item-secondary m-0 p-0 g-0">
-            <div class="d-flex justify-content-start">
-                <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
-                    Email
+        {% if canSeePrivateDetail %}
+            <li class="list-group-item list-group-item-secondary m-0 p-0 g-0">
+                <div class="d-flex justify-content-start">
+                    <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
+                        Email
+                    </div>
+                    <div class="col-md-10 px-2 align-middle py-1">{{ participant.user.email }}</div>
                 </div>
-                <div class="col-md-10 px-2 align-middle py-1">{{ participant.user.email }}</div>
-            </div>
-        </li>
+            </li>
+        {% endif %}
 
         <li class="list-group-item m-0 p-0 g-0">
             <div class="d-flex justify-content-start">
@@ -63,16 +91,20 @@
                 <div class="col-md-10 px-2">
 
                     {% if participant.personnage %}
-                        <a href="{{path('personnage.admin.detail', {'personnage': participant.personnage.id})}}">
+                        <a href="{{ path('personnage.admin.detail', {'personnage': participant.personnage.id}) }}">
 
-                        #{{ participant.personnage.id }} - {{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}
-                        - {{ participant.personnage.classeName }}
+                            #{{ participant.personnage.id }}
+                            - {{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}
+                            - {{ participant.personnage.classeName }}
                         </a>
 
-                        <br />
-                        <a
-                                href="{{ path('participant.personnage.remove', {'participant': participant.id, 'personnage': participant.personnage.id}) }}">Retirer
-                            le personnage (cela ne retirera pas le joueur du groupe)</a>
+                        {% if isAdmin %}
+                            <br/>
+                            <a
+                                    class="text-warning"
+                                    href="{{ path('participant.personnage.remove', {'participant': participant.id, 'personnage': participant.personnage.id}) }}">Retirer
+                                le personnage (cela ne retirera pas le joueur du groupe)</a>
+                        {% endif %}
                     {% else %}
                         N'a pas encore créé son personnage
                     {% endif %}
@@ -81,24 +113,26 @@
             </div>
         </li>
 
-        <li class="list-group-item m-0 p-0 g-0">
-            <div class="d-flex justify-content-start">
-                <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
-                    Billet
-                </div>
-                <div class="col-md-10 px-2 align-middle py-1">
+        {% if isAdmin %}
+            <li class="list-group-item m-0 p-0 g-0">
+                <div class="d-flex justify-content-start">
+                    <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
+                        Billet
+                    </div>
+                    <div class="col-md-10 px-2 align-middle py-1">
 
-                    {% if participant.billet %}
-                        <a href="{{ path('billet.detail', {'billet': participant.getBillet().getId()}) }}">
-                            <span class="text-success">{{ participant.billet }}</span>
-                        </a>
-                    {% else %}
-                        <span class="text-danger">Ce joueur n'a pas encore de billet.</span>
-                    {% endif %}
+                        {% if participant.billet %}
+                            <a href="{{ path('billet.detail', {'billet': participant.getBillet().getId()}) }}">
+                                <span class="text-success">{{ participant.billet }}</span>
+                            </a>
+                        {% else %}
+                            <span class="text-danger">Ce joueur n'a pas encore de billet.</span>
+                        {% endif %}
 
+                    </div>
                 </div>
-            </div>
-        </li>
+            </li>
+        {% endif %}
 
     </ul>
 
