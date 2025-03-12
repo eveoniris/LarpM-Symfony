@@ -121,11 +121,13 @@
                         {% endif %}
 
                         {% if canSeePrivateDetail %}
+                        {% if isAdmin %}
                             <li class="nav-item">
                                 <a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
                                    href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'enveloppe', 'groupeGn': groupeGnId})) }}"
                                 >Enveloppe</a>
                             </li>
+                        {% endif %}
 
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle{% if tab == 'domaine' %} active{% endif %}"

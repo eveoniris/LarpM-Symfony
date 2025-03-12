@@ -42,7 +42,7 @@ use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
-#[IsGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_USER')]
 #[Route('/groupe', name: 'groupe.')]
 class GroupeController extends AbstractController
 {
@@ -106,6 +106,7 @@ class GroupeController extends AbstractController
      * Modification de la description du groupe.
      */
     #[Route('/{groupe}/description', name: 'description')]
+    #[IsGranted('ROLE_SCENARISTE')]
     public function descriptionAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -135,6 +136,7 @@ class GroupeController extends AbstractController
     /**
      * Choix du scenariste.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/scenariste', name: 'scenariste')]
     public function scenaristeAction(
         Request $request,
@@ -165,6 +167,7 @@ class GroupeController extends AbstractController
     /**
      * fourni le tableau de quête pour tous les groupes.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/quetes', name: 'quetes')]
     public function quetesAction(
         Request $request,
@@ -262,6 +265,7 @@ class GroupeController extends AbstractController
     /**
      * Générateur de quêtes commerciales.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/quete', name: 'quete')]
     public function queteAction(
         Request $request,
@@ -284,6 +288,7 @@ class GroupeController extends AbstractController
     /**
      * Modifie les ingredients du groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/ingredients', name: 'ingredients')]
     public function adminIngredientAction(
         Request $request,
@@ -359,6 +364,7 @@ class GroupeController extends AbstractController
     /**
      * Modifie les ressources du groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/ressources', name: 'ressources')]
     public function adminRessourceAction(
         Request $request,
@@ -453,6 +459,7 @@ class GroupeController extends AbstractController
     /**
      * AModifie la richesse du groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/richesse', name: 'richesse')]
     public function adminRichesseAction(
         Request $request,
@@ -483,6 +490,7 @@ class GroupeController extends AbstractController
     /**
      * Ajoute un document dans le matériel du groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/documents', name: 'documents')]
     public function adminDocumentAction(
         Request $request,
@@ -513,6 +521,7 @@ class GroupeController extends AbstractController
     /**
      * Gestion des objets du groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/items', name: 'items')]
     public function adminItemAction(
         Request $request,
@@ -543,6 +552,7 @@ class GroupeController extends AbstractController
     /**
      * Gestion de l'enveloppe de groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/envelope', name: 'envelope')]
     public function envelopeAction(
         Request $request,
@@ -573,9 +583,9 @@ class GroupeController extends AbstractController
     /**
      * Gestion des membres du groupe.
      */
-    public function UsersAction(Request $request, EntityManagerInterface $entityManager, Groupe $groupe): Response
+    public function usersAction(Request $request, EntityManagerInterface $entityManager, Groupe $groupe): Response
     {
-        return $this->render('groupe/Users.twig', [
+        return $this->render('groupe/users.twig', [
             'groupe' => $groupe,
         ]);
     }
@@ -583,6 +593,7 @@ class GroupeController extends AbstractController
     /**
      * vérouillage d'un groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/lock', name: 'lock')]
     public function lockAction(
         Request $request,
@@ -604,6 +615,7 @@ class GroupeController extends AbstractController
     /**
      * devérouillage d'un groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/unlock', name: 'unlock')]
     public function unlockAction(
         Request $request,
@@ -622,6 +634,7 @@ class GroupeController extends AbstractController
     /**
      * rendre disponible un groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     public function availableAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -639,6 +652,7 @@ class GroupeController extends AbstractController
     /**
      * rendre indisponible un groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     public function unvailableAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -656,6 +670,7 @@ class GroupeController extends AbstractController
     /**
      * Lier un pays à un groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/pays', name: 'pays')]
     public function paysAction(
         Request $request,
@@ -704,6 +719,7 @@ class GroupeController extends AbstractController
     /**
      * Ajout d'un territoire sous le controle du groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/territoire/add', name: 'territoire.add')]
     public function territoireAddAction(
         Request $request,
@@ -751,6 +767,7 @@ class GroupeController extends AbstractController
     /**
      * Retirer un territoire du controle du groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/territoire/{territoire}/remove', name: 'territoire.remove')]
     public function territoireRemoveAction(
         Request $request,
@@ -784,6 +801,7 @@ class GroupeController extends AbstractController
     /**
      * Gestion de la restauration d'un groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/restauration', name: 'restauration')]
     public function restaurationAction(
         Request $request,
@@ -847,6 +865,7 @@ class GroupeController extends AbstractController
     /**
      * Impression matériel pour les personnages du groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/print/materiel', name: 'print.materiel')]
     public function printMaterielAction(
         Request $request,
@@ -866,6 +885,7 @@ class GroupeController extends AbstractController
     /**
      * Impression background pour les personnages du groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/print/background', name: 'print.background')]
     public function printBackgroundAction(
         Request $request,
@@ -881,6 +901,7 @@ class GroupeController extends AbstractController
      * Imprimmer toutes les enveloppes de tous les groupes.
      */
     /** @deprecated:  see GnController**/
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/print', name: 'print')]
     public function printAllAction(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -908,6 +929,7 @@ class GroupeController extends AbstractController
     /**
      * Impression matériel pour le groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/print/materiel/groupe', name: 'print.materiel.groupe')]
     public function printMaterielGroupeAction(
         Request $request,
@@ -933,6 +955,7 @@ class GroupeController extends AbstractController
     /**
      * Impression fiche de perso pour le groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/print/perso', name: 'print.perso')]
     public function printPersoAction(
         Request $request,
@@ -970,6 +993,7 @@ class GroupeController extends AbstractController
     /**
      * Visualisation des liens entre groupes.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/diplomatie', name: 'diplomatie')]
     public function diplomatieAction(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -984,6 +1008,7 @@ class GroupeController extends AbstractController
     /**
      * Impression des liens entre groupes.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/diplomatie/print', name: 'diplomatie.print')]
     public function diplomatiePrintAction(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -1006,6 +1031,7 @@ class GroupeController extends AbstractController
     /**
      * Liste des groupes.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('', name: 'list')]
     public function listAction(
         Request $request,
@@ -1063,6 +1089,7 @@ class GroupeController extends AbstractController
     /**
      * Ajouter un participant dans un groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     public function adminParticipantAddAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -1121,6 +1148,7 @@ class GroupeController extends AbstractController
     /**
      * Retirer un participant du groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     public function adminParticipantRemoveAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -1159,6 +1187,7 @@ class GroupeController extends AbstractController
     /**
      * Recherche d'un groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     public function searchAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(FindGroupeForm::class, [])
@@ -1210,6 +1239,7 @@ class GroupeController extends AbstractController
     /**
      * Modification du nombre de place disponibles dans un groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     public function placeAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $id = $request->get('index');
@@ -1241,6 +1271,7 @@ class GroupeController extends AbstractController
     /**
      * Ajout d'un background à un groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     public function addBackgroundAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -1271,6 +1302,7 @@ class GroupeController extends AbstractController
     /**
      * Mise à jour du background d'un groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     public function updateBackgroundAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -1303,6 +1335,7 @@ class GroupeController extends AbstractController
     /**
      * Ajout d'un groupe.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/add', name: 'add')]
     public function addAction(Request $request): RedirectResponse|Response
     {
@@ -1318,6 +1351,7 @@ class GroupeController extends AbstractController
      * Modification d'un groupe.
      */
     // TODO
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/update/{groupe}', name: 'update')]
     public function updateAction(
         Request $request,
@@ -1437,6 +1471,8 @@ class GroupeController extends AbstractController
         #[MapEntity] ?Groupe $groupe,
         #[MapEntity] ?Gn $gn = null,
     ): RedirectResponse|Response {
+        // TODO had access like personnage detail
+
         /*
          * Si le groupe existe, on affiche son détail
          * Sinon on envoie une erreur
@@ -1486,6 +1522,7 @@ class GroupeController extends AbstractController
         );
     }
 
+    #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/delete', name: 'delete', requirements: ['groupe' => Requirement::DIGITS], methods: [
         'DELETE',
         'GET',
@@ -1514,6 +1551,7 @@ class GroupeController extends AbstractController
     /**
      * Exportation de la liste des groupes au format CSV.
      */
+    #[IsGranted('ROLE_SCENARISTE')]
     public function exportAction(Request $request, EntityManagerInterface $entityManager): void
     {
         $repo = $entityManager->getRepository(Groupe::class);

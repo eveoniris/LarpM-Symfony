@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Entity\Groupe;
 use App\Entity\GroupeGn;
 use App\Entity\Participant;
+use App\Entity\User;
 use App\Enum\Role;
 use App\Form\GroupeGn\GroupeGnForm;
 use App\Form\GroupeGn\GroupeGnOrdreForm;
 use App\Form\GroupeGn\GroupeGnPlaceAvailableForm;
 use App\Form\GroupeGn\GroupeGnResponsableForm;
+use App\Repository\GroupeGnRepository;
 use App\Repository\ParticipantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -20,6 +22,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * LarpManager\Controllers\GroupeGnController.
@@ -85,22 +88,8 @@ class GroupeGnController extends AbstractController
             $this->redirectToRoute('app_login');
         }
 
-        $groupe = $groupeGn->getGroupe();
-        $canSeePrivateDetail = $this->isGranted(Role::SCENARISTE->value);
-        // Est-ce un membre du groupe ?
-        if (!$canSeePrivateDetail) {
-            $responsable = $groupe->getUserRelatedByResponsableId();
-            $user = $this->getUser();
-            if ($responsable && $user && $responsable?->getId() === $user?->getId()) {
-                $canSeePrivateDetail = true;
-            } else {
-                /** @var Participant $participant */
-                $participant = $this->getUser()?->getLastParticipant();
-                if ($participant) {
-                    $canSeePrivateDetail = $participant->getGroupeGn()?->getGroupe()->getId() === $groupe->getId();
-                }
-            }
-        }
+        $canManage = $this->canManageGroup($groupeGn);
+        $canSeePrivateDetail = $canManage || $this->canSeeGroup($groupeGn);
 
         return $this->render('groupe/detail.twig', [
             'groupe' => $groupeGn->getGroupe(),
@@ -108,6 +97,8 @@ class GroupeGnController extends AbstractController
             'participant' => $participant,
             'groupeGn' => $groupeGn,
             'canSeePrivateDetail' => $canSeePrivateDetail,
+            'canManage' => $canManage,
+            'isAdmin' => $this->isGranted(Role::SCENARISTE, Role::ORGA),
             'gn' => $groupeGn->getGn(),
         ]);
     }
@@ -459,7 +450,6 @@ class GroupeGnController extends AbstractController
                 $groupeGn->setNavigateur(null);
             }
 
-
             $entityManager->persist($groupeGn);
             $entityManager->flush();
             $redirect = $form->getExtraData()['redirect'] ?? null;
@@ -481,5 +471,55 @@ class GroupeGnController extends AbstractController
             'groupeGn' => $groupeGn,
             'form' => $form->createView(),
         ]);
+    }
+
+    protected function canManageGroup(?GroupeGn $groupeGn = null, bool $throw = false): bool
+    {
+        // Admin
+        if ($this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value)) {
+            return true;
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $throw ? throw new AccessDeniedException() : false;
+        }
+
+        $groupe = $groupeGn?->getGroupe();
+
+        // Est le responsable ?
+        if ($groupe && $groupe->getUserRelatedByResponsableId()?->getId() === $user->getId()) {
+            return true;
+        }
+
+        return $throw ? throw new AccessDeniedException() : false;
+    }
+
+    protected function canSeeGroup(?GroupeGn $groupeGn = null, bool $throw = false): bool
+    {
+        if ($this->canManageGroup($groupeGn, false)) {
+            return true;
+        }
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $throw ? throw new AccessDeniedException() : false;
+        }
+
+        if (!$groupeGn) {
+            return $throw ? throw new AccessDeniedException() : false;
+        }
+
+        /** @var GroupeGnRepository $groupeGnRepository */
+        $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
+
+        if ($groupeGnRepository->userIsMemberOfGroupe($user, $groupeGn)) {
+            return true;
+        }
+
+        return $throw ? throw new AccessDeniedException() : false;
     }
 }

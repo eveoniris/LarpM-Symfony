@@ -82,7 +82,6 @@ class TerritoireController extends AbstractController
     ): Response {
         $filename = __DIR__.'/../../assets/img/blasons/'.$territoire->getBlason();
 
-        // TODO check PersonnageController for Document management
         if (!file_exists($filename)) {
             // get old ?
             $path = $this->fileUploader->getProjectDirectory(
@@ -90,7 +89,7 @@ class TerritoireController extends AbstractController
             $filename = $path.$territoire->getBlason();
 
             if (!file_exists($filename)) {
-                $path = $path = $this->fileUploader->getProjectDirectory().'/../larpmanager/assets/img/blasons/';
+                $path = $this->fileUploader->getProjectDirectory().'/../larpmanager/private/img/blasons/';
                 $filename = $path.$territoire->getBlason();
                 if (!file_exists($filename)) {
                     return $this->sendNoImageAvailable($filename);

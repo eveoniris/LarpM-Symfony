@@ -92,96 +92,32 @@ class GroupeGnForm extends AbstractType
             return;
         }
 
-        $builder->add('suzerin', EntityType::class, [
-            'label' => 'Suzerin',
-            'choice_label' => 'nom',
+        $fields = [
+            'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId().' - '.$personnage->getNameSurname(),
             'autocomplete' => true,
             'required' => false,
             'class' => Personnage::class,
+            'placeholder' => 'Choisissez un personnage',
+            'empty_data' => null,
             // On veut tous les personnages vivant du GN (pas que ceux du groupe)
             'query_builder' => static fn (PersonnageRepository $personnageRepository,
             ) => $personnageRepository
                 ->createQueryBuilder('p')
                 ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
-                ->innerjoin('parti.groupeGns', 'g', Join::WITH, 'g.id = parti.groupeGn')
-                ->where('p.vivant = :vivant')
+               // ->innerjoin('parti.groupeGn', 'g', Join::WITH, 'g.id = parti.groupeGn')
+                ->where('p.vivant = :vivant AND parti.gn = :gnid')
                 // ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
                 ->setParameter('vivant', true)
+                ->setParameter('gnid', $groupeGn->getGn()->getId())
                 // ->setParameter('groupe_gn_id', $builder->getData()->getId())
                 ->orderBy('p.nom', 'ASC'),
-        ])
-            ->add('connetable', EntityType::class, [
-                'label' => 'Chef de guerre',
-                'choice_label' => 'nom',
-                'autocomplete' => true,
-                'required' => false,
-                'class' => Personnage::class,
-                // On veut tous les personnages vivant du GN (pas que ceux du groupe)
-                'query_builder' => static fn (PersonnageRepository $personnageRepository,
-                ) => $personnageRepository
-                    ->createQueryBuilder('p')
-                    ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
-                    ->innerjoin('parti.groupeGns', 'g', Join::WITH, 'g.id = parti.groupeGn')
-                    ->where('p.vivant = :vivant')
-                    // ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
-                    ->setParameter('vivant', true)
-                    // ->setParameter('groupe_gn_id', $builder->getData()->getId())
-                    ->orderBy('p.nom', 'ASC'),
-            ])
-            ->add('intendant', EntityType::class, [
-                'label' => 'Intendant',
-                'choice_label' => 'nom',
-                'autocomplete' => true,
-                'required' => false,
-                'class' => Personnage::class,
-                // On veut tous les personnages vivant du GN (pas que ceux du groupe)
-                'query_builder' => static fn (PersonnageRepository $personnageRepository,
-                ) => $personnageRepository
-                    ->createQueryBuilder('p')
-                    ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
-                    ->innerjoin('parti.groupeGns', 'g', Join::WITH, 'g.id = parti.groupeGn')
-                    ->where('p.vivant = :vivant')
-                    // ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
-                    ->setParameter('vivant', true)
-                    // ->setParameter('groupe_gn_id', $builder->getData()->getId())
-                    ->orderBy('p.nom', 'ASC'),
-            ])
-            ->add('navigateur', EntityType::class, [
-                'label' => 'Navigateur',
-                'choice_label' => 'nom',
-                'autocomplete' => true,
-                'required' => false,
-                'class' => Personnage::class,
-                // On veut tous les personnages vivant du GN (pas que ceux du groupe)
-                'query_builder' => static fn (PersonnageRepository $personnageRepository,
-                ) => $personnageRepository
-                    ->createQueryBuilder('p')
-                    ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
-                    ->innerjoin('parti.groupeGns', 'g', Join::WITH, 'g.id = parti.groupeGn')
-                    ->where('p.vivant = :vivant')
-                    // ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
-                    ->setParameter('vivant', true)
-                    // ->setParameter('groupe_gn_id', $builder->getData()->getId())
-                    ->orderBy('p.nom', 'ASC'),
-            ])
-            ->add('camarilla', EntityType::class, [
-                'label' => 'Eminence grise',
-                'choice_label' => 'nom',
-                'autocomplete' => true,
-                'required' => false,
-                'class' => Personnage::class,
-                // On veut tous les personnages vivant du GN (pas que ceux du groupe)
-                'query_builder' => static fn (PersonnageRepository $personnageRepository,
-                ) => $personnageRepository
-                    ->createQueryBuilder('p')
-                    ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
-                    ->innerjoin('parti.groupeGns', 'g', Join::WITH, 'g.id = parti.groupeGn')
-                    ->where('p.vivant = :vivant')
-                    // ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
-                    ->setParameter('vivant', true)
-                    // ->setParameter('groupe_gn_id', $builder->getData()->getId())
-                    ->orderBy('p.nom', 'ASC'),
-            ]);
+        ];
+
+        $builder->add('suzerin', EntityType::class, [...$fields, 'label' => 'Suzerin'])
+            ->add('connetable', EntityType::class,  [...$fields, 'label' => 'Chef de guerre'])
+            ->add('intendant', EntityType::class,  [...$fields, 'label' => 'Intendant'])
+            ->add('navigateur', EntityType::class,  [...$fields, 'label' => 'Navigateur'])
+            ->add('camarilla', EntityType::class,  [...$fields, 'label' => 'Eminence grise']);
     }
 
     /**
