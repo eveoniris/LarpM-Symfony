@@ -40,91 +40,13 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected LoggerInterface $logger,
         protected PersonnageService $personnageService,
         // Cache $cache, // TODO : later
-    ) {
-    }
-
-    protected function sendNoImageAvailable($path = 'no'): BinaryFileResponse
+    )
     {
-        $response = new BinaryFileResponse(
-            $this->fileUploader->getDirectory(
-                FolderType::Private
-            ).'No_Image_Available.jpg'
-        );
-        $response->headers->set('Content-Type', 'image/jpeg');
-        $response->headers->set('Content-Control', 'private');
-        if ($this->isGranted('ROLE_ADMIN')) {
-            $response->headers->set('Content-X-Path', $path);
-        }
-
-        return $response->send();
-    }
-
-    protected function render(string $view, array $parameters = [], ?Response $response = null): Response
-    {
-        // TODO enhance
-        $request = $this->requestStack?->getCurrentRequest();
-        if ($this->isGranted('ROLE_ADMIN') && $this->container->get('twig')->getLoader()->exists('admin/'.$view)) {
-            $currentParameters = $request->attributes->get('_route_params');
-            $currentParameters['playerView'] = !$request->get('playerView');
-
-            $parameters['playerViewToggleUrl'] = $this->generateUrl(
-                $request->attributes->get('_route'),
-                $currentParameters
-            );
-
-            if (false !== (bool) $request->get('playerView')) {
-                return parent::render('admin/'.$view, $parameters, $response);
-            }
-        }
-
-        return parent::render($view, $parameters, $response);
-    }
-
-    protected function getRequestLimit(int $defLimit = 10): int
-    {
-        return $this->pageRequest->getLimit($defLimit);
-    }
-
-    protected function getRequestPage(int $defPage = 1): int
-    {
-        return $this->pageRequest->getPage($defPage);
-    }
-
-    protected function getRequestOrderDir(string $defOrderDir = 'ASC'): string
-    {
-        return $this->pageRequest->getOrderBy()->setDefaultOrderDir($defOrderDir)->getSort();
     }
 
     protected function ListSearchForm(): FormInterface
     {
         return $this->pageRequest->getForm();
-    }
-
-    // TODO change to orderBy service
-    #[Deprecated]
-    protected function getRequestOrder(
-        string $defOrderBy = 'id',
-        string $defOrderDir = 'ASC',
-        ?string $alias = null,
-        ?array $allowedFields = null, // TODO: check SF security Form on Self Entity's attributes
-    ): array {
-        $request = $this->requestStack?->getCurrentRequest();
-        if (!$request) {
-            return [];
-        }
-
-        $orderBy = $request->query->getString('order_by', $defOrderBy);
-        $orderDir = $this->getRequestOrderDir($defOrderDir);
-
-        if (!empty($allowedFields) && !\in_array($orderBy, $allowedFields, true)) {
-            $orderBy = $defOrderBy;
-        }
-
-        if ($alias) {
-            $orderBy = $alias.'.'.$orderBy;
-        }
-
-        return [$orderBy => $orderDir];
     }
 
     protected function genericDelete(
@@ -169,6 +91,71 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         ]);
     }
 
+    protected function render(string $view, array $parameters = [], ?Response $response = null): Response
+    {
+        // TODO enhance
+        $request = $this->requestStack?->getCurrentRequest();
+        if ($this->isGranted('ROLE_ADMIN') && $this->container->get('twig')->getLoader()->exists('admin/'.$view)) {
+            $currentParameters = $request->attributes->get('_route_params');
+            $currentParameters['playerView'] = !$request->get('playerView');
+
+            $parameters['playerViewToggleUrl'] = $this->generateUrl(
+                $request->attributes->get('_route'),
+                $currentParameters
+            );
+
+            if (false !== (bool)$request->get('playerView')) {
+                return parent::render('admin/'.$view, $parameters, $response);
+            }
+        }
+
+        return parent::render($view, $parameters, $response);
+    }
+
+    protected function getRequestLimit(int $defLimit = 10): int
+    {
+        return $this->pageRequest->getLimit($defLimit);
+    }
+
+    #[Deprecated]
+    protected function getRequestOrder(
+        string $defOrderBy = 'id',
+        string $defOrderDir = 'ASC',
+        ?string $alias = null,
+        ?array $allowedFields = null, // TODO: check SF security Form on Self Entity's attributes
+    ): array
+    {
+        $request = $this->requestStack?->getCurrentRequest();
+        if (!$request) {
+            return [];
+        }
+
+        $orderBy = $request->query->getString('order_by', $defOrderBy);
+        $orderDir = $this->getRequestOrderDir($defOrderDir);
+
+        if (!empty($allowedFields) && !\in_array($orderBy, $allowedFields, true)) {
+            $orderBy = $defOrderBy;
+        }
+
+        if ($alias) {
+            $orderBy = $alias.'.'.$orderBy;
+        }
+
+        return [$orderBy => $orderDir];
+    }
+
+    protected function getRequestOrderDir(string $defOrderDir = 'ASC'): string
+    {
+        return $this->pageRequest->getOrderBy()->setDefaultOrderDir($defOrderDir)->getSort();
+    }
+
+    // TODO change to orderBy service
+
+    protected function getRequestPage(int $defPage = 1): int
+    {
+        return $this->pageRequest->getPage($defPage);
+    }
+
     protected function handleCreateOrUpdate(
         Request $request,
         $entity,
@@ -193,12 +180,14 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 ?->getArguments()['name'] ?? '';
         } catch (\ErrorException $e) {
             $this->logger->error($e);
-            throw new \RuntimeException(<<<'EOF'
+            throw new \RuntimeException(
+                <<<'EOF'
                 Unable to get the root route.
                 If you do not define a main route as class attributes (ie: #[Route('/groupe', name: 'groupe.')]), 
                 You may need to provide the argument $routes['root'] from the calling methods.
                 Sample: ['root' => 'groupe.'] from GroupeController::handleCreateOrUpdate()
-                EOF);
+                EOF
+            );
         }
 
         $routes['add'] ??= $root.'add';
@@ -303,7 +292,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
             return $form->has('update')
                 ? $this->redirectToRoute($routes['list'])
-                : $this->redirectToRoute($routes['detail']);
+                : $this->redirectToRoute($routes['detail'], [trim($routes['root'], '.') => $entity->getId()]);
         }
 
         return $this->render('_partials/addOrUpdateForm.twig', [
@@ -314,47 +303,15 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         ]);
     }
 
-    protected function sendDocument(mixed $entity, ?Document $document = null): BinaryFileResponse
+    protected function redirectToReferer(Request $request): ?RedirectResponse
     {
-        // TODO check usage of entity Document
+        $referer = $request->headers->get('referer');
 
-        // TODO on ne peux télécharger que les documents des compétences que l'on connait
-        // TODO on ne peux télécharger que les documents auquel on a accéss
-        if (null === $entity && $document instanceof Document) {
-            $entity = $document;
+        if ($referer) {
+            return $this->redirect($referer, 303);
         }
 
-        if ($entity && !method_exists($entity, 'getDocument')) {
-            throw new \RuntimeException('Missing method getDocument for given Entity');
-        }
-
-        if ($entity && !method_exists($entity, 'getDocumentUrl')) {
-            throw new \RuntimeException('Missing method getDocumentUrl for given Entity');
-        }
-
-        if ($entity && !method_exists($entity, 'getPrintLabel')) {
-            throw new \RuntimeException('Missing method getPrintLabel for given Entity');
-        }
-
-        $filename = $entity->getDocument($this->fileUploader->getProjectDirectory());
-        $documentUrl = $entity->getDocumentUrl();
-        $documentLabel = $entity->getPrintLabel();
-
-        if (!$documentUrl || !file_exists($filename)) {
-            throw new NotFoundHttpException("Le document n'existe pas");
-        }
-
-        $response = (new BinaryFileResponse($filename, Response::HTTP_OK))
-            ->setContentDisposition(
-                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                $documentLabel.'.pdf'
-            );
-
-        $response->headers->set('Content-Control', 'private');
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-length', filesize($filename));
-
-        return $response;
+        return null;
     }
 
     protected function sendCsv(
@@ -395,6 +352,77 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
         return $response;
     }
+
+    protected function sendDocument(mixed $entity, ?Document $document = null, bool $hasAttachement = true): BinaryFileResponse
+    {
+        // TODO check usage of entity Document
+
+        // TODO on ne peux télécharger que les documents des compétences que l'on connait
+        // TODO on ne peux télécharger que les documents auquel on a accéss
+        if (null === $entity && $document instanceof Document) {
+            $entity = $document;
+        }
+
+        if (method_exists($entity, 'getHasDocument')) {
+            // Ensure folder type and filetype
+            if (method_exists($entity, 'initFile')) {
+                $entity->initFile();
+            }
+            // get as Document entity to ensure interface
+            $entity = $entity->getHasDocument();
+        }
+
+        if ($entity && !method_exists($entity, 'getDocument')) {
+            throw new \RuntimeException('Missing method getDocument for given Entity');
+        }
+
+        if ($entity && !method_exists($entity, 'getDocumentUrl')) {
+            throw new \RuntimeException('Missing method getDocumentUrl for given Entity');
+        }
+
+        if ($entity && !method_exists($entity, 'getPrintLabel')) {
+            throw new \RuntimeException('Missing method getPrintLabel for given Entity');
+        }
+
+        $projectDir = $this->getParameter('kernel.project_dir')
+            ? $this->getParameter('kernel.project_dir').'/'
+            : $this->fileUploader->getProjectDirectory();
+        $entity->setProjectDir($projectDir);
+        $filename = $entity->getDocument();
+        $documentUrl = $entity->getDocumentUrl();
+        $documentLabel = $entity->getPrintLabel();
+
+        // TRY FROM 1 on first failed
+        if (!file_exists($filename)) {
+            $filename = $entity->getOldV1Document();
+        }
+
+        if (!$documentUrl || !file_exists($filename)) {
+            throw new NotFoundHttpException("Le document n'existe pas");
+        }
+
+        $response = (new BinaryFileResponse($filename, Response::HTTP_OK));
+
+        if ($hasAttachement) {
+            $response->setContentDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                $documentLabel.'.pdf'
+            );
+        }else {
+            $response
+                ->setContentDisposition(
+                    ResponseHeaderBag::DISPOSITION_INLINE,
+                    $documentLabel.'.pdf'
+                );
+        }
+
+        $response->headers->set('Content-Control', 'private');
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-length', filesize($filename));
+
+        return $response;
+    }
+
     /*
      * Sample
      *
@@ -414,14 +442,19 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
      * );
      */
 
-    protected function redirectToReferer(Request $request) : ?RedirectResponse
+    protected function sendNoImageAvailable($path = 'no'): BinaryFileResponse
     {
-        $referer = $request->headers->get('referer');
-
-        if ($referer) {
-            return $this->redirect($referer, 303);
+        $response = new BinaryFileResponse(
+            $this->fileUploader->getDirectory(
+                FolderType::Private
+            ).'No_Image_Available.jpg'
+        );
+        $response->headers->set('Content-Type', 'image/jpeg');
+        $response->headers->set('Content-Control', 'private');
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $response->headers->set('Content-X-Path', $path);
         }
 
-        return null;
+        return $response->send();
     }
 }

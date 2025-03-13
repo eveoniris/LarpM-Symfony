@@ -1,66 +1,57 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Rule;
-use App\Repository\RuleRepository;
+use App\Enum\DocumentType;
+use App\Enum\FolderType;
+use App\Enum\Role;
 use App\Form\Rule\RuleDeleteForm;
 use App\Form\Rule\RuleForm;
-use App\Form\Rule\RuleUpdateForm;
-
-//use Silex\Application;
+use App\Repository\RuleRepository;
+use App\Service\PagerService;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\RuleController.
- *
- * @author kevin
- */
 class RuleController extends AbstractController
 {
     /**
      * Page de gestion des règles.
      */
+    #[Route('/rule', name: 'rule.list')]
     #[Route('/rule', name: 'rules.list')]
-    public function listAction(Request $request, RuleRepository $ruleRepository): Response
+    public function listAction(Request $request, PagerService $pagerService, RuleRepository $ruleRepository): Response
     {
-        $orderBy = $this->getRequestOrder(
-            alias: 'r',
-            allowedFields: $ruleRepository->getFieldNames()
-        );
-
-        $query = $ruleRepository->createQueryBuilder('r')
-            ->orderBy(key($orderBy), current($orderBy));
-
-        $regles = $ruleRepository->findPaginatedQuery(
-            $query->getQuery(), $this->getRequestLimit(), $this->getRequestPage()
-        );
+        $pagerService->setRequest($request)->setRepository($ruleRepository)->setLimit(25);
 
         return $this->render(
             'rule\list.twig',
             [
-                'paginator' => $regles,
+                'pagerService' => $pagerService,
+                'paginator' => $ruleRepository->searchPaginated($pagerService),
+                'isAdmin' => $this->isGranted(Role::REGLE->value),
             ]
         );
-
-
-        //$regles = $entityManager->getRepository(\App\Entity\Rule::class)->findAll();
-
-        //return $this->render('rule/list.twig', [
-        //    'regles' => $regles,
-        //]);
     }
 
     /**
      * Ajout d'une règle.
      */
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    #[IsGranted(Role::REGLE->value)]
+    #[Route('/rule/add', name: 'rule.add')]
+    public function addAction(Request $request): RedirectResponse|Response
     {
+        return $this->handleCreateOrUpdate($request, new Rule(), RuleForm::class);
+        /* OLD
         $form = $this->createForm(RuleForm::class, [])
-            ->add('envoyer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Envoyer']);
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
@@ -72,8 +63,8 @@ class RuleController extends AbstractController
             $filename = $files['rule']->getClientOriginalName();
             $extension = $files['rule']->guessExtension();
 
-            if (!$extension || 'pdf' != $extension) {
-               $this->addFlash('error', 'Désolé, votre fichier ne semble pas valide (vérifiez le format de votre fichier)');
+            if (!$extension || 'pdf' !== $extension) {
+                $this->addFlash('error', 'Désolé, votre fichier ne semble pas valide (vérifiez le format de votre fichier)');
 
                 return $this->redirectToRoute('rules', [], 303);
             }
@@ -82,26 +73,29 @@ class RuleController extends AbstractController
 
             $files['rule']->move($path, $filename);
 
-            $rule = new \App\Entity\Rule();
+            $rule = new Rule();
             $rule->setLabel($data['label']);
             $rule->setDescription($data['description']);
             $rule->setUrl($filename);
 
-            $entityManager->persist($rule);
-            $entityManager->flush();
+            $this->entityManager->persist($rule);
+            $this->entityManager->flush();
 
-           $this->addFlash('success', 'Votre fichier a été enregistrée');
+            $this->addFlash('success', 'Votre fichier a été enregistrée');
         }
 
         return $this->render('rule/add.twig', [
             'form' => $form->createView(),
-        ]);
+        ]);*/
     }
 
     /**
      * Détail d'une règle.
      */
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Rule $rule)
+    #[IsGranted(Role::REGLE->value)]
+    #[Route('/rule/{rule}/detail', name: 'rule.detail', requirements: ['rule' => Requirement::DIGITS])]
+    #[Route('/rule/{rule}', requirements: ['rule' => Requirement::DIGITS])]
+    public function detailAction(#[MapEntity] Rule $rule): Response
     {
         return $this->render('rule/detail.twig', [
             'rule' => $rule,
@@ -111,48 +105,59 @@ class RuleController extends AbstractController
     /**
      * Mise à jour d'une règle.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Rule $rule)
+    #[IsGranted(Role::REGLE->value)]
+    #[Route('/rule/{rule}/update', name: 'rule.update', requirements: ['rule' => Requirement::DIGITS])]
+    public function updateAction(Request $request, #[MapEntity] Rule $rule): Response
     {
+        return $this->handleCreateOrUpdate(
+            $request,
+            $rule,
+            RuleForm::class,
+        );
+
+        /* Old
         $form = $this->createForm(RuleUpdateForm::class, $rule)
-            ->add('envoyer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Envoyer']);
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $rule = $form->getData();
-            $entityManager->persist($rule);
-            $entityManager->flush();
+            $this->entityManager->persist($rule);
+            $this->entityManager->flush();
 
-           $this->addFlash('success', 'Vos modifications été enregistrées');
+            $this->addFlash('success', 'Vos modifications été enregistrées');
         }
 
         return $this->render('rule/update.twig', [
             'form' => $form->createView(),
             'rule' => $rule,
-        ]);
+        ]);*/
     }
 
     /**
      * Supression d'un fichier de règle.
      */
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Rule $rule)
+    #[IsGranted(Role::REGLE->value)]
+    #[Route('/rule/{rule}/delete', name: 'rule.delete', requirements: ['rule' => Requirement::DIGITS])]
+    public function deleteAction(Request $request, #[MapEntity] Rule $rule): RedirectResponse|Response
     {
         $form = $this->createForm(RuleDeleteForm::class, $rule)
-            ->add('supprimer', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+            ->add('supprimer', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->remove($rule);
-            $entityManager->flush();
+            $this->entityManager->remove($rule);
+            $this->entityManager->flush();
 
             $filename = __DIR__.'/../../private/rules/'.$rule->getUrl();
 
             if (file_exists($filename)) {
                 unlink($filename);
-               $this->addFlash('success', 'suppresion du fichier '.$filename);
+                $this->addFlash('success', 'suppresion du fichier '.$filename);
             } else {
-               $this->addFlash('error', 'impossible de supprimer le fichier '.$filename);
+                $this->addFlash('error', 'impossible de supprimer le fichier '.$filename);
             }
 
             return $this->redirectToRoute('rules', [], 303);
@@ -167,10 +172,55 @@ class RuleController extends AbstractController
     /**
      * Télécharger une règle.
      */
-    public function documentAction(Request $request,  EntityManagerInterface $entityManager, Rule $rule)
+    #[Route('/rule/{rule}/document', name: 'rule.document', requirements: ['rule' => Requirement::DIGITS])]
+    public function documentAction(#[MapEntity] Rule $rule, Request $request): Response
     {
-        $filename = __DIR__.'/../../private/rules/'.$rule->getUrl();
+        return $this->sendDocument($rule, null, ! (bool) $request->get('stream', false));
+    }
 
-        return $app->sendFile($filename);
+    protected function handleCreateOrUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
+        ?callable $entityCallback = null,
+    ): RedirectResponse|Response {
+        if (!$entityCallback) {
+            /** @var Rule $rule */
+            $entityCallback = fn (mixed $rule, FormInterface $form): ?Rule => $rule->handleUpload($this->fileUploader);
+        }
+
+        if (null === $breadcrumb) {
+            $breadcrumb = [['route' => $this->generateUrl('rule.list'), 'name' => 'Liste des règles']];
+
+            if ($entity->getId()) {
+                $breadcrumb[] = [
+                    'route' => $this->generateUrl('rule.detail', ['rule' => $entity->getId()]),
+                    'name' => $entity->getLabel(),
+                ];
+                $breadcrumb[] = ['name' => 'Modifier une règle'];
+            }
+        }
+
+        return parent::handleCreateOrUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: [...$routes, 'root' => 'rule.'],
+            msg: [
+                'entity' => $this->translator->trans('Règle'),
+                'entity_added' => $this->translator->trans('La règle a été ajoutée'),
+                'entity_updated' => $this->translator->trans('La règle a été mise à jour'),
+                'entity_deleted' => $this->translator->trans('La règle a été supprimée'),
+                'entity_list' => $this->translator->trans('Liste des règles'),
+                'title_add' => $this->translator->trans('Ajouter une règle'),
+                'title_update' => $this->translator->trans('Modifier une règle'),
+                ...$msg,
+            ],
+            entityCallback: $entityCallback
+        );
     }
 }

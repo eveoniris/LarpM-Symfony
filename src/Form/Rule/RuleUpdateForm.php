@@ -8,11 +8,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Rule\RuleForm.
- *
- * @author kevin
- */
+/** @deprecated  */
 class RuleUpdateForm extends AbstractType
 {
     /**

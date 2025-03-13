@@ -3,8 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Connaissance;
-use App\Enum\DocumentType;
-use App\Enum\FolderType;
 use App\Form\ConnaissanceForm;
 use App\Repository\ConnaissanceRepository;
 use App\Service\PagerService;
@@ -28,7 +26,7 @@ class ConnaissanceController extends AbstractController
     public function listAction(
         Request $request,
         PagerService $pagerService,
-        ConnaissanceRepository $connaissanceRepository
+        ConnaissanceRepository $connaissanceRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($connaissanceRepository);
 
@@ -118,7 +116,7 @@ class ConnaissanceController extends AbstractController
         Request $request,
         #[MapEntity] Connaissance $connaissance,
         PersonnageService $personnageService,
-        ConnaissanceRepository $connaissanceRepository
+        ConnaissanceRepository $connaissanceRepository,
     ): Response {
         $routeName = 'connaissance.personnages';
         $routeParams = ['connaissance' => $connaissance->getId()];
@@ -160,19 +158,11 @@ class ConnaissanceController extends AbstractController
         array $breadcrumb = [],
         array $routes = [],
         array $msg = [],
-        ?callable $entityCallback = null
+        ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         if (!$entityCallback) {
             /** @var Connaissance $connaissance */
-            $entityCallback = function (mixed $connaissance, FormInterface $form): ?Connaissance {
-                $connaissance->handleUpload(
-                    $this->fileUploader,
-                    DocumentType::Documents,
-                    FolderType::Private
-                );
-
-                return $connaissance;
-            };
+            $entityCallback = fn (mixed $connaissance, FormInterface $form): ?Connaissance => $connaissance->handleUpload($this->fileUploader);
         }
 
         return parent::handleCreateOrUpdate(

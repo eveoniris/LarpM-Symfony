@@ -191,7 +191,7 @@ class TechnologieController extends AbstractController
             $technologiesRessources,
             TechnologiesRessourcesForm::class,
             breadcrumb: [
-                ['route' => $this->generateUrl('technologie.list'), 'name' => 'Liste des techologies'],
+                ['route' => $this->generateUrl('technologie.list'), 'name' => 'Liste des technologies'],
                 [
                     'route' => $this->generateUrl('technologie.detail', ['technologie' => $technologie->getId()]),
                     'name' => $technologie->getLabel(),
@@ -264,15 +264,7 @@ class TechnologieController extends AbstractController
     ): RedirectResponse|Response {
         if (!$entityCallback) {
             /** @var Technologie $technologie */
-            $entityCallback = function (mixed $technologie, FormInterface $form): ?Technologie {
-                $technologie->handleUpload(
-                    $this->fileUploader,
-                    DocumentType::Documents,
-                    FolderType::Private
-                );
-
-                return $technologie;
-            };
+            $entityCallback = fn (mixed $technologie, FormInterface $form): ?Technologie => $technologie->handleUpload($this->fileUploader);
         }
 
         return parent::handleCreateOrUpdate(

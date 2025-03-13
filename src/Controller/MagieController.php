@@ -224,11 +224,7 @@ class MagieController extends AbstractController
     protected function getDocumentCallBack(): \Closure
     {
         return function (Priere|Sphere|Sort|Potion $entity, FormInterface $form): Priere|Sphere|Sort|Potion {
-            $entity->handleUpload(
-                $this->fileUploader,
-                DocumentType::Documents,
-                FolderType::Private
-            );
+            $entity->handleUpload($this->fileUploader);
 
             return $entity;
         };

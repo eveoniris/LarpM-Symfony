@@ -22,6 +22,11 @@ class Document extends BaseDocument implements \Stringable
     public function __construct()
     {
         parent::__construct();
+        $this->initFile();
+    }
+
+    public function initFile(): static
+    {
         $this->setDocumentType(DocumentType::Documents)
             ->setFolderType(FolderType::Private)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
@@ -29,8 +34,9 @@ class Document extends BaseDocument implements \Stringable
             ->setCreationDate(new \DateTime('now'))
             ->setUpdateDate(new \DateTime('now'))
             ->setImpression(false);
-    }
 
+        return $this;
+    }
     /**
      * Fourni la description du document au bon format pour impression.
      */
@@ -57,9 +63,14 @@ class Document extends BaseDocument implements \Stringable
         return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getCode()));
     }
 
-    public function getDocument(string $projectDir): string
+    public function getDocument(?string $projectDir = null): string
     {
         return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
+    }
+
+    public function getOldV1Document(?string $projectDir = null): string
+    {
+        return $this->getDocumentFilePath($projectDir, true).$this->getDocumentUrl();
     }
 
     protected function afterUpload(FileUploader $fileUploader): FileUploader

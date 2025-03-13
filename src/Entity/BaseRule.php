@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -14,19 +15,19 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseRule', 'extended' => 'Rule'])]
 abstract class BaseRule
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
     protected string $label = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
     protected string $url = '';
 
     /**
      * @Column(type="text", nullable=true)
      */
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $description = '';
 
     /**
@@ -42,7 +43,7 @@ abstract class BaseRule
     /**
      * Get the value of id.
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

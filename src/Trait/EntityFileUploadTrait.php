@@ -2,7 +2,7 @@
 
 namespace App\Trait;
 
-use App\Entity\Photo;
+use App\Entity\Document;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Service\FileUploader;
@@ -22,28 +22,41 @@ trait EntityFileUploadTrait
             'groups' => ['pdf', 'file'],
         ]
     )]
-    protected UploadedFile|null $file;
+    protected ?UploadedFile $file;
     protected ?int $filenameMaxLength;
     protected bool $useUniqueId = true;
     protected ?string $filename;
     protected DocumentType $documentType;
     protected FolderType $folderType;
 
-    public function getDocument(string $projectDir = ''): string
+    protected ?string $projectDir = null;
+
+    public function getDocument(?string $projectDir = null): string
     {
-        // TODO find a way to DI the projectDir
+        $projectDir ??= $this->projectDir ?? '';
+
         return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
     }
 
-    public function getDocumentFilePath(string $projectDir = ''): string
+    public function getDocumentFilePath(?string $projectDir = null, bool $oldV1Prod = false): string
     {
-        // TODO find a way to DI the projectDir
+        $projectDir ??= $this->projectDir ?? '';
+
+        if ($oldV1Prod) {
+            $projectDir .= '../larpmanager/';
+        }
+
         return $projectDir.$this->getFolderType()->value.$this->getDocumentType()->value.DIRECTORY_SEPARATOR;
+    }
+
+    public function initFile(): self
+    {
+        return $this;
     }
 
     public function getDocumentType(): DocumentType
     {
-        return $this->documentType ?? $this->initFile()->documentType ?? DocumentType::Documents;
+        return $this->documentType ?? $this->initFile()?->documentType ?? DocumentType::Documents;
     }
 
     public function setDocumentType(DocumentType $documentType): static
@@ -53,12 +66,20 @@ trait EntityFileUploadTrait
         return $this;
     }
 
+    public function getProjectDir(): ?string
+    {
+        return $this->projectDir;
+    }
+
     public function handleUpload(FileUploader $fileUploader): static
     {
         // la propriété « file » peut être vide si le champ n'est pas requis (cas Modification, on garde le doc)
         if (!isset($this->file)) {
             return $this;
         }
+
+        // Ensure path folder type and document type.
+        $this->initFile();
 
         $fileUploader->upload(
             $this->getFile(),
@@ -77,7 +98,7 @@ trait EntityFileUploadTrait
         return $this;
     }
 
-    public function getFile(): UploadedFile|null
+    public function getFile(): ?UploadedFile
     {
         return $this->file ?? null;
     }
@@ -140,5 +161,26 @@ trait EntityFileUploadTrait
     protected function afterUpload(FileUploader $fileUploader): FileUploader
     {
         return $fileUploader;
+    }
+
+    public function setProjectDir(?string $projectDir): static
+    {
+        $this->projectDir = $projectDir;
+
+        return $this;
+    }
+
+    public function getHasDocument(): Document
+    {
+        $document = new Document();
+
+        $document->setDocumentType($this->getDocumentType());
+        $document->setFolderType($this->getFolderType());
+        $document->setProjectDir($this->getProjectDir());
+        $document->setFilename($this->getFilename());
+        $document->setFilenameMaxLength($this->getFilenameMaxLength());
+        $document->setDocumentUrl($this->getDocumentUrl());
+
+        return $document;
     }
 }
