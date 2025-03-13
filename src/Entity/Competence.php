@@ -19,10 +19,17 @@ class Competence extends BaseCompetence implements \Stringable
     public function __construct()
     {
         parent::__construct();
+        $this->initFile();
+    }
+
+    public function initFile(): static
+    {
         $this->setDocumentType(DocumentType::Documents)
             ->setFolderType(FolderType::Private)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
             ->setFilenameMaxLength(45 - 24 - 4);
+
+        return $this;
     }
 
     public function __toString(): string

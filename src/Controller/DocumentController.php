@@ -226,11 +226,7 @@ class DocumentController extends AbstractController
             // TODO debug why we do not store the docUrl
             $entityCallback = function (Document $document, FormInterface $form): ?Document {
                 $document->setUser($this->getUser());
-                $document->handleUpload(
-                    $this->fileUploader,
-                    DocumentType::Documents,
-                    FolderType::Private
-                );
+                $document->handleUpload($this->fileUploader);
 
                 return $document;
             };

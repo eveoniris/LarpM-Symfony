@@ -283,9 +283,7 @@ class CompetenceController extends AbstractController
     ): RedirectResponse|Response {
         if (!$entityCallback) {
             /** @var Competence $competence */
-            $entityCallback = function (mixed $competence, FormInterface $form): ?Competence {
-                return $competence->handleUpload($this->fileUploader);
-            };
+            $entityCallback = fn (mixed $competence, FormInterface $form): ?Competence => $competence->handleUpload($this->fileUploader);
         }
 
         return parent::handleCreateOrUpdate(

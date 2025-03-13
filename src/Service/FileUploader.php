@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -27,6 +28,36 @@ final class FileUploader
         $this->slugger = $slugger;
     }
 
+    public function getExtension(): string
+    {
+        return $this->extension;
+    }
+
+    public function getFileName(): string
+    {
+        return $this->fileName;
+    }
+
+    public function getSlugger(): SluggerInterface
+    {
+        return $this->slugger;
+    }
+
+    public function getStoredFileWithPath(): string
+    {
+        return $this->getFilePath().'/'.$this->getStoredFileName();
+    }
+
+    public function getFilePath(): string
+    {
+        return $this->filePath;
+    }
+
+    public function getStoredFileName(): string
+    {
+        return $this->storedFileName;
+    }
+
     public function upload(
         UploadedFile $file,
         FolderType $folderType,
@@ -48,7 +79,15 @@ final class FileUploader
         $this->filePath = $this->getDirectory($folderType, $docType);
 
         try {
-            $file->move($this->getDirectory($folderType, $docType), $this->storedFileName);
+            $file->move($this->filePath, $this->storedFileName);
+            // Keep for V1
+            $mainProdFile = $this->getProjectDirectory().'../larpmanager/'.$folderType->value.$docType->value.'/'.$this->storedFileName;
+
+            if (!file_exists($mainProdFile)) {
+                $filesystem = new Filesystem();
+                $filesystem->copy($this->filePath.'/'.$this->storedFileName, $mainProdFile);
+            }
+
         } catch (FileException $e) {
             // TODO log or handle exception if something happens during file upload
         }
@@ -77,35 +116,5 @@ final class FileUploader
     public function getProjectDirectory(): string
     {
         return $this->projectDirectory;
-    }
-
-    public function getSlugger(): SluggerInterface
-    {
-        return $this->slugger;
-    }
-
-    public function getFilePath(): string
-    {
-        return $this->filePath;
-    }
-
-    public function getFileName(): string
-    {
-        return $this->fileName;
-    }
-
-    public function getStoredFileName(): string
-    {
-        return $this->storedFileName;
-    }
-
-    public function getStoredFileWithPath(): string
-    {
-        return $this->getFilePath().'/'.$this->getStoredFileName();
-    }
-
-    public function getExtension(): string
-    {
-        return $this->extension;
     }
 }

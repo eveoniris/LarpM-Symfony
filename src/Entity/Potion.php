@@ -17,7 +17,12 @@ class Potion extends BasePotion
     public function __construct()
     {
         parent::__construct();
-        $this->setDocumentType(DocumentType::Documents)
+        $this->initFile();
+    }
+
+    public function initFile(): static
+    {
+        return $this->setDocumentType(DocumentType::Documents)
             ->setFolderType(FolderType::Private)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
             ->setFilenameMaxLength(45 - 24 - 4);

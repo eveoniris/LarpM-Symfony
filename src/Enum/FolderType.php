@@ -9,4 +9,5 @@ enum FolderType: string
     case Photos = 'assets/img/';
     case Trombine = 'private/img/';
     case Stock = 'private/stock/';
+    case Rule = 'private/rule/';
 }

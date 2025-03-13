@@ -9,6 +9,7 @@ enum DocumentType: string
     case Photos = 'photos';
     case Stock = 'stocks';
     case Documents = 'documents';
+    case Rule = 'rules';
     case None = '';
     case Image = 'img';
 }
