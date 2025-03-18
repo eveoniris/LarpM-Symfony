@@ -2427,7 +2427,8 @@ class PersonnageController extends AbstractController
             );
         }
 
-        $this->hasAccess($personnage); // TODO une version "résumer pour tous" ?
+        // Fiche pour le PJ ou admin
+        $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
 
         $descendants = $entityManager->getRepository(Personnage::class)->findDescendants($personnage);
         $tab = $request->get('tab', 'general');

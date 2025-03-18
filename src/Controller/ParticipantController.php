@@ -71,6 +71,7 @@ use App\Repository\DomaineRepository;
 use App\Repository\SecondaryGroupRepository;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Gd\Imagine;
@@ -78,6 +79,7 @@ use JetBrains\PhpStorm\Deprecated;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -305,7 +307,7 @@ class ParticipantController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $participant = $form->getData();
-            $participant->setBilletDate(new \DateTime('NOW'));
+            $participant->setBilletDate(new DateTime('NOW'));
             $entityManager->persist($participant);
             $entityManager->flush();
 
@@ -903,7 +905,7 @@ class ParticipantController extends AbstractController
             // historique
             $historique = new ExperienceGain();
             $historique->setExplanation('Création de votre personnage');
-            $historique->setOperationDate(new \DateTime('NOW'));
+            $historique->setOperationDate(new DateTime('NOW'));
             $historique->setPersonnage($personnage);
             $historique->setXpGain($participant->getGn()->getXpCreation());
             $entityManager->persist($historique);
@@ -951,7 +953,7 @@ class ParticipantController extends AbstractController
                 $personnage->addXp($xpAgeBonus);
                 $historique = new ExperienceGain();
                 $historique->setExplanation("Modification liée à l'age");
-                $historique->setOperationDate(new \DateTime('NOW'));
+                $historique->setOperationDate(new DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($xpAgeBonus);
                 $entityManager->persist($historique);
@@ -1054,7 +1056,7 @@ class ParticipantController extends AbstractController
             // historique
             $historique = new ExperienceGain();
             $historique->setExplanation('Création de votre personnage');
-            $historique->setOperationDate(new \DateTime('NOW'));
+            $historique->setOperationDate(new DateTime('NOW'));
             $historique->setPersonnage($personnage);
             $historique->setXpGain($participant->getGn()->getXpCreation());
             $entityManager->persist($historique);
@@ -1091,7 +1093,7 @@ class ParticipantController extends AbstractController
                 $personnage->addXp($xpAgeBonus);
                 $historique = new ExperienceGain();
                 $historique->setExplanation("Bonus lié à l'age");
-                $historique->setOperationDate(new \DateTime('NOW'));
+                $historique->setOperationDate(new DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($xpAgeBonus);
                 $entityManager->persist($historique);
@@ -1193,7 +1195,7 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Participant $participant,
         Rule $rule,
-    ): \Symfony\Component\HttpFoundation\BinaryFileResponse {
+    ): BinaryFileResponse {
         $filename = __DIR__.'/../../private/rules/'.$rule->getUrl();
         $file = new File($filename);
 
@@ -1606,7 +1608,7 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Participant $participant,
         Priere $priere,
-    ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
+    ): BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1636,7 +1638,7 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Participant $participant,
         Technologie $technologie,
-    ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
+    ): BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -1697,7 +1699,7 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Participant $participant,
         Potion $potion,
-    ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
+    ): BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2142,11 +2144,9 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/langue/{langue}/document', name: 'participant.langue.document')]
     public function langueDocumentAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        Participant $participant,
-        Langue $langue,
-    ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
+        #[MapEntity] Participant $participant,
+        #[MapEntity] Langue $langue,
+    ): BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2161,10 +2161,13 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
+        return $this->sendDocument($langue);
+        /*
         $filename = __DIR__.'/../../private/doc/'.$langue->getDocumentUrl();
         $file = new File($filename);
 
         return $this->file($file, $langue->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+        */
     }
 
     /**
@@ -2364,7 +2367,7 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Participant $participant,
         Sort $sort,
-    ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
+    ): BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2425,7 +2428,7 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Participant $participant,
         Connaissance $connaissance,
-    ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
+    ): BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2573,7 +2576,7 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Participant $participant,
         Competence $competence,
-    ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
+    ): BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2603,7 +2606,7 @@ class ParticipantController extends AbstractController
         EntityManagerInterface $entityManager,
         Participant $participant,
         Document $document,
-    ): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse {
+    ): BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2917,8 +2920,8 @@ class ParticipantController extends AbstractController
 
         $message->setUserRelatedByAuteur($this->getUser());
         $message->setUserRelatedByDestinataire($postulant->getPersonnage()->getUser());
-        $message->setCreationDate(new \DateTime('NOW'));
-        $message->setUpdateDate(new \DateTime('NOW'));
+        $message->setCreationDate(new DateTime('NOW'));
+        $message->setUpdateDate(new DateTime('NOW'));
 
         $form = $this->createForm(MessageForm::class, $message)
             ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre réponse']);
@@ -3383,7 +3386,7 @@ class ParticipantController extends AbstractController
 
             // historique
             $historique = new ExperienceUsage();
-            $historique->setOperationDate(new \DateTime('NOW'));
+            $historique->setOperationDate(new DateTime('NOW'));
             $historique->setXpUse($cout);
             $historique->setCompetence($competence);
             $historique->setPersonnage($personnage);
@@ -3543,7 +3546,7 @@ class ParticipantController extends AbstractController
                 // historique
                 $historique = new ExperienceGain();
                 $historique->setExplanation($explanation);
-                $historique->setOperationDate(new \DateTime('NOW'));
+                $historique->setOperationDate(new DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($gain);
                 $entityManager->persist($historique);
