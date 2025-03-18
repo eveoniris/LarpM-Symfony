@@ -4,6 +4,7 @@ namespace App\Service\Competence;
 
 use App\Entity\Level;
 use App\Entity\PersonnageTrigger;
+use App\Entity\Sort;
 use App\Service\CompetenceService;
 
 class MagieService extends CompetenceService

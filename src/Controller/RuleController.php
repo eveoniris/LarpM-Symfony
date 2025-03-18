@@ -3,8 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Rule;
-use App\Enum\DocumentType;
-use App\Enum\FolderType;
 use App\Enum\Role;
 use App\Form\Rule\RuleDeleteForm;
 use App\Form\Rule\RuleForm;
@@ -175,7 +173,7 @@ class RuleController extends AbstractController
     #[Route('/rule/{rule}/document', name: 'rule.document', requirements: ['rule' => Requirement::DIGITS])]
     public function documentAction(#[MapEntity] Rule $rule, Request $request): Response
     {
-        return $this->sendDocument($rule, null, ! (bool) $request->get('stream', false));
+        return $this->sendDocument($rule, null, !(bool) $request->get('stream', false));
     }
 
     protected function handleCreateOrUpdate(

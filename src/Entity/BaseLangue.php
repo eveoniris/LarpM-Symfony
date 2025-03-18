@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -20,16 +21,16 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BaseLangue', 'extended' => 'Langue'])]
 abstract class BaseLangue
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
+    #[Column(name: 'label', type: Types::STRING, length: 100)]
     protected string $label = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 450, nullable: true)]
+    #[Column(type: Types::STRING, length: 450, nullable: true)]
     protected ?string $description = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $diffusion = 0;
 
     #[OneToMany(mappedBy: 'langue', targetEntity: PersonnageLangues::class)]
@@ -48,10 +49,10 @@ abstract class BaseLangue
     #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'langues')]
     protected Collection $documents;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: false, options: ['default' => 0])]
+    #[Column(type: Types::BOOLEAN, nullable: false, options: ['default' => 0])]
     protected bool $secret = false;
 
-    #[ORM\Column(name: 'documentUrl', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[ORM\Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'langues')]
