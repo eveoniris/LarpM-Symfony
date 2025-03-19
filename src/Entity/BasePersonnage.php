@@ -212,7 +212,7 @@ abstract class BasePersonnage
     #[ORM\InverseJoinColumn(name: 'domaine_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $domaines;
 
-    #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'personnages')]
+    #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'personnages', cascade:['persist'])]
     #[ORM\JoinTable(name: 'personnages_potions')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id', nullable: false)]

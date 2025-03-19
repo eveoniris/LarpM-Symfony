@@ -2,6 +2,10 @@
 
 {% block title %}Sorts{% endblock title %}
 
+{% if isAdmin is not defined %}
+    {% set isAdmin = false %}
+{% endif %}
+
 {% block body %}
 
     {% include '_partials/breadcrumb.twig' with {'items' :
@@ -27,29 +31,36 @@
 
             <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
                 <div class="btn-group" role="group">
-                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Personnages associés"
-                       href="{{ path('magie.sort.personnages',{'sort':sort.id}) }}"><i
-                                class="fa fa-users"></i> Personnages</a>
-                    {% if sort.documentUrl %}
+                    {% if participant is defined and sort.documentUrl %}
                         <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                           title="Télécharger le document associé à cette sort"
-                           href="{{ path('magie.sort.document',{'sort':sort.id, 'document':sort.documentUrl}) }}"><i
+                           title="Télécharger le document associé à ce sort"
+                           href="{{ path('participant.sort.document',{'sort':sort.id, 'participant':participant.id, 'document':sort.documentUrl}) }}"><i
                                     class="fa fa-download"></i> Document</a>
                     {% endif %}
-                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Ajouter"
-                       href="{{ path('magie.sort.add') }}"><i
-                                class="fa fa-plus"></i> Ajouter</a>
-
-                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Modifier"
-                       href="{{ path('magie.sort.update',{'sort':sort.id}) }}"><i
-                                class="fa fa-pencil"></i> Modifier</a>
-                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Supprimer"
-                       href="{{ path('magie.sort.delete',{'sort':sort.id}) }}"><i
-                                class="fa fa-eraser"></i> Supprimer</a>
+                    {% if isAdmin %}
+                        {% if sort.documentUrl %}
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Télécharger le document associé à ce sort"
+                               href="{{ path('magie.sort.document',{'sort':sort.id, 'document':sort.documentUrl}) }}"><i
+                                        class="fa fa-download"></i> Document</a>
+                        {% endif %}
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Personnages associés"
+                           href="{{ path('magie.sort.personnages',{'sort':sort.id}) }}"><i
+                                    class="fa fa-users"></i> Personnages</a>
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Ajouter"
+                           href="{{ path('magie.sort.add') }}"><i
+                                    class="fa fa-plus"></i> Ajouter</a>
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Modifier"
+                           href="{{ path('magie.sort.update',{'sort':sort.id}) }}"><i
+                                    class="fa fa-pencil"></i> Modifier</a>
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Supprimer"
+                           href="{{ path('magie.sort.delete',{'sort':sort.id}) }}"><i
+                                    class="fa fa-eraser"></i> Supprimer</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

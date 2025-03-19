@@ -1,28 +1,27 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}{{ personnage.publicName }}{% endblock title %}
 
-{% block content %}
+{% block body %}
 
-<div class="container-fluid">
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage')  }}">Accueil</a></li>
-		<li><a href="{{ path('gn.detail', {'gn' : participant.gn.id}) }}">{{ participant.gn.label }}</a></li>
-		<li><a href="{{ path('gn.personnage', {'gn': participant.gn.id}) }}">{{ participant.personnage.nom }}</a></li>
-		<li class="active">Choix d'une nouvelle potion</li>
-	</ol>
-	
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'route' : path('gn.detail', {'gn':  participant.gn.id}), 'name' : participant.gn.label},
+			{'route' : path('personnage.detail', {'personnage':  participant.personnage.id}), 'name' : participant.personnage.nom},
+			{'name' : "Choix d'une nouvelle potion"}
+		]
+	} %}
+
+	<div class="header">
+		<h5>Choix d'une nouvelle potion</h5>
+	</div>
+
 	<div class="well bs-component">
-	<form action="{{ path('participant.potion.detail',{'participant': participant.id, 'niveau': niveau}) }}" method="POST" {{ form_enctype(form) }}>
-		<fieldset>
-			<blockquote>Votre compétence vous permet de choisir une nouvelle potion. Le descriptif des potions disponibles est visible en bas de page.</blockquote>
-			{% form_theme form 'Form/bootstrap_3_layout.html.twig' %}
-			
-			{{ form_row(form.potions) }}
-			{{ form_rest(form) }}
-		</fieldset>
-	</form>
+
+		{% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Votre compétence vous permet de choisir une nouvelle potion. Le descriptif des potions disponibles est visible en bas de page."} %}
+
+			{{ form(form) }}
 	</div>
 		
 	{% for potion in potions %}
@@ -30,9 +29,9 @@
 			<div class="header">
 				<h5>{{ potion.label }} - Niveau {{ potion.niveau }}</h5>
 			</div>
-			<p>{{ potion.description|markdown }}</p>
+			<p>{{ potion.description|markdown_to_html }}</p>
 		</div>
 	{% endfor %}
-</div>
 
-{% endblock content %}
+
+{% endblock body %}
