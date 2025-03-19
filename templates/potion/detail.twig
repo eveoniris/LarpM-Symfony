@@ -2,6 +2,10 @@
 
 {% block title %}Potions{% endblock title %}
 
+{% if isAdmin is not defined %}
+    {% set isAdmin = false %}
+{% endif %}
+
 {% block body %}
 
     {% include '_partials/breadcrumb.twig' with {'items' :
@@ -22,24 +26,32 @@
 
             <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
                 <div class="btn-group" role="group">
-                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Personnages associés"
-                       href="{{ path('magie.potion.personnages',{'potion':potion.id}) }}"><i
-                                class="fa fa-users"></i> Personnages</a>
-                    {% if potion.documentUrl %}
+                    {% if participant is defined and potion.documentUrl %}
                         <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                            title="Télécharger le document associé"
-                           href="{{ path('magie.potion.document',{'potion':potion.id, 'document': potion.documentUrl}) }}"><i
+                           href="{{ path('participant.potion.document',{'potion':potion.id, 'participant': participant.id,'document': potion.documentUrl}) }}"><i
                                     class="fa fa-download"></i> Document</a>
                     {% endif %}
-                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Modifier"
-                       href="{{ path('magie.potion.update',{'potion':potion.id}) }}"><i
-                                class="fa fa-pencil"></i> Modifier</a>
-                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Supprimer"
-                       href="{{ path('magie.potion.delete',{'potion':potion.id}) }}"><i
-                                class="fa fa-eraser"></i> Supprimer</a>
+                    {% if isAdmin %}
+                        {% if potion.documentUrl %}
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Télécharger le document associé"
+                               href="{{ path('magie.potion.document',{'potion':potion.id, 'document': potion.documentUrl}) }}"><i
+                                        class="fa fa-download"></i> Document</a>
+                        {% endif %}
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Personnages associés"
+                           href="{{ path('magie.potion.personnages',{'potion':potion.id}) }}"><i
+                                    class="fa fa-users"></i> Personnages</a>
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Modifier"
+                           href="{{ path('magie.potion.update',{'potion':potion.id}) }}"><i
+                                    class="fa fa-pencil"></i> Modifier</a>
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Supprimer"
+                           href="{{ path('magie.potion.delete',{'potion':potion.id}) }}"><i
+                                    class="fa fa-eraser"></i> Supprimer</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

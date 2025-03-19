@@ -1,6 +1,12 @@
 {% if css is not defined %}
     {% set css = 'well' %}
 {% endif %}
+
+{% if isAdmin is not defined %}
+    {% set isAdmin = false %}
+{% endif %}
+
+
 {% if personnage.sorts|length > 0 %}
     <div class="{{ css }}">
         <div class="header">
@@ -29,7 +35,7 @@
         <div class="list-group">
             {% for sort in personnage.sorts %}
                 <div class="list-group-item">
-                    <a  href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort': sort.id}) }}">
+                    <a href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort': sort.id}) }}">
                         {% if sort.secret %}
                             <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
                                data-bs-placement="top"
@@ -41,14 +47,31 @@
                         {% endif %}
                         Perles)
                     </a>
-                    &nbsp;
-                    <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
-                            href="#sort_{{ sort.id }}"
-                            aria-expanded="false" aria-controls="sort_{{ sort.id }}"
-                            role="button">
-                        <i class="fa-solid fa-circle-info"></i>
-                    </button>
-                    {# TODO télécharger le DOC ? #}
+
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                                href="#sort_{{ sort.id }}"
+                                aria-expanded="false" aria-controls="sort_{{ sort.id }}"
+                                role="button">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </button>
+                        {% if sort.documentUrl %}
+                            {% if isAdmin %}
+                                <button class="btn btn-sm btn-secondary"
+                                        href="{{ path('magie.sort.document',{'sort':sort.id, 'document': sort.documentUrl}) }}"
+                                        aria-expanded="false" aria-controls="sort_{{ sort.id }}"
+                                        role="button">
+                                    <i class="fa-solid fa-file"></i>
+                                </button>
+                            {% elseif participant is defined %}
+                                <button class="btn btn-sm btn-secondary"
+                                        href="{{ path('participant.sort.document',{'sort':sort.id, 'participant': participant.id,'document': sort.documentUrl}) }}"
+                                        role="button">
+                                    <i class="fa-solid fa-file"></i>
+                                </button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="list-group-item bg-body-secondary collapse" id="sort_{{ sort.id }}">
                     {{ sort.description|markdown_to_html }}
