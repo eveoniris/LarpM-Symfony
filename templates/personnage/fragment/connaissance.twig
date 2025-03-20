@@ -1,24 +1,60 @@
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
+
+{% if isAdmin is not defined %}
+    {% set isAdmin = false %}
+{% endif %}
+
 {% if personnage.connaissances|length > 0 %}
-	<div class="header">
-		<h5>Vos connaissances</h5>
-	</div>
-	<div class="row">
-		<div class="col-sm-12">
-			<div class="list-group">
-			{% for connaissance in personnage.connaissances %}
-				<div class="list-group-item">
-					<div class="list-group-item-heading">{% if connaissance.secret %}<span style="color:red;">Secret</span> - {% endif %}<strong>{{ connaissance.label }}</strong></div>
-					<div class="list-group-item-text">{{ connaissance.description|markdown_to_html }}</div>
-					<p class="list-group-item-text">
-						{% if connaissance.documentUrl %}
-							<a class="btn btn-default btn-sm" href="{{ path('participant.connaissance.detail',{'participant': participant.id, 'connaissance' : connaissance.id}) }}">
-								<i class="fa fa-file"></i> Imprimer l'aide de jeu
-							</a>
-						{% endif %}
-					</p>
-				</div>
-			{% endfor %}
-			</div>
-		</div>
-	</div>	
+    <div class="{{ css }}">
+        <div class="header">
+            <h5>Vos connaissances</h5>
+        </div>
+
+        <div class="list-group">
+            {% for connaissance in personnage.connaissances %}
+                <div class="list-group-item d-flex justify-content-between">
+                    <div>
+                        {% if connaissance.secret %}
+                            <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               title="Secret"></i> -&nbsp;
+                        {% endif %}
+
+                        {{ connaissance.label }}
+                    </div>
+
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                                href="#connaissance_{{ connaissance.id }}"
+                                aria-expanded="false" aria-controls="connaissance_{{ connaissance.id }}"
+                                role="button">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </button>
+                        {% if connaissance.documentUrl %}
+                            {% if isAdmin %}
+                                <button class="btn btn-sm btn-secondary"
+                                        href="{{ path('connaissance.document',{'connaissance':connaissance.id, 'document': connaissance.documentUrl}) }}"
+                                        aria-expanded="false"
+                                        role="button">
+                                    <i class="fa-solid fa-file"></i>
+                                </button>
+                            {% elseif participant is defined %}
+                                <button class="btn btn-sm btn-secondary"
+                                        href="{{ path('participant.connaissance.document',{'connaissance':connaissance.id, 'participant': participant.id,'document': connaissance.documentUrl}) }}"
+                                        role="button">
+                                    <i class="fa-solid fa-file"></i>
+                                </button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                </div>
+                <div class="list-group-item bg-body-secondary collapse" id="connaissance_{{ connaissance.id }}">
+                    {{ connaissance.description|markdown_to_html }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endif %}

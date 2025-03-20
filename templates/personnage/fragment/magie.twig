@@ -6,7 +6,6 @@
     {% set isAdmin = false %}
 {% endif %}
 
-
 {% if personnage.sorts|length > 0 %}
     <div class="{{ css }}">
         <div class="header">
@@ -34,19 +33,22 @@
         <h6>Liste de vos sorts</h6>
         <div class="list-group">
             {% for sort in personnage.sorts %}
-                <div class="list-group-item">
-                    <a href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort': sort.id}) }}">
-                        {% if sort.secret %}
-                            <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
-                               data-bs-placement="top"
-                               title="Secret"></i><span class="text-warning">Secret</span> - {% endif %}
-                        {{ sort.label }}
-                        - {{ sort.domaine.label }} Niveau {{ sort.niveau }}
-                        ({% if sort.domaine in personnage.domaines %}{{ sort.niveau + 1 }}
-                        {% else %}{{ sort.niveau + 2 }}
-                        {% endif %}
-                        Perles)
-                    </a>
+                <div class="list-group-item d-flex justify-content-between">
+                    <div>
+                        <a href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort': sort.id}) }}">
+                            {% if sort.secret %}
+                                <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
+                                   data-bs-placement="top"
+                                   title="Secret"></i><span class="text-warning">Secret</span> - {% endif %}
+                            {{ sort.label }} - {{ sort.domaine.label }} Niveau {{ sort.niveau }}
+                            ({% if sort.domaine in personnage.domaines %}
+                                {{ sort.niveau + 1 }}
+                            {% else %}
+                                {{ sort.niveau + 2 }}
+                            {% endif %}
+                            Perles)
+                        </a>
+                    </div>
 
                     <div class="btn-group" role="group">
                         <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"

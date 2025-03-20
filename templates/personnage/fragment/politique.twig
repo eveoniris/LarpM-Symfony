@@ -1,72 +1,79 @@
 {% if css is not defined %}
     {% set css = 'well' %}
 {% endif %}
-{% if personnage.hasCompetence('Politique') %}
-    <div class="{{ css }}">
-        <div class="header">
-            <h5>Vos connaissances politiques</h5>
-        </div>
 
-        {% set hasOne = false %}
-        <div class="row">
-            <div class="col-sm-12">
-                {# Liste des relations entre les pays #}
-                {% if personnage.getCompetenceNiveau('Politique') >= 1 %}
-                    {% set hasOne = true %}
-                    <p>
-                        Votre compétence Politique Apprenti vous permet de connaître les relations entre les fiefs :
-                        <a href="{{ path('participant.politique', {'participant': participant.id}) }}">Voir les liens
-                            politiques entre les différents fiefs</a>
-                    </p>
-                {% endif %}
+{% if isAdmin is not defined %}
+    {% set isAdmin = false %}
+{% endif %}
 
-                {# Les lois de son pays #}
-                {% if personnage.getCompetenceNiveau('Politique') >= 2 %}
-                    <p>
-                        Votre compétence Politique Initié vous permet de connaître les lois de votre pays :
-                    </p>
-                    <ul>
-                        {% set hasLoi = false %}
-                        {% for territoire in participant.groupeGn.groupe.territoires %}
-                            {% set hasOne = true %}
-                            {% for fief in territoire.ancestors %}
-                                {% for loi in fief.lois %}
-                                    <li>{{ loi.label }} : <a href="{{ path('loi.document',{'loi' : loi.id}) }}">Téléchargez
-                                            le document</a></li>
-                                    {% set hasLoi = true %}
-                                {% else %}
-                                    <li>Le fief {{ fief.nom }} ne dispose pas de lois écrites</li
-                                {% endfor %}
-                            {% endfor %}
-                        {% endfor %}
-                        {% if not hasLoi %}
-                            <li>Votre pays ne dispose pas de lois écrites</li>
-                        {% endif %}
-                    </ul>
+{% if lois is not defined %}
+    {% set lois = {} %}
+{% endif %}
 
-                {% endif %}
 
-                {# Toutes les lois #}
-                {% if personnage.getCompetenceNiveau('Politique') >= 3 %}
-                    <div>
-                        Votre compétence Politique Expert vous permet de connaître toutes les lois:
-                        <ul>
-                            {% for loi in lois %}
-                                {% set hasOne = true %}
-                                <li>{{ loi.label }} : <a href="{{ path('loi.document',{'loi' : loi.id}) }}">Téléchargez
-                                        le
-                                        document</a></li>
-                            {% else %}
-                                {% include '_partials/noResult.twig' with {'content' : 'Aucune', 'css' : 'w-100'} %}
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
-
-                {% if hasOne == false %}
-                    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucune'} %}
-                {% endif %}
-            </div>
-        </div>
+{% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::POLITICAL')) %}
+<div class="{{ css }}">
+    <div class="header">
+        <h5>Vos connaissances politiques</h5>
     </div>
+
+    {% set hasOne = false %}
+    {% set hasAll = false %}
+    <div class="list-group">
+
+        {# Liste des relations entre les pays #}
+        {% if personnage.hasCompetenceLevel(
+            constant('App\\Enum\\CompetenceFamilyType::POLITICAL'),
+            constant('App\\Enum\\LevelType::APPRENTICE'),
+        ) %}
+            {% set hasOne = true %}
+            <div class="list-group-item">
+                <a href="{{ path('participant.politique', {'participant': participant.id}) }}">Voir les liens
+                    politiques entre les différents fiefs</a>
+            </div>
+        {% endif %}
+
+        {% for loi in personnageService.lois(personnage) %}
+            {% set hasOne = true %}
+            <div class="list-group-item d-flex justify-content-between">
+                <div>
+                    {{ loi.label }}
+                </div>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                            href="#loi_{{ loi.id }}"
+                            aria-expanded="false" aria-controls="loi_{{ loi.id }}"
+                            role="button">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </button>
+                    {% if loi.documentUrl %}
+                        {% if participant is defined %}
+                            <button class="btn btn-sm btn-secondary"
+                                    href="{{ path('participant.loi.document',{ 'loi': loi.id, 'participant': participant.id}) }}"
+                                    aria-expanded="false"
+                                    role="button">
+                                <i class="fa-solid fa-file"></i>
+                            </button>
+                        {% elseif isAdmin %}
+                            <button class="btn btn-sm btn-secondary"
+                                    href="{{ path('loi.document',{'loi': loi.id}) }}"
+                                    aria-expanded="false"
+                                    role="button">
+                                <i class="fa-solid fa-file"></i>
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="list-group-item bg-body-secondary collapse" id="loi_{{ loi.id }}">
+                {{ loi.description|markdown_to_html }}
+            </div>
+        {% endfor %}
+
+        {% if hasOne == false %}
+            {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucune'} %}
+        {% endif %}
+    </div>
+
+</div>
 {% endif %}

@@ -1,5 +1,11 @@
+{# Used in Priere TAB #}
+
 {% if css is not defined %}
     {% set css = 'well' %}
+{% endif %}
+
+{% if isAdmin is not defined %}
+    {% set isAdmin = false %}
 {% endif %}
 
  {% if personnage.isPriest() %}
@@ -150,8 +156,8 @@
                      'css' : 'mt-4'
                  } %}
 
-                 {% for religion in personnage.religions %}
-
+                 {% for personnageReligion in personnage.personnagesReligions %}
+                     {% set religion = personnageReligion.religion %}
                      <div class="card mt-2">
                          <div class="card-header card-title">
                              <h5 id="priest_religions">Religions choisies par la prêtrise</h5>
