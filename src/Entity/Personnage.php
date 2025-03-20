@@ -1377,6 +1377,13 @@ class Personnage extends BasePersonnage implements \Stringable
         return false;
     }
 
+    public function isKnownLoi(Loi $loi): bool
+    {
+        // TODO
+
+        return false;
+    }
+
     /**
      * Vérifie si le personnage connait ce document.
      */

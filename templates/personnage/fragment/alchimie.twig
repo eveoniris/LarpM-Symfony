@@ -1,6 +1,11 @@
 {% if css is not defined %}
     {% set css = 'well' %}
 {% endif %}
+
+{% if isAdmin is not defined %}
+    {% set isAdmin = false %}
+{% endif %}
+
 {% if personnage.potions|length > 0 %}
     <div class="{{ css }}">
         <div class="header">
@@ -15,8 +20,13 @@
                     {% set potion = participant.hasPotionsDepartByLevel(niveau) %}
                     {% if potion %}
                         <a class="list-group-item"
-                           href="{{ path('participant.potion.detail', {'participant': participant.id, 'potion': potion.id}) }}">{% if potion.secret %}
-                                <span style="color:red;">Secret</span> - {% endif %}{{ potion.label }} -
+                           href="{{ path('participant.potion.detail', {'participant': participant.id, 'potion': potion.id}) }}">
+                            {% if potion.secret %}
+                                <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
+                                   data-bs-placement="top"
+                                   title="Secret"></i> -&nbsp;
+                            {% endif %}
+                            {{ potion.label }} -
                             Niveau {{ potion.niveau }}</a>
                     {% else %}
                         <a class="list-group-item">Vous n'avez pas choisi de potion de niveau {{ niveau }}.</a>
@@ -34,36 +44,40 @@
                     {% set potionPath = path('participant.potion.detail', {'participant': participant.id, 'potion': potion.id}) %}
                 {% endif %}
 
-                <div class="list-group-item">
-                    <a href="{{ potionPath }}">
-                        {% if potion.secret %}
-                            <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip" data-bs-placement="top"
-                               title="Secret"></i>&nbsp;
-                        {% endif %}{{ potion.id }} - {{ potion.label }}
-                        <small>(Niveau {{ potion.niveau }})</small></a>
+                <div class="list-group-item d-flex justify-content-between">
+                    <div>
+                        <a href="{{ potionPath }}">
+                            {% if potion.secret %}
+                                <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
+                                   data-bs-placement="top"
+                                   title="Secret"></i>&nbsp;
+                            {% endif %}{{ potion.id }} - {{ potion.label }}
+                            <small>(Niveau {{ potion.niveau }})</small></a>
+                    </div>
+
                     <div class="btn-group" role="group">
-                    <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
-                            href="#potion_{{ potion.id }}"
-                            aria-expanded="false" aria-controls="potion_{{ potion.id }}"
-                            role="button">
-                        <i class="fa-solid fa-circle-info"></i>
-                    </button>
-                    {% if potion.documentUrl %}
-                        {% if isAdmin %}
-                            <button class="btn btn-sm btn-secondary"
-                                    href="{{ path('magie.potion.document',{'potion':potion.id, 'document': potion.documentUrl}) }}"
-                                    aria-expanded="false" aria-controls="potion_{{ potion.id }}"
-                                    role="button">
-                                <i class="fa-solid fa-file"></i>
-                            </button>
-                        {% elseif participant is defined %}
-                            <button class="btn btn-sm btn-secondary"
-                                    href="{{ path('participant.potion.document',{'potion':potion.id, 'participant': participant.id,'document': potion.documentUrl}) }}"
-                                    role="button">
-                                <i class="fa-solid fa-file"></i>
-                            </button>
+                        <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                                href="#potion_{{ potion.id }}"
+                                aria-expanded="false" aria-controls="potion_{{ potion.id }}"
+                                role="button">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </button>
+                        {% if potion.documentUrl %}
+                            {% if isAdmin %}
+                                <button class="btn btn-sm btn-secondary"
+                                        href="{{ path('magie.potion.document',{'potion':potion.id, 'document': potion.documentUrl}) }}"
+                                        aria-expanded="false"
+                                        role="button">
+                                    <i class="fa-solid fa-file"></i>
+                                </button>
+                            {% elseif participant is defined %}
+                                <button class="btn btn-sm btn-secondary"
+                                        href="{{ path('participant.potion.document',{'potion':potion.id, 'participant': participant.id,'document': potion.documentUrl}) }}"
+                                        role="button">
+                                    <i class="fa-solid fa-file"></i>
+                                </button>
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
                     </div>
                 </div>
                 <div class="list-group-item bg-body-secondary collapse" id="potion_{{ potion.id }}">

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -16,16 +17,16 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseLoi', 'extended' => 'Loi'])]
 abstract class BaseLoi
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $label = null;
 
-    #[Column(name: 'documentUrl', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'lois')]

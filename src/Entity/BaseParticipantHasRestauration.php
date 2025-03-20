@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -24,7 +23,7 @@ abstract class BaseParticipantHasRestauration
     protected ?int $id = null;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected DateTime $date;
+    protected \DateTime $date;
 
     #[ManyToOne(targetEntity: Participant::class, inversedBy: 'participantHasRestaurations', cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: 'false')]
@@ -60,7 +59,7 @@ abstract class BaseParticipantHasRestauration
     /**
      * Set the value of date.
      */
-    public function setDate(DateTime $date): static
+    public function setDate(\DateTime $date): static
     {
         $this->date = $date;
 
@@ -70,7 +69,7 @@ abstract class BaseParticipantHasRestauration
     /**
      * Get the value of date.
      */
-    public function getDate(): DateTime
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
@@ -78,7 +77,7 @@ abstract class BaseParticipantHasRestauration
     /**
      * Set Participant entity (many to one).
      */
-    public function setParticipant(Participant $participant = null): static
+    public function setParticipant(?Participant $participant = null): static
     {
         $this->participant = $participant;
 
@@ -96,7 +95,7 @@ abstract class BaseParticipantHasRestauration
     /**
      * Set Restauration entity (many to one).
      */
-    public function setRestauration(Restauration $restauration = null): static
+    public function setRestauration(?Restauration $restauration = null): static
     {
         $this->restauration = $restauration;
 

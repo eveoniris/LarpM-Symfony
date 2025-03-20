@@ -10,21 +10,49 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="list-group">
+
                     {% for technologie in personnage.technologies %}
-                        <div class="list-group-item">
-                            {% if technologie.secret %}<span style="color:red;">Secret</span> - {% endif %}
-                            <div class="list-group-item-heading"><strong>{{ technologie.label }}</strong></div>
-                            <div class="list-group-item-text">{{ technologie.description|markdown_to_html }}</div>
-                            <p class="list-group-item-text">
-                                {% if technologie.documentUrl %}
-                                    <a class="btn btn-default btn-sm"
-                                       href="{{ path('participant.technologie.document',{'participant': participant.id, 'technologie' : technologie.id, 'filename': technologie.printlabel}) }}">
-                                        <i class="fa fa-file"></i> Imprimer l'aide de jeu
-                                    </a>
+                        <div class="list-group-item d-flex justify-content-between">
+                            <div>
+                                {% if technologie.secret %}
+                                    <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
+                                       data-bs-placement="top"
+                                       title="Secret"></i> -&nbsp;
                                 {% endif %}
-                            </p>
+
+                                {{ technologie.label }}
+                            </div>
+
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                                        href="#technologie_{{ technologie.id }}"
+                                        aria-expanded="false" aria-controls="technologie_{{ technologie.id }}"
+                                        role="button">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                </button>
+                                {% if technologie.documentUrl %}
+                                    {% if isAdmin %}
+                                        <button class="btn btn-sm btn-secondary"
+                                                href="{{ path('technologie.document',{'technologie':technologie.id, 'document': technologie.documentUrl}) }}"
+                                                aria-expanded="false"
+                                                role="button">
+                                            <i class="fa-solid fa-file"></i>
+                                        </button>
+                                    {% elseif participant is defined %}
+                                        <button class="btn btn-sm btn-secondary"
+                                                href="{{ path('participant.technologie.document',{'technologie':technologie.id, 'participant': participant.id,'document': technologie.documentUrl}) }}"
+                                                role="button">
+                                            <i class="fa-solid fa-file"></i>
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="list-group-item bg-body-secondary collapse" id="technologie_{{ technologie.id }}">
+                            {{ technologie.description|markdown_to_html }}
                         </div>
                     {% endfor %}
+
                 </div>
             </div>
         </div>

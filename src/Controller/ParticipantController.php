@@ -15,6 +15,7 @@ use App\Entity\GroupeAllie;
 use App\Entity\GroupeEnemy;
 use App\Entity\GroupeGn;
 use App\Entity\Langue;
+use App\Entity\Loi;
 use App\Entity\Membre;
 use App\Entity\Message;
 use App\Entity\Participant;
@@ -1347,8 +1348,6 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/connaissance/{connaissance}/document', name: 'participant.connaissance.document')]
     public function connaissanceDocumentAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
         Connaissance $connaissance,
     ): BinaryFileResponse|RedirectResponse {
@@ -1366,10 +1365,29 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $filename = __DIR__.'/../../private/doc/'.$connaissance->getDocumentUrl();
-        $file = new File($filename);
+        $this->sendDocument($connaissance);
+    }
 
-        return $this->file($file, $connaissance->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+    #[Route('/participant/{participant}/loi/{loi}/document', name: 'participant.loi.document')]
+    public function loiDocumentAction(
+        Participant $participant,
+        Loi $loi,
+    ): BinaryFileResponse|RedirectResponse {
+        $personnage = $participant->getPersonnage();
+
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        if (!$personnage->isKnownLoi($loi)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette loi !');
+
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        $this->sendDocument($loi);
     }
 
     /**
@@ -4240,8 +4258,6 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/technologie/{technologie}/document', name: 'participant.technologie.document')]
     public function technologieDocumentAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
         Technologie $technologie,
     ): BinaryFileResponse|RedirectResponse {
@@ -4259,10 +4275,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $filename = __DIR__.'/../../private/doc/'.$technologie->getDocumentUrl();
-        $file = new File($filename);
-
-        return $this->file($file, $technologie->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+        $this->sendDocument($technologie);
     }
 
     /**
