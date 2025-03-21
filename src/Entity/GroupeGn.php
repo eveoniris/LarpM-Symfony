@@ -84,7 +84,11 @@ class GroupeGn extends BaseGroupeGn
             $personnage = $personnage->getPersonnage();
         }
 
-        return $this->getSuzerin()?->getId() === $personnage->getId();
+        if (null === $this->getSuzerin()) {
+            return false;
+    }
+
+        return $this->getSuzerin()?->getId() === $personnage?->getId();
     }
 
     public function isConnetable(Personnage|Participant $personnage): bool

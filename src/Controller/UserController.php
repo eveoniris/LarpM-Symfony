@@ -317,7 +317,7 @@ class UserController extends AbstractController
             throw new NotFoundHttpException('No User was found with that ID.');
         }
 
-        $this->hasAccess($user);
+        $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
 
         if ($request->isMethod('POST')) {
             $user->setEmail($request->request->get('email'));

@@ -1480,7 +1480,7 @@ class GroupeController extends AbstractController
         if (!$groupe) {
             $this->addFlash('error', 'Le groupe n\'a pas été trouvé.');
 
-            return $this->redirectToRoute('groupe');
+            return $this->redirectToRoute('groupe.list');
         }
 
         $canSeePrivateDetail = $this->isGranted(Role::SCENARISTE->value);

@@ -4,240 +4,350 @@
 
 {% block body %}
 
-	{% include '_partials/breadcrumb.twig' with {'items' :
-		[
-			{'name' : 'Liste des grandeurs nature', 'route': path('gn.list') },
-			{'name' : gn.label }
-		]
-	} %}
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des grandeurs nature', 'route': path('gn.list') },
+            {'name' : gn.label }
+        ]
+    } %}
 
-	<div class="card text-bg mb-3">
+    <div class="card text-bg mb-3">
 
-			<div class="card-title"><div class="header"><h5>{{ gn.label }}</h5></div></div>
-			<div class="card-body">
-				<div class="card-text	">
-					{% if gn.description %}
-						{{ gn.description|markdown_to_html }}
-					{% else %}
-						{% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Ce GN ne possède aucune description"} %}
+        <div class="card-title">
+            <div class="header"><h5>{{ gn.label }}</h5></div>
+        </div>
+        <div class="card-body">
+            <div class="card-text	">
+                {% if gn.description %}
+                    {{ gn.description|markdown_to_html }}
+                {% else %}
+                    {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Ce GN ne possède aucune description"} %}
 
-					{% endif %}
-				</div>
-			</div>
-		</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
-	
-	{% if is_granted('ROLE_ADMIN', app.user) %}		
-		<div class="card mb-2">
-		    <div class="header">
-				<h5>Administratif (Ceci n'est visible que pour les ADMIN)</h5>
-			</div>
-		    
-		    <div class="card-body">
-		    	<ul>
-					<li><strong>Nombre de point d'expérience à la création d'un personnage : </strong>{{ gn.xpCreation }}</li>
-					<li><a href="{{ path('gn.billet', {'gn': gn.id}) }}">Gestion des billets</a></li>
-					<li><a href="{{ path('gn.update', {'gn': gn.id}) }}">Modifier le GN</a></li>
-					<li><a href="{{ path('gn.delete', {'gn': gn.id}) }}">Supprimer le GN</a></li>
-				</ul>
-				
-				<ul>
-					<li><a href="{{ path('gn.participants', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants ({{ gn.participants|length }})</a></li>
-					<li><a href="{{ path('gn.pnjs', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants PNJs ({{ gn.participantspnj|length }})</a></li>
-					<li><a href="{{ path('gn.participants.withoutbillet', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants sans billet ({{ gn.participantswithoutbillet|length }})</a></li>
-					<li><a href="{{ path('gn.participants.withoutgroup', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants sans groupe (mais avec billet) ({{ gn.participantswithoutgroup|length }})</a></li>
-					<li><a href="{{ path('gn.participants.withoutperso', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants sans personnage ({{ gn.participantswithoutperso|length }})</a></li>
-					<li><a href="{{ path('gn.groupesReserves', {'gn': gn.id}) }}"><i class="fa fa-download"></i> Groupes réservés</a></li>
-					<li><a href="{{ path('gn.fedegn', {'gn': gn.id}) }}"><i class="fa fa-download"></i> Document FédéGN</a></li>
-				</ul>
-			</div>
-		</div>
-	{% endif %}
-	
-	<div class="row">
-		<div class="col-md-6">
-			<div class="card mb-2">
-				<div class="header"><h5>Informations</h5></div>
-				
-				<div class="card-body">
-					<strong>Ou ?</strong> 
-					{{ gn.adresse|markdown_to_html }}
-					<strong>Quand ?</strong>
-					<p>Du {{ gn.dateDebut|date('d-m-Y') }} au {{ gn.dateFin|date('d-m-Y') }}.<br />
-				    L'acceuil des joueurs débutera le {{ gn.dateInstallationJoueur|date('d-m-Y') }} à {{ gn.dateInstallationJoueur|date('H:i') }} heure.</p>
-				    
-				    <ul>
-				    	<li>
-				    {% if participant %}
-				    	Vous participez à ce jeu
-				    {% else %}
-					    <a href="{{ path('user.gn.participe', {'gn': gn.id}) }}"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;Participer !</a>
-				    {% endif %}
-				    	</li>
-				    	<li><a href="{{ path('gn.groupes', {'gn': gn.id}) }}">Liste des groupes</a></li>
-				    	<li><a href="{{ path('gn.groupesPlaces', {'gn': gn.id}) }}">Liste des groupes recherchant des joueur.euse.s</a></li>
-				    </ul>
-				    
-				</div>
-			</div>	
-			
-			{% if participant %}
-				<div class="card mb-2">
-					<div class="header"><h5>Billet et restauration</h5></div>
-					
-					<div class="card-body">
-						<strong>Billet :</strong>
-						<ul class="list-group">
-							<li class="list-group-item">
-								{% if participant.billet %}
-									<i class="fa fa-ticket" aria-hidden="true"></i>&nbsp; {{ participant.billet }}
-								{% else %}
-									Vous n'avez pas encore de billets. Si vous venez d'effectuer l'achat du billet, attendez un jour ou deux que celui-ci vous soit attribué (il s'agit d'une opération manuelle)
-								{% endif %}
-							</li>
-						</ul>
-						
-						<strong>Restauration :</strong>
-						<ul class="list-group">
-							{% for participantHasRestauration in participant.participantHasRestaurations %}
-								<li class="list-group-item">
-									<i class="fa fa-coffee" aria-hidden="true"></i>&nbsp;
-									{{ participantHasRestauration.restauration.label }}</strong> obtenu le {{ participantHasRestauration.date|date('Y-m-d') }}
-								</li>
-							{% else %}
-								<li class="list-group-item">Vous n'avez pas de restauration prévu pendant le jeu. Utilisez la billeterie si vous voulez bénéficier de repas et de ticket boissons pendant le jeu.</li>
-							{% endfor %}
-						</ul>
-						
-						<strong>Achetez votre billet et votre restauration :</strong>
-						<ul class="list-group">
-							<li class="list-group-item">
-								<i class="fa fa-shopping-basket" aria-hidden="true"></i>&nbsp;
-								<a href=" {{ path('gn.billetterie', {'gn': participant.gn.id }) }}">Billetterie</a>
-							</li>
-						</ul>
-					</div>
-				</div>
-			{% endif %}
-		</div>
 
-		<div class="col-md-6">
-			<div class="card mb-2">
-				<div class="header"><h5>Les annonces</h5></div>
-				<div class="card-body">
-					{% for  annonce in gn.annonces%}
-						<div class="pull-right">
-							<small>publié le {{ annonce.updateDate|date('Y-m-d') }}</small>
-						</div>
-						<strong>{{ annonce.title }}</strong>
-									
-						{{ annonce.text|markdown_to_html }}
-						{% if is_granted('ROLE_REDACTEUR', app.user) %}
-							<a class="btn btn-primary" href="{{ path('annonce.update', {'annonce': annonce.id}) }}"><i class="fa fa-pencil"></i></a>
-						{% endif %}
-					{% else %}
-						{% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Ce GN ne dispose d'aucune annonce"} %}
+    {% if is_granted('ROLE_ADMIN', app.user) %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-2">
+                    <div class="header">
+                        <h5>Administratif (Ceci n'est visible que pour les ADMIN)</h5>
+                    </div>
 
-					{% endfor %}
-				</div>
-			</div>
-			
-			{% for question in questions %}
-				{% if participant and not participant.asAnswser(question) %}
-					<div class="card mb-2">
-						<div class="panel-heading">
-							<div class="header"><h5>Sondage: {{ question.label }}</h5></div>
-						</div>
-						<div class="card-body">
-							{{ question.text|markdown_to_html }}
-							<ul>
-							{% for reponse in question.choix|split(';') %}
-								<li><a href="{{ path('participant.reponse', {'participant':participant.id,'question': question.id, 'reponse':reponse}) }}">{{ reponse }}</a></li>
-							{% endfor %}
-							</ul>
-						</div>
-					</div>
-				{% endif %}
-			{% endfor %}
-			{% if participant %} 
-				{% for reponse in participant.reponses %}
-				<div class="panel panel-conan">
-					<div class="panel-heading">
-						[Répondu] : {{ reponse.question.label }}
-					</div>
-					<div class="panel-body">
-						{{ reponse.question.text|markdown_to_html }}
-						<strong>{{ reponse.question.reponse(reponse.reponse) }}</strong>
-						<div class="pull-right">
-							<a class="btn btn-danger" href="{{ path('participant.reponse.delete', {'participant':participant.id,'reponse': reponse.id}) }}">Supprimer ma réponse</a>
-						</div>
-					</div>
-				</div>
-				{% endfor %}
-   			{% endif %}
-			
-			{% if participant %}
-			<div class="card mb-2">
-				<div class="header"><h5>Votre personnage</h5></div>
-				
-				<div class="card-body">
-					<ul>
-					{% if participant.personnage %}
-						<li>
-							<a href="{{ path('gn.personnage', {'gn': gn.id}) }}"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;
-				   				{{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}&nbsp;--&nbsp;{{ participant.personnage.classeName }}
-				   			</a>
-				   		</li>
-					{% else %}
-						{% if participant.session %}
-							<li><a href="{{ path('participant.personnage.old', {'participant': participant.id}) }}"><i class="fa fa-plus" aria-hidden="true"></i> Reprendre un ancien personnage</a></li>
-							<li><a href="{{ path('participant.personnage.new', {'participant': participant.id}) }}"><i class="fa fa-plus" aria-hidden="true"></i> Créer un nouveau personnage</a></li>
-						{% else %}
-							<li>Vous devez <strong>rejoindre un groupe</strong> avant d'accéder à votre personnage.</li>
-						{% endif %}
-					{% endif %}
-					
-					{% if participant.personnageSecondaire %}
-	 					<li>Personnage secondaire :&nbsp;<strong>{{ participant.personnageSecondaire.classe.label }}</strong></li>
-	 				{% else %}
-	 					<li>Vous n'avez pas de personne secondaire, choisissez-en !</li>
-					{% endif %}
-						<li><a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}"><i class="fa fa-pencil" aria-hidden="true"></i> Modifier votre personnage secondaire</a></li>
-					{% if participant.session %}
-						<li><a href="{{ path('participant.background', {'participant': participant.id}) }}"><i class="fa fa-book" aria-hidden="true"></i> Votre background</a></li>
-					{% endif %}
-					</ul>
-				</div>
-			</div>
+                    <div class="card-body">
+                        <ul>
+                            <li><strong>Nombre de point d'expérience à la création d'un personnage
+                                    : </strong>{{ gn.xpCreation }}</li>
+                            <li><a href="{{ path('gn.billet', {'gn': gn.id}) }}">Gestion des billets</a></li>
+                            <li><a href="{{ path('gn.update', {'gn': gn.id}) }}">Modifier le GN</a></li>
+                            <li><a href="{{ path('gn.delete', {'gn': gn.id}) }}">Supprimer le GN</a></li>
+                        </ul>
 
-			
-			<div class="card mb-2">
-				<div class="header"><h5>Vos groupes</h5></div>
-				<div class="card-body">
-					<strong>Groupe principal :</strong>
-					<ul class="list-group">
-						{% if participant.session %}
-							<li class="list-group-item"><a href="{{ path('groupeGn.groupe', {'groupeGn': participant.session.id}) }}"><i class="fa fa-users"></i> {{ participant.session.groupe.nom }}</a></li>
-						{% else %}
-							<li class="list-group-item"><a href="{{ path('participant.groupe.join', {'participant': participant.id}) }}"><i class="fa fa-users"></i> Rejoindre un groupe</a></li>
-						{% endif %}
-					</ul>
-					
-					<strong>Groupes secondaires :</strong>
-					<ul class="list-group">
-						{% if participant.personnage %}
-							{% for membre in participant.personnage.membres %}
-								<li class="list-group-item">{% if membre.secondaryGroup.secret %}<span style="color:red;">Secret</span> - {% endif %}<a href="{{ path('participant.groupeSecondaire.detail', {'participant': participant.id, 'groupeSecondaire': membre.secondaryGroup.id}) }}">{{ membre.secondaryGroup }}</a></li>
-							{% endfor %}
-							{% for postulant in participant.personnage.postulants %}
-								<li class="list-group-item">{{ postulant.secondaryGroup }} -- En attente</li>
-							{% endfor %}
-						{% endif %}
-					</ul>
-					
-				</div>
-			</div>
-			{% endif %}	
-		</div>
-	</div>
+                        <ul>
+                            <li><a href="{{ path('gn.participants', {'gn': gn.id}) }}"><i class="fa fa-users"></i>
+                                    Participants
+                                    ({{ gn.participants|length }})</a></li>
+                            <li><a href="{{ path('gn.participants.csv', {'gn': gn.id}) }}"><i
+                                            class="fa fa-file-csv"></i>
+                                    Participants CSV ({{ gn.participants|length }})</a></li>
+                            <li><a href="{{ path('gn.groupes', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Groupes
+                                    ({{ gn.groupeGns|length }})</a></li>
+                            <li><a href="{{ path('gn.pnjs', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants
+                                    PNJs
+                                    ({{ gn.participantspnj|length }})</a></li>
+                            <li><a href="{{ path('gn.participants.withoutbillet', {'gn': gn.id}) }}"><i
+                                            class="fa fa-users"></i>
+                                    Participants sans billet ({{ gn.participantswithoutbillet|length }})</a></li>
+                            <li><a href="{{ path('gn.participants.withoutgroup', {'gn': gn.id}) }}"><i
+                                            class="fa fa-users"></i>
+                                    Participants sans groupe (mais avec billet)
+                                    ({{ gn.participantswithoutgroup|length }})</a>
+                            </li>
+                            <li><a href="{{ path('gn.participants.withoutperso', {'gn': gn.id}) }}"><i
+                                            class="fa fa-users"></i>
+                                    Participants sans personnage ({{ gn.participantswithoutperso|length }})</a></li>
+                            <li><a href="{{ path('gn.groupesReserves', {'gn': gn.id}) }}"><i class="fa fa-download"></i>
+                                    Groupes
+                                    réservés</a></li>
+                            <li><a href="{{ path('gn.fedegn', {'gn': gn.id}) }}"><i class="fa fa-download"></i> Document
+                                    FédéGN</a>
+                            </li>
+                            <li><a href="{{ path('billet.add',{'gn': gn.id}) }}"><i class="fa fa-plus"></i> Ajouter un
+                                    billet</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-2">
+                    <div class="header m-0">
+                        <h5 class="m-0">Résumer des billets</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                            <thead>
+                            <tr>
+                                <th>Billet</th>
+                                <th class="col-1">Quantité</th>
+                                <th class="col-1">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for billet in gn.billets %}
+                                <tr>
+                                    <td>{{ billet.label }}</td>
+                                    <td>{{ billet.participants|length }}</td>
+                                    <td>
+                                        <div class="btn-toolbar" role="toolbar">
+                                            <div class="btn-group" role="group">
+                                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                   title="Liste"
+                                                   href="{{ path('billet.participants', {'billet': billet.id}) }}"><i
+                                                            class="fa fa-users" aria-hidden="true"></i></a>
+                                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                   title="Modifier"
+                                                   href="{{ path('billet.update',{'billet':billet.id}) }}"><i
+                                                            class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                   title="Supprimer"
+                                                   href="{{ path('billet.delete',{'billet':billet.id}) }}"><i
+                                                            class="fa fa-eraser"></i></a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-2">
+                <div class="header"><h5>Informations</h5></div>
+
+                <div class="card-body">
+                    <strong>Ou ?</strong>
+                    {{ gn.adresse|markdown_to_html }}
+                    <strong>Quand ?</strong>
+                    <p>Du {{ gn.dateDebut|date('d-m-Y') }} au {{ gn.dateFin|date('d-m-Y') }}.<br/>
+                        L'acceuil des joueurs débutera le {{ gn.dateInstallationJoueur|date('d-m-Y') }}
+                        à {{ gn.dateInstallationJoueur|date('H:i') }} heure.</p>
+
+                    <ul>
+                        <li>
+                            {% if participant %}
+                                Vous participez à ce jeu
+                            {% else %}
+                                <a href="{{ path('user.gn.participe', {'gn': gn.id}) }}"><i class="fa fa-check"
+                                                                                            aria-hidden="true"></i>&nbsp;Participer
+                                    !</a>
+                            {% endif %}
+                        </li>
+                        <li><a href="{{ path('gn.groupes', {'gn': gn.id}) }}">Liste des groupes</a></li>
+                        <li><a href="{{ path('gn.groupesPlaces', {'gn': gn.id}) }}">Liste des groupes recherchant des
+                                joueur.euse.s</a></li>
+                    </ul>
+
+                </div>
+            </div>
+
+            {% if participant %}
+                <div class="card mb-2">
+                    <div class="header"><h5>Billet et restauration</h5></div>
+
+                    <div class="card-body">
+                        <strong>Billet :</strong>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                {% if participant.billet %}
+                                    <i class="fa fa-ticket" aria-hidden="true"></i>&nbsp; {{ participant.billet }}
+                                {% else %}
+                                    Vous n'avez pas encore de billets. Si vous venez d'effectuer l'achat du billet, attendez un jour ou deux que celui-ci vous soit attribué (il s'agit d'une opération manuelle)
+                                {% endif %}
+                            </li>
+                        </ul>
+
+                        <strong>Restauration :</strong>
+                        <ul class="list-group">
+                            {% for participantHasRestauration in participant.participantHasRestaurations %}
+                                <li class="list-group-item">
+                                    <i class="fa fa-coffee" aria-hidden="true"></i>&nbsp;
+                                    {{ participantHasRestauration.restauration.label }}</strong> obtenu
+                                    le {{ participantHasRestauration.date|date('Y-m-d') }}
+                                </li>
+                            {% else %}
+                                <li class="list-group-item">Vous n'avez pas de restauration prévu pendant le jeu.
+                                    Utilisez la billeterie si vous voulez bénéficier de repas et de ticket boissons
+                                    pendant le jeu.
+                                </li>
+                            {% endfor %}
+                        </ul>
+
+                        <strong>Achetez votre billet et votre restauration :</strong>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <i class="fa fa-shopping-basket" aria-hidden="true"></i>&nbsp;
+                                <a href=" {{ path('gn.billetterie', {'gn': participant.gn.id }) }}">Billetterie</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-2">
+                <div class="header"><h5>Les annonces</h5></div>
+                <div class="card-body">
+                    {% for  annonce in gn.annonces %}
+                        <div class="pull-right">
+                            <small>publié le {{ annonce.updateDate|date('Y-m-d') }}</small>
+                        </div>
+                        <strong>{{ annonce.title }}</strong>
+
+                        {{ annonce.text|markdown_to_html }}
+                        {% if is_granted('ROLE_REDACTEUR', app.user) %}
+                            <a class="btn btn-primary" href="{{ path('annonce.update', {'annonce': annonce.id}) }}"><i
+                                        class="fa fa-pencil"></i></a>
+                        {% endif %}
+                    {% else %}
+                        {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Ce GN ne dispose d'aucune annonce"} %}
+
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% for question in questions %}
+                {% if participant and not participant.asAnswser(question) %}
+                    <div class="card mb-2">
+                        <div class="panel-heading">
+                            <div class="header"><h5>Sondage: {{ question.label }}</h5></div>
+                        </div>
+                        <div class="card-body">
+                            {{ question.text|markdown_to_html }}
+                            <ul>
+                                {% for reponse in question.choix|split(';') %}
+                                    <li>
+                                        <a href="{{ path('participant.reponse', {'participant':participant.id,'question': question.id, 'reponse':reponse}) }}">{{ reponse }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% if participant %}
+                {% for reponse in participant.reponses %}
+                    <div class="panel panel-conan">
+                        <div class="panel-heading">
+                            [Répondu] : {{ reponse.question.label }}
+                        </div>
+                        <div class="panel-body">
+                            {{ reponse.question.text|markdown_to_html }}
+                            <strong>{{ reponse.question.reponse(reponse.reponse) }}</strong>
+                            <div class="pull-right">
+                                <a class="btn btn-danger"
+                                   href="{{ path('participant.reponse.delete', {'participant':participant.id,'reponse': reponse.id}) }}">Supprimer
+                                    ma réponse</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if participant %}
+                <div class="card mb-2">
+                    <div class="header"><h5>Votre personnage</h5></div>
+
+                    <div class="card-body">
+                        <ul>
+                            {% if participant.personnage %}
+                                <li>
+                                    <a href="{{ path('gn.personnage', {'gn': gn.id}) }}"><i class="fa fa-user"
+                                                                                            aria-hidden="true"></i>&nbsp;
+                                        {{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}
+                                        &nbsp;--&nbsp;{{ participant.personnage.classeName }}
+                                    </a>
+                                </li>
+                            {% else %}
+                                {% if participant.session %}
+                                    <li>
+                                        <a href="{{ path('participant.personnage.old', {'participant': participant.id}) }}"><i
+                                                    class="fa fa-plus" aria-hidden="true"></i> Reprendre un ancien
+                                            personnage</a></li>
+                                    <li>
+                                        <a href="{{ path('participant.personnage.new', {'participant': participant.id}) }}"><i
+                                                    class="fa fa-plus" aria-hidden="true"></i> Créer un nouveau
+                                            personnage</a></li>
+                                {% else %}
+                                    <li>Vous devez <strong>rejoindre un groupe</strong> avant d'accéder à votre
+                                        personnage.
+                                    </li>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if participant.personnageSecondaire %}
+                                <li>Personnage secondaire
+                                    :&nbsp;<strong>{{ participant.personnageSecondaire.classe.label }}</strong></li>
+                            {% else %}
+                                <li>Vous n'avez pas de personne secondaire, choisissez-en !</li>
+                            {% endif %}
+                            <li>
+                                <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}"><i
+                                            class="fa fa-pencil" aria-hidden="true"></i> Modifier votre personnage
+                                    secondaire</a></li>
+                            {% if participant.session %}
+                                <li><a href="{{ path('participant.background', {'participant': participant.id}) }}"><i
+                                                class="fa fa-book" aria-hidden="true"></i> Votre background</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+
+
+                <div class="card mb-2">
+                    <div class="header"><h5>Vos groupes</h5></div>
+                    <div class="card-body">
+                        <strong>Groupe principal :</strong>
+                        <ul class="list-group">
+                            {% if participant.session %}
+                                <li class="list-group-item"><a
+                                            href="{{ path('groupeGn.groupe', {'groupeGn': participant.session.id}) }}"><i
+                                                class="fa fa-users"></i> {{ participant.session.groupe.nom }}</a></li>
+                            {% else %}
+                                <li class="list-group-item"><a
+                                            href="{{ path('participant.groupe.join', {'participant': participant.id}) }}"><i
+                                                class="fa fa-users"></i> Rejoindre un groupe</a></li>
+                            {% endif %}
+                        </ul>
+
+                        <strong>Groupes secondaires :</strong>
+                        <ul class="list-group">
+                            {% if participant.personnage %}
+                                {% for membre in participant.personnage.membres %}
+                                    <li class="list-group-item">{% if membre.secondaryGroup.secret %}<span
+                                            style="color:red;">Secret</span> - {% endif %}<a
+                                                href="{{ path('participant.groupeSecondaire.detail', {'participant': participant.id, 'groupeSecondaire': membre.secondaryGroup.id}) }}">{{ membre.secondaryGroup }}</a>
+                                    </li>
+                                {% endfor %}
+                                {% for postulant in participant.personnage.postulants %}
+                                    <li class="list-group-item">{{ postulant.secondaryGroup }} -- En attente</li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
