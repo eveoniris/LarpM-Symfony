@@ -71,7 +71,6 @@ class ReligionController extends AbstractController
      */
     #[Route('/religion/mail', name: 'religion.mail')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-
     public function mailAction(ReligionRepository $religionRepository): Response
     {
         return $this->render(
