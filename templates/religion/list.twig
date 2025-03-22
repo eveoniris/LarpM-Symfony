@@ -1,42 +1,41 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Religions{% endblock title %}
+{% block title %}Religion{% endblock title %}
+
+{% if isAdmin is not defined %}
+    {% set isAdmin = false %}
+{% endif %}
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage')  }}">Accueil</a></li>
-		<li class="active">Les religions</li>
-	</ol>
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des religions' },
+        ]
+    } %}
 
-	<div class="well well-sm">
+    <div class="well well-sm bs-component">
 
-		{% include '_partials/pagination.html.twig' %}
+        <div class="header">
+            <h5>Liste des religions</h5>
+        </div>
 
-		<table class="table table-condensed table-striped table-bordered">
-			<thead>
-				<tr>
-					<th>Nom</th>
-					<th>Blason</th>
-					<th>Description</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for religion in paginator %}
-				<tr>
-					<td>{{ religion.label }}</td>
-					<td>{% if religion.blason %}
-		      				<img width="160" src="{{ path('religion.blason', {'religion' : religion.getId }) }}" />
-		      			{% endif %}
-					</td>
-					<td>{{ religion.description|markdown_to_html }}</td>
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
+        {% if isAdmin %}
+            <div class="btn-toolbar" role="toolbar" aria-label="...">
+                <div class="btn-group" role="group" aria-label="...">
+                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter une religion"
+                       href="{{ path('religion.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Liste mail"
+                       href="{{ path('religion.mail') }}"><i class="fa fa-list"></i> Liste</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 
-	{% include '_partials/pagination.html.twig' %}
+    {% include '_partials/pagination.html.twig' %}
 
-	</div>
-	
+    {{ include("religion/fragment/list.twig", {'religions' : paginator, 'add' : true}) }}
+
+    {% include '_partials/pagination.html.twig' %}
+
 {% endblock %}

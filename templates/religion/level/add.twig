@@ -1,16 +1,21 @@
 {% extends "base.html.twig" %}
 
+{% block title %}Fanatisme{% endblock title %}
+
 {% block body %}
 
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-xs-12 col-md-8">
-				{{ include("admin/religion/fragment/form.twig",{
-					'legend' : 'Ajout d\'un niveau de religion',
-					'action': path('religion.level.add'), 
-					'form' : form}) }}
-			</div>
-		</div>
-	</div>
-	
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'route' : path('religion.level'), 'name' : 'Gestion des niveaux de religion'},
+            {'name' : 'Ajouter un niveau'}
+        ]
+    } %}
+
+    <div class="well bs-component">
+        {{ include("religion/fragment/form.twig",{
+            'legend' : 'Ajout d\'un niveau de religion',
+            'action': path('religion.level.add'),
+            'form' : form}) }}
+    </div>
+
 {% endblock body %}
