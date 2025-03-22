@@ -72,7 +72,7 @@ td {white-space: normal; text-overflow: ellipsis;}
 				</td>
 				<td class="align-middle">
 					{% for personnage in item.personnages %}
-						<a href="{{ path('personnage.admin.detail', {'personnage':personnage.id}) }}">{{ personnage }}</a><br />
+						<a href="{{ path('personnage.detail', {'personnage':personnage.id}) }}">{{ personnage }}</a><br />
 					{% endfor %}
 				</td>
 				<td class="align-middle">

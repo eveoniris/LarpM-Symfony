@@ -174,7 +174,7 @@ class GnController extends AbstractController
         GnRepository $gnRepository,
     ): Response {
         return $this->render(
-            'admin/personnage/list.twig',
+            'personnage/list.twig',
             $personnageService->getSearchViewParameters(
                 $request,
                 'gn.personnages',

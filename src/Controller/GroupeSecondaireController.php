@@ -29,7 +29,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Liste des groupes secondaires (pour les orgas).
      */
-    #[Route('/groupeSecondaire', name: 'groupeSecondaire.admin.list')]
+    #[Route('/groupeSecondaire', name: 'groupeSecondaire.list')]
     #[Route('/groupeSecondaire', name: 'groupeSecondaire.list')]
     #[IsGranted('ROLE_USER')]
     public function adminListAction(
@@ -64,7 +64,7 @@ class GroupeSecondaireController extends AbstractController
      * Ajoute un groupe secondaire.
      */
     #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/groupeSecondaire/add', name: 'groupeSecondaire.admin.add')]
+    #[Route('/groupeSecondaire/add', name: 'groupeSecondaire.add')]
     public function adminAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $groupeSecondaire = new SecondaryGroup();
@@ -104,10 +104,10 @@ class GroupeSecondaireController extends AbstractController
             $this->addFlash('success', 'Le groupe secondaire a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('groupeSecondaire.admin.list', [], 303);
+                return $this->redirectToRoute('groupeSecondaire.list', [], 303);
             }
             if ($form->get('save_continue')->isClicked()) {
-                return $this->redirectToRoute('groupeSecondaire.admin.add', [], 303);
+                return $this->redirectToRoute('groupeSecondaire.add', [], 303);
             }
         }
 
@@ -136,7 +136,7 @@ class GroupeSecondaireController extends AbstractController
             $this->addFlash('success', 'Le groupe secondaire a été mis à jour.');
 
             return $this->redirectToRoute(
-                'groupeSecondaire.admin.detail',
+                'groupeSecondaire.detail',
                 ['groupeSecondaire' => $groupeSecondaire->getId()],
                 303
             );
@@ -177,7 +177,7 @@ class GroupeSecondaireController extends AbstractController
         ]);
     }
 
-    #[Route('/groupeSecondaire/{groupeSecondaire}/update', name: 'groupeSecondaire.admin.update')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/update', name: 'groupeSecondaire.update')]
     #[Route('/groupeSecondaire/{groupeSecondaire}/update', name: 'groupeSecondaire.update')]
     public function updateAction(
         Request $request,
@@ -233,7 +233,7 @@ class GroupeSecondaireController extends AbstractController
                 $this->addFlash('success', 'Le groupe secondaire a été supprimé.');
             }
 
-            return $this->redirectToRoute('groupeSecondaire.admin.list');
+            return $this->redirectToRoute('groupeSecondaire.list');
         }
 
         return $this->render('groupeSecondaire/update.twig', [
@@ -276,7 +276,7 @@ class GroupeSecondaireController extends AbstractController
      * Détail d'un groupe secondaire (pour les orgas).
      */
     #[IsGranted('ROLE_USER')]
-    #[Route('/groupeSecondaire/{groupeSecondaire}/detail', name: 'groupeSecondaire.admin.detail')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/detail', name: 'groupeSecondaire.detail')]
     #[Route('/groupeSecondaire/{groupeSecondaire}/detail', name: 'groupeSecondaire.detail')]
     public function detailAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
@@ -306,7 +306,7 @@ class GroupeSecondaireController extends AbstractController
      * Ajoute un nouveau membre au groupe secondaire.
      */
     #[IsGranted('ROLE_USER')]
-    #[Route('/groupeSecondaire/{groupeSecondaire}/addMember', name: 'groupeSecondaire.admin.newMembre')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/addMember', name: 'groupeSecondaire.newMembre')]
     #[Route('/groupeSecondaire/{groupeSecondaire}/addMember', name: 'groupeSecondaire.newMembre')]
     public function newMembreAction(
         Request $request,
@@ -327,7 +327,7 @@ class GroupeSecondaireController extends AbstractController
                 $this->addFlash('warning', 'le personnage est déjà membre du groupe secondaire.');
 
                 return $this->redirectToRoute(
-                    'groupeSecondaire.admin.detail',
+                    'groupeSecondaire.detail',
                     ['groupeSecondaire' => $groupeSecondaire->getId()],
                     303
                 );
@@ -343,7 +343,7 @@ class GroupeSecondaireController extends AbstractController
             $this->addFlash('success', 'le personnage a été ajouté au groupe secondaire.');
 
             return $this->redirectToRoute(
-                'groupeSecondaire.admin.detail',
+                'groupeSecondaire.detail',
                 ['groupeSecondaire' => $groupeSecondaire->getId()],
                 303
             );
@@ -409,7 +409,7 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/removeMember/{membre}', name: 'groupeSecondaire.member.remove')]
-    #[Route('/groupeSecondaire/{groupeSecondaire}/removeMember/{membre}', name: 'groupeSecondaire.admin.member.remove')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/removeMember/{membre}', name: 'groupeSecondaire.member.remove')]
     public function removeMembreAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
         #[MapEntity] Membre $membre,
@@ -428,7 +428,7 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/secretOff/{membre}', name: 'groupeSecondaire.secret.off')]
-    #[Route('/groupeSecondaire/{groupeSecondaire}/secretOff/{membre}', name: 'groupeSecondaire.admin.secret.off')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/secretOff/{membre}', name: 'groupeSecondaire.secret.off')]
     public function adminSecretOffAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
         #[MapEntity] Membre $membre,
@@ -445,7 +445,7 @@ class GroupeSecondaireController extends AbstractController
         );
     }
 
-    #[Route('/groupeSecondaire/{groupeSecondaire}/secretOn/{membre}', name: 'groupeSecondaire.admin.secret.on')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/secretOn/{membre}', name: 'groupeSecondaire.secret.on')]
     #[Route('/groupeSecondaire/{groupeSecondaire}/secretOn/{membre}', name: 'groupeSecondaire.secret.on')]
     public function secretOnAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,

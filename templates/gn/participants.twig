@@ -67,7 +67,7 @@
                 </td>
                 <td>
                     {% if participant.personnage %}
-                        <a href="{{ path('personnage.admin.detail', {'personnage': participant.personnage.id}) }}">{{ participant.personnage.nom }}</a>
+                        <a href="{{ path('personnage.detail', {'personnage': participant.personnage.id}) }}">{{ participant.personnage.nom }}</a>
                     {% else %}
                         <span class="text-danger">Aucun personnage sélectionné</span>
                     {% endif %}
@@ -86,19 +86,19 @@
                             {% if participant.user.personnage %}
                                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                                    title="Changer de personnage"
-                                   href="{{ path('participant.admin.personnage.old',{'participant':participant.id}) }}">
+                                   href="{{ path('participant.personnage.old',{'participant':participant.id}) }}">
                                     <i class="fa fa-exchange"></i>
                                 </a>
                             {% elseif participant.personnage %}
                                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                                    title="Sélectionner un ancien personnage"
-                                   href="{{ path('participant.admin.personnage.old',{'participant':participant.id}) }}">
+                                   href="{{ path('participant.personnage.old',{'participant':participant.id}) }}">
                                     <i class="fa fa-user"></i>
                                 </a>
                             {% elseif participant.groupeGN %}
                                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                                    title="Créer un nouveau personnage"
-                                   href="{{ path('participant.admin.personnage.new',{'participant':participant.id}) }}">
+                                   href="{{ path('participant.personnage.new',{'participant':participant.id}) }}">
                                     <i class="fa fa-user-plus"></i>
                                 </a>
                             {% endif %}

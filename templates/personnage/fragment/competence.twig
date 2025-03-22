@@ -12,15 +12,15 @@
             'title' : 'Action',
             'actions' :
             [
-                {'path' : path('personnage.admin.xp', {'personnage': personnage.id}), 'label': 'Ajouter des points d\'expérience' },
-                {'path' : path('personnage.admin.add.competence', {'personnage': personnage.id}), 'label': 'Ajouter une compétence' },
-                {'path' : path('personnage.admin.delete.competence', {'personnage': personnage.id}), 'label': 'Retirer la dernière compétence acquise' },
+                {'path' : path('personnage.xp', {'personnage': personnage.id}), 'label': 'Ajouter des points d\'expérience' },
+                {'path' : path('personnage.add.competence', {'personnage': personnage.id}), 'label': 'Ajouter une compétence' },
+                {'path' : path('personnage.delete.competence', {'personnage': personnage.id}), 'label': 'Retirer la dernière compétence acquise' },
             ]
         } %}
     {% else %}
         <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
             <a class="btn btn-secondary"  data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ajouter une compétence"
-               href="{{ path('personnage.admin.add.competence', {'personnage': personnage.id}) }}"><i
+               href="{{ path('personnage.add.competence', {'personnage': personnage.id}) }}"><i
                         class="fa fa-plus"></i> Ajouter</a>
         </div>
     {% endif %}

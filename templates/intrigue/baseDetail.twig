@@ -21,7 +21,7 @@
         <ul class="list-group-flush list-group">
             {% for intrigueHasGroupeSecondaire in intrigue.intrigueHasGroupeSecondaires %}
                 <li class="list-group-item ps-1">
-                    <a href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire': intrigueHasGroupeSecondaire.secondaryGroup.id}) }}">
+                    <a href="{{ path('groupeSecondaire.detail', {'groupeSecondaire': intrigueHasGroupeSecondaire.secondaryGroup.id}) }}">
                         {% if intrigueHasGroupeSecondaire.secondaryGroup.secret %}
                             <span>
                                                 <i class="fa fa-user-secret text-danger" data-toggle="tooltip"

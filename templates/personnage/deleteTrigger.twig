@@ -6,13 +6,13 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('personnage.admin.list') }}">Liste des personnages</a></li>
-		<li><a href="{{ path('personnage.admin.detail', {'personnage': personnage.id}) }}">Détail de {{ personnage.publicName }}</a></li>
+		<li><a href="{{ path('personnage.list') }}">Liste des personnages</a></li>
+		<li><a href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">Détail de {{ personnage.publicName }}</a></li>
 		<li class="active">Supression d'un déclencheur</li>
 	</ol>
 
 	<div class="well bs-component">	
-		{{ form_start(form, {"attr": {"action": path('personnage.admin.trigger.delete', {'personnage': personnage.id, 'trigger': trigger.id}) }}) }}
+		{{ form_start(form, {"attr": {"action": path('personnage.trigger.delete', {'personnage': personnage.id, 'trigger': trigger.id}) }}) }}
 			<fieldset>
 				<legend>Supression du déclencheur {{trigger.tag }} lié a {{ personnage.publicName }}</legend>
 				

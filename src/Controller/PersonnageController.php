@@ -169,7 +169,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajout d'un personnage (orga seulement).
      */
-    #[Route('/add', name: 'admin.add')]
+    #[Route('/admin/add', name: 'admin.add')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminAddAction(
         Request $request,
@@ -277,7 +277,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute un background au personnage.
      */
-    #[Route('/{personnage}/addBackground', name: 'admin.add.background')]
+    #[Route('/{personnage}/addBackground', name: 'add.background')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminAddBackgroundAction(
         Request $request,
@@ -301,7 +301,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'Le background a été sauvegardé.');
 
             return $this->redirectToRoute(
-                'personnage.admin.detail',
+                'personnage.detail',
                 ['personnage' => $personnage->getId(), 'tab' => 'biographie'],
                 303
             );
@@ -317,7 +317,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute un evenement de chronologie au personnage.
      */
-    #[Route('/{personnage}/addChronologie', name: 'admin.add.chronologie')]
+    #[Route('/{personnage}/addChronologie', name: 'add.chronologie')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminAddChronologieAction(
         Request $request,
@@ -352,7 +352,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'L\'évènement a été ajouté à la chronologie.');
 
             return $this->redirectToRoute(
-                'personnage.admin.detail',
+                'personnage.detail',
                 ['personnage' => $personnage->getId(), 'tab' => 'biographie'],
                 303
             );
@@ -365,7 +365,6 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    #[Route('/{personnage}/addCompetence', name: 'admin.add.competence')]
     #[Route('/{personnage}/addCompetence', name: 'add.competence')]
     #[Route('/{personnage}/competence/add', name: 'add.competence')]
     #[IsGranted(Role::USER->value)]
@@ -429,7 +428,7 @@ class PersonnageController extends AbstractController
             if (!$service->hasErrors()) {
                 $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-                return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
             }
 
             $form->get('id')->addError(new FormError($service->getErrorsAsString()));
@@ -446,7 +445,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute une connaissance à un personnage.
      */
-    #[Route('/{personnage}/connaissance/{connaissance}/add', name: 'admin.add.connaissance')]
+    #[Route('/{personnage}/connaissance/{connaissance}/add', name: 'add.connaissance')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminAddConnaissanceAction(
         #[MapEntity] Personnage $personnage,
@@ -458,7 +457,7 @@ class PersonnageController extends AbstractController
         $this->addFlash('success', $connaissance->getLabel().' '.$connaissance->getNiveau().' a été ajouté.');
 
         return $this->redirectToRoute(
-            'personnage.admin.update.connaissance',
+            'personnage.update.connaissance',
             ['personnage' => $personnage->getId(), 303]
         );
     }
@@ -466,7 +465,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute une lignée au personnage.
      */
-    #[Route('/{personnage}/addLignee', name: 'admin.add.lignee')]
+    #[Route('/{personnage}/addLignee', name: 'add.lignee')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminAddLigneeAction(
         Request $request,
@@ -500,7 +499,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'La lignée a été ajoutée.');
 
             return $this->redirectToRoute(
-                'personnage.admin.detail',
+                'personnage.detail',
                 ['personnage' => $personnage->getId(), 'tab' => 'biographie'],
                 303
             );
@@ -521,7 +520,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute une potion à un personnage.
      */
-    #[Route('/{personnage}/addPotion', name: 'admin.add.potion')]
+    #[Route('/{personnage}/addPotion', name: 'add.potion')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminAddPotionAction(
         Request $request,
@@ -541,13 +540,13 @@ class PersonnageController extends AbstractController
 
         $this->addFlash('success', $nomPotion.' a été ajoutée.');
 
-        return $this->redirectToRoute('personnage.admin.update.potion', ['personnage' => $personnage->getId(), 303]);
+        return $this->redirectToRoute('personnage.update.potion', ['personnage' => $personnage->getId(), 303]);
     }
 
     /**
      * Ajoute une priere à un personnage.
      */
-    #[Route('/{personnage}/priere/{priere}/add', name: 'admin.add.priere')]
+    #[Route('/{personnage}/priere/{priere}/add', name: 'add.priere')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminAddPriereAction(
         Request $request,
@@ -561,7 +560,7 @@ class PersonnageController extends AbstractController
         $this->addFlash('success', $priere->getLabel().' a été ajoutée.');
 
         return $this->redirectToReferer($request) ?? $this->redirectToRoute(
-            'personnage.admin.update.priere',
+            'personnage.update.priere',
             ['personnage' => $personnage->getId(), 303]
         );
     }
@@ -569,7 +568,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute une religion à un personnage.
      */
-    #[Route('/{personnage}/addReligion', name: 'admin.add.religion')]
+    #[Route('/{personnage}/addReligion', name: 'add.religion')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     #[Deprecated] // TODO import from Participant::religionAddAction()
     public function adminAddReligionAction(
@@ -584,7 +583,7 @@ class PersonnageController extends AbstractController
                 'Désolé, le personnage êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. (supprimer la religion fanatique qu\'il possède avant)'
             );
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         $personnageReligion = new PersonnagesReligions();
@@ -596,7 +595,7 @@ class PersonnageController extends AbstractController
         if (0 == $availableReligions->count()) {
             $this->addFlash('error', 'Désolé, il n\'y a plus de religion disponibles');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         // construit le tableau de choix
@@ -643,7 +642,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/religion_add.twig', [
@@ -655,7 +654,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute un sort à un personnage.
      */
-    #[Route('/{personnage}/sort/{sort}/add', name: 'admin.add.sort')]
+    #[Route('/{personnage}/sort/{sort}/add', name: 'add.sort')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminAddSortAction(
         Request $request,
@@ -669,7 +668,7 @@ class PersonnageController extends AbstractController
         $this->addFlash('success', $sort->getLabel().' '.$sort->getNiveau().' a été ajouté.');
 
         return $this->redirectToReferer($request) ?? $this->redirectToRoute(
-            'personnage.admin.update.sort',
+            'personnage.update.sort',
             ['personnage' => $personnage->getId(), 303]
         );
     }
@@ -677,7 +676,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute une technologie à un personnage.
      */
-    #[Route('/{personnage}/technologie/{technologie}/add', name: 'admin.add.technologie')]
+    #[Route('/{personnage}/technologie/{technologie}/add', name: 'add.technologie')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminAddTechnologieAction(
         Request $request,
@@ -691,7 +690,7 @@ class PersonnageController extends AbstractController
         $this->addFlash('success', $technologie->getLabel().' a été ajoutée.');
 
         return $this->redirectToReferer($request) ?? $this->redirectToRoute(
-            'personnage.admin.update.technologie',
+            'personnage.update.technologie',
             ['personnage' => $personnage->getId(), 303]
         );
     }
@@ -699,7 +698,7 @@ class PersonnageController extends AbstractController
     /**
      * Supression d'un personnage (orga seulement).
      */
-    #[Route('/{personnage}/delete', name: 'admin.delete')]
+    #[Route('/{personnage}/delete', name: 'delete')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminDeleteAction(
         Request $request,
@@ -778,7 +777,7 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    #[Route('/{personnage}/background/{background}/delete', name: 'admin.delete.background', requirements: [
+    #[Route('/{personnage}/background/{background}/delete', name: 'delete.background', requirements: [
         'personnage' => Requirement::DIGITS,
         'background' => Requirement::DIGITS,
     ])]
@@ -809,7 +808,7 @@ class PersonnageController extends AbstractController
     /**
      * Retire un évènement d'un personnage.
      */
-    #[Route('/{personnage}/chronologie/{personnageChronologie}/delete', name: 'admin.delete.chronologie', requirements: [
+    #[Route('/{personnage}/chronologie/{personnageChronologie}/delete', name: 'delete.chronologie', requirements: [
         'personnage' => Requirement::DIGITS,
         'personnageChronologie' => Requirement::DIGITS,
     ])]
@@ -845,7 +844,7 @@ class PersonnageController extends AbstractController
     /**
      * Retire une lignée d'un personnage.
      */
-    #[Route('/{personnage}/lignee/{personnageLignee}/delete', name: 'admin.delete.lignee', requirements: [
+    #[Route('/{personnage}/lignee/{personnageLignee}/delete', name: 'delete.lignee', requirements: [
         'personnage' => Requirement::DIGITS,
         'personnageLignee' => Requirement::DIGITS,
     ])]
@@ -876,6 +875,7 @@ class PersonnageController extends AbstractController
      * Télécharger la liste des personnages au format CSV.
      */
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[Route('/admin/download', name: 'admin.download', requirements: [])]
     public function adminDownloadAction(Request $request, EntityManagerInterface $entityManager): void
     {
         // TODO
@@ -884,13 +884,12 @@ class PersonnageController extends AbstractController
     /**
      * Liste des personnages.
      */
-    #[Route('/admin/list', name: 'admin.list')]
     #[Route('/list', name: 'list')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminListAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $routeName = 'personnage.admin.list';
-        $twigFilePath = 'admin/personnage/list.twig';
+        $routeName = 'personnage.list';
+        $twigFilePath = 'personnage/list.twig';
 
         // handle the request and return an array containing the parameters for the view
         $viewParams = $this->getSearchViewParameters($request, $entityManager, $routeName);
@@ -1051,7 +1050,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/materiel.twig', [
@@ -1064,6 +1063,7 @@ class PersonnageController extends AbstractController
      * Imprimer la liste des personnages.
      */
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[Route('/admin.print', name: 'admin.print')]
     public function adminPrintAction(Request $request, EntityManagerInterface $entityManager): void
     {
         // TODO
@@ -1076,7 +1076,7 @@ class PersonnageController extends AbstractController
     /**
      * Retire une connaissance à un personnage.
      */
-    #[Route('/{personnage}/connaissance/{connaissance}/delete', name: 'admin.delete.connaissance')]
+    #[Route('/{personnage}/connaissance/{connaissance}/delete', name: 'delete.connaissance')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemoveConnaissanceAction(
         Request $request,
@@ -1089,12 +1089,12 @@ class PersonnageController extends AbstractController
         $this->addFlash('success', $connaissance->getLabel().' '.$connaissance->getNiveau().' a été retiré.');
 
         return $this->redirectToReferer($request) ?? $this->redirectToRoute(
-            'personnage.admin.update.connaissance',
+            'personnage.update.connaissance',
             ['personnage' => $personnage->getId(), 303]
         );
     }
 
-    #[Route('/{personnage}/domaine/{domaine}/delete', name: 'admin.delete.domaine')]
+    #[Route('/{personnage}/domaine/{domaine}/delete', name: 'delete.domaine')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemoveDomaineAction(
         Request $request,
@@ -1110,7 +1110,7 @@ class PersonnageController extends AbstractController
         $this->addFlash('success', $nomDomaine.' a été retirée.');
 
         return $this->redirectToReferer($request) ?? $this->redirectToRoute(
-            'personnage.admin.update.domaine',
+            'personnage.update.domaine',
             ['personnage' => $personnage->getId(), 303]
         );
     }
@@ -1118,7 +1118,7 @@ class PersonnageController extends AbstractController
     /**
      * Retire une langue d'un personnage.
      */
-    #[Route('/{personnage}/deleteLangue/{personnageLangue}', name: 'admin.delete.langue')]
+    #[Route('/{personnage}/deleteLangue/{personnageLangue}', name: 'delete.langue')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemoveLangueAction(
         Request $request,
@@ -1141,7 +1141,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/removeLangue.twig', [
@@ -1154,7 +1154,7 @@ class PersonnageController extends AbstractController
     /**
      * Retire une potion à un personnage.
      */
-    #[Route('/{personnage}/potion/{potion}/delete', name: 'admin.delete.potion')]
+    #[Route('/{personnage}/potion/{potion}/delete', name: 'delete.potion')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemovePotionAction(
         Request $request,
@@ -1169,7 +1169,7 @@ class PersonnageController extends AbstractController
         $this->addFlash('success', $nomPotion.' a été retirée.');
 
         return $this->redirectToReferer($request) ?? $this->redirectToRoute(
-            'personnage.admin.update.potion',
+            'personnage.update.potion',
             ['personnage' => $personnage->getId(), 303]
         );
     }
@@ -1177,7 +1177,7 @@ class PersonnageController extends AbstractController
     /**
      * Retire une priere à un personnage.
      */
-    #[Route('/{personnage}/priere/{priere}/delete', name: 'admin.priere.delete')]
+    #[Route('/{personnage}/priere/{priere}/delete', name: 'priere.delete')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemovePriereAction(
         Request $request,
@@ -1191,7 +1191,7 @@ class PersonnageController extends AbstractController
         $this->addFlash('success', $priere->getLabel().' a été retirée.');
 
         return $this->redirectToReferer($request) ?? $this->redirectToReferer($request) ?? $this->redirectToRoute(
-            'personnage.admin.update.priere',
+            'personnage.update.priere',
             ['personnage' => $personnage->getId(), 303]
         );
     }
@@ -1199,7 +1199,7 @@ class PersonnageController extends AbstractController
     /**
      * Retire une religion d'un personnage.
      */
-    #[Route('/{personnage}/religion/{personnageReligion}/delete', name: 'admin.delete.religion')]
+    #[Route('/{personnage}/religion/{personnageReligion}/delete', name: 'delete.religion')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemoveReligionAction(
         Request $request,
@@ -1230,7 +1230,7 @@ class PersonnageController extends AbstractController
     /**
      * Retire un sort à un personnage.
      */
-    #[Route('/{personnage}/sort/{sort}/delete', name: 'admin.delete.sort')]
+    #[Route('/{personnage}/sort/{sort}/delete', name: 'delete.sort')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemoveSortAction(
         Request $request,
@@ -1244,7 +1244,7 @@ class PersonnageController extends AbstractController
         $this->addFlash('success', $sort->getLabel().' '.$sort->getNiveau().' a été retiré.');
 
         return $this->redirectToReferer($request) ?? $this->redirectToRoute(
-            'personnage.admin.update.sort',
+            'personnage.update.sort',
             ['personnage' => $personnage->getId(), 303]
         );
     }
@@ -1252,7 +1252,7 @@ class PersonnageController extends AbstractController
     /**
      * Retire une technologie à un personnage.
      */
-    #[Route('/{personnage}/technologie/{technologie}/delete', name: 'admin.delete.technologie')]
+    #[Route('/{personnage}/technologie/{technologie}/delete', name: 'delete.technologie')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminRemoveTechnologieAction(
         Request $request,
@@ -1274,7 +1274,7 @@ class PersonnageController extends AbstractController
     /**
      * Modification du statut d'un personnage.
      */
-    #[Route('/{personnage}/statut', name: 'admin.statut')]
+    #[Route('/{personnage}/statut', name: 'statut')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminStatutAction(
         Request $request,
@@ -1304,7 +1304,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le statut du personnage a été modifié');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/statut.twig', [
@@ -1316,7 +1316,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute un jeton vieillesse au personnage.
      */
-    #[Route('/{personnage}/addToken', name: 'admin.token.add')]
+    #[Route('/{personnage}/addToken', name: 'token.add')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminTokenAddAction(
         Request $request,
@@ -1361,13 +1361,13 @@ class PersonnageController extends AbstractController
         $entityManager->flush();
         $this->addFlash('success', 'Le jeton '.$token->getTag().' a été ajouté.');
 
-        return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+        return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
     }
 
     /**
      * Retire un jeton d'un personnage.
      */
-    #[Route('/{personnage}/deleteToken', name: 'admin.token.delete')]
+    #[Route('/{personnage}/deleteToken', name: 'token.delete')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminTokenDeleteAction(
         Request $request,
@@ -1403,13 +1403,13 @@ class PersonnageController extends AbstractController
 
         $this->addFlash('success', 'Le jeton a été retiré.');
 
-        return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+        return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
     }
 
     /**
      * Transfert d'un personnage à un autre utilisateur.
      */
-    #[Route('/{personnage}/transfert', name: 'admin.transfert')]
+    #[Route('/{personnage}/transfert', name: 'transfert')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminTransfertAction(
         Request $request,
@@ -1422,7 +1422,7 @@ class PersonnageController extends AbstractController
                 'Désolé, le personnage ne dispose pas encore de participation et ne peut donc pas encore être transféré'
             );
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         $form = $this->createFormBuilder()
@@ -1472,7 +1472,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été transféré');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/transfert.twig', [
@@ -1484,7 +1484,7 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute un trigger.
      */
-    #[Route('/{personnage}/addTrigger', name: 'admin.trigger.add')]
+    #[Route('/{personnage}/addTrigger', name: 'trigger.add')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminTriggerAddAction(
         Request $request,
@@ -1508,7 +1508,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le déclencheur a été ajouté.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/addTrigger.twig', [
@@ -1520,7 +1520,7 @@ class PersonnageController extends AbstractController
     /**
      * Supprime un trigger.
      */
-    #[Route('/{personnage}/deleteTrigger', name: 'admin.trigger.delete')]
+    #[Route('/{personnage}/deleteTrigger', name: 'trigger.delete')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminTriggerDeleteAction(
         Request $request,
@@ -1542,7 +1542,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le déclencheur a été supprimé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/deleteTrigger.twig', [
@@ -1587,7 +1587,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/update.twig', [
@@ -1599,7 +1599,7 @@ class PersonnageController extends AbstractController
     /**
      * Modifier l'age d'un personnage.
      */
-    #[Route('/{personnage}/updateAge', name: 'admin.update.age')]
+    #[Route('/{personnage}/updateAge', name: 'update.age')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateAgeAction(
         Request $request,
@@ -1646,7 +1646,7 @@ class PersonnageController extends AbstractController
     /**
      * Modifie le background d'un personnage.
      */
-    #[Route('/{personnage}/background/{background}/update', name: 'admin.update.background', requirements: [
+    #[Route('/{personnage}/background/{background}/update', name: 'update.background', requirements: [
         'personnage' => Requirement::DIGITS,
         'background' => Requirement::DIGITS,
     ])]
@@ -1669,7 +1669,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'Le background a été sauvegardé.');
 
             return $this->redirectToRoute(
-                'personnage.admin.detail',
+                'personnage.detail',
                 ['personnage' => $personnage->getId(), 'tab' => 'biographie'],
                 303
             );
@@ -1685,7 +1685,7 @@ class PersonnageController extends AbstractController
     /**
      * Affiche la liste des connaissances pour modification.
      */
-    #[Route('/{personnage}/updateConnaissance', name: 'admin.update.connaissance')]
+    #[Route('/{personnage}/updateConnaissance', name: 'update.connaissance')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateConnaissanceAction(
         Request $request,
@@ -1705,7 +1705,7 @@ class PersonnageController extends AbstractController
     /**
      * Modifie la liste des domaines de magie.
      */
-    #[Route('/{personnage}/updateDomaine', name: 'admin.update.domaine')]
+    #[Route('/{personnage}/updateDomaine', name: 'update.domaine')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateDomaineAction(
         Request $request,
@@ -1745,7 +1745,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/update.twig', [
@@ -1757,7 +1757,7 @@ class PersonnageController extends AbstractController
     /**
      * Modification de l'héroisme d'un personnage.
      */
-    #[Route('/{personnage}/updateHeroisme', name: 'admin.update.heroisme')]
+    #[Route('/{personnage}/updateHeroisme', name: 'update.heroisme')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateHeroismeAction(
         Request $request,
@@ -1785,7 +1785,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/update.twig', [
@@ -1797,7 +1797,7 @@ class PersonnageController extends AbstractController
     /**
      * Modifie la liste des ingrédients.
      */
-    #[Route('/{personnage}/updateIngredient', name: 'admin.update.ingredient')]
+    #[Route('/{personnage}/updateIngredient', name: 'update.ingredient')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateIngredientAction(
         Request $request,
@@ -1865,7 +1865,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute(
-                'personnage.admin.detail',
+                'personnage.detail',
                 ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'],
                 303
             );
@@ -1880,7 +1880,7 @@ class PersonnageController extends AbstractController
     /**
      * Modifie la liste des langues.
      */
-    #[Route('/{personnage}/updateLangue', name: 'admin.update.langue')]
+    #[Route('/{personnage}/updateLangue', name: 'update.langue')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateLangueAction(
         Request $request,
@@ -1955,7 +1955,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/update.twig', [
@@ -1967,7 +1967,7 @@ class PersonnageController extends AbstractController
     /**
      * Modifie l'origine d'un personnage.
      */
-    #[Route('/{personnage}/updateOrigine', name: 'admin.update.origine')]
+    #[Route('/{personnage}/updateOrigine', name: 'update.origine')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateOriginAction(
         Request $request,
@@ -2011,7 +2011,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/update.twig', [
@@ -2023,7 +2023,7 @@ class PersonnageController extends AbstractController
     /**
      * Affiche la liste des potions pour modification.
      */
-    #[Route('/{personnage}/updatePotion', name: 'admin.update.potion')]
+    #[Route('/{personnage}/updatePotion', name: 'update.potion')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdatePotionAction(
         Request $request,
@@ -2047,7 +2047,7 @@ class PersonnageController extends AbstractController
     /**
      * Affiche la liste des prières pour modifications.
      */
-    #[Route('/{personnage}/priere/update', name: 'admin.update.priere')]
+    #[Route('/{personnage}/priere/update', name: 'update.priere')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdatePriereAction(
         Request $request,
@@ -2070,7 +2070,7 @@ class PersonnageController extends AbstractController
     /**
      * Modification du pugilat d'un personnage.
      */
-    #[Route('/{personnage}/updatePugilat', name: 'admin.update.pugilat')]
+    #[Route('/{personnage}/updatePugilat', name: 'update.pugilat')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdatePugilatAction(
         Request $request,
@@ -2102,7 +2102,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/update.twig', [
@@ -2114,7 +2114,7 @@ class PersonnageController extends AbstractController
     /**
      * Modification de la renommee du personnage.
      */
-    #[Route('/{personnage}/updateRenomme', name: 'admin.update.renomme')]
+    #[Route('/{personnage}/updateRenomme', name: 'update.renomme')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateRenommeAction(
         Request $request,
@@ -2146,7 +2146,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/update.twig', [
@@ -2158,7 +2158,7 @@ class PersonnageController extends AbstractController
     /**
      * Modifie la liste des ressources.
      */
-    #[Route('/{personnage}/updateRessource', name: 'admin.update.ressource')]
+    #[Route('/{personnage}/updateRessource', name: 'update.ressource')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateRessourceAction(
         Request $request,
@@ -2241,7 +2241,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute(
-                'personnage.admin.detail',
+                'personnage.detail',
                 ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'],
                 303
             );
@@ -2256,7 +2256,7 @@ class PersonnageController extends AbstractController
     /**
      * Modifie la richesse.
      */
-    #[Route('/{personnage}/updateRichesse', name: 'admin.update.richesse')]
+    #[Route('/{personnage}/updateRichesse', name: 'update.richesse')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateRichesseAction(
         Request $request,
@@ -2276,7 +2276,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute(
-                'personnage.admin.detail',
+                'personnage.detail',
                 ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'],
                 303
             );
@@ -2291,7 +2291,7 @@ class PersonnageController extends AbstractController
     /**
      * Affiche la liste des sorts pour modification.
      */
-    #[Route('/{personnage}/updateSort', name: 'admin.update.sort')]
+    #[Route('/{personnage}/updateSort', name: 'update.sort')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateSortAction(
         Request $request,
@@ -2314,7 +2314,7 @@ class PersonnageController extends AbstractController
     /**
      * Modification des technologies d'un personnage.
      */
-    #[Route('/{personnage}/updateTechnologie', name: 'admin.update.technologie')]
+    #[Route('/{personnage}/updateTechnologie', name: 'update.technologie')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminUpdateTechnologieAction(
         Request $request,
@@ -2364,7 +2364,7 @@ class PersonnageController extends AbstractController
     /**
      * Gestion des points d'expérience d'un personnage (pour les orgas).
      */
-    #[Route('/{personnage}/xp', name: 'admin.xp')]
+    #[Route('/{personnage}/xp', name: 'xp')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     public function adminXpAction(
         Request $request,
@@ -2396,7 +2396,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Les points d\'expériences ont été ajoutés');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/xp.twig', [
@@ -2405,9 +2405,8 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    #[Route('/{personnage}/admin', name: 'admin.detail')]
+    #[Route('/{personnage}/admin', name: 'detail')]
     #[Route('/{personnage}', name: 'detail')]
-    #[Route('/admin/{personnage}/detail', name: 'admin.detail')] // larp V1 url
     #[IsGranted(Role::USER->value)]
     public function detailAction(
         Request $request,
@@ -2517,7 +2516,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'Le document a été ajouté au personnage.');
 
             return $this->redirectToRoute(
-                'personnage.admin.detail',
+                'personnage.detail',
                 ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'],
                 303
             );
@@ -2684,7 +2683,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'L\'objet a été ajouté au personnage.');
 
             return $this->redirectToRoute(
-                'personnage.admin.detail',
+                'personnage.detail',
                 ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'],
                 303
             );
@@ -2742,7 +2741,7 @@ class PersonnageController extends AbstractController
     /**
      * Retire la dernière compétence acquise par un personnage.
      */
-    #[Route('/{personnage}/deleteCompetence', name: 'admin.delete.competence')]
+    #[Route('/{personnage}/deleteCompetence', name: 'delete.competence')]
     public function removeCompetenceAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -2754,7 +2753,7 @@ class PersonnageController extends AbstractController
         if (!$lastCompetence) {
             $this->addFlash('error', 'Désolé, le personnage n\'a pas encore acquis de compétences');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         $competence = new Competence();
@@ -2778,7 +2777,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'La compétence a été retirée');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/removeCompetence.twig', [

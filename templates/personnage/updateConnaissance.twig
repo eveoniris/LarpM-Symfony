@@ -11,13 +11,13 @@
             <h5>Choix des connaissances</h5>
         </div>
 
-        {% include '_partials/formListSearch.twig' with {'actionPath' : path('personnage.admin.update.connaissance', {'personnage': personnage.id})} %}
+        {% include '_partials/formListSearch.twig' with {'actionPath' : path('personnage.update.connaissance', {'personnage': personnage.id})} %}
     </div>
 
     {% include '_partials/pagination.html.twig' %}
 
     <table class="table table-condensed table-striped table-bordered table-hover">
-        {% include '_partials/thead.twig' with  { 'route': 'personnage.admin.update.connaissance', 'routeOptions': {'personnage': personnage.id}, 'rows': [
+        {% include '_partials/thead.twig' with  { 'route': 'personnage.update.connaissance', 'routeOptions': {'personnage': personnage.id}, 'rows': [
             {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
             {'name' : 'Secret', 'field' : 'secret', 'css' : 'text-center'},
             {'name' : 'Description', 'css' : 'text-center'},
@@ -41,12 +41,12 @@
                 <td class="text-center">{% if personnage in connaissance.personnages %}
                         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                            title="Retirer cette connaissance"
-                           href="{{ path('personnage.admin.delete.connaissance',{'personnage':personnage.id, 'connaissance':connaissance.id}) }}">
+                           href="{{ path('personnage.delete.connaissance',{'personnage':personnage.id, 'connaissance':connaissance.id}) }}">
                             <i class="fa fa-minus text-danger"></i></a>
                     {% else %}
                         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                            title="Ajouter cette connaissance"
-                           href="{{ path('personnage.admin.add.connaissance',{'personnage':personnage.id, 'connaissance':connaissance.id}) }}">
+                           href="{{ path('personnage.add.connaissance',{'personnage':personnage.id, 'connaissance':connaissance.id}) }}">
                             <i class="fa fa-plus text-info"></i></a>
                     {% endif %}
                 </td>

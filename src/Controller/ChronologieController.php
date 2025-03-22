@@ -87,7 +87,7 @@ class ChronologieController extends AbstractController
         return $this->render('chronologie/index.twig', ['paginator' => $chronologies]);
     }
 
-    #[Route('/chronologie/add', name: 'chronologie.admin.add')]
+    #[Route('/chronologie/add', name: 'chronologie.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager)
     {
         $chronologie = new Chronologie();
@@ -130,7 +130,7 @@ class ChronologieController extends AbstractController
         ]);
     }
 
-    #[Route('/chronologie/{chronologie}/update', name: 'chronologie.admin.update')]
+    #[Route('/chronologie/{chronologie}/update', name: 'chronologie.update')]
     public function updateAction(Request $request, EntityManagerInterface $entityManager, Chronologie $chronologie)
     {
         if (!$chronologie) {
@@ -168,7 +168,7 @@ class ChronologieController extends AbstractController
         ]);
     }
 
-    #[Route('/chronologie/{chronologie}/remove', name: 'chronologie.admin.remove')]
+    #[Route('/chronologie/{chronologie}/remove', name: 'chronologie.remove')]
     public function removeAction(Request $request, EntityManagerInterface $entityManager, Chronologie $chronologie)
     {
         if (!$chronologie) {

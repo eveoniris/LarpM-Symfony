@@ -13,7 +13,7 @@
 
 		<div class="btn-toolbar" role="toolbar" aria-label="...">
 			<div class="btn-group" role="group" aria-label="...">
-				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un ingrédient" href="{{ path('ingredient.admin.add') }}"><i class="fa fa-add"></i> Ajouter</a>
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un ingrédient" href="{{ path('ingredient.add') }}"><i class="fa fa-add"></i> Ajouter</a>
 			</div>
 		</div>
 	</div>
@@ -46,9 +46,9 @@
 			<th>
 				<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 					<div class="btn-group" role="group" aria-label="...">
-						<a class="btn btn-secondary" href="{{ path('ingredient.admin.detail',{'ingredient':ingredient.id}) }}"><i class="fa fa-eye"></i></a>
-						<a class="btn btn-secondary" href="{{ path('ingredient.admin.update',{'ingredient':ingredient.id}) }}"><i class="fa fa-pencil"></i></a>
-						<a class="btn btn-danger" href="{{ path('ingredient.admin.delete',{'ingredient':ingredient.id}) }}"><i class="fa fa-eraser"></i></a>
+						<a class="btn btn-secondary" href="{{ path('ingredient.detail',{'ingredient':ingredient.id}) }}"><i class="fa fa-eye"></i></a>
+						<a class="btn btn-secondary" href="{{ path('ingredient.update',{'ingredient':ingredient.id}) }}"><i class="fa fa-pencil"></i></a>
+						<a class="btn btn-danger" href="{{ path('ingredient.delete',{'ingredient':ingredient.id}) }}"><i class="fa fa-eraser"></i></a>
 					</div>
 				</div>
 			</th>

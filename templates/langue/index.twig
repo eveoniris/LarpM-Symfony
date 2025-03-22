@@ -100,7 +100,7 @@
 
 					<p class="list-group-item-text">
 						{% if langue.documentUrl %}
-							<strong>Abécédaire : </strong><a href="{{ path('langue.admin.document',{'langue': langue.id}) }}">Téléchargez</a>
+							<strong>Abécédaire : </strong><a href="{{ path('langue.document',{'langue': langue.id}) }}">Téléchargez</a>
 						{% else %}
 							Aucun abécédaire n'est disponible.
 						{% endif %}

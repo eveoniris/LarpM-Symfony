@@ -93,7 +93,7 @@
                         <th scope="row">Personnages</th>
                         <td>
                             {% for personnage in document.personnages %}
-                                <a href="{{ path('personnage.admin.detail',{'personnage':personnage.id}) }}">{% if personnage.vivant == 0 %}<i class="fa-solid fa-skull"></i> {% endif %}{{ personnage.nom }}</a>,
+                                <a href="{{ path('personnage.detail',{'personnage':personnage.id}) }}">{% if personnage.vivant == 0 %}<i class="fa-solid fa-skull"></i> {% endif %}{{ personnage.nom }}</a>,
                             {% else %}
                                 Aucun
                             {% endfor %}

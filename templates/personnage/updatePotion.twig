@@ -12,13 +12,13 @@
             <h5>Choix des potions</h5>
         </div>
 
-        {% include '_partials/formListSearch.twig' with {'actionPath' : path('personnage.admin.update.potion', {'personnage': personnage.id})} %}
+        {% include '_partials/formListSearch.twig' with {'actionPath' : path('personnage.update.potion', {'personnage': personnage.id})} %}
     </div>
 
     {% include '_partials/pagination.html.twig' %}
 
     <table class="table table-condensed table-striped table-bordered table-hover">
-        {% include '_partials/thead.twig' with  { 'route': 'personnage.admin.update.potion', 'routeOptions': {'personnage': personnage.id}, 'rows': [
+        {% include '_partials/thead.twig' with  { 'route': 'personnage.update.potion', 'routeOptions': {'personnage': personnage.id}, 'rows': [
             {'name' : 'Numero', 'field' : 'numero', 'css' : 'text-center'},
             {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
             {'name' : 'Niveau', 'field' : 'niveau', 'css' : 'text-center'},
@@ -44,12 +44,12 @@
                 <td class="text-center">{% if personnage in potion.personnages %}
                         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                            title="Retirer cette potion"
-                           href="{{ path('personnage.admin.delete.potion',{'personnage':personnage.id, 'potion':potion.id}) }}">
+                           href="{{ path('personnage.delete.potion',{'personnage':personnage.id, 'potion':potion.id}) }}">
                             <i class="fa fa-minus text-danger"></i></a>
                     {% else %}
                         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                            title="Ajouter cette potion"
-                           href="{{ path('personnage.admin.add.potion',{'personnage':personnage.id, 'potion':potion.id}) }}">
+                           href="{{ path('personnage.add.potion',{'personnage':personnage.id, 'potion':potion.id}) }}">
                             <i class="fa fa-plus text-info"></i></a>
                     {% endif %}
                 </td>

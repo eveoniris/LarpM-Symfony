@@ -61,7 +61,7 @@ a {
 			<tr>
 				<td>{{ participant.personnage.nom }}</td>
 				<td>
-					<a href="{{ path('personnage.admin.detail', {'personnage': participant.personnage.id}) }}">
+					<a href="{{ path('personnage.detail', {'personnage': participant.personnage.id}) }}">
 						{% if participant.personnage.trombineUrl %}
 							<img src="{{ path('personnage.trombine', {'personnage' : participant.personnage.id }) }}" alt="{{ participant.personnage.nom }}" />
 						{% else %}

@@ -7,13 +7,13 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('personnage.admin.list') }}">Liste des personnages</a></li>
-		<li><a href="{{ path('personnage.admin.detail', {'personnage':personnage.id}) }}">Détail de {{ personnage.publicName }}</a></li>
+		<li><a href="{{ path('personnage.list') }}">Liste des personnages</a></li>
+		<li><a href="{{ path('personnage.detail', {'personnage':personnage.id}) }}">Détail de {{ personnage.publicName }}</a></li>
 		<li class="active">Modification de l'age de {{ personnage.nom }}</li>
 	</ol>
 	
 	<div class="well bs-component">	
-		{{ form_start(form, {"attr": {"action": path('personnage.admin.update.age', {'personnage': personnage.id}) }}) }}
+		{{ form_start(form, {"attr": {"action": path('personnage.update.age', {'personnage': personnage.id}) }}) }}
 			<fieldset>
 				<legend>Choix de l'age</legend>
 				

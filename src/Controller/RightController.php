@@ -12,7 +12,7 @@ class RightController extends AbstractController
     /**
      * Liste des droits.
      */
-    #[Route('/rights/list', name: 'right.admin.list')]
+    #[Route('/rights/list', name: 'right.list')]
     public function listAction(Request $request): Response
     {
         return $this->render(

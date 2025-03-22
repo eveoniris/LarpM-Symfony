@@ -13,18 +13,18 @@
                  'title' : 'Action',
                  'actions' :
                  [
-                     {'path' : path('personnage.admin.update.renomme', {'personnage': personnage.id}), 'label': 'Modifier la Renomée' },
-                     {'path' : path('personnage.admin.update.heroisme', {'personnage': personnage.id}), 'label': 'Modifier l\'Héroïsme' },
-                     {'path' : path('personnage.admin.update.pugilat', {'personnage': personnage.id}), 'label': 'Modifier le Pugilat' },
-                     {'path' : path('personnage.admin.update.domaine', {'personnage': personnage.id}), 'label': 'Modifier la liste des domaines de magie' },
-                     {'path' : path('personnage.admin.add.religion', {'personnage': personnage.id}), 'label': 'Ajouter une religion' },
-                     {'path' : path('personnage.admin.update.origine', {'personnage': personnage.id}), 'label': 'Modifier l\'origine' },
-                     {'path' : path('personnage.admin.update.langue', {'personnage': personnage.id}), 'label': 'Modifier les langages' },
-                     {'path' : path('personnage.admin.update.sort', {'personnage': personnage.id}), 'label': 'Modifier la liste des sorts' },
-                     {'path' : path('personnage.admin.update.potion', {'personnage': personnage.id}), 'label': 'Modifier la liste des potions' },
-                     {'path' : path('personnage.admin.update.priere', {'personnage': personnage.id}), 'label': 'Modifier la liste des prieres' },
-                     {'path' : path('personnage.admin.update.technologie', {'personnage': personnage.id}), 'label': 'Modifier la liste des technologies' },
-                     {'path' : path('personnage.admin.update.connaissance', {'personnage': personnage.id}), 'label': 'Modifier la liste des connaissances' },
+                     {'path' : path('personnage.update.renomme', {'personnage': personnage.id}), 'label': 'Modifier la Renomée' },
+                     {'path' : path('personnage.update.heroisme', {'personnage': personnage.id}), 'label': 'Modifier l\'Héroïsme' },
+                     {'path' : path('personnage.update.pugilat', {'personnage': personnage.id}), 'label': 'Modifier le Pugilat' },
+                     {'path' : path('personnage.update.domaine', {'personnage': personnage.id}), 'label': 'Modifier la liste des domaines de magie' },
+                     {'path' : path('personnage.add.religion', {'personnage': personnage.id}), 'label': 'Ajouter une religion' },
+                     {'path' : path('personnage.update.origine', {'personnage': personnage.id}), 'label': 'Modifier l\'origine' },
+                     {'path' : path('personnage.update.langue', {'personnage': personnage.id}), 'label': 'Modifier les langages' },
+                     {'path' : path('personnage.update.sort', {'personnage': personnage.id}), 'label': 'Modifier la liste des sorts' },
+                     {'path' : path('personnage.update.potion', {'personnage': personnage.id}), 'label': 'Modifier la liste des potions' },
+                     {'path' : path('personnage.update.priere', {'personnage': personnage.id}), 'label': 'Modifier la liste des prieres' },
+                     {'path' : path('personnage.update.technologie', {'personnage': personnage.id}), 'label': 'Modifier la liste des technologies' },
+                     {'path' : path('personnage.update.connaissance', {'personnage': personnage.id}), 'label': 'Modifier la liste des connaissances' },
                     ]
              } %}
          {% endif %}
@@ -47,7 +47,7 @@
                                  <span class="badge display-6 rounded-pill text-bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
                              </div>
                              <a class="btn btn-sm btn-secondary"
-                                href="{{ path('personnage.admin.delete.religion', {'personnage': personnage.id, 'personnageReligion': personnageReligion.id }) }}">Supprimer</a>
+                                href="{{ path('personnage.delete.religion', {'personnage': personnage.id, 'personnageReligion': personnageReligion.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item-text">
@@ -81,7 +81,7 @@
                              </div>
                              {% if personnageLangue.id is defined and personnageLangue.id %}
                              <a class="btn btn-sm btn-secondary"
-                                href="{{ path('personnage.admin.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Supprimer</a>
+                                href="{{ path('personnage.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Supprimer</a>
                              {% endif %}
                          </div>
                      {% endfor %}
@@ -99,7 +99,7 @@
                                  <a href="{{ path('magie.domaine.detail', {'domaine': domaine.id }) }}">{{ domaine.label }}</a>
                              </div>
                              <a class="btn btn-sm btn-secondary"
-                                href="{{ path('personnage.admin.delete.domaine', {'personnage': personnage.id, 'domaine': domaine.id }) }}">Supprimer</a>
+                                href="{{ path('personnage.delete.domaine', {'personnage': personnage.id, 'domaine': domaine.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
@@ -130,7 +130,7 @@
                                  - {{ sort.domaine.label }} Niveau {{ sort.niveau }}
                              </div>
                              <a class="btn btn-sm btn-secondary"
-                                href="{{ path('personnage.admin.delete.sort', {'personnage': personnage.id, 'sort': sort.id }) }}">Supprimer</a>
+                                href="{{ path('personnage.delete.sort', {'personnage': personnage.id, 'sort': sort.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucun</div>
@@ -160,7 +160,7 @@
                                  - Niveau {{ potion.niveau }}
                              </div>
                              <a class="btn btn-sm btn-secondary"
-                                href="{{ path('personnage.admin.delete.potion', {'personnage': personnage.id, 'potion': potion.id }) }}">Supprimer</a>
+                                href="{{ path('personnage.delete.potion', {'personnage': personnage.id, 'potion': potion.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucune</div>
@@ -184,7 +184,7 @@
                                  - Niveau {{ priere.niveau }} ({{ priere.label }})
                              </div>
                              <a class="btn btn-sm btn-secondary"
-                                href="{{ path('personnage.admin.priere.delete', {'personnage': personnage.id, 'priere': priere.id }) }}">Supprimer</a>
+                                href="{{ path('personnage.priere.delete', {'personnage': personnage.id, 'priere': priere.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucune</div>
@@ -208,7 +208,7 @@
                                  <a href="{{ path('technologie.detail', {'technologie': technologie.id }) }}">{{ technologie.label }}</a>
                              </div>
                              <a class="btn btn-sm btn-secondary"
-                                href="{{ path('personnage.admin.delete.technologie', {'personnage': personnage.id, 'technologie': technologie.id }) }}">Supprimer</a>
+                                href="{{ path('personnage.delete.technologie', {'personnage': personnage.id, 'technologie': technologie.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucune</div>
@@ -232,7 +232,7 @@
                                  <a href="{{ path('connaissance.detail', {'connaissance': connaissance.id }) }}">{{ connaissance.label }}</a>
                              </div>
                              <a class="btn btn-sm btn-secondary"
-                                href="{{ path('personnage.admin.delete.connaissance', {'personnage': personnage.id, 'connaissance': connaissance.id }) }}">Supprimer</a>
+                                href="{{ path('personnage.delete.connaissance', {'personnage': personnage.id, 'connaissance': connaissance.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucune</div>

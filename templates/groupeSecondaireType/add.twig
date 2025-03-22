@@ -6,12 +6,12 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("groupeSecondaire.admin.list") }}">Liste des groupes secondaires</a></li>
+		<li><a href="{{ path("groupeSecondaire.list") }}">Liste des groupes secondaires</a></li>
 		<li class="active">Ajout d'un type de groupe secondaire</li>
 	</ol>
 	
 	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('groupeSecondaireType.admin.add') }}) }}
+		{{ form_start(form, {"attr": {"action": path('groupeSecondaireType.add') }}) }}
 			<fieldset>
 				<legend>Ajout d'un type de groupe secondaire</legend>
 					

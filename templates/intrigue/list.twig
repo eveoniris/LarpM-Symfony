@@ -57,7 +57,7 @@
                     <ul>
                         {% for intrigueHasGroupeSecondaire in intrigue.intrigueHasGroupeSecondaires %}
                             <li>
-                                <a href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire': intrigueHasGroupeSecondaire.secondaryGroup.id}) }}">{% if intrigueHasGroupeSecondaire.secondaryGroup.secret %}
+                                <a href="{{ path('groupeSecondaire.detail', {'groupeSecondaire': intrigueHasGroupeSecondaire.secondaryGroup.id}) }}">{% if intrigueHasGroupeSecondaire.secondaryGroup.secret %}
                                         <i class="fa fa-user-secret" aria-hidden="true"></i> Secret - {% endif %}{{ intrigueHasGroupeSecondaire.secondaryGroup.label }}
                                 </a></li>
                         {% else %}

@@ -88,7 +88,7 @@
 				<h5>Information en jeu</h5>
 				<ul>
 					<li><b>Personnages :</b> {% for personnage in item.personnages %}
-							<a href="{{ path('personnage.admin.detail',{'personnage':personnage.id}) }}">{% if personnage.vivant == 0 %}💀 {% endif %}{{ personnage.nom }}</a>, 
+							<a href="{{ path('personnage.detail',{'personnage':personnage.id}) }}">{% if personnage.vivant == 0 %}💀 {% endif %}{{ personnage.nom }}</a>,
 						{% endfor %}</li>
 					<li><b>Groupes :</b> {% for groupe in item.groupes %}
 							<a href="{{ path('groupe.detail',{'index':groupe.id}) }}">{{ groupe.nom }}</a>, 

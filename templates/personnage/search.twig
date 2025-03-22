@@ -1,8 +1,29 @@
-{% extends "layout.twig" %}
 
-{% block title %}Recherche d'un personnage{% endblock title %}
+{% block body %}
 
-{% block content %}
+	{% set formPath = formPath is defined ? formPath : 'personnage.list' %}
+	{% set formParams = formParams is defined ? formParams : {} %}
+	{% set personnages = personnages is defined ? personnages : [] %}
 
-	
-{% endblock content %}
+	{% set displayAdminToolbar = displayAdminToolbar is defined ? displayAdminToolbar : true %}
+	{% set extraData = extraData is defined ? extraData : false %}
+	{% set extraDataTitle = extraDataTitle is defined ? extraDataTitle : null %}
+
+	{% set iconPjConfirmed = '<span title="PJ participant au GN actif"><i class="fa fa-hand-fist"></i></span>' %}
+	{% set iconPjDead = '<span title="Personnage mort"><i class="fa-solid fa-skull"></i></span>' %}
+	{% set iconPnj = '<span title="PNJ"><i class="fa-solid fa-masks-theater"></i></span>' %}
+	{% set iconPjOld = '<span title="Ancien PJ ne participant pas au GN actif"><i class="fa-solid fa-hourglass-end"></i></span>' %}
+
+	{{ include('personnage/searchHeader.twig') }}
+	{{ include('personnage/searchResultsTable.twig',
+		{
+			extraData: extraData,
+			extraDataTitle: extraDataTitle
+		}
+		)
+	}}
+
+	{% include '_partials/pagination.html.twig' %}
+
+
+{% endblock body %}

@@ -5,7 +5,7 @@
 {% block body %}
 
 <div class="well well-sm">
-	{{ form_start(form, {"attr": {"action": path('participant.admin.personnage.old', {'participant': participant.id}) }}) }}
+	{{ form_start(form, {"attr": {"action": path('participant.personnage.old', {'participant': participant.id}) }}) }}
 		<fieldset>
 			<legend>{{ groupe.nom }} - <small>Récupération d'un personnage</small></legend>
 			

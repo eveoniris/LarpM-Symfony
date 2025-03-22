@@ -12,7 +12,7 @@
 	</ol>
 	
 	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('groupe.admin.participant.remove',{'groupe': groupe.id, 'participant': participant.id}) }}" method="POST">
+		{{ form_start(form, {"attr": {"action": path('groupe.participant.remove',{'groupe': groupe.id, 'participant': participant.id}) }}" method="POST">
 			<div class="form-group">
 				<p>Etes-vous certain de vouloir retirer l'utilisation {{ participant.user.displayName }} du groupe {{ groupe.nom }} ?</p>
 			</div>

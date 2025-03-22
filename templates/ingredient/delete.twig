@@ -13,7 +13,7 @@
 
 
     <div class="well bs-component">
-        {{ form_start(form, {"attr": {"action": path('ingredient.admin.delete', {'ingredient': ingredient.id}) }}) }}
+        {{ form_start(form, {"attr": {"action": path('ingredient.delete', {'ingredient': ingredient.id}) }}) }}
         <fieldset>
             <legend>Supression d'un ingredient</legend>
             {{ ingredient.label }} -- Niveau {{ ingredient.niveau }}
