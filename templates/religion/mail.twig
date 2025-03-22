@@ -4,33 +4,39 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("religion") }}">Liste des religions</a></li>
-		<li class="active">Liste des adresses mails</li>
-	</ol>
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des religions', 'route':  path("religion.index") },
+            {'name' : "Liste des adresses mails" },
+        ]
+    } %}
 
-	<div class="well well-sm">
-		<table>
-		<thead>
-			<tr>
-				<th>Religion</th>
-				<th>Mails</th>
-			</tr>
-		</thead>
-		<tbody>
-		{%  for religion in religions %}
-			<tr>
-				<td>{{ religion.label }}</td>
-				<td>
-			{% for personnageReligion in religion.personnagesReligions %}
-				{{ personnageReligion.personnage.user.email }},&nbsp;
-			{% endfor %}
-				</td>
-			</tr>
-		{%  endfor %}
-		</tbody>
-		</table>
-	</div>
-	
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Liste des adresses mails</h5>
+        </div>
+
+        <div class="table-responsive-sm">
+            <table class="table table-striped table-bordered table-condensed table-hover">
+                <thead>
+                <tr>
+                    <th>Religion</th>
+                    <th>Niveau</th>
+                    <th>Mails</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for religion in religions %}
+                    <tr>
+                        <td>{{ religion.label }}</td>
+                        <td>{{ religion.level }}</td>
+                        <td class="text-wrap">{{ religion.emails }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 {% endblock body %}

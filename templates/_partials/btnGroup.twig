@@ -14,12 +14,12 @@
 {% if display and buttons|length > 0 %}
     <div data-turbo="false">
         <div class="d-flex justify-content-between" role="toolbar">
-            <div class="btn-group{% if css is defined %} {{ css|join(' ') }}{% endif %}" role="group">
+            <div class="d-flex btn-group{% if css is defined %} {{ css|join(' ') }}{% endif %}" role="group">
 
                 {% for button in buttons %}
                     {# may only some button are admin reserved #}
                     {% if button.isAdmin is not defined or not button.isAdmin or (button.isAdmin and isAdmin) %}
-                        <a class="btn {% if button.css is defined %} {{ button.css|join(' ') }}{% else %}btn-secondary{% endif %}"
+                        <a class="btn {% if button.css is defined %} {{ button.css|join(' ') }}{% else %}btn-secondary{% endif %} align-self-center"
                            data-bs-toggle="tooltip" data-bs-placement="bottom"
                                 {% if button.title is defined %} title="{{ button.title }}" {% endif %}
                                 {% if button.target is defined %}target="{{ button.target }}"{% endif %}

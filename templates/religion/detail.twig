@@ -1,139 +1,160 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Territoire{% endblock title %}
+{% block title %}Religion{% endblock title %}
+
+{% if isAdmin is not defined %}
+    {% set isAdmin = false %}
+{% endif %}
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("religion") }}">Liste des religions</a></li>
-		<li class="active">{{ religion.label }}</li>
-	</ol>
-	
-	<div class="well well-sm">
-		
-		<div class="clearfix">
-			<h4>
-			{{ religion.label }}{% if religion.secret %}<br/><span style="color:red;">(<strong>SECRET</strong>)</span>{% endif %}
-			</h4>
-			<div class="pull-right">
-				{% if religion.blason %}
-					<img width="160" src="{{ path('blason.get', {'blason' : religion.blason }) }}" /><br />
-				{% endif %}
-				<small><a href="{{ path('religion.update.blason', {'religion': religion.id}) }}">Ajouter ou modifier le blason</a></small>
-			</div>
-		</div>
-		
-  		<div class="list-group">
-		    		
-	    	<div class="list-group-item">
-		    	<h4 class="list-group-item-heading">Description publique</h4>
-    			<p class="list-group-item-text">
-    				{% if not religion.description %}
-    				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-    				Attention, cette religion n'a pas de description.
-    				{% else %}
-    					{{ religion.description|markdown_to_html }}
-    				{% endif %}
-    			</p>
-	    	</div>
-	    	
-	    	<div class="list-group-item">
-		    	<h4 class="list-group-item-heading">Description à destination des orgas</h4>
-    			<p class="list-group-item-text">
-    				{% if not religion.descriptionOrga %}
-    				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-    				Attention, cette religion n'a pas de description.
-    				{% else %}
-    					{{ religion.descriptionOrga|markdown_to_html }}
-    				{% endif %}
-    			</p>
-	    	</div>	    	
-	    	
-	    	<div class="list-group-item">
-		    	<h4 class="list-group-item-heading">Description à destination des pratiquants</h4>
-    			<p class="list-group-item-text">
-    				{% if not religion.descriptionPratiquant %}
-    				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-    				Attention, cette religion n'a pas de description.
-    				{% else %}
-    					{{ religion.descriptionPratiquant|markdown_to_html }}
-    				{% endif %}
-    			</p>
-	    	</div>
-	    	
-	    	<div class="list-group-item">
-		    	<h4 class="list-group-item-heading">Description à destination des fervents</h4>
-    			<p class="list-group-item-text">
-    				{% if not religion.descriptionFervent %}
-    				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-    				Attention, cette religion n'a pas de description.
-    				{% else %}
-    					{{ religion.descriptionFervent|markdown_to_html }}
-    				{% endif %}
-    			</p>
-	    	</div>
-	    	
-	    	<div class="list-group-item">
-		    	<h4 class="list-group-item-heading">Description à destination des fanatiques</h4>
-    			<p class="list-group-item-text">
-    				{% if not religion.descriptionFanatique %}
-    				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-    				Attention, cette religion n'a pas de description.
-    				{% else %}
-    					{{ religion.descriptionFanatique|markdown_to_html }}
-    				{% endif %}
-    			</p>
-	    	</div>
-	    		
-	    	<div class="list-group-item">
-			    <h4 class="list-group-item-heading">Sphères</h4>
-	    		<p class="list-group-item-text">
-	    			{% if not religion.spheres %}
-    				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-    				Attention, cette religion n'a pas de sphère.
-    				{% else %}
-    					<ul>
-    					{% for sphere in religion.spheres %}
-    						<li><a href="{{ path('magie.sphere.detail', {'sphere': sphere.id}) }}">{{ sphere.label }}</a></li>
-    					{% endfor %}
-    					</ul>
-    				{% endif %}
-    			</p>
-	    	</div>
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'route' : path("religion.index"),'name' : 'Liste des religions' },
+            {'name' : religion.label },
+        ]
+    } %}
 
-			<div class="list-group-item">
-				<h4 class="list-group-item-heading">Territoires principaux ({{ religion.territoirePrincipaux|length }})</h4>
-	    		<p class="list-group-item-text">
-	    			<ul>
-		    			{% for territoire in religion.territoirePrincipaux %}
-		    				<li><a href="{{ path('territoire.detail', {'territoire': territoire.id}) }}">{{ territoire.nom }}</a></li>
-		    			{% else %}
-		    				<li>Cette religion n'est le culte principal d'aucun territoire</li>
-		    			{% endfor %}
-	    			</ul>
-	    		</p>
-	    	</div>
+    <div class="well well-sm">
 
-			<div class="list-group-item">
-				<h4 class="list-group-item-heading">Territoires secondaire ({{ religion.territoireSecondaires|length }})</h4>
-	    		<p class="list-group-item-text">
-	    			<ul>
-		    			{% for territoire in religion.territoireSecondaires %}
-		    				<li><a href="{{ path('territoire.detail', {'territoire': territoire.id}) }}">{{ territoire.nom }}</a></li>
-		    			{% else %}
-		    				<li>Cette religion n'est le culte secondaire d'aucun territoire</li>
-		    			{% endfor %}
-	    			</ul>
-	    		</p>
-	    	</div>	    			
-			
-			<div class="list-group-item">
-  				<div class="btn-group" role="group" aria-label="...">
-  					<a  class="btn btn-primary" role="button" href="{{ path('religion.update', {index : religion.id}) }}">Modifier</a>
-				</div>
-  			</div>
-		</div>
-	</div>
+        <div class="clearfix">
+            <div class="header">
+                <h5>
+                    {% if religion.secret %}
+                        <i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
+                           title="Secret"></i> -&nbsp;
+                    {% endif %}
+                    {{ religion.label }}
+                </h5>
+            </div>
+
+            <div class="pull-right">
+                {% if religion.blason %}
+                    <img width="160" src="{{ path('religion.blason', {'religion' : religion.id }) }}"/><br/>
+                {% endif %}
+                <a href="{{ path('religion.update.blason', {'religion': religion.id}) }}">Ajouter ou modifier le
+                    blason</a>
+            </div>
+        </div>
+
+        <div class="list-group">
+
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Description publique</h4>
+                <p class="list-group-item-text">
+                    {% if not religion.description %}
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                        Attention, cette religion n'a pas de description.
+                    {% else %}
+                        {{ religion.description|markdown_to_html }}
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Description à destination des orgas</h4>
+                <p class="list-group-item-text">
+                    {% if not religion.descriptionOrga %}
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                        Attention, cette religion n'a pas de description.
+                    {% else %}
+                        {{ religion.descriptionOrga|markdown_to_html }}
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Description à destination des pratiquants</h4>
+                <p class="list-group-item-text">
+                    {% if not religion.descriptionPratiquant %}
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                        Attention, cette religion n'a pas de description.
+                    {% else %}
+                        {{ religion.descriptionPratiquant|markdown_to_html }}
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Description à destination des fervents</h4>
+                <p class="list-group-item-text">
+                    {% if not religion.descriptionFervent %}
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                        Attention, cette religion n'a pas de description.
+                    {% else %}
+                        {{ religion.descriptionFervent|markdown_to_html }}
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Description à destination des fanatiques</h4>
+                <p class="list-group-item-text">
+                    {% if not religion.descriptionFanatique %}
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                        Attention, cette religion n'a pas de description.
+                    {% else %}
+                        {{ religion.descriptionFanatique|markdown_to_html }}
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Sphères</h4>
+                <p class="list-group-item-text">
+                    {% if not religion.spheres %}
+                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                    Attention, cette religion n'a pas de sphère.
+                    {% else %}
+                <ul>
+                    {% for sphere in religion.spheres %}
+                        <li><a href="{{ path('magie.sphere.detail', {'sphere': sphere.id}) }}">{{ sphere.label }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                </p>
+            </div>
+
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Territoires principaux ({{ religion.territoirePrincipaux|length }}
+                    )</h4>
+                <p class="list-group-item-text">
+                <ul>
+                    {% for territoire in religion.territoirePrincipaux %}
+                        <li>
+                            <a href="{{ path('territoire.detail', {'territoire': territoire.id}) }}">{{ territoire.nom }}</a>
+                        </li>
+                    {% else %}
+                        <li>Cette religion n'est le culte principal d'aucun territoire</li>
+                    {% endfor %}
+                </ul>
+                </p>
+            </div>
+
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Territoires secondaire ({{ religion.territoireSecondaires|length }}
+                    )</h4>
+                <p class="list-group-item-text">
+                <ul>
+                    {% for territoire in religion.territoireSecondaires %}
+                        <li>
+                            <a href="{{ path('territoire.detail', {'territoire': territoire.id}) }}">{{ territoire.nom }}</a>
+                        </li>
+                    {% else %}
+                        <li>Cette religion n'est le culte secondaire d'aucun territoire</li>
+                    {% endfor %}
+                </ul>
+                </p>
+            </div>
+
+            <div class="list-group-item">
+                <div class="btn-group" role="group" aria-label="...">
+                    <a class="btn btn-primary" role="button"
+                       href="{{ path('religion.update', {religion : religion.id}) }}">Modifier</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

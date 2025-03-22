@@ -6,31 +6,31 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("religion") }}">Liste des religions</a></li>
-		<li><a href="{{ path('religion.detail', {'index': religion.id}) }}">{{ religion.label }}</a></li>
+		<li><a href="{{ path("religion.index") }}">Liste des religions</a></li>
+		<li><a href="{{ path('religion.detail', {'religion': religion.id}) }}">{{ religion.label }}</a></li>
 		<li class="active">Personnages</li>
 	</ol>
 	
+	<div class="well well-sm bs-component">
 
-	<div class="well well-sm">
-	
-			<h4>
+		<div class="header">
+			<h5>
 				{{ religion.label }}
 				<small>
 					( {{ religion.personnagesReligions|length }} personnages )
 				</small>
-			</h4>
-	
-			<div class="list-group">
-				{% for personnageReligion in religion.personnagesReligions %}
-					<div class="list-group-item">
-					<a href="{{ path('personnage.admin.detail',{'personnage':personnageReligion.personnage.id}) }}">#{{ personnageReligion.personnage.id }} - {{ personnageReligion.personnage.nom }} ({{ personnageReligion.personnage.surnom }}) - {{ personnageReligion.personnage.classeName }} - <strong>{{ personnageReligion.religionLevel.label }}</strong></a>
-					{% if personnageReligion.personnage.user %}
-						{{ personnageReligion.personnage.user.email }}
-					{% endif %}
-					</div>
-				{% endfor %}
-			</div>
+			</h5>
+		</div>
+
+		<div class="list-group">
+			{% for personnageReligion in religion.personnagesReligions %}
+				<div class="list-group-item">
+				<a href="{{ path('personnage.admin.detail',{'personnage':personnageReligion.personnage.id}) }}">#{{ personnageReligion.personnage.id }} - {{ personnageReligion.personnage.nom }} ({{ personnageReligion.personnage.surnom }}) - {{ personnageReligion.personnage.classeName }} - <strong>{{ personnageReligion.religionLevel.label }}</strong></a>
+				{% if personnageReligion.personnage.user %}
+					{{ personnageReligion.personnage.user.email }}
+				{% endif %}
+				</div>
+			{% endfor %}
 		</div>
 	</div>
 	

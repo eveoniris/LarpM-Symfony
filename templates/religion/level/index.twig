@@ -4,8 +4,20 @@
 
 {% block body %}
 
-{% include '_partials/breadcrumb.twig' with {'items' :  [{'name' : 'Niveaux de religion'}]} %}
+{% include '_partials/breadcrumb.twig' with {'items' :  [{'name' : 'Gestion des niveaux de religion'}]} %}
 
+<div class="well well-sm">
+	<div class="header">
+		<h5>Gestion des niveaux de religion <small>( {{ religionLevels|length }} niveaux)</small></h5>
+	</div>
+
+	<div class="btn-toolbar" role="toolbar" aria-label="...">
+		<div class="btn-group" role="group" aria-label="...">
+			<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un niveau de religion" href="{{ path('religion.level.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+		</div>
+	</div>
+</div>
+			
 <ul class="list-group">
 	{%  for religionLevel in religionLevels %}
 	<li class="list-group-item">
@@ -15,8 +27,20 @@
 					{{ religionLevel.label }} 
 				</h4>
 				<p class="list-group-item-text">		
-					<p class="text-default">{{ religionLevel.description }} ...</p>
+					{% if religionLevel.description %}
+						<p class="text-default">{{ religionLevel.description|slice(0,500) }} ...</p>
+					{% else %}
+						<p class="text-warning">Attention, ce niveau de religion n'a pas de description</p>
+					{%  endif %}
 				</p>
+			</div>
+			<div class="col-md-4">
+				<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+					<div class="btn-group" role="group" aria-label="...">
+						<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('religion.level.detail', {religionLevel: religionLevel.id}) }}"><i class="fa fa-eye"></i></a>
+						<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('religion.level.update', {religionLevel: religionLevel.id}) }}"><i class="fa fa-pencil"></i></a>
+					</div>
+				</div>
 			</div>
 		</div>
 	</li>

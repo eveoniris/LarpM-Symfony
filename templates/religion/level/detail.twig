@@ -4,28 +4,29 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-        <li><a href="{{ path('religion.level') }}">Liste des niveaux de religion</a></li>
-		<li class="active">Détail d'un niveau de religion</li>
-	</ol>
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'route' : path('religion.level'), 'name' : 'Gestion des niveaux de religion'},
+            {'name' : religionLevel.label}
+        ]
+    } %}
 
-	<div class="list-group">
-		<div class="list-group-item">
-			<div class="list-group-item-heading"><h6>Label</h6></div>
-			<div class="list-group-item-text">{{ religionLevel.label }}</strong></div>
-		</div>
-		<div class="list-group-item">
-			<div class="list-group-item-heading"><h6>Index</h6></div>
-			<div class="list-group-item-text">{{ religionLevel.id }}</strong></div>
-		</div>
-	</div>
-	
-	<div class="panel panel-default">
-		<div class="panel-heading"><h4>Description</h4></div>
-		<div class="panel-body">
-			<p>{{ religionLevel.description|markdown_to_html }}</p>
-		</div>
-	</div>
-		
+    <div class="list-group">
+        <div class="list-group-item">
+            <div class="list-group-item-heading"><h6>Label</h6></div>
+            <div class="list-group-item-text">{{ religionLevel.label }}</strong></div>
+        </div>
+        <div class="list-group-item">
+            <div class="list-group-item-heading"><h6>Index</h6></div>
+            <div class="list-group-item-text">{{ religionLevel.id }}</strong></div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading"><h4>Description</h4></div>
+        <div class="panel-body">
+            <p>{{ religionLevel.description|markdown_to_html }}</p>
+        </div>
+    </div>
+
 {% endblock body %}

@@ -336,3 +336,11 @@ th.rotate > div > span {
     padding: 5px 10px;
 }
 /** END Diplomatie **/
+
+.search input {
+    height: 2.4em;
+    font-size: 1.2em;
+}
+
+.btn-search a, .btn-search button, .btn-search button i { align-items: center !important; }
+.btn-search a, .btn-search button i { font-size: 1.2em; }

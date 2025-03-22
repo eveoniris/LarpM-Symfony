@@ -4,7 +4,7 @@
 {% endif %}
 
 
-<div class="d-flex justify-content-center" data-turbo="false">
+<div class="d-flex justify-content-center search" data-turbo="false">
     <ul class="list-group">
         <li class="list-group-item">
             <div class="btn-toolbar" role="toolbar">
@@ -19,31 +19,32 @@
                             {% endfor %}
                         {% endif %}
 
-                        <div class="input-group-btn border-1 border rounded-end-2{% if buttons is defined %} me-2{% endif %}">
-                            <button type="submit" class="btn btn-default "
-                                    data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                    title="Lancer la recherche"><i class="fa fa-search"></i>
-                            </button>
-                            <a class="btn btn-default"
-                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="Reset"
-                               href="{{ actionPath }}"><i class="fa fa-refresh"></i>
-                            </a>
+                        <div class="btn-search d-flex">
+                            <div class="d-flex input-group-btn border-1 border rounded-end-2{% if buttons is defined %} me-2{% endif %}">
+                                <button type="submit" class="btn btn-default align-self-center"
+                                        data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                        title="Lancer la recherche"><i class="fa fa-search"></i>
+                                </button>
+                                <button class="btn btn-default align-self-center"
+                                   data-bs-toggle="tooltip" data-bs-placement="bottom" title="Reset"
+                                   href="{{ actionPath }}"><i class="fa fa-refresh"></i>
+                                </button>
+                            </div>
+
+                            {% if buttons is not defined %}
+                                {% set buttons = {} %}
+                            {% endif %}
+
+                            {% if canAdd is defined and canAdd %}
+                                {% set buttons = buttons|merge([{'title': canAdd.title, 'route': canAdd.path, 'icon': 'fa-plus', 'label': 'Ajouter'}]) %}
+                            {% endif %}
+
+                            {% if print is defined and print %}
+                                {% set buttons = buttons|merge([{'title': print.title, 'route': print.path, 'icon': 'fa-print', 'label': 'Imprimer'}]) %}
+                            {% endif %}
+
+                            {% include '_partials/btnGroup.twig' with {'butons' : buttons, 'css': 'input-group'} %}
                         </div>
-
-                        {% if buttons is not defined %}
-                            {% set buttons = {} %}
-                        {% endif %}
-
-                        {% if canAdd is defined and canAdd %}
-                            {% set buttons = buttons|merge([{'title': canAdd.title, 'route': canAdd.path, 'icon': 'fa-plus', 'label': 'Ajouter'}]) %}
-                        {% endif %}
-
-                        {% if print is defined and print %}
-                            {% set buttons = buttons|merge([{'title': print.title, 'route': print.path, 'icon': 'fa-print', 'label': 'Imprimer'}]) %}
-                        {% endif %}
-
-                        {% include '_partials/btnGroup.twig' with {'butons' : buttons, 'css': 'input-group'} %}
-
                     </div>
                 </div>
             </div>
