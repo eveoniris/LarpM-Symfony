@@ -12,7 +12,7 @@
 	</ol>
 	
 	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('groupe.admin.items',{'groupe': groupe.id}) }}" method="POST">
+		{{ form_start(form, {"attr": {"action": path('groupe.items',{'groupe': groupe.id}) }}" method="POST">
 					
 			{{ form(form) }}
 		{{ form_end(form) }}

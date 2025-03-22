@@ -37,7 +37,7 @@
     <div class="card-img text-center">
         {# TODO get good trombine ? #}
         {% if participant.personnage %}
-            <a href="{{ path('personnage.admin.detail', {'personnage': participant.personnage.id}) }}">
+            <a href="{{ path('personnage.detail', {'personnage': participant.personnage.id}) }}">
                 {% if participant.personnage.trombineUrl %}
                     <img class="media-object w-auto col-sm-4" style="max-height:250px;max-width: 250px"
                          src="{{ path('personnage.trombine', {'personnage' : participant.personnage.id }) }}"
@@ -91,7 +91,7 @@
                 <div class="col-md-10 px-2">
 
                     {% if participant.personnage %}
-                        <a href="{{ path('personnage.admin.detail', {'personnage': participant.personnage.id}) }}">
+                        <a href="{{ path('personnage.detail', {'personnage': participant.personnage.id}) }}">
 
                             #{{ participant.personnage.id }}
                             - {{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}

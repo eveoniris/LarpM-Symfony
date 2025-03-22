@@ -36,7 +36,7 @@
             {% for personnage in paginator %}
                 <tr>
                     <td class="text-center">
-                        <a href="{{ path('personnage.admin.detail', {'personnage':personnage.id}) }}">{{ personnage.id }}</a>
+                        <a href="{{ path('personnage.detail', {'personnage':personnage.id}) }}">{{ personnage.id }}</a>
                     </td>
                     <td class="text-center">
                         {% if personnage.vivant %}
@@ -56,7 +56,7 @@
                             <div class="btn-group" role="group">
                                 <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                    title="Voir"
-                                   href="{{ path('personnage.admin.detail',{'personnage':personnage.id}) }}"><i
+                                   href="{{ path('personnage.detail',{'personnage':personnage.id}) }}"><i
                                             class="fa fa-pencil"></i> Voir</a>
                             </div>
                         </div>

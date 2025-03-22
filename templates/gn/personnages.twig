@@ -32,10 +32,10 @@
 
 	   		<div class="btn-toolbar" role="toolbar" aria-label="...">
 				<div class="btn-group" role="group" aria-label="...">
-					<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter un personnage" href="{{ path('personnage.admin.add') }}"><i class="fa fa-plus"></i></a>
+					<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Ajouter un personnage" href="{{ path('personnage.add') }}"><i class="fa fa-plus"></i></a>
 					<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Faire vieillir les personnages" href="{{ path('personnage.vieillir') }}"><i class="fa fa-users"></i></a>
-					<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Imprimer la liste" href="{{ path('personnage.admin.print') }}"><i class="fa fa-print"></i></a>
-					<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Télécharger la liste (CSV)" href="{{ path('personnage.admin.download') }}"><i class="fa fa-download"></i></a>
+					<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Imprimer la liste" href="{{ path('personnage.print') }}"><i class="fa fa-print"></i></a>
+					<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Télécharger la liste (CSV)" href="{{ path('personnage.download') }}"><i class="fa fa-download"></i></a>
 				</div>
 				
 				<form class="form-inline" action="{{ path('gn.personnages', {'gn' : gn.id}) }}" method="POST" {{ form_enctype(form) }}>
@@ -49,7 +49,7 @@
 							{{ form_widget(form.type) }}
 							<div class="input-group-btn">
 								<button type="submit" class="btn btn-default" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
-								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('personnage.admin.list') }}"><i class="fa fa-refresh"></i></a>
+								<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset" href="{{ path('personnage.list') }}"><i class="fa fa-refresh"></i></a>
 							</div>
 						</div>
 					</div>

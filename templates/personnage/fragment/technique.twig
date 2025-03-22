@@ -8,12 +8,12 @@
         </div>
 
         {% if isAdmin %}
-            {#  {'path' : path('personnage.admin.token.add', {'personnage': personnage.id}), 'label': 'Ajouter un jeton vieillessee', 'token : 'VIEILLESSE'}, #}
+            {#  {'path' : path('personnage.token.add', {'personnage': personnage.id}), 'label': 'Ajouter un jeton vieillessee', 'token : 'VIEILLESSE'}, #}
             {% include '_partials/dropDown.twig' with {
                 'title' : 'Action',
                 'actions' :
                 [
-                    {'path' : path('personnage.admin.trigger.add', {'personnage': personnage.id}), 'label': 'Ajouter un déclencheur de compétence' },
+                    {'path' : path('personnage.trigger.add', {'personnage': personnage.id}), 'label': 'Ajouter un déclencheur de compétence' },
                 ]
             } %}
         {% endif %}
@@ -25,7 +25,7 @@
                     <div class="list-group-item">
                         {{ personnageToken.token.label }}
                         --
-                        <a href="{{ path('personnage.admin.token.delete', {'personnage': personnage.id, 'personnageHasToken': personnageToken.id}) }}">Supprimer</a>
+                        <a href="{{ path('personnage.token.delete', {'personnage': personnage.id, 'personnageHasToken': personnageToken.id}) }}">Supprimer</a>
                     </div>
                 {% else %}
                     <div class="list-group-item">La liste est vide</div>
@@ -38,7 +38,7 @@
                     <div class="list-group-item">
                         {{ trigger.tag }}
                         --
-                        <a href="{{ path('personnage.admin.trigger.delete', {'personnage': personnage.id, 'trigger': trigger.id}) }}">Supprimer</a>
+                        <a href="{{ path('personnage.trigger.delete', {'personnage': personnage.id, 'trigger': trigger.id}) }}">Supprimer</a>
                     </div>
                 {% else %}
                     <div class="list-group-item">La liste est vide</div>

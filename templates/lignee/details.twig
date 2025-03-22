@@ -54,7 +54,7 @@
 
                         {% for personnageLignee in lignee.personnageLignees %}
                             <tr>
-                                <td><a href="{{ path('personnage.admin.detail', {'personnage': personnageLignee.personnage.id}) }}">{{ personnageLignee.personnage.id }}</a> </td>
+                                <td><a href="{{ path('personnage.detail', {'personnage': personnageLignee.personnage.id}) }}">{{ personnageLignee.personnage.id }}</a> </td>
                                 <td>
                                 {% if personnageLignee.personnage.vivant == 0 %}
                                     {{ iconPjDead | raw }}
@@ -66,7 +66,7 @@
                                     {{ iconPjOld | raw }}
                                 {% endif %}
                                 </td>                                 
-                                <td><a href="{{ path('personnage.admin.detail', {'personnage': personnageLignee.personnage.id}) }}">{{ personnageLignee.personnage.nom}}</a></td>
+                                <td><a href="{{ path('personnage.detail', {'personnage': personnageLignee.personnage.id}) }}">{{ personnageLignee.personnage.nom}}</a></td>
 
                                 {% if personnageLignee.personnage.groupe == NULL %}
                                 <td> - </td>
@@ -78,12 +78,12 @@
                                 {% if personnageLignee.parent1 == NULL %}
                                 <td> - </td>
                                 {% else %}
-                                <td><a href="{{ path('personnage.admin.detail', {'personnage': personnageLignee.parent1.id}) }}">{{ personnageLignee.parent1.nom }} ({{ personnageLignee.parent1.ageReel }} ans)</a></td>
+                                <td><a href="{{ path('personnage.detail', {'personnage': personnageLignee.parent1.id}) }}">{{ personnageLignee.parent1.nom }} ({{ personnageLignee.parent1.ageReel }} ans)</a></td>
                                 {% endif %}
                                 {% if personnageLignee.parent2 == NULL %}
                                 <td> - </td>
                                 {% else %}
-                                <td><a href="{{ path('personnage.admin.detail', {'personnage': personnageLignee.parent2.id}) }}">{{ personnageLignee.parent2.nom }} ({{ personnageLignee.parent2.ageReel }} ans)</a></td>
+                                <td><a href="{{ path('personnage.detail', {'personnage': personnageLignee.parent2.id}) }}">{{ personnageLignee.parent2.nom }} ({{ personnageLignee.parent2.ageReel }} ans)</a></td>
                                 {% endif %}
 
                                 <td>

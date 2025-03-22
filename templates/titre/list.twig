@@ -13,7 +13,7 @@
 
 		<div class="btn-toolbar" role="toolbar" aria-label="...">
 			<div class="btn-group" role="group" aria-label="...">
-				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un titre" href="{{ path('titre.admin.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un titre" href="{{ path('titre.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
 			</div>
 		</div>
 	</div>
@@ -32,9 +32,9 @@
 				<td>
 					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 						<div class="btn-group" role="group" aria-label="...">
-							<a class="btn btn-secondary" href="{{ path('titre.admin.detail',{'titre':titre.id}) }}"><i class="fa fa-eye"></i></a>
-							<a class="btn btn-secondary" href="{{ path('titre.admin.update',{'titre':titre.id}) }}"><i class="fa fa-pencil"></i></a>
-							<a class="btn btn-danger" href="{{ path('titre.admin.delete',{'titre':titre.id}) }}"><i class="fa fa-eraser"></i></a>
+							<a class="btn btn-secondary" href="{{ path('titre.detail',{'titre':titre.id}) }}"><i class="fa fa-eye"></i></a>
+							<a class="btn btn-secondary" href="{{ path('titre.update',{'titre':titre.id}) }}"><i class="fa fa-pencil"></i></a>
+							<a class="btn btn-danger" href="{{ path('titre.delete',{'titre':titre.id}) }}"><i class="fa fa-eraser"></i></a>
 						</div>
 					</div>
 				</td>

@@ -6,13 +6,13 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path('personnage.admin.list') }}">Liste des personnages</a></li>
-		<li><a href="{{ path('personnage.admin.detail', {'personnage': personnage.id}) }}">Détail de {{ personnage.publicName }}</a></li>
+		<li><a href="{{ path('personnage.list') }}">Liste des personnages</a></li>
+		<li><a href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">Détail de {{ personnage.publicName }}</a></li>
 		<li class="active">Supression du personnage</li>
 	</ol>
 
 	<div class="well bs-component">	
-		{{ form_start(form, {"attr": {"action": path('personnage.admin.delete', {'personnage': personnage.id}) }}) }}
+		{{ form_start(form, {"attr": {"action": path('personnage.delete', {'personnage': personnage.id}) }}) }}
 			<fieldset>
 				<legend>Supression du personnage {{ personnage.publicName }}</legend>
 				

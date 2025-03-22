@@ -4,7 +4,7 @@
 
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
-            {'name' : 'Liste des groupes secondaires', 'route': path('groupeSecondaire.admin.list') },
+            {'name' : 'Liste des groupes secondaires', 'route': path('groupeSecondaire.list') },
             {'name' : "Détail de #{groupeSecondaire.label}" },
         ]
     } %}
@@ -19,7 +19,7 @@
         {% if isAdmin %}
             <div class="panel-heading d-flex justify-content-end mb-2">
                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier"
-                   href="{{ path('groupeSecondaire.admin.update', {'groupeSecondaire': groupeSecondaire.id}) }}"><i
+                   href="{{ path('groupeSecondaire.update', {'groupeSecondaire': groupeSecondaire.id}) }}"><i
                             class="fa fa-pencil"></i> Modifier</a>
             </div>
         {% endif %}
@@ -114,7 +114,7 @@
                     <div class="list-group-item">
                         <h6 class="list-group-item-heading">
                             Personnage : <a
-                                    href="{{ path('personnage.admin.detail', {'personnage':postulant.personnage.id}) }}">{{ postulant.personnage.publicname }}</a>
+                                    href="{{ path('personnage.detail', {'personnage':postulant.personnage.id}) }}">{{ postulant.personnage.publicname }}</a>
                         </h6>
                         {% if postulant.personnage.groupe %}<p class="list-group-item-text">Groupe : <a
                                     href="{{ path('groupe.detail', {'groupe': postulant.personnage.groupe.id}) }}">{{ postulant.personnage.groupe.nom }}</a>
@@ -157,7 +157,7 @@
             {% if isAdmin %}
                 <div class="panel-heading d-flex justify-content-end mb-2">
                     <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un membre"
-                       href="{{ path('groupeSecondaire.admin.newMembre', {'groupeSecondaire': groupeSecondaire.id}) }}"><i
+                       href="{{ path('groupeSecondaire.newMembre', {'groupeSecondaire': groupeSecondaire.id}) }}"><i
                                 class="fa fa-plus"></i> Ajouter</a>
                 </div>
             {% endif %}
@@ -255,7 +255,7 @@
                                                                                  data-bs-toggle="tooltip"
                                                                                  data-bs-placement="bottom"
                                                                                  data-bs-title="Mort"></i> {% endif %}
-                                        <a href="{{ path('personnage.admin.detail', {'personnage': membre.personnage.id}) }}">{{ membre.personnage.identityByLabel(gn.getLabel()) }}</a>
+                                        <a href="{{ path('personnage.detail', {'personnage': membre.personnage.id}) }}">{{ membre.personnage.identityByLabel(gn.getLabel()) }}</a>
                                     </h6>
                                     {% if membre.personnage.participeTo(gn) %}
                                         <span class="text-success">Inscrit à {{ gn.label }}</span><br/>
@@ -269,20 +269,20 @@
                                         {% if membre.secret %}
                                             <p class="text-danger">À accès aux secrets du groupe</p>
                                             <a class="btn btn-secondary"
-                                               href="{{ path('groupeSecondaire.admin.secret.off', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
+                                               href="{{ path('groupeSecondaire.secret.off', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
                                                 Retirer l'accès aux secrets
                                             </a>
                                         {% else %}
                                             <p>N'à pas accès aux secrets du groupe</p>
                                             <a class="btn btn-secondary"
-                                               href="{{ path('groupeSecondaire.admin.secret.on', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
+                                               href="{{ path('groupeSecondaire.secret.on', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
                                                 Donner accès aux secrets
                                             </a>
                                         {% endif %}
                                     </div>
                                     <div class="list-group-item-text mt-2">
                                         <a class="btn btn-secondary"
-                                           href="{{ path('groupeSecondaire.admin.member.remove', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}">
+                                           href="{{ path('groupeSecondaire.member.remove', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}">
                                             Retirer ce membre
                                         </a>
                                     </div>

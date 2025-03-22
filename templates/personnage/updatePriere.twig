@@ -13,14 +13,14 @@
             <h5>Choix des prières</h5>
         </div>
 
-        {% include '_partials/formListSearch.twig' with {'actionPath' : path('personnage.admin.update.priere', {'personnage': personnage.id})} %}
+        {% include '_partials/formListSearch.twig' with {'actionPath' : path('personnage.update.priere', {'personnage': personnage.id})} %}
 
     </div>
 
     {% include '_partials/pagination.html.twig' %}
 
     <table class="table table-condensed table-striped table-bordered table-hover">
-        {% include '_partials/thead.twig' with  { 'route': 'personnage.admin.update.priere', 'routeOptions': {'personnage': personnage.id}, 'rows': [
+        {% include '_partials/thead.twig' with  { 'route': 'personnage.update.priere', 'routeOptions': {'personnage': personnage.id}, 'rows': [
             {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
             {'name' : 'Niveau', 'field' : 'niveau', 'css' : 'text-center'},
             {'name' : 'Sphere', 'field' : 'sphere.label', 'css' : 'text-center'},
@@ -37,13 +37,13 @@
                 <td  class="text-center">{% if personnage in priere.personnages %}
                         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                            title="Retirer cette priere"
-                           href="{{ path('personnage.admin.priere.delete',{'personnage':personnage.id, 'priere':priere.id}) }}">
+                           href="{{ path('personnage.priere.delete',{'personnage':personnage.id, 'priere':priere.id}) }}">
                             <i class="fa fa-minus text-danger"></i>
                         </a>
                     {% else %}
                         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                            title="Ajouter cette prière"
-                           href="{{ path('personnage.admin.add.priere',{'personnage':personnage.id, 'priere':priere.id}) }}">
+                           href="{{ path('personnage.add.priere',{'personnage':personnage.id, 'priere':priere.id}) }}">
                             <i class="fa fa-plus text-info"></i>
                         </a>
                     {% endif %}

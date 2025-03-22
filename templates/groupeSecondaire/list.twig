@@ -19,8 +19,8 @@
         {% set buttons = [] %}
         {% if isAdmin %}
         {% set buttons = [
-            {'title': "Ajouter un groupe secondaire", 'route': path('groupeSecondaire.admin.add'), 'icon': 'fa-plus', 'label': 'Ajouter'},
-            {'title': "Ajouter un type de groupe secondaire", 'route': path('groupeSecondaireType.admin.add'), 'icon': 'fa-folder-plus', 'label': 'Nouveau type'},
+            {'title': "Ajouter un groupe secondaire", 'route': path('groupeSecondaire.add'), 'icon': 'fa-plus', 'label': 'Ajouter'},
+            {'title': "Ajouter un type de groupe secondaire", 'route': path('groupeSecondaireType.add'), 'icon': 'fa-folder-plus', 'label': 'Nouveau type'},
             {'title': "Imprimer les enveloppes", 'route': path('groupeSecondaire.materiel.printAll'), 'icon': 'fa-print', 'label': 'Imprimer'}
         ] %}
         {% endif %}
@@ -47,7 +47,7 @@
             <tr>
                 {% if isAdmin %}
                 <td class="text-center">
-                    <a href="{{ path('groupeSecondaire.admin.update', {'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.id }}
+                    <a href="{{ path('groupeSecondaire.update', {'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.id }}
                 </td>
 
                 <td>
@@ -63,7 +63,7 @@
                 {% endif %}
 
                 <td>
-                    <a href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.label }}
+                    <a href="{{ path('groupeSecondaire.detail', {'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.label }}
                 </td>
                 <td>{{ groupeSecondaire.description|markdown_to_html|highlight(pagerService.searchValue) }}</td>
                 <td>{{ groupeSecondaire.secondaryGroupType.label }}</td>
@@ -73,7 +73,7 @@
                     <div class="d-flex justify-content-center">
                         {% include '_partials/btnGroup.twig' with {'buttons' :
                             [
-                                {'title': 'Modifier le groupe secondaire', 'route':path('groupeSecondaire.admin.update', {'groupeSecondaire':groupeSecondaire.id}), 'icon': 'fa-pencil' }
+                                {'title': 'Modifier le groupe secondaire', 'route':path('groupeSecondaire.update', {'groupeSecondaire':groupeSecondaire.id}), 'icon': 'fa-pencil' }
                             ]
                         } %}
                     </div>

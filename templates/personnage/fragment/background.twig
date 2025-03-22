@@ -14,7 +14,7 @@
             'title' : 'Action',
             'actions' :
             [
-                {'path' : path('personnage.admin.add.background', {'personnage': personnage.id}), 'label': 'Ajouter un background' },
+                {'path' : path('personnage.add.background', {'personnage': personnage.id}), 'label': 'Ajouter un background' },
             ]
         } %}
     {% endif %}
@@ -29,11 +29,11 @@
                 <div class="btn-group">
                 <a class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
                    title="Modifier"
-                   href="{{ path('personnage.admin.update.background', {'personnage': personnage.id, 'background': background.id}) }}"><i
+                   href="{{ path('personnage.update.background', {'personnage': personnage.id, 'background': background.id}) }}"><i
                             class="fa fa-pencil"></i> Modifier</a>
                     <a class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Supprimer"
-                       href="{{ path('personnage.admin.delete.background', {'personnage': personnage.id, 'background': background.id}) }}"><i
+                       href="{{ path('personnage.delete.background', {'personnage': personnage.id, 'background': background.id}) }}"><i
                                 class="fa fa-eraser"></i> Supprimer</a>
                 </div>
             </div>

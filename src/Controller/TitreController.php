@@ -35,7 +35,7 @@ class TitreController extends AbstractController
     /**
      * Detail d'un titre.
      */
-    #[Route('/titre/{titre}/detail', name: 'titre.admin.detail')]
+    #[Route('/titre/{titre}/detail', name: 'titre.detail')]
     public function adminDetailAction(Request $request,  EntityManagerInterface $entityManager, Titre $titre): Response
     {
         return $this->render('titre/detail.twig', [
@@ -46,7 +46,7 @@ class TitreController extends AbstractController
     /**
      * Ajoute un titre.
      */
-    #[Route('/titre/add', name: 'titre.admin.add')]
+    #[Route('/titre/add', name: 'titre.add')]
     public function adminAddAction(Request $request,  EntityManagerInterface $entityManager): Response|RedirectResponse
     {
         $titre = new Titre();
@@ -64,7 +64,7 @@ class TitreController extends AbstractController
 
            $this->addFlash('success', 'Le titre a été ajouté');
 
-            return $this->redirectToRoute('titre.admin.detail', ['titre' => $titre->getId()], 303);
+            return $this->redirectToRoute('titre.detail', ['titre' => $titre->getId()], 303);
         }
 
         return $this->render('titre/add.twig', [
@@ -76,7 +76,7 @@ class TitreController extends AbstractController
     /**
      * Met à jour un titre.
      */
-    #[Route('/titre/{titre}/update', name: 'titre.admin.update')]
+    #[Route('/titre/{titre}/update', name: 'titre.update')]
     public function adminUpdateAction(Request $request,  EntityManagerInterface $entityManager, Titre $titre): Response|RedirectResponse
     {
         $form = $this->createForm(TitreForm::class, $titre)
@@ -92,7 +92,7 @@ class TitreController extends AbstractController
 
            $this->addFlash('success', 'Le titre a été sauvegardé');
 
-            return $this->redirectToRoute('titre.admin.detail', ['titre' => $titre->getId()], 303);
+            return $this->redirectToRoute('titre.detail', ['titre' => $titre->getId()], 303);
         }
 
         return $this->render('titre/update.twig', [
@@ -104,7 +104,7 @@ class TitreController extends AbstractController
     /**
      * Supprime un titre.
      */
-    #[Route('/titre/{titre}/delete', name: 'titre.admin.delete')]
+    #[Route('/titre/{titre}/delete', name: 'titre.delete')]
     public function adminDeleteAction(Request $request,  EntityManagerInterface $entityManager, Titre $titre): Response|RedirectResponse
     {
         $form = $this->createForm(TitreDeleteForm::class, $titre)

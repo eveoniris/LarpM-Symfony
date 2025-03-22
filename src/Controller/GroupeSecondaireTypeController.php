@@ -31,7 +31,7 @@ class GroupeSecondaireTypeController extends AbstractController
     /**
      * Ajoute un type de groupe secondaire.
      */
-    #[Route('/groupeSecondaireType/add', name: 'groupeSecondaireType.admin.add')]
+    #[Route('/groupeSecondaireType/add', name: 'groupeSecondaireType.add')]
     public function adminAddAction(Request $request, EntityManagerInterface $entityManager)
     {
         $groupeSecondaireType = new \App\Entity\SecondaryGroupType();
@@ -51,9 +51,9 @@ class GroupeSecondaireTypeController extends AbstractController
            $this->addFlash('success', 'Le type de groupe secondaire a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('groupeSecondaire.admin.list', [], 303);
+                return $this->redirectToRoute('groupeSecondaire.list', [], 303);
             } elseif ($form->get('save_continue')->isClicked()) {
-                return $this->redirectToRoute('groupeSecondaireType.admin.add', [], 303);
+                return $this->redirectToRoute('groupeSecondaireType.add', [], 303);
             }
         }
 
@@ -90,7 +90,7 @@ class GroupeSecondaireTypeController extends AbstractController
                $this->addFlash('success', 'Le type de groupe secondaire a été supprimé.');
             }
 
-            return $this->redirectToRoute('groupeSecondaireType.admin.list');
+            return $this->redirectToRoute('groupeSecondaireType.list');
         }
 
         return $this->render('groupeSecondaireType/update.twig', [
@@ -113,7 +113,7 @@ class GroupeSecondaireTypeController extends AbstractController
         } else {
            $this->addFlash('error', 'Le type de groupe secondaire n\'a pas été trouvé.');
 
-            return $this->redirectToRoute('groupeSecondaireType.admin.list');
+            return $this->redirectToRoute('groupeSecondaireType.list');
         }
     }
 }

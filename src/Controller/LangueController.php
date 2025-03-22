@@ -276,7 +276,7 @@ class LangueController extends AbstractController
     /**
      * Obtenir le document lié a une langue.
      */
-    #[Route('/langue/{langue}/document', name: 'langue.admin.document')]
+    #[Route('/langue/{langue}/document', name: 'langue.document')]
     public function adminDocumentAction(Request $request, Langue $langue): BinaryFileResponse
     {
         $document = $langue->getDocumentUrl();

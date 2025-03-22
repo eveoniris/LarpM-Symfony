@@ -64,13 +64,13 @@
 
                         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                            title="Créer un nouveau personnage"
-                           href="{{ path('participant.admin.personnage.new',{'participant':participant.id}) }}">
+                           href="{{ path('participant.personnage.new',{'participant':participant.id}) }}">
                             <i class="fa fa-user-plus"></i>
                         </a>
 
                         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                            title="Sélectionner un ancien personnage"
-                           href="{{ path('participant.admin.personnage.old',{'participant':participant.id}) }}">
+                           href="{{ path('participant.personnage.old',{'participant':participant.id}) }}">
                             <i class="fa fa-user"></i>
                         </a>
                     {% else %}

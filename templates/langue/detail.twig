@@ -93,7 +93,7 @@
                         <h4 class="list-group-item-heading">Abécédaire</h4>
                         <p class="list-group-item-text">
                             {% if langue.documentUrl %}
-                                <a href="{{ path('langue.admin.document',{'langue': langue.id}) }}">Téléchargez</a>
+                                <a href="{{ path('langue.document',{'langue': langue.id}) }}">Téléchargez</a>
                             {% else %}
                                 Aucun abécédaire n'est disponible.
                             {% endif %}

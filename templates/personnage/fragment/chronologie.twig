@@ -13,7 +13,7 @@
             'title' : 'Action',
             'actions' :
             [
-                {'path' : path('personnage.admin.add.chronologie', {'personnage': personnage.id}), 'label': 'Ajouter un évènement' },
+                {'path' : path('personnage.add.chronologie', {'personnage': personnage.id}), 'label': 'Ajouter un évènement' },
             ]
         } %}
     {% endif %}
@@ -42,7 +42,7 @@
                             <td class="text-center">
                                 <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                    title="Supprimer"
-                                   href="{{ path('personnage.admin.delete.chronologie', {'personnage':personnage.id, 'personnageChronologie': personnageChronologie.id}) }}"><i
+                                   href="{{ path('personnage.delete.chronologie', {'personnage':personnage.id, 'personnageChronologie': personnageChronologie.id}) }}"><i
                                             class="fa fa-eraser"></i></a>
                             </td>
                             {% endif %}

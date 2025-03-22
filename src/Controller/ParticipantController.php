@@ -232,14 +232,14 @@ class ParticipantController extends AbstractController
     /**
      * Detail d'un joueur.
      */
-    #[Route('/participant/admin/{participant}/detail', name: 'participant.admin.detail')]
+    #[Route('/participant/{participant}/detail', name: 'participant.detail')]
     public function adminDetailAction(
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
     ): RedirectResponse|Response {
         if ($participant) {
-            return $this->render('joueur/admin/detail.twig', ['participant' => $participant]);
+            return $this->render('joueur/detail.twig', ['participant' => $participant]);
         } else {
             $this->addFlash('error', 'Le participant n\'a pas été trouvé.');
 
@@ -250,7 +250,7 @@ class ParticipantController extends AbstractController
     /**
      * Création d'un nouveau personnage. L'utilisateur doit être dans un groupe et son billet doit être valide.
      */
-    #[Route('/participant/{participant}/admin/personnageNew', name: 'participant.admin.personnage.new')]
+    #[Route('/participant/{participant}/personnageNew', name: 'participant.personnage.new')]
     public function adminPersonnageNewAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -390,7 +390,7 @@ class ParticipantController extends AbstractController
     /**
      * Reprendre un ancien personnage.
      */
-    #[Route('/participant/{participant}/admin/personnageOld', name: 'participant.admin.personnage.old')]
+    #[Route('/participant/{participant}/personnageOld', name: 'participant.personnage.old')]
     public function adminPersonnageOldAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -447,7 +447,7 @@ class ParticipantController extends AbstractController
     /**
      * Met a jours les points d'expérience des joueurs.
      */
-    #[Route('/participant/admin/{participant}/xp', name: 'participant.admin.xp')]
+    #[Route('/participant/{participant}/xp', name: 'participant.xp')]
     public function adminXpAction(
         EntityManagerInterface $entityManager,
         Request $request,
@@ -483,7 +483,7 @@ class ParticipantController extends AbstractController
             }
         }
 
-        return $this->render('joueur/admin/xp.twig', [
+        return $this->render('joueur/xp.twig', [
             'participant' => $participant,
         ]);
     }
@@ -1493,7 +1493,7 @@ class ParticipantController extends AbstractController
         Participant $participant,
     ): RedirectResponse|Response {
         if ($participant) {
-            return $this->render('joueur/admin/detail.twig', ['participant' => $participant]);
+            return $this->render('joueur/detail.twig', ['participant' => $participant]);
         } else {
             $this->addFlash('error', 'Le participant n\'a pas été trouvé.');
 
@@ -2369,7 +2369,7 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('user.admin.list', [], 303);
+            return $this->redirectToRoute('user.list', [], 303);
         }
 
         return $this->render('participant/new.twig', [

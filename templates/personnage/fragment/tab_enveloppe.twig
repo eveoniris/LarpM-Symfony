@@ -16,9 +16,9 @@
                 [
                     {'path' : path('personnage.documents', {'personnage': personnage.id}), 'label': 'Modifier la liste des documents' },
                     {'path' : path('personnage.items', {'personnage': personnage.id}), 'label': 'Modifier la liste des objets' },
-                    {'path' : path('personnage.admin.update.ingredient', {'personnage': personnage.id}), 'label': 'Modifier la liste des ingrédients' },
-                    {'path' : path('personnage.admin.update.ressource', {'personnage': personnage.id}), 'label': 'Modifier la liste des ressources' },
-                    {'path' : path('personnage.admin.update.richesse', {'personnage': personnage.id}), 'label': 'Modifier la richesse' },
+                    {'path' : path('personnage.update.ingredient', {'personnage': personnage.id}), 'label': 'Modifier la liste des ingrédients' },
+                    {'path' : path('personnage.update.ressource', {'personnage': personnage.id}), 'label': 'Modifier la liste des ressources' },
+                    {'path' : path('personnage.update.richesse', {'personnage': personnage.id}), 'label': 'Modifier la richesse' },
                 ]
             } %}
         {% endif %}

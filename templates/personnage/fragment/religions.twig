@@ -34,7 +34,7 @@
                         <div>
                             <div class="btn-group">
                                 {% if isAdmin %}
-                                    <a href="{{ path('personnage.admin.delete.religion', {'personnage': personnage.id, 'personnageReligion': personnageReligion.id }) }}"
+                                    <a href="{{ path('personnage.delete.religion', {'personnage': personnage.id, 'personnageReligion': personnageReligion.id }) }}"
                                        class="btn btn-sm btn-secondary" title="supprimer" data-toggle="tooltip"
                                        data-placement="top"><i class="fa-solid fa-eraser"></i> supprimer</a>
                                 {% endif %}

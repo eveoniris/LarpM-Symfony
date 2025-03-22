@@ -37,7 +37,7 @@
             {% if membre.secondaryGroup.personnage.id != membre.personnage.id %}
                 <li class="list-group-item">
                     <a
-                            href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire': membre.secondaryGroup.id}) }}">
+                            href="{{ path('groupeSecondaire.detail', {'groupeSecondaire': membre.secondaryGroup.id}) }}">
                         {% if membre.secondaryGroup.secret %}
                             <i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
                                title="Secret"></i> -
@@ -55,7 +55,7 @@
     <ul class="list-group mb-4">
         {% for postulant in personnage.postulants %}
             <li class="list-group-item">
-                <a href="{{ path('groupeSecondaire.admin.detail', {'groupeSecondaire': postulant.secondaryGroup.id}) }}">
+                <a href="{{ path('groupeSecondaire.detail', {'groupeSecondaire': postulant.secondaryGroup.id}) }}">
                     {{ postulant.secondaryGroup.label }}
                     en attente de validation
                     .</a>

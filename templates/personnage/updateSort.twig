@@ -10,14 +10,14 @@
             <h5>Choix des sortilèges</h5>
         </div>
 
-        {% include '_partials/formListSearch.twig' with {'actionPath' : path('personnage.admin.update.sort', {'personnage': personnage.id})} %}
+        {% include '_partials/formListSearch.twig' with {'actionPath' : path('personnage.update.sort', {'personnage': personnage.id})} %}
     </div>
 
     {% include '_partials/pagination.html.twig' %}
 
 
     <table class="table table-condensed table-striped table-bordered table-hover">
-        {% include '_partials/thead.twig' with  { 'route': 'personnage.admin.update.sort', 'routeOptions': {'personnage': personnage.id}, 'rows': [
+        {% include '_partials/thead.twig' with  { 'route': 'personnage.update.sort', 'routeOptions': {'personnage': personnage.id}, 'rows': [
             {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
             {'name' : 'Niveau', 'field' : 'niveau', 'css' : 'text-center'},
             {'name' : 'Secret', 'field' : 'secret', 'css' : 'text-center'},
@@ -44,12 +44,12 @@
                     {% if personnage in sort.personnages %}
                         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                            title="Retirer ce sort"
-                           href="{{ path('personnage.admin.delete.sort',{'personnage':personnage.id, 'sort':sort.id}) }}">
+                           href="{{ path('personnage.delete.sort',{'personnage':personnage.id, 'sort':sort.id}) }}">
                             <i class="fa fa-minus text-danger"></i></a>
                     {% else %}
                         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                            title="Ajouter ce sort"
-                           href="{{ path('personnage.admin.add.sort',{'personnage':personnage.id, 'sort':sort.id}) }}">
+                           href="{{ path('personnage.add.sort',{'personnage':personnage.id, 'sort':sort.id}) }}">
                             <i class="fa fa-plus text-info"></i></a>
                     {% endif %}
                 </td>

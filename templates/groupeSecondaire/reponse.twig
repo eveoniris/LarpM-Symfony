@@ -6,14 +6,14 @@
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("groupeSecondaire.admin.list") }}">Liste des groupes secondaires</a></li>
-		<li><a href="{{ path("groupeSecondaire.admin.detail",{'index':groupeSecondaire.id}) }}">Détail de {{ groupeSecondaire.label }}</a></li>
+		<li><a href="{{ path("groupeSecondaire.list") }}">Liste des groupes secondaires</a></li>
+		<li><a href="{{ path("groupeSecondaire.detail",{'index':groupeSecondaire.id}) }}">Détail de {{ groupeSecondaire.label }}</a></li>
 		<li class="active">Accepter ou refuser une candidature</li>
 	</ol>
 	
 	<div class="well bs-component">
 		
-		{{ form_start(form, {"attr": {"action": path('groupeSecondaire.admin.reponse', {'index': groupeSecondaire.id, 'postulantId': postulant.id}) }}) }}
+		{{ form_start(form, {"attr": {"action": path('groupeSecondaire.reponse', {'index': groupeSecondaire.id, 'postulantId': postulant.id}) }}) }}
 			<fieldset>
 				<legend>Accepter ou refuser la candidature de {{ postulant.personnage.publicidentity }}</legend>
 					{{ postulant.explanation|markdown_to_html }}

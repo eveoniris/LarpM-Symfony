@@ -11,7 +11,7 @@
             <h5>Choix des technologies</h5>
         </div>
         {% if errorLevel != 1 %}
-            {% include '_partials/formListSearch.twig' with {'actionPath' : path('personnage.admin.update.technologie', {'personnage': personnage.id})} %}
+            {% include '_partials/formListSearch.twig' with {'actionPath' : path('personnage.update.technologie', {'personnage': personnage.id})} %}
         {% endif %}
     </div>
 
@@ -23,7 +23,7 @@
 
     {% if errorLevel != 1 %}
         <table class="table table-condensed table-striped table-bordered table-hover">
-            {% include '_partials/thead.twig' with  { 'route': 'personnage.admin.update.technologie', 'routeOptions': {'personnage': personnage.id}, 'rows': [
+            {% include '_partials/thead.twig' with  { 'route': 'personnage.update.technologie', 'routeOptions': {'personnage': personnage.id}, 'rows': [
                 {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
                 {'name' : 'Secret', 'field' : 'secret', 'css' : 'text-center'},
                 {'name' : 'Compétence', 'field' : 'competenceFamily.label', 'css' : 'text-center'},
@@ -52,12 +52,12 @@
                             {% if hasTechnologie %}
                                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                                    title="Retirer cette technologie"
-                                   href="{{ path('personnage.admin.delete.technologie',{'personnage':personnage.id, 'technologie':technologie.id}) }}">
+                                   href="{{ path('personnage.delete.technologie',{'personnage':personnage.id, 'technologie':technologie.id}) }}">
                                     <i class="fa fa-minus text-danger"></i></a>
                             {% else %}
                                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                                    title="Ajouter cette technologie"
-                                   href="{{ path('personnage.admin.add.technologie',{'personnage':personnage.id, 'technologie':technologie.id}) }}">
+                                   href="{{ path('personnage.add.technologie',{'personnage':personnage.id, 'technologie':technologie.id}) }}">
                                     <i class="fa fa-plus text-info"></i></a>
                             {% endif %}
                         </td>

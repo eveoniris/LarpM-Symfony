@@ -20,15 +20,15 @@
             'title' : 'Action',
             'actions' :
             [
-                {'path' : path('personnage.admin.statut', {'personnage': personnage.id}), 'label': 'Modifier le statut (vivant/mort)' },
-                {'path' : path('personnage.admin.update.age', {'personnage': personnage.id}), 'label': 'Modifier l\'Age' },
+                {'path' : path('personnage.statut', {'personnage': personnage.id}), 'label': 'Modifier le statut (vivant/mort)' },
+                {'path' : path('personnage.update.age', {'personnage': personnage.id}), 'label': 'Modifier l\'Age' },
                 {'path' : path('personnage.update', {'personnage': personnage.id}), 'label': 'Modifier (nom/surnom/etc ...)' },
-                {'path' : path('personnage.admin.update.renomme', {'personnage': personnage.id}), 'label': 'Modifier la Renomée' },
-                {'path' : path('personnage.admin.update.heroisme', {'personnage': personnage.id}), 'label': 'Modifier l\'Héroïsme' },
-                {'path' : path('personnage.admin.update.pugilat', {'personnage': personnage.id}), 'label': 'Modifier le Pugilat' },
-                {'path' : path('personnage.admin.transfert', {'personnage': personnage.id}), 'label': 'Transférer le personnage' },
+                {'path' : path('personnage.update.renomme', {'personnage': personnage.id}), 'label': 'Modifier la Renomée' },
+                {'path' : path('personnage.update.heroisme', {'personnage': personnage.id}), 'label': 'Modifier l\'Héroïsme' },
+                {'path' : path('personnage.update.pugilat', {'personnage': personnage.id}), 'label': 'Modifier le Pugilat' },
+                {'path' : path('personnage.transfert', {'personnage': personnage.id}), 'label': 'Transférer le personnage' },
                 {'path' : path('personnage.export', {'personnage': personnage.id}), 'label': 'Imprimer' },
-                {'path' : path('personnage.admin.delete', {'personnage': personnage.id}), 'label': 'Supprimer' },
+                {'path' : path('personnage.delete', {'personnage': personnage.id}), 'label': 'Supprimer' },
             ]
         } %}
     {% endif %}

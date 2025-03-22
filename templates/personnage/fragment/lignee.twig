@@ -14,14 +14,14 @@
                 'title' : 'Action',
                 'actions' :
                 [
-                    {'path' : path('personnage.admin.add.lignee', {'personnage': personnage.id}), 'label': 'Ajouter une lignée' },
+                    {'path' : path('personnage.add.lignee', {'personnage': personnage.id}), 'label': 'Ajouter une lignée' },
                 ]
             } %}
             {% if personnage.personnageLignee|length > 0 %}
                 {% set actions = {} %}
                 {# TODO for lignage in personnage.personnageLignee }
                         {% set actions = actions|merge({
-                            'path':  path('personnage.admin.delete.lignee', {'personnage': personnage.id, 'personnageLignee' : lignage.id }),
+                            'path':  path('personnage.delete.lignee', {'personnage': personnage.id, 'personnageLignee' : lignage.id }),
                             'label': 'Retirer'
                         }) %}
                     {% endfor #}
@@ -44,7 +44,7 @@
 
                                 <a class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                    title="Supprimer"
-                                   href="{{ path('personnage.admin.delete.lignee', {'personnage':personnage.id, 'personnageLignee': lignage.id}) }}"><i
+                                   href="{{ path('personnage.delete.lignee', {'personnage':personnage.id, 'personnageLignee': lignage.id}) }}"><i
                                             class="fa fa-eraser"></i></a>
 
                             </div>
@@ -54,12 +54,12 @@
                             <ul>
                                 {% if lignage.parent1 %}
                                     <li>
-                                        <a href="{{ path('personnage.admin.detail', {'personnage':lignage.parent1.id}) }}">{{ lignage.parent1.identity }}{% if lignage.parent2.surnom %} - {{ lignage.parent2.surnom }}{% endif %}</a>
+                                        <a href="{{ path('personnage.detail', {'personnage':lignage.parent1.id}) }}">{{ lignage.parent1.identity }}{% if lignage.parent2.surnom %} - {{ lignage.parent2.surnom }}{% endif %}</a>
                                         - {{ lignage.parent1.agereel }} ans
                                     </li>
                                     {% if lignage.parent2 %}
                                         <li>
-                                            <a href="{{ path('personnage.admin.detail', {'personnage':lignage.parent2.id}) }}">{{ lignage.parent2.identity }}{% if lignage.parent1.surnom %} - {{ lignage.parent2.surnom }}{% endif %}</a>
+                                            <a href="{{ path('personnage.detail', {'personnage':lignage.parent2.id}) }}">{{ lignage.parent2.identity }}{% if lignage.parent1.surnom %} - {{ lignage.parent2.surnom }}{% endif %}</a>
                                             - {{ lignage.parent2.agereel }} ans
                                         </li>
                                     {% endif %}
@@ -80,7 +80,7 @@
                         <ul>
                             {% for descendant in descendants %}
                                 <li>
-                                    <a href="{{ path('personnage.admin.detail', {'personnage':descendant.personnage.id}) }}">{{ descendant.personnage.identity }}
+                                    <a href="{{ path('personnage.detail', {'personnage':descendant.personnage.id}) }}">{{ descendant.personnage.identity }}
                                         - {{ descendant.personnage.surnom }}</a>
                                     - {{ descendant.personnage.agereel }} ans
                                 </li>

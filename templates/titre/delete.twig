@@ -15,7 +15,7 @@
 	
 	
 	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('titre.admin.delete', {'titre': titre.id}) }}) }}
+		{{ form_start(form, {"attr": {"action": path('titre.delete', {'titre': titre.id}) }}) }}
 			<fieldset>
 				<legend>Supression d'un titre</legend>
 					{{ titre.label }} -- {{ titre.renomme }} point de renommés necessaires
