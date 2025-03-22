@@ -62,7 +62,7 @@ class LoiController extends AbstractController
             return $this->redirectToRoute('loi.index', [], 303);
         }
 
-        return $this->render('admin\loi\add.twig', [
+        return $this->render('loi\add.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -92,7 +92,7 @@ class LoiController extends AbstractController
             return $this->redirectToRoute('loi.index', [], 303);
         }
 
-        return $this->render('admin\loi\delete.twig', [
+        return $this->render('loi\delete.twig', [
             'form' => $form->createView(),
             'loi' => $loi,
         ]);
@@ -107,7 +107,7 @@ class LoiController extends AbstractController
         EntityManagerInterface $entityManager,
         #[MapEntity] Loi $loi,
     ): Response {
-        return $this->render('admin\loi\detail.twig', [
+        return $this->render('loi\detail.twig', [
             'loi' => $loi,
         ]);
     }
@@ -116,28 +116,9 @@ class LoiController extends AbstractController
      * Téléchargement du document lié à une compétence.
      */
     #[Route('/loi/{loi}/document', name: 'loi.document')]
-    public function getDocumentAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Loi $loi,
-    ): BinaryFileResponse {
+    public function getDocumentAction(#[MapEntity] Loi $loi): BinaryFileResponse
+    {
         return $this->sendDocument($loi);
-        /*
-         * $document = $loi->getDocumentUrl();
-
-       $file = __DIR__.'/../../private/documents/'.$document;
-
-       return new BinaryFileResponse($file);
-
-
-       $stream = static function () use ($file): void {
-           readfile($file);
-       };
-       return $app->stream($stream, 200, [
-           'Content-Type' => 'text/pdf',
-           'Content-length' => filesize($file),
-           'Content-Disposition' => 'attachment; filename="'.$loi->getLabel().'.pdf"',
-       ]);*/
     }
 
     /**
@@ -148,7 +129,7 @@ class LoiController extends AbstractController
     {
         $lois = $entityManager->getRepository(Loi::class)->findAll();
 
-        return $this->render('admin\loi\index.twig', [
+        return $this->render('loi\index.twig', [
             'lois' => $lois,
         ]);
     }
@@ -219,7 +200,7 @@ class LoiController extends AbstractController
             return $this->redirectToRoute('loi.index', [], 303);
         }
 
-        return $this->render('admin\loi\update.twig', [
+        return $this->render('loi\update.twig', [
             'form' => $form->createView(),
             'loi' => $loi,
         ]);
