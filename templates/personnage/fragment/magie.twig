@@ -30,7 +30,7 @@
             {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'title': 'Avertissement', 'content' : "Vous n'avez pas les connaissances pour lancer ces sorts et vous ne pouvez pas les recopier sans l'aide adéquate." } %}
         {% endif %}
 
-        <h6>Liste de vos sorts</h6>
+        <h6 class="mt-2">Liste de vos sorts</h6>
         <div class="list-group">
             {% for sort in personnage.sorts %}
                 <div class="list-group-item d-flex justify-content-between">

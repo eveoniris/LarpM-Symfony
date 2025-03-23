@@ -14,11 +14,18 @@
             ]
         } %}
 
-        <div class="well bs-component">
-            <blockquote>Votre compétence vous permet de choisir un nouveau sort.</blockquote>
-            <blockquote>Attention ! Un sort dans un domaine que vous ne maitrisez pas necessitera plus de Perles pour le
-                lancer (la description complète des sorts est disponible en bas de cette page)
-            </blockquote>
+        <div class="well wel-sm bs-component">
+            <div class="header"><h5>Choix d'un nouveau sort</h5></div>
+
+            {% set notifHtml %}
+
+                <p>Votre compétence vous permet de choisir un nouveau sort.</p>
+                <p>Attention ! Un sort dans un domaine que vous ne maitrisez pas necessitera plus de Perles pour le
+                    lancer (la description complète des sorts est disponible en bas de cette page)
+                </p>
+            {% endset %}
+            {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : notifHtml} %}
+
 
             {{ form(form) }}
         </div>

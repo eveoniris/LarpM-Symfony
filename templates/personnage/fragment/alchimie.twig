@@ -16,18 +16,54 @@
         {% else %}
             <h6>Liste de vos potions de départ</h6>
             <div class="list-group">
-                {% for niveau in 1..personnage.getCompetenceNiveau('Alchimie') %}
+                {% for niveau in 1..personnage.getCompetenceNiveau(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
                     {% set potion = participant.hasPotionsDepartByLevel(niveau) %}
                     {% if potion %}
-                        <a class="list-group-item"
-                           href="{{ path('participant.potion.detail', {'participant': participant.id, 'potion': potion.id}) }}">
-                            {% if potion.secret %}
-                                <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
-                                   data-bs-placement="top"
-                                   title="Secret"></i> -&nbsp;
-                            {% endif %}
-                            {{ potion.label }} -
-                            Niveau {{ potion.niveau }}</a>
+                        {% if isAdmin %}
+                            {% set potionPath = path('magie.potion.detail', {'potion': potion.id}) %}
+                        {% else %}
+                            {% set potionPath = path('participant.potion.detail', {'participant': participant.id, 'potion': potion.id}) %}
+                        {% endif %}
+                        <div class="list-group-item d-flex justify-content-between">
+                            <div>
+                                <a href="{{ potionPath }}">
+                                    {% if potion.secret %}
+                                        <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           title="Secret"></i> -&nbsp;
+                                    {% endif %}
+                                    {{ potion.label }} -
+                                    Niveau {{ potion.niveau }}</a>
+                            </div>
+
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                                        href="#potiond_{{ potion.id }}"
+                                        aria-expanded="false" aria-controls="potiond_{{ potion.id }}"
+                                        role="button">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                </button>
+                                {% if potion.documentUrl %}
+                                    {% if isAdmin %}
+                                        <button class="btn btn-sm btn-secondary"
+                                                href="{{ path('magie.potion.document',{'potion':potion.id, 'document': potion.documentUrl}) }}"
+                                                aria-expanded="false"
+                                                role="button">
+                                            <i class="fa-solid fa-file"></i>
+                                        </button>
+                                    {% elseif participant is defined %}
+                                        <button class="btn btn-sm btn-secondary"
+                                                href="{{ path('participant.potion.document',{'potion':potion.id, 'participant': participant.id,'document': potion.documentUrl}) }}"
+                                                role="button">
+                                            <i class="fa-solid fa-file"></i>
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="list-group-item bg-body-secondary collapse" id="potiond_{{ potion.id }}">
+                            {{ potion.description|markdown_to_html }}
+                        </div>
                     {% else %}
                         <a class="list-group-item">Vous n'avez pas choisi de potion de niveau {{ niveau }}.</a>
                     {% endif %}
@@ -35,7 +71,7 @@
             </div>
         {% endif %}
 
-        <h6>Liste de vos potions connues</h6>
+        <h6 class="mt-2">Liste de vos potions connues</h6>
         <div class="list-group">
             {% for potion in personnage.potions %}
                 {% if isAdmin %}

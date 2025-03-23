@@ -3,8 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Document;
-use App\Enum\DocumentType;
-use App\Enum\FolderType;
 use App\Form\DocumentForm;
 use App\Repository\DocumentRepository;
 use App\Service\PagerService;
@@ -144,6 +142,7 @@ class DocumentController extends AbstractController
     #[Route('/get/{document}', name: 'get', requirements: ['document' => Requirement::DIGITS])]
     public function getAction(#[MapEntity] Document $document): BinaryFileResponse
     {
+        return $this->sendDocument($document);
         // TODO
         $filename = __DIR__.'/../../private/documents/'.$document->getDocumentUrl();
 
@@ -171,7 +170,7 @@ class DocumentController extends AbstractController
     public function detailAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Document $document
+        #[MapEntity] Document $document,
     ): Response {
         return $this->render('document/detail.twig', ['document' => $document]);
     }
@@ -194,7 +193,7 @@ class DocumentController extends AbstractController
      */
     #[Route('/{document}/delete', name: 'delete', requirements: ['document' => Requirement::DIGITS])]
     public function deleteAction(
-        #[MapEntity] Document $document
+        #[MapEntity] Document $document,
     ): RedirectResponse|Response {
         return $this->genericDelete(
             $document,
@@ -220,7 +219,7 @@ class DocumentController extends AbstractController
         array $breadcrumb = [],
         array $routes = [],
         array $msg = [],
-        ?callable $entityCallback = null
+        ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         if (!$entityCallback) {
             // TODO debug why we do not store the docUrl
