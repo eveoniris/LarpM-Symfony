@@ -24,6 +24,7 @@ use App\Entity\Rarete;
 use App\Entity\Religion;
 use App\Entity\RenommeHistory;
 use App\Entity\Ressource;
+use App\Entity\Sort;
 use App\Entity\Territoire;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
@@ -1073,7 +1074,7 @@ class PersonnageService
     ): ArrayCollection {
         $availableSorts = new ArrayCollection();
 
-        $repo = $this->app['orm.em']->getRepository(Sort::class);
+        $repo = $this->entityManager->getRepository(Sort::class);
         $sorts = $repo->findByNiveau($niveau);
 
         foreach ($sorts as $sort) {

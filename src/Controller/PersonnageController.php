@@ -365,10 +365,9 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    #[Route('/{personnage}/addCompetence', name: 'add.competence')]
     #[Route('/{personnage}/competence/add', name: 'add.competence')]
     #[IsGranted(Role::USER->value)]
-    public function adminAddCompetenceAction(
+    public function addCompetenceAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
@@ -414,15 +413,15 @@ class PersonnageController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-
             $competenceId = $data->getId();
             $competence = $entityManager->find(Competence::class, $competenceId);
+
             $service = null;
 
             if (!$competence) {
                 $form->addError('Competence not found');
             } else {
-                $service = $personnageService->addCompetence($personnage, $competence);
+                $service = $personnageService->addCompetence($personnage, $competence, false);
             }
 
             if (!$service->hasErrors()) {
@@ -440,6 +439,50 @@ class PersonnageController extends AbstractController
             'personnage' => $personnage,
             'competences' => $availableCompetences,
         ]);
+    }
+
+    protected function hasAccess(Personnage $personnage, array $roles = []): void
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        // Doit être connecté
+        if (!$user || !$this->isGranted(Role::USER->value)) {
+            throw new AccessDeniedException();
+        }
+
+        // Est l'interprète du personnage
+        if ($personnage->getUser()?->getId() === $user->getId()) {
+            return;
+        }
+
+        // Est un niveau admin suffisant
+        if ($roles) {
+            /** @var Role $role */
+            foreach ($roles as $role) {
+                if ($this->isGranted($role->value)) {
+                    return;
+                }
+            }
+        }
+
+        /*
+         * Autre option :
+         * if (!$user) {
+         * $this->addFlash('error', 'Désolé, vous devez être identifié pour accéder à cette page');
+         * $this->redirectToRoute('app_login', [], 303);
+         * }
+         *
+         * if (
+         * !($this->isGranted('ROLE_ADMIN') || $this->isGranted(Role::SCENARISTE->value))
+         * && $user->getId() !== $personnage->getUser()?->getId()
+         * ) {
+         * $this->addFlash('error', "Vous n'avez pas les permissions requises pour modifier une trombine");
+         * $this->redirect($request->headers->get('referer'));
+         * $this->redirectToRoute('homepage', [], 303);
+         * }
+         */
+
+        throw new AccessDeniedException();
     }
 
     /**
@@ -461,6 +504,12 @@ class PersonnageController extends AbstractController
             ['personnage' => $personnage->getId(), 303]
         );
     }
+
+    /**
+     * Permet de faire vieillir les personnages
+     * Cela va donner un Jeton Vieillesse à tous les personnages et changer la catégorie d'age des personnages cumulants deux jetons vieillesse.
+     */
+    // TODO
 
     /**
      * Ajoute une lignée au personnage.
@@ -512,11 +561,6 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    /**
-     * Permet de faire vieillir les personnages
-     * Cela va donner un Jeton Vieillesse à tous les personnages et changer la catégorie d'age des personnages cumulants deux jetons vieillesse.
-     */
-    // TODO
     /**
      * Ajoute une potion à un personnage.
      */
@@ -909,8 +953,8 @@ class PersonnageController extends AbstractController
         $orderBy = $request->get('order_by') ?: 'id';
         $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
         $isAsc = 'ASC' == $orderDir;
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
+        $limit = (int)($request->get('limit') ?: 50);
+        $page = (int)($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
@@ -1013,13 +1057,13 @@ class PersonnageController extends AbstractController
         }
 
         return array_merge([
-            'personnages' => $personnages,
-            'paginator' => $paginator,
-            'form' => $form->createView(),
-            'optionalParameters' => $optionalParameters,
-            'columnDefinitions' => $columnDefinitions,
-            'formPath' => $routeName,
-        ]
+                'personnages' => $personnages,
+                'paginator' => $paginator,
+                'form' => $form->createView(),
+                'optionalParameters' => $optionalParameters,
+                'columnDefinitions' => $columnDefinitions,
+                'formPath' => $routeName,
+            ]
         );
     }
 
@@ -1060,6 +1104,11 @@ class PersonnageController extends AbstractController
     }
 
     /**
+     * Affiche le détail d'un personnage (pour les orgas).
+     */
+    // #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+
+    /**
      * Imprimer la liste des personnages.
      */
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
@@ -1069,10 +1118,6 @@ class PersonnageController extends AbstractController
         // TODO
     }
 
-    /**
-     * Affiche le détail d'un personnage (pour les orgas).
-     */
-    // #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     /**
      * Retire une connaissance à un personnage.
      */
@@ -1989,7 +2034,7 @@ class PersonnageController extends AbstractController
             // et récupérer les langues de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 if ('ORIGINE' === $personnageLangue->getSource(
-                ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
+                    ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
                     $personnage->removePersonnageLangues($personnageLangue);
                     $this->entityManager->remove($personnageLangue);
                 }
@@ -2331,7 +2376,7 @@ class PersonnageController extends AbstractController
         $limit = 1;
         foreach ($competences as $competence) {
             if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily(
-            )?->getCompetenceFamilyType()?->value) {
+                )?->getCompetenceFamilyType()?->value) {
                 if ($competence->getLevel()?->getIndex() >= 2) {
                     $message = false;
                     $errorLevel = 0;
@@ -2450,48 +2495,27 @@ class PersonnageController extends AbstractController
         );
     }
 
-    protected function hasAccess(Personnage $personnage, array $roles = []): void
+    /**
+     * @return non-falsy-string[]
+     */
+    public function getLangueMateriel(Personnage $personnage): array
     {
-        /** @var User $user */
-        $user = $this->getUser();
-        // Doit être connecté
-        if (!$user || !$this->isGranted(Role::USER->value)) {
-            throw new AccessDeniedException();
-        }
-
-        // Est l'interprète du personnage
-        if ($personnage->getUser()?->getId() === $user->getId()) {
-            return;
-        }
-
-        // Est un niveau admin suffisant
-        if ($roles) {
-            /** @var Role $role */
-            foreach ($roles as $role) {
-                if ($this->isGranted($role->value)) {
-                    return;
+        $langueMateriel = [];
+        foreach ($personnage->getPersonnageLangues() as $langue) {
+            if ($langue->getLangue()->getGroupeLangue()->getId() > 0 && $langue->getLangue()->getGroupeLangue()->getId(
+                ) < 6) {
+                if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel)) {
+                    $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
                 }
             }
+
+            if (0 === $langue->getLangue()->getDiffusion()) {
+                $langueMateriel[] = 'Alphabet '.$langue->getLangue()->getLabel();
+            }
         }
+        sort($langueMateriel);
 
-        /*
-         * Autre option :
-         * if (!$user) {
-         * $this->addFlash('error', 'Désolé, vous devez être identifié pour accéder à cette page');
-         * $this->redirectToRoute('app_login', [], 303);
-         * }
-         *
-         * if (
-         * !($this->isGranted('ROLE_ADMIN') || $this->isGranted(Role::SCENARISTE->value))
-         * && $user->getId() !== $personnage->getUser()?->getId()
-         * ) {
-         * $this->addFlash('error', "Vous n'avez pas les permissions requises pour modifier une trombine");
-         * $this->redirect($request->headers->get('referer'));
-         * $this->redirectToRoute('homepage', [], 303);
-         * }
-         */
-
-        throw new AccessDeniedException();
+        return $langueMateriel;
     }
 
     /**
@@ -2539,29 +2563,6 @@ class PersonnageController extends AbstractController
     }
 
     /**
-     * @return non-falsy-string[]
-     */
-    public function getLangueMateriel(Personnage $personnage): array
-    {
-        $langueMateriel = [];
-        foreach ($personnage->getPersonnageLangues() as $langue) {
-            if ($langue->getLangue()->getGroupeLangue()->getId() > 0 && $langue->getLangue()->getGroupeLangue()->getId(
-            ) < 6) {
-                if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel)) {
-                    $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
-                }
-            }
-
-            if (0 === $langue->getLangue()->getDiffusion()) {
-                $langueMateriel[] = 'Alphabet '.$langue->getLangue()->getLabel();
-            }
-        }
-        sort($langueMateriel);
-
-        return $langueMateriel;
-    }
-
-    /**
      * Exporte la fiche d'un personnage.
      */
     #[Route('/{personnage}/export', name: 'export')]
@@ -2603,13 +2604,13 @@ class PersonnageController extends AbstractController
             return $this->sendNoImageAvailable();
         }
         $path = $this->fileUploader->getProjectDirectory(
-        ).FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
+            ).FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
 
         $filename = $personnage->getTrombine($this->fileUploader->getProjectDirectory());
         if (!file_exists($filename)) {
             // get old ?
             $path = $this->fileUploader->getProjectDirectory(
-            ).FolderType::Private->value.DocumentType::Image->value.'/';
+                ).FolderType::Private->value.DocumentType::Image->value.'/';
             $filename = $path.$personnage->getTrombineUrl();
 
             if (!file_exists($filename)) {

@@ -16,7 +16,7 @@ class MagieService extends CompetenceService
         // TODO by competence LEVEL
         // Todo Domaine magie ?
         $personnageNbSorts = $this->getPersonnage()->getSorts()->count();
-        $availableSorts = $this->entityManager->getRepository(Sort::class)->count();
+        $availableSorts = $this->entityManager->getRepository(Sort::class)->count([]);
 
         // Plus de sorts à apprendre
         if ($personnageNbSorts >= $availableSorts) {

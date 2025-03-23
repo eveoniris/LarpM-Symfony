@@ -12,7 +12,7 @@
             <h5>Magie</h5>
         </div>
 
-        {% if personnage.hasCompetence('Magie') %}
+        {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::MAGIC')) %}
             <h6>Liste de vos domaines de Magie</h6>
             <div class="list-group">
                 {% for domaine in personnage.domaines %}
@@ -26,7 +26,7 @@
             </div>
         {% endif %}
 
-        {% if not personnage.hasCompetence('Magie') %}
+        {% if not personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::MAGIC')) %}
             {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'title': 'Avertissement', 'content' : "Vous n'avez pas les connaissances pour lancer ces sorts et vous ne pouvez pas les recopier sans l'aide adéquate." } %}
         {% endif %}
 
@@ -41,12 +41,9 @@
                                    data-bs-placement="top"
                                    title="Secret"></i><span class="text-warning">Secret</span> - {% endif %}
                             {{ sort.label }} - {{ sort.domaine.label }} Niveau {{ sort.niveau }}
-                            ({% if sort.domaine in personnage.domaines %}
-                                {{ sort.niveau + 1 }}
-                            {% else %}
-                                {{ sort.niveau + 2 }}
-                            {% endif %}
-                            Perles)
+                            ({% if sort.domaine in personnage.domaines %}{{ sort.niveau + 1 }}
+                            {% else %}{{ sort.niveau + 2 }}
+                            {% endif %} Perles)
                         </a>
                     </div>
 

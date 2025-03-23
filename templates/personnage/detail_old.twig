@@ -23,7 +23,7 @@
 				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Choisir une nouvelle religion" href="{{ path('participant.religion.add',{'participant': participant.id}) }}"><i class="fa fa-cloud" aria-hidden="true"></i></a>
 				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Acheter une compétence" href="{{ path('participant.competence.add', {'participant': participant.id}) }}"><i class="fa fa-graduation-cap" aria-hidden="true"></i></a>
 				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier votre personnage" href="{{ path('participant.personnage.edit', {'participant': participant.id}) }}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-				{% if personnage.hasCompetence('Magie') %}
+				{% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::MAGIC')) %}
 					<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Découvrir la magie" href="{{ path('participant.magie', {'participant': participant.id}) }}"><i class="fa fa-magic" aria-hidden="true"></i></a>
 				{% endif %}
 				<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Imprimer votre personnage" href="{{ path('personnage.export', {'personnage':personnage.id}) }}"><i class="fa fa-print" aria-hidden="true"></i></a>
@@ -63,16 +63,16 @@
 								<li class="list-group-item"><a href="{{ path('participant.personnage.domaine', {'participant': participant.id}) }}">Choisir un domaine de magie</a></li>
 							{% endif %}
 							{% if trigger.tag == 'SORT APPRENTI' %}
-								<li class="list-group-item"><a href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort' : 1}) }}">Choisir un sort de niveau Apprenti</a></li>
+								<li class="list-group-item"><a href="{{ path('participant.sort.choose', {'participant': participant.id, 'sort' : 1}) }}">Choisir un sort de niveau Apprenti</a></li>
 							{% endif %}
 							{% if trigger.tag == 'SORT INITIE' %}
-								<li class="list-group-item"><a href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort' : 2}) }}">Choisir un sort de niveau Initié</a></li>
+								<li class="list-group-item"><a href="{{ path('participant.sort.choose', {'participant': participant.id, 'sort' : 2}) }}">Choisir un sort de niveau Initié</a></li>
 							{% endif %}
 							{% if trigger.tag == 'SORT EXPERT' %}
-								<li class="list-group-item"><a href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort' : 3}) }}">Choisir un sort de niveau Expert</a></li>
+								<li class="list-group-item"><a href="{{ path('participant.sort.choose', {'participant': participant.id, 'sort' : 3}) }}">Choisir un sort de niveau Expert</a></li>
 							{% endif %}
 							{% if trigger.tag == 'SORT MAITRE' %}
-								<li class="list-group-item"><a href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort' : 4}) }}">Choisir un sort de niveau Maitre</a></li>
+								<li class="list-group-item"><a href="{{ path('participant.sort.choose', {'participant': participant.id, 'sort' : 4}) }}">Choisir un sort de niveau Maitre</a></li>
 							{% endif %}
 							{% if trigger.tag == 'PRETRISE INITIE' %}
 								<li class="list-group-item"><a href="{{ path('participant.personnage.religionDescription', {'participant': participant.id}) }}">Choisir une description de religion</a></li>
@@ -81,8 +81,8 @@
 								<li class="list-group-item"><a href="{{ path('participant.personnage.technologie', {'participant': participant.id}) }}">Choisir une technologie</a></li>
 							{% endif %}
 						{% endfor %}
-							{% if personnage.hasCompetence('Alchimie') %}
-								{% for niveau in 1..personnage.getCompetenceNiveau('Alchimie') %}
+							{% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
+								{% for niveau in 1..personnage.getCompetenceNiveau(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
 									{% if not participant.hasPotionsDepartByLevel(niveau) %}
 										<li class="list-group-item"><a href="{{ path('participant.sort', {'sort' : niveau, 'participant' : participant.id}) }}">Choisir votre potion de niveau {{ niveau }} à ajouter à votre enveloppe de départ</a></li>
 									{% endif %}

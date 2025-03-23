@@ -353,7 +353,7 @@ class CompetenceService
 
     public function getCompetenceService(Competence $competence): self
     {
-        $service = match ($competence->getCompetenceFamily()?->getLabel()) {
+        $service = match ($competence->getCompetenceFamily()?->getCompetenceFamilyType()?->value) {
             CompetenceFamilyType::PRIESTHOOD->value => $this->getService(PretriseService::class),
             CompetenceFamilyType::NOBILITY->value => $this->getService(NoblesseService::class),
             CompetenceFamilyType::ALCHEMY->value => $this->getService(AlchimieService::class),
@@ -483,9 +483,8 @@ class CompetenceService
         if (empty($rule)) {
             return;
         }
-
         foreach ($rule as $tagName => $nb) {
-            while ($nb-- > 0) {
+            while ($nb-- >= 0) {
                 $trigger = new PersonnageTrigger();
                 $trigger->setPersonnage($this->getPersonnage());
                 $trigger->setTag($tagName);

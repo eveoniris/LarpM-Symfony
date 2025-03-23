@@ -73,7 +73,6 @@ use App\Repository\PotionRepository;
 use App\Repository\SecondaryGroupRepository;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Gd\Imagine;
@@ -89,6 +88,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
@@ -288,7 +288,7 @@ class ParticipantController extends AbstractController
             // historique
             $historique = new ExperienceGain();
             $historique->setExplanation('Création de votre personnage');
-            $historique->setOperationDate(new DateTime('NOW'));
+            $historique->setOperationDate(new \DateTime('NOW'));
             $historique->setPersonnage($personnage);
             $historique->setXpGain($participant->getGn()->getXpCreation());
             $entityManager->persist($historique);
@@ -325,7 +325,7 @@ class ParticipantController extends AbstractController
                 $personnage->addXp($xpAgeBonus);
                 $historique = new ExperienceGain();
                 $historique->setExplanation("Bonus lié à l'age");
-                $historique->setOperationDate(new DateTime('NOW'));
+                $historique->setOperationDate(new \DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($xpAgeBonus);
                 $entityManager->persist($historique);
@@ -473,7 +473,7 @@ class ParticipantController extends AbstractController
                 // historique
                 $historique = new ExperienceGain();
                 $historique->setExplanation($explanation);
-                $historique->setOperationDate(new DateTime('NOW'));
+                $historique->setOperationDate(new \DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($gain);
                 $entityManager->persist($historique);
@@ -587,7 +587,7 @@ class ParticipantController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $participant = $form->getData();
-            $participant->setBilletDate(new DateTime('NOW'));
+            $participant->setBilletDate(new \DateTime('NOW'));
             $entityManager->persist($participant);
             $entityManager->flush();
 
@@ -818,7 +818,7 @@ class ParticipantController extends AbstractController
         $choices = [];
         foreach ($availableCompetences as $competence) {
             $choices[$competence->getId()] = $competence->getLabel(
-                ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
+            ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
         }
 
         $form = $this->createFormBuilder($participant)
@@ -917,8 +917,8 @@ class ParticipantController extends AbstractController
                     foreach ($religion->getSpheres() as $sphere) {
                         foreach ($sphere->getPrieres() as $priere) {
                             if ($priere->getNiveau() == $competence->getLevel()->getId() && !$personnage->hasPriere(
-                                    $priere
-                                )) {
+                                $priere
+                            )) {
                                 $priere->addPersonnage($personnage);
                                 $personnage->addPriere($priere);
                             }
@@ -1212,7 +1212,7 @@ class ParticipantController extends AbstractController
 
             // historique
             $historique = new ExperienceUsage();
-            $historique->setOperationDate(new DateTime('NOW'));
+            $historique->setOperationDate(new \DateTime('NOW'));
             $historique->setXpUse($cout);
             $historique->setCompetence($competence);
             $historique->setPersonnage($personnage);
@@ -1366,28 +1366,6 @@ class ParticipantController extends AbstractController
         }
 
         $this->sendDocument($connaissance);
-    }
-
-    #[Route('/participant/{participant}/loi/{loi}/document', name: 'participant.loi.document')]
-    public function loiDocumentAction(
-        Participant $participant,
-        Loi $loi,
-    ): BinaryFileResponse|RedirectResponse {
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        if (!$personnage->isKnownLoi($loi)) {
-            $this->addFlash('error', 'Vous ne connaissez pas cette loi !');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        $this->sendDocument($loi);
     }
 
     /**
@@ -1564,11 +1542,11 @@ class ParticipantController extends AbstractController
     /**
      * Choix d'un domaine de magie.
      */
-    #[Route('/participant/{participant}/domaineMagie', name: 'participant.domaineMagie')]
+    #[Route('/participant/{participant}/domaineMagie', name: 'participant.personnage.domaine')]
     public function domaineMagieAction(
         Request $request,
-        EntityManagerInterface $entityManager,
-        Participant $participant,
+        #[MapEntity] Participant $participant,
+        PersonnageService $personnageService,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -1584,15 +1562,14 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $availableDomaines = $app['personnage.manager']->getAvailableDomaines($personnage);
+        $availableDomaines = $personnageService->getAvailableDomaines($personnage);
 
-        $form = $this->createFormBuilder($participant)
-            ->add('domaine', 'entity', [
+        $form = $this->createFormBuilder()
+            ->add('domaine', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Choisissez votre domaine de magie',
                 'multiple' => false,
                 'expanded' => true,
-                'class' => Domaine::class,
                 'choices' => $availableDomaines,
                 'choice_label' => 'label',
             ])
@@ -1607,13 +1584,13 @@ class ParticipantController extends AbstractController
 
             // Ajout du domaine de magie au personnage
             $personnage->addDomaine($domaine);
-            $entityManager->persist($personnage);
+            $this->entityManager->persist($personnage);
 
             // suppression du trigger
             $trigger = $personnage->getTrigger('DOMAINE MAGIE');
-            $entityManager->remove($trigger);
+            $this->entityManager->remove($trigger);
 
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
@@ -1789,7 +1766,6 @@ class ParticipantController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-
 
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/detail', name: 'participant.groupeSecondaire.detail')]
     public function groupeSecondaireDetailAction(
@@ -1989,8 +1965,8 @@ class ParticipantController extends AbstractController
 
         $message->setUserRelatedByAuteur($this->getUser());
         $message->setUserRelatedByDestinataire($postulant->getPersonnage()->getUser());
-        $message->setCreationDate(new DateTime('NOW'));
-        $message->setUpdateDate(new DateTime('NOW'));
+        $message->setCreationDate(new \DateTime('NOW'));
+        $message->setUpdateDate(new \DateTime('NOW'));
 
         $form = $this->createForm(MessageForm::class, $message)
             ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre réponse']);
@@ -2319,6 +2295,28 @@ class ParticipantController extends AbstractController
         */
     }
 
+    #[Route('/participant/{participant}/loi/{loi}/document', name: 'participant.loi.document')]
+    public function loiDocumentAction(
+        Participant $participant,
+        Loi $loi,
+    ): BinaryFileResponse|RedirectResponse {
+        $personnage = $participant->getPersonnage();
+
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        if (!$personnage->isKnownLoi($loi)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette loi !');
+
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        $this->sendDocument($loi);
+    }
+
     /**
      * Découverte de la magie, des domaines et sortilèges.
      */
@@ -2582,7 +2580,7 @@ class ParticipantController extends AbstractController
             // historique
             $historique = new ExperienceGain();
             $historique->setExplanation('Création de votre personnage');
-            $historique->setOperationDate(new DateTime('NOW'));
+            $historique->setOperationDate(new \DateTime('NOW'));
             $historique->setPersonnage($personnage);
             $historique->setXpGain($participant->getGn()->getXpCreation());
             $entityManager->persist($historique);
@@ -2630,7 +2628,7 @@ class ParticipantController extends AbstractController
                 $personnage->addXp($xpAgeBonus);
                 $historique = new ExperienceGain();
                 $historique->setExplanation("Modification liée à l'age");
-                $historique->setOperationDate(new DateTime('NOW'));
+                $historique->setOperationDate(new \DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($xpAgeBonus);
                 $entityManager->persist($historique);
@@ -2831,7 +2829,7 @@ class ParticipantController extends AbstractController
 
                 // Noblesse expert : +2 Renommee
                 if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel()->getId(
-                    )) {
+                )) {
                     $renomme_history = new RenommeHistory();
                     $renomme_history->setRenomme(2);
                     $renomme_history->setExplication('[Nouvelle participation] Noblesse Expert');
@@ -3474,9 +3472,9 @@ class ParticipantController extends AbstractController
 
         if (true === $participant->getGroupeGn()?->getGroupe()->getLock()) {
             $href = $this->generateUrl(
-                    'groupe.detail',
-                    ['groupe' => $participant->getGroupeGn()?->getGroupe()->getId()]
-                ).'#groupe_lock';
+                'groupe.detail',
+                ['groupe' => $participant->getGroupeGn()?->getGroupe()->getId()]
+            ).'#groupe_lock';
 
             $message =
                 <<<HTML
@@ -4041,12 +4039,12 @@ class ParticipantController extends AbstractController
     /**
      * Choix d'un nouveau sortilège.
      */
-    #[Route('/participant/{participant}/sort/{sort}', name: 'participant.sort')]
-    public function sortAction(
+    #[Route('/participant/{participant}/sort/{sort}', name: 'participant.sort.choose', requirements: ['personnage' => Requirement::DIGITS])]
+    public function chooseSortAction(
         Request $request,
-        EntityManagerInterface $entityManager,
-        Participant $participant,
-        Sort $sort,
+        #[MapEntity] Participant $participant,
+        int $sort,
+        PersonnageService $personnageService,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -4067,15 +4065,15 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $sorts = $app['personnage.manager']->getAvailableSorts($personnage, $niveau);
+        $sorts = $personnageService->getAvailableSorts($personnage, $niveau);
 
-        $form = $this->createFormBuilder($participant)
-            ->add('sorts', 'entity', [
+        $form = $this->createFormBuilder()
+            ->add('sort', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Choisissez votre sort',
                 'multiple' => false,
                 'expanded' => true,
-                'class' => Sort::class,
+                'autocomplete' => true,
                 'choices' => $sorts,
                 'choice_label' => 'fullLabel',
             ])
@@ -4086,33 +4084,33 @@ class ParticipantController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            $sort = $data['sorts'];
+            $sort = $data['sort'];
 
             // Ajout du domaine de magie au personnage
             $personnage->addSort($sort);
-            $entityManager->persist($personnage);
+            $this->entityManager->persist($personnage);
 
             // suppression du trigger
             switch ($niveau) {
                 case 1:
                     $trigger = $personnage->getTrigger('SORT APPRENTI');
-                    $entityManager->remove($trigger);
+                    $this->entityManager->remove($trigger);
                     break;
                 case 2:
                     $trigger = $personnage->getTrigger('SORT INITIE');
-                    $entityManager->remove($trigger);
+                    $this->entityManager->remove($trigger);
                     break;
                 case 3:
                     $trigger = $personnage->getTrigger('SORT EXPERT');
-                    $entityManager->remove($trigger);
+                    $this->entityManager->remove($trigger);
                     break;
                 case 4:
                     $trigger = $personnage->getTrigger('SORT MAITRE');
-                    $entityManager->remove($trigger);
+                    $this->entityManager->remove($trigger);
                     break;
             }
 
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
@@ -4131,12 +4129,10 @@ class ParticipantController extends AbstractController
     /**
      * Detail d'un sort.
      */
-    #[Route('/participant/{participant}/sort/{sort}/detail', name: 'participant.sort.detail')]
+    #[Route('/participant/{participant}/sort/{sort}/detail', name: 'participant.sort.detail', requirements: ['personnage' => Requirement::DIGITS])]
     public function sortDetailAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        Participant $participant,
-        Sort $sort,
+        #[MapEntity] Participant $participant,
+        #[MapEntity] Sort $sort,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 

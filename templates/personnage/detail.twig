@@ -59,7 +59,7 @@
 								   title="Modifier votre personnage"
 								   href="{{ path('personnage.update', {'personnage': personnage.id}) }}"><i
 											class="fa fa-pencil" aria-hidden="true"></i></a>
-								{% if personnage.hasCompetence('Magie') %}
+								{% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::MAGIC')) %}
 									<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
 									   title="Découvrir la magie"
 									   href="{{ path('personnage.magie', {'personnage': personnage.id}) }}"><i

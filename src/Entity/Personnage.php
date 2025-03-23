@@ -1299,7 +1299,7 @@ class Personnage extends BasePersonnage implements \Stringable
     public function hasTrigger($tag): bool
     {
         foreach ($this->getPersonnageTriggers() as $personnageTrigger) {
-            if ($personnageTrigger->getTag() == $tag) {
+            if ($personnageTrigger->getTag() === $tag) {
                 return true;
             }
         }

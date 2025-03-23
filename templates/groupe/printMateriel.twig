@@ -50,7 +50,7 @@ body {
 		<li>Aucun matériel</li>
 	{% endif %}
 	</ul>
-	{% if participant.personnage.hasCompetence('Prêtrise') %}
+	{% if participant.personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD')) %}
 		{% set enoughReligion = 0 %}
 		{% for religion in participant.personnage.personnagesReligions %}
 			{% if religion.religionLevel.index >= 2 %}
@@ -82,7 +82,7 @@ body {
 	{% endif %}
 
 	{# Potions #}
-	{% if participant.personnage.hasCompetence('Alchimie') %}
+	{% if participant.personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
 		<strong>Potions :</strong>
 		<ul>
 		{% for potion in participant.potionsenveloppe %}
