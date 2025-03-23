@@ -490,9 +490,11 @@ class Personnage extends BasePersonnage implements \Stringable
     /**
      * Fourni le niveau d'une compétence d'un personnage.
      */
-    public function getCompetenceNiveau(string $label): int
+    public function getCompetenceNiveau(string|CompetenceFamilyType $label): int
     {
-        if ($type = CompetenceFamilyType::getFromLabel($label)) {
+        if ($label instanceof CompetenceFamilyType) {
+            $competences = $this->getCompetencesFromFamilyType($label);
+        } elseif ($type = CompetenceFamilyType::getFromLabel($label)) {
             $competences = $this->getCompetencesFromFamilyType($type);
         } else {
             $competences = $this->getCompetencesByFamilyLabel($label);

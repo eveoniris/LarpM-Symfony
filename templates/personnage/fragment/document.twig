@@ -1,6 +1,11 @@
 {% if css is not defined %}
     {% set css = 'well' %}
 {% endif %}
+
+{% if isAdmin is not defined %}
+    {% set isAdmin = false %}
+{% endif %}
+
 {% if personnage.documents|length > 0 %}
     <div class="{{ css }}">
         <div class="header">
@@ -8,9 +13,29 @@
         </div>
         <div class="list-group">
             {% for document in personnage.documents %}
-                <a class="list-group-item"
-                   href="{{ path('participant.document.detail',{'participant': participant.id, 'document' : document.id}) }}"><strong>{{ document.code }}</strong>
-                    - {{ document.titre }}</a>
+                <div class="list-group-item d-flex justify-content-between">
+                    <div>
+                        <a href="{{ path('participant.document.detail',{'participant': participant.id, 'document' : document.id}) }}"><strong>{{ document.code }}</strong>
+                            - {{ document.titre }}</a>
+                    </div>
+
+                    <div class="btn-group" role="group">
+                        {% if isAdmin %}
+                            <button class="btn btn-sm btn-secondary"
+                                    href="{{ path('document',{'participant':participant.id, 'document': document.id}) }}"
+                                    aria-expanded="false"
+                                    role="button">
+                                <i class="fa-solid fa-file"></i>
+                            </button>
+                        {% elseif participant is defined %}
+                            <button class="btn btn-sm btn-secondary"
+                                    href="{{ path('participant.document',{'document':document.id, 'participant': participant.id,'document': document.id}) }}"
+                                    role="button">
+                                <i class="fa-solid fa-file"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
             {% else %}
                 {% include '_partials/noResult.twig' with {'content' : 'Aucun', 'css' : 'w-100'} %}
             {% endfor %}

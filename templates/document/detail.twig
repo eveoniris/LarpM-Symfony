@@ -2,147 +2,200 @@
 
 {% block title %}Documents{% endblock title %}
 
+{% if isAdmin is not defined %}
+    {% set isAdmin = false %}
+{% endif %}
+
 {% block body %}
 
-    {% include '_partials/breadcrumb.twig' with {'items' :
-        [
-            {'name' : 'Liste des documents', 'route': path('document.list') },
-            {'name' : "Détail du document #{document.label}" }
-        ]
-    } %}
+  {% if participant is defined %}
+      {% include '_partials/breadcrumb.twig' with {'items' :
+          [
+              {'name' : participant.gn.label, 'route': path('gn.detail', {'gn': participant.gn.id}) },
+              {'name' : participant.personnage.nom, 'route': path('personnage.detail', {'personnage': participant.personnage.id}) },
+              {'name' : "Détail du document #{document.label}" }
+          ]
+      } %}
+  {% else %}
+      {% include '_partials/breadcrumb.twig' with {'items' :
+          [
+              {'name' : 'Liste des documents', 'route': path('document.list') },
+              {'name' : "Détail du document #{document.label}" }
+          ]
+      } %}
+  {% endif %}
 
-    <div class="well well-sm">
+<div class="well well-sm">
 
-        <div class="header">
-            <h5>Détail d'un document</h5>
-        </div>
+    <div class="header">
+        <h5>Détail d'un document</h5>
+    </div>
 
+    {% if isAdmin or participant is defined %}
         <div class="d-flex justify-content-end mb-2">
             <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
                 <div class="btn-group" role="group">
-                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Ajouter une document"
-                       href="{{ path('document.add') }}"><i
-                                class="fa fa-plus"></i> Ajouter</a>
-                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Télécharger"
-                       target="_blank" href="{{ path('document.get',{'document': document.id}) }}"><i
-                                class="fa fa-download"></i> Télécharger</a>
-                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Modifier"
-                       href="{{ path('document.update',{'document':document.id}) }}"><i
-                                class="fa fa-pencil"></i> Modifier</a>
-                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Supprimer"
-                       href="{{ path('document.delete',{'document':document.id}) }}"><i
-                                class="fa fa-eraser"></i> Supprimer</a>
+                    {% if isAdmin %}
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Ajouter une document"
+                           href="{{ path('document.add') }}"><i
+                                    class="fa fa-plus"></i> Ajouter</a>
+                        <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Télécharger"
+                           target="_blank" href="{{ path('document.get',{'document': document.id}) }}"><i
+                                    class="fa fa-download"></i> Télécharger</a>
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Modifier"
+                           href="{{ path('document.update',{'document':document.id}) }}"><i
+                                    class="fa fa-pencil"></i> Modifier</a>
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Supprimer"
+                           href="{{ path('document.delete',{'document':document.id}) }}"><i
+                                    class="fa fa-eraser"></i> Supprimer</a>
+                    {% elseif participant is defined %}
+                        <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Télécharger"
+                           target="_blank"
+                           href="{{ path('participant.document',{'document': document.id, 'participant': participant.id}) }}"><i
+                                    class="fa fa-download"></i> Télécharger</a>
+
+                    {% endif %}
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 
 
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card text-bg mb-3">
+    {% if isAdmin %}
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card text-bg mb-3">
 
-                <div class="header"><h5>{{ document.titre }}</h5></div>
-                <div class="card-body">
-                    <div class="card-text">
-                        {% if document.description %}
-                        {{ document.description|markdown_to_html }}
-                        {% else %}
-                            {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Aucune description n'a été faite."} %}
-                        {% endif %}
+                    <div class="header"><h5>{{ document.titre }}</h5></div>
+                    <div class="card-body">
+                        <div class="card-text">
+                            {% if document.description %}
+                                {{ document.description|markdown_to_html }}
+                            {% else %}
+                                {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Aucune description n'a été faite."} %}
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
+
             </div>
 
-        </div>
+            <div class="col-md-4">
+                <div class="card mb-2">
+                    <div class="header">
+                        <h5 class="m-0">Propriétés</h5>
+                    </div>
 
-        <div class="col-md-4">
-            <div class="card mb-2">
-                <div class="header">
-                    <h5 class="m-0">Propriétés</h5>
+                    <table class="table table-condensed table-striped table-bordered table-hover mb-0">
+                        <tbody>
+                        <tr>
+                            <th class="col-md-2" scope="row">Code</th>
+                            <td>{{ document.code }}</td>
+                        </tr>
+                        <tr>
+                            <th class="col-md-2" scope="row">Impression</th>
+                            <td>{% if document.impression %}Imprimé{% else %}Non imprimé{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Auteur</th>
+                            <td>{{ document.auteur|default('Aucun') }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Groupes</th>
+                            <td>
+                                {% for groupe in document.groupes %}
+                                    <a href="{{ path('groupe.detail',{'index':groupe.id}) }}">{{ groupe.nom }}</a>,
+                                {% else %}
+                                    Aucun
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Personnages</th>
+                            <td>
+                                {% for personnage in document.personnages %}
+                                    <a href="{{ path('personnage.detail',{'personnage':personnage.id}) }}">{% if personnage.vivant == 0 %}
+                                            <i class="fa-solid fa-skull"></i> {% endif %}{{ personnage.nom }}</a>,
+                                {% else %}
+                                    Aucun
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Lieux</th>
+                            <td>
+                                {{ document.lieus|join(', ')|default('Aucun') }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Créé par</th>
+                            <td>
+                                {{ document.user.userName }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row">Date de création</th>
+                            <td>
+                                {{ document.creationDate|date('Y-m-d') }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row">Date de modification</th>
+                            <td>
+                                {{ document.updateDate|date('Y-m-d') }}
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+
+
                 </div>
+            </div>
 
-                <table class="table table-condensed table-striped table-bordered table-hover mb-0">
-                    <tbody>
-                    <tr>
-                        <th class="col-md-2" scope="row">Code</th>
-                        <td>{{ document.code }}</td>
-                    </tr>
-                    <tr>
-                        <th class="col-md-2" scope="row">Impression</th>
-                        <td>{% if document.impression %}Imprimé{% else %}Non imprimé{% endif %}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Auteur</th>
-                        <td>{{ document.auteur|default('Aucun') }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Groupes</th>
-                        <td>
-                            {% for groupe in document.groupes %}
-                                <a href="{{ path('groupe.detail',{'index':groupe.id}) }}">{{ groupe.nom }}</a>,
-                            {% else %}
-                                Aucun
-                            {% endfor %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Personnages</th>
-                        <td>
-                            {% for personnage in document.personnages %}
-                                <a href="{{ path('personnage.detail',{'personnage':personnage.id}) }}">{% if personnage.vivant == 0 %}<i class="fa-solid fa-skull"></i> {% endif %}{{ personnage.nom }}</a>,
-                            {% else %}
-                                Aucun
-                            {% endfor %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Lieux</th>
-                        <td>
-                            {{ document.lieus|join(', ')|default('Aucun') }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Créé par</th>
-                        <td>
-                            {{ document.user.userName }}
-                        </td>
-                    </tr>
+        </div>
 
-                    <tr>
-                        <th scope="row">Date de création</th>
-                        <td>
-                            {{ document.creationDate|date('Y-m-d') }}
-                        </td>
-                    </tr>
+    {% else %}
 
-                    <tr>
-                        <th scope="row">Date de modification</th>
-                        <td>
-                            {{ document.updateDate|date('Y-m-d') }}
-                        </td>
-                    </tr>
-
-                    </tbody>
-                </table>
-
-
+        <div class="header"><h5>{{ document.titre }}</h5></div>
+        <div class="card-body">
+            <div class="card-text">
+                {% if document.description %}
+                    {{ document.description|markdown_to_html }}
+                {% else %}
+                    {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Aucune description n'a été faite."} %}
+                {% endif %}
             </div>
         </div>
 
-    </div>
+
+    {% endif %}
 
     <div class="card">
-        <object type="application/pdf" width="100%" height="800px"
-                data="{{ path('document.get',{'document': document.id}) }}">
-            <div class="well">
-                Si le PDF n'apparait pas correctement dans votre navigateur, <a
-                        href="{{ path('document.get',{'document': document.id}) }}">cliquez ici</a> pour télécharger
-                le fichier.
-            </div>
-        </object>
+        {% if isAdmin %}
+            <object type="application/pdf" width="100%" height="800px"
+                    data="{{ path('document.get',{'document': document.id}) }}">
+                <div class="well">
+                    Si le PDF n'apparait pas correctement dans votre navigateur, <a
+                            href="{{ path('document.get',{'document': document.id}) }}">cliquez ici</a> pour télécharger
+                    le fichier.
+                </div>
+            </object>
+        {% elseif participant is defined %}
+            <object type="application/pdf" width="100%" height="800px"
+                    data="{{ path('participant.document',{'document': document.id, 'participant': participant.id}) }}">
+                <div class="well">
+                    Si le PDF n'apparait pas correctement dans votre navigateur, <a
+                            href="{{ path('participant.document',{'participant': participant.id, 'document': document.id}) }}">cliquez
+                        ici</a> pour télécharger
+                    le fichier.
+                </div>
+            </object>
+        {% endif %}
     </div>
-{% endblock %}
+    {% endblock %}

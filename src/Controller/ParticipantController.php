@@ -762,6 +762,96 @@ class ParticipantController extends AbstractController
     }
 
     /**
+     * Choix d'un nouveau sortilège.
+     */
+    #[Route('/participant/{participant}/sort/{sort}', name: 'participant.sort.choose', requirements: ['personnage' => Requirement::DIGITS])]
+    public function chooseSortAction(
+        Request $request,
+        #[MapEntity] Participant $participant,
+        int $sort,
+        PersonnageService $personnageService,
+    ): RedirectResponse|Response {
+        $personnage = $participant->getPersonnage();
+
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        $niveau = $request->get('sort');
+
+        if (!$personnage->hasTrigger('SORT APPRENTI')
+            && !$personnage->hasTrigger('SORT INITIE')
+            && !$personnage->hasTrigger('SORT EXPERT')
+            && !$personnage->hasTrigger('SORT MAITRE')) {
+            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de sorts supplémentaires.');
+
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        $sorts = $personnageService->getAvailableSorts($personnage, $niveau);
+
+        $form = $this->createFormBuilder()
+            ->add('sort', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre sort',
+                'multiple' => false,
+                'expanded' => true,
+                'autocomplete' => true,
+                'choices' => $sorts,
+                'choice_label' => 'fullLabel',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider votre sort'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $sort = $data['sort'];
+
+            // Ajout du domaine de magie au personnage
+            $personnage->addSort($sort);
+            $this->entityManager->persist($personnage);
+
+            // suppression du trigger
+            switch ($niveau) {
+                case 1:
+                    $trigger = $personnage->getTrigger('SORT APPRENTI');
+                    $this->entityManager->remove($trigger);
+                    break;
+                case 2:
+                    $trigger = $personnage->getTrigger('SORT INITIE');
+                    $this->entityManager->remove($trigger);
+                    break;
+                case 3:
+                    $trigger = $personnage->getTrigger('SORT EXPERT');
+                    $this->entityManager->remove($trigger);
+                    break;
+                case 4:
+                    $trigger = $personnage->getTrigger('SORT MAITRE');
+                    $this->entityManager->remove($trigger);
+                    break;
+            }
+
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        return $this->render('personnage/sort.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
+            'participant' => $participant,
+            'sorts' => $sorts,
+            'niveau' => $niveau,
+        ]);
+    }
+
+    /**
      * Liste des classes pour le joueur.
      */
     #[Route('/participant/{participant}/classe/list', name: 'participant.classe.list')]
@@ -818,7 +908,7 @@ class ParticipantController extends AbstractController
         $choices = [];
         foreach ($availableCompetences as $competence) {
             $choices[$competence->getId()] = $competence->getLabel(
-            ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
+                ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
         }
 
         $form = $this->createFormBuilder($participant)
@@ -917,8 +1007,8 @@ class ParticipantController extends AbstractController
                     foreach ($religion->getSpheres() as $sphere) {
                         foreach ($sphere->getPrieres() as $priere) {
                             if ($priere->getNiveau() == $competence->getLevel()->getId() && !$personnage->hasPriere(
-                                $priere
-                            )) {
+                                    $priere
+                                )) {
                                 $priere->addPersonnage($personnage);
                                 $personnage->addPriere($priere);
                             }
@@ -1484,10 +1574,8 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/document/{document}/detail', name: 'participant.document.detail')]
     public function documentDetailAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        Participant $participant,
-        Document $document,
+        #[MapEntity] Participant $participant,
+        #[MapEntity] Document $document,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
         if (!$personnage) {
@@ -2295,6 +2383,28 @@ class ParticipantController extends AbstractController
         */
     }
 
+    #[Route('/participant/{participant}/document/{document}', name: 'participant.document')]
+    public function documentAction(
+        #[MapEntity] Participant $participant,
+        #[MapEntity] Document $document,
+    ): BinaryFileResponse|RedirectResponse {
+        $personnage = $participant->getPersonnage();
+
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        if (!$personnage->isKnownDocument($document)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette loi !');
+
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        return $this->sendDocument($document);
+    }
+
     #[Route('/participant/{participant}/loi/{loi}/document', name: 'participant.loi.document')]
     public function loiDocumentAction(
         Participant $participant,
@@ -2829,7 +2939,7 @@ class ParticipantController extends AbstractController
 
                 // Noblesse expert : +2 Renommee
                 if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel()->getId(
-                )) {
+                    )) {
                     $renomme_history = new RenommeHistory();
                     $renomme_history->setRenomme(2);
                     $renomme_history->setExplication('[Nouvelle participation] Noblesse Expert');
@@ -3051,7 +3161,10 @@ class ParticipantController extends AbstractController
             4 => 'ALCHIMIE MAITRE',
         ];
         foreach ($niveaux as $i => $tag) {
-            if ($niveau === $i && !$personnage->hasTrigger($tag)) {
+
+            if ($niveau === $i &&
+                (!$personnage->hasTrigger($tag) && $participant->hasPotionsDepartByLevel($i))
+            ) {
                 $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de potions supplémentaires.');
 
                 return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
@@ -3086,18 +3199,30 @@ class ParticipantController extends AbstractController
             switch ($niveau) {
                 case 1:
                     $trigger = $personnage->getTrigger('ALCHIMIE APPRENTI');
-                    $this->entityManager->remove($trigger);
+                    // May not come from trigger
+                    if ($trigger) {
+                        $this->entityManager->remove($trigger);
+                    }
                     break;
                 case 2:
                     $trigger = $personnage->getTrigger('ALCHIMIE INITIE');
-                    $this->entityManager->remove($trigger);
+                    // May not come from trigger
+                    if ($trigger) {
+                        $this->entityManager->remove($trigger);
+                    }
                     break;
                 case 3:
                     $trigger = $personnage->getTrigger('ALCHIMIE EXPERT');
-                    $this->entityManager->remove($trigger);
+                    // May not come from trigger
+                    if ($trigger) {
+                        $this->entityManager->remove($trigger);
+                    }
                     break;
                 case 4:
-                    $trigger = $personnage->getTrigger('ALCHIMIE MAITRE');
+                    // May not come from trigger
+                    if ($trigger) {
+                        $trigger = $personnage->getTrigger('ALCHIMIE MAITRE');
+                    }
                     $this->entityManager->remove($trigger);
                     break;
             }
@@ -3175,13 +3300,18 @@ class ParticipantController extends AbstractController
     }
 
     /**
+     * Affichage à destination d'un membre du groupe secondaire.
+     */
+    // TODO Fix access if SECRET and not a member !
+
+    /**
      * Choix d'une nouvelle potion de départ.
      */
-    #[Route('/participant/{participant}/potionDepart', name: 'participant.potionDepart')]
-    public function potiondepartAction(
+    #[Route('/participant/{participant}/potion/depart', name: 'participant.potion.depart')]
+    public function potionDepartAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Participant $participant,
+        #[MapEntity] Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -3201,13 +3331,12 @@ class ParticipantController extends AbstractController
 
         $potions = $personnage->getPotionsNiveau($niveau);
 
-        $form = $this->createFormBuilder($participant)
-            ->add('potions', 'entity', [
+        $form = $this->createFormBuilder()
+            ->add('potion', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Choisissez votre potion de départ',
                 'multiple' => false,
                 'expanded' => true,
-                'class' => Potion::class,
                 'choices' => $potions,
                 'choice_label' => 'fullLabel',
             ])
@@ -3218,13 +3347,13 @@ class ParticipantController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            $potion = $data['potions'];
+            $potion = $data['potion'];
 
             // Ajout de la potion au personnage
             $participant->addPotionDepart($potion);
-            $entityManager->persist($participant);
+            $this->entityManager->persist($participant);
 
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
@@ -3240,10 +3369,6 @@ class ParticipantController extends AbstractController
         ]);
     }
 
-    /**
-     * Affichage à destination d'un membre du groupe secondaire.
-     */
-    // TODO Fix access if SECRET and not a member !
     /**
      * Detail d'une priere.
      */
@@ -3472,9 +3597,9 @@ class ParticipantController extends AbstractController
 
         if (true === $participant->getGroupeGn()?->getGroupe()->getLock()) {
             $href = $this->generateUrl(
-                'groupe.detail',
-                ['groupe' => $participant->getGroupeGn()?->getGroupe()->getId()]
-            ).'#groupe_lock';
+                    'groupe.detail',
+                    ['groupe' => $participant->getGroupeGn()?->getGroupe()->getId()]
+                ).'#groupe_lock';
 
             $message =
                 <<<HTML
@@ -4033,96 +4158,6 @@ class ParticipantController extends AbstractController
 
         return $this->render('joueur/search.twig', [
             'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Choix d'un nouveau sortilège.
-     */
-    #[Route('/participant/{participant}/sort/{sort}', name: 'participant.sort.choose', requirements: ['personnage' => Requirement::DIGITS])]
-    public function chooseSortAction(
-        Request $request,
-        #[MapEntity] Participant $participant,
-        int $sort,
-        PersonnageService $personnageService,
-    ): RedirectResponse|Response {
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        $niveau = $request->get('sort');
-
-        if (!$personnage->hasTrigger('SORT APPRENTI')
-            && !$personnage->hasTrigger('SORT INITIE')
-            && !$personnage->hasTrigger('SORT EXPERT')
-            && !$personnage->hasTrigger('SORT MAITRE')) {
-            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de sorts supplémentaires.');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        $sorts = $personnageService->getAvailableSorts($personnage, $niveau);
-
-        $form = $this->createFormBuilder()
-            ->add('sort', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre sort',
-                'multiple' => false,
-                'expanded' => true,
-                'autocomplete' => true,
-                'choices' => $sorts,
-                'choice_label' => 'fullLabel',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre sort'])
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $sort = $data['sort'];
-
-            // Ajout du domaine de magie au personnage
-            $personnage->addSort($sort);
-            $this->entityManager->persist($personnage);
-
-            // suppression du trigger
-            switch ($niveau) {
-                case 1:
-                    $trigger = $personnage->getTrigger('SORT APPRENTI');
-                    $this->entityManager->remove($trigger);
-                    break;
-                case 2:
-                    $trigger = $personnage->getTrigger('SORT INITIE');
-                    $this->entityManager->remove($trigger);
-                    break;
-                case 3:
-                    $trigger = $personnage->getTrigger('SORT EXPERT');
-                    $this->entityManager->remove($trigger);
-                    break;
-                case 4:
-                    $trigger = $personnage->getTrigger('SORT MAITRE');
-                    $this->entityManager->remove($trigger);
-                    break;
-            }
-
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        return $this->render('personnage/sort.twig', [
-            'form' => $form->createView(),
-            'personnage' => $personnage,
-            'participant' => $participant,
-            'sorts' => $sorts,
-            'niveau' => $niveau,
         ]);
     }
 

@@ -7,9 +7,9 @@
         <h5>Choix à déterminer</h5>
     </div>
 
-    {% set hasOne = false %}
-    {% if personnage.personnageTriggers|length > 0 %}
-        {% set hasOne = true %}
+    {% if personnage.personnageTriggers|length > 0
+        or personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
+
         {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : 'Vos compétences vous permettent de choisir des connaissances supplémentaires' } %}
 
         <ul class="list-group">
@@ -84,36 +84,33 @@
                                 href="{{ path('participant.personnage.technologie', {'participant': participant.id}) }}">Choisir
                             une technologie</a></li>
                 {% endif %}
-            {% else %}
-                {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucun'} %}
-            {% endfor %}
-            {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
-                {% for niveau in 1..personnage.getCompetenceNiveau(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
-                    {% if not participant.hasPotionsDepartByLevel(niveau) %}
-                        <li class="list-group-item"><a
-                                    href="{{ path('participant.sort', {'sort' : niveau, 'participant' : participant.id}) }}">Choisir
-                                votre potion de niveau {{ niveau }} à ajouter à votre enveloppe de départ</a></li>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        </ul>
-    {% endif %}
 
-    {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
-        {% set hasOne = true %}
-        <ul class="list-group">
-            {% for niveau in 1..personnage.getCompetenceNiveau(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
-                {% if not participant.hasPotionsDepartByLevel(niveau) %}
-                    <li class="list-group-item"><a
-                                href="{{ path('participant.sort', {'sort' : niveau, 'participant' : participant.id}) }}">Choisir
-                            votre potion de niveau {{ niveau }} à ajouter à votre enveloppe de départ</a></li>
+                {% if loop.last and personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
+
+                    {% for niveau in 1..personnage.getCompetenceNiveau(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
+                        {% if not participant.hasPotionsDepartByLevel(niveau) %}
+                            <li class="list-group-item"><a
+                                        href="{{ path('participant.potion.depart', {'niveau' : niveau, 'participant' : participant.id}) }}">Choisir
+                                    votre potion de niveau {{ niveau }} à ajouter à votre enveloppe de départ</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                {% endif %}
+            {% else %}
+                {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
+                    {% for niveau in 1..personnage.getCompetenceNiveau(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
+                        {% if not participant.hasPotionsDepartByLevel(niveau) %}
+                            <li class="list-group-item"><a
+                                        href="{{ path('participant.potion.depart', {'niveau' : niveau, 'participant' : participant.id}) }}">Choisir
+                                    votre potion de niveau {{ niveau }} à ajouter à votre enveloppe de départ</a></li>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucun'} %}
                 {% endif %}
             {% endfor %}
         </ul>
     {% endif %}
 
-    {% if hasOne == false %}
-        {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucun'} %}
-    {% endif %}
 
 </div>
