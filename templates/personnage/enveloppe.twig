@@ -39,7 +39,7 @@
             <li>Aucun matériel</li>
         {% endif %}
     </ul>
-    {% if personnage.hasCompetence('Prêtrise') %}
+    {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD')) %}
         {% set enoughReligion = 0 %}
         {% for religion in personnage.personnagesReligions %}
             {% if religion.religionLevel.index >= 2 %}

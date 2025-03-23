@@ -52,7 +52,7 @@
                     {% endfor %}
                 </div>
 
-                {% if personnage.hasCompetence('Prêtrise') %}
+                {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD')) %}
                     <div class="list-group-item">
                         {% set enoughReligion = 0 %}
                         <h6 class="list-group-item-heading">Divinité principale :</h6>
