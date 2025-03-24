@@ -16,12 +16,14 @@ class CompetenceAttribute extends BaseCompetenceAttribute implements \ArrayAcces
         return 'CompetenceAttribute';
     }
 
-    public function offsetGet($offset): void
+    public function offsetGet($offset): mixed
     {
+        return null;
     }
 
-    public function offsetExists($offset): void
+    public function offsetExists($offset): bool
     {
+        return false;
     }
 
     public function offsetUnset($offset): void

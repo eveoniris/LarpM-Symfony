@@ -50,15 +50,15 @@ abstract class BaseBonus
     /**
      * @var Collection<int, Territoire>
      */
-    #[ORM\ManyToMany(targetEntity: OrigineBonus::class, mappedBy: 'bonus', cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: OrigineBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'origine_bonus')]
-    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: false)]
-    private Collection $origineBonus;
+    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: 'false')]
+    private Collection $originesBonus;
 
     /**
      * @var Collection<int, Personnage>|null
      */
-    #[ORM\ManyToMany(targetEntity: PersonnageBonus::class, mappedBy: 'bonus', cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: PersonnageBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'personnage_bonus')]
     #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: 'false')]
     private ?Collection $personnageBonus;
@@ -66,7 +66,7 @@ abstract class BaseBonus
     /**
      * @var Collection<int, GroupeBonus>|null
      */
-    #[ORM\ManyToMany(targetEntity: GroupeBonus::class, mappedBy: 'bonus', cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: GroupeBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'groupe_bonus')]
     #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: 'false')]
     private ?Collection $groupeBonus;
@@ -75,7 +75,7 @@ abstract class BaseBonus
     {
         $this->personnageBonus = new ArrayCollection();
         $this->groupeBonus = new ArrayCollection();
-        $this->origineBonus = new ArrayCollection();
+        $this->originesBonus = new ArrayCollection();
     }
 
     /**
@@ -83,13 +83,13 @@ abstract class BaseBonus
      */
     public function getOrigineBonus(): Collection
     {
-        return $this->origineBonus;
+        return $this->originesBonus;
     }
 
     public function addOrigineBonus(OrigineBonus $origine): static
     {
-        if (!$this->origineBonus->contains($origine)) {
-            $this->origineBonus->add($origine);
+        if (!$this->originesBonus->contains($origine)) {
+            $this->originesBonus->add($origine);
             $origine->setBonus($this);
         }
 
@@ -98,7 +98,7 @@ abstract class BaseBonus
 
     public function removeOrigineBonus(OrigineBonus $origine): static
     {
-        $this->origineBonus->removeElement($origine);
+        $this->originesBonus->removeElement($origine);
         if ($origine->getBonus() === $this) {
             $origine->setBonus(null);
         }

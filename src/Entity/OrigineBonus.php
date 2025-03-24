@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
-use App\Enum\Status;
 use App\Repository\OrigineBonusRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
 
 #[ORM\Index(columns: ['bonus_id'], name: 'fk_bonus_idx')]
 #[ORM\Index(columns: ['territoire_id'], name: 'fk_territoire_idx')]
@@ -20,11 +20,11 @@ class OrigineBonus
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Territoire::class, cascade: ['persist', 'remove'], inversedBy: 'originesBonus')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[JoinColumn(nullable: false)]
     private ?Territoire $territoire = null;
 
-    #[ORM\ManyToOne(targetEntity: Bonus::class, cascade: ['persist', 'remove'], inversedBy: 'territoireBonus')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Bonus::class, cascade: ['persist', 'remove'], inversedBy: 'originesBonus')]
+    #[JoinColumn(nullable: false)]
     private ?Bonus $bonus = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
