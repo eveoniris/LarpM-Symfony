@@ -12,7 +12,7 @@
 
 {% if isAdmin %}
     {% set breadcrumb = breadcrumb|merge([{'name' : 'Liste des personnages', 'route': path('personnage.list') }]) %}
-{% elseif participant is defined %}
+{% elseif participant is defined and participant.gn is defined %}
     {% set breadcrumb = breadcrumb|merge([{'name' : participant.gn.label, 'route': path('gn.detail', {'gn' : participant.gn.id}) }]) %}
 {% endif %}
 {% set breadcrumb = breadcrumb|merge([{'name' : "Detail de #{personnage.nom}", 'route': path('personnage.detail', {'personnage' : personnage.id, 'tab': tab})}]) %}

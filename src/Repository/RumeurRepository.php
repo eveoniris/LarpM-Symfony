@@ -4,29 +4,25 @@ namespace App\Repository;
 
 use App\Entity\Rumeur;
 use App\Service\OrderBy;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 
 class RumeurRepository extends BaseRepository
 {
     /**
-     * Recherche d'une liste d'rumeur.
-     *
-     * @param unknown $type
-     * @param unknown $value
-     * @param unknown $limit
-     * @param unknown $offset
+     * Recherche d'une liste de rumeur.
      */
-    public function findList($type, $value, array $order = [], int $limit = 0, int $offset = 20)
+    public function findList($type, $value, array $order = [], int $limit = 0, int $offset = 20): Query
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('i');
         $qb->from(Rumeur::class, 'i');
-        if ($type && $value && 'text' === $type) {
+        if ($value && 'text' === $type) {
             $qb->andWhere('i.text LIKE :value');
             $qb->setParameter('value', '%'.$value.'%');
         }
-        if ($type && $value && 'territoire' === $type) {
+        if ($value && 'territoire' === $type) {
             $qb->join('i.territoire', 't');
             $qb->andWhere('t.nom LIKE :value');
             $qb->setParameter('value', '%'.$value.'%');
@@ -40,16 +36,16 @@ class RumeurRepository extends BaseRepository
     }
 
     /**
-     * Trouve le nombre d'rumeur correspondant aux critères de recherche.
+     * Trouve le nombre de rumeurs correspondant aux critères de recherche.
      */
-    public function findCount($type, ?string $value)
+    public function findCount($type, ?string $value): float|bool|int|string|null
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select($qb->expr()->count('r'));
         $qb->from(Rumeur::class, 'r');
 
-        if ($type && $value && 'text' === $type) {
+        if ($value && 'text' === $type) {
             $qb->andWhere('r.text LIKE :value');
             $qb->setParameter('value', '%'.$value.'%');
         }
@@ -62,7 +58,7 @@ class RumeurRepository extends BaseRepository
         string|array|null $attributes = self::SEARCH_NOONE,
         ?OrderBy $orderBy = null,
         ?string $alias = null,
-        ?QueryBuilder $query = null
+        ?QueryBuilder $query = null,
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
