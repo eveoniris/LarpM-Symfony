@@ -11,6 +11,7 @@ use App\Service\FileUploader;
 use App\Trait\EntityFileUploadTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Imagine\Gd\Imagine;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -34,6 +35,24 @@ class Personnage extends BasePersonnage implements \Stringable
     protected bool $isCreation = false;
 
     /**
+     * @var Collection<int, Espece>
+     */
+    #[ORM\ManyToMany(targetEntity: Espece::class, mappedBy: 'personnages')]
+    private Collection $especes;
+
+    /**
+     * @var Collection<int, PersonnageApprentissage>
+     */
+    #[ORM\OneToMany(mappedBy: 'personnage', targetEntity: PersonnageApprentissage::class)]
+    private Collection $apprentissages;
+
+    /**
+     * @var Collection<int, PersonnageApprentissage>
+     */
+    #[ORM\OneToMany(mappedBy: 'enseignant', targetEntity: PersonnageApprentissage::class)]
+    private Collection $apprentissageEnseignants;
+
+    /**
      * Constructeur.
      */
     public function __construct()
@@ -42,6 +61,9 @@ class Personnage extends BasePersonnage implements \Stringable
         $this->setXp(0);
         $this->setVivant(true);
         $this->initFile();
+        $this->especes = new ArrayCollection();
+        $this->apprentissages = new ArrayCollection();
+        $this->apprentissageEnseignants = new ArrayCollection();
     }
 
     public function initFile(): self
@@ -1660,5 +1682,92 @@ class Personnage extends BasePersonnage implements \Stringable
     public function getPrintLabel(): ?string
     {
         return (new AsciiSlugger())->slug($this->getLabel());
+    }
+
+    /**
+     * @return Collection<int, Espece>
+     */
+    public function getEspeces(): Collection
+    {
+        return $this->especes;
+    }
+
+    public function addEspece(Espece $espece): static
+    {
+        if (!$this->especes->contains($espece)) {
+            $this->especes->add($espece);
+            $espece->addPersonnage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEspece(Espece $espece): static
+    {
+        if ($this->especes->removeElement($espece)) {
+            $espece->removePersonnage($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PersonnageApprentissage>
+     */
+    public function getApprentissages(): Collection
+    {
+        return $this->apprentissages;
+    }
+
+    public function addApprentissage(PersonnageApprentissage $apprentissage): static
+    {
+        if (!$this->apprentissages->contains($apprentissage)) {
+            $this->apprentissages->add($apprentissage);
+            $apprentissage->setPersonnage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApprentissage(PersonnageApprentissage $apprentissage): static
+    {
+        if ($this->apprentissages->removeElement($apprentissage)) {
+            // set the owning side to null (unless already changed)
+            if ($apprentissage->getPersonnage() === $this) {
+                $apprentissage->setPersonnage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PersonnageApprentissage>
+     */
+    public function getapprentissageEnseignants(): Collection
+    {
+        return $this->apprentissageEnseignants;
+    }
+
+    public function addPersonnageApprentissage(PersonnageApprentissage $personnageApprentissage): static
+    {
+        if (!$this->apprentissageEnseignants->contains($personnageApprentissage)) {
+            $this->apprentissageEnseignants->add($personnageApprentissage);
+            $personnageApprentissage->setEnseignant($this);
+        }
+
+        return $this;
+    }
+
+    public function removePersonnageApprentissage(PersonnageApprentissage $personnageApprentissage): static
+    {
+        if ($this->apprentissageEnseignants->removeElement($personnageApprentissage)) {
+            // set the owning side to null (unless already changed)
+            if ($personnageApprentissage->getEnseignant() === $this) {
+                $personnageApprentissage->setEnseignant(null);
+            }
+        }
+
+        return $this;
     }
 }
