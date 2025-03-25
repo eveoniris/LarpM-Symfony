@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use App\Repository\BonusRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BonusRepository::class)]
@@ -12,6 +14,18 @@ class Bonus extends BaseBonus
 {
     // Pour faire voyager une éventuelle source
     private string $sourceTmp = '';
+
+    /**
+     * @var Collection<int, Merveille>
+     */
+    #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: Merveille::class)]
+    private Collection $merveilles;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->merveilles = new ArrayCollection();
+    }
 
     public function getConditions(?array $row = null): array
     {
@@ -196,5 +210,35 @@ class Bonus extends BaseBonus
     public function isXp(): bool
     {
         return BonusType::XP->value === $this->getType()->value;
+    }
+
+    /**
+     * @return Collection<int, Merveille>
+     */
+    public function getMerveilles(): Collection
+    {
+        return $this->merveilles;
+    }
+
+    public function addMerveille(Merveille $merveille): static
+    {
+        if (!$this->merveilles->contains($merveille)) {
+            $this->merveilles->add($merveille);
+            $merveille->setBonus($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMerveille(Merveille $merveille): static
+    {
+        if ($this->merveilles->removeElement($merveille)) {
+            // set the owning side to null (unless already changed)
+            if ($merveille->getBonus() === $this) {
+                $merveille->setBonus(null);
+            }
+        }
+
+        return $this;
     }
 }

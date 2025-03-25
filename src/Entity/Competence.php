@@ -16,6 +16,12 @@ class Competence extends BaseCompetence implements \Stringable
 {
     use EntityFileUploadTrait;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $secret = null;
+
+    #[ORM\ManyToOne(inversedBy: 'competence')]
+    private ?PersonnageApprentissage $personnageApprentissage = null;
+
     public function __construct()
     {
         parent::__construct();
@@ -196,5 +202,29 @@ class Competence extends BaseCompetence implements \Stringable
         $this->setDocumentUrl($fileUploader->getStoredFileName());
 
         return $fileUploader;
+    }
+
+    public function isSecret(): ?bool
+    {
+        return $this->secret;
+    }
+
+    public function setSecret(?bool $secret): static
+    {
+        $this->secret = $secret;
+
+        return $this;
+    }
+
+    public function getPersonnageApprentissage(): ?PersonnageApprentissage
+    {
+        return $this->personnageApprentissage;
+    }
+
+    public function setPersonnageApprentissage(?PersonnageApprentissage $personnageApprentissage): static
+    {
+        $this->personnageApprentissage = $personnageApprentissage;
+
+        return $this;
     }
 }
