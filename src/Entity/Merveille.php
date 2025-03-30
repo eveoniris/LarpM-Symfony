@@ -30,7 +30,7 @@ class Merveille
     private ?string $statut = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_creatation = null;
+    private ?\DateTimeInterface $date_creation = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $date_destruction = null;
@@ -53,6 +53,11 @@ class Merveille
         return $this;
     }
 
+    public function getLabel(): string
+    {
+        return $this->getNom() ?? '';
+    }
+
     public function getNom(): ?string
     {
         return $this->nom;
@@ -67,7 +72,7 @@ class Merveille
 
     public function getDescription(): ?string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     public function setDescription(?string $description): static
@@ -79,7 +84,7 @@ class Merveille
 
     public function getDescriptionScenariste(): ?string
     {
-        return $this->description_scenariste;
+        return $this->description_scenariste ?? '';
     }
 
     public function setDescriptionScenariste(?string $description_scenariste): static
@@ -91,7 +96,7 @@ class Merveille
 
     public function getDescriptionCartographe(): ?string
     {
-        return $this->description_cartographe;
+        return $this->description_cartographe ?? '';
     }
 
     public function setDescriptionCartographe(?string $description_cartographe): static
@@ -103,7 +108,7 @@ class Merveille
 
     public function getStatut(): ?string
     {
-        return $this->statut;
+        return $this->statut ?? '';
     }
 
     public function setStatut(?string $statut): static
@@ -113,14 +118,14 @@ class Merveille
         return $this;
     }
 
-    public function getDateCreatation(): ?\DateTimeInterface
+    public function getDateCreation(): ?\DateTimeInterface
     {
-        return $this->date_creatation;
+        return $this->date_creation;
     }
 
-    public function setDateCreatation(?\DateTimeInterface $date_creatation): static
+    public function setDateCreation(?\DateTimeInterface $date_creation): static
     {
-        $this->date_creatation = $date_creatation;
+        $this->date_creation = $date_creation;
 
         return $this;
     }

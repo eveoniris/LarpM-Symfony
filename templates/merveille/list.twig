@@ -1,0 +1,82 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Merveille{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des merveilles' },
+        ]
+    } %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Liste des merveilles</h5>
+        </div>
+
+        {% include '_partials/formListSearch.twig' with
+            {
+                'canAdd': {'title': 'Ajouter une merveille', 'path': path('merveille.add')},
+                'actionPath' : path('merveille.list')
+            } %}
+    </div>
+
+    {% include '_partials/pagination.html.twig' %}
+
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'merveille.list', 'rows': [
+            {'name' : 'Id', 'field' : 'id', 'css' : 'text-center'},
+            {'name' : 'Nom', 'field' : 'nom', 'css' : 'text-center'},
+            {'name' : 'Description', 'field' : 'description'},
+            {'name' : 'Bonus', 'field' : 'bonus'},
+            {'name' : 'statut', 'field': 'statut', 'css' : 'text-center'},
+            {'name' : 'Actions', 'css' : 'text-center'},
+        ]} %}
+        <tbody>
+        {% for merveille in paginator %}
+            <tr>
+                <td class="text-center align-middle">
+                   {{ merveille.id|highlight(pagerService.searchValue) }}
+                </td>
+                <td class="text-center align-middle">{{ merveille.nom|highlight(pagerService.searchValue) }}</td>
+                <td>
+                    {{ merveille.description|markdown_to_html|highlight(pagerService.searchValue) }}
+                </td>
+                <td>
+                    <strong>{{ merveille.bonus.titre|markdown_to_html|highlight(pagerService.searchValue) }}:&nbsp;</strong>
+                    {{ merveille.bonus.description|markdown_to_html|highlight(pagerService.searchValue) }}
+                </td>
+                <td>
+                    {{ merveille.statut|highlight(pagerService.searchValue) }}
+                </td>
+                <td>
+                    <div class="btn-toolbar pull-right" role="toolbar">
+                        <div class="btn-group-vertical" role="group">
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Modifier"
+                               href="{{ path('merveille.update',{'merveille':merveille.id}) }}"><i
+                                        class="fa fa-pencil"></i> Modifier</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Détail"
+                               href="{{ path('merveille.detail',{'merveille':merveille.id}) }}"><i
+                                        class="fa fa-eye"></i> Detail</a>
+                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Supprimer"
+                               href="{{ path('merveille.delete',{'merveille':merveille.id}) }}"><i
+                                        class="fa fa-eraser"></i> Supprimer</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            {% include '_partials/noResultTableRow.twig' %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include '_partials/pagination.html.twig' %}
+
+
+{% endblock %}

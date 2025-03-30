@@ -53,10 +53,6 @@ abstract class BaseItem
     #[Column(type: Types::INTEGER)]
     protected int $quantite = 0;
 
-    #[ORM\ManyToOne(targetEntity: Qualite::class, inversedBy: 'items')]
-    #[ORM\JoinColumn(name: 'qualite_id', referencedColumnName: 'id')]
-    protected Quality $qualite;
-
     #[ORM\ManyToOne(targetEntity: Quality::class, inversedBy: 'items')]
     #[ORM\JoinColumn(name: 'quality_id', referencedColumnName: 'id')]
     protected Quality $quality;

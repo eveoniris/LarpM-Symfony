@@ -1,0 +1,93 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Merveille{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des merveilles', 'route': path('merveille.list') },
+            {'name' : 'Détail d\'une merveille' }
+        ]
+    } %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Détail d'une merveille</h5>
+        </div>
+
+        <div class="d-flex justify-content-end">
+
+            <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Ajouter"
+                       href="{{ path('merveille.add') }}"><i
+                                class="fa fa-plus"></i> Ajouter</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier"
+                       href="{{ path('merveille.update',{'merveille':merveille.id}) }}"><i
+                                class="fa fa-pencil"></i> Modifier</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Supprimer"
+                       href="{{ path('merveille.delete',{'merveille':merveille.id}) }}"><i
+                                class="fa fa-eraser"></i> Supprimer</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+                <div class="list-group">
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Nom</div>
+                        <div class="list-group-item-text ps-1">{{ merveille.nom }}</div>
+                    </div>
+
+                    <div class="list-group-item mb-4">
+                        <div class="list-group-item-heading fw-bold mb-1">Description</div>
+                        <div class="list-group-item-text ps-1">{{ merveille.description|markdown_to_html }}</div>
+                    </div>
+
+                    <div class="list-group-item mb-4">
+                        <div class="list-group-item-heading fw-bold mb-1">Description scénariste</div>
+                        <div class="list-group-item-text ps-1">{{ merveille.descriptionScenariste|markdown_to_html }}</div>
+                    </div>
+
+                    <div class="list-group-item mb-4">
+                        <div class="list-group-item-heading fw-bold mb-1">Description carthographe</div>
+                        <div class="list-group-item-text ps-1">{{ merveille.descriptionCartographe|markdown_to_html }}</div>
+                    </div>
+
+                    <div class="list-group-item mb-4">
+                        <div class="list-group-item-heading fw-bold mb-1">Statut</div>
+                        <div class="list-group-item-text ps-1">{{ merveille.statut }}</div>
+                    </div>
+
+                    <div class="list-group-item mb-4">
+                        <div class="list-group-item-heading fw-bold mb-1">Date création</div>
+                        <div class="list-group-item-text ps-1">{{ merveille.dateCreation }}</div>
+                    </div>
+
+                    <div class="list-group-item mb-4">
+                        <div class="list-group-item-heading fw-bold mb-1">Date destruction</div>
+                        <div class="list-group-item-text ps-1">{{ merveille.dateDestruction }}</div>
+                    </div>
+
+                    <div class="list-group-item mb-4">
+                        <div class="list-group-item-heading fw-bold mb-1">Bonus</div>
+                        <div class="list-group-item-text ps-1">
+                            <a href="{{ path('bonus.detail',{'bonus': merveille.bonus.id}) }}">{{ merveille.bonus.titre|markdown_to_html }}</a><br/>
+                            {{ merveille.description|markdown_to_html }}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock body %}
