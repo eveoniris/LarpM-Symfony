@@ -32,13 +32,14 @@
             {'name' : 'Description', 'field' : 'description'},
             {'name' : 'Bonus', 'field' : 'bonus'},
             {'name' : 'statut', 'field': 'statut', 'css' : 'text-center'},
+            {'name' : 'territoire', 'field': 'territoire', 'css' : 'text-center'},
             {'name' : 'Actions', 'css' : 'text-center'},
         ]} %}
         <tbody>
         {% for merveille in paginator %}
             <tr>
                 <td class="text-center align-middle col-1">
-                   {{ merveille.id|highlight(pagerService.searchValue) }}
+                    {{ merveille.id|highlight(pagerService.searchValue) }}
                 </td>
                 <td class="text-center align-middle col-1">{{ merveille.nom|highlight(pagerService.searchValue) }}</td>
                 <td>
@@ -46,14 +47,21 @@
                 </td>
                 <td>
                     {% if merveille.bonus.titre is defined %}
-                    <strong>{{ merveille.bonus.titre|highlight(pagerService.searchValue) }}</strong><br />
-                    {{ merveille.bonus.description|markdown_to_html|highlight(pagerService.searchValue) }}
+                        <strong>{{ merveille.bonus.titre|highlight(pagerService.searchValue) }}</strong><br/>
+                        {{ merveille.bonus.description|markdown_to_html|highlight(pagerService.searchValue) }}
                     {% else %}
                         aucun
                     {% endif %}
                 </td>
-                <td class="col-1">
+                <td class="col-1 text-center">
                     {{ merveille.statut|highlight(pagerService.searchValue) }}
+                </td>
+                <td class="col-1 text-center">
+                    {% if merveille.territoire.nom is defined %}
+                        {{ merveille.territoire.nom|highlight(pagerService.searchValue) }}
+                    {% else %}
+                        aucun
+                    {% endif %}
                 </td>
                 <td class="col-1">
                     <div class="btn-toolbar pull-right" role="toolbar">

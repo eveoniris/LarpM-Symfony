@@ -1,10 +1,10 @@
 <?php
 
-
 namespace App\Form\Territoire;
 
 use App\Entity\Appelation;
 use App\Entity\Langue;
+use App\Entity\Merveille;
 use App\Entity\Religion;
 use App\Entity\Ressource;
 use App\Entity\Territoire;
@@ -20,11 +20,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\TerritoireForm.
- *
- * @author kevin
- */
 class TerritoireForm extends AbstractType
 {
     /**
@@ -206,13 +201,23 @@ class TerritoireForm extends AbstractType
                 'label' => 'Ce territoire dépend de ',
                 'class' => Territoire::class,
                 'choice_label' => 'nom',
-                'empty_data' => 'Aucun, territoire indépendant',
-                //'empty_data' => null,
+                // 'empty_data' => 'Aucun, territoire indépendant',
+                'empty_data' => null,
                 'mapped' => true,
                 'query_builder' => static function (TerritoireRepository $tr) {
                     return $tr->createQueryBuilder('tr')->orderBy('tr.nom', 'ASC');
                 },
             ]);
+        /* Merveille are added from MerveilleForm
+        ->add('merveilles', EntityType::class, [
+            'required' => false,
+            'label' => 'Merveille',
+            'class' => Merveille::class,
+            'multiple' => true,
+            'expanded' => true,
+            'mapped' => true,
+            'choice_label' => 'label',
+        ])*/
     }
 
     /**

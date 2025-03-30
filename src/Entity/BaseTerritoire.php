@@ -222,6 +222,9 @@ abstract class BaseTerritoire
     #[ORM\OrderBy(['id' => 'DESC'])]
     private ?Collection $originesBonus;
 
+    #[OneToMany(mappedBy: 'territoire', targetEntity: Merveille::class)]
+    private Collection $merveilles;
+
     public function __construct()
     {
         $this->chronologies = new ArrayCollection();
@@ -240,6 +243,7 @@ abstract class BaseTerritoire
         $this->langues = new ArrayCollection();
         $this->religions = new ArrayCollection();
         $this->originesBonus = new ArrayCollection();
+        $this->merveilles = new ArrayCollection();
     }
 
     /**
@@ -317,7 +321,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of politique.
      */
-    public function setPolitique(string $politique): static
+    public function setPolitique(?string $politique): static
     {
         $this->politique = $politique;
 
@@ -335,7 +339,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of dirigeant.
      */
-    public function setDirigeant(string $dirigeant): static
+    public function setDirigeant(?string $dirigeant): static
     {
         $this->dirigeant = $dirigeant;
 
@@ -353,7 +357,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of population.
      */
-    public function setPopulation(string $population)
+    public function setPopulation(?string $population)
     {
         $this->population = $population;
 
@@ -371,7 +375,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of symbole.
      */
-    public function setSymbole(string $symbole): static
+    public function setSymbole(?string $symbole): static
     {
         $this->symbole = $symbole;
 
@@ -389,7 +393,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of tech_level.
      */
-    public function setTechLevel(string $tech_level): static
+    public function setTechLevel(?string $tech_level): static
     {
         $this->tech_level = $tech_level;
 
@@ -407,7 +411,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of type_racial.
      */
-    public function setTypeRacial(string $type_racial): static
+    public function setTypeRacial(?string $type_racial): static
     {
         $this->type_racial = $type_racial;
 
@@ -425,7 +429,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of inspiration.
      */
-    public function setInspiration(string $inspiration): static
+    public function setInspiration(?string $inspiration): static
     {
         $this->inspiration = $inspiration;
 
@@ -443,7 +447,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of armes_predilection.
      */
-    public function setArmesPredilection(string $armes_predilection): static
+    public function setArmesPredilection(?string $armes_predilection): static
     {
         $this->armes_predilection = $armes_predilection;
 
@@ -461,7 +465,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of vetements.
      */
-    public function setVetements(string $vetements): static
+    public function setVetements(?string $vetements): static
     {
         $this->vetements = $vetements;
 
@@ -479,7 +483,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of noms_masculin.
      */
-    public function setNomsMasculin(string $noms_masculin): static
+    public function setNomsMasculin(?string $noms_masculin): static
     {
         $this->noms_masculin = $noms_masculin;
 
@@ -497,7 +501,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of noms_feminin.
      */
-    public function setNomsFeminin(string $noms_feminin): static
+    public function setNomsFeminin(?string $noms_feminin): static
     {
         $this->noms_feminin = $noms_feminin;
 
@@ -515,7 +519,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of frontieres.
      */
-    public function setFrontieres(string $frontieres): static
+    public function setFrontieres(?string $frontieres): static
     {
         $this->frontieres = $frontieres;
 
@@ -627,7 +631,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of description_secrete.
      */
-    public function setDescriptionSecrete(string $description_secrete): static
+    public function setDescriptionSecrete(?string $description_secrete): static
     {
         $this->description_secrete = $description_secrete;
 
@@ -645,7 +649,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of statut.
      */
-    public function setStatut(string $statut): static
+    public function setStatut(?string $statut): static
     {
         $this->statut = $statut;
 
@@ -1208,6 +1212,36 @@ abstract class BaseTerritoire
             // set the owning side to null (unless already changed)
             if ($origineBonus->getTerritoire() === $this) {
                 $origineBonus->setTerritoire(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Merveille>
+     */
+    public function getMerveilles(): Collection
+    {
+        return $this->merveilles;
+    }
+
+    public function addMerveille(Merveille $merveille): static
+    {
+        if (!$this->merveilles->contains($merveille)) {
+            $this->merveilles->add($merveille);
+            $merveille->setTerritoire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMerveille(Merveille $merveille): static
+    {
+        if ($this->merveilles->removeElement($merveille)) {
+            // set the owning side to null (unless already changed)
+            if ($merveille->getTerritoire() === $this) {
+                $merveille->setTerritoire(null);
             }
         }
 
