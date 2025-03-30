@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use _PHPStan_c875e8309\Nette\Utils\DateTime;
 use App\Entity\Document;
+use App\Entity\LogAction;
 use App\Enum\FolderType;
 use App\Form\DeleteForm;
 use App\Repository\BaseRepository;
@@ -40,8 +42,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected LoggerInterface $logger,
         protected PersonnageService $personnageService,
         // Cache $cache, // TODO : later
-    )
-    {
+    ) {
     }
 
     protected function ListSearchForm(): FormInterface
@@ -104,7 +105,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 $currentParameters
             );
 
-            if (false !== (bool)$request->get('playerView')) {
+            if (false !== (bool) $request->get('playerView')) {
                 return parent::render('admin/'.$view, $parameters, $response);
             }
         }
@@ -123,8 +124,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string $defOrderDir = 'ASC',
         ?string $alias = null,
         ?array $allowedFields = null, // TODO: check SF security Form on Self Entity's attributes
-    ): array
-    {
+    ): array {
         $request = $this->requestStack?->getCurrentRequest();
         if (!$request) {
             return [];
@@ -181,14 +181,12 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $routes['root'] = $root; // ensure if from other
         } catch (\ErrorException $e) {
             $this->logger->error($e);
-            throw new \RuntimeException(
-                <<<'EOF'
+            throw new \RuntimeException(<<<'EOF'
                 Unable to get the root route.
                 If you do not define a main route as class attributes (ie: #[Route('/groupe', name: 'groupe.')]), 
                 You may need to provide the argument $routes['root'] from the calling methods.
                 Sample: ['root' => 'groupe.'] from GroupeController::handleCreateOrUpdate()
-                EOF
-            );
+                EOF);
         }
 
         $routes['add'] ??= $root.'add';
@@ -223,9 +221,6 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             }
             $breadcrumb[] = ['name' => $msg['title']];
         }
-
-        // Todo add an action LOG (who/when/what)
-
         if ($isNew) {
             $form->add(
                 'save',
@@ -274,20 +269,32 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 return $this->redirectToRoute($routes['add']);
             }
 
+            $logAction = new LogAction();
+            $logAction->setDate(new DateTime());
+            $logAction->setUser($this->getUser());
+            $logAction->setType('entity');
+
             if ($form->has('delete') && $form->get('delete')->isClicked()) {
+                $logAction->setType('entity_delete');
                 $this->entityManager->remove($entity);
                 $this->addFlash('success', $msg['entity_deleted']);
             } else {
                 $this->entityManager->persist($entity);
 
                 if ($form->has('update') && $form->get('update')->isClicked()) {
+                    $logAction->setType('entity_update');
                     $this->addFlash('success', $msg['entity_updated']);
                 }
 
                 if ($form->has('save') && $form->get('save')->isClicked()) {
+                    $logAction->setType('entity_add');
                     $this->addFlash('success', $msg['entity_added']);
                 }
             }
+
+            $entityData = ['class' => $entity::class, 'data' => (array) $entity];
+            $logAction->setData($entityData);
+            $this->entityManager->persist($logAction);
 
             $this->entityManager->flush();
 
@@ -357,7 +364,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     protected function sendDocument(
         mixed $entity,
         ?Document $document = null,
-        bool $hasAttachement = true
+        bool $hasAttachement = true,
     ): BinaryFileResponse {
         // TODO check usage of entity Document
 

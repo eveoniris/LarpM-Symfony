@@ -165,4 +165,9 @@ class Merveille
 
         return $this;
     }
+
+    public function isActive(): bool
+    {
+        return 'active' === $this->statut || null !== $this->getDateDestruction();
+    }
 }
