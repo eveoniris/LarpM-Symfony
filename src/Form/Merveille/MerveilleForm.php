@@ -4,6 +4,7 @@ namespace App\Form\Merveille;
 
 use App\Entity\Bonus;
 use App\Entity\Merveille;
+use App\Entity\Territoire;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -74,6 +75,13 @@ class MerveilleForm extends AbstractType
                 'autocomplete' => true,
                 'label_html' => true,
                 'choice_label' => static fn (Bonus $bonus, $currentKey) => $bonus->getTitre().' - '.$bonus->getDescription(),
+            ])
+            ->add('territoire', EntityType::class, [
+                'required' => false,
+                'label' => 'Territoire',
+                'class' => Territoire::class,
+                'autocomplete' => true,
+                'choice_label' => 'nom',
             ]);
     }
 

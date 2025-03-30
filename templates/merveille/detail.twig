@@ -89,6 +89,17 @@
                         </div>
                     </div>
 
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Territoire</div>
+                        <div class="list-group-item-text ps-1">
+                            {% if merveille.territoire.nom is defined %}
+                                <a href="{{ path('territoire.detail',{'territoire': merveille.territoire.id}) }}">{{ merveille.territoire.nom }}</a><br/>
+                            {% else %}
+                                Aucun
+                            {% endif %}
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

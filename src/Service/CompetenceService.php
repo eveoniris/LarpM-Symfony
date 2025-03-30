@@ -198,8 +198,10 @@ class CompetenceService
         $count = 0;
 
         foreach ($this->getPersonnage()?->getLastParticipant()?->getGroupe()?->getTerritoires() as $territoire) {
+
             /** @var Territoire $territoire */
             foreach ($territoire->getMerveilles() as $merveille) {
+
                 if (!$merveille->isActive()) {
                     continue;
                 }

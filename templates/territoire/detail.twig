@@ -267,6 +267,35 @@
                         </div>
                     </div>
 
+                    <div class="list-group-item">
+                        <h4 class="list-group-item-heading">Liste des merveilles rattachées à ce territoire
+                            ({{ territoire.merveilles|length }} merveilles)</h4>
+                        <div class="list-group-item-text">
+                            <ul>
+                                {% for merveille in territoire.merveilles %}
+                                    <li>
+                                        <strong>
+                                            {% if isAdmin %}
+                                                <a href="{{ path('merveille.detail',{'merveille': merveille.id}) }}">{{ merveille.label }}</a>
+                                            {% else %}
+                                                {{ merveille.label }}
+                                            {% endif %}
+                                        </strong>
+                                        <br/>
+                                        <div>
+                                            {{ merveille.description|markdown_to_html }}
+                                            {% if isAdmin %}
+                                                <hr>
+                                                <h6>Description scénariste</h6>
+                                                {{ merveille.descriptionScenariste|markdown_to_html }}
+                                            {% endif %}
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
                     {% if isAdmin %}
                         <div class="list-group-item">
                             <div class="btn-group" role="group" aria-label="...">

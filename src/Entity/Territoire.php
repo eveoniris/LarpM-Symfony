@@ -16,16 +16,7 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity(repositoryClass: TerritoireRepository::class)]
 class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringable
 {
-
-
     private ArrayCollection $valideOrigineBonus;
-
-    /**
-     * @var Collection<int, Merveille>
-     */
-    #[ORM\OneToMany(mappedBy: 'territoire', targetEntity: Merveille::class)]
-    private Collection $merveilles;
-
     /**
      * Constructeur.
      */
@@ -34,7 +25,6 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
         $this->setOrdreSocial(3);
         $this->valideOrigineBonus = new ArrayCollection();
         parent::__construct();
-        $this->merveilles = new ArrayCollection();
     }
 
     /**
@@ -487,35 +477,5 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
             'Instable' => 1,
             default => 0,
         };
-    }
-
-    /**
-     * @return Collection<int, Merveille>
-     */
-    public function getMerveilles(): Collection
-    {
-        return $this->merveilles;
-    }
-
-    public function addMerveille(Merveille $merveille): static
-    {
-        if (!$this->merveilles->contains($merveille)) {
-            $this->merveilles->add($merveille);
-            $merveille->setTerritoire($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMerveille(Merveille $merveille): static
-    {
-        if ($this->merveilles->removeElement($merveille)) {
-            // set the owning side to null (unless already changed)
-            if ($merveille->getTerritoire() === $this) {
-                $merveille->setTerritoire(null);
-            }
-        }
-
-        return $this;
     }
 }

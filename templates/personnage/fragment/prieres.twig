@@ -41,30 +41,14 @@
 
                     <div class="btn-group" role="group">
                         <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
-                                href="#religionn_{{ religion.id }}"
-                                aria-expanded="false" aria-controls="religion_{{ religion.id }}"
+                                href="#religionn_{{ personnage.territoire.religion.id }}"
+                                aria-expanded="false" aria-controls="religion_{{ personnage.territoire.religion.id }}"
                                 role="button">
                             <i class="fa-solid fa-circle-info"></i>
                         </button>
-                        {% if religion.documentUrl %}
-                            {% if isAdmin %}
-                                <button class="btn btn-sm btn-secondary"
-                                        href="{{ path('magie.religion.document',{'religion':religion.id, 'document': religion.documentUrl}) }}"
-                                        aria-expanded="false"
-                                        role="button">
-                                    <i class="fa-solid fa-file"></i>
-                                </button>
-                            {% elseif participant is defined %}
-                                <button class="btn btn-sm btn-secondary"
-                                        href="{{ path('participant.religion.document',{'religion':religion.id, 'participant': participant.id,'document': religion.documentUrl}) }}"
-                                        role="button">
-                                    <i class="fa-solid fa-file"></i>
-                                </button>
-                            {% endif %}
-                        {% endif %}
                     </div>
                 </div>
-                <div class="list-group-item bg-body-secondary collapse p-0" id="religion_{{ religion.id }}">
+                <div class="list-group-item bg-body-secondary collapse p-0" id="religion_{{ personnage.territoire.religion.id }}">
                     <ul class="list-group list-group-flush p-0 m-0">
                         <li class="fw-bold text-center list-group-item list-group-item-secondary">Description principale
                         </li>
@@ -112,22 +96,6 @@
                                 role="button">
                             <i class="fa-solid fa-circle-info"></i>
                         </button>
-                        {% if religion.documentUrl %}
-                            {% if isAdmin %}
-                                <button class="btn btn-sm btn-secondary"
-                                        href="{{ path('magie.religion.document',{'religion':religion.id, 'document': religion.documentUrl}) }}"
-                                        aria-expanded="false"
-                                        role="button">
-                                    <i class="fa-solid fa-file"></i>
-                                </button>
-                            {% elseif participant is defined %}
-                                <button class="btn btn-sm btn-secondary"
-                                        href="{{ path('participant.religion.document',{'religion':religion.id, 'participant': participant.id,'document': religion.documentUrl}) }}"
-                                        role="button">
-                                    <i class="fa-solid fa-file"></i>
-                                </button>
-                            {% endif %}
-                        {% endif %}
                     </div>
                 </div>
                 <div class="list-group-item bg-body-secondary collapse p-0" id="religionterritory_{{ religion.id }}">
