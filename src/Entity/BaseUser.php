@@ -178,6 +178,10 @@ abstract class BaseUser
     #[ORM\InverseJoinColumn(name: 'restriction_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $restrictions;
 
+    #[OneToMany(mappedBy: 'user', targetEntity: LogAction::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'true')]
+    private Collection $logActions;
+
     public function __construct()
     {
         $this->backgrounds = new ArrayCollection();
@@ -200,6 +204,7 @@ abstract class BaseUser
         $this->restrictionRelatedByAuteurIds = new ArrayCollection();
         $this->rumeurs = new ArrayCollection();
         $this->restrictions = new ArrayCollection();
+        $this->logActions = new ArrayCollection();
     }
 
     public function setId(int $id): static
@@ -1119,5 +1124,33 @@ abstract class BaseUser
     public function getRestrictions(): Collection
     {
         return $this->restrictions;
+    }
+
+    /**
+     * @return Collection<int, LogAction>
+     */
+    public function getLogActions(): Collection
+    {
+        return $this->logActions;
+    }
+
+    public function addLogAction(LogAction $logAction): static
+    {
+        if (!$this->logActions->contains($logAction)) {
+            $this->logActions->add($logAction);
+            $logAction->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLogAction(LogAction $logAction): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->logActions->removeElement($logAction) && $logAction->getUser() === $this) {
+            $logAction->setUser(null);
+        }
+
+        return $this;
     }
 }

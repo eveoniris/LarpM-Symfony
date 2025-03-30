@@ -37,21 +37,25 @@
         <tbody>
         {% for merveille in paginator %}
             <tr>
-                <td class="text-center align-middle">
+                <td class="text-center align-middle col-1">
                    {{ merveille.id|highlight(pagerService.searchValue) }}
                 </td>
-                <td class="text-center align-middle">{{ merveille.nom|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle col-1">{{ merveille.nom|highlight(pagerService.searchValue) }}</td>
                 <td>
                     {{ merveille.description|markdown_to_html|highlight(pagerService.searchValue) }}
                 </td>
                 <td>
-                    <strong>{{ merveille.bonus.titre|markdown_to_html|highlight(pagerService.searchValue) }}:&nbsp;</strong>
+                    {% if merveille.bonus.titre is defined %}
+                    <strong>{{ merveille.bonus.titre|highlight(pagerService.searchValue) }}</strong><br />
                     {{ merveille.bonus.description|markdown_to_html|highlight(pagerService.searchValue) }}
+                    {% else %}
+                        aucun
+                    {% endif %}
                 </td>
-                <td>
+                <td class="col-1">
                     {{ merveille.statut|highlight(pagerService.searchValue) }}
                 </td>
-                <td>
+                <td class="col-1">
                     <div class="btn-toolbar pull-right" role="toolbar">
                         <div class="btn-group-vertical" role="group">
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"

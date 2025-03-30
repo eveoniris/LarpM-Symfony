@@ -24,12 +24,6 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     public const ROLE_STOCK = 'ROLE_STOCK';
     public const ROLE_USER = 'ROLE_USER';
 
-    /**
-     * @var Collection<int, LogAction>
-     */
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: LogAction::class)]
-    private Collection $logActions;
-
     public static function loadValidatorMetadata(ClassMetadata $metadata): void
     {
         $metadata->addConstraint(new UniqueEntity([
@@ -95,7 +89,6 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         $this->email = $email;
         $this->setCreationDate(new \DateTime('NOW'));
         parent::__construct();
-        $this->logActions = new ArrayCollection();
     }
 
     // @deprecated
@@ -532,35 +525,5 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         $interval = date_diff($gn_date, $naissance);
 
         return (int) $interval->format('%y');
-    }
-
-    /**
-     * @return Collection<int, LogAction>
-     */
-    public function getLogActions(): Collection
-    {
-        return $this->logActions;
-    }
-
-    public function addLogAction(LogAction $logAction): static
-    {
-        if (!$this->logActions->contains($logAction)) {
-            $this->logActions->add($logAction);
-            $logAction->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLogAction(LogAction $logAction): static
-    {
-        if ($this->logActions->removeElement($logAction)) {
-            // set the owning side to null (unless already changed)
-            if ($logAction->getUser() === $this) {
-                $logAction->setUser(null);
-            }
-        }
-
-        return $this;
     }
 }

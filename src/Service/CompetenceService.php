@@ -12,6 +12,7 @@ use App\Entity\Level;
 use App\Entity\Personnage;
 use App\Entity\PersonnageTrigger;
 use App\Entity\RenommeHistory;
+use App\Entity\Territoire;
 use App\Enum\CompetenceFamilyType;
 use App\Service\Competence\AlchimieService;
 use App\Service\Competence\ArtisantService;
@@ -150,8 +151,8 @@ class CompetenceService
     public function getBonusCout(): int
     {
         return $this->getOrigineBonusCout()
-            + $this->getMerveilleBonusCout()?->getBonusXp()
-            + $this->getApprentissageBonusCout()?->getBonusXp();
+            + $this->getMerveilleBonusCout()
+            + $this->getApprentissageBonusCout();
     }
 
     public function getOrigineBonusCout(): int
@@ -192,22 +193,36 @@ class CompetenceService
         return $this;
     }
 
-    public function getMerveilleBonusCout(): ?object // PersonnageApprentissage
+    public function getMerveilleBonusCout(): int // PersonnageApprentissage
     {
-        /*
-        * TODO
-        * Table merveille_bonus [id PK, merveille_id, bonus_id, status, date_creation, date_expiration, status, ?admin_id]
-         * La date d'expiration fonction du status doit permettre de conservé ou non un bonus sur un personnage qui
-         * à eu ce bonus qui ne serait plus disponible pour de nouveau joueur
-         *  Table merveille [] // TODO
-         *
-         * A voir si le gain XP en bonus est depuis "bonus" ou depuis origin_bonus ?
-        *
-        * */
-        return null;
+        $count = 0;
+
+        foreach ($this->getPersonnage()?->getLastParticipant()?->getGroupe()?->getTerritoires() as $territoire) {
+            /** @var Territoire $territoire */
+            foreach ($territoire->getMerveilles() as $merveille) {
+                if (!$merveille->isActive()) {
+                    continue;
+                }
+
+                $bonus = $merveille->getBonus();
+
+                if (!$bonus || !$bonus->isValid()) {
+                    continue;
+                }
+
+                // Dans ce service, nous ne traitons que les bonus de type XP
+                // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
+                if ($bonus->isXp() && (null === $bonus->getCompetence() || $this->getCompetence()->getId(
+                ) === $bonus->getCompetence()->getId())) {
+                    $count += $bonus->getValeur();
+                }
+            }
+        }
+
+        return $count;
     }
 
-    public function getApprentissageBonusCout(): ?object // PersonnageApprentissage
+    public function getApprentissageBonusCout(): int // PersonnageApprentissage
     {
         /*
          * TODO
@@ -216,7 +231,7 @@ class CompetenceService
          *
          * */
 
-        return null;
+        return 0;
     }
 
     public function getClasse(): Classe

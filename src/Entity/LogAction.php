@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\LogActionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
 
 #[ORM\Entity(repositoryClass: LogActionRepository::class)]
 class LogAction
@@ -14,8 +15,8 @@ class LogAction
     #[ORM\Column(options: ['unsigned' => true])]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'logActions')]
-    #[ORM\Column(options: ['unsigned' => true])]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'logActions')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'true')]
     private ?User $user = null;
 
     #[ORM\Column(nullable: true)]

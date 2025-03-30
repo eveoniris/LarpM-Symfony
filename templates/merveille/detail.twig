@@ -47,41 +47,45 @@
                         <div class="list-group-item-text ps-1">{{ merveille.nom }}</div>
                     </div>
 
-                    <div class="list-group-item mb-4">
+                    <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Description</div>
                         <div class="list-group-item-text ps-1">{{ merveille.description|markdown_to_html }}</div>
                     </div>
 
-                    <div class="list-group-item mb-4">
+                    <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Description scénariste</div>
                         <div class="list-group-item-text ps-1">{{ merveille.descriptionScenariste|markdown_to_html }}</div>
                     </div>
 
-                    <div class="list-group-item mb-4">
+                    <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Description carthographe</div>
                         <div class="list-group-item-text ps-1">{{ merveille.descriptionCartographe|markdown_to_html }}</div>
                     </div>
 
-                    <div class="list-group-item mb-4">
+                    <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Statut</div>
                         <div class="list-group-item-text ps-1">{{ merveille.statut }}</div>
                     </div>
 
-                    <div class="list-group-item mb-4">
+                    <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Date création</div>
                         <div class="list-group-item-text ps-1">{{ merveille.dateCreation }}</div>
                     </div>
 
-                    <div class="list-group-item mb-4">
+                    <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Date destruction</div>
                         <div class="list-group-item-text ps-1">{{ merveille.dateDestruction }}</div>
                     </div>
 
-                    <div class="list-group-item mb-4">
+                    <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Bonus</div>
                         <div class="list-group-item-text ps-1">
+                            {% if merveille.bonus.titre is defined %}
                             <a href="{{ path('bonus.detail',{'bonus': merveille.bonus.id}) }}">{{ merveille.bonus.titre|markdown_to_html }}</a><br/>
                             {{ merveille.description|markdown_to_html }}
+                            {% else %}
+                                Aucun
+                            {% endif %}
                         </div>
                     </div>
 

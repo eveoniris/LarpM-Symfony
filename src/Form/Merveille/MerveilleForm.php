@@ -60,23 +60,20 @@ class MerveilleForm extends AbstractType
                 'label' => 'Etat',
             ])
             ->add('date_creation', DateType::class, [
-                'label' => 'Date de création',
+                'label' => 'Date GN de création',
                 'required' => true,
             ])
             ->add('date_destruction', DateType::class, [
-                'label' => 'Date de destruction',
+                'label' => 'Date GN de destruction',
                 'required' => true,
             ])
             ->add('bonus', EntityType::class, [
                 'required' => false,
                 'label' => 'Bonus',
                 'class' => Bonus::class,
-                'multiple' => false,
                 'autocomplete' => true,
-                'expanded' => true,
-                'mapped' => true,
                 'label_html' => true,
-                'choice_label' => static fn (Bonus $bonus, $currentKey) => '<strong>'.$bonus->getTitre().'</strong> - '.$bonus->getDescription(),
+                'choice_label' => static fn (Bonus $bonus, $currentKey) => $bonus->getTitre().' - '.$bonus->getDescription(),
             ]);
     }
 
