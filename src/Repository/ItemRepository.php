@@ -12,7 +12,7 @@ class ItemRepository extends BaseRepository
     public function findNextNumero(): int
     {
         try {
-            $numeroMax = (int)$this->getEntityManager()
+            $numeroMax = (int) $this->getEntityManager()
                 ->createQuery('SELECT MAX(i.numero) FROM App\Entity\Item i')
                 ->getSingleScalarResult();
         } catch (NonUniqueResultException|NoResultException $e) {
@@ -28,7 +28,7 @@ class ItemRepository extends BaseRepository
         string|array|null $attributes = self::SEARCH_NOONE,
         ?OrderBy $orderBy = null,
         ?string $alias = null,
-        ?QueryBuilder $query = null
+        ?QueryBuilder $query = null,
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
@@ -93,7 +93,6 @@ class ItemRepository extends BaseRepository
                 OrderBy::ASC => ['qualident' => OrderBy::ASC],
                 OrderBy::DESC => ['qualident' => OrderBy::DESC],
             ],
-
         ];
     }
 

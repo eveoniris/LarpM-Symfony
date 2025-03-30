@@ -1598,36 +1598,6 @@ class ParticipantController extends AbstractController
     }
 
     /**
-     * Obtenir le document lié à un document.
-     */
-    #[Route('/participant/{participant}/document/{document}/document', name: 'participant.document.document')]
-    public function documentDocumentAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        Participant $participant,
-        Document $document,
-    ): BinaryFileResponse|RedirectResponse {
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        if (!$personnage->isKnownDocument($document)) {
-            $this->addFlash('error', 'Vous ne connaissez pas ce document !');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        $filename = __DIR__.'/../../private/documents/'.$document->getDocumentUrl();
-        $file = new File($filename);
-
-        return $this->file($file, $document->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
-    }
-
-    /**
      * Choix d'un domaine de magie.
      */
     #[Route('/participant/{participant}/domaineMagie', name: 'participant.personnage.domaine')]

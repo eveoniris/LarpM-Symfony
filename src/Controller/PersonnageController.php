@@ -2522,6 +2522,7 @@ class PersonnageController extends AbstractController
      * Gestion des documents lié à un personnage.
      */
     #[Route('/{personnage}/documents', name: 'documents')]
+    #[IsGranted(Role::SCENARISTE->value)]
     public function documentAction(
         Request $request,
         EntityManagerInterface $entityManager,

@@ -20,14 +20,7 @@
                     </div>
 
                     <div class="btn-group" role="group">
-                        {% if isAdmin %}
-                            <button class="btn btn-sm btn-secondary"
-                                    href="{{ path('document',{'participant':participant.id, 'document': document.id}) }}"
-                                    aria-expanded="false"
-                                    role="button">
-                                <i class="fa-solid fa-file"></i>
-                            </button>
-                        {% elseif participant is defined %}
+                        {% if participant is defined %}
                             <button class="btn btn-sm btn-secondary"
                                     href="{{ path('participant.document',{'document':document.id, 'participant': participant.id,'document': document.id}) }}"
                                     role="button">

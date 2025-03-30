@@ -178,6 +178,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 ?? (new \ReflectionClass(static::class))
                 ?->getAttributes(Route::class)[0]
                 ?->getArguments()['name'] ?? '';
+            $routes['root'] = $root; // ensure if from other
         } catch (\ErrorException $e) {
             $this->logger->error($e);
             throw new \RuntimeException(
@@ -353,8 +354,11 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return $response;
     }
 
-    protected function sendDocument(mixed $entity, ?Document $document = null, bool $hasAttachement = true): BinaryFileResponse
-    {
+    protected function sendDocument(
+        mixed $entity,
+        ?Document $document = null,
+        bool $hasAttachement = true
+    ): BinaryFileResponse {
         // TODO check usage of entity Document
 
         // TODO on ne peux télécharger que les documents des compétences que l'on connait
@@ -408,7 +412,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 ResponseHeaderBag::DISPOSITION_ATTACHMENT,
                 $documentLabel.'.pdf'
             );
-        }else {
+        } else {
             $response
                 ->setContentDisposition(
                     ResponseHeaderBag::DISPOSITION_INLINE,
