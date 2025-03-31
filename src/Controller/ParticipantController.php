@@ -2809,23 +2809,19 @@ class ParticipantController extends AbstractController
         }
 
         $groupe = $groupeGn->getGroupe();
-        $gn = $groupeGn->getGn();
 
-        // TODO all alive
         $default = $participant->getUser()?->getPersonnages()->toArray()[0] ?? null;
         $lastPersonnage = $participant->getUser()?->getLastPersonnage();
-        if (null != $lastPersonnage) {
+        if (null !== $lastPersonnage) {
             $default = $lastPersonnage;
         }
 
-        // error_log($default->getNom());
-
-        $form = $this->createFormBuilder($participant)
+        $form = $this->createFormBuilder()
             ->add('personnage', EntityType::class, [
                 'label' => 'Choisissez votre personnage',
                 'choice_label' => 'resumeParticipations',
                 'class' => Personnage::class,
-                'choices' => array_unique($participant->getUser()->getPersonnagesVivants()),
+                'choices' => array_unique($participant->getUser()?->getPersonnagesVivants()),
                 'data' => $default,
             ])
             ->add('save', SubmitType::class, ['label' => 'Valider'])
