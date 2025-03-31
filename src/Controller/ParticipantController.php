@@ -3394,10 +3394,11 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $filename = __DIR__.'/../../private/doc/'.$priere->getDocumentUrl();
+        return $this->sendDocument($priere);
+        /*$filename = __DIR__.'/../../private/doc/'.$priere->getDocumentUrl();
         $file = new File($filename);
 
-        return $this->file($file, $priere->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+        return $this->file($file, $priere->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);*/
     }
 
     /**

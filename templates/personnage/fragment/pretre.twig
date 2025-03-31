@@ -1,0 +1,194 @@
+{# Used in Competence TAB #}
+
+{% if css is not defined %}
+    {% set css = 'well' %}
+{% endif %}
+
+{% if isAdmin is not defined %}
+    {% set isAdmin = false %}
+{% endif %}
+
+{% if hasOne is not defined %}
+    {% set hasOne = false %}
+{% endif %}
+
+{% if personnage.isPriest() %}
+<div class="{{ css }}">
+    <div class="header">
+        <h5>Prières</h5>
+    </div>
+
+    <div class="list-group">
+
+        {# accés à toutes les descriptions pour pratiquants des religions de leur pays #}
+        {% if personnage.hasCompetenceLevel(
+            constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD'),
+            constant('App\\Enum\\LevelType::APPRENTICE'),
+        ) %}
+
+            {% if  personnage.territoire.religion %}
+
+                <div class="list-group-item d-flex justify-content-between">
+                    <div>
+                        {% if personnage.territoire.religion.secret %}
+                            <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                               data-placement="top"
+                               title="Secret"></i> -&nbsp;
+                        {% endif %}
+
+                        {{ personnage.territoire.religion.label }}
+                    </div>
+
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                                href="#religionn_{{ personnage.territoire.religion.id }}"
+                                aria-expanded="false" aria-controls="religion_{{ personnage.territoire.religion.id }}"
+                                role="button">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="list-group-item bg-body-secondary collapse p-0" id="religion_{{ personnage.territoire.religion.id }}">
+                    <ul class="list-group list-group-flush p-0 m-0">
+                        <li class="fw-bold text-center list-group-item list-group-item-secondary">Description principale
+                        </li>
+                        <li class="list-group-item">
+                            {{ personnage.territoire.religion.description|markdown_to_html }}
+                        </li>
+
+                        <li class="fw-bold text-center list-group-item list-group-item-secondary">
+                            Informations supplémentaires pour les Pratiquants
+                        </li>
+                        <li class="list-group-item">
+                            {{ personnage.territoire.religion.descriptionPratiquant|markdown_to_html }}
+                        </li>
+
+                        {# LH 7 : Apprenti - Vous connaissez le niveau Fervent de toutes les Religions liées à votre Origine. #}
+
+                        <li class="fw-bold text-center list-group-item list-group-item-secondary">
+                            Informations supplémentaires pour les Fervents
+                        </li>
+                        <li class="list-group-item">
+                            {{ personnage.territoire.religion.descriptionFervent|markdown_to_html }}
+                        </li>
+                    </ul>
+                </div>
+
+            {% endif %}
+
+            {% for religion in personnage.territoire.religions %}
+
+                <div class="list-group-item d-flex justify-content-between">
+                    <div>
+                        {% if religion.secret %}
+                            <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                               data-placement="top"
+                               title="Secret"></i> -&nbsp;
+                        {% endif %}
+
+                        {{ religion.label }}
+                    </div>
+
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                                href="#religionterritory_{{ religion.id }}"
+                                aria-expanded="false" aria-controls="religionterritory_{{ religion.id }}"
+                                role="button">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="list-group-item bg-body-secondary collapse p-0" id="religionterritory_{{ religion.id }}">
+                    <ul class="list-group list-group-flush p-0 m-0">
+                        <li class="fw-bold text-center list-group-item list-group-item-secondary">Description
+                        </li>
+                        <li class="list-group-item">
+                            {{ religion.description|markdown_to_html }}
+                        </li>
+
+                        <li class="fw-bold text-center list-group-item list-group-item-secondary">
+                            Informations supplémentaires pour les Pratiquants
+                        </li>
+                        <li class="list-group-item">
+                            {{ religion.descriptionPratiquant|markdown_to_html }}
+                        </li>
+
+                        <li class="fw-bold text-center list-group-item list-group-item-secondary">
+                            Informations supplémentaires pour les Fervents
+                        </li>
+                        <li class="list-group-item">
+                            {{ religion.descriptionFervent|markdown_to_html }}
+                        </li>
+                    </ul>
+                </div>
+
+
+            {% endfor %}
+
+        {% endif %}
+
+        {# Peuvent choisir 3 religions pour acceder à leur description pour pratiquants #}
+        {# LH7 prêtre initié : Vous connaissez le niveau fervent d'une Religion supplémentaire. #}
+        {% if personnage.hasCompetenceLevel(
+            constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD'),
+            constant('App\\Enum\\LevelType::INITIATED'),
+        ) %}
+
+            {% for personnageReligion in personnage.personnagesReligions %}
+                {% set hasOne = true %}
+                <div class="list-group-item d-flex justify-content-between">
+                    <div>
+                        {% if personnageReligion.religion.secret %}
+                            <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                               data-placement="top"
+                               title="Secret"></i> -&nbsp;
+
+                        {% endif %}
+
+                        {{ personnageReligion.religion.label }}
+                    </div>
+
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                                href="#priest_{{ personnageReligion.religion.id }}"
+                                aria-expanded="false" aria-controls="priest_{{ personnageReligion.religion.id }}"
+                                role="button">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="list-group-item collapse p-0" id="priest_{{ personnageReligion.religion.id }}">
+                    <ul class="list-group list-group-flush m-0 p-0">
+                        <li class="fw-bold text-center list-group-item list-group-item-secondary p-0">Description principale
+                        </li>
+                        <li class="list-group-item">
+                            {{ personnageReligion.religion.description|markdown_to_html }}
+                        </li>
+
+                        <li class="fw-bold text-center list-group-item list-group-item-secondary p-0">
+                            Informations supplémentaires pour les Pratiquants
+                        </li>
+                        <li class="list-group-item">
+                            {{ personnageReligion.religion.descriptionPratiquant|markdown_to_html }}
+                        </li>
+
+                        <li class="fw-bold text-center list-group-item list-group-item-secondary p-0">
+                            Informations supplémentaires pour les Fervents
+                        </li>
+                        <li class="list-group-item">
+                            {{ personnageReligion.religion.descriptionFervent|markdown_to_html }}
+                        </li>
+                    </ul>
+                </div>
+
+            {% endfor %}
+        {% endif %}
+
+        {% if hasOne == false %}
+            {% include '_partials/cardNotif.twig' with {'type': 'info','content' : "Vous n'avez pas encore choisie de religion pour laquelle prêcher"} %}
+        {% endif %}
+
+    </div>
+
+</div>
+{% endif %}
