@@ -189,7 +189,7 @@ class BaseGroupe
     /**
      * Set the value of nom.
      */
-    public function setNom(string $nom): static
+    public function setNom(?string $nom): static
     {
         $this->nom = $nom;
 

@@ -32,7 +32,10 @@
 	</div>
 {% endblock %}
 
-{% block javascript %}
+{% block javascripts %}
+
+ {{ parent() }}
+
 <script>
 
 	function addGroupeHasRessourceForm(collectionHolder, $newRessourceLinkLi) {
@@ -88,4 +91,4 @@
 	});
 
 </script>
-{% endblock javascript %}
+{% endblock javascripts %}

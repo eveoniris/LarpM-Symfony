@@ -3,16 +3,14 @@
 
 namespace App\Form\Groupe;
 
-use LarpManager\Repository\DocumentRepository;
+use App\Entity\Document;
+use App\Entity\Groupe;
+use App\Repository\DocumentRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\GroupeDocumentForm.
- *
- * @author kevin
- */
 class GroupeDocumentForm extends AbstractType
 {
     /**
@@ -20,16 +18,14 @@ class GroupeDocumentForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('documents', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+        $builder->add('documents', EntityType::class, [
             'label' => 'Choisissez les documents possédé par le groupe en début de jeu',
             'multiple' => true,
             'expanded' => true,
             'required' => false,
-            'class' => \App\Entity\Document::class,
+            'class' => Document::class,
             'choice_label' => 'identity',
-            'query_builder' => static function (DocumentRepository $er) {
-                return $er->createQueryBuilder('d')->orderBy('d.code', 'ASC');
-            },
+            'query_builder' => static fn (DocumentRepository $er) => $er->createQueryBuilder('d')->orderBy('d.code', 'ASC'),
         ]);
     }
 
@@ -39,7 +35,7 @@ class GroupeDocumentForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Groupe::class,
+            'data_class' => '\\'.Groupe::class,
         ]);
     }
 

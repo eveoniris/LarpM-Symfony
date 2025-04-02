@@ -3,16 +3,15 @@
 
 namespace App\Form\Groupe;
 
-use LarpManager\Repository\ItemRepository;
+use App\Entity\Groupe;
+use App\Entity\Item;
+use App\Repository\ItemRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\GroupeItemForm.
- *
- * @author kevin
- */
+
 class GroupeItemForm extends AbstractType
 {
     /**
@@ -20,12 +19,12 @@ class GroupeItemForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('items', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+        $builder->add('items', EntityType::class, [
             'label' => 'Choisissez les objets possédé par le groupe en début de jeu',
             'multiple' => true,
             'expanded' => true,
             'required' => false,
-            'class' => \App\Entity\Item::class,
+            'class' => Item::class,
             'choice_label' => 'identitereverse',
             'query_builder' => static function (ItemRepository $er) {
                 return $er->createQueryBuilder('i')->orderBy('i.label', 'ASC');
@@ -39,7 +38,7 @@ class GroupeItemForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Groupe::class,
+            'data_class' => '\\'.Groupe::class,
         ]);
     }
 

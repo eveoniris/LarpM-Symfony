@@ -196,7 +196,7 @@ class PersonnageController extends AbstractController
         }
 
         $form = $this->createForm(PersonnageForm::class, $personnage)
-            ->add('classe', 'entity', [
+            ->add('classe', EntityType::class, [
                 'label' => 'Classes disponibles',
                 'choice_label' => 'label',
                 'class' => Classe::class,
@@ -427,6 +427,8 @@ class PersonnageController extends AbstractController
             if (!$service->hasErrors()) {
                 $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
+                $this->log($competence, 'competence_add', true);
+
                 return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
             }
 
@@ -617,8 +619,8 @@ class PersonnageController extends AbstractController
     #[Deprecated] // TODO import from Participant::religionAddAction()
     public function adminAddReligionAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
+        PersonnageService $personnageService,
     ): RedirectResponse|Response {
         // refUser la demande si le personnage est Fanatique
         if ($personnage->isFanatique()) {
@@ -634,9 +636,9 @@ class PersonnageController extends AbstractController
         $personnageReligion->setPersonnage($personnage);
 
         // ne proposer que les religions que le personnage ne pratique pas déjà ...
-        $availableReligions = $app['personnage.manager']->getAdminAvailableReligions($personnage);
+        $availableReligions = $personnageService->getAdminAvailableReligions($personnage);
 
-        if (0 == $availableReligions->count()) {
+        if (0 === $availableReligions->count()) {
             $this->addFlash('error', 'Désolé, il n\'y a plus de religion disponibles');
 
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
@@ -649,10 +651,9 @@ class PersonnageController extends AbstractController
         }
 
         $form = $this->createForm(PersonnageReligionForm::class, $personnageReligion)
-            ->add('religion', 'entity', [
+            ->add('religion', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Votre religion',
-                'class' => Religion::class,
                 'choices' => $availableReligions,
                 'choice_label' => 'label',
             ])
@@ -665,12 +666,12 @@ class PersonnageController extends AbstractController
 
             // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
             // n'autoriser que un Fervent que si l'utilisateur n'a pas encore Fervent.
-            if (3 == $personnageReligion->getReligionLevel()->getIndex()) {
+            if (3 === $personnageReligion->getReligionLevel()->getIndex()) {
                 $personnagesReligions = $personnage->getPersonnagesReligions();
                 foreach ($personnagesReligions as $oldReligion) {
-                    $entityManager->remove($oldReligion);
+                    $this->entityManager->remove($oldReligion);
                 }
-            } elseif (2 == $personnageReligion->getReligionLevel()->getIndex()) {
+            } elseif (2 === $personnageReligion->getReligionLevel()->getIndex()) {
                 if ($personnage->isFervent()) {
                     $this->addFlash(
                         'error',
@@ -681,8 +682,8 @@ class PersonnageController extends AbstractController
                 }
             }
 
-            $entityManager->persist($personnageReligion);
-            $entityManager->flush();
+            $this->entityManager->persist($personnageReligion);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
@@ -2438,6 +2439,8 @@ class PersonnageController extends AbstractController
             $entityManager->persist($personnage);
             $entityManager->persist($historique);
             $entityManager->flush();
+
+            $this->log(['personnage' => $personnage->getid(), 'xp' => $data['xp'], 'explanation' => $data['explanation']], 'xp_add', true);
 
             $this->addFlash('success', 'Les points d\'expériences ont été ajoutés');
 
