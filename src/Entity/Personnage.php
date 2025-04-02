@@ -793,11 +793,11 @@ class Personnage extends BasePersonnage implements \Stringable
     /**
      * @return bool
      */
-    public function getPotionsNiveau($niveau): array
+    public function getPotionsNiveau(int $niveau): array
     {
         $potions = [];
         foreach ($this->getPotions() as $potion) {
-            if ($potion->getNiveau() == $niveau) {
+            if ($potion->getNiveau() === $niveau) {
                 $potions[] = $potion;
             }
         }

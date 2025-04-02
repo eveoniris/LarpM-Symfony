@@ -273,7 +273,7 @@ class PersonnageService
 
             $materiel = $bonus->getData('materiel', null);
             if ($materiel) {
-                $competence->setMateriel(1 === $materiel ? $bonus->getDescription() : $materiel);
+                $competence->setMateriel(is_string($materiel) || empty($materiel) ? $bonus->getDescription() : $materiel);
             }
             $family = new CompetenceFamily();
             $family->setId(-1);
@@ -284,6 +284,27 @@ class PersonnageService
         }
 
         return $all;
+    }
+
+    public function getAvailableLangues(Personnage $personnage, int $diffusion = 0): ArrayCollection
+    {
+        $availableLangues = new ArrayCollection();
+
+        $repo = $this->entityManager->getRepository(Langue::class);
+        $langues = $repo->findBy([], ['label' => 'ASC']);
+
+        foreach ($langues as $langue) {
+            if ($langue->getSecret()) {
+                continue;
+            }
+
+            if ($langue->getDiffusion() === $diffusion
+                && !$personnage->isKnownLanguage($langue)) {
+                $availableLangues[] = $langue;
+            }
+        }
+
+        return $availableLangues;
     }
 
     /**
@@ -342,10 +363,10 @@ class PersonnageService
                 continue;
             }
 
-            // TODO tant que on a pas fait de reprise pour les placer en crétion dans personnage_bonus
+            // TODO tant que on a pas fait de reprise pour les placer en création dans personnage_bonus
             // Le bonus n'est actif que si le personnage est natif d'un territoire dont son 1er groupe est à l'origine.
-            if (BonusPeriode::NATIVE === $bonus->getPeriode()
-                && !$personnage->getFirstParticipantGnGroupe()?->getTerritoire()?->getId() === $personnage->getOrigine(
+            if (BonusPeriode::NATIVE->value === $bonus->getPeriode()?->value
+                && $personnage->getFirstParticipantGnGroupe()?->getTerritoire()?->getId() !== $personnage->getOrigine(
                 )?->getId()
             ) {
                 continue;
@@ -1015,7 +1036,7 @@ class PersonnageService
             $all += (int) $bonus->getValeur();
         }
 
-        return $all;
+        return $all ?? 0;
     }
 
     public function getAvailableCompetences(Personnage $personnage): ArrayCollection

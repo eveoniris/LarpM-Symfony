@@ -269,32 +269,27 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 return $this->redirectToRoute($routes['add']);
             }
 
-            $logAction = new LogAction();
-            $logAction->setDate(new DateTime());
-            $logAction->setUser($this->getUser());
-            $logAction->setType('entity');
+            $logType = 'entity';
 
             if ($form->has('delete') && $form->get('delete')->isClicked()) {
-                $logAction->setType('entity_delete');
+                $logType = 'entity_delete';
                 $this->entityManager->remove($entity);
                 $this->addFlash('success', $msg['entity_deleted']);
             } else {
                 $this->entityManager->persist($entity);
 
                 if ($form->has('update') && $form->get('update')->isClicked()) {
-                    $logAction->setType('entity_update');
+                    $logType = 'entity_update';
                     $this->addFlash('success', $msg['entity_updated']);
                 }
 
                 if ($form->has('save') && $form->get('save')->isClicked()) {
-                    $logAction->setType('entity_add');
+                    $logType = 'entity_add';
                     $this->addFlash('success', $msg['entity_added']);
                 }
             }
 
-            $entityData = ['class' => $entity::class, 'data' => (array) $entity];
-            $logAction->setData($entityData);
-            $this->entityManager->persist($logAction);
+            $this->log($entity, $logType);
 
             $this->entityManager->flush();
 
@@ -309,6 +304,34 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             'msg' => $msg,
             'breadcrumb' => $breadcrumb,
         ]);
+    }
+
+    protected function log(mixed $entity, string $type, bool $flush = false): void
+    {
+        $logAction = new LogAction();
+        $logAction->setDate(new DateTime());
+        $logAction->setUser($this->getUser());
+        $logAction->setType($type);
+
+        if (method_exists($entity, 'toLog')) {
+            $entityValue = $entity->toLog();
+        } else {
+            $entityValue = (array) $entity;
+            // Clean a bit
+            foreach ($entityValue as $key => $value) {
+                $cleanKey = str_replace([$entity::class, ' ', '*'], ['', '', ''], $key);
+                if ($cleanKey !== $key) {
+                    $entityValue[$cleanKey] = $value;
+                    unset($entityValue[$key]);
+                }
+            }
+        }
+
+        $entityData = ['class' => $entity::class, 'data' => $entityValue];
+
+        $logAction->setData($entityData);
+        $this->entityManager->persist($logAction);
+        $flush && $this->entityManager->flush();
     }
 
     protected function redirectToReferer(Request $request): ?RedirectResponse

@@ -3,18 +3,22 @@
 
 namespace App\Form\Personnage;
 
+use App\Entity\Age;
+use App\Entity\Classe;
+use App\Entity\Genre;
+use App\Entity\Personnage;
+use App\Entity\Territoire;
 use Doctrine\ORM\EntityRepository;
 use App\Repository\ClasseRepository;
 use App\Repository\TerritoireRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Personnage\PersonnageForm.
- *
- * @author kevin
- */
+
 class PersonnageForm extends AbstractType
 {
     /**
@@ -22,18 +26,18 @@ class PersonnageForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('nom', TextType::class, [
             'required' => true,
             'label' => '',
         ])
-            ->add('surnom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('surnom', TextType::class, [
                 'required' => false,
                 'label' => '',
             ])
-            ->add('age', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('age', EntityType::class, [
                 'required' => true,
                 'label' => '',
-                'class' => \App\Entity\Age::class,
+                'class' => Age::class,
                 'choice_label' => 'label',
                 'query_builder' => static function (EntityRepository $er) {
                     $qb = $er->createQueryBuilder('a');
@@ -42,16 +46,16 @@ class PersonnageForm extends AbstractType
                     return $qb;
                 },
             ])
-            ->add('genre', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('genre', EntityType::class, [
                 'required' => true,
                 'label' => '',
-                'class' => \App\Entity\Genre::class,
+                'class' => Genre::class,
                 'choice_label' => 'label',
             ])
-            ->add('classe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('classe', EntityType::class, [
                 'required' => true,
                 'label' => 'Votre classe',
-                'class' => \App\Entity\Classe::class,
+                'class' => Classe::class,
                 'choice_label' => 'label',
                 'query_builder' => static function (ClasseRepository $er) {
                     $qb = $er->createQueryBuilder('c');
@@ -61,10 +65,10 @@ class PersonnageForm extends AbstractType
                     return $qb;
                 },
             ])
-            ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('territoire', EntityType::class, [
                 'required' => true,
                 'label' => 'Votre origine',
-                'class' => \App\Entity\Territoire::class,
+                'class' => Territoire::class,
                 'choice_label' => 'nom',
                 'query_builder' => static function (TerritoireRepository $er) {
                     $qb = $er->createQueryBuilder('t');
@@ -74,15 +78,20 @@ class PersonnageForm extends AbstractType
                     return $qb;
                 },
             ])
-            ->add('intrigue', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('intrigue', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['Oui' => true, 'Non' => false],
                 'label' => 'Participer aux intrigues',
             ])
-            ->add('sensible', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('sensible', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['Non' => false, 'Oui' => true],
                 'label' => 'Personnage sensible',
+            ])
+            ->add('bracelet', ChoiceType::class, [
+                'required' => true,
+                'choices' => ['Non' => false, 'Oui' => true],
+                'label' => 'Possédez-vous votre propre bracelet pour les langues du jeu ?',
             ]);
     }
 
@@ -92,7 +101,7 @@ class PersonnageForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Personnage::class,
+            'data_class' => Personnage::class,
         ]);
     }
 

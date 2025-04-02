@@ -2129,6 +2129,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
+        PersonnageService $personnageService,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2144,15 +2145,14 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $availableLangues = $app['personnage.manager']->getAvailableLangues($personnage, 0);
+        $availableLangues = $personnageService->getAvailableLangues($personnage, 0);
 
-        $form = $this->createFormBuilder($participant)
-            ->add('langue', 'entity', [
+        $form = $this->createFormBuilder()
+            ->add('langue', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Choisissez votre nouvelle langue',
                 'multiple' => false,
                 'expanded' => true,
-                'class' => Langue::class,
                 'choices' => $availableLangues,
                 'choice_label' => 'fullDescription',
             ])
@@ -2196,6 +2196,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
+        PersonnageService $personnageService,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2211,15 +2212,14 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $availableLangues = $app['personnage.manager']->getAvailableLangues($personnage, 2);
+        $availableLangues = $personnageService->getAvailableLangues($personnage, 2);
 
-        $form = $this->createFormBuilder($participant)
-            ->add('langue', 'entity', [
+        $form = $this->createFormBuilder()
+            ->add('langue', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Choisissez votre nouvelle langue',
                 'multiple' => false,
                 'expanded' => true,
-                'class' => Langue::class,
                 'choices' => $availableLangues,
                 'choice_label' => 'fullDescription',
             ])
@@ -2263,6 +2263,7 @@ class ParticipantController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         Participant $participant,
+        PersonnageService $personnageService,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -2278,15 +2279,14 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $availableLangues = $app['personnage.manager']->getAvailableLangues($personnage, 1);
+        $availableLangues = $personnageService->getAvailableLangues($personnage, 1);
 
-        $form = $this->createFormBuilder($participant)
-            ->add('langue', 'entity', [
+        $form = $this->createFormBuilder()
+            ->add('langue', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Choisissez votre nouvelle langue',
                 'multiple' => false,
                 'expanded' => true,
-                'class' => Langue::class,
                 'choices' => $availableLangues,
                 'choice_label' => 'fullDescription',
             ])
@@ -3296,7 +3296,7 @@ class ParticipantController extends AbstractController
         }
 
         $potions = $personnage->getPotionsNiveau($niveau);
-
+// TODO dd($potions);
         $form = $this->createFormBuilder()
             ->add('potion', ChoiceType::class, [
                 'required' => true,

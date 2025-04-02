@@ -78,7 +78,11 @@ class Bonus extends BaseBonus
     {
         $data = $this->getJsonData() ?: [];
 
-        return $data[$key] ?? $data[$key.'s'] ?? $data[rtrim($key, 's')] ?? ($default ?? $data);
+        if ($key) {
+            return $data[$key] ?? $data[$key.'s'] ?? $data[rtrim($key, 's')] ?? $default;
+        }
+
+        return $data ?? $default;
     }
 
     public function getDataAsString(): string

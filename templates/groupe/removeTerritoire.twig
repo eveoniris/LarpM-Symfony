@@ -12,13 +12,6 @@
 	</ol>
 	
 	<div class="well well-sm">
-		{{ form_start(form, {"attr": {"action": path('groupe.territoire.remove',{'groupe': groupe.id, 'territoire': territoire.id}) }}" method="POST">
-			<div class="form-group">
-				<p>Attention ! le groupe {{ groupe.nom }} va perdre le contrôle du territoire {{ territoire.nom }}</p>
-			</div>
-			
-			{{ form(form) }}
-			
-		{{ form_end(form) }}
+		{{ form(form) }}
 	</div>
 {% endblock %}

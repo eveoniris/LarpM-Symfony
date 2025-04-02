@@ -70,8 +70,8 @@ abstract class BasePersonnage
     #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $sensible = null;
 
-    #[Column(type: Types::BOOLEAN, nullable: true)]
-    private ?bool $bracelet = null;
+    #[Column(type: Types::BOOLEAN, nullable: false)]
+    private bool $bracelet = false;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceGain::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
@@ -341,7 +341,7 @@ abstract class BasePersonnage
     /**
      * Set the value of surnom.
      */
-    public function setSurnom(string $surnom): static
+    public function setSurnom(?string $surnom): static
     {
         $this->surnom = $surnom;
 
@@ -533,7 +533,7 @@ abstract class BasePersonnage
      */
     public function getRichesse(): ?int
     {
-        return $this->richesse;
+        return $this->richesse ?? 0;
     }
 
     /**
@@ -1523,14 +1523,14 @@ abstract class BasePersonnage
         return $langueMateriel;
     }
 
-    public function isBracelet(): ?bool
+    public function isBracelet(): bool
     {
         return $this->bracelet;
     }
 
     public function setBracelet(?bool $bracelet): static
     {
-        $this->bracelet = $bracelet;
+        $this->bracelet = (bool) $bracelet;
 
         return $this;
     }

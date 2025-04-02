@@ -33,6 +33,7 @@ use App\Service\PagerService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,103 +48,93 @@ use Symfony\Component\Serializer\SerializerInterface;
 class GroupeController extends AbstractController
 {
     /**
-     * Modifier la composition du groupe.
+     * Ajout d'un groupe.
      */
-    #[Route('/{groupe}/composition', name: 'composition')]
-    public function compositionAction(
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/add', name: 'add')]
+    public function addAction(Request $request): RedirectResponse|Response
+    {
+        return $this->handleCreateOrUpdate(
+            $request,
+            new Groupe(),
+
+            GroupeForm::class
+        );
+    }
+
+    protected function handleCreateOrUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
+        ?callable $entityCallback = null,
+    ): RedirectResponse|Response {
+        $routes['root'] = 'groupe.';
+
+        return parent::handleCreateOrUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                ...$msg,
+                'entity' => $this->translator->trans('groupe'),
+                'entity_added' => $this->translator->trans('Le groupe a été ajoutée'),
+                'entity_updated' => $this->translator->trans('Le groupe a été mise à jour'),
+                'entity_deleted' => $this->translator->trans('Le groupe a été supprimé'),
+                'entity_list' => $this->translator->trans('Liste des groupes'),
+                'title_add' => $this->translator->trans('Ajouter un groupe'),
+                'title_update' => $this->translator->trans('Modifier un groupe'),
+            ],
+            entityCallback: $entityCallback
+        );
+    }
+
+    /**
+     * Ajout d'un background à un groupe.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function addBackgroundAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $originalGroupeClasses = new ArrayCollection();
+        $id = $request->get('index');
+        $groupe = $entityManager->find(Groupe::class, $id);
 
-        /*
-         *  Crée un tableau contenant les objets GroupeClasse du groupe
-         */
-        foreach ($groupe->getGroupeClasses() as $groupeClasse) {
-            $originalGroupeClasses->add($groupeClasse);
-        }
+        $background = new Background();
+        $background->setGroupe($groupe);
 
-        $form = $this->createForm(GroupeCompositionForm::class, $groupe)
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(BackgroundForm::class, $background)
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $groupe = $form->getData();
+            $this->addFlash('success', 'Le background du groupe a été créé');
 
-            /*
-             * Pour toutes les classes du groupe
-             */
-            foreach ($groupe->getGroupeClasses() as $groupeClasses) {
-                $groupeClasses->setGroupe($groupe);
-            }
-
-            /*
-             *  supprime la relation entre le groupeClasse et le groupe
-             */
-            foreach ($originalGroupeClasses as $groupeClasse) {
-                if (false == $groupe->getGroupeClasses()->contains($groupeClasse)) {
-                    $entityManager->remove($groupeClasse);
-                }
-            }
-
-            $entityManager->persist($groupe);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La composition du groupe a été sauvegardé.');
-
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()], 303);
         }
 
-        return $this->render('groupe/composition.twig', [
+        return $this->render('groupe/background/add.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
     }
 
     /**
-     * Modification de la description du groupe.
+     * Ajoute un document dans le matériel du groupe.
      */
-    #[Route('/{groupe}/description', name: 'description')]
     #[IsGranted('ROLE_SCENARISTE')]
-    public function descriptionAction(
+    #[Route('/{groupe}/documents', name: 'documents')]
+    public function adminDocumentAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeDescriptionForm::class, $groupe)
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $groupe = $form->getData();
-            $entityManager->persist($groupe);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La description du groupe a été sauvegardé.');
-
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
-        }
-
-        return $this->render('groupe/description.twig', [
-            'groupe' => $groupe,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Choix du scenariste.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/scenariste', name: 'scenariste')]
-    public function scenaristeAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeScenaristeForm::class, $groupe)
+        $form = $this->createForm(GroupeDocumentForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -153,135 +144,14 @@ class GroupeController extends AbstractController
             $entityManager->persist($groupe);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Le groupe a été sauvegardé.');
+            $this->addFlash('success', 'Le document a été ajouté au groupe.');
 
             return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('groupe/scenariste.twig', [
+        return $this->render('groupe/documents.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * fourni le tableau de quête pour tous les groupes.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/quetes', name: 'quetes')]
-    public function quetesAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        SerializerInterface $serializer,
-    ) {
-        $repo = $entityManager->getRepository(Groupe::class);
-        $groupes = $repo->findAllOrderByNumero();
-        $ressourceRares = new ArrayCollection($entityManager->getRepository(Ressource::class)->findRare());
-        $ressourceCommunes = new ArrayCollection($entityManager->getRepository(Ressource::class)->findCommun());
-
-        $quetes = new ArrayCollection();
-        $stats = [];
-
-        foreach ($groupes as $groupe) {
-            $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
-            $quetes[] = [
-                'quete' => $quete,
-                'groupe' => $groupe,
-            ];
-            foreach ($quete['needs'] as $ressources) {
-                if (isset($stats[$ressources->getLabel()])) {
-                    ++$stats[$ressources->getLabel()];
-                } else {
-                    $stats[$ressources->getLabel()] = 1;
-                }
-            }
-        }
-
-        if ($request->get('csv')) {
-            $header = [
-                'nom',
-                'pays',
-                'res 1',
-                'res 2',
-                'res 3',
-                'res 4',
-                'res 5',
-                'res 6',
-                'res 7',
-                'Départ',
-                'Arrivée',
-                'recompense 1',
-                'recompense 2',
-                'recompense 3',
-                'recompense 4',
-                'recompense 5',
-                'description',
-            ];
-
-            header('Content-Type: text/csv');
-            header('Content-Disposition: attachment; filename=eveoniris_quetes_'.date('Ymd').'.csv');
-            header('Pragma: no-cache');
-            header('Expires: 0');
-
-            $output = fopen('php://output', 'wb');
-
-            fputcsv($output, $header, ';');
-
-            foreach ($quetes as $quete) {
-                $line = [];
-                $line[] = mb_convert_encoding(
-                    '#'.$quete['groupe']->getNumero().' '.$quete['groupe']->getNom(),
-                    'ISO-8859-1'
-                );
-                $line[] = $quete['groupe']->getTerritoire() ? mb_convert_encoding(
-                    (string)$quete['groupe']->getTerritoire()->getNom(),
-                    'ISO-8859-1'
-                ) : '';
-
-                foreach ($quete['quete']['needs'] as $ressources) {
-                    $line[] = mb_convert_encoding((string)$ressources->getLabel(), 'ISO-8859-1');
-                }
-
-                $line[] = '';
-                $line[] = '';
-                foreach ($quete['quete']['recompenses'] as $recompense) {
-                    $line[] = mb_convert_encoding((string)$recompense, 'ISO-8859-1');
-                }
-
-                $line[] = '';
-                fputcsv($output, $line, ';');
-            }
-
-            fclose($output);
-            exit;
-        }
-
-        return $this->render('groupe/quetes.twig', [
-            'quetes' => $quetes,
-            'stats' => $stats,
-        ]);
-    }
-
-    /**
-     * Générateur de quêtes commerciales.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/quete', name: 'quete')]
-    public function queteAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe,
-    ): Response {
-        $ressourceRares = new ArrayCollection($entityManager->getRepository(Ressource::class)->findRare());
-        $ressourceCommunes = new ArrayCollection($entityManager->getRepository(Ressource::class)->findCommun());
-        $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
-
-        return $this->render('groupe/quete.twig', [
-            'groupe' => $groupe,
-            'needs' => $quete['needs'],
-            'valeur' => $quete['valeur'],
-            'cible' => $quete['cible'],
-            'recompenses' => $quete['recompenses'],
         ]);
     }
 
@@ -358,6 +228,135 @@ class GroupeController extends AbstractController
         return $this->render('groupe/ingredient.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Gestion des objets du groupe.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/{groupe}/items', name: 'items')]
+    public function adminItemAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(GroupeItemForm::class, $groupe)
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $groupe = $form->getData();
+            $entityManager->persist($groupe);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'L\'objet a été ajouté au groupe.');
+
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+        }
+
+        return $this->render('groupe/items.twig', [
+            'groupe' => $groupe,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Ajouter un participant dans un groupe.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function adminParticipantAddAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponse|Response {
+        $groupe = $request->get('groupe');
+
+        $repo = $entityManager->getRepository(Participant::class);
+
+        // trouve tous les participants n'étant pas dans un groupe
+        $participants = $repo->findAllByGroupeNull();
+
+        // creation du formulaire
+        $form = $this->createForm()
+            ->add('participant', 'entity', [
+                'label' => 'Choisissez le nouveau membre du groupe',
+                'required' => false,
+                'expanded' => true,
+                'multiple' => false,
+                'choice_label' => 'UserIdentity',
+                'class' => Participant::class,
+                'choices' => $participants,
+            ])
+            ->add('submit', SubmitType::class, ['label' => 'Ajouter']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $participant = $data['participant'];
+
+            $groupe->addParticipant($participant);
+            $participant->setGroupe($groupe);
+            // le personnage du joueur doit aussi changer de groupe
+            if ($participant->getPersonnage()) {
+                $personnage = $participant->getPersonnage();
+                $personnage->setGroupe($groupe);
+                $entityManager->persist($personnage);
+            }
+
+            $entityManager->persist($groupe);
+            $entityManager->persist($participant);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le participant a été ajouté au groupe.');
+
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+        }
+
+        return $this->render('groupe/addParticipant.twig', [
+            'groupe' => $groupe,
+            'participants' => $participants,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Retirer un participant du groupe.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function adminParticipantRemoveAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponse|Response {
+        $participantId = $request->get('participant');
+        $groupe = $request->get('groupe');
+
+        $participant = $entityManager->find(Participant::class, $participantId);
+
+        if ($request->isMethod('POST')) {
+            $personnage = $participant->getPersonnage();
+            if ($personnage) {
+                if ($personnage->getGroupe() == $groupe) {
+                    $personnage->removeGroupe($groupe);
+                }
+
+                $entityManager->persist($personnage);
+            }
+
+            $participant->removeGroupe($groupe);
+            $entityManager->persist($participant);
+            $entityManager->persist($groupe);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le participant a été retiré du groupe.');
+
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+        }
+
+        return $this->render('groupe/removeParticipant.twig', [
+            'groupe' => $groupe,
+            'participant' => $participant,
         ]);
     }
 
@@ -488,16 +487,116 @@ class GroupeController extends AbstractController
     }
 
     /**
-     * Ajoute un document dans le matériel du groupe.
+     * rendre disponible un groupe.
      */
     #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/documents', name: 'documents')]
-    public function adminDocumentAction(
+    public function availableAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Groupe $groupe,
+    ): RedirectResponse {
+        $groupe->setFree(true);
+        $entityManager->persist($groupe);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le groupe est maintenant disponible. Il pourra être réservé par un joueur');
+
+        return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+    }
+
+    /**
+     * Modifier la composition du groupe.
+     */
+    #[Route('/{groupe}/composition', name: 'composition')]
+    public function compositionAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeDocumentForm::class, $groupe)
+        $originalGroupeClasses = new ArrayCollection();
+
+        /*
+         *  Crée un tableau contenant les objets GroupeClasse du groupe
+         */
+        foreach ($groupe->getGroupeClasses() as $groupeClasse) {
+            $originalGroupeClasses->add($groupeClasse);
+        }
+
+        $form = $this->createForm(GroupeCompositionForm::class, $groupe)
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $groupe = $form->getData();
+
+            /*
+             * Pour toutes les classes du groupe
+             */
+            foreach ($groupe->getGroupeClasses() as $groupeClasses) {
+                $groupeClasses->setGroupe($groupe);
+            }
+
+            /*
+             *  supprime la relation entre le groupeClasse et le groupe
+             */
+            foreach ($originalGroupeClasses as $groupeClasse) {
+                if (false == $groupe->getGroupeClasses()->contains($groupeClasse)) {
+                    $entityManager->remove($groupeClasse);
+                }
+            }
+
+            $entityManager->persist($groupe);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'La composition du groupe a été sauvegardé.');
+
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+        }
+
+        return $this->render('groupe/composition.twig', [
+            'groupe' => $groupe,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/{groupe}/delete', name: 'delete', requirements: ['groupe' => Requirement::DIGITS], methods: [
+        'DELETE',
+        'GET',
+        'POST',
+    ])]
+    public function deleteAction(#[MapEntity] Groupe $groupe): RedirectResponse|Response
+    {
+        return $this->genericDelete(
+            $groupe,
+            'Supprimer un groupe',
+            'Le groupe a été supprimé',
+            'groupe.list',
+            [
+                ['route' => $this->generateUrl('groupe.list'), 'name' => 'Liste des groupes'],
+                [
+                    'route' => $this->generateUrl('groupe.detail', ['groupe' => $groupe->getId()]),
+                    'groupe' => $groupe->getId(),
+                    'name' => $groupe->getNom(),
+                    'content' => $groupe->getDescription(),
+                ],
+                ['name' => 'Supprimer un groupe'],
+            ]
+        );
+    }
+
+    /**
+     * Modification de la description du groupe.
+     */
+    #[Route('/{groupe}/description', name: 'description')]
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function descriptionAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(GroupeDescriptionForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -507,45 +606,113 @@ class GroupeController extends AbstractController
             $entityManager->persist($groupe);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Le document a été ajouté au groupe.');
+            $this->addFlash('success', 'La description du groupe a été sauvegardé.');
 
             return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('groupe/documents.twig', [
+        return $this->render('groupe/description.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
     }
 
     /**
-     * Gestion des objets du groupe.
+     * Affiche le détail d'un groupe.
      */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/items', name: 'items')]
-    public function adminItemAction(
+    #[Route('/{groupe}', name: 'detail')]
+    #[Route('/{groupe}/gn/{gn}', name: 'detail.gn')]
+    public function detailAction(
         Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe,
+        #[MapEntity] ?Groupe $groupe,
+        #[MapEntity] ?Gn $gn = null,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeItemForm::class, $groupe)
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+        // TODO had access like personnage detail
 
-        $form->handleRequest($request);
+        /*
+         * Si le groupe existe, on affiche son détail
+         * Sinon on envoie une erreur
+         */
+        if (!$groupe) {
+            $this->addFlash('error', 'Le groupe n\'a pas été trouvé.');
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $groupe = $form->getData();
-            $entityManager->persist($groupe);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'L\'objet a été ajouté au groupe.');
-
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.list');
         }
 
-        return $this->render('groupe/items.twig', [
-            'groupe' => $groupe,
-            'form' => $form->createView(),
+        $canSeePrivateDetail = $this->isGranted(Role::SCENARISTE->value);
+        $canEdit = $this->isGranted(Role::SCENARISTE->value);
+        // Est-ce un membre du groupe ?
+        if (!$canSeePrivateDetail) {
+            $responsable = $groupe->getUserRelatedByResponsableId();
+            $user = $this->getUser();
+            if ($responsable && $user && $responsable?->getId() === $user?->getId()) {
+                $canSeePrivateDetail = true;
+            } else {
+                /** @var Participant $participant */
+                $participant = $this->getUser()?->getLastParticipant();
+                if ($participant) {
+                    $canSeePrivateDetail = $participant->getGroupeGn()?->getGroupe()->getId() === $groupe->getId();
+                }
+            }
+        }
+
+        // est-ce un personnage titré (peut être extérieur au groupe)
+        if (!$canSeePrivateDetail) {
+            /** @var GroupeGn $groupeGn */
+            $groupeGn = $groupe->getGroupeGns()->last();
+            if ($groupeGn) {
+                $canSeePrivateDetail = $groupeGn->hasTitle($this->getUser());
+                $canEdit = $groupeGn->hasTitle($this->getUser());
+            }
+        }
+
+        return $this->render(
+            'groupe/detail.twig',
+            [
+                'groupe' => $groupe,
+                'tab' => $request->get('tab', 'detail'),
+                'canSeePrivateDetail' => $canSeePrivateDetail,
+                'canEdit' => $canEdit,
+                'gn' => $gn,
+            ]
+        );
+    }
+
+    /**
+     * Visualisation des liens entre groupes.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/diplomatie', name: 'diplomatie')]
+    public function diplomatieAction(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $repo = $entityManager->getRepository(Groupe::class);
+        $groupes = $repo->findBy(['pj' => true], ['nom' => 'ASC']);
+
+        return $this->render('diplomatie.twig', [
+            'groupes' => $groupes,
+        ]);
+    }
+
+    /**
+     * Impression des liens entre groupes.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/diplomatie/print', name: 'diplomatie.print')]
+    public function diplomatiePrintAction(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $repo = $entityManager->getRepository(GroupeAllie::class);
+        $alliances = $repo->findByAlliances();
+        $demandeAlliances = $repo->findByDemandeAlliances();
+
+        $repo = $entityManager->getRepository(GroupeEnemy::class);
+        $guerres = $repo->findByWar();
+        $demandePaix = $repo->findByRequestPeace();
+
+        return $this->render('diplomatiePrint.twig', [
+            'alliances' => $alliances,
+            'demandeAlliances' => $demandeAlliances,
+            'guerres' => $guerres,
+            'demandePaix' => $demandePaix,
         ]);
     }
 
@@ -581,13 +748,97 @@ class GroupeController extends AbstractController
     }
 
     /**
-     * Gestion des membres du groupe.
+     * Exportation de la liste des groupes au format CSV.
      */
-    public function usersAction(Request $request, EntityManagerInterface $entityManager, Groupe $groupe): Response
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function exportAction(Request $request, EntityManagerInterface $entityManager): void
     {
-        return $this->render('groupe/users.twig', [
-            'groupe' => $groupe,
+        $repo = $entityManager->getRepository(Groupe::class);
+        $groupes = $repo->findAll();
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename=eveoniris_groupe_'.date('Ymd').'.csv');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        $output = fopen('php://output', 'w');
+
+        // header
+        fputcsv(
+            $output,
+            [
+                'nom',
+                'description',
+                'code',
+                'creation_date',
+            ],
+            ','
+        );
+
+        foreach ($groupes as $groupe) {
+            fputcsv($output, $groupe->getExportValue(), ',');
+        }
+
+        fclose($output);
+        exit;
+    }
+
+    /**
+     * Liste des groupes.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('', name: 'list')]
+    public function listAction(
+        Request $request,
+        PagerService $pagerService,
+        GroupeRepository $groupeRepository,
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($groupeRepository);
+
+        return $this->render('groupe/list.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $groupeRepository->searchPaginated($pagerService),
         ]);
+        /* OLD
+        $order_by = $request->get('order_by') ?: 'numero';
+        $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
+        $limit = (int)($request->get('limit') ?: 50);
+        $page = (int)($request->get('page') ?: 1);
+        $offset = ($page - 1) * $limit;
+        $type = null;
+        $value = null;
+
+        $form = $this->createForm(GroupeFindForm::class);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $type = $data['type'];
+            $value = $data['search'];
+        }
+
+        $repo = $entityManager->getRepository(Groupe::class);
+
+        $groupes = $repo->findList(
+            $type,
+            $value,
+            $limit,
+            $offset,
+            ['by' => $order_by, 'dir' => $order_dir]
+        );
+
+        $paginator = $repo->findPaginatedQuery(
+            $groupes,
+            $this->getRequestLimit(),
+            $this->getRequestPage()
+        );
+
+        return $this->render('groupe/list.twig', [
+            'form' => $form->createView(),
+            'paginator' => $paginator,
+        ]);
+        */
     }
 
     /**
@@ -613,61 +864,6 @@ class GroupeController extends AbstractController
     }
 
     /**
-     * devérouillage d'un groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/unlock', name: 'unlock')]
-    public function unlockAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe,
-    ): RedirectResponse {
-        $groupe->setLock(false);
-        $entityManager->persist($groupe);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Le groupe est dévérouillé');
-
-        return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
-    }
-
-    /**
-     * rendre disponible un groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    public function availableAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        Groupe $groupe,
-    ): RedirectResponse {
-        $groupe->setFree(true);
-        $entityManager->persist($groupe);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Le groupe est maintenant disponible. Il pourra être réservé par un joueur');
-
-        return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
-    }
-
-    /**
-     * rendre indisponible un groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    public function unvailableAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        Groupe $groupe,
-    ): RedirectResponse {
-        $groupe->setFree(false);
-        $entityManager->persist($groupe);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Le groupe est maintenant réservé. Il ne pourra plus être réservé par un joueur');
-
-        return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
-    }
-
-    /**
      * Lier un pays à un groupe.
      */
     #[IsGranted('ROLE_SCENARISTE')]
@@ -677,8 +873,8 @@ class GroupeController extends AbstractController
         EntityManagerInterface $entityManager,
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $form = $this->createForm()
-            ->add('territoire', 'entity', [
+        $form = $this->createFormBuilder()
+            ->add('territoire', EntityType::class, [
                 'required' => true,
                 'class' => Territoire::class,
                 'choice_label' => 'nomComplet',
@@ -692,7 +888,8 @@ class GroupeController extends AbstractController
                     return $qb;
                 },
             ])
-            ->add('add', SubmitType::class, ['label' => 'Ajouter le territoire']);
+            ->add('add', SubmitType::class, ['label' => 'Ajouter le territoire'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -717,190 +914,42 @@ class GroupeController extends AbstractController
     }
 
     /**
-     * Ajout d'un territoire sous le controle du groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/territoire/add', name: 'territoire.add')]
-    public function territoireAddAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeForm::class)
-            ->add('territoire', 'entity', [
-                'required' => true,
-                'class' => Territoire::class,
-                'choice_label' => 'nomComplet',
-                'label' => 'choisissez le territoire',
-                'expanded' => true,
-                'query_builder' => static function (TerritoireRepository $er) {
-                    $qb = $er->createQueryBuilder('t');
-                    $qb->orderBy('t.nom', 'ASC');
-
-                    return $qb;
-                },
-            ])
-            ->add('add', SubmitType::class, ['label' => 'Ajouter le territoire']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $territoire = $data['territoire'];
-
-            $territoire->setGroupe($groupe);
-
-            $entityManager->persist($territoire);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le territoire est contrôlé par le groupe');
-
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
-        }
-
-        return $this->render('groupe/addTerritoire.twig', [
-            'groupe' => $groupe,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Retirer un territoire du controle du groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/territoire/{territoire}/remove', name: 'territoire.remove')]
-    public function territoireRemoveAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        Groupe $groupe,
-        Territoire $territoire,
-    ): RedirectResponse|Response {
-        $form = $this->createForm()
-            ->add('remove', SubmitType::class, ['label' => 'Retirer le territoire']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $territoire->setGroupeNull();
-
-            $entityManager->persist($territoire);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le territoire n\'est plus controlé par le groupe');
-
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
-        }
-
-        return $this->render('groupe/removeTerritoire.twig', [
-            'groupe' => $groupe,
-            'territoire' => $territoire,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Gestion de la restauration d'un groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/restauration', name: 'restauration')]
-    public function restaurationAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        Groupe $groupe,
-    ): RedirectResponse|Response {
-        $availableTaverns = GroupeManager::getAvailableTaverns();
-
-        $formBuilder = $this->createForm();
-
-        $participants = $groupe->getParticipants();
-
-        $iterator = $participants->getIterator();
-        $iterator->uasort(static function ($first, $second): int {
-            if ($first === $second) {
-                return 0;
-            }
-
-            return $first->getUser()->getEtatCivil()->getNom() < $second->getUser()->getEtatCivil()->getNom() ? -1 : 1;
-        });
-        $participants = new ArrayCollection(iterator_to_array($iterator));
-
-        foreach ($participants as $participant) {
-            $formBuilder->add($participant->getId(), 'choice', [
-                'label' => $participant->getUser()->getEtatCivil()->getNom().' '.$participant->getUser()->getEtatCivil(
-                    )->getPrenom().' '.$participant->getUser()->getEmail(),
-                'choices' => $availableTaverns,
-                'data' => $participant->getTavernId(),
-                'multiple' => false,
-                'expanded' => false,
-            ]);
-        }
-
-        $form = $formBuilder->add('save', SubmitType::class, ['label' => 'Enregistrer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $result = $form->getData();
-            foreach ($result as $joueur => $tavern) {
-                $j = $entityManager->getRepository(Participant::class)->find($joueur);
-                if ($j && $j->getTavernId() != $tavern) {
-                    $j->setTavernId($tavern);
-                    $entityManager->persist($j);
-                }
-            }
-
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Les options de restauration sont enregistrés.');
-
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
-        }
-
-        return $this->render('groupe/restauration.twig', [
-            'groupe' => $groupe,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Impression matériel pour les personnages du groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/print/materiel', name: 'print.materiel')]
-    public function printMaterielAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe,
-    ): Response {
-        // recherche les personnages du prochains GN membre du groupe
-        $session = $groupe->getNextSession();
-        $participants = $session->getParticipants();
-
-        return $this->render('groupe/printMateriel.twig', [
-            'groupe' => $groupe,
-            'participants' => $participants,
-        ]);
-    }
-
-    /**
-     * Impression background pour les personnages du groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/print/background', name: 'print.background')]
-    public function printBackgroundAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe,
-    ): Response {
-        return $this->render('groupe/printBackground.twig', [
-            'groupe' => $groupe,
-        ]);
-    }
-
-    /**
      * Imprimmer toutes les enveloppes de tous les groupes.
      */
-    /** @deprecated:  see GnController**/
+
+    /**
+     * Modification du nombre de place disponibles dans un groupe.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function placeAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    {
+        $id = $request->get('index');
+        $groupe = $entityManager->find(Groupe::class, $id);
+
+        if ('POST' == $request->getMethod()) {
+            $newPlaces = $request->get('place');
+
+            /*
+             * Met à jour uniquement si la valeur à changé
+             */
+            if ($groupe->getClasseOpen() != $newPlaces) {
+                $groupe->setClasseOpen($newPlaces);
+                $entityManager->persist($groupe);
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le nombre de place disponible a été mis à jour');
+
+            return $this->redirectToRoute('groupe.list', [], 303);
+        }
+
+        return $this->render('groupe/place.twig', [
+            'groupe' => $groupe,
+        ]);
+    }
+
+    /** @deprecated:  see GnController* */
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/print', name: 'print')]
     public function printAllAction(Request $request, EntityManagerInterface $entityManager): Response
@@ -923,6 +972,41 @@ class GroupeController extends AbstractController
 
         return $this->render('groupe/printAll.twig', [
             'groupes' => $groupes,
+        ]);
+    }
+
+    /**
+     * Impression background pour les personnages du groupe.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/{groupe}/print/background', name: 'print.background')]
+    public function printBackgroundAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe,
+    ): Response {
+        return $this->render('groupe/printBackground.twig', [
+            'groupe' => $groupe,
+        ]);
+    }
+
+    /**
+     * Impression matériel pour les personnages du groupe.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/{groupe}/print/materiel', name: 'print.materiel')]
+    public function printMaterielAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe,
+    ): Response {
+        // recherche les personnages du prochains GN membre du groupe
+        $session = $groupe->getNextSession();
+        $participants = $session->getParticipants();
+
+        return $this->render('groupe/printMateriel.twig', [
+            'groupe' => $groupe,
+            'participants' => $participants,
         ]);
     }
 
@@ -991,196 +1075,218 @@ class GroupeController extends AbstractController
     }
 
     /**
-     * Visualisation des liens entre groupes.
+     * Générateur de quêtes commerciales.
      */
     #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/diplomatie', name: 'diplomatie')]
-    public function diplomatieAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $repo = $entityManager->getRepository(Groupe::class);
-        $groupes = $repo->findBy(['pj' => true], ['nom' => 'ASC']);
-
-        return $this->render('diplomatie.twig', [
-            'groupes' => $groupes,
-        ]);
-    }
-
-    /**
-     * Impression des liens entre groupes.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/diplomatie/print', name: 'diplomatie.print')]
-    public function diplomatiePrintAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $repo = $entityManager->getRepository(GroupeAllie::class);
-        $alliances = $repo->findByAlliances();
-        $demandeAlliances = $repo->findByDemandeAlliances();
-
-        $repo = $entityManager->getRepository(GroupeEnemy::class);
-        $guerres = $repo->findByWar();
-        $demandePaix = $repo->findByRequestPeace();
-
-        return $this->render('diplomatiePrint.twig', [
-            'alliances' => $alliances,
-            'demandeAlliances' => $demandeAlliances,
-            'guerres' => $guerres,
-            'demandePaix' => $demandePaix,
-        ]);
-    }
-
-    /**
-     * Liste des groupes.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('', name: 'list')]
-    public function listAction(
+    #[Route('/{groupe}/quete', name: 'quete')]
+    public function queteAction(
         Request $request,
-        PagerService $pagerService,
-        GroupeRepository $groupeRepository,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe,
     ): Response {
-        $pagerService->setRequest($request)->setRepository($groupeRepository);
+        $ressourceRares = new ArrayCollection($entityManager->getRepository(Ressource::class)->findRare());
+        $ressourceCommunes = new ArrayCollection($entityManager->getRepository(Ressource::class)->findCommun());
+        $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
 
-        return $this->render('groupe/list.twig', [
-            'pagerService' => $pagerService,
-            'paginator' => $groupeRepository->searchPaginated($pagerService),
-        ]);
-        /* OLD
-        $order_by = $request->get('order_by') ?: 'numero';
-        $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int)($request->get('limit') ?: 50);
-        $page = (int)($request->get('page') ?: 1);
-        $offset = ($page - 1) * $limit;
-        $type = null;
-        $value = null;
-
-        $form = $this->createForm(GroupeFindForm::class);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $type = $data['type'];
-            $value = $data['search'];
-        }
-
-        $repo = $entityManager->getRepository(Groupe::class);
-
-        $groupes = $repo->findList(
-            $type,
-            $value,
-            $limit,
-            $offset,
-            ['by' => $order_by, 'dir' => $order_dir]
-        );
-
-        $paginator = $repo->findPaginatedQuery(
-            $groupes,
-            $this->getRequestLimit(),
-            $this->getRequestPage()
-        );
-
-        return $this->render('groupe/list.twig', [
-            'form' => $form->createView(),
-            'paginator' => $paginator,
-        ]);
-        */
-    }
-
-    /**
-     * Ajouter un participant dans un groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    public function adminParticipantAddAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-    ): RedirectResponse|Response {
-        $groupe = $request->get('groupe');
-
-        $repo = $entityManager->getRepository(Participant::class);
-
-        // trouve tous les participants n'étant pas dans un groupe
-        $participants = $repo->findAllByGroupeNull();
-
-        // creation du formulaire
-        $form = $this->createForm()
-            ->add('participant', 'entity', [
-                'label' => 'Choisissez le nouveau membre du groupe',
-                'required' => false,
-                'expanded' => true,
-                'multiple' => false,
-                'choice_label' => 'UserIdentity',
-                'class' => Participant::class,
-                'choices' => $participants,
-            ])
-            ->add('submit', SubmitType::class, ['label' => 'Ajouter']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $participant = $data['participant'];
-
-            $groupe->addParticipant($participant);
-            $participant->setGroupe($groupe);
-            // le personnage du joueur doit aussi changer de groupe
-            if ($participant->getPersonnage()) {
-                $personnage = $participant->getPersonnage();
-                $personnage->setGroupe($groupe);
-                $entityManager->persist($personnage);
-            }
-
-            $entityManager->persist($groupe);
-            $entityManager->persist($participant);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le participant a été ajouté au groupe.');
-
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
-        }
-
-        return $this->render('groupe/addParticipant.twig', [
+        return $this->render('groupe/quete.twig', [
             'groupe' => $groupe,
-            'participants' => $participants,
-            'form' => $form->createView(),
+            'needs' => $quete['needs'],
+            'valeur' => $quete['valeur'],
+            'cible' => $quete['cible'],
+            'recompenses' => $quete['recompenses'],
         ]);
     }
 
     /**
-     * Retirer un participant du groupe.
+     * fourni le tableau de quête pour tous les groupes.
      */
     #[IsGranted('ROLE_SCENARISTE')]
-    public function adminParticipantRemoveAction(
+    #[Route('/quetes', name: 'quetes')]
+    public function quetesAction(
         Request $request,
         EntityManagerInterface $entityManager,
-    ): RedirectResponse|Response {
-        $participantId = $request->get('participant');
-        $groupe = $request->get('groupe');
+        SerializerInterface $serializer,
+    ) {
+        $repo = $entityManager->getRepository(Groupe::class);
+        $groupes = $repo->findAllOrderByNumero();
+        $ressourceRares = new ArrayCollection($entityManager->getRepository(Ressource::class)->findRare());
+        $ressourceCommunes = new ArrayCollection($entityManager->getRepository(Ressource::class)->findCommun());
 
-        $participant = $entityManager->find(Participant::class, $participantId);
+        $quetes = new ArrayCollection();
+        $stats = [];
 
-        if ($request->isMethod('POST')) {
-            $personnage = $participant->getPersonnage();
-            if ($personnage) {
-                if ($personnage->getGroupe() == $groupe) {
-                    $personnage->removeGroupe($groupe);
+        foreach ($groupes as $groupe) {
+            $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
+            $quetes[] = [
+                'quete' => $quete,
+                'groupe' => $groupe,
+            ];
+            foreach ($quete['needs'] as $ressources) {
+                if (isset($stats[$ressources->getLabel()])) {
+                    ++$stats[$ressources->getLabel()];
+                } else {
+                    $stats[$ressources->getLabel()] = 1;
+                }
+            }
+        }
+
+        if ($request->get('csv')) {
+            $header = [
+                'nom',
+                'pays',
+                'res 1',
+                'res 2',
+                'res 3',
+                'res 4',
+                'res 5',
+                'res 6',
+                'res 7',
+                'Départ',
+                'Arrivée',
+                'recompense 1',
+                'recompense 2',
+                'recompense 3',
+                'recompense 4',
+                'recompense 5',
+                'description',
+            ];
+
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename=eveoniris_quetes_'.date('Ymd').'.csv');
+            header('Pragma: no-cache');
+            header('Expires: 0');
+
+            $output = fopen('php://output', 'wb');
+
+            fputcsv($output, $header, ';');
+
+            foreach ($quetes as $quete) {
+                $line = [];
+                $line[] = mb_convert_encoding(
+                    '#'.$quete['groupe']->getNumero().' '.$quete['groupe']->getNom(),
+                    'ISO-8859-1'
+                );
+                $line[] = $quete['groupe']->getTerritoire() ? mb_convert_encoding(
+                    (string)$quete['groupe']->getTerritoire()->getNom(),
+                    'ISO-8859-1'
+                ) : '';
+
+                foreach ($quete['quete']['needs'] as $ressources) {
+                    $line[] = mb_convert_encoding((string)$ressources->getLabel(), 'ISO-8859-1');
                 }
 
-                $entityManager->persist($personnage);
+                $line[] = '';
+                $line[] = '';
+                foreach ($quete['quete']['recompenses'] as $recompense) {
+                    $line[] = mb_convert_encoding((string)$recompense, 'ISO-8859-1');
+                }
+
+                $line[] = '';
+                fputcsv($output, $line, ';');
             }
 
-            $participant->removeGroupe($groupe);
-            $entityManager->persist($participant);
-            $entityManager->persist($groupe);
+            fclose($output);
+            exit;
+        }
+
+        return $this->render('groupe/quetes.twig', [
+            'quetes' => $quetes,
+            'stats' => $stats,
+        ]);
+    }
+
+    /**
+     * Gestion de la restauration d'un groupe.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/{groupe}/restauration', name: 'restauration')]
+    public function restaurationAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Groupe $groupe,
+    ): RedirectResponse|Response {
+        $availableTaverns = GroupeManager::getAvailableTaverns();
+
+        $formBuilder = $this->createForm();
+
+        $participants = $groupe->getParticipants();
+
+        $iterator = $participants->getIterator();
+        $iterator->uasort(static function ($first, $second): int {
+            if ($first === $second) {
+                return 0;
+            }
+
+            return $first->getUser()->getEtatCivil()->getNom() < $second->getUser()->getEtatCivil()->getNom() ? -1 : 1;
+        });
+        $participants = new ArrayCollection(iterator_to_array($iterator));
+
+        foreach ($participants as $participant) {
+            $formBuilder->add($participant->getId(), 'choice', [
+                'label' => $participant->getUser()->getEtatCivil()->getNom().' '.$participant->getUser()->getEtatCivil(
+                    )->getPrenom().' '.$participant->getUser()->getEmail(),
+                'choices' => $availableTaverns,
+                'data' => $participant->getTavernId(),
+                'multiple' => false,
+                'expanded' => false,
+            ]);
+        }
+
+        $form = $formBuilder->add('save', SubmitType::class, ['label' => 'Enregistrer']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $result = $form->getData();
+            foreach ($result as $joueur => $tavern) {
+                $j = $entityManager->getRepository(Participant::class)->find($joueur);
+                if ($j && $j->getTavernId() != $tavern) {
+                    $j->setTavernId($tavern);
+                    $entityManager->persist($j);
+                }
+            }
+
             $entityManager->flush();
 
-            $this->addFlash('success', 'Le participant a été retiré du groupe.');
+            $this->addFlash('success', 'Les options de restauration sont enregistrés.');
 
             return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('groupe/removeParticipant.twig', [
+        return $this->render('groupe/restauration.twig', [
             'groupe' => $groupe,
-            'participant' => $participant,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Choix du scenariste.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/{groupe}/scenariste', name: 'scenariste')]
+    public function scenaristeAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(GroupeScenaristeForm::class, $groupe)
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $groupe = $form->getData();
+            $entityManager->persist($groupe);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le groupe a été sauvegardé.');
+
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+        }
+
+        return $this->render('groupe/scenariste.twig', [
+            'groupe' => $groupe,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -1237,120 +1343,130 @@ class GroupeController extends AbstractController
     }
 
     /**
-     * Modification du nombre de place disponibles dans un groupe.
+     * Ajout d'un territoire sous le controle du groupe.
      */
     #[IsGranted('ROLE_SCENARISTE')]
-    public function placeAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
-    {
-        $id = $request->get('index');
-        $groupe = $entityManager->find(Groupe::class, $id);
-
-        if ('POST' == $request->getMethod()) {
-            $newPlaces = $request->get('place');
-
-            /*
-             * Met à jour uniquement si la valeur à changé
-             */
-            if ($groupe->getClasseOpen() != $newPlaces) {
-                $groupe->setClasseOpen($newPlaces);
-                $entityManager->persist($groupe);
-            }
-
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le nombre de place disponible a été mis à jour');
-
-            return $this->redirectToRoute('groupe.list', [], 303);
-        }
-
-        return $this->render('groupe/place.twig', [
-            'groupe' => $groupe,
-        ]);
-    }
-
-    /**
-     * Ajout d'un background à un groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    public function addBackgroundAction(
+    #[Route('/{groupe}/territoire/add', name: 'territoire.add')]
+    public function territoireAddAction(
         Request $request,
         EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $id = $request->get('index');
-        $groupe = $entityManager->find(Groupe::class, $id);
+        $form = $this->createFormBuilder()
+            ->add('territoire', EntityType::class, [
+                'required' => true,
+                'class' => Territoire::class,
+                'choice_label' => 'nomComplet',
+                'label' => 'choisissez le territoire',
+                'expanded' => true,
+                'query_builder' => static function (TerritoireRepository $er) {
+                    $qb = $er->createQueryBuilder('t');
+                    $qb->orderBy('t.nom', 'ASC');
 
-        $background = new Background();
-        $background->setGroupe($groupe);
-
-        $form = $this->createForm(BackgroundForm::class, $background)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+                    return $qb;
+                },
+            ])
+            ->add('add', SubmitType::class, ['label' => 'Ajouter le territoire'])
+            ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->addFlash('success', 'Le background du groupe a été créé');
+            $data = $form->getData();
+            $territoire = $data['territoire'];
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()], 303);
+            $territoire->setGroupe($groupe);
+
+            $entityManager->persist($territoire);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le territoire est contrôlé par le groupe');
+
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('groupe/background/add.twig', [
+        return $this->render('groupe/addTerritoire.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
     }
 
     /**
-     * Mise à jour du background d'un groupe.
+     * Retirer un territoire du controle du groupe.
      */
     #[IsGranted('ROLE_SCENARISTE')]
-    public function updateBackgroundAction(
+    #[Route('/{groupe}/territoire/{territoire}/remove', name: 'territoire.remove')]
+    public function territoireRemoveAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+        Groupe $groupe,
+        Territoire $territoire,
     ): RedirectResponse|Response {
-        $id = $request->get('index');
-        $groupe = $entityManager->find(Groupe::class, $id);
-
-        $form = $this->createForm(BackgroundForm::class, $groupe->getBackground())
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createFormBuilder()
+            ->add('remove', SubmitType::class, ['label' => 'Retirer le territoire'])
+        ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $background = $form->getData();
+            $territoire->setGroupeNull();
 
-            $entityManager->persist($background);
-            $entityManager->flush();
+            $this->entityManager->persist($territoire);
+            $this->entityManager->flush();
 
-            $this->addFlash('success', 'Le background du groupe a été mis à jour');
+            $this->addFlash('success', 'Le territoire n\'est plus controlé par le groupe');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()], 303);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
-        return $this->render('groupe/background/update.twig', [
+        return $this->render('groupe/removeTerritoire.twig', [
             'groupe' => $groupe,
+            'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
-    }
-
-    /**
-     * Ajout d'un groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/add', name: 'add')]
-    public function addAction(Request $request): RedirectResponse|Response
-    {
-        return $this->handleCreateOrUpdate(
-            $request,
-            new Groupe(),
-
-            GroupeForm::class
-        );
     }
 
     /**
      * Modification d'un groupe.
      */
     // TODO
+    /**
+     * devérouillage d'un groupe.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/{groupe}/unlock', name: 'unlock')]
+    public function unlockAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Groupe $groupe,
+    ): RedirectResponse {
+        $groupe->setLock(false);
+        $entityManager->persist($groupe);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le groupe est dévérouillé');
+
+        return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+    }
+
+    /**
+     * rendre indisponible un groupe.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function unvailableAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Groupe $groupe,
+    ): RedirectResponse {
+        $groupe->setFree(false);
+        $entityManager->persist($groupe);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le groupe est maintenant réservé. Il ne pourra plus être réservé par un joueur');
+
+        return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+    }
+
+
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/update/{groupe}', name: 'update')]
     public function updateAction(
@@ -1462,156 +1578,45 @@ class GroupeController extends AbstractController
     }
 
     /**
-     * Affiche le détail d'un groupe.
+     * Mise à jour du background d'un groupe.
      */
-    #[Route('/{groupe}', name: 'detail')]
-    #[Route('/{groupe}/gn/{gn}', name: 'detail.gn')]
-    public function detailAction(
-        Request $request,
-        #[MapEntity] ?Groupe $groupe,
-        #[MapEntity] ?Gn $gn = null,
-    ): RedirectResponse|Response {
-        // TODO had access like personnage detail
-
-        /*
-         * Si le groupe existe, on affiche son détail
-         * Sinon on envoie une erreur
-         */
-        if (!$groupe) {
-            $this->addFlash('error', 'Le groupe n\'a pas été trouvé.');
-
-            return $this->redirectToRoute('groupe.list');
-        }
-
-        $canSeePrivateDetail = $this->isGranted(Role::SCENARISTE->value);
-        $canEdit = $this->isGranted(Role::SCENARISTE->value);
-        // Est-ce un membre du groupe ?
-        if (!$canSeePrivateDetail) {
-            $responsable = $groupe->getUserRelatedByResponsableId();
-            $user = $this->getUser();
-            if ($responsable && $user && $responsable?->getId() === $user?->getId()) {
-                $canSeePrivateDetail = true;
-            } else {
-                /** @var Participant $participant */
-                $participant = $this->getUser()?->getLastParticipant();
-                if ($participant) {
-                    $canSeePrivateDetail = $participant->getGroupeGn()?->getGroupe()->getId() === $groupe->getId();
-                }
-            }
-        }
-
-        // est-ce un personnage titré (peut être extérieur au groupe)
-        if (!$canSeePrivateDetail) {
-            /** @var GroupeGn $groupeGn */
-            $groupeGn = $groupe->getGroupeGns()->last();
-            if ($groupeGn) {
-                $canSeePrivateDetail = $groupeGn->hasTitle($this->getUser());
-                $canEdit = $groupeGn->hasTitle($this->getUser());
-            }
-        }
-
-        return $this->render(
-            'groupe/detail.twig',
-            [
-                'groupe' => $groupe,
-                'tab' => $request->get('tab', 'detail'),
-                'canSeePrivateDetail' => $canSeePrivateDetail,
-                'canEdit' => $canEdit,
-                'gn' => $gn,
-            ]
-        );
-    }
-
     #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/delete', name: 'delete', requirements: ['groupe' => Requirement::DIGITS], methods: [
-        'DELETE',
-        'GET',
-        'POST',
-    ])]
-    public function deleteAction(#[MapEntity] Groupe $groupe): RedirectResponse|Response
-    {
-        return $this->genericDelete(
-            $groupe,
-            'Supprimer un groupe',
-            'Le groupe a été supprimé',
-            'groupe.list',
-            [
-                ['route' => $this->generateUrl('groupe.list'), 'name' => 'Liste des groupes'],
-                [
-                    'route' => $this->generateUrl('groupe.detail', ['groupe' => $groupe->getId()]),
-                    'groupe' => $groupe->getId(),
-                    'name' => $groupe->getNom(),
-                    'content' => $groupe->getDescription(),
-                ],
-                ['name' => 'Supprimer un groupe'],
-            ]
-        );
+    public function updateBackgroundAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponse|Response {
+        $id = $request->get('index');
+        $groupe = $entityManager->find(Groupe::class, $id);
+
+        $form = $this->createForm(BackgroundForm::class, $groupe->getBackground())
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $background = $form->getData();
+
+            $entityManager->persist($background);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le background du groupe a été mis à jour');
+
+            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()], 303);
+        }
+
+        return $this->render('groupe/background/update.twig', [
+            'groupe' => $groupe,
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
-     * Exportation de la liste des groupes au format CSV.
+     * Gestion des membres du groupe.
      */
-    #[IsGranted('ROLE_SCENARISTE')]
-    public function exportAction(Request $request, EntityManagerInterface $entityManager): void
+    public function usersAction(Request $request, EntityManagerInterface $entityManager, Groupe $groupe): Response
     {
-        $repo = $entityManager->getRepository(Groupe::class);
-        $groupes = $repo->findAll();
-
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_groupe_'.date('Ymd').'.csv');
-        header('Pragma: no-cache');
-        header('Expires: 0');
-
-        $output = fopen('php://output', 'w');
-
-        // header
-        fputcsv(
-            $output,
-            [
-                'nom',
-                'description',
-                'code',
-                'creation_date',
-            ],
-            ','
-        );
-
-        foreach ($groupes as $groupe) {
-            fputcsv($output, $groupe->getExportValue(), ',');
-        }
-
-        fclose($output);
-        exit;
-    }
-
-    protected function handleCreateOrUpdate(
-        Request $request,
-        $entity,
-        string $formClass,
-        array $breadcrumb = [],
-        array $routes = [],
-        array $msg = [],
-        ?callable $entityCallback = null,
-    ): RedirectResponse|Response {
-        $routes['root'] = 'groupe.';
-
-        return parent::handleCreateOrUpdate(
-            request: $request,
-            entity: $entity,
-            formClass: $formClass,
-            breadcrumb: $breadcrumb,
-            routes: $routes,
-            msg: [
-                ...$msg,
-                'entity' => $this->translator->trans('groupe'),
-                'entity_added' => $this->translator->trans('Le groupe a été ajoutée'),
-                'entity_updated' => $this->translator->trans('Le groupe a été mise à jour'),
-                'entity_deleted' => $this->translator->trans('Le groupe a été supprimé'),
-                'entity_list' => $this->translator->trans('Liste des groupes'),
-                'title_add' => $this->translator->trans('Ajouter un groupe'),
-                'title_update' => $this->translator->trans('Modifier un groupe'),
-            ],
-            entityCallback: $entityCallback
-        );
+        return $this->render('groupe/users.twig', [
+            'groupe' => $groupe,
+        ]);
     }
 }

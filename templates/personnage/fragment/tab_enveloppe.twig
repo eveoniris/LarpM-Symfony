@@ -33,7 +33,7 @@
 
                 <div class="list-group-item">
                     <h6 class="list-group-item-heading">Richesse
-                        : {{ personnageService.allRenomme(personnage)|default(0) }}
+                        : {{ personnageService.allRichesse(personnage)|default(0) }}
                         pièces d'argent</h6>
                 </div>
 
@@ -52,6 +52,7 @@
                     {% endfor %}
                 </div>
 
+                {# TODO materiel
                 {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD')) %}
                     <div class="list-group-item">
                         {% set enoughReligion = 0 %}
@@ -70,9 +71,11 @@
                         {% endif %}
                     </div>
                 {% endif %}
+                #}
+
                 <div class="list-group-item">
                     <h6 class="list-group-item-heading">Lié aux langues :</h6>
-                    {% if personnage.bracelet %}
+                    {% if personnage.bracelet == 1 %}
                         <div class="list-group-item-text">Aucun:
                             <i class="fa fa-warning text-warning"></i> Le joueur/La joueuse gère ses bracelets de
                             langue

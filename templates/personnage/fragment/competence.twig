@@ -63,8 +63,7 @@
                            href="{{ path('participant.competence.detail',{'participant': participant.id, 'competence' : competence.id}) }}">
                             <i class="fa fa-file"></i> Imprimer l'aide de jeu
                         </a>
-                    {% else %}
-                        {# TODO CHECK isGranted #}
+                    {% elseif isAdmin %}
                         <a class="btn btn-secondary btn-sm"
                            href="{{ path('competence.detail',{'competence' : competence.id}) }}">
                             <i class="fa fa-file"></i> Imprimer l'aide de jeu
