@@ -949,6 +949,7 @@ class PersonnageController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         string $routeName,
+        array $columnKeys = [],
     ): array {
         // récupère les filtres et tris de recherche + pagination renseignés dans le formulaire
         $orderBy = $request->get('order_by') ?: 'id';
