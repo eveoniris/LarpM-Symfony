@@ -5,9 +5,13 @@ namespace App\Controller;
 use App\Entity\Construction;
 use App\Entity\Groupe;
 use App\Entity\Loi;
+use App\Entity\Personnage;
 use App\Entity\Territoire;
+use App\Entity\User;
+use App\Enum\CompetenceFamilyType;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
+use App\Enum\LevelType;
 use App\Enum\Role;
 use App\Form\ChronologieForm;
 use App\Form\Territoire\FiefForm;
@@ -131,9 +135,34 @@ class TerritoireController extends AbstractController
             return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
         }
 
+        $canSeePrivateDetail = $this->isGranted(Role::REGLE->value);
+
+        if (!$canSeePrivateDetail && $this->isGranted(Role::USER->value)) {
+            // Visible des membres du groupe
+            /** @var Personnage $personnage */
+            foreach ($territoire->getGroupe()?->getPersonnages() as $personnage) {
+                if ($personnage->getUser()?->getId() === $this->getUser()?->getId()) {
+                    $canSeePrivateDetail = true;
+                }
+            }
+        }
+
+        $isMappingInitiated = false;
+        // Visible des cartographes initiés (pour les merveilles
+        /** @var User $user */
+        $user = $this->getUser();
+        /** @var Personnage $personnage */
+        foreach ($user->getPersonnages() as $personnage) {
+            if ($personnage->hasCompetenceLevel(CompetenceFamilyType::MAPPING, LevelType::INITIATED)) {
+                $isMappingInitiated = true;
+            }
+        }
+
         return $this->render('territoire/addConstruction.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
+            'canSeePrivateDetail' => $canSeePrivateDetail,
+            'isMappingInitiated' => $isMappingInitiated,
         ]);
     }
 
