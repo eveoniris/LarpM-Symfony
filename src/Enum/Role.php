@@ -14,6 +14,7 @@ enum Role: string
     case ORGA = 'ROLE_ORGA';
     case REDACTEUR = 'ROLE_REDACTEUR';
     case REGLE = 'ROLE_REGLE';
+    case WARGAME = 'ROLE_WARGAME';
     case SCENARISTE = 'ROLE_SCENARISTE';
     case STOCK = 'ROLE_STOCK';
     case USER = 'ROLE_USER';

@@ -15,6 +15,8 @@
         <div class="list-group-item-text d-flex justify-content-between">
             {% if religion.blason %}
                 <div class="align-self-center me-2">
+                    {% if religion.secret %}
+                    {% endif %}
                     <img width="160" src="{{ path('religion.blason', {'religion' : religion.id }) }}"
                          alt="{{ religion.label }}"/><br/>
                 </div>

@@ -639,8 +639,8 @@ class GroupeController extends AbstractController
             return $this->redirectToRoute('groupe.list');
         }
 
-        $canSeePrivateDetail = $this->isGranted(Role::SCENARISTE->value);
-        $canEdit = $this->isGranted(Role::SCENARISTE->value);
+        $canSeePrivateDetail = $this->isGranted(Role::WARGAME->value);
+        $canEdit = $this->isGranted(Role::WARGAME->value);
         // Est-ce un membre du groupe ?
         if (!$canSeePrivateDetail) {
             $responsable = $groupe->getUserRelatedByResponsableId();

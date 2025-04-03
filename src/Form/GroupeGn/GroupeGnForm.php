@@ -32,7 +32,7 @@ class GroupeGnForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        if ($this->security->isGranted(Role::REGLE->value)) {
+        if ($this->security->isGranted(Role::WARGAME->value)) {
             $builder->add('gn', EntityType::class, [
                 'label' => 'Jeu',
                 'required' => true,
@@ -88,7 +88,7 @@ class GroupeGnForm extends AbstractType
         }
 
         // Seul un admin ou le suzerin peu changer cela
-        if (!$this->security->isGranted(Role::REGLE->value) || !$this->security->getUser()?->getId() === $groupeGn->getSuzerin()?->getId()) {
+        if (!$this->security->isGranted(Role::WARGAME->value) || !$this->security->getUser()?->getId() === $groupeGn->getSuzerin()?->getId()) {
             return;
         }
 

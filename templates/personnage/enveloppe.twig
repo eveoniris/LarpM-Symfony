@@ -17,12 +17,12 @@
         {% endif %}
     {% endif %}
     <br/>
-    {% if personnageService.allRenomme|default(0) > 4 %}
+    {% if personnageService.allRenomme(personnage)|default(0) > 4 %}
         <strong>Renommée :</strong> {{ personnageService.allRenomme(personnage)|default(0) }}<br/>
     {% endif %}
 
     {% if personnage.richesse|default(0) > 0 %}
-        <strong>Richesse :</strong> {{ personnageService.allRichesse(personnage)e|default(0) }} pièces d'argent<br/>
+        <strong>Richesse :</strong> {{ personnageService.allRichesse(personnage)|default(0) }} pièces d'argent<br/>
     {% endif %}
 
     <strong>Lié aux compétences</strong>
@@ -94,10 +94,10 @@
     {% endif %}
 
     {# ingredients #}
-    {% if personnageService.allIngredients(personnage)|length > 0 %}
+    {% if personnageService.allIngredient(personnage)|length > 0 %}
         <strong>Ingrédients</strong>
         <ul>
-            {% for personnageIngredient in personnageService.allIngredients(personnage) %}
+            {% for personnageIngredient in personnageService.allIngredient(personnage) %}
                 <li>{{ personnageIngredient.nombre }} {{ personnageIngredient.ingredient }}
                     - {{ personnageIngredient.ingredient.color }} : {{ personnageIngredient.ingredient.dose }}</li>
             {% endfor %}
