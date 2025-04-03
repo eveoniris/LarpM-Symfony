@@ -127,16 +127,15 @@ class Participant extends BaseParticipant implements \Stringable
         return (int) $interval->format('%y');
     }
 
-    public function hasPotionsDepartByLevel($niveau = 1)
+    public function hasPotionsDepartByLevel(int $niveau = 1): ?Potion
     {
-        $return = false;
         foreach ($this->getPotionsDepart() as $potion) {
-            if ($potion->getNiveau() == $niveau) {
+            if ($potion->getNiveau() === $niveau) {
                 $return = $potion;
             }
         }
 
-        return $return;
+        return null;
     }
 
     public function getPotionsDepartByLevel($niveau = 1)

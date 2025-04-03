@@ -1569,6 +1569,28 @@ class ParticipantController extends AbstractController
         }
     }
 
+    #[Route('/participant/{participant}/document/{document}', name: 'participant.document')]
+    public function documentAction(
+        #[MapEntity] Participant $participant,
+        #[MapEntity] Document $document,
+    ): BinaryFileResponse|RedirectResponse {
+        $personnage = $participant->getPersonnage();
+
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        if (!$personnage->isKnownDocument($document)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette loi !');
+
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        return $this->sendDocument($document);
+    }
+
     /**
      * Detail d'un document.
      */
@@ -2351,28 +2373,6 @@ class ParticipantController extends AbstractController
 
         return $this->file($file, $langue->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
         */
-    }
-
-    #[Route('/participant/{participant}/document/{document}', name: 'participant.document')]
-    public function documentAction(
-        #[MapEntity] Participant $participant,
-        #[MapEntity] Document $document,
-    ): BinaryFileResponse|RedirectResponse {
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        if (!$personnage->isKnownDocument($document)) {
-            $this->addFlash('error', 'Vous ne connaissez pas cette loi !');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        return $this->sendDocument($document);
     }
 
     #[Route('/participant/{participant}/loi/{loi}/document', name: 'participant.loi.document')]
@@ -3186,10 +3186,10 @@ class ParticipantController extends AbstractController
                     break;
                 case 4:
                     // May not come from trigger
+                    $trigger = $personnage->getTrigger('ALCHIMIE MAITRE');
                     if ($trigger) {
-                        $trigger = $personnage->getTrigger('ALCHIMIE MAITRE');
+                        $this->entityManager->remove($trigger);
                     }
-                    $this->entityManager->remove($trigger);
                     break;
             }
 
@@ -3201,6 +3201,76 @@ class ParticipantController extends AbstractController
         }
 
         return $this->render('personnage/potion.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
+            'participant' => $participant,
+            'potions' => $potions,
+            'niveau' => $niveau,
+        ]);
+    }
+
+    /**
+     * Choix d'une nouvelle potion de départ.
+     */
+    #[Route('/participant/{participant}/potion/depart', name: 'participant.potion.depart')]
+    public function potionDepartAction(
+        Request $request,
+        #[MapEntity] Participant $participant,
+        PotionRepository $potionRepository,
+    ): RedirectResponse|Response {
+        $personnage = $participant->getPersonnage();
+
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        $niveau = $request->get('niveau');
+
+        if ($participant->hasPotionsDepartByLevel($niveau)) {
+            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de potions de départ supplémentaires.');
+
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        // On veut piocher dans les potions que connait le personnage pour lui demander de choisir celle qu'il veut avoir au début
+        $potions = $personnage->getPotionsNiveau($niveau); // and not $potionRepository->findByNiveau($niveau);
+
+        $form = $this->createFormBuilder()
+            ->add('potion', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre potion de départ',
+                'multiple' => false,
+                'expanded' => true,
+                'choices' => $potions,
+                'choice_label' => 'fullLabel',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider votre potion de départ'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $potion = $data['potion'];
+
+            // Ajout de la potion au personnage
+            $participant->addPotionDepart($potion);
+            $this->entityManager->persist($participant);
+
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+            return $this->redirectToRoute(
+                'gn.personnage',
+                ['gn' => $participant->getGn()->getId(), 'tab' => 'competences'],
+                303
+            );
+        }
+
+        return $this->render('personnage/potiondepart.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'participant' => $participant,
@@ -3241,6 +3311,11 @@ class ParticipantController extends AbstractController
     }
 
     /**
+     * Affichage à destination d'un membre du groupe secondaire.
+     */
+    // TODO Fix access if SECRET and not a member !
+
+    /**
      * Obtenir le document lié à une potion.
      */
     #[Route('/participant/{participant}/potion/{potion}/document', name: 'participant.potion.document')]
@@ -3263,76 +3338,6 @@ class ParticipantController extends AbstractController
         }
 
         return $this->sendDocument($potion);
-    }
-
-    /**
-     * Affichage à destination d'un membre du groupe secondaire.
-     */
-    // TODO Fix access if SECRET and not a member !
-
-    /**
-     * Choix d'une nouvelle potion de départ.
-     */
-    #[Route('/participant/{participant}/potion/depart', name: 'participant.potion.depart')]
-    public function potionDepartAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Participant $participant,
-    ): RedirectResponse|Response {
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        $niveau = $request->get('niveau');
-
-        if ($participant->hasPotionsDepartByLevel($niveau)) {
-            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de potions de départ supplémentaires.');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        $potions = $personnage->getPotionsNiveau($niveau);
-// TODO dd($potions);
-        $form = $this->createFormBuilder()
-            ->add('potion', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre potion de départ',
-                'multiple' => false,
-                'expanded' => true,
-                'choices' => $potions,
-                'choice_label' => 'fullLabel',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre potion de départ'])
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $potion = $data['potion'];
-
-            // Ajout de la potion au personnage
-            $participant->addPotionDepart($potion);
-            $this->entityManager->persist($participant);
-
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        return $this->render('personnage/potiondepart.twig', [
-            'form' => $form->createView(),
-            'personnage' => $personnage,
-            'participant' => $participant,
-            'potions' => $potions,
-            'niveau' => $niveau,
-        ]);
     }
 
     /**

@@ -412,7 +412,7 @@ class GroupeGnController extends AbstractController
         $redirect = $request->get('redirect');
 
         // Seul un admin ou le suzerin peu changer cela
-        if (!$this->isGranted(Role::REGLE->value) || !$this->getUser()?->getId() === $groupeGn->getSuzerin()?->getId()) {
+        if (!$this->isGranted(Role::WARGAME->value) || !$this->getUser()?->getId() === $groupeGn->getSuzerin()?->getId()) {
             $this->addFlash('success', "Vous n'êtes pas autorisé à accéder à cette page");
 
             if ($redirect) {

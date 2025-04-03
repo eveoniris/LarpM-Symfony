@@ -88,7 +88,7 @@
                 {% if loop.last and personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
 
                     {% for niveau in 1..personnage.getCompetenceNiveau(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
-                        {% if not participant.hasPotionsDepartByLevel(niveau) %}
+                        {% if niveau > 0 and not participant.hasPotionsDepartByLevel(niveau) %}
                             <li class="list-group-item"><a
                                         href="{{ path('participant.potion.depart', {'niveau' : niveau, 'participant' : participant.id}) }}">Choisir
                                     votre potion de niveau {{ niveau }} à ajouter à votre enveloppe de départ</a></li>
@@ -99,7 +99,7 @@
             {% else %}
                 {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
                     {% for niveau in 1..personnage.getCompetenceNiveau(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
-                        {% if not participant.hasPotionsDepartByLevel(niveau) %}
+                        {% if niveau > 0 and not participant.hasPotionsDepartByLevel(niveau) %}
                             <li class="list-group-item"><a
                                         href="{{ path('participant.potion.depart', {'niveau' : niveau, 'participant' : participant.id}) }}">Choisir
                                     votre potion de niveau {{ niveau }} à ajouter à votre enveloppe de départ</a></li>

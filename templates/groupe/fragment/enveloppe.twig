@@ -1,11 +1,17 @@
-<h5 class="mt-2">Enveloppe de groupe pour {{ groupe.nextSession.gn.label }}</h5>
+{% if groupe.nextSession.gn.label is defined %}
+    <h5 class="mt-2">Enveloppe de groupe pour {{ groupe.nextSession.gn.label }}</h5>
+{% else %}
+    <h5 class="mt-2">Enveloppe de groupe le prochain GN</h5>
+    {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : "Ce groupe n'est pas enregistrer pour le prochain GN" } %}
+{% endif %}
+
 <blockquote>Cette liste correspond au matériel qui sera présent dans l'enveloppe de début de jeu remise au groupe
 </blockquote>
 
 <h6><strong>Richesse</strong>
     {% if isAdmin %}
-    <a
-            href="{{ path('groupe.richesse', {'groupe': groupe.id}) }}">Modifier la richesse</a>
+        <a
+                href="{{ path('groupe.richesse', {'groupe': groupe.id}) }}">Modifier la richesse</a>
     {% endif %}</h6>
 <div class="card p-2 mb-2">
     <p>La richesse de votre groupe est composé des pièces d'argent fournies par les territoires qu'il contrôle, ainsi de
@@ -37,8 +43,8 @@
 
 <h6><strong>Ressources</strong>
     {% if isAdmin %}
-    <a
-            href="{{ path('groupe.ressources', {'groupe': groupe.id}) }}">Modifier les ressources</a>
+        <a
+                href="{{ path('groupe.ressources', {'groupe': groupe.id}) }}">Modifier les ressources</a>
     {% endif %}
 </h6>
 <div class="card p-2 mb-2">
@@ -70,8 +76,8 @@
 
 <h6><strong>Ingrédients</strong>
     {% if isAdmin %}
-    <a
-            href="{{ path('groupe.ingredients', {'groupe': groupe.id}) }}">Modifier les ingrédients</a>
+        <a
+                href="{{ path('groupe.ingredients', {'groupe': groupe.id}) }}">Modifier les ingrédients</a>
     {% endif %}
 </h6>
 <div class="card p-2 mb-2">
@@ -103,8 +109,8 @@
 
 <h6><strong>&nbspDocuments</strong>
     {% if isAdmin %}
-    <a
-            href=" {{ path('groupe.documents', {'groupe': groupe.id}) }}">Modifier la liste de documents</a>
+        <a
+                href=" {{ path('groupe.documents', {'groupe': groupe.id}) }}">Modifier la liste de documents</a>
     {% endif %}
 </h6>
 <div class="card p-2 mb-2">
@@ -123,8 +129,8 @@
 
 <h6><strong>&nbspObjets</strong>
     {% if isAdmin %}
-    <a
-            href=" {{ path('groupe.items', {'groupe': groupe.id}) }}">Modifier la liste des objets</a>
+        <a
+                href=" {{ path('groupe.items', {'groupe': groupe.id}) }}">Modifier la liste des objets</a>
     {% endif %}
 </h6>
 <div class="card p-2 mb-2">
@@ -144,8 +150,8 @@
 
 <h6><strong>Autre</strong>
     {% if isAdmin %}
-    <a
-            href="{{ path('groupe.envelope', {'groupe':groupe.id}) }}"><strong>Modifier le contenu</strong></a>
+        <a
+                href="{{ path('groupe.envelope', {'groupe':groupe.id}) }}"><strong>Modifier le contenu</strong></a>
     {% endif %}
 </h6>
 <div class="card p-2 mb-2">
@@ -166,9 +172,9 @@
 
                         Documents :
                         {% if isAdmin %}
-                        <a href=" {{ path('personnage.documents', {'personnage': participant.personnage.id}) }}">Modifier
-                            la
-                            liste de documents</a>
+                            <a href=" {{ path('personnage.documents', {'personnage': participant.personnage.id}) }}">Modifier
+                                la
+                                liste de documents</a>
                         {% endif %}
                         <ul>
                             {% for document in participant.personnage.documents %}
@@ -182,9 +188,10 @@
 
                         Objets :
                         {% if isAdmin %}
-                        <a href=" {{ path('personnage.items', {'personnage': participant.personnage.id}) }}">Modifier la
-                            liste
-                            des objets</a>
+                            <a href=" {{ path('personnage.items', {'personnage': participant.personnage.id}) }}">Modifier
+                                la
+                                liste
+                                des objets</a>
                         {% endif %}
                         <ul>
                             {% for item in participant.personnage.items %}
@@ -198,8 +205,8 @@
 
                         Sorts :
                         {% if isAdmin %}
-                        <a href="{{ path('personnage.update.sort', {'personnage': participant.personnage.id}) }}">Modifier
-                            la liste des sorts</a>
+                            <a href="{{ path('personnage.update.sort', {'personnage': participant.personnage.id}) }}">Modifier
+                                la liste des sorts</a>
                         {% endif %}
                         <ul>
                             {% for sort in participant.personnage.sorts %}
@@ -211,8 +218,8 @@
 
                         Potions :
                         {% if isAdmin %}
-                        <a href="{{ path('personnage.update.potion', {'personnage': participant.personnage.id}) }}">Modifier
-                            la liste des potions</a>
+                            <a href="{{ path('personnage.update.potion', {'personnage': participant.personnage.id}) }}">Modifier
+                                la liste des potions</a>
                         {% endif %}
                         <ul>
                             {% for potion in participant.personnage.potions %}
@@ -224,8 +231,8 @@
 
                         Prières :
                         {% if isAdmin %}
-                        <a href="{{ path('personnage.update.priere', {'personnage': participant.personnage.id}) }}">Modifier
-                            la liste des prières</a>
+                            <a href="{{ path('personnage.update.priere', {'personnage': participant.personnage.id}) }}">Modifier
+                                la liste des prières</a>
                         {% endif %}
                         <ul>
                             {% for priere in participant.personnage.prieres %}
@@ -237,8 +244,8 @@
 
                         Ingrédients :
                         {% if isAdmin %}
-                        <a href="{{ path('personnage.update.ingredient', {'personnage': participant.personnage.id}) }}">Modifier
-                            la liste des ingrédients</a>
+                            <a href="{{ path('personnage.update.ingredient', {'personnage': participant.personnage.id}) }}">Modifier
+                                la liste des ingrédients</a>
                         {% endif %}
                         <ul>
                             {% for personnageIngredient in participant.personnage.personnageIngredients %}
@@ -252,8 +259,8 @@
 
                         Ressources :
                         {% if isAdmin %}
-                        <a href="{{ path('personnage.update.ressource', {'personnage': participant.personnage.id}) }}">Modifier
-                            la liste des ressources</a>
+                            <a href="{{ path('personnage.update.ressource', {'personnage': participant.personnage.id}) }}">Modifier
+                                la liste des ressources</a>
                         {% endif %}
                         <ul>
                             {% for personnageRessource in participant.personnage.personnageRessources %}
@@ -265,8 +272,8 @@
 
                         Richesse :
                         {% if isAdmin %}
-                        <a href="{{ path('personnage.update.richesse', {'personnage': participant.personnage.id}) }}">Modifier
-                            la richesse</a>
+                            <a href="{{ path('personnage.update.richesse', {'personnage': participant.personnage.id}) }}">Modifier
+                                la richesse</a>
                         {% endif %}
                         <ul>
                             <li>{{ participant.personnage.richesse|default(0) }} PA</li>
@@ -274,8 +281,8 @@
 
                         Technologies :
                         {% if isAdmin %}
-                        <a href="{{ path('personnage.update.technologie', {'personnage': participant.personnage.id}) }}">Modifier
-                            les technologies</a>
+                            <a href="{{ path('personnage.update.technologie', {'personnage': participant.personnage.id}) }}">Modifier
+                                les technologies</a>
                         {% endif %}
                         <ul>
                             {% for technologie in participant.personnage.technologies %}
