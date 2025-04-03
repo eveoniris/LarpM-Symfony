@@ -4,6 +4,13 @@
 
 {% block body %}
 
+    {% if canSeePrivateDetail is not defined %}
+        {% set canSeePrivateDetail = false %}
+    {% endif %}
+    {% if isMappingInitiated is not defined %}
+        {% set isMappingInitiated = false %}
+    {% endif %}
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-8">
@@ -283,7 +290,9 @@
                                         </strong>
                                         <br/>
                                         <div>
-                                            {{ merveille.description|markdown_to_html }}
+                                            {% if canSeePrivateDetail or isMappingInitiated %}
+                                                {{ merveille.descriptionCartographe|markdown_to_html }}
+                                            {% endif %}
                                             {% if isAdmin %}
                                                 <hr>
                                                 <h6>Description scénariste</h6>

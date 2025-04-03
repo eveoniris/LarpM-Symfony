@@ -23,6 +23,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     public const ROLE_SCENARISTE = 'ROLE_SCENARISTE';
     public const ROLE_STOCK = 'ROLE_STOCK';
     public const ROLE_USER = 'ROLE_USER';
+    public const ROLE_WARGAME = 'ROLE_WARGAME';
 
     public static function loadValidatorMetadata(ClassMetadata $metadata): void
     {
@@ -50,6 +51,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
             self::ROLE_STOCK,
             self::ROLE_USER,
             self::ROLE_ORGA,
+            self::ROLE_WARGAME,
         ];
     }
 
@@ -65,6 +67,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
             self::ROLE_SCENARISTE => 'Droit de modification sur le scénario, les groupes et le background',
             self::ROLE_STOCK => 'Droit de modification sur le stock',
             self::ROLE_USER => 'Utilisateur de larpManager',
+            self::ROLE_WARGAME => 'Jeu de domaine de larpManager',
         ];
     }
 
