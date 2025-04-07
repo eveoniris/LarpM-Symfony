@@ -10,7 +10,7 @@
                 <i class="fa-solid fa-crown text-warning"></i> Suzerin
         </span>
             {% set hasTitre = true %}
-        {% else %}
+        {% elseif participant.getPersonnage().getId() is defined %}
             {% if session.getCamarilla.getId == participant.getPersonnage().getId() %}
                 <span><i class="fa-solid fa-brain text-warning"></i> Eminence grise</span>
                 {% set hasTitre = true %}
