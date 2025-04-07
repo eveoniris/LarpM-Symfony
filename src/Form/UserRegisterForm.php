@@ -32,6 +32,10 @@ class UserRegisterForm extends AbstractType
             'label' => 'Adresse email',
             'required' => true,
         ])
+            ->add('email_contact', EmailType::class, [
+                'label' => 'Adresse email de contact',
+                'help' => "Si parent d'un mineur, ou que l'email de conneixon ne convient pas pour être contacté",
+            ])
             ->add('username', TextType::class, [
                 'label' => 'Nom ou pseudo',
                 'required' => true,

@@ -182,6 +182,9 @@ abstract class BaseUser
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'true')]
     private Collection $logActions;
 
+    #[Column(length: 255, nullable: true)]
+    private ?string $email_contact = null;
+
     public function __construct()
     {
         $this->backgrounds = new ArrayCollection();
@@ -1150,6 +1153,18 @@ abstract class BaseUser
         if ($this->logActions->removeElement($logAction) && $logAction->getUser() === $this) {
             $logAction->setUser(null);
         }
+
+        return $this;
+    }
+
+    public function getEmailContact(): ?string
+    {
+        return $this->email_contact;
+    }
+
+    public function setEmailContact(?string $email_contact): static
+    {
+        $this->email_contact = $email_contact;
 
         return $this;
     }

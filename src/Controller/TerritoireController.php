@@ -26,6 +26,8 @@ use App\Form\Territoire\TerritoireIngredientsForm;
 use App\Form\Territoire\TerritoireLoiForm;
 use App\Form\Territoire\TerritoireStatutForm;
 use App\Form\Territoire\TerritoireStrategieForm;
+use App\Repository\TerritoireRepository;
+use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -496,30 +498,25 @@ class TerritoireController extends AbstractController
      * Liste des territoires.
      */
     #[Route('/territoire', name: 'territoire.list')]
-    public function listAction(Request $request, EntityManagerInterface $entityManager)
-    {
-        $territoirenRepository = $entityManager->getRepository(Territoire::class);
-
-        $orderBy = $this->getRequestOrder(
-            alias: 't',
-            allowedFields: $territoirenRepository->getFieldNames()
-        );
-
-        $qb = $entityManager->createQueryBuilder('t')
-            ->select('t')
-            ->from(Territoire::class, 't')
-            ->where('t.territoire IS NULL')
-            ->orderBy(key($orderBy), current($orderBy));
-
-        $paginator = $territoirenRepository->findPaginatedQuery(
-            $qb->getQuery(),
-            $this->getRequestLimit(10),
-            $this->getRequestPage()
-        );
+    public function listAction(
+        Request $request,
+        PagerService $pagerService,
+        TerritoireRepository $territoireRepository,
+    ): Response {
+        // Set order by nom by default
+        $request->request->set('order_by', $request->request->get('order_by', 'nom'));
+        $pagerService->setRequest($request)->setRepository($territoireRepository);
 
         $isAdmin = $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::CARTOGRAPHE->value);
 
-        return $this->render('territoire/list.twig', ['paginator' => $paginator, 'isAdmin' => $isAdmin]);
+        return $this->render(
+            'territoire/list.twig',
+            [
+                'paginator' => $territoireRepository->searchPaginated($pagerService),
+                'isAdmin' => $isAdmin,
+                'pagerService' => $pagerService,
+            ]
+        );
     }
 
     /**

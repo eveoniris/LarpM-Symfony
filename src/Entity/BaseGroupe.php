@@ -207,7 +207,7 @@ class BaseGroupe
     /**
      * Set the value of description.
      */
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
 

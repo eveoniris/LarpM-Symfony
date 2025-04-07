@@ -321,6 +321,7 @@ class UserController extends AbstractController
 
         if ($request->isMethod('POST')) {
             $user->setEmail($request->request->get('email'));
+            $user->setEmailContact($request->request->get('email_contact'));
             if ($request->request->has('username')) {
                 $user->setUsername($request->request->get('username'));
             }
@@ -862,7 +863,7 @@ class UserController extends AbstractController
     {
         $email = $request->request->get('email');
 
-        $repo = $entityManager->getRepository('\\'.User::class);
+        $repo = $entityManager->getRepository(User::class);
         $User = $repo->findOneByEmail($email);
 
         if (!$User) {
