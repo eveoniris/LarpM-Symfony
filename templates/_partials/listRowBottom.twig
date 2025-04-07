@@ -1,11 +1,28 @@
 {# ROW #}
-<div class="container bg-body border border-secondary border-top-0 rounded-bottom mb-2">
-    <div class="row row-cols-2">
-        <div class="align-middle lh-lg col-sm-2 border-end fw-bold text-center bg-body-secondary rounded-2 rounded-end-0 rounded-top-0 m-auto overflow-hidden">
+<div class="container bg-body border border-secondary border-top-0 rounded-bottom mb-2 p-0">
+    <div class="d-flex justify-content-start">
+        <div class="align-middle lh-lg col-sm-3 p-1 text-center bg-body-secondary border-end fw-bold rounded-2 rounded-end-0 rounded-top-0">
             {{ title }}
         </div>
-        <div class="align-middle lh-lg col-sm-10 m-auto">
-            {{ text }}
+        <div class="w-100 mx-2 mt-1">
+            <div class="d-flex justify-content-between">
+                <div>
+                    {{ text }}
+                </div>
+                {% if item.collapse.id is defined %}
+                    <button class="btn btn-sm btn-secondary ms-2" role="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#{{ item.collapse.id }}"
+                            aria-expanded="false"
+                            title="historique"
+                            aria-controls="{{ item.collapse.id }}">
+                        <i class="fa {% if item.collapse.icon is defined %}{{item.collapse.icon}}{% else %}fa-info{% endif %}" aria-hidden="true"></i>
+                    </button>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
+{% if item.collapse.id is defined %}
+    {% include '_partials/listCollapse.twig' with {'idCollapse': item.collapse.id, 'text': item.collapse.text} %}
+{% endif %}
