@@ -14,18 +14,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UserRegisterForm extends AbstractType
 {
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setDefaults([
-            // ...
-            'data_class' => User::class,
-            'constraints' => [
-                new UniqueEntity(fields: ['email']),
-                new UniqueEntity(fields: ['username']),
-            ],
-        ]);
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('email', EmailType::class, [
@@ -57,6 +45,18 @@ class UserRegisterForm extends AbstractType
                     ],
                 ]
             );
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            // ...
+            'data_class' => User::class,
+            'constraints' => [
+                new UniqueEntity(fields: ['email']),
+                new UniqueEntity(fields: ['username']),
+            ],
+        ]);
     }
 
     public function getName(): string

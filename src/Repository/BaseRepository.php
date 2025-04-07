@@ -359,7 +359,6 @@ abstract class BaseRepository extends ServiceEntityRepository
         $orderBy ??= $this->orderBy;
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-
         if (
             $orderBy->getOrderBy()
             && $this->isAllowedAttribute($orderBy->getOrderBy(), $this->sortAttributes($alias))

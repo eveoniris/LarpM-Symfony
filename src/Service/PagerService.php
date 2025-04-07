@@ -17,7 +17,7 @@ final class PagerService
     protected int $page;
     protected FormInterface $form;
     protected mixed $searchValue;
-    protected null|string|array $searchType;
+    protected string|array|null $searchType;
     protected Request $request;
     protected ?BaseRepository $repository = null;
 
@@ -57,7 +57,7 @@ final class PagerService
         return $this->limit;
     }
 
-    protected function getRequest(): ?Request
+    public function getRequest(): ?Request
     {
         if (isset($this->request)) {
             return $this->request;
@@ -71,6 +71,7 @@ final class PagerService
     public function setRequest(Request $request): PagerService
     {
         $this->request = $request;
+        $this->orderBy->getFromRequest($request); // reload
 
         return $this;
     }
@@ -122,7 +123,7 @@ final class PagerService
         return $this;
     }
 
-    public function getSearchType(): null|string|array
+    public function getSearchType(): string|array|null
     {
         if (isset($this->searchType)) {
             return $this->searchType;
@@ -152,7 +153,7 @@ final class PagerService
         }
     }
 
-    public function getForm(string $type = null, ListSearch $data = null, array $options = []): FormInterface
+    public function getForm(?string $type = null, ?ListSearch $data = null, array $options = []): FormInterface
     {
         if (isset($this->form)) {
             return $this->form;

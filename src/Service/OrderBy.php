@@ -20,8 +20,8 @@ final class OrderBy
     }
 
     public function getFromRequest(
-        Request $request = null,
-        string $alias = null
+        ?Request $request = null,
+        ?string $alias = null,
     ): self {
         $request ??= $this->requestStack?->getCurrentRequest();
 
@@ -47,7 +47,7 @@ final class OrderBy
         return $this;
     }
 
-    protected function getRequestOrderDir(Request $request = null): string
+    protected function getRequestOrderDir(?Request $request = null): string
     {
         $request ??= $this->requestStack?->getCurrentRequest();
         if (!$request) {
@@ -69,16 +69,17 @@ final class OrderBy
     }
 
     protected function getRequestOrderBy(
-        Request $request = null,
-
-        string $alias = null,
+        ?Request $request = null,
+        ?string $alias = null,
     ): ?string {
+        $x = !empty($request?->get('order_by'));
         $request ??= $this->requestStack?->getCurrentRequest();
         if (!$request) {
             return null;
         }
-
-        $this->orderBy = $request->query->getString('order_by') ?: null;
+//dd($x, $request->get('order_by'));
+        $this->orderBy = $request->query->getString('order_by')
+            ?: $request->get('order_by') ?: null;
 
         if (!$this->orderBy) {
             return null;

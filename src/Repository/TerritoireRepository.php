@@ -236,6 +236,17 @@ class TerritoireRepository extends BaseRepository
         return parent::translateAttribute($attribute);
     }
 
+    public function root(QueryBuilder $query, bool $root): QueryBuilder
+    {
+        if ($root) {
+            $query->andWhere($this->alias.'.territoire = :value OR '.$this->alias.'.territoire IS NULL');
+        } else {
+            $query->andWhere($this->alias.'.territoire = :value');
+        }
+
+        return $query->setParameter('value', $root);
+    }
+
     public function translateAttributes(): array
     {
         return [

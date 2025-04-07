@@ -503,16 +503,25 @@ class TerritoireController extends AbstractController
         PagerService $pagerService,
         TerritoireRepository $territoireRepository,
     ): Response {
-        // Set order by nom by default
+        // Set order by nom by default TODO add a setDefaultOrder ...
         $request->request->set('order_by', $request->request->get('order_by', 'nom'));
         $pagerService->setRequest($request)->setRepository($territoireRepository);
+
+        $alias = $territoireRepository->getAlias();
+
+        // Got only main territory
+        $queryBuilder = $territoireRepository->root(
+            $territoireRepository->createQueryBuilder($alias),
+            true
+        );
+
 
         $isAdmin = $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::CARTOGRAPHE->value);
 
         return $this->render(
             'territoire/list.twig',
             [
-                'paginator' => $territoireRepository->searchPaginated($pagerService),
+                'paginator' => $territoireRepository->searchPaginated($pagerService, $queryBuilder),
                 'isAdmin' => $isAdmin,
                 'pagerService' => $pagerService,
             ]
