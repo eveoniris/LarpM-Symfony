@@ -20,6 +20,9 @@ class UserNewForm extends AbstractType
             'label' => 'Adresse mail',
             'required' => true,
         ])
+            ->add('email_contact', TextType::class, [
+                'label' => 'Adresse mail de contact',
+            ])
             ->add('username', TextType::class, [
                 'label' => "Nom d'utilisateur",
                 'required' => true,

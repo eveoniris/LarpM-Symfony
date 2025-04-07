@@ -9,7 +9,7 @@
     <div class="well well-sm">
 
         <div class="header">
-            <h5>Liste des compétences</h5>
+            <h5>Liste des compétences!</h5>
         </div>
 
         {% if is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
@@ -23,6 +23,9 @@
                 'actionPath' : path('competence.list')
             } %}
     </div>
+
+    {% include '_partials/pagination.html.twig' %}
+
 
     <div class="row">
         {% for competence in paginator %}
@@ -75,5 +78,8 @@
             </div>
         {% endfor %}
     </div>
+
+
+    {% include '_partials/pagination.html.twig' %}
 
 {% endblock body %}
