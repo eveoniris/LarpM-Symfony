@@ -2,46 +2,51 @@
 
 {% block content %}
     <div class="print-center">
-        <table>
-            <tr>
-                <td style="width:33%;">
-                    <strong>#{{ personnage.id }}</strong><br/>
-                    <strong>{{ personnage.nom }}{% if personnage.surnom %}<small> ({{ personnage.surnom }}
-                            )</small>{% endif %}</strong><br/>
-                    Origine : {{ personnage.territoire|default("non définie") }}<br/>
-                    {{ personnage.classeName }}, {{ personnage.genre }}, <small>{{ personnage.ageReel|default('x') }}
-                        ans ({{ personnage.age }})</small><br/>
-                    {% if personnage.user %}{{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}{% else %}Ce personnage n'est pas lié à un joueur{% endif %}
-                    . {% if personnage.intrigue %}participe aux intrigues{% else %}ne participe pas aux intrigues{% endif %}
-                </td>
-                <td>
-                    <strong>{% if groupe %}Groupe #{{ groupe.numero }} {{ groupe.nom }}{% else %}PAS DE GROUPE{% endif %}</strong><br/>
-                    {% if participant %}
-                        <strong>GN : {{ participant.gn.label }}</strong><br/>
-                        {% for participantHasRestauration in participant.participantHasRestaurations %}
-                            {{ participantHasRestauration.restauration.label }}<br/>
-                        {% endfor %}
-                        <strong>Personnage Secondaire : </strong>
-                        {% if participant.personnageSecondaire %}
-                            {{ participant.personnageSecondaire.classe.label }}
-                        {% else %}
-                            PAS DE PERSONNAGE SECONDAIRE
-                        {% endif %}
-                    {% endif %}
-                </td>
-                <td>
-                    {% if personnage.user %}
-                        {% if personnage.user.etatCivil %}
-                            Personne à contacter en cas d'urgence :
-                            <br/>{{ personnage.user.etatCivil.personneAPrevenir }}<br/>
-                            Téléphone : {{ personnage.user.etatCivil.telPap }}<br/>
-                            Problèmes médicaux : {{ personnage.user.etatCivil.problemeMedicaux }}
-                        {% endif %}
-                        {% if personnage.isSensible %}<br/>Ce personnage est <strong>sensible</strong>.{% endif %}
-                    {% endif %}
-                </td>
-            </tr>
-        </table>
+    <table>
+    <tr>
+    <td style="width:33%;">
+        <strong>#{{ personnage.id }}</strong><br/>
+        <strong>{{ personnage.nom }}{% if personnage.surnom %}<small> ({{ personnage.surnom }}
+                )</small>{% endif %}</strong><br/>
+        Origine : {{ personnage.territoire|default("non définie") }}<br/>
+        {{ personnage.classeName }}, {{ personnage.genre }}, <small>{{ personnage.ageReel|default('x') }}
+            ans ({{ personnage.age }})</small><br/>
+        {% if personnage.user %}{{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}{% else %}Ce personnage n'est pas lié à un joueur{% endif %}
+        . {% if personnage.intrigue %}participe aux intrigues{% else %}ne participe pas aux intrigues{% endif %}
+        <br/> <strong>Titre : </strong>
+        {{ personnageService.getTitre(participant.personnage, participant.gn) }}
+
+    </td>
+    <td>
+    <strong>{% if groupe %}Groupe #{{ groupe.numero }} {{ groupe.nom }}{% else %}PAS DE GROUPE{% endif %}</strong><br/>
+    {% if participant %}
+        <strong>GN : {{ participant.gn.label }}</strong><br/>
+        {% for participantHasRestauration in participant.participantHasRestaurations %}
+            {{ participantHasRestauration.restauration.label }}<br/>
+        {% endfor %}
+        <strong>Personnage Secondaire : </strong>
+        {% if participant.personnageSecondaire %}
+            {{ participant.personnageSecondaire.classe.label }}
+        {% else %}
+            PAS DE PERSONNAGE SECONDAIRE
+        {% endif %}
+
+        </div>
+    {% endif %}
+    </td>
+    <td>
+        {% if personnage.user %}
+            {% if personnage.user.etatCivil %}
+                Personne à contacter en cas d'urgence :
+                <br/>{{ personnage.user.etatCivil.personneAPrevenir }}<br/>
+                Téléphone : {{ personnage.user.etatCivil.telPap }}<br/>
+                Problèmes médicaux : {{ personnage.user.etatCivil.problemeMedicaux }}
+            {% endif %}
+            {% if personnage.isSensible %}<br/>Ce personnage est <strong>sensible</strong>.{% endif %}
+        {% endif %}
+    </td>
+    </tr>
+    </table>
     </div>
 
     <table>

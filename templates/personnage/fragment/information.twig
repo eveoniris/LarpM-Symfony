@@ -38,7 +38,7 @@
         <div class="text-center">
             {% if personnage.genre == 'Masculin' %}
                 <img width="216" height="300" alt="{{ personnage.classe.labelMasculin }}"
-                     src="{{ path('classe.image', {'classe' : personnage.classe.id, 'sexe' : 'F' }) }}"/>
+                     src="{{ path('classe.image', {'classe' : personnage.classe.id, 'sexe' : 'M' }) }}"/>
             {% else %}
                 <img width="216" height="200" alt="{{ personnage.classe.labelFeminin }}"
                      src="{{ path('classe.image', {'classe' : personnage.classe.id, 'sexe' : 'F' }) }}"/>
@@ -270,10 +270,10 @@
             {% endif %}
         {% endset %}
 
-        {# TODO <div class="list-group-item">
-				<div class="head">Titre :</div> {{ app['personnage.manager'].titre(personnage)|default('Aucun') }}
-			</div> #}
 
+        {% set titreHtml %}
+            <span>{{ personnageService.getTitre(personnage) }}</span>
+        {% endset %}
 
 
         {% include '_partials/listItems.twig'
@@ -294,7 +294,8 @@
             {'title': 'Renommé', 'text': renomme, 'collapse': renommeCollapse},
             {'title': 'Héroïsme', 'text': heroisme, 'collapse': heroismeCollapse, 'visible': canSeeDetail},
             {'title': 'Personnage secondaire', 'text': persoSecondaireHtml},
-            {'title': 'Scénariste', 'text': scenaristeHtml}
+            {'title': 'Scénariste', 'text': scenaristeHtml},
+            {'title': 'Titre', 'text': titreHtml, 'visible': canSeeDetail }
         ]
         } %}
 

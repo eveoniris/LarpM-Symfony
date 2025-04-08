@@ -6,7 +6,9 @@ use App\Entity\Bonus;
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
 use App\Entity\Domaine;
+use App\Entity\Gn;
 use App\Entity\GroupeBonus;
+use App\Entity\GroupeGn;
 use App\Entity\GroupeLangue;
 use App\Entity\HeroismeHistory;
 use App\Entity\Ingredient;
@@ -381,6 +383,11 @@ class PersonnageService
         }
 
         return $all;
+    }
+
+    public function getTitre(Personnage $personnage, ?Gn $gn = null): ?string
+    {
+        return $this->entityManager->getRepository(GroupeGn::class)->getTitres($personnage, $gn);
     }
 
     public function getGroupeBonus(
