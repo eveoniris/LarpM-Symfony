@@ -25,9 +25,7 @@
         <strong>Richesse :</strong> {{ personnageService.allRichesse(personnage)|default(0) }} pièces d'argent<br/>
     {% endif %}
 
-    <strong>Lié aux compétences</strong>
-    <ul>
-        {% set hasMateriel = 0 %}
+    {% set materielHtml %}
         {% for competence in personnageService.allCompetences(personnage) %}
             {% if competence.materiel %}
                 <li><strong>{{ competence.competenceFamily.label }}&nbsp({{ competence.level.label }})
@@ -35,10 +33,15 @@
                 {% set hasMateriel = 1 %}
             {% endif %}
         {% endfor %}
-        {% if hasMateriel == 0 %}
-            <li>Aucun matériel</li>
-        {% endif %}
-    </ul>
+    {% endset %}
+
+    {% if materielHtml %}
+        <strong>Lié aux compétences</strong>
+        <ul>
+            {{materielHtml}}
+        </ul>
+    {% endif %}
+
     {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD')) %}
         {% set enoughReligion = 0 %}
         {% for religion in personnage.personnagesReligions %}
