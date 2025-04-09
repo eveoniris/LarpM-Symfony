@@ -955,8 +955,8 @@ class PersonnageController extends AbstractController
         $orderBy = $request->get('order_by') ?: 'id';
         $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
         $isAsc = 'ASC' == $orderDir;
-        $limit = (int)($request->get('limit') ?: 50);
-        $page = (int)($request->get('page') ?: 1);
+        $limit = (int) ($request->get('limit') ?: 50);
+        $page = (int) ($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
@@ -1059,13 +1059,13 @@ class PersonnageController extends AbstractController
         }
 
         return array_merge([
-                'personnages' => $personnages,
-                'paginator' => $paginator,
-                'form' => $form->createView(),
-                'optionalParameters' => $optionalParameters,
-                'columnDefinitions' => $columnDefinitions,
-                'formPath' => $routeName,
-            ]
+            'personnages' => $personnages,
+            'paginator' => $paginator,
+            'form' => $form->createView(),
+            'optionalParameters' => $optionalParameters,
+            'columnDefinitions' => $columnDefinitions,
+            'formPath' => $routeName,
+        ]
         );
     }
 
@@ -2036,7 +2036,7 @@ class PersonnageController extends AbstractController
             // et récupérer les langues de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 if ('ORIGINE' === $personnageLangue->getSource(
-                    ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
+                ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
                     $personnage->removePersonnageLangues($personnageLangue);
                     $this->entityManager->remove($personnageLangue);
                 }
@@ -2378,7 +2378,7 @@ class PersonnageController extends AbstractController
         $limit = 1;
         foreach ($competences as $competence) {
             if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily(
-                )?->getCompetenceFamilyType()?->value) {
+            )?->getCompetenceFamilyType()?->value) {
                 if ($competence->getLevel()?->getIndex() >= 2) {
                     $message = false;
                     $errorLevel = 0;
@@ -2483,7 +2483,7 @@ class PersonnageController extends AbstractController
         if (!$twig->getLoader()->exists('personnage/fragment/tab_'.$tab.'.twig')) {
             $tab = 'general';
         }
-        if (!$isAdmin && $tab === 'enveloppe') {
+        if (!$isAdmin && 'enveloppe' === $tab) {
             $tab = 'general';
         }
 
@@ -2492,34 +2492,11 @@ class PersonnageController extends AbstractController
             [
                 'personnage' => $personnage,
                 'descendants' => $descendants,
-                'langueMateriel' => $this->getLangueMateriel($personnage),
+                'langueMateriel' => $personnage->getLangueMateriel(),
                 'participant' => $personnage->getLastParticipant(),
                 'tab' => $tab,
             ]
         );
-    }
-
-    /**
-     * @return non-falsy-string[]
-     */
-    public function getLangueMateriel(Personnage $personnage): array
-    {
-        $langueMateriel = [];
-        foreach ($personnage->getPersonnageLangues() as $langue) {
-            if ($langue->getLangue()->getGroupeLangue()->getId() > 0 && $langue->getLangue()->getGroupeLangue()->getId(
-                ) < 6) {
-                if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel)) {
-                    $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
-                }
-            }
-
-            if (0 === $langue->getLangue()->getDiffusion()) {
-                $langueMateriel[] = 'Alphabet '.$langue->getLangue()->getLabel();
-            }
-        }
-        sort($langueMateriel);
-
-        return $langueMateriel;
     }
 
     /**
@@ -2563,7 +2540,7 @@ class PersonnageController extends AbstractController
     {
         return $this->render('personnage/enveloppe.twig', [
             'personnage' => $personnage,
-            'langueMateriel' => $this->getLangueMateriel($personnage),
+            'langueMateriel' => $personnage->getLangueMateriel(),
         ]);
     }
 
@@ -2586,7 +2563,7 @@ class PersonnageController extends AbstractController
         return $this->render('personnage/print.twig', [
             'personnage' => $personnage,
             'participant' => $participant,
-            'langueMateriel' => $this->getLangueMateriel($personnage),
+            'langueMateriel' => $personnage->getLangueMateriel(),
             'groupe' => $groupe,
         ]);
     }
@@ -2609,13 +2586,13 @@ class PersonnageController extends AbstractController
             return $this->sendNoImageAvailable();
         }
         $path = $this->fileUploader->getProjectDirectory(
-            ).FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
+        ).FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
 
         $filename = $personnage->getTrombine($this->fileUploader->getProjectDirectory());
         if (!file_exists($filename)) {
             // get old ?
             $path = $this->fileUploader->getProjectDirectory(
-                ).FolderType::Private->value.DocumentType::Image->value.'/';
+            ).FolderType::Private->value.DocumentType::Image->value.'/';
             $filename = $path.$personnage->getTrombineUrl();
 
             if (!file_exists($filename)) {

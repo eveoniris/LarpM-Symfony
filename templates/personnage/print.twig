@@ -30,8 +30,6 @@
         {% else %}
             PAS DE PERSONNAGE SECONDAIRE
         {% endif %}
-
-        </div>
     {% endif %}
     </td>
     <td>
@@ -168,7 +166,7 @@
                     Technologie - {{ technologie.label }}<br/>
                 {% endfor %}
 
-                {% if personnage.isSensible %}Brassard jaune avec un poing gravé<br /.{% endif %}
+                {% if personnage.isSensible %}Brassard jaune avec un poing gravé<br/>.{% endif %}
             </td>
             <td>
                 {% for membre in personnage.membres %}

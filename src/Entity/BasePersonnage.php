@@ -1511,10 +1511,10 @@ abstract class BasePersonnage
                 if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel)) {
                     $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
                 }
-            }
 
-            if (0 === $langue->getLangue()->getDiffusion()) {
-                $langueMateriel[] = 'Alphabet '.$langue->getLangue()->getLabel();
+                if (0 === $langue->getLangue()->getDiffusion()) {
+                    $langueMateriel[] = 'Alphabet '.$langue->getLangue()->getLabel();
+                }
             }
         }
 
