@@ -34,6 +34,7 @@ use App\Enum\BonusType;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\LevelType;
 use App\Form\PersonnageFindForm;
+use App\Repository\ReligionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -212,6 +213,7 @@ class PersonnageService
 
         $repo = $this->entityManager->getRepository(Religion::class);
         $religions = $repo->findAllPublicOrderedByLabel();
+        $hasReligion = $personnage->getReligions()->count() > 0;
 
         foreach ($religions as $religion) {
             if (!$this->knownReligion($personnage, $religion)) {
@@ -220,6 +222,19 @@ class PersonnageService
         }
 
         return $availableReligions;
+    }
+
+    public function hasReligionSans(Personnage $personnage): bool
+    {
+        /** @var ReligionRepository $religionRepository */
+        $religionRepository = $this->entityManager->getRepository(Religion::class);
+        $qb = $religionRepository->createQueryBuilder('rl');
+        $religion = $qb->where($qb->expr()->eq($qb->expr()->lower('rl.label'), ':lbl'))
+            ->setParameter('lbl', 'sans')
+            ->getQuery()
+            ->getSingleResult();
+
+        return $religion && $this->knownReligion($personnage, $religion);
     }
 
     public function knownReligion(Personnage $personnage, Religion $religion): bool

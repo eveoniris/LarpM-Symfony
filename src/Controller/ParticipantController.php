@@ -30,6 +30,7 @@ use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\Question;
 use App\Entity\Religion;
+use App\Entity\ReligionLevel;
 use App\Entity\RenommeHistory;
 use App\Entity\Reponse;
 use App\Entity\Rule;
@@ -38,6 +39,7 @@ use App\Entity\Sort;
 use App\Entity\Technologie;
 use App\Entity\Territoire;
 use App\Entity\User;
+use App\Enum\CompetenceFamilyType;
 use App\Enum\Role;
 use App\Form\AcceptAllianceForm;
 use App\Form\AcceptPeaceForm;
@@ -908,7 +910,7 @@ class ParticipantController extends AbstractController
         $choices = [];
         foreach ($availableCompetences as $competence) {
             $choices[$competence->getId()] = $competence->getLabel(
-                ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
+            ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
         }
 
         $form = $this->createFormBuilder($participant)
@@ -1007,8 +1009,8 @@ class ParticipantController extends AbstractController
                     foreach ($religion->getSpheres() as $sphere) {
                         foreach ($sphere->getPrieres() as $priere) {
                             if ($priere->getNiveau() == $competence->getLevel()->getId() && !$personnage->hasPriere(
-                                    $priere
-                                )) {
+                                $priere
+                            )) {
                                 $priere->addPersonnage($personnage);
                                 $personnage->addPriere($priere);
                             }
@@ -2905,7 +2907,7 @@ class ParticipantController extends AbstractController
 
                 // Noblesse expert : +2 Renommee
                 if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel()->getId(
-                    )) {
+                )) {
                     $renomme_history = new RenommeHistory();
                     $renomme_history->setRenomme(2);
                     $renomme_history->setExplication('[Nouvelle participation] Noblesse Expert');
@@ -3127,9 +3129,8 @@ class ParticipantController extends AbstractController
             4 => 'ALCHIMIE MAITRE',
         ];
         foreach ($niveaux as $i => $tag) {
-
-            if ($niveau === $i &&
-                (!$personnage->hasTrigger($tag) && $participant->hasPotionsDepartByLevel($i))
+            if ($niveau === $i
+                && (!$personnage->hasTrigger($tag) && $participant->hasPotionsDepartByLevel($i))
             ) {
                 $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de potions supplémentaires.');
 
@@ -3555,7 +3556,6 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/religion/add', name: 'participant.religion.add')]
     public function religionAddAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
         PersonnageService $personnageService,
     ): RedirectResponse|Response {
@@ -3569,9 +3569,9 @@ class ParticipantController extends AbstractController
 
         if (true === $participant->getGroupeGn()?->getGroupe()->getLock()) {
             $href = $this->generateUrl(
-                    'groupe.detail',
-                    ['groupe' => $participant->getGroupeGn()?->getGroupe()->getId()]
-                ).'#groupe_lock';
+                'groupe.detail',
+                ['groupe' => $participant->getGroupeGn()?->getGroupe()->getId()]
+            ).'#groupe_lock';
 
             $message =
                 <<<HTML
@@ -3602,6 +3602,9 @@ class ParticipantController extends AbstractController
         $personnageReligion = new PersonnagesReligions();
         $personnageReligion->setPersonnage($personnage);
 
+        // Un prêtre ne peu pas prendre Sans; S'il a "Sans" il ne peut pas prendre de ferveur
+        $hasReligionSans = $personnageService->hasReligionSans($personnage);
+
         // ne proposer que les religions que le personnage ne pratique pas déjà ...
         $availableReligions = $personnageService->getAvailableReligions($personnage);
 
@@ -3631,16 +3634,43 @@ class ParticipantController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var PersonnagesReligions $personnageReligion */
             $personnageReligion = $form->getData();
+
+            // supprimer toutes les autres religions si l'utilisateur à choisi Sans
+            if ($personnageReligion->getReligion()?->isSans()) {
+                if ($personnage->hasCompetence(CompetenceFamilyType::PRIESTHOOD)) {
+                    $this->addFlash(
+                        'error',
+                        "Par Chrom! Un prêtre sans religion ?! C'est non !"
+                    );
+                } else {
+                    $personnagesReligions = $personnage->getPersonnagesReligions();
+                    foreach ($personnagesReligions as $oldReligion) {
+                        $this->entityManager->remove($oldReligion);
+                    }
+
+                    // pas plus de Pratiquant
+                    if (1 < $personnageReligion->getReligionLevel()?->getIndex()) {
+                        $this->addFlash(
+                            'error',
+                            "Etre sans religion ne permet pas d'être plus que pratiquant"
+                        );
+                        $religionLevel = $this->entityManager->getRepository(ReligionLevel::class)->findOneBy(
+                            ['index' => 1]
+                        );
+                        $personnageReligion->setReligionLevel($religionLevel);
+                    }
+                }
 
             // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
             // n'autoriser qu'un Fervent que si l'utilisateur n'a pas encore Fervent.
-            if (3 === $personnageReligion->getReligionLevel()->getIndex()) {
+            } elseif (3 === $personnageReligion->getReligionLevel()?->getIndex()) {
                 $personnagesReligions = $personnage->getPersonnagesReligions();
                 foreach ($personnagesReligions as $oldReligion) {
-                    $entityManager->remove($oldReligion);
+                    $this->entityManager->remove($oldReligion);
                 }
-            } elseif (2 === $personnageReligion->getReligionLevel()->getIndex()) {
+            } elseif (2 === $personnageReligion->getReligionLevel()?->getIndex()) {
                 if ($personnage->isFervent()) {
                     $this->addFlash(
                         'error',
@@ -3651,8 +3681,8 @@ class ParticipantController extends AbstractController
                 }
             }
 
-            $entityManager->persist($personnageReligion);
-            $entityManager->flush();
+            $this->entityManager->persist($personnageReligion);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
@@ -3738,11 +3768,9 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/religion/list', name: 'participant.religion.list')]
     public function religionListAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
     ): Response {
-        $repo = $entityManager->getRepository('\\'.Religion::class);
+        $repo = $this->entityManager->getRepository(Religion::class);
         $religions = $repo->findAllOrderedByLabel();
 
         return $this->render('participant/religion.twig', [

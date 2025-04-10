@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Repository\ReligionRepository;
 use Doctrine\ORM\Mapping\Entity;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Entity(repositoryClass: ReligionRepository::class)]
 class Religion extends BaseReligion implements \Stringable
@@ -12,6 +11,11 @@ class Religion extends BaseReligion implements \Stringable
     public function __toString(): string
     {
         return $this->getLabel();
+    }
+
+    public function isSans(): bool
+    {
+        return 'sans' === strtolower($this->getLabel());
     }
 
     /**
