@@ -54,7 +54,13 @@
 					</ul>
 				</td>
 				<td>{% if groupe.lock %}<span class="text-danger">Verrouillé</span>{% else %}Ouvert{% endif %}</td>
-				<td>{% if groupe.scenariste %}{{ groupe.scenariste.etatCivil|highlight(pagerService.searchValue) }}{% else %}pas de scénariste{% endif %}</td>
+				<td>
+					{% if groupe.scenariste %}
+						<a href="{{ path('user.detail', {'user': groupe.scenariste.id}) }}">{{ groupe.scenariste.etatCivil|highlight(pagerService.searchValue) }}</a>
+					{% else %}
+						pas de scénariste
+					{% endif %}
+				</td>
 				<td>
 					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
 						<div class="btn-group" role="group" aria-label="...">
