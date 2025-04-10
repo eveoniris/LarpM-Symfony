@@ -101,7 +101,7 @@ class GroupeGnForm extends AbstractType
             'empty_data' => null,
             // On veut tous les personnages vivant du GN (pas que ceux du groupe)
             'query_builder' => static fn (PersonnageRepository $personnageRepository,
-            ) => $personnageRepository
+            ) => $personnageRepository // TODO and PID not IN groupeGn titres
                 ->createQueryBuilder('p')
                 ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
                // ->innerjoin('parti.groupeGn', 'g', Join::WITH, 'g.id = parti.groupeGn')

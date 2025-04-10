@@ -105,7 +105,7 @@ class ReligionController extends AbstractController
      */
     #[Route('/religion/add', name: 'religion.add')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-    public function addAction(EntityManagerInterface $entityManager, Request $request): Response
+    public function addAction(Request $request): Response
     {
         $religion = new Religion();
 
@@ -119,18 +119,18 @@ class ReligionController extends AbstractController
         // si l'utilisateur soumet une nouvelle religion
         if ($form->isSubmitted() && $form->isValid()) {
             $religion = $form->getData();
-            $entityManager->persist($religion);
-            $entityManager->flush();
+            $this->entityManager->persist($religion);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'La religion a été ajoutée.');
 
             // l'utilisateur est redirigé soit vers la liste des religions, soit vers de nouveau
             // vers le formulaire d'ajout d'une religion
             if ($form->get('save')->isClicked()) {
-                // return $this->redirectToRoute('religion.index', [], 303);
                 return $this->redirectToRoute('religion.index', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
-                // return $this->redirectToRoute('religion.add', [], 303);
+            }
+
+            if ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('religion.add', [], 303);
             }
         }
