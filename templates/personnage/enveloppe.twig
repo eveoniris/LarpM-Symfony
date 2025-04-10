@@ -42,6 +42,7 @@
         </ul>
     {% endif %}
 
+    {# On utilise plus la divinité principal en impression d'enveloppe
     {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD')) %}
         {% set enoughReligion = 0 %}
         {% for religion in personnage.personnagesReligions %}
@@ -55,6 +56,8 @@
             CE PRÊTRE N'A PAS ASSEZ DE FERVEUR
         {% endif %}
     {% endif %}
+    #}
+
     <strong>Lié aux langues</strong>
     <ul>
         {% set bracelets = [] %}

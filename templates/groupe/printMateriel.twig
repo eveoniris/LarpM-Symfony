@@ -30,9 +30,7 @@
                 <strong>Richesse :</strong> {{ participant.personnage.richesse|default(0) }} pièces d'argent<br/>
             {% endif %}
 
-            <strong>Lié aux compétences :</strong>
-            <ul>
-                {% set hasMateriel = 0 %}
+            {% set materielHtml %}
                 {% for competence in participant.personnage.competences %}
                     {% if competence.materiel %}
                         <li><strong>{{ competence.competenceFamily.label }}&nbsp({{ competence.level.label }})
@@ -40,25 +38,13 @@
                         {% set hasMateriel = 1 %}
                     {% endif %}
                 {% endfor %}
-                {% if hasMateriel == 0 %}
-                    <li>Aucun matériel</li>
-                {% endif %}
-            </ul>
-            {% if participant.personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD')) %}
-                {% set enoughReligion = 0 %}
-                {% for religion in participant.personnage.personnagesReligions %}
-                    {% if religion.religionLevel.index >= 2 %}
-                        {% set enoughReligion = 1 %}
-                        <strong>Divinité principale
-                            : </strong>{{ religion.religion }} ({{ religion.religionLevel.label }})
-                        <br/>
-                        <br/>
-                    {% endif %}
-                {% endfor %}
-                {% if enoughReligion == 0 %}
-                    <strong>Divinité principale
-                        : </strong>CE PRÊTRE N'A PAS ASSEZ DE FERVEUR<br/>
-                {% endif %}
+            {% endset %}
+
+            {% if materielHtml %}
+                <strong>Lié aux compétences :</strong>
+                <ul>
+                    {{ materielHtml }}
+                </ul>
             {% endif %}
 
             {# Langues #}

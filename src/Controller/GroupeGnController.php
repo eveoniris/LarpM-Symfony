@@ -405,7 +405,6 @@ class GroupeGnController extends AbstractController
     #[Route('/groupeGn/{groupe}/update/{groupeGn}/', name: 'groupeGn.update')]
     public function updateAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         Groupe $groupe,
         GroupeGn $groupeGn,
     ): RedirectResponse|Response {
@@ -450,8 +449,8 @@ class GroupeGnController extends AbstractController
                 $groupeGn->setNavigateur(null);
             }
 
-            $entityManager->persist($groupeGn);
-            $entityManager->flush();
+            $this->entityManager->persist($groupeGn);
+            $this->entityManager->flush();
             $redirect = $form->getExtraData()['redirect'] ?? null;
 
             $this->addFlash('success', 'La participation au jeu a été enregistré.');
