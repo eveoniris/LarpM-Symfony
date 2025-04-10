@@ -114,10 +114,10 @@ class GroupeGnForm extends AbstractType
         ];
 
         $builder->add('suzerin', EntityType::class, [...$fields, 'label' => 'Suzerin'])
-            ->add('connetable', EntityType::class,  [...$fields, 'label' => 'Chef de guerre'])
-            ->add('intendant', EntityType::class,  [...$fields, 'label' => 'Intendant'])
-            ->add('navigateur', EntityType::class,  [...$fields, 'label' => 'Navigateur'])
-            ->add('camarilla', EntityType::class,  [...$fields, 'label' => 'Eminence grise']);
+            ->add('connetable', EntityType::class, [...$fields, 'label' => 'Chef de guerre'])
+            ->add('intendant', EntityType::class, [...$fields, 'label' => 'Intendant'])
+            ->add('navigateur', EntityType::class, [...$fields, 'label' => 'Navigateur'])
+            ->add('camarilla', EntityType::class, [...$fields, 'label' => 'Eminence grise']);
     }
 
     /**

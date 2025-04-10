@@ -53,6 +53,7 @@
                     {% endfor %}
                 </div>
 
+                {# On utilise plus la divinité principale en enveloppe
                 {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD')) %}
                     <div class="list-group-item">
                         {% set enoughReligion = 0 %}
@@ -71,6 +72,7 @@
                         {% endif %}
                     </div>
                 {% endif %}
+                #}
 
                 <div class="list-group-item">
                     <h6 class="list-group-item-heading">Lié aux langues :</h6>

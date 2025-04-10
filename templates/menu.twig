@@ -14,18 +14,24 @@
                     </a>
                     <ul class="dropdown-menu">
                         {% if app.user %}
-                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('user.self') }}">Mon compte</a></li>
-                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('gn.list') }}">Mes Grandeurs natures</a></li>
-                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('messagerie') }}">Ma messagerie</a></li>
+                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('user.self') }}">Mon
+                                    compte</a></li>
+                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('gn.list') }}">Mes Grandeurs
+                                    natures</a></li>
+                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('messagerie') }}">Ma
+                                    messagerie</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('app_logout') }}">Déconnection</a></li>
+                            <li><a class="dropdown-item text-body-emphasis"
+                                   href="{{ path('app_logout') }}">Déconnection</a></li>
                         {% else %}
-                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('app_login') }}">Connection</a></li>
+                            <li><a class="dropdown-item text-body-emphasis"
+                                   href="{{ path('app_login') }}">Connection</a></li>
                             <li><a class="dropdown-item text-body-emphasis" href="{{ path('user.register') }}">S'enregistrer</a>
                             </li>
-                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('user.forgot-password') }}">Mot de passe
+                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('user.forgot-password') }}">Mot
+                                    de passe
                                     oublié ?</a></li>
                         {% endif %}
                     </ul>
@@ -71,20 +77,21 @@
                         Univers
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item text-body-emphasis" href="{{ path('religion.index') }}">Religions</a></li>
+                        <li><a class="dropdown-item text-body-emphasis"
+                               href="{{ path('religion.index') }}">Religions</a></li>
                         <li><a class="dropdown-item text-body-emphasis" href="{{ path('world') }}">Carte</a></li>
                         {% if is_granted('ROLE_CARTOGRAPHE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item"  href="{{ path('territoire.list') }}">Territoires</a>
+                            <li><a class="dropdown-item" href="{{ path('territoire.list') }}">Territoires</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ path('territoire.fief') }}">Fiefs</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ path('culture.index') }}">Cultures</a>
                             </li>
                         {% endif %}
-                       </ul>
+                    </ul>
                 </li>
 
                 {# Menus reservé aux scénaristes #}
@@ -159,16 +166,18 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item text-body-emphasis" href="{{ path('rules.list') }}">Règles</a></li>
-                        <li><a class="dropdown-item text-body-emphasis" href="{{ path('competence.list') }}">Compétences</a></li>
-                        <li><a class="dropdown-item text-body-emphasis" href="{{ path('classe.index') }}">Classes</a></li>
+                        <li><a class="dropdown-item text-body-emphasis" href="{{ path('competence.list') }}">
+                                Compétences</a></li>
+                        <li><a class="dropdown-item text-body-emphasis" href="{{ path('classe.index') }}">
+                                Classes</a></li>
                         {% if is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="{{ path('competenceFamily.index') }}">Famille de
-                                    compétences</a></li>
-                            <li><a class="dropdown-item" href="{{ path('attributeType.index') }}">Attributs de
-                                    compétences</a></li>
+                            <li><a class="dropdown-item" href="{{ path('competenceFamily.index') }}">
+                                    Familles de compétences</a></li>
+                            <li><a class="dropdown-item" href="{{ path('attributeType.index') }}">
+                                    Attributs de compétences</a></li>
                             <li><a class="dropdown-item" href="{{ path('level.list') }}">Niveaux</a></li>
                             <li><a class="dropdown-item" href="{{ path('age.list') }}">Ages</a></li>
                             <li><a class="dropdown-item" href="{{ path('genre.index') }}">Genres</a></li>
@@ -177,19 +186,19 @@
                                    href="{{ path('construction.index') }}">Constructions</a></li>
                             <li><a class="dropdown-item" href="{{ path('technologie.index') }}">Technologies</a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ path('magie.domaine.list') }}">Domaine de
-                                    magie</a></li>
+                            <li><a class="dropdown-item" href="{{ path('magie.domaine.list') }}">Domaines de magie</a>
+                            </li>
                             <li><a class="dropdown-item" href="{{ path('magie.sort.list') }}">Sorts</a></li>
                             <li><a class="dropdown-item" href="{{ path('magie.potion.list') }}">Potions</a></li>
                             <li><a class="dropdown-item" href="{{ path('magie.sphere.list') }}">Sphères</a></li>
                             <li><a class="dropdown-item" href="{{ path('magie.priere.list') }}">Prières</a></li>
                             <li><a class="dropdown-item"
                                    href="{{ path('connaissance.list') }}">Connaissances</a></li>
-                            <li><a class="dropdown-item" href="{{ path('personnageSecondaire.list') }}">Personnages
-                                    secondaires</a>
+                            <li><a class="dropdown-item" href="{{ path('personnageSecondaire.list') }}">
+                                    Personnages secondaires</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ path('bonus.list') }}">Bonus</a></li>
-                            <li><a class="dropdown-item" href="{{ path('merveille.list') }}">Merveille</a></li>
+                            <li><a class="dropdown-item" href="{{ path('merveille.list') }}">Merveilles</a></li>
                         {% endif %}
                     </ul>
                 </li>
@@ -259,7 +268,8 @@
                 </div>
             {% endif %}
             <div class="d-flex">
-                <button class="btn btn-dark shadow" id="btnSwitch" data-bs-placement="bottom" title="Changer mode sombre/claire"><i class="fa fa-toggle-on"></i></button>
+                <button class="btn btn-dark shadow" id="btnSwitch" data-bs-placement="bottom"
+                        title="Changer mode sombre/claire"><i class="fa fa-toggle-on"></i></button>
             </div>
             <!-- form class="d-flex" role="search">
                 <input class="form-control me-2" type="search" placeholder="Rechercher" aria-label="Rechercher">
