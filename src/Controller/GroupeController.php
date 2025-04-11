@@ -193,7 +193,7 @@ class GroupeController extends AbstractController
              * supprime la relation entre groupeHasIngredient et le groupe
              */
             foreach ($originalGroupeHasIngredients as $groupeHasIngredient) {
-                if (false == $groupe->getGroupeHasIngredients()->contains($groupeHasIngredient)) {
+                if (false === $groupe->getGroupeHasIngredients()->contains($groupeHasIngredient)) {
                     $entityManager->remove($groupeHasIngredient);
                 }
             }
@@ -222,7 +222,7 @@ class GroupeController extends AbstractController
 
             $this->addFlash('success', 'Votre groupe a été sauvegardé.');
 
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId(), 'tab' => 'enveloppe']);
         }
 
         return $this->render('groupe/ingredient.twig', [
@@ -365,15 +365,14 @@ class GroupeController extends AbstractController
      */
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/ressources', name: 'ressources')]
-    public function adminRessourceAction(
+    public function ressourceAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $originalGroupeHasRessources = new ArrayCollection();
 
         /*
-         *  Crée un tableau contenant les objets GroupeHasRessource du groupe
+         * Crée un tableau contenant les objets GroupeHasRessource du groupe
          */
         foreach ($groupe->getGroupeHasRessources() as $groupeHasRessource) {
             $originalGroupeHasRessources->add($groupeHasRessource);
@@ -398,8 +397,8 @@ class GroupeController extends AbstractController
              *  supprime la relation entre groupeHasRessource et le groupe
              */
             foreach ($originalGroupeHasRessources as $groupeHasRessource) {
-                if (false == $groupe->getGroupeHasRessources()->contains($groupeHasRessource)) {
-                    $entityManager->remove($groupeHasRessource);
+                if (false === $groupe->getGroupeHasRessources()->contains($groupeHasRessource)) {
+                    $this->entityManager->remove($groupeHasRessource);
                 }
             }
 
@@ -409,7 +408,7 @@ class GroupeController extends AbstractController
              *  Gestion des ressources communes alloués au hasard
              */
             if ($randomCommun && $randomCommun > 0) {
-                $ressourceCommune = $entityManager->getRepository(Ressource::class)->findCommun();
+                $ressourceCommune = $this->entityManager->getRepository(Ressource::class)->findCommun();
                 shuffle($ressourceCommune);
                 $needs = new ArrayCollection(array_slice($ressourceCommune, 0, $randomCommun));
 
@@ -418,7 +417,7 @@ class GroupeController extends AbstractController
                     $ghr->setRessource($ressource);
                     $ghr->setQuantite(1);
                     $ghr->setGroupe($groupe);
-                    $entityManager->persist($ghr);
+                    $this->entityManager->persist($ghr);
                 }
             }
 
@@ -428,7 +427,7 @@ class GroupeController extends AbstractController
              *  Gestion des ressources rares alloués au hasard
              */
             if ($randomRare && $randomRare > 0) {
-                $ressourceRare = $entityManager->getRepository(Ressource::class)->findRare();
+                $ressourceRare = $this->entityManager->getRepository(Ressource::class)->findRare();
                 shuffle($ressourceRare);
                 $needs = new ArrayCollection(array_slice($ressourceRare, 0, $randomRare));
 
@@ -437,16 +436,16 @@ class GroupeController extends AbstractController
                     $ghr->setRessource($ressource);
                     $ghr->setQuantite(1);
                     $ghr->setGroupe($groupe);
-                    $entityManager->persist($ghr);
+                    $this->entityManager->persist($ghr);
                 }
             }
 
-            $entityManager->persist($groupe);
-            $entityManager->flush();
+            $this->entityManager->persist($groupe);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre groupe a été sauvegardé.');
 
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId(), 'tab' => 'enveloppe']);
         }
 
         return $this->render('groupe/ressource.twig', [

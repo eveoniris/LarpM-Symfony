@@ -3,16 +3,14 @@
 
 namespace App\Form\Groupe;
 
+use App\Entity\Groupe;
 use App\Form\Type\GroupeHasIngredientType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\GroupeIngredientForm.
- *
- * @author kevin
- */
 class GroupeIngredientForm extends AbstractType
 {
     /**
@@ -20,7 +18,7 @@ class GroupeIngredientForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('groupeHasIngredients', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+        $builder->add('groupeHasIngredients', CollectionType::class, [
             'label' => 'Ingredients',
             'required' => false,
             'allow_add' => true,
@@ -28,7 +26,7 @@ class GroupeIngredientForm extends AbstractType
             'by_reference' => false,
             'entry_type' => GroupeHasIngredientType::class,
         ])
-            ->add('random', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            ->add('random', IntegerType::class, [
                 'mapped' => false,
                 'label' => 'X ingrédients choisis au hasard',
                 'required' => false,
@@ -44,7 +42,7 @@ class GroupeIngredientForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Groupe::class,
+            'data_class' => Groupe::class,
         ]);
     }
 

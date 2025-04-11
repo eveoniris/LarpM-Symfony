@@ -3,16 +3,14 @@
 
 namespace App\Form\Groupe;
 
+use App\Entity\Groupe;
 use App\Form\Type\GroupeHasRessourceType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\GroupeRessourceForm.
- *
- * @author kevin
- */
 class GroupeRessourceForm extends AbstractType
 {
     /**
@@ -21,7 +19,7 @@ class GroupeRessourceForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('randomCommun', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            ->add('randomCommun', IntegerType::class, [
                 'mapped' => false,
                 'label' => 'X ressources communes choisies au hasard',
                 'required' => false,
@@ -29,7 +27,7 @@ class GroupeRessourceForm extends AbstractType
                     'help' => 'Indiquez combien de ressources COMMUNES il faut ajouter à ce groupe.',
                 ],
             ])
-            ->add('randomRare', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            ->add('randomRare', IntegerType::class, [
                 'mapped' => false,
                 'label' => 'X ressources rares choisies au hasard',
                 'required' => false,
@@ -37,7 +35,7 @@ class GroupeRessourceForm extends AbstractType
                     'help' => 'Indiquez combien de ressources RARES il faut ajouter à ce groupe.',
                 ],
             ])
-            ->add('groupeHasRessources', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+            ->add('groupeHasRessources', CollectionType::class, [
                 'label' => 'Ressources',
                 'required' => false,
                 'allow_add' => true,
@@ -53,7 +51,7 @@ class GroupeRessourceForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Groupe::class,
+            'data_class' => Groupe::class,
         ]);
     }
 
