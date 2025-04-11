@@ -74,6 +74,7 @@ use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use JetBrains\PhpStorm\Deprecated;
@@ -101,7 +102,7 @@ class PersonnageController extends AbstractController
     // contient la liste des colonnes
     protected $columnDefinitions = [
         'colId' => ['label' => '#', 'fieldName' => 'id', 'sortFieldName' => 'id', 'tooltip' => 'Numéro d\'identifiant'],
-        'colStatut' => ['label' => 'S', 'fieldName' => 'status', 'sortFieldName' => 'status', 'tooltip' => 'Statut'],
+        'colStatut' => ['label' => 'S', 'fieldName' => 'status', 'canOrder' => false,'sortFieldName' => 'status', 'tooltip' => 'Statut'],
         'colNom' => [
             'label' => 'Nom',
             'fieldName' => 'nom',
@@ -125,24 +126,28 @@ class PersonnageController extends AbstractController
             'fieldName' => 'renomme',
             'sortFieldName' => 'renomme',
             'tooltip' => 'Points de renommée',
+            'canOrder' => false,
         ],
         'colPugilat' => [
             'label' => 'Pugilat',
             'fieldName' => 'pugilat',
             'sortFieldName' => 'pugilat',
             'tooltip' => 'Points de pugilat',
+            'canOrder' => false,
         ],
         'colHeroisme' => [
             'label' => 'Héroïsme',
             'fieldName' => 'heroisme',
             'sortFieldName' => 'heroisme',
             'tooltip' => 'Points d\'héroisme',
+            'canOrder' => false,
         ],
         'colUser' => [
             'label' => 'Utilisateur',
             'fieldName' => 'user',
             'sortFieldName' => 'user',
             'tooltip' => 'Liste des utilisateurs (Nom et prénom) par GN',
+            'canOrder' => false,
         ],
         'colXp' => [
             'label' => 'Points d\'expérience',
@@ -155,6 +160,7 @@ class PersonnageController extends AbstractController
             'fieldName' => 'hasAnomalie',
             'sortFieldName' => 'hasAnomalie',
             'tooltip' => 'Une pastille orange indique une anomalie',
+            'canOrder' => false,
         ],
     ];
 
@@ -930,16 +936,13 @@ class PersonnageController extends AbstractController
      * Liste des personnages.
      */
     #[Route('/list', name: 'list')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
-    public function adminListAction(Request $request, EntityManagerInterface $entityManager): Response
+    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    public function listAction(Request $request): Response
     {
-        $routeName = 'personnage.list';
-        $twigFilePath = 'personnage/list.twig';
-
         // handle the request and return an array containing the parameters for the view
-        $viewParams = $this->getSearchViewParameters($request, $entityManager, $routeName);
+        $viewParams = $this->getSearchViewParameters($request, $this->entityManager, 'personnage.list');
 
-        return $this->render($twigFilePath, $viewParams);
+        return $this->render('personnage/list.twig', $viewParams);
     }
 
     /**
@@ -1020,29 +1023,33 @@ class PersonnageController extends AbstractController
         // attention, il y a des propriétés sur lesquelles on ne peut pas appliquer le order by
         // car elles ne sont pas en base mais calculées, ça compliquerait trop le sql
         $orderByCalculatedFields = new ArrayCollection(['pugilat', 'heroisme', 'user', 'hasAnomalie', 'status']);
-        if ($orderByCalculatedFields->contains($orderBy)) {
+        // TODO ?
+        if (false && $orderByCalculatedFields->contains($orderBy)) {
             // recherche basée uniquement sur les filtres
             $filteredPersonnages = $repo->findList($criteria)->getResult();
             // on applique le tri
             PersonnageManager::sort($filteredPersonnages, $orderBy, $isAsc);
-            $personnagesCollection = new ArrayCollection($filteredPersonnages);
+            $personnages = new ArrayCollection($filteredPersonnages);
             // on découpe suivant la pagination demandée
-            $personnages = $personnagesCollection->slice($offset, $limit);
-        } else {
-            // recherche et applique directement en sql filtres + tri + pagination
-            $personnages = $repo->findList(
-                $criteria,
-                ['by' => $orderBy, 'dir' => $orderDir],
-                $limit,
-                $offset
-            );
+            $personnages = $personnages->slice($offset, $limit);
+
+            $paginator = new Paginator($personnages);
         }
+        // else {
+        // recherche et applique directement en sql filtres + tri + pagination
+        $personnages = $repo->findList(
+            $criteria,
+            ['by' => $orderBy, 'dir' => $orderDir],
+            $limit,
+            $offset
+        );
 
         $paginator = $repo->findPaginatedQuery(
             $personnages,
             $this->getRequestLimit(),
             $this->getRequestPage()
         );
+        //  }
 
         // récupère les colonnes à afficher
         if (empty($columnKeys)) {
