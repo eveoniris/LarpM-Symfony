@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -17,10 +18,10 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupeHasIngredient', 'extended' => 'GroupeHasIngredient'])]
 abstract class BaseGroupeHasIngredient
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     protected int $quantite = 0;
 
     #[ORM\ManyToOne(targetEntity: Groupe::class, cascade: ['persist', 'remove'], inversedBy: 'groupeHasIngredients')]
@@ -29,7 +30,7 @@ abstract class BaseGroupeHasIngredient
 
     #[ORM\ManyToOne(targetEntity: Ingredient::class, inversedBy: 'groupeHasIngredients')]
     #[ORM\JoinColumn(name: 'ingredient_id', referencedColumnName: 'id')]
-    protected $ingredient;
+    protected ?Ingredient   $ingredient;
 
     /**
      * Set the value of id.
@@ -98,7 +99,7 @@ abstract class BaseGroupeHasIngredient
     /**
      * Get Ingredient entity (many to one).
      */
-    public function getIngredient(): Ingredient
+    public function getIngredient(): ?Ingredient
     {
         return $this->ingredient;
     }
