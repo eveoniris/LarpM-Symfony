@@ -8,6 +8,7 @@ use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\Connaissance;
 use App\Entity\Domaine;
+use App\Entity\Espece;
 use App\Entity\ExperienceGain;
 use App\Entity\HeroismeHistory;
 use App\Entity\Ingredient;
@@ -66,6 +67,7 @@ use App\Manager\GroupeManager;
 use App\Manager\PersonnageManager;
 use App\Repository\ConnaissanceRepository;
 use App\Repository\DomaineRepository;
+use App\Repository\ParticipantRepository;
 use App\Repository\PotionRepository;
 use App\Repository\PriereRepository;
 use App\Repository\SortRepository;
@@ -102,7 +104,13 @@ class PersonnageController extends AbstractController
     // contient la liste des colonnes
     protected $columnDefinitions = [
         'colId' => ['label' => '#', 'fieldName' => 'id', 'sortFieldName' => 'id', 'tooltip' => 'Numéro d\'identifiant'],
-        'colStatut' => ['label' => 'S', 'fieldName' => 'status', 'canOrder' => false,'sortFieldName' => 'status', 'tooltip' => 'Statut'],
+        'colStatut' => [
+            'label' => 'S',
+            'fieldName' => 'status',
+            'canOrder' => false,
+            'sortFieldName' => 'status',
+            'tooltip' => 'Statut',
+        ],
         'colNom' => [
             'label' => 'Nom',
             'fieldName' => 'nom',
@@ -170,6 +178,128 @@ class PersonnageController extends AbstractController
     public function accueilAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         return $this->render('personnage/accueil.twig', []);
+    }
+
+    #[Route('/{personnage}/competence/add', name: 'add.competence')]
+    #[IsGranted(Role::USER->value)]
+    public function addCompetenceAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+        PersonnageService $personnageService,
+    ): RedirectResponse|Response {
+        $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
+
+        $availableCompetences = $personnageService->getAvailableCompetences($personnage);
+        $referer = $request->headers->get('referer');
+
+        if (0 === $availableCompetences->count()) {
+            $this->addFlash('error', 'Désolé, il n\'y a plus de compétence disponible.');
+
+            if (!$referer || str_starts_with($referer, $request->getUri())) {
+                $this->redirect($referer, 303);
+            }
+
+            return $this->redirectToRoute('homepage', [], 303);
+        }
+
+        // construit le tableau de choix
+        $choices = [];
+        foreach ($availableCompetences as $competence) {
+            $choices[$competence->getLabel().' (cout : '.$personnageService->getCompetenceCout(
+                $personnage,
+                $competence
+            ).' xp)'] = $competence->getId();
+        }
+
+        $competence = new Competence();
+        $form = $this->createFormBuilder($competence)
+            ->add('id', ChoiceType::class, [
+                'label' => 'Choisissez une nouvelle compétence',
+                'choices' => $choices,
+            ])
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => 'Ajouter la compétence', 'attr' => ['class' => 'btn btn-secondary']]
+            )->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $competenceId = $data->getId();
+            $competence = $entityManager->find(Competence::class, $competenceId);
+
+            $service = null;
+
+            if (!$competence) {
+                $form->addError('Competence not found');
+            } else {
+                $service = $personnageService->addCompetence($personnage, $competence, false);
+            }
+
+            if (!$service->hasErrors()) {
+                $this->addFlash('success', 'Votre personnage a été sauvegardé.');
+
+                $this->log($competence, 'competence_add', true);
+
+                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            }
+
+            $form->get('id')->addError(new FormError($service->getErrorsAsString()));
+        }
+
+        return $this->render('personnage/competence.twig', [
+            'form' => $form->createView(),
+            'isAdmin' => $this->isGranted(Role::ADMIN->value) || $this->isGranted(Role::SCENARISTE->value),
+            'personnage' => $personnage,
+            'competences' => $availableCompetences,
+        ]);
+    }
+
+    protected function hasAccess(Personnage $personnage, array $roles = []): void
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        // Doit être connecté
+        if (!$user || !$this->isGranted(Role::USER->value)) {
+            throw new AccessDeniedException();
+        }
+
+        // Est l'interprète du personnage
+        if ($personnage->getUser()?->getId() === $user->getId()) {
+            return;
+        }
+
+        // Est un niveau admin suffisant
+        if ($roles) {
+            /** @var Role $role */
+            foreach ($roles as $role) {
+                if ($this->isGranted($role->value)) {
+                    return;
+                }
+            }
+        }
+
+        /*
+         * Autre option :
+         * if (!$user) {
+         * $this->addFlash('error', 'Désolé, vous devez être identifié pour accéder à cette page');
+         * $this->redirectToRoute('app_login', [], 303);
+         * }
+         *
+         * if (
+         * !($this->isGranted('ROLE_ADMIN') || $this->isGranted(Role::SCENARISTE->value))
+         * && $user->getId() !== $personnage->getUser()?->getId()
+         * ) {
+         * $this->addFlash('error', "Vous n'avez pas les permissions requises pour modifier une trombine");
+         * $this->redirect($request->headers->get('referer'));
+         * $this->redirectToRoute('homepage', [], 303);
+         * }
+         */
+
+        throw new AccessDeniedException();
     }
 
     /**
@@ -369,128 +499,6 @@ class PersonnageController extends AbstractController
             'personnage' => $personnage,
             'personnageChronologie' => $personnageChronologie,
         ]);
-    }
-
-    #[Route('/{personnage}/competence/add', name: 'add.competence')]
-    #[IsGranted(Role::USER->value)]
-    public function addCompetenceAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Personnage $personnage,
-        PersonnageService $personnageService,
-    ): RedirectResponse|Response {
-        $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
-
-        $availableCompetences = $personnageService->getAvailableCompetences($personnage);
-        $referer = $request->headers->get('referer');
-
-        if (0 === $availableCompetences->count()) {
-            $this->addFlash('error', 'Désolé, il n\'y a plus de compétence disponible.');
-
-            if (!$referer || str_starts_with($referer, $request->getUri())) {
-                $this->redirect($referer, 303);
-            }
-
-            return $this->redirectToRoute('homepage', [], 303);
-        }
-
-        // construit le tableau de choix
-        $choices = [];
-        foreach ($availableCompetences as $competence) {
-            $choices[$competence->getLabel().' (cout : '.$personnageService->getCompetenceCout(
-                $personnage,
-                $competence
-            ).' xp)'] = $competence->getId();
-        }
-
-        $competence = new Competence();
-        $form = $this->createFormBuilder($competence)
-            ->add('id', ChoiceType::class, [
-                'label' => 'Choisissez une nouvelle compétence',
-                'choices' => $choices,
-            ])
-            ->add(
-                'save',
-                SubmitType::class,
-                ['label' => 'Ajouter la compétence', 'attr' => ['class' => 'btn btn-secondary']]
-            )->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $competenceId = $data->getId();
-            $competence = $entityManager->find(Competence::class, $competenceId);
-
-            $service = null;
-
-            if (!$competence) {
-                $form->addError('Competence not found');
-            } else {
-                $service = $personnageService->addCompetence($personnage, $competence, false);
-            }
-
-            if (!$service->hasErrors()) {
-                $this->addFlash('success', 'Votre personnage a été sauvegardé.');
-
-                $this->log($competence, 'competence_add', true);
-
-                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
-            }
-
-            $form->get('id')->addError(new FormError($service->getErrorsAsString()));
-        }
-
-        return $this->render('personnage/competence.twig', [
-            'form' => $form->createView(),
-            'isAdmin' => $this->isGranted(Role::ADMIN->value) || $this->isGranted(Role::SCENARISTE->value),
-            'personnage' => $personnage,
-            'competences' => $availableCompetences,
-        ]);
-    }
-
-    protected function hasAccess(Personnage $personnage, array $roles = []): void
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-        // Doit être connecté
-        if (!$user || !$this->isGranted(Role::USER->value)) {
-            throw new AccessDeniedException();
-        }
-
-        // Est l'interprète du personnage
-        if ($personnage->getUser()?->getId() === $user->getId()) {
-            return;
-        }
-
-        // Est un niveau admin suffisant
-        if ($roles) {
-            /** @var Role $role */
-            foreach ($roles as $role) {
-                if ($this->isGranted($role->value)) {
-                    return;
-                }
-            }
-        }
-
-        /*
-         * Autre option :
-         * if (!$user) {
-         * $this->addFlash('error', 'Désolé, vous devez être identifié pour accéder à cette page');
-         * $this->redirectToRoute('app_login', [], 303);
-         * }
-         *
-         * if (
-         * !($this->isGranted('ROLE_ADMIN') || $this->isGranted(Role::SCENARISTE->value))
-         * && $user->getId() !== $personnage->getUser()?->getId()
-         * ) {
-         * $this->addFlash('error', "Vous n'avez pas les permissions requises pour modifier une trombine");
-         * $this->redirect($request->headers->get('referer'));
-         * $this->redirectToRoute('homepage', [], 303);
-         * }
-         */
-
-        throw new AccessDeniedException();
     }
 
     /**
@@ -933,150 +941,6 @@ class PersonnageController extends AbstractController
     }
 
     /**
-     * Liste des personnages.
-     */
-    #[Route('/list', name: 'list')]
-    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
-    public function listAction(Request $request): Response
-    {
-        // handle the request and return an array containing the parameters for the view
-        $viewParams = $this->getSearchViewParameters($request, $this->entityManager, 'personnage.list');
-
-        return $this->render('personnage/list.twig', $viewParams);
-    }
-
-    /**
-     * Retourne le tableau de paramètres à utiliser pour l'affichage de la recherche des personnages.
-     */
-    public function getSearchViewParameters(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        string $routeName,
-        array $columnKeys = [],
-    ): array {
-        // récupère les filtres et tris de recherche + pagination renseignés dans le formulaire
-        $orderBy = $request->get('order_by') ?: 'id';
-        $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
-        $isAsc = 'ASC' == $orderDir;
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
-        $offset = ($page - 1) * $limit;
-        $criteria = [];
-
-        $formData = $request->query->all('personnage_find_form');
-        $religion = isset($formData['religion']) ? $entityManager->find(
-            'App\Entity\Religion',
-            $formData['religion']
-        ) : null;
-        $competence = isset($formData['competence']) ? $entityManager->find(
-            'App\Entity\Competence',
-            $formData['competence']
-        ) : null;
-        $classe = isset($formData['classe']) ? $entityManager->find('App\Entity\Classe', $formData['classe']) : null;
-        $groupe = isset($formData['groupe']) ? $entityManager->find('App\Entity\Groupe', $formData['groupe']) : null;
-        $optionalParameters = '';
-
-        // construit le formulaire contenant les filtres de recherche
-        $form = $this->createForm(
-            PersonnageFindForm::class,
-            null,
-            [
-                'data' => [
-                    'religion' => $religion,
-                    'classe' => $classe,
-                    'competence' => $competence,
-                    'groupe' => $groupe,
-                ],
-                'method' => 'get',
-                'csrf_protection' => false,
-            ]
-        );
-
-        $form->handleRequest($request);
-
-        // récupère les nouveaux filtres de recherche
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $type = $data['type'];
-            $value = $data['value'];
-            $criteria[$type] = $value;
-        }
-        if ($religion) {
-            $criteria['religion'] = $religion->getId();
-            $optionalParameters .= "&personnageFind[religion]={$religion->getId()}";
-        }
-        if ($competence) {
-            $criteria['competence'] = $competence->getId();
-            $optionalParameters .= "&personnageFind[competence]={$competence->getId()}";
-        }
-        if ($classe) {
-            $criteria['classe'] = $classe->getId();
-            $optionalParameters .= "&personnageFind[classe]={$classe->getId()}";
-        }
-        if ($groupe) {
-            $criteria['groupe'] = $groupe->getId();
-            $optionalParameters .= "&personnageFind[groupe]={$groupe->getId()}";
-        }
-
-        $repo = $entityManager->getRepository(Personnage::class);
-
-        // attention, il y a des propriétés sur lesquelles on ne peut pas appliquer le order by
-        // car elles ne sont pas en base mais calculées, ça compliquerait trop le sql
-        $orderByCalculatedFields = new ArrayCollection(['pugilat', 'heroisme', 'user', 'hasAnomalie', 'status']);
-        // TODO ?
-        if (false && $orderByCalculatedFields->contains($orderBy)) {
-            // recherche basée uniquement sur les filtres
-            $filteredPersonnages = $repo->findList($criteria)->getResult();
-            // on applique le tri
-            PersonnageManager::sort($filteredPersonnages, $orderBy, $isAsc);
-            $personnages = new ArrayCollection($filteredPersonnages);
-            // on découpe suivant la pagination demandée
-            $personnages = $personnages->slice($offset, $limit);
-
-            $paginator = new Paginator($personnages);
-        }
-        // else {
-        // recherche et applique directement en sql filtres + tri + pagination
-        $personnages = $repo->findList(
-            $criteria,
-            ['by' => $orderBy, 'dir' => $orderDir],
-            $limit,
-            $offset
-        );
-
-        $paginator = $repo->findPaginatedQuery(
-            $personnages,
-            $this->getRequestLimit(),
-            $this->getRequestPage()
-        );
-        //  }
-
-        // récupère les colonnes à afficher
-        if (empty($columnKeys)) {
-            // on prend l'ordre par défaut
-            $columnDefinitions = $this->columnDefinitions;
-        } else {
-            // on reconstruit le tableau dans l'ordre demandé
-            $columnDefinitions = [];
-            foreach ($columnKeys as $columnKey) {
-                if (array_key_exists($columnKey, $this->columnDefinitions)) {
-                    $columnDefinitions[] = $this->columnDefinitions[$columnKey];
-                }
-            }
-        }
-
-        return array_merge([
-            'personnages' => $personnages,
-            'paginator' => $paginator,
-            'form' => $form->createView(),
-            'optionalParameters' => $optionalParameters,
-            'columnDefinitions' => $columnDefinitions,
-            'formPath' => $routeName,
-        ]
-        );
-    }
-
-    /**
      * Modifie le matériel lié à un personnage.
      */
     #[Route('/{personnage}/updateMateriel', name: 'update.materiel')]
@@ -1113,11 +977,6 @@ class PersonnageController extends AbstractController
     }
 
     /**
-     * Affiche le détail d'un personnage (pour les orgas).
-     */
-    // #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
-
-    /**
      * Imprimer la liste des personnages.
      */
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
@@ -1147,6 +1006,11 @@ class PersonnageController extends AbstractController
             ['personnage' => $personnage->getId(), 303]
         );
     }
+
+    /**
+     * Affiche le détail d'un personnage (pour les orgas).
+     */
+    // #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
 
     #[Route('/{personnage}/domaine/{domaine}/delete', name: 'delete.domaine')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
@@ -1461,81 +1325,6 @@ class PersonnageController extends AbstractController
     }
 
     /**
-     * Transfert d'un personnage à un autre utilisateur.
-     */
-    #[Route('/{personnage}/transfert', name: 'transfert')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
-    public function adminTransfertAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Personnage $personnage,
-    ): RedirectResponse|Response {
-        if ($oldParticipant = $personnage->getLastParticipant()) {
-            $this->addFlash(
-                'error',
-                'Désolé, le personnage ne dispose pas encore de participation et ne peut donc pas encore être transféré'
-            );
-
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
-        }
-
-        $form = $this->createFormBuilder()
-            ->add('id', EntityType::class, [
-                'required' => true,
-                // 'expanded' => true,
-                'autocomplete' => true,
-                'label' => 'Nouveau propriétaire',
-                'class' => Participant::class,
-                // 'choice_label' => 'UserIdentity',
-            ])
-            ->add('transfert', SubmitType::class, [
-                'label' => 'Transferer',
-                'attr' => ['class' => 'btn btn-secondary'],
-            ])->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $newParticipant = $data['participant'];
-
-            $personnage->setUser($newParticipant->getUser());
-
-            // gestion de l'ancien personnage
-            if ($newParticipant->getPersonnage()) {
-                $oldPersonnage = $newParticipant->getPersonnage();
-                $oldPersonnage->removeParticipant($newParticipant);
-                $oldPersonnage->setGroupeNull();
-            }
-
-            // le personnage doit rejoindre le groupe de l'utilisateur
-            if ($newParticipant->getGroupeGn() && $newParticipant->getGroupeGn()->getGroupe()) {
-                $personnage->setGroupe($newParticipant->getGroupeGn()->getGroupe());
-            }
-
-            $oldParticipant->setPersonnageNull();
-            $oldParticipant->getUser()?->setPersonnage(null);
-            $newParticipant->setPersonnage($personnage);
-            $newParticipant->getUser()->setPersonnage($personnage);
-            $personnage->addParticipant($newParticipant);
-
-            $entityManager->persist($oldParticipant);
-            $entityManager->persist($newParticipant);
-            $entityManager->persist($personnage);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le personnage a été transféré');
-
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
-        }
-
-        return $this->render('personnage/transfert.twig', [
-            'personnage' => $personnage,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
      * Ajoute un trigger.
      */
     #[Route('/{personnage}/addTrigger', name: 'trigger.add')]
@@ -1603,50 +1392,6 @@ class PersonnageController extends AbstractController
             'form' => $form->createView(),
             'personnage' => $personnage,
             'trigger' => $trigger,
-        ]);
-    }
-
-    /**
-     * Modification du personnage.
-     */
-    #[Route('/{personnage}/update', name: 'update')]
-    #[IsGranted(Role::USER->value)]
-    public function adminUpdateAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Personnage $personnage,
-    ): RedirectResponse|Response {
-        $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
-
-        $editClass = PersonnageEditForm::class;
-        if ($this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value)) {
-            $editClass = PersonnageUpdateForm::class;
-        }
-
-        $form = $this->createForm($editClass, $personnage)
-            ->add('save', SubmitType::class, [
-                'label' => 'Valider les modifications',
-                'attr' => [
-                    'class' => 'btn btn-secondary',
-                ],
-            ]);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $personnage = $form->getData();
-
-            $entityManager->persist($personnage);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le personnage a été sauvegardé.');
-
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
-        }
-
-        return $this->render('personnage/update.twig', [
-            'form' => $form->createView(),
-            'personnage' => $personnage,
         ]);
     }
 
@@ -1926,93 +1671,6 @@ class PersonnageController extends AbstractController
         }
 
         return $this->render('personnage/ingredients.twig', [
-            'form' => $form->createView(),
-            'personnage' => $personnage,
-        ]);
-    }
-
-    /**
-     * Modifie la liste des langues.
-     */
-    #[Route('/{personnage}/updateLangue', name: 'update.langue')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
-    public function adminUpdateLangueAction(
-        Request $request,
-        #[MapEntity] Personnage $personnage,
-    ): RedirectResponse|Response {
-        $langues = $this->entityManager->getRepository(Langue::class)->findBy([],
-            ['secret' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC']);
-
-        $originalLanguages = [];
-        foreach ($personnage->getLanguages() as $languages) {
-            $originalLanguages[] = $languages;
-        }
-
-        $form = $this->createFormBuilder()
-            ->add('langues', EntityType::class, [
-                'required' => true,
-                'label' => 'Choisissez les langues du personnage',
-                'multiple' => true,
-                'expanded' => true,
-                'class' => Langue::class,
-                'choices' => $langues,
-                'choice_label' => 'label',
-                'data' => $originalLanguages,
-            ])
-            ->add(
-                'save',
-                SubmitType::class,
-                ['label' => 'Valider vos modifications', 'attr' => ['class' => 'btn btn-secondary']]
-            )
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $langues = $data['langues'];
-
-            // pour toutes les nouvelles langues
-            foreach ($langues as $langue) {
-                if (!$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = new PersonnageLangues();
-                    $personnageLangue->setPersonnage($personnage);
-                    $personnageLangue->setLangue($langue);
-                    $personnageLangue->setSource('ADMIN');
-                    $this->entityManager->persist($personnageLangue);
-                }
-            }
-
-            if (0 === count($langues)) {
-                foreach ($personnage->getLanguages() as $langue) {
-                    $personnageLangue = $personnage->getPersonnageLangue($langue);
-                    $this->entityManager->remove($personnageLangue);
-                }
-            } else {
-                foreach ($personnage->getLanguages() as $langue) {
-                    $found = false;
-                    foreach ($langues as $l) {
-                        if ($l === $langue) {
-                            $found = true;
-                        }
-                    }
-
-                    if (!$found) {
-                        $personnageLangue = $personnage->getPersonnageLangue($langue);
-                        $this->entityManager->remove($personnageLangue);
-                    }
-                }
-            }
-
-            $this->entityManager->persist($personnage);
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'Le personnage a été sauvegardé.');
-
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
-        }
-
-        return $this->render('personnage/update.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
@@ -2448,7 +2106,11 @@ class PersonnageController extends AbstractController
             $entityManager->persist($historique);
             $entityManager->flush();
 
-            $this->log(['personnage' => $personnage->getid(), 'xp' => $data['xp'], 'explanation' => $data['explanation']], 'xp_add', true);
+            $this->log(
+                ['personnage' => $personnage->getid(), 'xp' => $data['xp'], 'explanation' => $data['explanation']],
+                'xp_add',
+                true
+            );
 
             $this->addFlash('success', 'Les points d\'expériences ont été ajoutés');
 
@@ -2685,6 +2347,150 @@ class PersonnageController extends AbstractController
         ]);
     }
 
+    /**
+     * Liste des personnages.
+     */
+    #[Route('/list', name: 'list')]
+    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    public function listAction(Request $request): Response
+    {
+        // handle the request and return an array containing the parameters for the view
+        $viewParams = $this->getSearchViewParameters($request, $this->entityManager, 'personnage.list');
+
+        return $this->render('personnage/list.twig', $viewParams);
+    }
+
+    /**
+     * Retourne le tableau de paramètres à utiliser pour l'affichage de la recherche des personnages.
+     */
+    public function getSearchViewParameters(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        string $routeName,
+        array $columnKeys = [],
+    ): array {
+        // récupère les filtres et tris de recherche + pagination renseignés dans le formulaire
+        $orderBy = $request->get('order_by') ?: 'id';
+        $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
+        $isAsc = 'ASC' == $orderDir;
+        $limit = (int) ($request->get('limit') ?: 50);
+        $page = (int) ($request->get('page') ?: 1);
+        $offset = ($page - 1) * $limit;
+        $criteria = [];
+
+        $formData = $request->query->all('personnage_find_form');
+        $religion = isset($formData['religion']) ? $entityManager->find(
+            'App\Entity\Religion',
+            $formData['religion']
+        ) : null;
+        $competence = isset($formData['competence']) ? $entityManager->find(
+            'App\Entity\Competence',
+            $formData['competence']
+        ) : null;
+        $classe = isset($formData['classe']) ? $entityManager->find('App\Entity\Classe', $formData['classe']) : null;
+        $groupe = isset($formData['groupe']) ? $entityManager->find('App\Entity\Groupe', $formData['groupe']) : null;
+        $optionalParameters = '';
+
+        // construit le formulaire contenant les filtres de recherche
+        $form = $this->createForm(
+            PersonnageFindForm::class,
+            null,
+            [
+                'data' => [
+                    'religion' => $religion,
+                    'classe' => $classe,
+                    'competence' => $competence,
+                    'groupe' => $groupe,
+                ],
+                'method' => 'get',
+                'csrf_protection' => false,
+            ]
+        );
+
+        $form->handleRequest($request);
+
+        // récupère les nouveaux filtres de recherche
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $type = $data['type'];
+            $value = $data['value'];
+            $criteria[$type] = $value;
+        }
+        if ($religion) {
+            $criteria['religion'] = $religion->getId();
+            $optionalParameters .= "&personnageFind[religion]={$religion->getId()}";
+        }
+        if ($competence) {
+            $criteria['competence'] = $competence->getId();
+            $optionalParameters .= "&personnageFind[competence]={$competence->getId()}";
+        }
+        if ($classe) {
+            $criteria['classe'] = $classe->getId();
+            $optionalParameters .= "&personnageFind[classe]={$classe->getId()}";
+        }
+        if ($groupe) {
+            $criteria['groupe'] = $groupe->getId();
+            $optionalParameters .= "&personnageFind[groupe]={$groupe->getId()}";
+        }
+
+        $repo = $entityManager->getRepository(Personnage::class);
+
+        // attention, il y a des propriétés sur lesquelles on ne peut pas appliquer le order by
+        // car elles ne sont pas en base mais calculées, ça compliquerait trop le sql
+        $orderByCalculatedFields = new ArrayCollection(['pugilat', 'heroisme', 'user', 'hasAnomalie', 'status']);
+        // TODO ?
+        if (false && $orderByCalculatedFields->contains($orderBy)) {
+            // recherche basée uniquement sur les filtres
+            $filteredPersonnages = $repo->findList($criteria)->getResult();
+            // on applique le tri
+            PersonnageManager::sort($filteredPersonnages, $orderBy, $isAsc);
+            $personnages = new ArrayCollection($filteredPersonnages);
+            // on découpe suivant la pagination demandée
+            $personnages = $personnages->slice($offset, $limit);
+
+            $paginator = new Paginator($personnages);
+        }
+        // else {
+        // recherche et applique directement en sql filtres + tri + pagination
+        $personnages = $repo->findList(
+            $criteria,
+            ['by' => $orderBy, 'dir' => $orderDir],
+            $limit,
+            $offset
+        );
+
+        $paginator = $repo->findPaginatedQuery(
+            $personnages,
+            $this->getRequestLimit(),
+            $this->getRequestPage()
+        );
+        //  }
+
+        // récupère les colonnes à afficher
+        if (empty($columnKeys)) {
+            // on prend l'ordre par défaut
+            $columnDefinitions = $this->columnDefinitions;
+        } else {
+            // on reconstruit le tableau dans l'ordre demandé
+            $columnDefinitions = [];
+            foreach ($columnKeys as $columnKey) {
+                if (array_key_exists($columnKey, $this->columnDefinitions)) {
+                    $columnDefinitions[] = $this->columnDefinitions[$columnKey];
+                }
+            }
+        }
+
+        return array_merge([
+            'personnages' => $personnages,
+            'paginator' => $paginator,
+            'form' => $form->createView(),
+            'optionalParameters' => $optionalParameters,
+            'columnDefinitions' => $columnDefinitions,
+            'formPath' => $routeName,
+        ]
+        );
+    }
+
     #[Route('/{personnage}/magie', name: 'magie')]
     public function magieAction(
         #[MapEntity] Personnage $personnage,
@@ -2791,6 +2597,94 @@ class PersonnageController extends AbstractController
     }
 
     /**
+     * Transfert d'un personnage à un autre utilisateur.
+     */
+    #[Route('/{personnage}/transfert', name: 'transfert')]
+    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    public function transfertAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ): RedirectResponse|Response {
+        if (!$oldParticipant = $personnage->getLastParticipant()) {
+            $this->addFlash(
+                'error',
+                'Désolé, le personnage ne dispose pas encore de participation et ne peut donc pas encore être transféré'
+            );
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        $form = $this->createFormBuilder()
+            ->add('participant', EntityType::class, [
+                'required' => true,
+                // 'expanded' => true,
+                'multiple' => false,
+                'autocomplete' => true,
+                'label' => 'Nouveau propriétaire',
+                'help' => 'Il doit avoir une participation, et ne pas avoir de personnage associé à celle-ci',
+                'class' => Participant::class,
+                'choice_label' => static fn (Participant $participant) => $participant->getGn()->getLabel(
+                ).' - '.$participant->getUser()?->getFullname(),
+                'query_builder' => static fn (ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
+                        ->select('prt')
+                        ->innerJoin('prt.user', 'u')
+                        ->innerJoin('prt.gn', 'gn')
+                        ->innerJoin('u.etatCivil', 'ec')
+                        ->andWhere('prt.personnage IS NULL AND prt.user IS NOT NULL')
+                        ->orderBy('gn.id', 'DESC')
+                        ->addOrderBy('ec.nom', 'ASC')
+                        ->addOrderBy('ec.prenom_usage', 'ASC'),
+            ])
+            ->add('transfert', SubmitType::class, [
+                'label' => 'Transferer',
+                'attr' => ['class' => 'btn btn-secondary'],
+            ])->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $newParticipant = $data['participant'];
+
+            $personnage->setUser($newParticipant?->getUser());
+
+            // gestion de l'ancien personnage
+            if ($newParticipant->getPersonnage()) {
+                $oldPersonnage = $newParticipant->getPersonnage();
+                $oldPersonnage->removeParticipant($newParticipant);
+                $oldPersonnage->setGroupeNull();
+            }
+
+            // le personnage doit rejoindre le groupe de l'utilisateur
+            if ($newParticipant->getGroupeGn() && $newParticipant->getGroupeGn()->getGroupe()) {
+                $personnage->setGroupe($newParticipant->getGroupeGn()->getGroupe());
+            }
+
+            $oldParticipant->setPersonnageNull();
+            $oldParticipant->getUser()?->setPersonnage(null);
+            $newParticipant->setPersonnage($personnage);
+            $newParticipant->getUser()->setPersonnage($personnage);
+            $personnage->addParticipant($newParticipant);
+            $personnage->setUser($newParticipant->getUser());
+
+            $entityManager->persist($oldParticipant);
+            $entityManager->persist($newParticipant);
+            $entityManager->persist($personnage);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le personnage a été transféré');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('personnage/transfert.twig', [
+            'personnage' => $personnage,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
      * Dé-Selection du personnage courant.
      */
     public function unselectAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse
@@ -2798,6 +2692,221 @@ class PersonnageController extends AbstractController
         $app['personnage.manager']->resetCurrentPersonnage();
 
         return $this->redirectToRoute('homepage', [], 303);
+    }
+
+    /**
+     * Modification du personnage.
+     */
+    #[Route('/{personnage}/update', name: 'update')]
+    #[IsGranted(Role::USER->value)]
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Personnage $personnage,
+    ): RedirectResponse|Response {
+        $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
+
+        $editClass = PersonnageEditForm::class;
+        if ($this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value)) {
+            $editClass = PersonnageUpdateForm::class;
+        }
+
+        $form = $this->createForm($editClass, $personnage)
+            ->add('save', SubmitType::class, [
+                'label' => 'Valider les modifications',
+                'attr' => [
+                    'class' => 'btn btn-secondary',
+                ],
+            ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $personnage = $form->getData();
+
+            $entityManager->persist($personnage);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le personnage a été sauvegardé.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('personnage/update.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
+        ]);
+    }
+
+    #[Route('/{personnage}/espece', name: 'espece')]
+    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    public function updateEspecesAction(
+        Request $request,
+        #[MapEntity] Personnage $personnage,
+    ): RedirectResponse|Response {
+        $especes = $this->entityManager->getRepository(Espece::class)->findBy([],
+            ['nom' => 'ASC']);
+
+        $originalEspeces = [];
+        foreach ($personnage->getEspeces() as $espece) {
+            $originalEspeces[] = $espece;
+        }
+
+        $form = $this->createFormBuilder()
+            ->add('especes', EntityType::class, [
+                'required' => true,
+                'label' => 'Choisissez les espèces du personnage',
+                'multiple' => true,
+                'expanded' => true,
+                'class' => Espece::class,
+                'choices' => $especes,
+                'label_html' => true,
+                'choice_label' => static fn (Espece $espece)
+                    => ($espece->isSecret() ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '') . $espece->getNom(),
+                'data' => $originalEspeces,
+            ])
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => 'Valider vos modifications', 'attr' => ['class' => 'btn btn-secondary']]
+            )
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        /* @var Espece $espece * */
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $especesChanges = $data['especes'];
+
+            // pour toutes les nouvelles espèces
+            foreach ($especesChanges as $espece) {
+                if (!$personnage->getEspeces()->contains($espece)) {
+                    $personnage->addEspece($espece);
+                }
+            }
+
+            if (0 === count($especesChanges)) {
+                foreach ($personnage->getEspeces() as $espece) {
+                    $personnage->removeEspece($espece);
+                }
+            } else {
+                foreach ($originalEspeces as $espece) {
+                    $found = false;
+
+                    /** @var Espece $especeChange */
+                    foreach ($especesChanges as $especeChange) {
+                        if ($espece->getId() === $especeChange->getId()) {
+                            $found = true;
+                            break;
+                        }
+                    }
+
+                    if (!$found) {
+                        $personnage->removeEspece($espece);
+                    }
+                }
+            }
+
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Le personnage a été sauvegardé.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('personnage/update.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
+        ]);
+    }
+
+    /**
+     * Modifie la liste des langues.
+     */
+    #[Route('/{personnage}/updateLangue', name: 'update.langue')]
+    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    public function updateLangueAction(
+        Request $request,
+        #[MapEntity] Personnage $personnage,
+    ): RedirectResponse|Response {
+        $langues = $this->entityManager->getRepository(Langue::class)->findBy([],
+            ['secret' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC']);
+
+        $originalLanguages = [];
+        foreach ($personnage->getLanguages() as $languages) {
+            $originalLanguages[] = $languages;
+        }
+
+        $form = $this->createFormBuilder()
+            ->add('langues', EntityType::class, [
+                'required' => true,
+                'label' => 'Choisissez les langues du personnage',
+                'multiple' => true,
+                'expanded' => true,
+                'class' => Langue::class,
+                'choices' => $langues,
+                'choice_label' => 'label',
+                'data' => $originalLanguages,
+            ])
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => 'Valider vos modifications', 'attr' => ['class' => 'btn btn-secondary']]
+            )
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $langues = $data['langues'];
+
+            // pour toutes les nouvelles langues
+            foreach ($langues as $langue) {
+                if (!$personnage->isKnownLanguage($langue)) {
+                    $personnageLangue = new PersonnageLangues();
+                    $personnageLangue->setPersonnage($personnage);
+                    $personnageLangue->setLangue($langue);
+                    $personnageLangue->setSource('ADMIN');
+                    $this->entityManager->persist($personnageLangue);
+                }
+            }
+
+            if (0 === count($langues)) {
+                foreach ($personnage->getLanguages() as $langue) {
+                    $personnageLangue = $personnage->getPersonnageLangue($langue);
+                    $this->entityManager->remove($personnageLangue);
+                }
+            } else {
+                foreach ($personnage->getLanguages() as $langue) {
+                    $found = false;
+                    foreach ($langues as $l) {
+                        if ($l === $langue) {
+                            $found = true;
+                        }
+                    }
+
+                    if (!$found) {
+                        $personnageLangue = $personnage->getPersonnageLangue($langue);
+                        $this->entityManager->remove($personnageLangue);
+                    }
+                }
+            }
+
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Le personnage a été sauvegardé.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('personnage/update.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
+        ]);
     }
 
     /**

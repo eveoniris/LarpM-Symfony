@@ -310,7 +310,6 @@ class UserController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         UserRepository $repository,
     ): Response {
-
         $errors = [];
 
         if (!$user) {
@@ -1133,25 +1132,8 @@ class UserController extends AbstractController
     {
         /** @var User $loggedUser */
         $loggedUser = $this->getUser();
-        // Doit être connecté
-        if (!$loggedUser || !$this->isGranted(Role::USER->value)) {
-            throw new AccessDeniedException();
-        }
 
-        // Est l'interprète du personnage
-        if ($user->getId() === $loggedUser->getId()) {
-            return;
-        }
-
-        // Est un niveau admin suffisant
-        if ($roles) {
-            /** @var Role $role */
-            foreach ($roles as $role) {
-                if ($this->isGranted($role->value)) {
-                    return;
-                }
-            }
-        }
+        $this->checkHasAccess($roles, fn () => $user->getId() === $loggedUser->getId());
 
         /*
          * Autre option :
@@ -1169,7 +1151,5 @@ class UserController extends AbstractController
          * $this->redirectToRoute('homepage', [], 303);
          * }
          */
-
-        throw new AccessDeniedException();
     }
 }

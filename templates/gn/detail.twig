@@ -334,8 +334,10 @@
                         <ul class="list-group">
                             {% if participant.personnage %}
                                 {% for membre in participant.personnage.membres %}
-                                    <li class="list-group-item">{% if membre.secondaryGroup.secret %}<span
-                                            style="color:red;">Secret</span> - {% endif %}<a
+                                    <li class="list-group-item">{% if membre.secondaryGroup.secret %}
+                                        <i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
+                                                                                                        title="Secret"></i> Secret -
+                                        {% endif %}<a
                                                 href="{{ path('participant.groupeSecondaire.detail', {'participant': participant.id, 'groupeSecondaire': membre.secondaryGroup.id}) }}">{{ membre.secondaryGroup }}</a>
                                     </li>
                                 {% endfor %}

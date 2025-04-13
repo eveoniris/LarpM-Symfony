@@ -212,7 +212,7 @@ abstract class BasePersonnage
     #[ORM\InverseJoinColumn(name: 'domaine_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $domaines;
 
-    #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'personnages', cascade:['persist'])]
+    #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'personnages', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'personnages_potions')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id', nullable: false)]
@@ -268,6 +268,24 @@ abstract class BasePersonnage
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
     private ?Collection $personnageBonus;
 
+    /**
+     * @var Collection<int, Espece>
+     */
+    #[ORM\ManyToMany(targetEntity: Espece::class, mappedBy: 'personnages')]
+    private Collection $especes;
+
+    /**
+     * @var Collection<int, PersonnageApprentissage>
+     */
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageApprentissage::class)]
+    private Collection $apprentissages;
+
+    /**
+     * @var Collection<int, PersonnageApprentissage>
+     */
+    #[OneToMany(mappedBy: 'enseignant', targetEntity: PersonnageApprentissage::class)]
+    private Collection $apprentissageEnseignants;
+
     public function __construct()
     {
         $this->experienceGains = new ArrayCollection();
@@ -300,6 +318,9 @@ abstract class BasePersonnage
         $this->personnageChronologie = new ArrayCollection();
         $this->personnageLignee = new ArrayCollection();
         $this->personnageBonus = new ArrayCollection();
+        $this->especes = new ArrayCollection();
+        $this->apprentissages = new ArrayCollection();
+        $this->apprentissageEnseignants = new ArrayCollection();
     }
 
     /**
@@ -1556,6 +1577,95 @@ abstract class BasePersonnage
             // set the owning side to null (unless already changed)
             if ($personnageBonus->getPersonnage() === $this) {
                 $personnageBonus->setPersonnage(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+
+    /**
+     * @return Collection<int, Espece>
+     */
+    public function getEspeces(): Collection
+    {
+        return $this->especes;
+    }
+
+    public function addEspece(Espece $espece): static
+    {
+        if (!$this->especes->contains($espece)) {
+            $this->especes->add($espece);
+            $espece->addPersonnage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEspece(Espece $espece): static
+    {
+        if ($this->especes->removeElement($espece)) {
+            $espece->removePersonnage($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PersonnageApprentissage>
+     */
+    public function getApprentissages(): Collection
+    {
+        return $this->apprentissages;
+    }
+
+    public function addApprentissage(PersonnageApprentissage $apprentissage): static
+    {
+        if (!$this->apprentissages->contains($apprentissage)) {
+            $this->apprentissages->add($apprentissage);
+            $apprentissage->setPersonnage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApprentissage(PersonnageApprentissage $apprentissage): static
+    {
+        if ($this->apprentissages->removeElement($apprentissage)) {
+            // set the owning side to null (unless already changed)
+            if ($apprentissage->getPersonnage() === $this) {
+                $apprentissage->setPersonnage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PersonnageApprentissage>
+     */
+    public function getapprentissageEnseignants(): Collection
+    {
+        return $this->apprentissageEnseignants;
+    }
+
+    public function addPersonnageApprentissage(PersonnageApprentissage $personnageApprentissage): static
+    {
+        if (!$this->apprentissageEnseignants->contains($personnageApprentissage)) {
+            $this->apprentissageEnseignants->add($personnageApprentissage);
+            $personnageApprentissage->setEnseignant($this);
+        }
+
+        return $this;
+    }
+
+    public function removePersonnageApprentissage(PersonnageApprentissage $personnageApprentissage): static
+    {
+        if ($this->apprentissageEnseignants->removeElement($personnageApprentissage)) {
+            // set the owning side to null (unless already changed)
+            if ($personnageApprentissage->getEnseignant() === $this) {
+                $personnageApprentissage->setEnseignant(null);
             }
         }
 

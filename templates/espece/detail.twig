@@ -1,0 +1,71 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Merveille{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des espèces', 'route': path('espece.list') },
+            {'name' : 'Détail d\'une espèce' }
+        ]
+    } %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Détail d'une espèce</h5>
+        </div>
+
+        <div class="d-flex justify-content-end">
+
+            <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Ajouter"
+                       href="{{ path('espece.add') }}"><i
+                                class="fa fa-plus"></i> Ajouter</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier"
+                       href="{{ path('espece.update',{'espece':espece.id}) }}"><i
+                                class="fa fa-pencil"></i> Modifier</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Personnages ayant cette espèce"
+                       href="{{ path('espece.personnages',{'espece':espece.id}) }}"><i
+                                class="fa fa-users"></i> Personnages</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Supprimer"
+                       href="{{ path('espece.delete',{'espece':espece.id}) }}"><i
+                                class="fa fa-eraser"></i> Supprimer</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+                <div class="list-group">
+
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Nom</div>
+                        <div class="list-group-item-text ps-1">{% if espece.secret %}<i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
+                                                                                        title="Secret"></i> - {% endif %}{{ espece.nom }}</div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Description</div>
+                        <div class="list-group-item-text ps-1">{{ espece.description|markdown_to_html }}</div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Type</div>
+                        <div class="list-group-item-text ps-1">{{ espece.type|trans }}</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock body %}
