@@ -1701,7 +1701,7 @@ class PersonnageController extends AbstractController
             // et récupérer les langues de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 if ('ORIGINE' === $personnageLangue->getSource(
-                ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
+                    ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
                     $personnage->removePersonnageLangues($personnageLangue);
                     $this->entityManager->remove($personnageLangue);
                 }
@@ -2043,7 +2043,7 @@ class PersonnageController extends AbstractController
         $limit = 1;
         foreach ($competences as $competence) {
             if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily(
-            )?->getCompetenceFamilyType()?->value) {
+                )?->getCompetenceFamilyType()?->value) {
                 if ($competence->getLevel()?->getIndex() >= 2) {
                     $message = false;
                     $errorLevel = 0;
@@ -2123,13 +2123,13 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    #[Route('/{personnage}/admin', name: 'detail')]
-    #[Route('/{personnage}', name: 'detail')]
+    #[Route('/{personnage}/admin', name: 'detail', requirements: ['personnage' => Requirement::DIGITS])]
+    #[Route('/{personnage}', name: 'detail', requirements: ['personnage' => Requirement::DIGITS])]
     #[IsGranted(Role::USER->value)]
     public function detailAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
+        PersonnageService $personnageService,
         Environment $twig,
     ): Response {
         // Fiche public
@@ -2144,10 +2144,17 @@ class PersonnageController extends AbstractController
             );
         }
 
+        // Ensure human
+        if (!$personnage->getEspeces()) {
+            $personnage->addEspece($personnageService->getHumanEspece());
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
+        }
+
         // Fiche pour le PJ ou admin
         $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
 
-        $descendants = $entityManager->getRepository(Personnage::class)->findDescendants($personnage);
+        $descendants = $this->entityManager->getRepository(Personnage::class)->findDescendants($personnage);
         $tab = $request->get('tab', 'general');
         if (!$twig->getLoader()->exists('personnage/fragment/tab_'.$tab.'.twig')) {
             $tab = 'general';
@@ -2255,13 +2262,13 @@ class PersonnageController extends AbstractController
             return $this->sendNoImageAvailable();
         }
         $path = $this->fileUploader->getProjectDirectory(
-        ).FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
+            ).FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
 
         $filename = $personnage->getTrombine($this->fileUploader->getProjectDirectory());
         if (!file_exists($filename)) {
             // get old ?
             $path = $this->fileUploader->getProjectDirectory(
-            ).FolderType::Private->value.DocumentType::Image->value.'/';
+                ).FolderType::Private->value.DocumentType::Image->value.'/';
             $filename = $path.$personnage->getTrombineUrl();
 
             if (!file_exists($filename)) {
@@ -2373,8 +2380,8 @@ class PersonnageController extends AbstractController
         $orderBy = $request->get('order_by') ?: 'id';
         $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
         $isAsc = 'ASC' == $orderDir;
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
+        $limit = (int)($request->get('limit') ?: 50);
+        $page = (int)($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
@@ -2481,13 +2488,13 @@ class PersonnageController extends AbstractController
         }
 
         return array_merge([
-            'personnages' => $personnages,
-            'paginator' => $paginator,
-            'form' => $form->createView(),
-            'optionalParameters' => $optionalParameters,
-            'columnDefinitions' => $columnDefinitions,
-            'formPath' => $routeName,
-        ]
+                'personnages' => $personnages,
+                'paginator' => $paginator,
+                'form' => $form->createView(),
+                'optionalParameters' => $optionalParameters,
+                'columnDefinitions' => $columnDefinitions,
+                'formPath' => $routeName,
+            ]
         );
     }
 
@@ -2624,17 +2631,17 @@ class PersonnageController extends AbstractController
                 'label' => 'Nouveau propriétaire',
                 'help' => 'Il doit avoir une participation, et ne pas avoir de personnage associé à celle-ci',
                 'class' => Participant::class,
-                'choice_label' => static fn (Participant $participant) => $participant->getGn()->getLabel(
-                ).' - '.$participant->getUser()?->getFullname(),
-                'query_builder' => static fn (ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
-                        ->select('prt')
-                        ->innerJoin('prt.user', 'u')
-                        ->innerJoin('prt.gn', 'gn')
-                        ->innerJoin('u.etatCivil', 'ec')
-                        ->andWhere('prt.personnage IS NULL AND prt.user IS NOT NULL')
-                        ->orderBy('gn.id', 'DESC')
-                        ->addOrderBy('ec.nom', 'ASC')
-                        ->addOrderBy('ec.prenom_usage', 'ASC'),
+                'choice_label' => static fn(Participant $participant) => $participant->getGn()->getLabel(
+                    ).' - '.$participant->getUser()?->getFullname(),
+                'query_builder' => static fn(ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
+                    ->select('prt')
+                    ->innerJoin('prt.user', 'u')
+                    ->innerJoin('prt.gn', 'gn')
+                    ->innerJoin('u.etatCivil', 'ec')
+                    ->andWhere('prt.personnage IS NULL AND prt.user IS NOT NULL')
+                    ->orderBy('gn.id', 'DESC')
+                    ->addOrderBy('ec.nom', 'ASC')
+                    ->addOrderBy('ec.prenom_usage', 'ASC'),
             ])
             ->add('transfert', SubmitType::class, [
                 'label' => 'Transferer',
@@ -2761,8 +2768,8 @@ class PersonnageController extends AbstractController
                 'class' => Espece::class,
                 'choices' => $especes,
                 'label_html' => true,
-                'choice_label' => static fn (Espece $espece)
-                    => ($espece->isSecret() ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '') . $espece->getNom(),
+                'choice_label' => static fn(Espece $espece) => ($espece->isSecret(
+                    ) ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '').$espece->getNom(),
                 'data' => $originalEspeces,
             ])
             ->add(
