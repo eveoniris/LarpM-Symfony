@@ -59,151 +59,151 @@
       </trans-unit>
       <trans-unit id="xE8xYu5" resname="Nom">
         <source>Nom</source>
-        <target>__Nom</target>
+        <target>Nom</target>
       </trans-unit>
       <trans-unit id="DL_wAnF" resname="Type">
         <source>Type</source>
-        <target>__Type</target>
+        <target>Type</target>
       </trans-unit>
       <trans-unit id="_FIXbbO" resname="Expert">
         <source>Expert</source>
-        <target>__Expert</target>
+        <target>Expert</target>
       </trans-unit>
       <trans-unit id="qlsOPbo" resname="Utilisateur">
         <source>Utilisateur</source>
-        <target>__Utilisateur</target>
+        <target>Utilisateur</target>
       </trans-unit>
       <trans-unit id="lU81I2z" resname="Prénom">
         <source>Prénom</source>
-        <target>__Prénom</target>
+        <target>Prénom</target>
       </trans-unit>
       <trans-unit id="JZi_tm0" resname="Email">
         <source>Email</source>
-        <target>__Email</target>
+        <target>Email</target>
       </trans-unit>
       <trans-unit id="pNXjWDA" resname="Billet">
         <source>Billet</source>
-        <target>__Billet</target>
+        <target>Billet</target>
       </trans-unit>
       <trans-unit id="tO90Ej0" resname="Description secrète">
         <source>Description secrète</source>
-        <target>__Description secrète</target>
+        <target>Description secrète</target>
       </trans-unit>
       <trans-unit id="Tbcnsfe" resname="Code">
         <source>Code</source>
-        <target>__Code</target>
+        <target>Code</target>
       </trans-unit>
       <trans-unit id="uezKhds" resname="Titre">
         <source>Titre</source>
-        <target>__Titre</target>
+        <target>Titre</target>
       </trans-unit>
       <trans-unit id="2fzepuX" resname="Impression">
         <source>Impression</source>
-        <target>__Impression</target>
+        <target>Impression</target>
       </trans-unit>
       <trans-unit id="3mM_xT0" resname="Chiffrement">
         <source>Chiffrement</source>
-        <target>__Chiffrement</target>
+        <target>Chiffrement</target>
       </trans-unit>
       <trans-unit id="mBMSr69" resname="Scénariste">
         <source>Scénariste</source>
-        <target>__Scénariste</target>
+        <target>Scénariste</target>
       </trans-unit>
       <trans-unit id="tKLftfL" resname="Auteur">
         <source>Auteur</source>
-        <target>__Auteur</target>
+        <target>Auteur</target>
       </trans-unit>
       <trans-unit id="1QZJUCK" resname="Spécial">
         <source>Spécial</source>
-        <target>__Spécial</target>
+        <target>Spécial</target>
       </trans-unit>
       <trans-unit id="5bMLvuO" resname="Numéro">
         <source>Numéro</source>
-        <target>__Numéro</target>
+        <target>Numéro</target>
       </trans-unit>
       <trans-unit id="._SkIek" resname="Qualité">
         <source>Qualité</source>
-        <target>__Qualité</target>
+        <target>Qualité</target>
       </trans-unit>
       <trans-unit id="BlHiciO" resname="Qualité et identification">
         <source>Qualité et identification</source>
-        <target>__Qualité et identification</target>
+        <target>Qualité et identification</target>
       </trans-unit>
       <trans-unit id="SJpj2V3" resname="Identification">
         <source>Identification</source>
-        <target>__Identification</target>
+        <target>Identification</target>
       </trans-unit>
       <trans-unit id="gkeTvwU" resname="Appelation">
         <source>Appelation</source>
-        <target>__Appelation</target>
+        <target>Appelation</target>
       </trans-unit>
       <trans-unit id="yCaX6Jd" resname="Défense">
         <source>Défense</source>
-        <target>__Défense</target>
+        <target>Défense</target>
       </trans-unit>
       <trans-unit id="I3RfoBV" resname="Contraintes">
         <source>Contraintes</source>
-        <target>__Contraintes</target>
+        <target>Contraintes</target>
       </trans-unit>
       <trans-unit id="BWZy1Ha" resname="Groupe">
         <source>Groupe</source>
-        <target>__Groupe</target>
+        <target>Groupe</target>
       </trans-unit>
       <trans-unit id="o8N02ol" resname="Contenu">
         <source>Contenu</source>
-        <target>__Contenu</target>
+        <target>Contenu</target>
       </trans-unit>
       <trans-unit id="6LVFIIX" resname="Territoire">
         <source>Territoire</source>
-        <target>__Territoire</target>
+        <target>Territoire</target>
       </trans-unit>
       <trans-unit id="TToXQpx" resname="Matériel">
         <source>Matériel</source>
-        <target>__Matériel</target>
+        <target>Matériel</target>
       </trans-unit>
       <trans-unit id="z7PBo0I" resname="Numero">
         <source>Numero</source>
-        <target>__Numero</target>
+        <target>Numero</target>
       </trans-unit>
       <trans-unit id="SpCbKuq" resname="Sphere">
         <source>Sphere</source>
-        <target>__Sphere</target>
+        <target>Sphere</target>
       </trans-unit>
       <trans-unit id="3XwnNFH" resname="Annonce">
         <source>Annonce</source>
-        <target>__Annonce</target>
+        <target>Annonce</target>
       </trans-unit>
       <trans-unit id="M89nngn" resname="Email scénariste">
         <source>Email scénariste</source>
-        <target>__Email scénariste</target>
+        <target>Email scénariste</target>
       </trans-unit>
       <trans-unit id="i6oBWs7" resname="Prénom scénariste">
         <source>Prénom scénariste</source>
-        <target>__Prénom scénariste</target>
+        <target>Prénom scénariste</target>
       </trans-unit>
       <trans-unit id="wXhSA9i" resname="Nom scénariste">
         <source>Nom scénariste</source>
-        <target>__Nom scénariste</target>
+        <target>Nom scénariste</target>
       </trans-unit>
       <trans-unit id="aq2eM8Q" resname="Roles">
         <source>Roles</source>
-        <target>__Roles</target>
+        <target>Roles</target>
       </trans-unit>
       <trans-unit id="KizziD1" resname="Pseudo">
         <source>Pseudo</source>
-        <target>__Pseudo</target>
+        <target>Pseudo</target>
       </trans-unit>
       <trans-unit id="Co4Clq0" resname="Prenom">
         <source>Prenom</source>
-        <target>__Prenom</target>
+        <target>Prenom</target>
       </trans-unit>
       <trans-unit id=".AyjhhL" resname="Périodicité">
         <source>Périodicité</source>
-        <target>__Périodicité</target>
+        <target>Périodicité</target>
       </trans-unit>
       <trans-unit id="j.we7za" resname="Domaine d'application">
         <source>Domaine d'application</source>
-        <target>__Domaine d'application</target>
+        <target>Domaine d'application</target>
       </trans-unit>
     </body>
   </file>
