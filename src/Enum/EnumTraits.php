@@ -14,8 +14,6 @@ trait EnumTraits
     // region Public Methods
     /**
      * Checks if value is a valid enum value.
-     *
-     * @param mixed $value
      */
     public static function isValid($value): bool
     {
@@ -30,16 +28,8 @@ trait EnumTraits
      * Returns an array of all the enum's values in the following format:
      * For backed enums:
      * Case name as key, case value as value (same format as our former toArray method prior to native enums: CONSTANT => value)
-     * [
-     *      'MAIN' => 'main',
-     *      'TERM_ACCOUNT' => 'term_account'
-     * ]
      * For basic enums:
      * Case name as key, case name as value
-     * [
-     *      'main' => 'main',
-     *      'term_account' => 'term_account'
-     * ].
      */
     public static function toArray(): array
     {

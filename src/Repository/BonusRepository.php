@@ -81,9 +81,9 @@ class BonusRepository extends BaseRepository
             ...parent::translateAttributes(),
             'description' => $this->translator->trans('Description', domain: 'repository'),
             'titre' => $this->translator->trans('Titre', domain: 'repository'),
-            'type' => $this->translator->trans('Titre', domain: 'Type'),
-            'periode' => $this->translator->trans('Titre', domain: 'Périodicité'),
-            'application' => $this->translator->trans('Titre', domain: "Domaine d'application"),
+            'type' => $this->translator->trans('Type', domain: 'repository'),
+            'periode' => $this->translator->trans('Périodicité', domain: 'repository'),
+            'application' => $this->translator->trans("Domaine d'application", domain: 'repository'),
         ];
     }
 

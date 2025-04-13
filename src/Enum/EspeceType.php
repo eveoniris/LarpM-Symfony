@@ -26,12 +26,12 @@ enum EspeceType: string implements TranslatableInterface
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
         return match ($this) {
-            self::HUMANOID => $translator->trans('enum.espece.humanoid', locale: $locale),
-            self::MAGIC => $translator->trans('enum.espece.magic', locale: $locale),
-            self::UNDEAD => $translator->trans('enum.espece.undead', locale: $locale),
-            self::DIVINITY => $translator->trans('enum.espece.divinity', locale: $locale),
-            self::DEAMON => $translator->trans('enum.espece.deamon', locale: $locale),
-            self::ETHEREAL => $translator->trans('enum.espece.ethereal', locale: $locale),
+            self::HUMANOID => $translator->trans('HUMANOID', domain: 'enum', locale: $locale),
+            self::MAGIC => $translator->trans('MAGIC', domain: 'enum', locale: $locale),
+            self::UNDEAD => $translator->trans('UNDEAD', domain: 'enum', locale: $locale),
+            self::DIVINITY => $translator->trans('DIVINITY', domain: 'enum', locale: $locale),
+            self::DEAMON => $translator->trans('DEAMON', domain: 'enum', locale: $locale),
+            self::ETHEREAL => $translator->trans('ETHEREAL', domain: 'enum', locale: $locale),
         };
     }
 }
