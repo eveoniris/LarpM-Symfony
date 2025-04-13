@@ -361,100 +361,6 @@ class GroupeController extends AbstractController
     }
 
     /**
-     * Modifie les ressources du groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/ressources', name: 'ressources')]
-    public function ressourceAction(
-        Request $request,
-        #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
-        $originalGroupeHasRessources = new ArrayCollection();
-
-        /*
-         * Crée un tableau contenant les objets GroupeHasRessource du groupe
-         */
-        foreach ($groupe->getGroupeHasRessources() as $groupeHasRessource) {
-            $originalGroupeHasRessources->add($groupeHasRessource);
-        }
-
-        $form = $this->createForm(GroupeRessourceForm::class, $groupe)
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $groupe = $form->getData();
-
-            /*
-             * Pour toutes les ressources du groupe
-             */
-            foreach ($groupe->getGroupeHasRessources() as $groupeHasRessource) {
-                $groupeHasRessource->setGroupe($groupe);
-            }
-
-            /*
-             *  supprime la relation entre groupeHasRessource et le groupe
-             */
-            foreach ($originalGroupeHasRessources as $groupeHasRessource) {
-                if (false === $groupe->getGroupeHasRessources()->contains($groupeHasRessource)) {
-                    $this->entityManager->remove($groupeHasRessource);
-                }
-            }
-
-            $randomCommun = $form['randomCommun']->getData();
-
-            /*
-             *  Gestion des ressources communes alloués au hasard
-             */
-            if ($randomCommun && $randomCommun > 0) {
-                $ressourceCommune = $this->entityManager->getRepository(Ressource::class)->findCommun();
-                shuffle($ressourceCommune);
-                $needs = new ArrayCollection(array_slice($ressourceCommune, 0, $randomCommun));
-
-                foreach ($needs as $ressource) {
-                    $ghr = new GroupeHasRessource();
-                    $ghr->setRessource($ressource);
-                    $ghr->setQuantite(1);
-                    $ghr->setGroupe($groupe);
-                    $this->entityManager->persist($ghr);
-                }
-            }
-
-            $randomRare = $form['randomRare']->getData();
-
-            /*
-             *  Gestion des ressources rares alloués au hasard
-             */
-            if ($randomRare && $randomRare > 0) {
-                $ressourceRare = $this->entityManager->getRepository(Ressource::class)->findRare();
-                shuffle($ressourceRare);
-                $needs = new ArrayCollection(array_slice($ressourceRare, 0, $randomRare));
-
-                foreach ($needs as $ressource) {
-                    $ghr = new GroupeHasRessource();
-                    $ghr->setRessource($ressource);
-                    $ghr->setQuantite(1);
-                    $ghr->setGroupe($groupe);
-                    $this->entityManager->persist($ghr);
-                }
-            }
-
-            $this->entityManager->persist($groupe);
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'Votre groupe a été sauvegardé.');
-
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId(), 'tab' => 'enveloppe']);
-        }
-
-        return $this->render('groupe/ressource.twig', [
-            'groupe' => $groupe,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
      * AModifie la richesse du groupe.
      */
     #[IsGranted('ROLE_SCENARISTE')]
@@ -913,10 +819,6 @@ class GroupeController extends AbstractController
     }
 
     /**
-     * Imprimmer toutes les enveloppes de tous les groupes.
-     */
-
-    /**
      * Modification du nombre de place disponibles dans un groupe.
      */
     #[IsGranted('ROLE_SCENARISTE')]
@@ -947,6 +849,10 @@ class GroupeController extends AbstractController
             'groupe' => $groupe,
         ]);
     }
+
+    /**
+     * Imprimmer toutes les enveloppes de tous les groupes.
+     */
 
     /** @deprecated:  see GnController* */
     #[IsGranted('ROLE_SCENARISTE')]
@@ -1066,11 +972,14 @@ class GroupeController extends AbstractController
             }
         }
 
-        return $this->render('groupe/printPerso.twig', [
-            'groupe' => $groupe,
-            'participants' => $participants,
-            'quetes' => $quetes,
-        ]);
+        return $this->render(
+            'groupe/printPerso.twig',
+            [
+                'groupe' => $groupe,
+                'participants' => $participants,
+                'quetes' => $quetes,
+            ]
+        );
     }
 
     /**
@@ -1191,6 +1100,100 @@ class GroupeController extends AbstractController
         return $this->render('groupe/quetes.twig', [
             'quetes' => $quetes,
             'stats' => $stats,
+        ]);
+    }
+
+    /**
+     * Modifie les ressources du groupe.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/{groupe}/ressources', name: 'ressources')]
+    public function ressourceAction(
+        Request $request,
+        #[MapEntity] Groupe $groupe,
+    ): RedirectResponse|Response {
+        $originalGroupeHasRessources = new ArrayCollection();
+
+        /*
+         * Crée un tableau contenant les objets GroupeHasRessource du groupe
+         */
+        foreach ($groupe->getGroupeHasRessources() as $groupeHasRessource) {
+            $originalGroupeHasRessources->add($groupeHasRessource);
+        }
+
+        $form = $this->createForm(GroupeRessourceForm::class, $groupe)
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $groupe = $form->getData();
+
+            /*
+             * Pour toutes les ressources du groupe
+             */
+            foreach ($groupe->getGroupeHasRessources() as $groupeHasRessource) {
+                $groupeHasRessource->setGroupe($groupe);
+            }
+
+            /*
+             *  supprime la relation entre groupeHasRessource et le groupe
+             */
+            foreach ($originalGroupeHasRessources as $groupeHasRessource) {
+                if (false === $groupe->getGroupeHasRessources()->contains($groupeHasRessource)) {
+                    $this->entityManager->remove($groupeHasRessource);
+                }
+            }
+
+            $randomCommun = $form['randomCommun']->getData();
+
+            /*
+             *  Gestion des ressources communes alloués au hasard
+             */
+            if ($randomCommun && $randomCommun > 0) {
+                $ressourceCommune = $this->entityManager->getRepository(Ressource::class)->findCommun();
+                shuffle($ressourceCommune);
+                $needs = new ArrayCollection(array_slice($ressourceCommune, 0, $randomCommun));
+
+                foreach ($needs as $ressource) {
+                    $ghr = new GroupeHasRessource();
+                    $ghr->setRessource($ressource);
+                    $ghr->setQuantite(1);
+                    $ghr->setGroupe($groupe);
+                    $this->entityManager->persist($ghr);
+                }
+            }
+
+            $randomRare = $form['randomRare']->getData();
+
+            /*
+             *  Gestion des ressources rares alloués au hasard
+             */
+            if ($randomRare && $randomRare > 0) {
+                $ressourceRare = $this->entityManager->getRepository(Ressource::class)->findRare();
+                shuffle($ressourceRare);
+                $needs = new ArrayCollection(array_slice($ressourceRare, 0, $randomRare));
+
+                foreach ($needs as $ressource) {
+                    $ghr = new GroupeHasRessource();
+                    $ghr->setRessource($ressource);
+                    $ghr->setQuantite(1);
+                    $ghr->setGroupe($groupe);
+                    $this->entityManager->persist($ghr);
+                }
+            }
+
+            $this->entityManager->persist($groupe);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Votre groupe a été sauvegardé.');
+
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId(), 'tab' => 'enveloppe']);
+        }
+
+        return $this->render('groupe/ressource.twig', [
+            'groupe' => $groupe,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -1402,7 +1405,7 @@ class GroupeController extends AbstractController
     ): RedirectResponse|Response {
         $form = $this->createFormBuilder()
             ->add('remove', SubmitType::class, ['label' => 'Retirer le territoire'])
-        ->getForm();
+            ->getForm();
 
         $form->handleRequest($request);
 
