@@ -5,57 +5,205 @@
       <tool tool-id="symfony" tool-name="Symfony"/>
     </header>
     <body>
-      <trans-unit id="zVuDKsX" resname="Libellé">
+      <trans-unit id="R4YYInL" resname="Libellé">
         <source>Libellé</source>
         <target>Libellé</target>
       </trans-unit>
-      <trans-unit id="TyG7uHn" resname="Tout critère">
+      <trans-unit id="R8dH0jd" resname="Tout critère">
         <source>Tout critère</source>
         <target>Tout critère</target>
       </trans-unit>
-      <trans-unit id="RnmzsS3" resname="Aucun">
+      <trans-unit id="90uuPUF" resname="Aucun">
         <source>Aucun</source>
         <target>Aucun</target>
       </trans-unit>
-      <trans-unit id="EhVukhv" resname="Id">
+      <trans-unit id="hm.JYE2" resname="Id">
         <source>Id</source>
         <target>Id</target>
       </trans-unit>
-      <trans-unit id="K1EE9fw" resname="Niveau">
+      <trans-unit id="AMTbIFK" resname="Niveau">
         <source>Niveau</source>
         <target>Niveau</target>
       </trans-unit>
-      <trans-unit id="5sV7nJi" resname="cout XP">
+      <trans-unit id="jHWaGtL" resname="cout XP">
         <source>cout XP</source>
         <target>cout XP</target>
       </trans-unit>
-      <trans-unit id="7MtRSNs" resname="cout XP favori">
+      <trans-unit id="EaIxRLI" resname="cout XP favori">
         <source>cout XP favori</source>
         <target>cout XP favori</target>
       </trans-unit>
-      <trans-unit id="GsjM0dr" resname="cout XP méconnu">
+      <trans-unit id="yhIfAO7" resname="cout XP méconnu">
         <source>cout XP méconnu</source>
         <target>cout XP méconnu</target>
       </trans-unit>
-      <trans-unit id="Um4Ah8w" resname="Description">
+      <trans-unit id="NMmVjl0" resname="Description">
         <source>Description</source>
         <target>Description</target>
       </trans-unit>
-      <trans-unit id="1YdiLSd" resname="Bonus">
+      <trans-unit id="1K5Xque" resname="Bonus">
         <source>Bonus</source>
         <target>Bonus</target>
       </trans-unit>
-      <trans-unit id="kJ.ULi2" resname="Autorisé à la création">
+      <trans-unit id="iT1uB92" resname="Autorisé à la création">
         <source>Autorisé à la création</source>
         <target>Autorisé à la création</target>
       </trans-unit>
-      <trans-unit id="qUVsdwR" resname="Age minimum de la tranche">
+      <trans-unit id="E3ZV.mz" resname="Age minimum de la tranche">
         <source>Age minimum de la tranche</source>
         <target>Age minimum de la tranche</target>
       </trans-unit>
-      <trans-unit id="FQORaiq" resname="Tag">
+      <trans-unit id="DxuZnkH" resname="Tag">
         <source>Tag</source>
         <target>Tag</target>
+      </trans-unit>
+      <trans-unit id="xE8xYu5" resname="Nom">
+        <source>Nom</source>
+        <target>__Nom</target>
+      </trans-unit>
+      <trans-unit id="DL_wAnF" resname="Type">
+        <source>Type</source>
+        <target>__Type</target>
+      </trans-unit>
+      <trans-unit id="_FIXbbO" resname="Expert">
+        <source>Expert</source>
+        <target>__Expert</target>
+      </trans-unit>
+      <trans-unit id="qlsOPbo" resname="Utilisateur">
+        <source>Utilisateur</source>
+        <target>__Utilisateur</target>
+      </trans-unit>
+      <trans-unit id="lU81I2z" resname="Prénom">
+        <source>Prénom</source>
+        <target>__Prénom</target>
+      </trans-unit>
+      <trans-unit id="JZi_tm0" resname="Email">
+        <source>Email</source>
+        <target>__Email</target>
+      </trans-unit>
+      <trans-unit id="pNXjWDA" resname="Billet">
+        <source>Billet</source>
+        <target>__Billet</target>
+      </trans-unit>
+      <trans-unit id="tO90Ej0" resname="Description secrète">
+        <source>Description secrète</source>
+        <target>__Description secrète</target>
+      </trans-unit>
+      <trans-unit id="Tbcnsfe" resname="Code">
+        <source>Code</source>
+        <target>__Code</target>
+      </trans-unit>
+      <trans-unit id="uezKhds" resname="Titre">
+        <source>Titre</source>
+        <target>__Titre</target>
+      </trans-unit>
+      <trans-unit id="2fzepuX" resname="Impression">
+        <source>Impression</source>
+        <target>__Impression</target>
+      </trans-unit>
+      <trans-unit id="3mM_xT0" resname="Chiffrement">
+        <source>Chiffrement</source>
+        <target>__Chiffrement</target>
+      </trans-unit>
+      <trans-unit id="mBMSr69" resname="Scénariste">
+        <source>Scénariste</source>
+        <target>__Scénariste</target>
+      </trans-unit>
+      <trans-unit id="tKLftfL" resname="Auteur">
+        <source>Auteur</source>
+        <target>__Auteur</target>
+      </trans-unit>
+      <trans-unit id="1QZJUCK" resname="Spécial">
+        <source>Spécial</source>
+        <target>__Spécial</target>
+      </trans-unit>
+      <trans-unit id="5bMLvuO" resname="Numéro">
+        <source>Numéro</source>
+        <target>__Numéro</target>
+      </trans-unit>
+      <trans-unit id="._SkIek" resname="Qualité">
+        <source>Qualité</source>
+        <target>__Qualité</target>
+      </trans-unit>
+      <trans-unit id="BlHiciO" resname="Qualité et identification">
+        <source>Qualité et identification</source>
+        <target>__Qualité et identification</target>
+      </trans-unit>
+      <trans-unit id="SJpj2V3" resname="Identification">
+        <source>Identification</source>
+        <target>__Identification</target>
+      </trans-unit>
+      <trans-unit id="gkeTvwU" resname="Appelation">
+        <source>Appelation</source>
+        <target>__Appelation</target>
+      </trans-unit>
+      <trans-unit id="yCaX6Jd" resname="Défense">
+        <source>Défense</source>
+        <target>__Défense</target>
+      </trans-unit>
+      <trans-unit id="I3RfoBV" resname="Contraintes">
+        <source>Contraintes</source>
+        <target>__Contraintes</target>
+      </trans-unit>
+      <trans-unit id="BWZy1Ha" resname="Groupe">
+        <source>Groupe</source>
+        <target>__Groupe</target>
+      </trans-unit>
+      <trans-unit id="o8N02ol" resname="Contenu">
+        <source>Contenu</source>
+        <target>__Contenu</target>
+      </trans-unit>
+      <trans-unit id="6LVFIIX" resname="Territoire">
+        <source>Territoire</source>
+        <target>__Territoire</target>
+      </trans-unit>
+      <trans-unit id="TToXQpx" resname="Matériel">
+        <source>Matériel</source>
+        <target>__Matériel</target>
+      </trans-unit>
+      <trans-unit id="z7PBo0I" resname="Numero">
+        <source>Numero</source>
+        <target>__Numero</target>
+      </trans-unit>
+      <trans-unit id="SpCbKuq" resname="Sphere">
+        <source>Sphere</source>
+        <target>__Sphere</target>
+      </trans-unit>
+      <trans-unit id="3XwnNFH" resname="Annonce">
+        <source>Annonce</source>
+        <target>__Annonce</target>
+      </trans-unit>
+      <trans-unit id="M89nngn" resname="Email scénariste">
+        <source>Email scénariste</source>
+        <target>__Email scénariste</target>
+      </trans-unit>
+      <trans-unit id="i6oBWs7" resname="Prénom scénariste">
+        <source>Prénom scénariste</source>
+        <target>__Prénom scénariste</target>
+      </trans-unit>
+      <trans-unit id="wXhSA9i" resname="Nom scénariste">
+        <source>Nom scénariste</source>
+        <target>__Nom scénariste</target>
+      </trans-unit>
+      <trans-unit id="aq2eM8Q" resname="Roles">
+        <source>Roles</source>
+        <target>__Roles</target>
+      </trans-unit>
+      <trans-unit id="KizziD1" resname="Pseudo">
+        <source>Pseudo</source>
+        <target>__Pseudo</target>
+      </trans-unit>
+      <trans-unit id="Co4Clq0" resname="Prenom">
+        <source>Prenom</source>
+        <target>__Prenom</target>
+      </trans-unit>
+      <trans-unit id=".AyjhhL" resname="Périodicité">
+        <source>Périodicité</source>
+        <target>__Périodicité</target>
+      </trans-unit>
+      <trans-unit id="j.we7za" resname="Domaine d'application">
+        <source>Domaine d'application</source>
+        <target>__Domaine d'application</target>
       </trans-unit>
     </body>
   </file>

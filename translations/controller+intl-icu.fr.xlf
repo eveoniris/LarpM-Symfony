@@ -5,43 +5,43 @@
       <tool tool-id="symfony" tool-name="Symfony"/>
     </header>
     <body>
-      <trans-unit id="WOJkMwc" resname="donnée">
+      <trans-unit id="kv_1uuE" resname="donnée">
         <source>donnée</source>
         <target>donnée</target>
       </trans-unit>
-      <trans-unit id="2kH9CWZ" resname="La donnée a été ajoutée">
+      <trans-unit id="Yo_9eN6" resname="La donnée a été ajoutée">
         <source>La donnée a été ajoutée</source>
         <target>La donnée a été ajoutée</target>
       </trans-unit>
-      <trans-unit id="WoHIaAe" resname="La donnée a été supprimée">
+      <trans-unit id="GBDxW0p" resname="La donnée a été supprimée">
         <source>La donnée a été supprimée</source>
         <target>La donnée a été supprimée</target>
       </trans-unit>
-      <trans-unit id="8aGnLRx" resname="La donnée a été mise à jour">
+      <trans-unit id="ZNF615R" resname="La donnée a été mise à jour">
         <source>La donnée a été mise à jour</source>
         <target>La donnée a été mise à jour</target>
       </trans-unit>
-      <trans-unit id="QAzfTEE" resname="Sauvegarder">
+      <trans-unit id="4X6079F" resname="Sauvegarder">
         <source>Sauvegarder</source>
         <target>Sauvegarder</target>
       </trans-unit>
-      <trans-unit id="QnNE34f" resname="Sauvegarder &amp; continuer">
+      <trans-unit id="xO8MTSN" resname="Sauvegarder &amp; continuer">
         <source>Sauvegarder &amp; continuer</source>
         <target><![CDATA[Sauvegarder & continuer]]></target>
       </trans-unit>
-      <trans-unit id="Xl0CFs4" resname="Supprimer">
+      <trans-unit id="UcvUUXS" resname="Supprimer">
         <source>Supprimer</source>
         <target>Supprimer</target>
       </trans-unit>
-      <trans-unit id="VkVKLpy" resname="Ajouter une donnée">
+      <trans-unit id="sPgm6Xb" resname="Ajouter une donnée">
         <source>Ajouter une donnée</source>
         <target>Ajouter une donnée</target>
       </trans-unit>
-      <trans-unit id="mOOhzhK" resname="Modifier la donnée">
+      <trans-unit id="Sx6NFay" resname="Modifier la donnée">
         <source>Modifier la donnée</source>
         <target>Modifier la donnée</target>
       </trans-unit>
-      <trans-unit id="ZN47ucl" resname="Liste des données">
+      <trans-unit id="UXF9fi_" resname="Liste des données">
         <source>Liste des données</source>
         <target>Liste des données</target>
       </trans-unit>

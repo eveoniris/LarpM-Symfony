@@ -5,221 +5,737 @@
       <tool tool-id="symfony" tool-name="Symfony"/>
     </header>
     <body>
-      <trans-unit id="TyG7uHn" resname="Tout critère">
+      <trans-unit id="R8dH0jd" resname="Tout critère">
         <source>Tout critère</source>
         <target>Tout critère</target>
       </trans-unit>
-      <trans-unit id="RnmzsS3" resname="Aucun">
+      <trans-unit id="90uuPUF" resname="Aucun">
         <source>Aucun</source>
         <target>Aucun</target>
       </trans-unit>
-      <trans-unit id="EhVukhv" resname="Id">
+      <trans-unit id="hm.JYE2" resname="Id">
         <source>Id</source>
         <target>Id</target>
       </trans-unit>
-      <trans-unit id="K1EE9fw" resname="Niveau">
+      <trans-unit id="AMTbIFK" resname="Niveau">
         <source>Niveau</source>
         <target>Niveau</target>
       </trans-unit>
-      <trans-unit id="zVuDKsX" resname="Libellé">
+      <trans-unit id="R4YYInL" resname="Libellé">
         <source>Libellé</source>
         <target>Libellé</target>
       </trans-unit>
-      <trans-unit id="5sV7nJi" resname="cout XP">
+      <trans-unit id="jHWaGtL" resname="cout XP">
         <source>cout XP</source>
         <target>cout XP</target>
       </trans-unit>
-      <trans-unit id="7MtRSNs" resname="cout XP favori">
+      <trans-unit id="EaIxRLI" resname="cout XP favori">
         <source>cout XP favori</source>
         <target>cout XP favori</target>
       </trans-unit>
-      <trans-unit id="GsjM0dr" resname="cout XP méconnu">
+      <trans-unit id="yhIfAO7" resname="cout XP méconnu">
         <source>cout XP méconnu</source>
         <target>cout XP méconnu</target>
       </trans-unit>
-      <trans-unit id="eOeSABC" resname="Titre">
+      <trans-unit id="uezKhds" resname="Titre">
         <source>Titre</source>
         <target>Titre</target>
       </trans-unit>
-      <trans-unit id="xSSk9I3" resname="Groupe">
+      <trans-unit id="BWZy1Ha" resname="Groupe">
         <source>Groupe</source>
         <target>Groupe</target>
       </trans-unit>
-      <trans-unit id="kofiwlo" resname="Scénariste">
+      <trans-unit id="mBMSr69" resname="Scénariste">
         <source>Scénariste</source>
         <target>Scénariste</target>
       </trans-unit>
-      <trans-unit id="WIDlngw" resname="Auteur">
+      <trans-unit id="tKLftfL" resname="Auteur">
         <source>Auteur</source>
         <target>Auteur</target>
       </trans-unit>
-      <trans-unit id="Um4Ah8w" resname="Description">
+      <trans-unit id="NMmVjl0" resname="Description">
         <source>Description</source>
         <target>Description</target>
       </trans-unit>
-      <trans-unit id="1YdiLSd" resname="Bonus">
+      <trans-unit id="1K5Xque" resname="Bonus">
         <source>Bonus</source>
         <target>Bonus</target>
       </trans-unit>
-      <trans-unit id="kJ.ULi2" resname="Autorisé à la création">
+      <trans-unit id="iT1uB92" resname="Autorisé à la création">
         <source>Autorisé à la création</source>
         <target>Autorisé à la création</target>
       </trans-unit>
-      <trans-unit id="qUVsdwR" resname="Age minimum de la tranche">
+      <trans-unit id="E3ZV.mz" resname="Age minimum de la tranche">
         <source>Age minimum de la tranche</source>
         <target>Age minimum de la tranche</target>
       </trans-unit>
-      <trans-unit id="WOJkMwc" resname="donnée">
+      <trans-unit id="kv_1uuE" resname="donnée">
         <source>donnée</source>
         <target>donnée</target>
       </trans-unit>
-      <trans-unit id="2kH9CWZ" resname="La donnée a été ajoutée">
+      <trans-unit id="Yo_9eN6" resname="La donnée a été ajoutée">
         <source>La donnée a été ajoutée</source>
         <target>La donnée a été ajoutée</target>
       </trans-unit>
-      <trans-unit id="WoHIaAe" resname="La donnée a été supprimée">
+      <trans-unit id="GBDxW0p" resname="La donnée a été supprimée">
         <source>La donnée a été supprimée</source>
         <target>La donnée a été supprimée</target>
       </trans-unit>
-      <trans-unit id="8aGnLRx" resname="La donnée a été mise à jour">
+      <trans-unit id="ZNF615R" resname="La donnée a été mise à jour">
         <source>La donnée a été mise à jour</source>
         <target>La donnée a été mise à jour</target>
       </trans-unit>
-      <trans-unit id="QAzfTEE" resname="Sauvegarder">
+      <trans-unit id="4X6079F" resname="Sauvegarder">
         <source>Sauvegarder</source>
         <target>Sauvegarder</target>
       </trans-unit>
-      <trans-unit id="QnNE34f" resname="Sauvegarder &amp; continuer">
+      <trans-unit id="xO8MTSN" resname="Sauvegarder &amp; continuer">
         <source>Sauvegarder &amp; continuer</source>
         <target><![CDATA[Sauvegarder & continuer]]></target>
       </trans-unit>
-      <trans-unit id="Xl0CFs4" resname="Supprimer">
+      <trans-unit id="UcvUUXS" resname="Supprimer">
         <source>Supprimer</source>
         <target>Supprimer</target>
       </trans-unit>
-      <trans-unit id="VkVKLpy" resname="Ajouter une donnée">
+      <trans-unit id="sPgm6Xb" resname="Ajouter une donnée">
         <source>Ajouter une donnée</source>
         <target>Ajouter une donnée</target>
       </trans-unit>
-      <trans-unit id="mOOhzhK" resname="Modifier la donnée">
+      <trans-unit id="Sx6NFay" resname="Modifier la donnée">
         <source>Modifier la donnée</source>
         <target>Modifier la donnée</target>
       </trans-unit>
-      <trans-unit id=".SAugjN" resname="type d'attribut">
+      <trans-unit id="Vb3ZT1M" resname="type d'attribut">
         <source>type d'attribut</source>
         <target>type d'attribut</target>
       </trans-unit>
-      <trans-unit id="F_EwJGk" resname="Le type d'attribut a été ajouté">
+      <trans-unit id="NMIMfOS" resname="Le type d'attribut a été ajouté">
         <source>Le type d'attribut a été ajouté</source>
         <target>Le type d'attribut a été ajouté</target>
       </trans-unit>
-      <trans-unit id="R4s3YCl" resname="Le type d'attribut a été mis à jour">
+      <trans-unit id="W73RfbE" resname="Le type d'attribut a été mis à jour">
         <source>Le type d'attribut a été mis à jour</source>
         <target>Le type d'attribut a été mis à jour</target>
       </trans-unit>
-      <trans-unit id="XG7Qw_6" resname="Le type d'attribut a été supprimé">
+      <trans-unit id="t1zfx7t" resname="Le type d'attribut a été supprimé">
         <source>Le type d'attribut a été supprimé</source>
         <target>Le type d'attribut a été supprimé</target>
       </trans-unit>
-      <trans-unit id="CYch357" resname="Ajouter un type d'attribut">
+      <trans-unit id="k6PWcfl" resname="Ajouter un type d'attribut">
         <source>Ajouter un type d'attribut</source>
         <target>Ajouter un type d'attribut</target>
       </trans-unit>
-      <trans-unit id="PiOqzFM" resname="Modifier un type d'attribut">
+      <trans-unit id="H4N9lXW" resname="Modifier un type d'attribut">
         <source>Modifier un type d'attribut</source>
         <target>Modifier un type d'attribut</target>
       </trans-unit>
-      <trans-unit id="AT9UQAy" resname="age">
+      <trans-unit id="Nj4wK9p" resname="age">
         <source>age</source>
         <target>age</target>
       </trans-unit>
-      <trans-unit id="9czwnL0" resname="L'age a été ajouté">
+      <trans-unit id="Cg6BDEh" resname="L'age a été ajouté">
         <source>L'age a été ajouté</source>
         <target>L'age a été ajouté</target>
       </trans-unit>
-      <trans-unit id=".T4wBgc" resname="L'age a été mis à jour">
+      <trans-unit id="Me.a_CZ" resname="L'age a été mis à jour">
         <source>L'age a été mis à jour</source>
         <target>L'age a été mis à jour</target>
       </trans-unit>
-      <trans-unit id="ZXSzHSF" resname="L'age a été supprimé">
+      <trans-unit id="5u4JAhc" resname="L'age a été supprimé">
         <source>L'age a été supprimé</source>
         <target>L'age a été supprimé</target>
       </trans-unit>
-      <trans-unit id="8GI6nYb" resname="Liste des ages">
+      <trans-unit id="c43u82n" resname="Liste des ages">
         <source>Liste des ages</source>
         <target>Liste des ages</target>
       </trans-unit>
-      <trans-unit id="rEMy1dT" resname="Ajouter un age">
+      <trans-unit id="ql4Txiw" resname="Ajouter un age">
         <source>Ajouter un age</source>
         <target>Ajouter un age</target>
       </trans-unit>
-      <trans-unit id="QX6pqD2" resname="Modifier un age">
+      <trans-unit id="N85mrVf" resname="Modifier un age">
         <source>Modifier un age</source>
         <target>Modifier un age</target>
       </trans-unit>
-      <trans-unit id="rxX9vY3" resname="niveau">
+      <trans-unit id="0IV5KwY" resname="niveau">
         <source>niveau</source>
         <target>niveau</target>
       </trans-unit>
-      <trans-unit id="3nXcK1e" resname="Le niveau a été ajouté">
+      <trans-unit id="CEXDLGW" resname="Le niveau a été ajouté">
         <source>Le niveau a été ajouté</source>
         <target>Le niveau a été ajouté</target>
       </trans-unit>
-      <trans-unit id="smngbtE" resname="Le niveau a été mis à jour">
+      <trans-unit id="O018XJP" resname="Le niveau a été mis à jour">
         <source>Le niveau a été mis à jour</source>
         <target>Le niveau a été mis à jour</target>
       </trans-unit>
-      <trans-unit id="P.oXpNd" resname="Le niveau a été supprimé">
+      <trans-unit id="z_1yQ1j" resname="Le niveau a été supprimé">
         <source>Le niveau a été supprimé</source>
         <target>Le niveau a été supprimé</target>
       </trans-unit>
-      <trans-unit id="hT5r4.0" resname="Liste des niveaux">
+      <trans-unit id="ljLvHVY" resname="Liste des niveaux">
         <source>Liste des niveaux</source>
         <target>Liste des niveaux</target>
       </trans-unit>
-      <trans-unit id="I6CYrcB" resname="Ajouter un niveau">
+      <trans-unit id="YeBy6b3" resname="Ajouter un niveau">
         <source>Ajouter un niveau</source>
         <target>Ajouter un niveau</target>
       </trans-unit>
-      <trans-unit id="fJYI4Gc" resname="Modifier un niveau">
+      <trans-unit id="W2Jsk54" resname="Modifier un niveau">
         <source>Modifier un niveau</source>
         <target>Modifier un niveau</target>
       </trans-unit>
-      <trans-unit id="XtYpWP8" resname="Liste des types d'attributs">
+      <trans-unit id="qiGmtSE" resname="Liste des types d'attributs">
         <source>Liste des types d'attributs</source>
         <target>Liste des types d'attributs</target>
       </trans-unit>
-      <trans-unit id="__I2J.0" resname="Supprimer un jeton">
+      <trans-unit id="o0AXvvS" resname="Supprimer un jeton">
         <source>Supprimer un jeton</source>
         <target>Supprimer un jeton</target>
       </trans-unit>
-      <trans-unit id=".LTJkBP" resname="Le jeton a été supprimé">
+      <trans-unit id="8Vz7JSC" resname="Le jeton a été supprimé">
         <source>Le jeton a été supprimé</source>
         <target>Le jeton a été supprimé</target>
       </trans-unit>
-      <trans-unit id="qFOARux" resname="Liste des jetons">
+      <trans-unit id="iokX0a." resname="Liste des jetons">
         <source>Liste des jetons</source>
         <target>Liste des jetons</target>
       </trans-unit>
-      <trans-unit id="kdKxBqO" resname="jeton">
+      <trans-unit id="hP7IdlV" resname="jeton">
         <source>jeton</source>
         <target>jeton</target>
       </trans-unit>
-      <trans-unit id="Qn5B_ji" resname="Le jeton a été ajouté">
+      <trans-unit id="k5gYqjr" resname="Le jeton a été ajouté">
         <source>Le jeton a été ajouté</source>
         <target>Le jeton a été ajouté</target>
       </trans-unit>
-      <trans-unit id="aTDF8qB" resname="Le jeton a été mis à jour">
+      <trans-unit id="jqIPAY." resname="Le jeton a été mis à jour">
         <source>Le jeton a été mis à jour</source>
         <target>Le jeton a été mis à jour</target>
       </trans-unit>
-      <trans-unit id=".B30uu_" resname="Ajouter un jeton">
+      <trans-unit id="DxityTq" resname="Ajouter un jeton">
         <source>Ajouter un jeton</source>
         <target>Ajouter un jeton</target>
       </trans-unit>
-      <trans-unit id="VSlJL6F" resname="Modifier un jeton">
+      <trans-unit id="5h1m1HG" resname="Modifier un jeton">
         <source>Modifier un jeton</source>
         <target>Modifier un jeton</target>
+      </trans-unit>
+      <trans-unit id="b3VDiPV" resname="groupe">
+        <source>groupe</source>
+        <target>groupe</target>
+      </trans-unit>
+      <trans-unit id="UJVrtyx" resname="Le groupe a été ajoutée">
+        <source>Le groupe a été ajoutée</source>
+        <target>Le groupe a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="k3b5edv" resname="Le groupe a été mise à jour">
+        <source>Le groupe a été mise à jour</source>
+        <target>Le groupe a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="ePelFd1" resname="Le groupe a été supprimé">
+        <source>Le groupe a été supprimé</source>
+        <target>Le groupe a été supprimé</target>
+      </trans-unit>
+      <trans-unit id="9PAHAVd" resname="Liste des groupes">
+        <source>Liste des groupes</source>
+        <target>Liste des groupes</target>
+      </trans-unit>
+      <trans-unit id="4BB1ki6" resname="Ajouter un groupe">
+        <source>Ajouter un groupe</source>
+        <target>Ajouter un groupe</target>
+      </trans-unit>
+      <trans-unit id="7s3fKCO" resname="Modifier un groupe">
+        <source>Modifier un groupe</source>
+        <target>Modifier un groupe</target>
+      </trans-unit>
+      <trans-unit id="4e0rib0" resname="personnage">
+        <source>personnage</source>
+        <target>personnage</target>
+      </trans-unit>
+      <trans-unit id="wfCufbf" resname="Le personnage a été ajouté">
+        <source>Le personnage a été ajouté</source>
+        <target>Le personnage a été ajouté</target>
+      </trans-unit>
+      <trans-unit id="WyldO9q" resname="Le personnage a été mis à jour">
+        <source>Le personnage a été mis à jour</source>
+        <target>Le personnage a été mis à jour</target>
+      </trans-unit>
+      <trans-unit id="oD8JbMM" resname="Le personnage a été supprimé">
+        <source>Le personnage a été supprimé</source>
+        <target>Le personnage a été supprimé</target>
+      </trans-unit>
+      <trans-unit id="fAuRiIz" resname="Liste des personnages">
+        <source>Liste des personnages</source>
+        <target>Liste des personnages</target>
+      </trans-unit>
+      <trans-unit id="9u3ndvq" resname="Ajouter un personnage">
+        <source>Ajouter un personnage</source>
+        <target>Ajouter un personnage</target>
+      </trans-unit>
+      <trans-unit id="C8vdkrp" resname="Modifier un personnage">
+        <source>Modifier un personnage</source>
+        <target>Modifier un personnage</target>
+      </trans-unit>
+      <trans-unit id="fGF6THR" resname="competence">
+        <source>competence</source>
+        <target>competence</target>
+      </trans-unit>
+      <trans-unit id="XQ_0lgy" resname="La competence a été ajoutée">
+        <source>La competence a été ajoutée</source>
+        <target>La competence a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="ITWm4FS" resname="La competence a été mise à jour">
+        <source>La competence a été mise à jour</source>
+        <target>La competence a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="nGzt0ZT" resname="La competence a été supprimée">
+        <source>La competence a été supprimée</source>
+        <target>La competence a été supprimée</target>
+      </trans-unit>
+      <trans-unit id="of9fnau" resname="Liste des competences">
+        <source>Liste des competences</source>
+        <target>Liste des competences</target>
+      </trans-unit>
+      <trans-unit id="2oP7mlg" resname="Ajouter une competence">
+        <source>Ajouter une competence</source>
+        <target>Ajouter une competence</target>
+      </trans-unit>
+      <trans-unit id="CvM6l.q" resname="Modifier une competence">
+        <source>Modifier une competence</source>
+        <target>Modifier une competence</target>
+      </trans-unit>
+      <trans-unit id="CjqHWr7" resname="Règle">
+        <source>Règle</source>
+        <target>Règle</target>
+      </trans-unit>
+      <trans-unit id="M567.QG" resname="La règle a été ajoutée">
+        <source>La règle a été ajoutée</source>
+        <target>La règle a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="Va34p6d" resname="La règle a été mise à jour">
+        <source>La règle a été mise à jour</source>
+        <target>La règle a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="Y.WFpjG" resname="La règle a été supprimée">
+        <source>La règle a été supprimée</source>
+        <target>La règle a été supprimée</target>
+      </trans-unit>
+      <trans-unit id="lF4pDDa" resname="Liste des règles">
+        <source>Liste des règles</source>
+        <target>Liste des règles</target>
+      </trans-unit>
+      <trans-unit id="Yn0KGIX" resname="Ajouter une règle">
+        <source>Ajouter une règle</source>
+        <target>Ajouter une règle</target>
+      </trans-unit>
+      <trans-unit id="IUlPkEY" resname="Modifier une règle">
+        <source>Modifier une règle</source>
+        <target>Modifier une règle</target>
+      </trans-unit>
+      <trans-unit id="DdbYCA0" resname="construction">
+        <source>construction</source>
+        <target>construction</target>
+      </trans-unit>
+      <trans-unit id="mfFLhUD" resname="La construction a été ajoutée">
+        <source>La construction a été ajoutée</source>
+        <target>La construction a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="nHp73CM" resname="La construction a été mise à jour">
+        <source>La construction a été mise à jour</source>
+        <target>La construction a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="ATaWUPS" resname="La construction a été supprimée">
+        <source>La construction a été supprimée</source>
+        <target>La construction a été supprimée</target>
+      </trans-unit>
+      <trans-unit id="Q1N.rh9" resname="Liste des constructions">
+        <source>Liste des constructions</source>
+        <target>Liste des constructions</target>
+      </trans-unit>
+      <trans-unit id="x5019XF" resname="Ajouter une construction">
+        <source>Ajouter une construction</source>
+        <target>Ajouter une construction</target>
+      </trans-unit>
+      <trans-unit id="53VaHyd" resname="Modifier une construction">
+        <source>Modifier une construction</source>
+        <target>Modifier une construction</target>
+      </trans-unit>
+      <trans-unit id="U5ep68H" resname="merveille">
+        <source>merveille</source>
+        <target>merveille</target>
+      </trans-unit>
+      <trans-unit id="DHc38ku" resname="La merveille a été ajoutée">
+        <source>La merveille a été ajoutée</source>
+        <target>La merveille a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="JEJDVel" resname="La merveille a été mise à jour">
+        <source>La merveille a été mise à jour</source>
+        <target>La merveille a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="cUpAthK" resname="La merveille a été supprimée">
+        <source>La merveille a été supprimée</source>
+        <target>La merveille a été supprimée</target>
+      </trans-unit>
+      <trans-unit id="L58ILlp" resname="Liste des merveilles">
+        <source>Liste des merveilles</source>
+        <target>Liste des merveilles</target>
+      </trans-unit>
+      <trans-unit id="B7h41Pf" resname="Ajouter une merveille">
+        <source>Ajouter une merveille</source>
+        <target>Ajouter une merveille</target>
+      </trans-unit>
+      <trans-unit id="G2Lyu0T" resname="Modifier une merveille">
+        <source>Modifier une merveille</source>
+        <target>Modifier une merveille</target>
+      </trans-unit>
+      <trans-unit id="H7YMihq" resname="connaissance">
+        <source>connaissance</source>
+        <target>connaissance</target>
+      </trans-unit>
+      <trans-unit id="jbM6Sex" resname="La connaissance a été ajoutée">
+        <source>La connaissance a été ajoutée</source>
+        <target>La connaissance a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="MSxmocI" resname="La connaissance a été mise à jour">
+        <source>La connaissance a été mise à jour</source>
+        <target>La connaissance a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="63Qq14B" resname="La connaissance a été supprimée">
+        <source>La connaissance a été supprimée</source>
+        <target>La connaissance a été supprimée</target>
+      </trans-unit>
+      <trans-unit id="3QfIWiG" resname="Liste des connaissances">
+        <source>Liste des connaissances</source>
+        <target>Liste des connaissances</target>
+      </trans-unit>
+      <trans-unit id=".LKJM27" resname="Ajouter une connaissance">
+        <source>Ajouter une connaissance</source>
+        <target>Ajouter une connaissance</target>
+      </trans-unit>
+      <trans-unit id="RuqOp6I" resname="Modifier une connaissance">
+        <source>Modifier une connaissance</source>
+        <target>Modifier une connaissance</target>
+      </trans-unit>
+      <trans-unit id="vkcpSwq" resname="bonus">
+        <source>bonus</source>
+        <target>bonus</target>
+      </trans-unit>
+      <trans-unit id="D1EMERd" resname="Le bonus a été ajoutée">
+        <source>Le bonus a été ajoutée</source>
+        <target>Le bonus a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="0ItpJCs" resname="Le bonus a été mise à jour">
+        <source>Le bonus a été mise à jour</source>
+        <target>Le bonus a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="Sivqb2z" resname="Le bonus a été supprimé">
+        <source>Le bonus a été supprimé</source>
+        <target>Le bonus a été supprimé</target>
+      </trans-unit>
+      <trans-unit id="bMNYVz_" resname="Ajouter un bonus">
+        <source>Ajouter un bonus</source>
+        <target>Ajouter un bonus</target>
+      </trans-unit>
+      <trans-unit id="XRT9ldz" resname="Modifier un bonus">
+        <source>Modifier un bonus</source>
+        <target>Modifier un bonus</target>
+      </trans-unit>
+      <trans-unit id="CLYX2MK" resname="document">
+        <source>document</source>
+        <target>document</target>
+      </trans-unit>
+      <trans-unit id="egmLNt9" resname="Le document a été ajouté">
+        <source>Le document a été ajouté</source>
+        <target>Le document a été ajouté</target>
+      </trans-unit>
+      <trans-unit id="VAXpx3E" resname="Le document a été mis à jour">
+        <source>Le document a été mis à jour</source>
+        <target>Le document a été mis à jour</target>
+      </trans-unit>
+      <trans-unit id="kDw7g.W" resname="Le document a été supprimé">
+        <source>Le document a été supprimé</source>
+        <target>Le document a été supprimé</target>
+      </trans-unit>
+      <trans-unit id="soRTnTZ" resname="Liste des documents">
+        <source>Liste des documents</source>
+        <target>Liste des documents</target>
+      </trans-unit>
+      <trans-unit id="xUY2AL8" resname="Ajouter un document">
+        <source>Ajouter un document</source>
+        <target>Ajouter un document</target>
+      </trans-unit>
+      <trans-unit id="Y1b.t01" resname="Modifier un documents">
+        <source>Modifier un documents</source>
+        <target>Modifier un documents</target>
+      </trans-unit>
+      <trans-unit id="HMber6." resname="classe">
+        <source>classe</source>
+        <target>classe</target>
+      </trans-unit>
+      <trans-unit id="MAvP4S4" resname="La classe a été ajoutée">
+        <source>La classe a été ajoutée</source>
+        <target>La classe a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="AyUihDs" resname="La classe a été mise à jour">
+        <source>La classe a été mise à jour</source>
+        <target>La classe a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="F29ghTQ" resname="La classe a été supprimée">
+        <source>La classe a été supprimée</source>
+        <target>La classe a été supprimée</target>
+      </trans-unit>
+      <trans-unit id="zynF3h9" resname="Liste des classes">
+        <source>Liste des classes</source>
+        <target>Liste des classes</target>
+      </trans-unit>
+      <trans-unit id="3gWyJbz" resname="Ajouter une classe">
+        <source>Ajouter une classe</source>
+        <target>Ajouter une classe</target>
+      </trans-unit>
+      <trans-unit id="XXpdMVt" resname="Modifier une classe">
+        <source>Modifier une classe</source>
+        <target>Modifier une classe</target>
+      </trans-unit>
+      <trans-unit id="J6.wofs" resname="ressource">
+        <source>ressource</source>
+        <target>ressource</target>
+      </trans-unit>
+      <trans-unit id="gOXCw.X" resname="La ressource a été ajoutée">
+        <source>La ressource a été ajoutée</source>
+        <target>La ressource a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="QoL6L8V" resname="La ressource a été mise à jour">
+        <source>La ressource a été mise à jour</source>
+        <target>La ressource a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="GE0sZTn" resname="La ressource a été supprimé">
+        <source>La ressource a été supprimé</source>
+        <target>La ressource a été supprimé</target>
+      </trans-unit>
+      <trans-unit id="ZkWWuGy" resname="Ajouter une ressource">
+        <source>Ajouter une ressource</source>
+        <target>Ajouter une ressource</target>
+      </trans-unit>
+      <trans-unit id="7I26ilC" resname="Modifier une ressource">
+        <source>Modifier une ressource</source>
+        <target>Modifier une ressource</target>
+      </trans-unit>
+      <trans-unit id="ou.wijN" resname="technologie">
+        <source>technologie</source>
+        <target>technologie</target>
+      </trans-unit>
+      <trans-unit id="Cdu0Ewp" resname="La technologie a été ajoutée">
+        <source>La technologie a été ajoutée</source>
+        <target>La technologie a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="43OKkuP" resname="La technologie a été mise à jour">
+        <source>La technologie a été mise à jour</source>
+        <target>La technologie a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="cajG9Gs" resname="La technologie a été supprimée">
+        <source>La technologie a été supprimée</source>
+        <target>La technologie a été supprimée</target>
+      </trans-unit>
+      <trans-unit id="5854Xw." resname="Liste des technologies">
+        <source>Liste des technologies</source>
+        <target>Liste des technologies</target>
+      </trans-unit>
+      <trans-unit id="e6YEizr" resname="Ajouter une technologie">
+        <source>Ajouter une technologie</source>
+        <target>Ajouter une technologie</target>
+      </trans-unit>
+      <trans-unit id="udGEZ3L" resname="Modifier une technologie">
+        <source>Modifier une technologie</source>
+        <target>Modifier une technologie</target>
+      </trans-unit>
+      <trans-unit id="NpLMZ2L" resname="espece">
+        <source>espece</source>
+        <target>espece</target>
+      </trans-unit>
+      <trans-unit id="lCS4Dct" resname="L'espèce a été ajoutée">
+        <source>L'espèce a été ajoutée</source>
+        <target>L'espèce a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="LRE3qTk" resname="L'espèce a été mise à jour">
+        <source>L'espèce a été mise à jour</source>
+        <target>L'espèce a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="3q2wXJw" resname="L'espèce a été supprimée">
+        <source>L'espèce a été supprimée</source>
+        <target>L'espèce a été supprimée</target>
+      </trans-unit>
+      <trans-unit id="kag6Wlv" resname="Liste des espèces">
+        <source>Liste des espèces</source>
+        <target>Liste des espèces</target>
+      </trans-unit>
+      <trans-unit id="qv2Pkrh" resname="Ajouter une espèce">
+        <source>Ajouter une espèce</source>
+        <target>Ajouter une espèce</target>
+      </trans-unit>
+      <trans-unit id="B12oYY8" resname="Modifier une espèce">
+        <source>Modifier une espèce</source>
+        <target>Modifier une espèce</target>
+      </trans-unit>
+      <trans-unit id="BRb4uQE" resname="Supprimer une sphère">
+        <source>Supprimer une sphère</source>
+        <target>Supprimer une sphère</target>
+      </trans-unit>
+      <trans-unit id="voVQPqO" resname="La sphère a été supprimée">
+        <source>La sphère a été supprimée</source>
+        <target>La sphère a été supprimée</target>
+      </trans-unit>
+      <trans-unit id="54n8TTI" resname="Liste des sphères">
+        <source>Liste des sphères</source>
+        <target>Liste des sphères</target>
+      </trans-unit>
+      <trans-unit id="wkViRnk" resname="prière">
+        <source>prière</source>
+        <target>prière</target>
+      </trans-unit>
+      <trans-unit id="zp_7fGt" resname="La prière a été ajoutée">
+        <source>La prière a été ajoutée</source>
+        <target>La prière a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="t31bnzt" resname="La prière a été mise à jour">
+        <source>La prière a été mise à jour</source>
+        <target>La prière a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="hq6ai1e" resname="La prière a été supprimée">
+        <source>La prière a été supprimée</source>
+        <target>La prière a été supprimée</target>
+      </trans-unit>
+      <trans-unit id="g_SyysA" resname="Liste des prières">
+        <source>Liste des prières</source>
+        <target>Liste des prières</target>
+      </trans-unit>
+      <trans-unit id="TY7jeGg" resname="Ajouter une prière">
+        <source>Ajouter une prière</source>
+        <target>Ajouter une prière</target>
+      </trans-unit>
+      <trans-unit id="3j.YFA9" resname="Modifier une prière">
+        <source>Modifier une prière</source>
+        <target>Modifier une prière</target>
+      </trans-unit>
+      <trans-unit id="igsz1oG" resname="sphère">
+        <source>sphère</source>
+        <target>sphère</target>
+      </trans-unit>
+      <trans-unit id="sx5j9lx" resname="La sphère a été ajoutée">
+        <source>La sphère a été ajoutée</source>
+        <target>La sphère a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="HnIxN83" resname="La sphère a été mise à jour">
+        <source>La sphère a été mise à jour</source>
+        <target>La sphère a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="vk_Z2Oe" resname="Ajouter une sphère">
+        <source>Ajouter une sphère</source>
+        <target>Ajouter une sphère</target>
+      </trans-unit>
+      <trans-unit id="AlhNMUI" resname="Modifier une sphère">
+        <source>Modifier une sphère</source>
+        <target>Modifier une sphère</target>
+      </trans-unit>
+      <trans-unit id="WXzhz22" resname="potion">
+        <source>potion</source>
+        <target>potion</target>
+      </trans-unit>
+      <trans-unit id="FO70kuV" resname="La potion a été ajoutée">
+        <source>La potion a été ajoutée</source>
+        <target>La potion a été ajoutée</target>
+      </trans-unit>
+      <trans-unit id="Efgt7i6" resname="La potion a été mise à jour">
+        <source>La potion a été mise à jour</source>
+        <target>La potion a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="lRZlfPq" resname="La potion a été supprimée">
+        <source>La potion a été supprimée</source>
+        <target>La potion a été supprimée</target>
+      </trans-unit>
+      <trans-unit id="FA_G1TE" resname="Liste des potions">
+        <source>Liste des potions</source>
+        <target>Liste des potions</target>
+      </trans-unit>
+      <trans-unit id="PvtI_U." resname="Ajouter une potion">
+        <source>Ajouter une potion</source>
+        <target>Ajouter une potion</target>
+      </trans-unit>
+      <trans-unit id="aWJphUZ" resname="Modifier une potion">
+        <source>Modifier une potion</source>
+        <target>Modifier une potion</target>
+      </trans-unit>
+      <trans-unit id="y.Ipr06" resname="domaine">
+        <source>domaine</source>
+        <target>domaine</target>
+      </trans-unit>
+      <trans-unit id="n3.NUaE" resname="Le domaine a été ajouté">
+        <source>Le domaine a été ajouté</source>
+        <target>Le domaine a été ajouté</target>
+      </trans-unit>
+      <trans-unit id="Xo.eo57" resname="Le domaine a été mise à jour">
+        <source>Le domaine a été mise à jour</source>
+        <target>Le domaine a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="380n3HU" resname="Le domaine a été supprimé">
+        <source>Le domaine a été supprimé</source>
+        <target>Le domaine a été supprimé</target>
+      </trans-unit>
+      <trans-unit id="voBsEtB" resname="Liste des domaines">
+        <source>Liste des domaines</source>
+        <target>Liste des domaines</target>
+      </trans-unit>
+      <trans-unit id="29yFWxb" resname="Ajouter un domaine">
+        <source>Ajouter un domaine</source>
+        <target>Ajouter un domaine</target>
+      </trans-unit>
+      <trans-unit id="zpyeG4j" resname="Modifier un domaine">
+        <source>Modifier un domaine</source>
+        <target>Modifier un domaine</target>
+      </trans-unit>
+      <trans-unit id="FR2b5Xa" resname="sort">
+        <source>sort</source>
+        <target>sort</target>
+      </trans-unit>
+      <trans-unit id="FDycYsq" resname="Le sort a été ajouté">
+        <source>Le sort a été ajouté</source>
+        <target>Le sort a été ajouté</target>
+      </trans-unit>
+      <trans-unit id="03L4YV2" resname="Le sort a été mise à jour">
+        <source>Le sort a été mise à jour</source>
+        <target>Le sort a été mise à jour</target>
+      </trans-unit>
+      <trans-unit id="PSd7A0C" resname="Le sort a été supprimé">
+        <source>Le sort a été supprimé</source>
+        <target>Le sort a été supprimé</target>
+      </trans-unit>
+      <trans-unit id=".amN8ct" resname="Liste des sorts">
+        <source>Liste des sorts</source>
+        <target>Liste des sorts</target>
+      </trans-unit>
+      <trans-unit id="35K.cHP" resname="Ajouter un sort">
+        <source>Ajouter un sort</source>
+        <target>Ajouter un sort</target>
+      </trans-unit>
+      <trans-unit id="SPNtDw_" resname="Modifier un sort">
+        <source>Modifier un sort</source>
+        <target>Modifier un sort</target>
+      </trans-unit>
+      <trans-unit id="veF3DHZ" resname="Supprimer une prière">
+        <source>Supprimer une prière</source>
+        <target>Supprimer une prière</target>
+      </trans-unit>
+      <trans-unit id="dklNOR3" resname="Supprimer une potion">
+        <source>Supprimer une potion</source>
+        <target>Supprimer une potion</target>
+      </trans-unit>
+      <trans-unit id="IOt.0je" resname="Supprimer un domaine">
+        <source>Supprimer un domaine</source>
+        <target>Supprimer un domaine</target>
+      </trans-unit>
+      <trans-unit id="aKF4Ba0" resname="Supprimer un sort">
+        <source>Supprimer un sort</source>
+        <target>Supprimer un sort</target>
       </trans-unit>
     </body>
   </file>

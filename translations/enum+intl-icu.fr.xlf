@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="fr" target-language="fr" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="NOaE1su" resname="HUMANOID">
+        <source>HUMANOID</source>
+        <target>Humain</target>
+      </trans-unit>
+      <trans-unit id="RmaZa00" resname="MAGIC">
+        <source>MAGIC</source>
+        <target>Magique</target>
+      </trans-unit>
+      <trans-unit id="M7Ct5Qr" resname="UNDEAD">
+        <source>UNDEAD</source>
+        <target>Mort-vivant</target>
+      </trans-unit>
+      <trans-unit id="i.74qC8" resname="DIVINITY">
+        <source>DIVINITY</source>
+        <target>Divinité</target>
+      </trans-unit>
+      <trans-unit id="HafKTYp" resname="DEAMON">
+        <source>DEAMON</source>
+        <target>Démon</target>
+      </trans-unit>
+      <trans-unit id="iMr3mqm" resname="ETHEREAL">
+        <source>ETHEREAL</source>
+        <target>Ethéré</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
