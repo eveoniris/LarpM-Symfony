@@ -50,7 +50,7 @@
 
     {% if canSeeDetail %}
         {% set especeHtml %}
-            <div class="d-flex justify-content-between mt-1">
+            <div class="d-flex justify-content-between">
                 {% for espece in personnage.especes %}
                     <div>
                         <a href="{{ path('espece.detail', {'espece': espece.id}) }}"
@@ -60,7 +60,13 @@
                         </a>
                     </div>
                 {% else %}
-                    -
+                    {% set humanEspece = personnageService.getHumanEspece() %}
+                    <div>
+                        <a href="{{ path('espece.detail', {'espece': humanEspece.id}) }}"
+                           class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0 me-1">
+                            {{ humanEspece.nom }}
+                        </a>
+                    </div>
                 {% endfor %}
             </div>
         {% endset %}
