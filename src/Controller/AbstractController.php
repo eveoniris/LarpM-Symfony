@@ -5,7 +5,9 @@ namespace App\Controller;
 use _PHPStan_c875e8309\Nette\Utils\DateTime;
 use App\Entity\Document;
 use App\Entity\LogAction;
+use App\Entity\User;
 use App\Enum\FolderType;
+use App\Enum\Role;
 use App\Form\DeleteForm;
 use App\Repository\BaseRepository;
 use App\Service\FileUploader;
@@ -26,6 +28,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -490,5 +493,32 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         return $response->send();
+    }
+
+    protected function checkHasAccess(array $roles, ?callable $callable): void
+    {
+
+        /** @var User $loggedUser */
+        $loggedUser = $this->getUser();
+        // Doit être connecté
+        if (!$loggedUser || !$this->isGranted(Role::USER->value)) {
+            throw new AccessDeniedException();
+        }
+
+        // Est un niveau admin suffisant
+        if ($roles) {
+            /** @var Role $role */
+            foreach ($roles as $role) {
+                if ($this->isGranted($role->value)) {
+                    return;
+                }
+            }
+        }
+
+        if (is_callable($callable) && $callable()) {
+            return;
+        }
+
+        throw new AccessDeniedException();
     }
 }

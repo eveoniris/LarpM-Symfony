@@ -6,6 +6,7 @@ use App\Entity\Bonus;
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
 use App\Entity\Domaine;
+use App\Entity\Espece;
 use App\Entity\Gn;
 use App\Entity\GroupeBonus;
 use App\Entity\GroupeGn;
@@ -243,6 +244,17 @@ class PersonnageService
 
         foreach ($personnageReligions as $personnageReligion) {
             if ($personnageReligion->getReligion() === $religion) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function hasEspece(Personnage $personnage, Espece $espece): bool
+    {
+        foreach ($personnage->getEspeces() as $especePersonnage) {
+            if ($especePersonnage->getId() === $espece->getId()) {
                 return true;
             }
         }

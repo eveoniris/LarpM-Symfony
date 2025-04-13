@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\EspeceType;
 use App\Repository\EspeceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -39,6 +40,11 @@ class Espece
         $this->personnages = new ArrayCollection();
     }
 
+    public function getLabel(): string
+    {
+        return $this->getNom() ?? '';
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -65,7 +71,7 @@ class Espece
 
     public function getDescription(): ?string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     public function setDescription(?string $description): static
@@ -75,13 +81,19 @@ class Espece
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): ?EspeceType
     {
-        return $this->type;
+        return EspeceType::tryFrom($this->type);
     }
 
-    public function setType(?string $type): static
+    public function setType(string|EspeceType|null $type): static
     {
+        if ($type instanceof EspeceType) {
+            $this->type = $type->value;
+
+            return $this;
+        }
+
         $this->type = $type;
 
         return $this;

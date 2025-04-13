@@ -92,6 +92,8 @@
                     </td>
                 {% endif %}
             </tr>
+        {% else %}
+            {% include '_partials/noResultTableRow.twig' %}
         {% endfor %}
         </tbody>
     </table>

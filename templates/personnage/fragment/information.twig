@@ -26,6 +26,7 @@
                 {'path' : path('personnage.update.renomme', {'personnage': personnage.id}), 'label': 'Modifier la Renomée' },
                 {'path' : path('personnage.update.heroisme', {'personnage': personnage.id}), 'label': 'Modifier l\'Héroïsme' },
                 {'path' : path('personnage.update.pugilat', {'personnage': personnage.id}), 'label': 'Modifier le Pugilat' },
+                {'path' : path('personnage.espece', {'personnage': personnage.id}), 'label': 'Modifier les espèces' },
                 {'path' : path('personnage.transfert', {'personnage': personnage.id}), 'label': 'Transférer le personnage' },
                 {'path' : path('personnage.export', {'personnage': personnage.id}), 'label': 'Imprimer' },
                 {'path' : path('personnage.delete', {'personnage': personnage.id}), 'label': 'Supprimer' },
@@ -46,43 +47,57 @@
         </div>
     {% endif %}
 
-    <div>
 
-        {# Joueur #}
-        {% set joueurHtml = "Ce personnage n'est pas lié à un joueur" %}
-        {% if personnage.user %}
-            {% set joueurHtml %}
-                <a href="{{ path('user.view',{'user': personnage.user.id}) }}">
-                    {{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}
-                </a>
-            {% endset %}
+    {% if canSeeDetail %}
+        {% set especeHtml %}
+            <div class="d-flex justify-content-between mt-1">
+                {% for espece in personnage.especes %}
+                    <div>
+                        <a href="{{ path('espece.detail', {'espece': espece.id}) }}"
+                           class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0 me-1">
+                            {% if espece.isSecret %}<i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
+                                                       title="Secret"></i> - {% endif %} {{ espece.nom }}
+                        </a>
+                    </div>
+                {% else %}
+                    -
+                {% endfor %}
+            </div>
+        {% endset %}
+    {% endif %}
+
+    {# Joueur #}
+    {% set joueurHtml = "Ce personnage n'est pas lié à un joueur" %}
+    {% if personnage.user %}
+        {% set joueurHtml %}
+            <a href="{{ path('user.view',{'user': personnage.user.id}) }}">
+                {{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}
+            </a>
+        {% endset %}
+    {% endif %}
+
+    {# Scenariste #}
+    {% set scenaristeHtml = "Ce personnage n'est pas lié à un joueur" %}
+    {% if personnage.user %}
+        {% if participant is not defined %}
+            {% set participant = personnage.user.participants|last %}
         {% endif %}
 
-        {# Scenariste #}
-        {% set scenaristeHtml = "Ce personnage n'est pas lié à un joueur" %}
-        {% if personnage.user %}
-            {% if participant is not defined %}
-                {% set participant = personnage.user.participants|last %}
-            {% endif %}
-
-            {% set scenaristeHtml %}
-                {% if participant.personnage %}
-                    {% if participant.groupeGn %}
-                        {% if participant.groupeGn.groupe %}
-                            {% if not participant.groupeGn.groupe.scenariste %}
-                                <div class="text-warning">
+        {% set scenaristeHtml %}
+            {% if participant.personnage %}
+                {% if participant.groupeGn %}
+                    {% if participant.groupeGn.groupe %}
+                        {% if not participant.groupeGn.groupe.scenariste %}
+                            <div class="text-warning">
                                     <span class="fa fa-exclamation-triangle"
                                           aria-hidden="true"></span>&nbsp;Attention, ce personnage n'a pas de
-                                    scénariste.
-                                </div>
-                            {% else %}
-                                <a href="{{ path('user.view',{'user': personnage.user.id}) }}">
-                                    {{ participant.groupeGn.groupe.scenariste.etatCivil }}
-                                    &nbsp;({{ participant.groupeGn.groupe.scenariste.email }})
-                                </a>
-                            {% endif %}
+                                scénariste.
+                            </div>
                         {% else %}
-                            Aucun
+                            <a href="{{ path('user.view',{'user': personnage.user.id}) }}">
+                                {{ participant.groupeGn.groupe.scenariste.etatCivil }}
+                                &nbsp;({{ participant.groupeGn.groupe.scenariste.email }})
+                            </a>
                         {% endif %}
                     {% else %}
                         Aucun
@@ -90,192 +105,195 @@
                 {% else %}
                     Aucun
                 {% endif %}
-            {% endset %}
+            {% else %}
+                Aucun
+            {% endif %}
+        {% endset %}
+    {% endif %}
+
+    {% set santeHtml %}
+        {% if personnage.vivant %}
+            <span class="text-success">Vivant</span>
+        {% else %}
+            <span class="text-danger">💀 Mort</span>
         {% endif %}
+    {% endset %}
 
-        {% set santeHtml %}
-            {% if personnage.vivant %}
-                <span class="text-success">Vivant</span>
+    {% set ageHtml %}
+        {{ personnage.ageReel|default('x') }} ans ({{ personnage.age }})
+    {% endset %}
+
+    {% set origineHtml %}
+        {% if personnage.territoire %}
+            <a href="{{ path('territoire.detail', {'territoire':personnage.territoire.id}) }}">{{ personnage.territoire }}</a>
+        {% else %}
+            non définie
+        {% endif %}
+    {% endset %}
+
+    {% set sensibilityHtml %}
+        Pas de violence excessive dans les gestes ou les mots, pas de drague, de
+        propositions d'alcool, etc.
+    {% endset %}
+
+    {% set renomme = personnageService.allRenomme(personnage)|default(0) %}
+    {% set renommeCollapse = false %}
+    {% if canSeeDetail and renomme > 0 %}
+        {% set renommeCollapseHtml %}
+            {% for historique in personnageService.getAllRenommeDisplay(personnage) %}
+                <div class="list-group-item">{{ historique.date|date("Y-m-d H:i:s") }}
+                    : {% if historique.renomme > 0 %}+{% endif %}{{ historique.renomme }}  {% if historique.explication %} pour la raison suivante : "{{ historique.explication }}"{% endif %}
+                    .
+                </div>
             {% else %}
-                <span class="text-danger">💀 Mort</span>
-            {% endif %}
+                {% include '_partials/noResult.twig' %}
+            {% endfor %}
         {% endset %}
+        {% set renommeCollapse = {'id':'renommeHistory', 'icon': 'fa-history', 'text': renommeCollapseHtml} %}
+    {% endif %}
 
-        {% set ageHtml %}
-            {{ personnage.ageReel|default('x') }} ans ({{ personnage.age }})
+    {% set itrigueHtml %}
+        {% if personnage.intrigue %}
+            Participe aux intrigues
+        {% else %}
+            Ne participe pas aux intrigues.
+        {% endif %}
+    {% endset %}
+
+    {% set experienceCollapse = false %}
+    {% if canSeeDetail and personnage.xp|default(0) > 0 %}
+        {% set experienceCollapseHtml %}
+            <div class="list-group">
+                <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
+                    Gains</h6>
+                <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                    <thead>
+                    <tr>
+                        <th class="col-md-3">Date</th>
+                        <th class="col-md-1">Quantité</th>
+                        <th>Raison</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% set totalXpGain = 0 %}
+                    {% for historique in personnage.experienceGains %}
+                        {% set totalXpGain = totalXpGain + historique.xpGain %}
+                        <tr>
+                        <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
+                        <td>+{{ historique.xpGain }}</td>
+                        <td>{{ historique.explanation }}</td>
+                        </tr>{% else %}
+                        {% include '_partials/noResultTableRow.twig' %}
+                    {% endfor %}
+                    <tr>
+                        <td>Total</td>
+                        <td>{{ totalXpGain }}</td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
+                    Usages</h6>
+                <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                    <thead>
+                    <tr>
+                        <th class="col-md-3">Date</th>
+                        <th class="col-md-1">Quantité</th>
+                        <th>Compétence</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% set totalXpUse = 0 %}
+                    {% for historique in personnage.experienceUsages %}
+                        {% set totalXpUse = totalXpUse + historique.xpUse %}
+                        <tr>
+                            <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
+                            <td>-{{ historique.xpUse }}</td>
+                            <td>{{ historique.competence.label }}</td>
+                        </tr>
+                    {% else %}
+                        {% include '_partials/noResultTableRow.twig' %}
+                    {% endfor %}
+                    <tr>
+                        <td>Total</td>
+                        <td>{{ totalXpUse }}</td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         {% endset %}
+        {% set experienceCollapse = {'id':'experienceHistory1', 'icon': 'fa-history', 'text': experienceCollapseHtml} %}
+    {% endif %}
 
-        {% set origineHtml %}
-            {% if personnage.territoire %}
-                <a href="{{ path('territoire.detail', {'territoire':personnage.territoire.id}) }}">{{ personnage.territoire }}</a>
-            {% else %}
-                non définie
-            {% endif %}
+    {% set pugilat = personnageService.allPugilat(personnage)|default(0) %}
+    {% set pugilatCollapse = false %}
+    {% if canSeeDetail and pugilat > 0 %}
+        {% set pugilatCollapseHtml %}
+            <div class="list-group">
+                <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                    <thead>
+                    <tr>
+                        <th class="col-md-3">Date</th>
+                        <th class="col-md-1">Quantité</th>
+                        <th>Raison</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for historique in personnageService.allPugilatDisplay(personnage) %}
+                        <tr>
+                            <td>{{ historique.date|date("Y-m-d H:i:s") }}</td>
+                            <td>{% if historique.pugilat > 0 %}+{% endif %}{{ historique.pugilat }}</td>
+                            <td>{% if historique.explication %}{{ historique.explication }}{% endif %}</td>
+                        </tr>
+                    {% else %}
+                        {% include '_partials/noResultTableRow.twig' %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% endset %}
+        {% set pugilatCollapse = {'id':'pugilatHistory1', 'icon': 'fa-history', 'text': pugilatCollapseHtml} %}
+    {% endif %}
 
-        {% set sensibilityHtml %}
-            Pas de violence excessive dans les gestes ou les mots, pas de drague, de
-            propositions d'alcool, etc.
-        {% endset %}
-
-        {% set renomme = personnageService.allRenomme(personnage)|default(0) %}
-        {% set renommeCollapse = false %}
-        {% if canSeeDetail and renomme > 0 %}
-            {% set renommeCollapseHtml %}
-                {% for historique in personnageService.getAllRenommeDisplay(personnage) %}
+    {% set heroisme = personnageService.allHeroisme(personnage)|default(0) %}
+    {% set heroismeCollapse = false %}
+    {% if canSeeDetail and heroisme > 0 %}
+        {% set heroismeCollapseHtml %}
+            <div class="list-group">
+                {% for historique in personnageService.allHeroismeDisplay(personnage) %}
                     <div class="list-group-item">{{ historique.date|date("Y-m-d H:i:s") }}
-                        : {% if historique.renomme > 0 %}+{% endif %}{{ historique.renomme }}  {% if historique.explication %} pour la raison suivante : "{{ historique.explication }}"{% endif %}
+                        : {% if historique.heroisme > 0 %}+{% endif %}{{ historique.heroisme }}  {% if historique.explication %} pour la raison suivante : "{{ historique.explication }}"{% endif %}
                         .
                     </div>
                 {% else %}
                     {% include '_partials/noResult.twig' %}
                 {% endfor %}
-            {% endset %}
-            {% set renommeCollapse = {'id':'renommeHistory', 'icon': 'fa-history', 'text': renommeCollapseHtml} %}
-        {% endif %}
+            </div>
+        {% endset %}
+        {% set heroismeCollapse = {'id':'heroismeHistory1', 'icon': 'fa-history', 'text': heroismeCollapseHtml} %}
+    {% endif %}
 
-        {% set itrigueHtml %}
-            {% if personnage.intrigue %}
-                Participe aux intrigues
+    {% set persoSecondaireHtml %}
+        {% if participant is defined %}
+            {% if participant.personnageSecondaire is defined and participant.personnageSecondaire.classe is defined %}
+                {{ participant.personnageSecondaire.classe.label }}
             {% else %}
-                Ne participe pas aux intrigues.
+                <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">Choisir
+                    son personnage secondaire</a>
             {% endif %}
-        {% endset %}
-
-        {% set experienceCollapse = false %}
-        {% if canSeeDetail and personnage.xp|default(0) > 0 %}
-            {% set experienceCollapseHtml %}
-                <div class="list-group">
-                    <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
-                        Gains</h6>
-                    <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
-                        <thead>
-                        <tr>
-                            <th class="col-md-3">Date</th>
-                            <th class="col-md-1">Quantité</th>
-                            <th>Raison</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% set totalXpGain = 0 %}
-                        {% for historique in personnage.experienceGains %}
-                            {% set totalXpGain = totalXpGain + historique.xpGain %}
-                            <tr>
-                            <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
-                            <td>+{{ historique.xpGain }}</td>
-                            <td>{{ historique.explanation }}</td>
-                            </tr>{% else %}
-                            {% include '_partials/noResultTableRow.twig' %}
-                        {% endfor %}
-                        <tr>
-                            <td>Total</td>
-                            <td>{{ totalXpGain }}</td>
-                            <td></td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
-                        Usages</h6>
-                    <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
-                        <thead>
-                        <tr>
-                            <th class="col-md-3">Date</th>
-                            <th class="col-md-1">Quantité</th>
-                            <th>Compétence</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% set totalXpUse = 0 %}
-                        {% for historique in personnage.experienceUsages %}
-                            {% set totalXpUse = totalXpUse + historique.xpUse %}
-                            <tr>
-                                <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
-                                <td>-{{ historique.xpUse }}</td>
-                                <td>{{ historique.competence.label }}</td>
-                            </tr>
-                        {% else %}
-                            {% include '_partials/noResultTableRow.twig' %}
-                        {% endfor %}
-                        <tr>
-                            <td>Total</td>
-                            <td>{{ totalXpUse }}</td>
-                            <td></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            {% endset %}
-            {% set experienceCollapse = {'id':'experienceHistory1', 'icon': 'fa-history', 'text': experienceCollapseHtml} %}
+        {% else %}
+            {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'title': 'Prérequis !', 'content' : "Le personnage ne dispose d'aucune participation à un GN"} %}
         {% endif %}
-
-        {% set pugilat = personnageService.allPugilat(personnage)|default(0) %}
-        {% set pugilatCollapse = false %}
-        {% if canSeeDetail and pugilat > 0 %}
-            {% set pugilatCollapseHtml %}
-                <div class="list-group">
-                    <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
-                        <thead>
-                        <tr>
-                            <th class="col-md-3">Date</th>
-                            <th class="col-md-1">Quantité</th>
-                            <th>Raison</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for historique in personnageService.allPugilatDisplay(personnage) %}
-                            <tr>
-                                <td>{{ historique.date|date("Y-m-d H:i:s") }}</td>
-                                <td>{% if historique.pugilat > 0 %}+{% endif %}{{ historique.pugilat }}</td>
-                                <td>{% if historique.explication %}{{ historique.explication }}{% endif %}</td>
-                            </tr>
-                        {% else %}
-                            {% include '_partials/noResultTableRow.twig' %}
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% endset %}
-            {% set pugilatCollapse = {'id':'pugilatHistory1', 'icon': 'fa-history', 'text': pugilatCollapseHtml} %}
-        {% endif %}
-
-        {% set heroisme = personnageService.allHeroisme(personnage)|default(0) %}
-        {% set heroismeCollapse = false %}
-        {% if canSeeDetail and heroisme > 0 %}
-            {% set heroismeCollapseHtml %}
-                <div class="list-group">
-                    {% for historique in personnageService.allHeroismeDisplay(personnage) %}
-                        <div class="list-group-item">{{ historique.date|date("Y-m-d H:i:s") }}
-                            : {% if historique.heroisme > 0 %}+{% endif %}{{ historique.heroisme }}  {% if historique.explication %} pour la raison suivante : "{{ historique.explication }}"{% endif %}
-                            .
-                        </div>
-                    {% else %}
-                        {% include '_partials/noResult.twig' %}
-                    {% endfor %}
-                </div>
-            {% endset %}
-            {% set heroismeCollapse = {'id':'heroismeHistory1', 'icon': 'fa-history', 'text': heroismeCollapseHtml} %}
-        {% endif %}
-
-        {% set persoSecondaireHtml %}
-            {% if participant is defined %}
-                {% if participant.personnageSecondaire is defined and participant.personnageSecondaire.classe is defined %}
-                    {{ participant.personnageSecondaire.classe.label }}
-                {% else %}
-                    <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">Choisir
-                        son personnage secondaire</a>
-                {% endif %}
-            {% else %}
-                {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'title': 'Prérequis !', 'content' : "Le personnage ne dispose d'aucune participation à un GN"} %}
-            {% endif %}
-        {% endset %}
+    {% endset %}
 
 
-        {% set titreHtml %}
-            <span>{{ personnageService.getTitre(personnage) }}</span>
-        {% endset %}
+    {% set titreHtml %}
+        <span>{{ personnageService.getTitre(personnage) }}</span>
+    {% endset %}
 
-
+    <div>
         {% include '_partials/listItems.twig'
             with { 'items' : [
             {'title': 'Joueur', 'text': joueurHtml},
@@ -286,6 +304,7 @@
             {'title': 'Age', 'text': ageHtml},
             {'title': 'Santé', 'text': santeHtml},
             {'title': 'Genre', 'text':  personnage.genre },
+            {'title': 'Espèce', 'text':  especeHtml, 'visible': canSeeDetail },
             {'title': 'Origine', 'text': origineHtml},
             {'title': 'Intrigue', 'text': itrigueHtml, 'visible': canSeeDetail},
             {'title': 'Sensibilité', 'text': 'Ce personnage est sensible', 'visible': personnage.isSensible, 'collapse': {'id': 'sensibility', 'text': sensibilityHtml}},

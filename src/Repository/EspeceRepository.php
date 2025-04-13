@@ -3,41 +3,64 @@
 namespace App\Repository;
 
 use App\Entity\Espece;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\Personnage;
+use App\Service\OrderBy;
+use Doctrine\ORM\QueryBuilder;
 
-/**
- * @extends ServiceEntityRepository<Espece>
- */
-class EspeceRepository extends ServiceEntityRepository
+class EspeceRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+
+    public function searchAttributes(): array
     {
-        parent::__construct($registry, Espece::class);
+        $alias ??= static::getEntityAlias();
+
+        return [
+            self::SEARCH_ALL,
+            $alias.'.nom', // => 'Libellé',
+            $alias.'.description', // => 'Description',
+            $alias.'.type',
+        ];
     }
 
-    //    /**
-    //     * @return Espece[] Returns an array of Espece objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('e.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function sortAttributes(?string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
 
-    //    public function findOneBySomeField($value): ?Espece
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return [
+            ...parent::sortAttributes($alias),
+            $alias.'.nom' => [
+                OrderBy::ASC => [$alias.'.nom' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.nom' => OrderBy::DESC],
+            ],
+            $alias.'.description' => [
+                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+            ],
+            'type' => [
+                OrderBy::ASC => [$alias.'.type' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.type' => OrderBy::DESC],
+            ],
+        ];
+    }
+
+    public function translateAttributes(): array
+    {
+        return [
+            ...parent::translateAttributes(),
+            'description' => $this->translator->trans('Description', domain: 'repository'),
+            'nom' => $this->translator->trans('Nom', domain: 'repository'),
+            'type' => $this->translator->trans('Type', domain: 'repository'),
+        ];
+    }
+
+    public function getPersonnages(Espece $espece): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        return $personnageRepository->createQueryBuilder('perso')
+            ->innerJoin('perso.especes', 'esp')
+            ->where('esp.id = :espid')
+            ->setParameter('espid', $espece->getId());
+    }
 }
