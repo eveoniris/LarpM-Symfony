@@ -37,6 +37,9 @@ class BaseCompetence
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $materiel = null;
 
+    #[Column(type: Types::BOOLEAN,nullable: true)]
+    protected ?bool $secret = null;
+
     /**
      * @var Collection<int, CompetenceAttribute>|CompetenceAttribute[]
      */
@@ -80,6 +83,9 @@ class BaseCompetence
     #[JoinColumn(name: 'competence_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
     protected Collection $personnages;
+
+    #[ManyToOne(inversedBy: 'apprentissages')]
+    protected ?PersonnageApprentissage $personnageApprentissage = null;
 
     public function __construct()
     {
@@ -239,6 +245,30 @@ class BaseCompetence
     public function getPersonnages(): Collection
     {
         return $this->personnages;
+    }
+
+    public function getPersonnageApprentissage(): ?PersonnageApprentissage
+    {
+        return $this->personnageApprentissage;
+    }
+
+    public function setPersonnageApprentissage(?PersonnageApprentissage $personnageApprentissage): static
+    {
+        $this->personnageApprentissage = $personnageApprentissage;
+
+        return $this;
+    }
+
+    public function isSecret(): ?bool
+    {
+        return $this->secret;
+    }
+
+    public function setSecret(?bool $secret): static
+    {
+        $this->secret = $secret;
+
+        return $this;
     }
 
     /* public function __sleep()

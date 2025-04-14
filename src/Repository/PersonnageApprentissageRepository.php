@@ -2,42 +2,40 @@
 
 namespace App\Repository;
 
-use App\Entity\PersonnageApprentissage;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\Gn;
+use App\Entity\Personnage;
+use Carbon\Carbon;
 
-/**
- * @extends ServiceEntityRepository<PersonnageApprentissage>
- */
-class PersonnageApprentissageRepository extends ServiceEntityRepository
+class PersonnageApprentissageRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function hasApprentissage(Personnage $personnage, ?int $fromDate = null, ?int $toDate = null): bool
     {
-        parent::__construct($registry, PersonnageApprentissage::class);
+        // TODO date_deleted ?
+
+        $dql = <<<DQL
+                SELECT COUNT(pa) AS exists
+                FROM App\Entity\PersonnageApprentissage pa 
+                WHERE pa.personnage = :pid 
+                DQL;
+
+        if ($fromDate) {
+            $dql .= ' AND pa.date_enseignement >= :fromDate';
+        }
+
+        if ($toDate) {
+            $dql .= ' AND pa.date_enseignement < :toDate';
+        }
+
+        $query = $this->getEntityManager()->createQuery($dql);
+
+        if ($fromDate) {
+            $query->setParameter('fromDate', $fromDate);
+        }
+
+        if ($toDate) {
+            $query->setParameter('toDate', $toDate);
+        }
+
+        return (bool) $query->setParameter('pid', $personnage->getId())->getSingleScalarResult();
     }
-
-    //    /**
-    //     * @return PersonnageApprentissage[] Returns an array of PersonnageApprentissage objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?PersonnageApprentissage
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

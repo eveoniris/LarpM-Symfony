@@ -275,16 +275,18 @@ abstract class BasePersonnage
     private Collection $especes;
 
     /**
-     * @var Collection<int, PersonnageApprentissage>
+     * @var Collection<int, PersonnageApprentissage>|null
      */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageApprentissage::class)]
-    private Collection $apprentissages;
+    #[OneToMany(mappedBy: 'personnageApprentissage', targetEntity: PersonnageApprentissage::class, cascade: ['persist', 'remove'])]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    private ?Collection $apprentissages;
 
     /**
-     * @var Collection<int, PersonnageApprentissage>
+     * @var Collection<int, PersonnageApprentissage>|null
      */
-    #[OneToMany(mappedBy: 'enseignant', targetEntity: PersonnageApprentissage::class)]
-    private Collection $apprentissageEnseignants;
+    #[OneToMany(mappedBy: 'enseignant', targetEntity: PersonnageApprentissage::class, cascade: ['persist', 'remove'])]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    private ?Collection $apprentissageEnseignants;
 
     public function __construct()
     {

@@ -1,0 +1,16 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ personnage.publicName }}{% endblock title %}
+
+{% block body %}
+
+    {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Apprentissage"} %}
+
+    <div class="well well-sm bs-component" data-tubo="false">
+        <div class="header">
+            <h5>Apprentissage de compétence</h5>
+        </div>
+        {{ form(form) }}
+    </div>
+
+{% endblock body %}
