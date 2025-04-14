@@ -33,6 +33,12 @@ class Gn extends BaseGn implements \Stringable
         return $personnages;
     }
 
+    public function isInter(): bool
+    {
+        // maybe later
+        return false;
+    }
+
     /**
      * Fourni la liste de tous les personnages ayant une certaine renommé prévu sur un jeu.
      */

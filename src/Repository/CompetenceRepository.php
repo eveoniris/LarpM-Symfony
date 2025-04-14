@@ -14,11 +14,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 
-/**
- * LarpManager\Repository\CompetenceRepository.
- *
- * @author kevin
- */
 class CompetenceRepository extends BaseRepository
 {
     /**

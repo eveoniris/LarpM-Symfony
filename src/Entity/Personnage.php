@@ -1520,7 +1520,7 @@ class Personnage extends BasePersonnage implements \Stringable
             return false;
         }
 
-        return null !== $this->getCompetencesFromFamilyType($type);
+        return !empty($this->getCompetencesFromFamilyType($type));
     }
 
     public function hasCompetenceId(int $id): bool

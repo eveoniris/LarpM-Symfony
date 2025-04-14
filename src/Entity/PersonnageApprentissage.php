@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
 
 #[ORM\Entity(repositoryClass: PersonnageApprentissageRepository::class)]
 class PersonnageApprentissage
@@ -16,28 +17,32 @@ class PersonnageApprentissage
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'date_enseignement')]
+    #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'apprentissages')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Personnage $personnage = null;
 
     /**
      * @var Collection<int, Competence>
      */
     #[ORM\OneToMany(mappedBy: 'personnageApprentissage', targetEntity: Competence::class)]
-    private Collection $competence;
+    private Collection $competences;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_enseignement = null;
+    private ?\DateTimeInterface $created_at = null;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    private ?int $date_enseignement = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $date_usage = null;
 
-    #[ORM\ManyToOne(inversedBy: 'apprentissageEnseignants')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'apprentissageEnseignants')]
+    #[JoinColumn(nullable: false)]
     private ?Personnage $enseignant = null;
 
     public function __construct()
     {
-        $this->competence = new ArrayCollection();
+        $this->competences = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -67,15 +72,15 @@ class PersonnageApprentissage
     /**
      * @return Collection<int, Competence>
      */
-    public function getCompetence(): Collection
+    public function getCompetences(): Collection
     {
-        return $this->competence;
+        return $this->competences;
     }
 
     public function addCompetence(Competence $competence): static
     {
-        if (!$this->competence->contains($competence)) {
-            $this->competence->add($competence);
+        if (!$this->competences->contains($competence)) {
+            $this->competences->add($competence);
             $competence->setPersonnageApprentissage($this);
         }
 
@@ -84,7 +89,7 @@ class PersonnageApprentissage
 
     public function removeCompetence(Competence $competence): static
     {
-        if ($this->competence->removeElement($competence)) {
+        if ($this->competences->removeElement($competence)) {
             // set the owning side to null (unless already changed)
             if ($competence->getPersonnageApprentissage() === $this) {
                 $competence->setPersonnageApprentissage(null);
@@ -94,17 +99,30 @@ class PersonnageApprentissage
         return $this;
     }
 
-    public function getDateEnseignement(): ?\DateTimeInterface
+    public function getDateEnseignement(): ?int
     {
         return $this->date_enseignement;
     }
 
-    public function setDateEnseignement(?\DateTimeInterface $date_enseignement): static
+    public function setDateEnseignement(?int $date_enseignement): static
     {
         $this->date_enseignement = $date_enseignement;
 
         return $this;
     }
+
+    public function getCreaytedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $createdAt): static
+    {
+        $this->created_at = $createdAt;
+
+        return $this;
+    }
+
 
     public function getDateUsage(): ?\DateTimeInterface
     {
@@ -128,5 +146,13 @@ class PersonnageApprentissage
         $this->enseignant = $enseignant;
 
         return $this;
+    }
+
+    public function toLog(): array
+    {
+        return [
+            'personnage_id' => $this->personnage->getId(),
+            'enseignant_id' => $this->enseignant->getId(),
+        ];
     }
 }

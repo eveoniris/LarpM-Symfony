@@ -10,11 +10,15 @@ use App\Entity\Connaissance;
 use App\Entity\Domaine;
 use App\Entity\Espece;
 use App\Entity\ExperienceGain;
+use App\Entity\Gn;
 use App\Entity\HeroismeHistory;
 use App\Entity\Ingredient;
 use App\Entity\Langue;
+use App\Entity\Level;
+use App\Entity\LogAction;
 use App\Entity\Participant;
 use App\Entity\Personnage;
+use App\Entity\PersonnageApprentissage;
 use App\Entity\PersonnageBackground;
 use App\Entity\PersonnageChronologie;
 use App\Entity\PersonnageHasToken;
@@ -67,7 +71,9 @@ use App\Manager\GroupeManager;
 use App\Manager\PersonnageManager;
 use App\Repository\ConnaissanceRepository;
 use App\Repository\DomaineRepository;
+use App\Repository\GnRepository;
 use App\Repository\ParticipantRepository;
+use App\Repository\PersonnageApprentissageRepository;
 use App\Repository\PotionRepository;
 use App\Repository\PriereRepository;
 use App\Repository\SortRepository;
@@ -75,6 +81,7 @@ use App\Repository\TechnologieRepository;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Types\IntegerType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Imagine\Gd\Imagine;
@@ -1701,7 +1708,7 @@ class PersonnageController extends AbstractController
             // et récupérer les langues de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 if ('ORIGINE' === $personnageLangue->getSource(
-                ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
+                    ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
                     $personnage->removePersonnageLangues($personnageLangue);
                     $this->entityManager->remove($personnageLangue);
                 }
@@ -2043,7 +2050,7 @@ class PersonnageController extends AbstractController
         $limit = 1;
         foreach ($competences as $competence) {
             if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily(
-            )?->getCompetenceFamilyType()?->value) {
+                )?->getCompetenceFamilyType()?->value) {
                 if ($competence->getLevel()?->getIndex() >= 2) {
                     $message = false;
                     $errorLevel = 0;
@@ -2121,6 +2128,173 @@ class PersonnageController extends AbstractController
             'personnage' => $personnage,
             'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/{personnage}/apprentissage', name: 'apprentissage')]
+    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    public function apprentissageAction(
+        Request $request,
+        #[MapEntity] Personnage $personnage,
+        PersonnageService $personnageService,
+        PersonnageApprentissageRepository $personnageApprentissageRepository,
+    ): RedirectResponse|Response {
+        $availableCompetences = $personnageService->getAvailableCompetences($personnage);
+
+        // Remove competences after Expert
+        /**
+         * @var Competence $competence
+         */
+        foreach ($availableCompetences as $key => $competence) {
+            if ($competence->getLevel()?->getIndex() > Level::NIVEAU_3) {
+                unset($availableCompetences[$key]);
+            }
+        }
+
+        $formBuilder = $this->createFormBuilder()
+            ->add('enseignant', EntityType::class, [
+                'required' => true,
+                'multiple' => false,
+                'error_bubbling' => false,
+                'autocomplete' => true,
+                'label' => 'Enseignant',
+                'class' => Personnage::class,
+                'choice_label' => static fn(Personnage $personnage) => $personnage->getIdName(),
+            ])
+            ->add('competence', ChoiceType::class, [
+                'required' => true,
+                'multiple' => false,
+                'autocomplete' => true,
+                'label' => 'Compétence étudiée',
+                'choices' => $availableCompetences,
+                'choice_label' => static fn(Competence $competence) => $competence->getLabel(),
+            ]);
+
+        /** @var GnRepository $gnRepository */
+        $gnRepository = $this->entityManager->getRepository(Gn::class);
+        $gns = $gnRepository->findAll(); // ordered by date_debut
+
+        if (empty($gns)) {
+            $formBuilder->add('annee', IntegerType::class, [
+                'required' => true,
+                'label' => "Année de l'apprentissage",
+            ]);
+        } else {
+            /** @var Gn $nextGn */
+            $nextGn = array_shift($gns);
+            /** @var ?Gn $lastGn */
+            $lastGn = null;
+            if (!empty($gns)) {
+                /** @var Gn $gn * */
+                foreach ($gns as $gn) {
+                    if (!$gn->isInter()) {
+                        $lastGn = $gn;
+                        break;
+                    }
+                }
+            }
+
+            // TODO : pas fonctionnel
+            $hasApprentissage = $personnageApprentissageRepository->hasApprentissage(
+                $personnage,
+                $nextGn->getDateJeu(),
+                $lastGn->getDateJeu()
+            );
+
+            if ($hasApprentissage) {
+                $this->addFlash(
+                    'error',
+                    'Le personnage à déjà fait un apprentissage sur cette période. Il doit attendre le prochain opus pour en faire un nouveau.'
+                );
+
+                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            }
+
+            $endDate = $nextGn->getDateJeu();
+            $startDate = $lastGn ? $lastGn->getDateJeu() : $endDate - 5;
+            $dateChoices = range($startDate, $endDate);
+
+            foreach ($dateChoices as $k => $date) {
+
+                $valueLabel = $date;
+
+                if ($startDate && $date === $startDate) {
+                    $valueLabel = $startDate.' - '.$lastGn->getLabel();
+                } elseif ($endDate && $date === $endDate) {
+                    $valueLabel = $endDate.' - '.$nextGn->getLabel();
+                }
+
+                if ($valueLabel !== $k) {
+                    unset($dateChoices[$k]);
+                    $dateChoices[$valueLabel] = $date;
+                }
+            }
+
+            $formBuilder->add('annee', ChoiceType::class, [
+                'required' => true,
+                'choices' => $dateChoices,
+                'label' => "Année de l'apprentissage",
+            ]);
+        }
+
+        $form = $formBuilder
+            ->add('apprentissage', SubmitType::class, [
+                'label' => 'Valider',
+                'attr' => ['class' => 'btn btn-secondary'],
+            ])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
+            /** @var Personnage $enseignant */
+            $enseignant = $data['enseignant'];
+            $competence = $data['competence'];
+            $annee = $data['annee'];
+
+            if (!$enseignant->isKnownCompetence($competence)) {
+                $form->addError(
+                    new FormError(
+                        sprintf(
+                            "L'enseignant: %s. Ne peut pas enseigner %s",
+                            $enseignant->getIdName(),
+                            $competence->getLabel()
+                        )
+                    )
+                );
+            }
+
+            if ($form->isValid()) {
+
+                // TODO il manque la colonne_competence_id sur la table perso_apprenti
+                $personnageApprentissage = new PersonnageApprentissage();
+                $personnageApprentissage->setPersonnage($personnage);
+                $personnageApprentissage->setEnseignant($enseignant);
+                $personnageApprentissage->setCreatedAt(new \DateTime());
+                $personnageApprentissage->setDateEnseignement($annee);
+
+                $logAction = new LogAction();
+                $logAction->setUser($this->getUser());
+                $logAction->setDate(new \DateTime());
+                $logAction->setType('Apprentissage');
+                $logAction->setData([...$personnageApprentissage->toLog(), 'competence_id' => $competence->getId()]);
+
+                $this->entityManager->persist($logAction);
+                $this->entityManager->persist($personnageApprentissage);
+                // TODO  $this->entityManager->flush();
+
+                $this->addFlash('success', "l'apprentissage a été ajouté");
+
+                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            }
+
+        }
+
+        return $this->render('personnage/apprentissage.twig', [
+            'personnage' => $personnage,
+            'form' => $form->createView(),
+        ], new Response(null, $form->isSubmitted() && $form->isValid() ? 200 : 422 ));
     }
 
     #[Route('/{personnage}/admin', name: 'detail', requirements: ['personnage' => Requirement::DIGITS])]
@@ -2262,13 +2436,13 @@ class PersonnageController extends AbstractController
             return $this->sendNoImageAvailable();
         }
         $path = $this->fileUploader->getProjectDirectory(
-        ).FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
+            ).FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
 
         $filename = $personnage->getTrombine($this->fileUploader->getProjectDirectory());
         if (!file_exists($filename)) {
             // get old ?
             $path = $this->fileUploader->getProjectDirectory(
-            ).FolderType::Private->value.DocumentType::Image->value.'/';
+                ).FolderType::Private->value.DocumentType::Image->value.'/';
             $filename = $path.$personnage->getTrombineUrl();
 
             if (!file_exists($filename)) {
@@ -2380,8 +2554,8 @@ class PersonnageController extends AbstractController
         $orderBy = $request->get('order_by') ?: 'id';
         $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
         $isAsc = 'ASC' == $orderDir;
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
+        $limit = (int)($request->get('limit') ?: 50);
+        $page = (int)($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
@@ -2488,13 +2662,13 @@ class PersonnageController extends AbstractController
         }
 
         return array_merge([
-            'personnages' => $personnages,
-            'paginator' => $paginator,
-            'form' => $form->createView(),
-            'optionalParameters' => $optionalParameters,
-            'columnDefinitions' => $columnDefinitions,
-            'formPath' => $routeName,
-        ]
+                'personnages' => $personnages,
+                'paginator' => $paginator,
+                'form' => $form->createView(),
+                'optionalParameters' => $optionalParameters,
+                'columnDefinitions' => $columnDefinitions,
+                'formPath' => $routeName,
+            ]
         );
     }
 
@@ -2631,9 +2805,9 @@ class PersonnageController extends AbstractController
                 'label' => 'Nouveau propriétaire',
                 'help' => 'Il doit avoir une participation, et ne pas avoir de personnage associé à celle-ci',
                 'class' => Participant::class,
-                'choice_label' => static fn (Participant $participant) => $participant->getGn()->getLabel(
-                ).' - '.$participant->getUser()?->getFullname(),
-                'query_builder' => static fn (ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
+                'choice_label' => static fn(Participant $participant) => $participant->getGn()->getLabel(
+                    ).' - '.$participant->getUser()?->getFullname(),
+                'query_builder' => static fn(ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
                     ->select('prt')
                     ->innerJoin('prt.user', 'u')
                     ->innerJoin('prt.gn', 'gn')
@@ -2771,8 +2945,8 @@ class PersonnageController extends AbstractController
                 'class' => Espece::class,
                 'choices' => $especes,
                 'label_html' => true,
-                'choice_label' => static fn (Espece $espece) => ($espece->isSecret(
-                ) ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '').$espece->getNom(),
+                'choice_label' => static fn(Espece $espece) => ($espece->isSecret(
+                    ) ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '').$espece->getNom(),
                 'data' => $originalEspeces,
             ])
             ->add(
