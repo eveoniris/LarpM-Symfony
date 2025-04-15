@@ -84,8 +84,9 @@ class BaseCompetence
     #[ORM\InverseJoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
     protected Collection $personnages;
 
-    #[ManyToOne(inversedBy: 'apprentissages')]
-    protected ?PersonnageApprentissage $personnageApprentissage = null;
+    #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageApprentissage::class, cascade: ['persist', 'remove'])]
+    #[JoinColumn(name: 'competence_id', referencedColumnName: 'id', nullable: 'false')]
+    protected Collection $personnageApprentissages;
 
     public function __construct()
     {
@@ -247,14 +248,21 @@ class BaseCompetence
         return $this->personnages;
     }
 
-    public function getPersonnageApprentissage(): ?PersonnageApprentissage
+    public function getPersonnageApprentissages(): Collection
     {
-        return $this->personnageApprentissage;
+        return $this->personnageApprentissages;
     }
 
-    public function setPersonnageApprentissage(?PersonnageApprentissage $personnageApprentissage): static
+    public function addPersonnageApprentissage(PersonnageApprentissage $personnageApprentissages): static
     {
-        $this->personnageApprentissage = $personnageApprentissage;
+        $this->personnageApprentissages[] = $personnageApprentissages;
+
+        return $this;
+    }
+
+    public function removePersonnageApprentissage(PersonnageApprentissage $personnageApprentissage): static
+    {
+        $this->personnageApprentissages->removeElement($personnageApprentissage);
 
         return $this;
     }

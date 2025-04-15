@@ -11,7 +11,6 @@ use App\Service\FileUploader;
 use App\Trait\EntityFileUploadTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Imagine\Gd\Imagine;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -1214,10 +1213,21 @@ class Personnage extends BasePersonnage implements \Stringable
         return '';
     }
 
+    public function getApprentissage(Competence $competence): ?PersonnageApprentissage
+    {
+        /** @var PersonnageApprentissage $apprentissage */
+        foreach ($this->getApprentissages() as $apprentissage) {
+            if ($apprentissage->getCompetence()?->getId() === $competence->getId()) {
+                return $apprentissage;
+            }
+        }
+
+        return null;
+    }
+
     public function hasCompetenceLevel(CompetenceFamilyType $type, Level|LevelType $level): bool
     {
         $index = $level->getIndex();
-
         foreach ($this->getCompetencesFromFamilyType($type) as $competence) {
             if ($competence?->getLevel()?->getIndex() === $index) {
                 return true;
