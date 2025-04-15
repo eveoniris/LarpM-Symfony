@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,13 +20,13 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseExperienceUsage', 'extended' => 'ExperienceUsage'])]
 abstract class BaseExperienceUsage
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
-    protected \DateTime $operation_date;
+    #[Column(type: Types::DATETIME_MUTABLE)]
+    protected DateTime $operation_date;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     protected int $xp_use;
 
     #[ManyToOne(targetEntity: Competence::class, inversedBy: 'experienceUsages')]
@@ -47,14 +49,14 @@ abstract class BaseExperienceUsage
         return $this->id;
     }
 
-    public function setOperationDate(\DateTime $operation_date): static
+    public function setOperationDate(DateTime $operation_date): static
     {
         $this->operation_date = $operation_date;
 
         return $this;
     }
 
-    public function getOperationDate(): \DateTime
+    public function getOperationDate(): DateTime
     {
         return $this->operation_date;
     }

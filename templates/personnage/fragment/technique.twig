@@ -8,7 +8,6 @@
         </div>
 
         {% if isAdmin %}
-            {#  {'path' : path('personnage.token.add', {'personnage': personnage.id}), 'label': 'Ajouter un jeton vieillessee', 'token : 'VIEILLESSE'}, #}
             {% include '_partials/dropDown.twig' with {
                 'title' : 'Action',
                 'actions' :
@@ -19,26 +18,52 @@
         {% endif %}
 
         <div class="panel-body">
-            <h6>Jetons de vieillesse</h6>
-            <div class="list-group mb-2">
-                {% for personnageToken in personnage.personnageHasTokens %}
-                    <div class="list-group-item">
-                        {{ personnageToken.token.label }}
-                        --
-                        <a href="{{ path('personnage.token.delete', {'personnage': personnage.id, 'personnageHasToken': personnageToken.id}) }}">Supprimer</a>
-                    </div>
-                {% else %}
-                    <div class="list-group-item">La liste est vide</div>
-                {% endfor %}
-            </div>
+            {% if isAdmin %}
+                <h6>Jetons de vieillesse</h6>
+                <div class="list-group mb-2">
+                    {% for personnageToken in personnage.personnageHasTokens %}
+                        <div class="list-group-item  d-flex justify-content-between">
+                            <div>{{ personnageToken.token.label }}</div>
+                            <div>
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ path('personnage.token.delete', {'personnage': personnage.id, 'personnageHasToken': personnageToken.id}) }}">Supprimer</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="list-group-item">La liste est vide</div>
+                    {% endfor %}
+                </div>
 
-            <h6>Déclencheurs de compétences (à choisir pour le joueur)</h6>
+                <h6>Apprentissage</h6>
+                <div class="list-group mb-2">
+                    {% for apprentissage in personnage.apprentissages %}
+                        <div class="list-group-item  d-flex justify-content-between">
+                            <div>{{ apprentissage.competence.label }}</div>
+                            <div>
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ path('personnage.apprentissage.detail', {'personnage': personnage.id, 'apprentissage': apprentissage.id}) }}">Voir</a>
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ path('personnage.apprentissage.delete', {'personnage': personnage.id, 'apprentissage': apprentissage.id}) }}">Supprimer</a>
+
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="list-group-item">La liste est vide</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <h6>Déclencheurs de compétences</h6>
             <div class="list-group">
                 {% for trigger in personnage.personnageTriggers %}
-                    <div class="list-group-item">
-                        {{ trigger.tag }}
-                        --
-                        <a href="{{ path('personnage.trigger.delete', {'personnage': personnage.id, 'trigger': trigger.id}) }}">Supprimer</a>
+                    <div class="list-group-item d-flex justify-content-between">
+                        <div>{{ trigger.tag }}</div>
+                        {% if isAdmin %}
+                            <div>
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ path('personnage.trigger.delete', {'personnage': personnage.id, 'trigger': trigger.id}) }}">Supprimer</a>
+                            </div>
+                        {% endif %}
                     </div>
                 {% else %}
                     <div class="list-group-item">La liste est vide</div>

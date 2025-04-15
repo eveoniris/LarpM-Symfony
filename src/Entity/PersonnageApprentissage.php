@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\PersonnageApprentissageRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
@@ -18,87 +16,47 @@ class PersonnageApprentissage
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'apprentissages')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[JoinColumn(nullable: false)]
     private ?Personnage $personnage = null;
 
-    /**
-     * @var Collection<int, Competence>
-     */
-    #[ORM\OneToMany(mappedBy: 'personnageApprentissage', targetEntity: Competence::class)]
-    private Collection $competences;
+    #[ORM\ManyToOne(targetEntity: Competence::class, inversedBy: 'personnageApprentissage')]
+    #[JoinColumn(nullable: false)]
+    private Competence $competence;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $created_at = null;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $date_enseignement = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $date_usage = null;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'apprentissageEnseignants')]
     #[JoinColumn(nullable: false)]
     private ?Personnage $enseignant = null;
 
-    public function __construct()
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $deleted_at = null;
+
+    public function getCompetence(): ?Competence
     {
-        $this->competences = new ArrayCollection();
+        return $this->competence;
     }
 
-    public function getId(): ?int
+    public function setCompetence(?Competence $competence): static
     {
-        return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
+        $this->competence = $competence;
 
         return $this;
     }
 
-    public function getPersonnage(): ?Personnage
+    public function getCreatedAt(): ?\DateTimeInterface
     {
-        return $this->personnage;
+        return $this->created_at;
     }
 
-    public function setPersonnage(?Personnage $personnage): static
-    {
-        $this->personnage = $personnage;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Competence>
-     */
-    public function getCompetences(): Collection
-    {
-        return $this->competences;
-    }
-
-    public function addCompetence(Competence $competence): static
-    {
-        if (!$this->competences->contains($competence)) {
-            $this->competences->add($competence);
-            $competence->setPersonnageApprentissage($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCompetence(Competence $competence): static
-    {
-        if ($this->competences->removeElement($competence)) {
-            // set the owning side to null (unless already changed)
-            if ($competence->getPersonnageApprentissage() === $this) {
-                $competence->setPersonnageApprentissage(null);
-            }
-        }
-
-        return $this;
-    }
-
+    /** Annee en jeu */
     public function getDateEnseignement(): ?int
     {
         return $this->date_enseignement;
@@ -110,19 +68,6 @@ class PersonnageApprentissage
 
         return $this;
     }
-
-    public function getCreaytedAt(): ?\DateTimeInterface
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(?\DateTimeInterface $createdAt): static
-    {
-        $this->created_at = $createdAt;
-
-        return $this;
-    }
-
 
     public function getDateUsage(): ?\DateTimeInterface
     {
@@ -148,11 +93,66 @@ class PersonnageApprentissage
         return $this;
     }
 
+    public function getPersonnage(): ?Personnage
+    {
+        return $this->personnage;
+    }
+
+    public function setPersonnage(?Personnage $personnage): static
+    {
+        $this->personnage = $personnage;
+
+        return $this;
+    }
+
+    public function getDescription(): string
+    {
+        return sprintf(
+            '%s enseigné par %s pour %s le %s%s',
+            $this->getCompetence()?->getLabel(),
+            $this->getEnseignant()?->getIdName(),
+            $this->getPersonnage()?->getIdName(),
+            $this->getDateEnseignement(),
+            !$this->getDateUsage() ?: '. Utilisé le '.$this->getDateUsage()->format('d/m/Y')
+        );
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $createdAt): static
+    {
+        $this->created_at = $createdAt;
+
+        return $this;
+    }
+
     public function toLog(): array
     {
         return [
             'personnage_id' => $this->personnage->getId(),
             'enseignant_id' => $this->enseignant->getId(),
         ];
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deleted_at;
+    }
+
+    public function setDeletedAt(?\DateTimeInterface $deleted_at): static
+    {
+        $this->deleted_at = $deleted_at;
+
+        return $this;
     }
 }

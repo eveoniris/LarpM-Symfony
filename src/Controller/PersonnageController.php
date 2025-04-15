@@ -41,6 +41,7 @@ use App\Entity\User;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
+use App\Enum\LevelType;
 use App\Enum\Role;
 use App\Form\Personnage\PersonnageChronologieForm;
 use App\Form\Personnage\PersonnageDocumentForm;
@@ -1708,7 +1709,7 @@ class PersonnageController extends AbstractController
             // et récupérer les langues de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 if ('ORIGINE' === $personnageLangue->getSource(
-                    ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
+                ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
                     $personnage->removePersonnageLangues($personnageLangue);
                     $this->entityManager->remove($personnageLangue);
                 }
@@ -2050,7 +2051,7 @@ class PersonnageController extends AbstractController
         $limit = 1;
         foreach ($competences as $competence) {
             if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily(
-                )?->getCompetenceFamilyType()?->value) {
+            )?->getCompetenceFamilyType()?->value) {
                 if ($competence->getLevel()?->getIndex() >= 2) {
                     $message = false;
                     $errorLevel = 0;
@@ -2130,9 +2131,51 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    #[Route('/{personnage}/apprentissage', name: 'apprentissage')]
+    #[Route('/{personnage}/apprentissage/{apprentissage}/detail', name: 'apprentissage.detail', requirements: ['personnage' => Requirement::DIGITS, 'apprentissage' => Requirement::DIGITS])]
     #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
-    public function apprentissageAction(
+    public function apprentissageDetailAction(
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] PersonnageApprentissage $apprentissage,
+    ): RedirectResponse|Response {
+        return $this->render(
+            'personnage/apprentissage_detail.twig',
+            [
+                'personnage' => $personnage,
+                'apprentissage' => $apprentissage,
+            ]
+        );
+    }
+
+    #[Route('/{personnage}/apprentissage/{apprentissage}/delete', name: 'apprentissage.delete', requirements: ['personnage' => Requirement::DIGITS, 'apprentissage' => Requirement::DIGITS])]
+    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    public function apprentissageDeleteAction(
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] PersonnageApprentissage $apprentissage,
+    ): RedirectResponse|Response {
+        if ($apprentissage->getDateUsage()) {
+            $this->addFlash('error', 'Attention cet apprentissage a déjà été utilisé pour apprendre la compétence');
+        }
+
+        return $this->genericDelete(
+            $apprentissage,
+            'Supprimer un apprentissage',
+            "L'apprentissage a été supprimé",
+            $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'competences']),
+            [
+                // it's an admin view, do not need to test role for this breadcrumb
+                ['route' => $this->generateUrl('personnage.list'), 'name' => 'Liste des personnages'],
+                [
+                    'route' => $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId()]),
+                    'name' => $personnage->getPublicName(),
+                ],
+                ['name' => 'Supprimer un apprentissage'],
+            ],
+        );
+    }
+
+    #[Route('/{personnage}/apprentissage', name: 'apprentissage', requirements: ['personnage' => Requirement::DIGITS])]
+    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    public function apprentissageAddAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
         PersonnageService $personnageService,
@@ -2158,7 +2201,7 @@ class PersonnageController extends AbstractController
                 'autocomplete' => true,
                 'label' => 'Enseignant',
                 'class' => Personnage::class,
-                'choice_label' => static fn(Personnage $personnage) => $personnage->getIdName(),
+                'choice_label' => static fn (Personnage $personnage) => $personnage->getIdName(),
             ])
             ->add('competence', ChoiceType::class, [
                 'required' => true,
@@ -2166,7 +2209,7 @@ class PersonnageController extends AbstractController
                 'autocomplete' => true,
                 'label' => 'Compétence étudiée',
                 'choices' => $availableCompetences,
-                'choice_label' => static fn(Competence $competence) => $competence->getLabel(),
+                'choice_label' => static fn (Competence $competence) => $competence->getLabel(),
             ]);
 
         /** @var GnRepository $gnRepository */
@@ -2193,17 +2236,16 @@ class PersonnageController extends AbstractController
                 }
             }
 
-            // TODO : pas fonctionnel
             $hasApprentissage = $personnageApprentissageRepository->hasApprentissage(
                 $personnage,
-                $nextGn->getDateJeu(),
-                $lastGn->getDateJeu()
+                $lastGn->getDateJeu(),
+                $nextGn->getDateJeu()
             );
 
             if ($hasApprentissage) {
                 $this->addFlash(
                     'error',
-                    'Le personnage à déjà fait un apprentissage sur cette période. Il doit attendre le prochain opus pour en faire un nouveau.'
+                    'Le personnage a déjà fait un apprentissage sur cette période. Il doit attendre le prochain opus pour en faire un nouveau.'
                 );
 
                 return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
@@ -2214,7 +2256,6 @@ class PersonnageController extends AbstractController
             $dateChoices = range($startDate, $endDate);
 
             foreach ($dateChoices as $k => $date) {
-
                 $valueLabel = $date;
 
                 if ($startDate && $date === $startDate) {
@@ -2253,11 +2294,14 @@ class PersonnageController extends AbstractController
             $competence = $data['competence'];
             $annee = $data['annee'];
 
-            if (!$enseignant->isKnownCompetence($competence)) {
+            if (
+                !$enseignant->isKnownCompetence($competence)
+                || !$enseignant->hasCompetenceLevel($competence->getCompetenceFamily()?->getCompetenceFamilyType(), LevelType::EXPERT)
+            ) {
                 $form->addError(
                     new FormError(
                         sprintf(
-                            "L'enseignant: %s. Ne peut pas enseigner %s",
+                            "L'enseignant: %s. Ne peut pas enseigner %s. Il doit pour cela connaitre la compétence au moins au niveau expert.",
                             $enseignant->getIdName(),
                             $competence->getLabel()
                         )
@@ -2265,12 +2309,23 @@ class PersonnageController extends AbstractController
                 );
             }
 
-            if ($form->isValid()) {
+            if (!$availableCompetences->contains($competence)) {
+                $form->addError(
+                    new FormError(
+                        sprintf(
+                            'La compétence %s ne fait pas partie des compétences actuellement accessibles pour le personnage %s',
+                            $competence->getLabel(),
+                            $personnage->getIdName()
+                        )
+                    )
+                );
+            }
 
-                // TODO il manque la colonne_competence_id sur la table perso_apprenti
+            if ($form->isValid()) {
                 $personnageApprentissage = new PersonnageApprentissage();
                 $personnageApprentissage->setPersonnage($personnage);
                 $personnageApprentissage->setEnseignant($enseignant);
+                $personnageApprentissage->setCompetence($competence);
                 $personnageApprentissage->setCreatedAt(new \DateTime());
                 $personnageApprentissage->setDateEnseignement($annee);
 
@@ -2282,19 +2337,18 @@ class PersonnageController extends AbstractController
 
                 $this->entityManager->persist($logAction);
                 $this->entityManager->persist($personnageApprentissage);
-                // TODO  $this->entityManager->flush();
+                $this->entityManager->flush();
 
                 $this->addFlash('success', "l'apprentissage a été ajouté");
 
-                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'competences'], 303);
             }
-
         }
 
         return $this->render('personnage/apprentissage.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
-        ], new Response(null, $form->isSubmitted() && $form->isValid() ? 200 : 422 ));
+        ], new Response(null, !$form->isSubmitted() || $form->isValid() ? 200 : 422));
     }
 
     #[Route('/{personnage}/admin', name: 'detail', requirements: ['personnage' => Requirement::DIGITS])]
@@ -2436,13 +2490,13 @@ class PersonnageController extends AbstractController
             return $this->sendNoImageAvailable();
         }
         $path = $this->fileUploader->getProjectDirectory(
-            ).FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
+        ).FolderType::Private->value.DocumentType::Image->value.'/'.$personnage->getTrombineUrl();
 
         $filename = $personnage->getTrombine($this->fileUploader->getProjectDirectory());
         if (!file_exists($filename)) {
             // get old ?
             $path = $this->fileUploader->getProjectDirectory(
-                ).FolderType::Private->value.DocumentType::Image->value.'/';
+            ).FolderType::Private->value.DocumentType::Image->value.'/';
             $filename = $path.$personnage->getTrombineUrl();
 
             if (!file_exists($filename)) {
@@ -2554,8 +2608,8 @@ class PersonnageController extends AbstractController
         $orderBy = $request->get('order_by') ?: 'id';
         $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
         $isAsc = 'ASC' == $orderDir;
-        $limit = (int)($request->get('limit') ?: 50);
-        $page = (int)($request->get('page') ?: 1);
+        $limit = (int) ($request->get('limit') ?: 50);
+        $page = (int) ($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
@@ -2662,13 +2716,13 @@ class PersonnageController extends AbstractController
         }
 
         return array_merge([
-                'personnages' => $personnages,
-                'paginator' => $paginator,
-                'form' => $form->createView(),
-                'optionalParameters' => $optionalParameters,
-                'columnDefinitions' => $columnDefinitions,
-                'formPath' => $routeName,
-            ]
+            'personnages' => $personnages,
+            'paginator' => $paginator,
+            'form' => $form->createView(),
+            'optionalParameters' => $optionalParameters,
+            'columnDefinitions' => $columnDefinitions,
+            'formPath' => $routeName,
+        ]
         );
     }
 
@@ -2805,9 +2859,9 @@ class PersonnageController extends AbstractController
                 'label' => 'Nouveau propriétaire',
                 'help' => 'Il doit avoir une participation, et ne pas avoir de personnage associé à celle-ci',
                 'class' => Participant::class,
-                'choice_label' => static fn(Participant $participant) => $participant->getGn()->getLabel(
-                    ).' - '.$participant->getUser()?->getFullname(),
-                'query_builder' => static fn(ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
+                'choice_label' => static fn (Participant $participant) => $participant->getGn()->getLabel(
+                ).' - '.$participant->getUser()?->getFullname(),
+                'query_builder' => static fn (ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
                     ->select('prt')
                     ->innerJoin('prt.user', 'u')
                     ->innerJoin('prt.gn', 'gn')
@@ -2945,8 +2999,8 @@ class PersonnageController extends AbstractController
                 'class' => Espece::class,
                 'choices' => $especes,
                 'label_html' => true,
-                'choice_label' => static fn(Espece $espece) => ($espece->isSecret(
-                    ) ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '').$espece->getNom(),
+                'choice_label' => static fn (Espece $espece) => ($espece->isSecret(
+                ) ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '').$espece->getNom(),
                 'data' => $originalEspeces,
             ])
             ->add(

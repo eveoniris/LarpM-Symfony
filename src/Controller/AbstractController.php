@@ -74,7 +74,13 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         if ($entityToDelete) {
-            $this->entityManager->remove($entityToDelete);
+            // Soft or hard delete ?
+            if (method_exists($entityToDelete, 'getDeletedAt')) {
+                $entityToDelete->setDeletedAt(new \DateTime('NOW'));
+                $this->entityManager->persist($entityToDelete);
+            } else {
+                $this->entityManager->remove($entityToDelete);
+            }
             $this->entityManager->flush();
 
             $this->addFlash('success', $successMsg);

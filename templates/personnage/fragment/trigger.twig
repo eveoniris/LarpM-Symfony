@@ -110,7 +110,7 @@
                 {% endif %}
             {% endfor %}
         </ul>
+    {% else %}
+        {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucun'} %}
     {% endif %}
-
-
 </div>

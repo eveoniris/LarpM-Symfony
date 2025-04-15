@@ -2,13 +2,13 @@
 
 namespace App\Service;
 
-use App\Entity\Bonus;
 use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
 use App\Entity\ExperienceGain;
 use App\Entity\ExperienceUsage;
 use App\Entity\Level;
+use App\Entity\LogAction;
 use App\Entity\Personnage;
 use App\Entity\PersonnageTrigger;
 use App\Entity\RenommeHistory;
@@ -23,6 +23,7 @@ use App\Service\Competence\PretriseService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class CompetenceService
@@ -41,11 +42,10 @@ class CompetenceService
     protected array $errors;
     protected bool $hasBonus = false;
 
-    // TODO : Handle Merveille | Origine | Apprentissage
-
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
         protected readonly UrlGeneratorInterface $urlGenerator,
+        protected readonly Security $security,
     ) {
         $this->init();
     }
@@ -92,7 +92,18 @@ class CompetenceService
         // Attribution des bonus spécifique à la compétence
         $this->giveBonus();
 
+        $log = new LogAction();
+        $log->setDate(new \DateTime());
+        $log->setType('AddCompetence');
+        $log->setUser($this->security->getUser());
+        $log->setData([
+            'competence_id' => $this->getCompetence()->getId(),
+            'personnage_id' => $this->getPersonnage()->getId(),
+            'cost' => $cout,
+        ]);
+
         // Enregistrement en base du lot
+        $this->entityManager->persist($log);
         $this->entityManager->persist($this->getCompetence());
         $this->entityManager->persist($this->getPersonnage());
         $this->entityManager->flush();
@@ -198,10 +209,8 @@ class CompetenceService
         $count = 0;
 
         foreach ($this->getPersonnage()?->getLastParticipant()?->getGroupe()?->getTerritoires() as $territoire) {
-
             /** @var Territoire $territoire */
             foreach ($territoire->getMerveilles() as $merveille) {
-
                 if (!$merveille->isActive()) {
                     continue;
                 }
@@ -224,14 +233,12 @@ class CompetenceService
         return $count;
     }
 
-    public function getApprentissageBonusCout(): int // PersonnageApprentissage
+    public function getApprentissageBonusCout(): int
     {
-        /*
-         * TODO
-         * Table personnage_apprentissage [id PK, date, personnage_id, teacher_id FK, admin_id FK, competence_family_id, status, date_usage, bonus_xp, ?gn_id, ?participant_id]
-         * S'il existe un apprentissage pas encore utilisé retourner son Objet (il sera à mettre à jour
-         *
-         * */
+        $apprentissage = $this->getPersonnage()->getApprentissage($this->getCompetence());
+        if ($apprentissage) {
+            return 1;
+        }
 
         return 0;
     }
@@ -299,6 +306,12 @@ class CompetenceService
         $historique->setCompetence($this->getCompetence());
         $historique->setPersonnage($this->getPersonnage());
         $this->entityManager->persist($historique);
+
+        $apprentissage = $this->getPersonnage()->getApprentissage($this->getCompetence());
+        if ($apprentissage) {
+            $apprentissage->setDateUsage(new \DateTime('NOW'));
+            $this->entityManager->persist($apprentissage);
+        }
 
         return $this;
     }
@@ -404,6 +417,7 @@ class CompetenceService
         return new $class(
             $this->entityManager,
             $this->urlGenerator,
+            $this->security,
         );
     }
 

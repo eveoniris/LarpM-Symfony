@@ -1,0 +1,40 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ personnage.nom }} détails{% endblock title %}
+
+{% block body %}
+
+    {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Apprentissage"} %}
+
+    {% set isAdmin = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Apprentissage</h5>
+        </div>
+
+        {% if isAdmin %}
+        <div class="d-flex justify-content-between">
+
+            <h4>Détail</h4>
+            <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
+                <div class="btn-group" role="group">
+                  <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Supprimer"
+                       href="{{ path('personnage.apprentissage.delete',{'personnage':apprentissage.personnage.id, 'apprentissage': apprentissage.id}) }}"><i
+                                class="fa fa-eraser"></i> Supprimer</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <p>{{ apprentissage.description|markdown_to_html }}</p>
+            </div>
+        </div>
+
+    </div>
+
+
+{% endblock body %}

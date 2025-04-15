@@ -277,7 +277,7 @@ abstract class BasePersonnage
     /**
      * @var Collection<int, PersonnageApprentissage>|null
      */
-    #[OneToMany(mappedBy: 'personnageApprentissage', targetEntity: PersonnageApprentissage::class, cascade: ['persist', 'remove'])]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageApprentissage::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
     private ?Collection $apprentissages;
 
@@ -1585,8 +1585,6 @@ abstract class BasePersonnage
         return $this;
     }
 
-
-
     /**
      * @return Collection<int, Espece>
      */
@@ -1617,9 +1615,20 @@ abstract class BasePersonnage
     /**
      * @return Collection<int, PersonnageApprentissage>
      */
-    public function getApprentissages(): Collection
+    public function getApprentissages(?bool $withDeleted = false): Collection
     {
-        return $this->apprentissages;
+        if ($withDeleted) {
+            return $this->apprentissages;
+        }
+
+        $apprentissages = new ArrayCollection();
+        foreach ($this->apprentissages as $apprentissage) {
+            if (null === $apprentissage->getDeletedAt()) {
+                $apprentissages->add($apprentissage);
+            }
+        }
+
+        return $apprentissages;
     }
 
     public function addApprentissage(PersonnageApprentissage $apprentissage): static

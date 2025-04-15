@@ -91,7 +91,7 @@
                 {% for competence in competences|sort %}
                     <div class="col-md-6 list-group mb-2">
                     <div class="list-group-item">
-                        <div class="list-group-item-heading">
+                        <div class="list-group-item-heading d-flex justify-content-between">
                             <h6>
                                 {{ competence.label }}
                                 {% if personnage.classe.isFavoriteCompetenceFamily(competence.competenceFamily) %}
@@ -102,8 +102,12 @@
                                        title="Méconnue"></i>
                                 {% endif %}
                                 &nbsp;({{ personnageService.getCompetenceCout(personnage, competence) }} xp)
-                                {# TODO APPRENTISSAGE #}
                             </h6>
+                            {% set apprentissage = personnage.getApprentissage(competence) %}
+                            {% if apprentissage %}
+                                <small><i class="fa fa-graduation-cap text-info" data-toggle="tooltip" data-placement="top"
+                                   title="Apprentissage"></i> Enseignée par {{ apprentissage.enseignant.publicName }} en {{ apprentissage.dateEnseignement }}</small>
+                            {% endif %}
                         </div>
                         <div class="list-group-item-text">{{ competence.description|markdown_to_html }}</div>
                     </div>

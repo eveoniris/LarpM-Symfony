@@ -2,20 +2,23 @@
 
 namespace App\Repository;
 
-use App\Entity\Gn;
 use App\Entity\Personnage;
-use Carbon\Carbon;
 
 class PersonnageApprentissageRepository extends BaseRepository
 {
     public function hasApprentissage(Personnage $personnage, ?int $fromDate = null, ?int $toDate = null): bool
     {
-        // TODO date_deleted ?
+        // handle bad param
+        if ($fromDate > $toDate) {
+            $tmpDate = $fromDate;
+            $fromDate = $toDate;
+            $toDate = $tmpDate;
+        }
 
         $dql = <<<DQL
                 SELECT COUNT(pa) AS exists
                 FROM App\Entity\PersonnageApprentissage pa 
-                WHERE pa.personnage = :pid 
+                WHERE pa.personnage = :pid AND pa.deleted_at IS NULL
                 DQL;
 
         if ($fromDate) {
