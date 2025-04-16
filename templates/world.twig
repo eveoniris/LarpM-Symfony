@@ -134,8 +134,8 @@
 </div>
 {% endblock %}
 
-{% block javascript %}
-
+{% block javascripts %}
+	{{ parent() }}
 <script src="{{ app.request.basepath }}/worldmap/leaflet-1.0.3/leaflet.js"></script>
 <script src="{{ app.request.basepath }}/worldmap/leaflet/L.Control.MousePosition.js"></script>
 <script src="{{ app.request.basepath }}/worldmap/leaflet/L.Control.Window.js"></script>
@@ -157,6 +157,7 @@
 <script src="{{ app.request.basepath }}/worldmap/leaflet/spin.min.js"></script>
 <script src="{{ app.request.basepath }}/worldmap/leaflet/leaflet.spin.min.js"></script>
 <script src="{{ app.request.basepath }}/worldmap/js/randomColor.min.js"></script>
+<script src="{{ app.request.basepath }}/worldmap/js/jquery-3.7.1.min.js"></script>
 <script src="{{ app.request.basepath }}/worldmap/turf/turf-3.0.11.min.js"></script>
 
 
@@ -691,9 +692,9 @@
 			// Affichage des informations concernant le layer selectionné
 			displayInfoPanel: function(props)
 			{
-				var detailLink = "{{ app.request.basepath }}/worldmap/territoire/"+props.id+"/joueur";
-				var editLink = "{{ app.request.basepath }}/worldmap/territoire/"+props.id+"/update";
-			    var editStrategieLink = "{{ app.request.basepath }}/worldmap/territoire/"+props.id+"/updateStrategie";
+				var detailLink = "{{ app.request.basepath }}/territoire/"+props.id+"";
+				var editLink = "{{ app.request.basepath }}/territoire/"+props.id+"/update";
+			    var editStrategieLink = "{{ app.request.basepath }}/territoire/"+props.id+"/update/strategie";
 			    			     			        
 				if ( props && ! props.description ) props.description = 'Aucune description';
 

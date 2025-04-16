@@ -115,6 +115,10 @@
                                             <a class="dropdown-item {% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}"
                                                href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'membres', 'gn': session.gn.id})) }}"
                                             >{{ session.gn }}</a></li>
+                                    {% else %}
+                                        <li class="d-grid gap-2 rounded-top-2">
+                                            <a class="dropdown-item rounded-top-2" href="{{ path('groupeGn.add', {'groupe': groupe.id}) }}">Ajouter une session</a>
+                                        </li>
                                     {% endfor %}
                                 </ul>
                             </li>

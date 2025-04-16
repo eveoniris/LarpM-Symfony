@@ -140,7 +140,7 @@ abstract class BaseGroupeGn
     /**
      * Set the value of code.
      */
-    public function setCode(string $code): static
+    public function setCode(?string $code): static
     {
         $this->code = $code;
 
@@ -194,9 +194,9 @@ abstract class BaseGroupeGn
     /**
      * Set the value of place_available.
      */
-    public function setPlaceAvailable(int $place_available): GroupeGn
+    public function setPlaceAvailable(?int $place_available): GroupeGn
     {
-        $this->place_available = $place_available;
+        $this->place_available = $place_available ?? 0;
 
         return $this;
     }
@@ -206,15 +206,15 @@ abstract class BaseGroupeGn
      */
     public function getPlaceAvailable(): ?int
     {
-        return $this->place_available;
+        return $this->place_available ?? 0;
     }
 
     /**
      * Set the value of agents.
      */
-    public function setAgents(int $agents): static
+    public function setAgents(?int $agents): static
     {
-        $this->agents = $agents;
+        $this->agents = $agents ?? 0;
 
         return $this;
     }
@@ -230,9 +230,9 @@ abstract class BaseGroupeGn
     /**
      * Set the value of bateaux.
      */
-    public function setBateaux(int $bateaux): static
+    public function setBateaux(?int $bateaux): static
     {
-        $this->bateaux = $bateaux;
+        $this->bateaux = $bateaux ?? 0;
 
         return $this;
     }
@@ -248,9 +248,9 @@ abstract class BaseGroupeGn
     /**
      * Set the value of sieges.
      */
-    public function setSieges(int $sieges): static
+    public function setSieges(?int $sieges): static
     {
-        $this->sieges = $sieges;
+        $this->sieges = $sieges ?? 0;
 
         return $this;
     }

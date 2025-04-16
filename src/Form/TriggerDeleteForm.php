@@ -3,15 +3,11 @@
 
 namespace App\Form;
 
+use App\Entity\PersonnageTrigger;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\TriggerDeleteForm.
- *
- * @author kevin
- */
 class TriggerDeleteForm extends AbstractType
 {
     /**
@@ -27,7 +23,7 @@ class TriggerDeleteForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\PersonnageTrigger::class,
+            'data_class' => PersonnageTrigger::class,
         ]);
     }
 
