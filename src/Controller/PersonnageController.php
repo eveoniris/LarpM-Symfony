@@ -1371,14 +1371,16 @@ class PersonnageController extends AbstractController
     /**
      * Supprime un trigger.
      */
-    #[Route('/{personnage}/deleteTrigger', name: 'trigger.delete')]
+    #[Route('/{personnage}/trigger/{trigger}/delete', name: 'trigger.delete', requirements: [
+        'personnage' => Requirement::DIGITS,
+        'trigger' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
-    public function adminTriggerDeleteAction(
+    public function triggerDeleteAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
+        #[MapEntity] PersonnageTrigger $trigger,
     ): RedirectResponse|Response {
-        $trigger = $request->get('trigger');
 
         $form = $this->createForm(TriggerDeleteForm::class, $trigger)
             ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
@@ -1388,8 +1390,8 @@ class PersonnageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $trigger = $form->getData();
 
-            $entityManager->remove($trigger);
-            $entityManager->flush();
+            $this->entityManager->remove($trigger);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le déclencheur a été supprimé.');
 
@@ -2188,7 +2190,7 @@ class PersonnageController extends AbstractController
          * @var Competence $competence
          */
         foreach ($availableCompetences as $key => $competence) {
-            if ($competence->getLevel()?->getIndex() > Level::NIVEAU_3) {
+            if ($competence->getLevel()?->getIndex() > Level::NIVEAU_4) {
                 unset($availableCompetences[$key]);
             }
         }

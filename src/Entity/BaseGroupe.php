@@ -243,7 +243,7 @@ class BaseGroupe
     /**
      * Set the value of code.
      */
-    public function setCode(string $code): static
+    public function setCode(?string $code): static
     {
         $this->code = $code;
 

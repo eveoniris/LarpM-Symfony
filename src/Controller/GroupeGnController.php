@@ -37,8 +37,7 @@ class GroupeGnController extends AbstractController
     #[Route('/groupeGn/{groupe}/add/', name: 'groupeGn.add')]
     public function addAction(
         Request $request,
-        EntityManagerInterface $entityManager,
-        Groupe $groupe,
+        #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $groupeGn = new GroupeGn();
         $groupeGn->setGroupe($groupe);
@@ -59,8 +58,8 @@ class GroupeGnController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $groupeGn = $form->getData();
-            $entityManager->persist($groupeGn);
-            $entityManager->flush();
+            $this->entityManager->persist($groupeGn);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'La participation au jeu a été enregistré.');
 
