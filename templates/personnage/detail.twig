@@ -4,125 +4,131 @@
 
 {% block body %}
 
-	{% include 'personnage/fragment/breadcrumb.twig' %}
+    {% include 'personnage/fragment/breadcrumb.twig' %}
 
-	{% set isAdmin = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
+    {% set isAdmin = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
 
-	<div class="panel mb-0 border-bottom-0">
-		<div class="header">
-			<h5>Fiche de personnage</h5>
-		</div>
+    <div class="panel mb-0 border-bottom-0">
+        <div class="header">
+            <h5>Fiche de personnage</h5>
+        </div>
 
-		<div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between">
 
-			<h3>
-				{% if isAdmin and personnage.isPnj() %}🎭 PNJ - {% endif %}
-				{{ personnage.nom }}{% if personnage.surnom %} <small>({{ personnage.surnom }})</small>{% endif %}
-			</h3>
-			<div class="fs-3">
-				{% if personnage.genre == 'Masculin' %}
-					<i class="fa fa-mars" aria-hidden="true"></i>
-				{% elseif personnage.genre == 'Feminin' %}
-					<i class="fa fa-venus" aria-hidden="true"></i>
-				{% else %}
-					<i class="fa fa-transgender-alt" aria-hidden="true"></i>
-				{% endif %}
+            <h3>
+                {% if isAdmin and personnage.isPnj() %}🎭 PNJ - {% endif %}
+                {{ personnage.nom }}{% if personnage.surnom %} <small>({{ personnage.surnom }})</small>{% endif %}
+            </h3>
+            <div class="fs-3">
+                {% if personnage.genre == 'Masculin' %}
+                    <i class="fa fa-mars" aria-hidden="true"></i>
+                {% elseif personnage.genre == 'Feminin' %}
+                    <i class="fa fa-venus" aria-hidden="true"></i>
+                {% else %}
+                    <i class="fa fa-transgender-alt" aria-hidden="true"></i>
+                {% endif %}
 
-				<small>{{ personnage.ageReel|default('x') }} ans ({{ personnage.age }})</small>
+                <small>{{ personnage.ageReel|default('x') }} ans ({{ personnage.age }})</small>
 
-				{% if personnage.vivant %}<span class="text-success">Vivant</span>{% else %}<span
-						class="text-danger">💀 Mort</span>{% endif %}
+                {% if personnage.vivant %}<span class="text-success">Vivant</span>{% else %}<span
+                        class="text-danger">💀 Mort</span>{% endif %}
 
-			</div>
-			<div class="fs-3">
-				{{ personnage.classeName }}
-			</div>
-		</div>
+            </div>
+            <div class="fs-3">
+                {{ personnage.classeName }}
+            </div>
+        </div>
 
 
-		<div class="row">
-			<div class="col-md-12">
-				<div>
-					<div class="pull-right">
-						<div class="btn-toolbar" role="toolbar" aria-label="...">
-							<div class="btn-group" role="group" aria-label="...">
-								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-								   title="Choisir une nouvelle religion"
-								   href="{{ path('participant.religion.add',{'participant': participant.id}) }}"><i
-											class="fa fa-cloud"
-											aria-hidden="true"></i></a>
-								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-								   title="Acheter une compétence"
-								   href="{{ path('personnage.add.competence', {'personnage': personnage.id}) }}"><i
-											class="fa fa-graduation-cap" aria-hidden="true"></i></a>
-								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-								   title="Modifier votre personnage"
-								   href="{{ path('personnage.update', {'personnage': personnage.id}) }}"><i
-											class="fa fa-pencil" aria-hidden="true"></i></a>
-								{% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::MAGIC')) %}
-									<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-									   title="Découvrir la magie"
-									   href="{{ path('personnage.magie', {'personnage': personnage.id}) }}"><i
-												class="fa fa-magic"
-												aria-hidden="true"></i></a>
-								{% endif %}
-								<a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-								   title="Imprimer votre personnage"
-								   href="{{ path('personnage.export', {'personnage':personnage.id}) }}"><i
-											class="fa fa-print"
-											aria-hidden="true"></i></a>
-							</div>
-						</div>
-					</div>
-					<ul class="nav nav-tabs">
-						<li class="nav-item">
-							<a class="nav-link{% if tab == 'general' %} active{% endif %}"
-							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'general'})) }}"
-							>Générale</a>
-						</li>
+        <div class="row">
+            <div class="col-md-12">
+                <div>
+                    <div class="pull-right">
+                        <div class="btn-toolbar" role="toolbar" aria-label="...">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Choisir une nouvelle religion"
+                                   href="{{ path('participant.religion.add',{'participant': participant.id}) }}"><i
+                                            class="fa fa-cloud"
+                                            aria-hidden="true"></i></a>
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Acheter une compétence"
+                                   href="{{ path('personnage.add.competence', {'personnage': personnage.id}) }}"><i
+                                            class="fa fa-graduation-cap" aria-hidden="true"></i></a>
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Modifier votre personnage"
+                                   href="{{ path('personnage.update', {'personnage': personnage.id}) }}"><i
+                                            class="fa fa-pencil" aria-hidden="true"></i>
+                                    {% if personnage.isBraceletSetted == false %}
+                                        <span class="position-absolute top-0 end-0 translate-middle badge z-3 p-1 bg-danger border border-light rounded-circle">
+									        <span class="visually-hidden">!</span>
+									    </span>
+                                    {% endif %}
+                                </a>
+                                {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::MAGIC')) %}
+                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="Découvrir la magie"
+                                       href="{{ path('personnage.magie', {'personnage': personnage.id}) }}"><i
+                                                class="fa fa-magic"
+                                                aria-hidden="true"></i></a>
+                                {% endif %}
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Imprimer votre personnage"
+                                   href="{{ path('personnage.export', {'personnage':personnage.id}) }}"><i
+                                            class="fa fa-print"
+                                            aria-hidden="true"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link{% if tab == 'general' %} active{% endif %}"
+                               href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'general'})) }}"
+                            >Générale</a>
+                        </li>
 
-						<li class="nav-item">
-							<a class="nav-link{% if tab == 'competences' %} active{% endif %}"
-							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'competences'})) }}"
-							>Compétences</a>
-						</li>
+                        <li class="nav-item">
+                            <a class="nav-link{% if tab == 'competences' %} active{% endif %}"
+                               href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'competences'})) }}"
+                            >Compétences</a>
+                        </li>
 
-						<li class="nav-item">
-							<a class="nav-link{% if tab == 'religions' %} active{% endif %}"
-							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'religions'})) }}"
-							>Religions</a>
-						</li>
+                        <li class="nav-item">
+                            <a class="nav-link{% if tab == 'religions' %} active{% endif %}"
+                               href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'religions'})) }}"
+                            >Religions</a>
+                        </li>
 
-						<li class="nav-item">
-							<a class="nav-link{% if tab == 'biographie' %} active{% endif %}"
-							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'biographie'})) }}"
-							>Biographie</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link{% if tab == 'groupes' %} active{% endif %}"
-							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'groupes'})) }}"
-							>Groupes</a>
-						</li>
+                        <li class="nav-item">
+                            <a class="nav-link{% if tab == 'biographie' %} active{% endif %}"
+                               href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'biographie'})) }}"
+                            >Biographie</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link{% if tab == 'groupes' %} active{% endif %}"
+                               href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'groupes'})) }}"
+                            >Groupes</a>
+                        </li>
 
-						{% if isAdmin %}
-						<li class="nav-item">
-							<a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
-							   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'enveloppe'})) }}"
-							>Enveloppe</a>
-						</li>
-						{% endif %}
+                        {% if isAdmin %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
+                                   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'enveloppe'})) }}"
+                                >Enveloppe</a>
+                            </li>
+                        {% endif %}
 
-					</ul>
+                    </ul>
 
-				</div>
-			</div>
-		</div>
-	</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<!-- Tab panes -->
-	<div class="tab-content">
-		<div role="tabpanel" class="tab-pane active" role="tabpanel">
-			{% include "personnage/fragment/tab_#{tab|default('detail')}.twig" with {'personnage': personnage, 'css': 'panel'} %}
-		</div>
-	</div>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" role="tabpanel">
+            {% include "personnage/fragment/tab_#{tab|default('detail')}.twig" with {'personnage': personnage, 'css': 'panel'} %}
+        </div>
+    </div>
 {% endblock body %}

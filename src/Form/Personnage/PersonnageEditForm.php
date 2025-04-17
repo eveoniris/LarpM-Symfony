@@ -4,12 +4,14 @@
 namespace App\Form\Personnage;
 
 use App\Entity\Personnage;
+use JetBrains\PhpStorm\Deprecated;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+#[Deprecated]
 class PersonnageEditForm extends AbstractType
 {
     /**

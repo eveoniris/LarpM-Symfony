@@ -19,7 +19,7 @@ class PersonnageApprentissage
     #[JoinColumn(nullable: false)]
     private ?Personnage $personnage = null;
 
-    #[ORM\ManyToOne(targetEntity: Competence::class, inversedBy: 'personnageApprentissage')]
+    #[ORM\ManyToOne(targetEntity: Competence::class, inversedBy: 'personnageApprentissages')]
     #[JoinColumn(nullable: false)]
     private Competence $competence;
 

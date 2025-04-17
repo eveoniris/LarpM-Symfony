@@ -423,10 +423,10 @@ abstract class BaseGroupeGn
         return $this;
     }
 
-    public function getSuzerin(): ?Personnage
+    public function getSuzerin(bool $strict = true): ?Personnage
     {
         // Par défaut le chef de groupe
-        return $this->suzerin ?? $this->getParticipant()?->getPersonnage();
+        return $this->suzerin ?? ($strict ? null : $this->getParticipant()?->getPersonnage());
     }
 
     public function setSuzerin(?Personnage $suzerin): static
@@ -436,9 +436,9 @@ abstract class BaseGroupeGn
         return $this;
     }
 
-    public function getConnetable(): ?Personnage
+    public function getConnetable(bool $strict = true): ?Personnage
     {
-        return $this->connetable ?? $this->getSuzerin();
+        return $this->connetable ?? ($strict ? null : $this->getSuzerin($strict));
     }
 
     public function setConnetable(?Personnage $connetable): static
@@ -448,9 +448,9 @@ abstract class BaseGroupeGn
         return $this;
     }
 
-    public function getIntendant(): ?Personnage
+    public function getIntendant(bool $strict = true): ?Personnage
     {
-        return $this->intendant ?? $this->getSuzerin();
+        return $this->intendant ?? ($strict ? null : $this->getSuzerin($strict));
     }
 
     public function setIntendant(?Personnage $intendant): static
@@ -460,9 +460,9 @@ abstract class BaseGroupeGn
         return $this;
     }
 
-    public function getNavigateur(): ?Personnage
+    public function getNavigateur(bool $strict = true): ?Personnage
     {
-        return $this->navigateur ?? $this->getSuzerin();
+        return $this->navigateur ?? ($strict ? null : $this->getSuzerin($strict));
     }
 
     public function setNavigateur(?Personnage $navigateur): static
@@ -472,9 +472,9 @@ abstract class BaseGroupeGn
         return $this;
     }
 
-    public function getCamarilla(): ?Personnage
+    public function getCamarilla(bool $strict = true): ?Personnage
     {
-        return $this->camarilla ?? $this->getSuzerin();
+        return $this->camarilla ?? ($strict ? null : $this->getSuzerin($strict));
     }
 
     public function setCamarilla(?Personnage $camarilla): static

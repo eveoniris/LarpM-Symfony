@@ -45,7 +45,6 @@ use App\Enum\LevelType;
 use App\Enum\Role;
 use App\Form\Personnage\PersonnageChronologieForm;
 use App\Form\Personnage\PersonnageDocumentForm;
-use App\Form\Personnage\PersonnageEditForm;
 use App\Form\Personnage\PersonnageIngredientForm;
 use App\Form\Personnage\PersonnageItemForm;
 use App\Form\Personnage\PersonnageLigneeForm;
@@ -1381,7 +1380,6 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         #[MapEntity] PersonnageTrigger $trigger,
     ): RedirectResponse|Response {
-
         $form = $this->createForm(TriggerDeleteForm::class, $trigger)
             ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
@@ -2937,21 +2935,15 @@ class PersonnageController extends AbstractController
     /**
      * Modification du personnage.
      */
-    #[Route('/{personnage}/update', name: 'update')]
+    #[Route('/{personnage}/update', name: 'update', requirements: ['personnage' => Requirement::DIGITS])]
     #[IsGranted(Role::USER->value)]
     public function updateAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
 
-        $editClass = PersonnageEditForm::class;
-        if ($this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value)) {
-            $editClass = PersonnageUpdateForm::class;
-        }
-
-        $form = $this->createForm($editClass, $personnage)
+        $form = $this->createForm(PersonnageUpdateForm::class, $personnage)
             ->add('save', SubmitType::class, [
                 'label' => 'Valider les modifications',
                 'attr' => [
@@ -2962,10 +2954,16 @@ class PersonnageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Personnage $personnage */
             $personnage = $form->getData();
 
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            // enforce to false
+            if (!$personnage->isBracelet()) {
+                $personnage->setBracelet(false);
+            }
+
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 

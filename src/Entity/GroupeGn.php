@@ -64,11 +64,11 @@ class GroupeGn extends BaseGroupeGn
 
     public function hasTitle(User|UserInterface $user): bool
     {
-        return $this->getSuzerin()?->getId() === $user->getId()
-            || $this->getConnetable()?->getId() === $user->getId()
-            || $this->getIntendant()?->getId() === $user->getId()
-            || $this->getCamarilla()?->getId() === $user->getId()
-            || $this->getNavigateur()?->getId() === $user->getId();
+        return $this->getSuzerin(false)?->getId() === $user->getId()
+            || $this->getConnetable(false)?->getId() === $user->getId()
+            || $this->getIntendant(false)?->getId() === $user->getId()
+            || $this->getCamarilla(false)?->getId() === $user->getId()
+            || $this->getNavigateur(false)?->getId() === $user->getId();
     }
 
     public function addAgent(): static
@@ -84,11 +84,11 @@ class GroupeGn extends BaseGroupeGn
             $personnage = $personnage->getPersonnage();
         }
 
-        if (null === $this->getSuzerin()) {
+        if (null === $this->getSuzerin(false)) {
             return false;
     }
 
-        return $this->getSuzerin()?->getId() === $personnage?->getId();
+        return $this->getSuzerin(false)?->getId() === $personnage?->getId();
     }
 
     public function isConnetable(Personnage|Participant $personnage): bool
@@ -97,7 +97,7 @@ class GroupeGn extends BaseGroupeGn
             $personnage = $personnage->getPersonnage();
         }
 
-        return $this->getConnetable()?->getId() === $personnage->getId();
+        return $this->getConnetable(false)?->getId() === $personnage->getId();
     }
 
     public function isCamarilla(Personnage|Participant $personnage): bool
@@ -106,7 +106,7 @@ class GroupeGn extends BaseGroupeGn
             $personnage = $personnage->getPersonnage();
         }
 
-        return $this->getCamarilla()?->getId() === $personnage->getId();
+        return $this->getCamarilla(false)?->getId() === $personnage->getId();
     }
 
     public function isIntendant(Personnage|Participant $personnage): bool
@@ -115,7 +115,7 @@ class GroupeGn extends BaseGroupeGn
             $personnage = $personnage->getPersonnage();
         }
 
-        return $this->getIntendant()?->getId() === $personnage->getId();
+        return $this->getIntendant(false)?->getId() === $personnage->getId();
     }
 
     public function isNavigateur(Personnage|Participant $personnage): bool
@@ -124,16 +124,16 @@ class GroupeGn extends BaseGroupeGn
             $personnage = $personnage->getPersonnage();
         }
 
-        return $this->getNavigateur()?->getId() === $personnage->getId();
+        return $this->getNavigateur(false)?->getId() === $personnage->getId();
     }
 
     public function isResponsable(Personnage|Participant $personnage): bool
     {
         if ($personnage instanceof Participant) {
-            return $this->getParticipant()?->getId() === $personnage->getId();
+            return $this->getParticipant(false)?->getId() === $personnage->getId();
         }
 
-        return $this->getParticipant()?->getPersonnage()?->getId() === $personnage->getId();
+        return $this->getParticipant(false)?->getPersonnage()?->getId() === $personnage->getId();
     }
 
     public function addBateau(): static
