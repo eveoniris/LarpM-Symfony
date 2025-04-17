@@ -7,6 +7,7 @@ use App\Entity\GroupeGn;
 use App\Entity\Personnage;
 use App\Enum\Role;
 use App\Repository\PersonnageRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -17,14 +18,17 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class GroupeGnForm extends AbstractType
 {
-    private Security $security;
-
-    public function __construct(Security $security)
-    {
-        $this->security = $security;
+    public function __construct(
+        private readonly Security $security,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
+    ) {
     }
 
     /**
@@ -88,36 +92,84 @@ class GroupeGnForm extends AbstractType
         }
 
         // Seul un admin ou le suzerin peu changer cela
-        if (!$this->security->isGranted(Role::WARGAME->value) || !$this->security->getUser()?->getId() === $groupeGn->getSuzerin()?->getId()) {
+        if (!$this->security->isGranted(Role::WARGAME->value) || !$this->security->getUser()?->getId(
+        ) === $groupeGn->getSuzerin()?->getId()) {
             return;
         }
 
-        $fields = [
-            'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId().' - '.$personnage->getNameSurname(),
-            'autocomplete' => true,
-            'required' => false,
-            'class' => Personnage::class,
-            'placeholder' => 'Choisissez un personnage',
-            'empty_data' => null,
-            // On veut tous les personnages vivant du GN (pas que ceux du groupe)
-            'query_builder' => static fn (PersonnageRepository $personnageRepository,
-            ) => $personnageRepository // TODO and PID not IN groupeGn titres
+        $fieldCallback = function (string $child, string $label) use ($options, $groupeGn) {
+            return [
+                'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId(
+                ).' - '.$personnage->getNameSurname(),
+                'autocomplete' => true,
+                'required' => false,
+                'class' => Personnage::class,
+                'placeholder' => 'Choisissez un personnage',
+                'empty_data' => null,
+                // On veut tous les personnages vivant du GN (pas que ceux du groupe)
+                'query_builder' => static fn (PersonnageRepository $personnageRepository,
+                ) => $personnageRepository // TODO and PID not IN groupeGn titres
                 ->createQueryBuilder('p')
-                ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
-               // ->innerjoin('parti.groupeGn', 'g', Join::WITH, 'g.id = parti.groupeGn')
-                ->where('p.vivant = :vivant AND parti.gn = :gnid')
-                // ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
-                ->setParameter('vivant', true)
-                ->setParameter('gnid', $groupeGn->getGn()->getId())
-                // ->setParameter('groupe_gn_id', $builder->getData()->getId())
-                ->orderBy('p.nom', 'ASC'),
+                    ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
+                    // ->leftjoin('parti.groupeGn', 'g', Join::WITH, 'g.id = parti.groupeGn') // AND titre_id is null
+                    ->where('p.vivant = :vivant AND parti.gn = :gnid')
+                    // ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
+                    ->setParameter('vivant', true)
+                    ->setParameter('gnid', $groupeGn->getGn()->getId())
+                    // ->setParameter('groupe_gn_id', $builder->getData()->getId())
+                    ->orderBy('p.nom', 'ASC'),
+                'constraints' => [
+                    new Assert\Callback([
+                        'callback' => function (?Personnage $personnage, ExecutionContextInterface $context) use (
+                            $options,
+                            $child
+                        ) {
+                            if (!$personnage) {
+                                return;
+                            }
+
+                            $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
+
+                            $titres = $groupeGnRepository->getTitres($personnage, $options['gn'] ?? null);
+
+                            if (!empty($titres)) {
+                                $context
+                                    ->buildViolation(
+                                        $this->translator->trans(
+                                            'groupeGn.titre.unique',
+                                            [
+                                                '%personnageName%' => $personnage->getIdName(),
+                                                '%titres%' => $titres,
+                                            ]
+                                        )
+                                    )
+                                    ->atPath('['.$child.']')
+                                    ->addViolation();
+                            }
+                        },
+                    ]),
+                ],
+            ];
+        };
+
+        $fields = [
+            'suzerin' => 'Suzerin',
+            'connetable' => 'Chef de guerre',
+            'intendant' => 'Intendant',
+            'navigateur' => 'Navigateur',
+            'camarilla' => 'Eminence grise',
         ];
 
+        foreach ($fields as $field => $label) {
+            $builder->add($field, EntityType::class, [...$fieldCallback($field, $label), 'label' => $label]);
+        }
+
+        /*
         $builder->add('suzerin', EntityType::class, [...$fields, 'label' => 'Suzerin'])
             ->add('connetable', EntityType::class, [...$fields, 'label' => 'Chef de guerre'])
             ->add('intendant', EntityType::class, [...$fields, 'label' => 'Intendant'])
             ->add('navigateur', EntityType::class, [...$fields, 'label' => 'Navigateur'])
-            ->add('camarilla', EntityType::class, [...$fields, 'label' => 'Eminence grise']);
+            ->add('camarilla', EntityType::class, [...$fields, 'label' => 'Eminence grise']);*/
     }
 
     /**
@@ -127,6 +179,7 @@ class GroupeGnForm extends AbstractType
     {
         $resolver->setDefaults([
             'class' => GroupeGn::class,
+            'gn' => null,
         ]);
     }
 

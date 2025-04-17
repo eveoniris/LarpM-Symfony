@@ -737,6 +737,10 @@
         <source>Supprimer un sort</source>
         <target>Supprimer un sort</target>
       </trans-unit>
+      <trans-unit id="zT_S9OV" resname="groupeGn.titre.unique">
+        <source>Le personnage {personnageName}, a déjà un titre {titres}. Il ne doit plus l'avoir pour pouvoir en avoir un nouveau</source>
+        <target>Le personnage {personnageName}, a déjà un titre {titres}. Il ne doit plus l'avoir pour pouvoir en avoir un nouveau</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

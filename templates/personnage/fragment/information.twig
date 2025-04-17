@@ -47,6 +47,14 @@
         </div>
     {% endif %}
 
+    {% if personnage.isBraceletSetted == false %}
+        {% set messageBracelet %}
+            Vous n'avez pas encore indiqué si vous avez vos propres bracelets de langue, ou si nous devons vous en fournir dans votre enveloppe de jeu.<br />
+            <a href="{{ path('personnage.update', {'personnage': personnage.id}) }}#personnage_update_form_bracelet">mettre à jour ma préférence</a>
+        {% endset %}
+        {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : messageBracelet} %}
+    {% endif %}
+
     {% set especeHtml %}
         <div class="d-flex justify-content-between">
             {% for espece in personnage.especes %}

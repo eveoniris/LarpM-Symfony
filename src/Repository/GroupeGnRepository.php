@@ -37,6 +37,11 @@ class GroupeGnRepository extends BaseRepository
         return reset($groupeGns);
     }
 
+    /**
+     * @param Personnage $personnage
+     * @param Gn|null $gn
+     * @param GroupeGn|null $notInGroupGn to exclude (when )
+     */
     public function getTitres(Personnage $personnage, ?Gn $gn = null): string
     {
         $rsm = new ResultSetMapping();
@@ -80,9 +85,9 @@ class GroupeGnRepository extends BaseRepository
         try {
             return $query
                 ->setParameter('pid', $personnage->getId())
-                ->getSingleScalarResult() ?: '-';
+                ->getSingleScalarResult() ?: '';
         } catch (NoResultException $e) {
-            return '-';
+            return '';
         }
     }
 

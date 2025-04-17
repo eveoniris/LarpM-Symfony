@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Groupe;
 use App\Entity\GroupeGn;
 use App\Entity\Participant;
+use App\Entity\Personnage;
 use App\Entity\User;
 use App\Enum\Role;
 use App\Form\GroupeGn\GroupeGnForm;
@@ -18,11 +19,14 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Translation\TranslatableMessage;
 
 /**
  * LarpManager\Controllers\GroupeGnController.
@@ -100,6 +104,56 @@ class GroupeGnController extends AbstractController
             'isAdmin' => $this->isGranted(Role::SCENARISTE, Role::ORGA),
             'gn' => $groupeGn->getGn(),
         ]);
+    }
+
+    protected function canManageGroup(?GroupeGn $groupeGn = null, bool $throw = false): bool
+    {
+        // Admin
+        if ($this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value)) {
+            return true;
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $throw ? throw new AccessDeniedException() : false;
+        }
+
+        $groupe = $groupeGn?->getGroupe();
+
+        // Est le responsable ?
+        if ($groupe && $groupe->getUserRelatedByResponsableId()?->getId() === $user->getId()) {
+            return true;
+        }
+
+        return $throw ? throw new AccessDeniedException() : false;
+    }
+
+    protected function canSeeGroup(?GroupeGn $groupeGn = null, bool $throw = false): bool
+    {
+        if ($this->canManageGroup($groupeGn, false)) {
+            return true;
+        }
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $throw ? throw new AccessDeniedException() : false;
+        }
+
+        if (!$groupeGn) {
+            return $throw ? throw new AccessDeniedException() : false;
+        }
+
+        /** @var GroupeGnRepository $groupeGnRepository */
+        $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
+
+        if ($groupeGnRepository->userIsMemberOfGroupe($user, $groupeGn)) {
+            return true;
+        }
+
+        return $throw ? throw new AccessDeniedException() : false;
     }
 
     /**
@@ -404,13 +458,19 @@ class GroupeGnController extends AbstractController
     #[Route('/groupeGn/{groupe}/update/{groupeGn}/', name: 'groupeGn.update')]
     public function updateAction(
         Request $request,
-        Groupe $groupe,
-        GroupeGn $groupeGn,
+        #[MapEntity] Groupe $groupe,
+        #[MapEntity] GroupeGn $groupeGn,
     ): RedirectResponse|Response {
         $redirect = $request->get('redirect');
 
+
+        $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
+        $personnage = $this->entityManager->getRepository(Personnage::class);
+
+
         // Seul un admin ou le suzerin peu changer cela
-        if (!$this->isGranted(Role::WARGAME->value) || !$this->getUser()?->getId() === $groupeGn->getSuzerin()?->getId()) {
+        if (!$this->isGranted(Role::WARGAME->value) || !$this->getUser()?->getId() === $groupeGn->getSuzerin()?->getId(
+        )) {
             $this->addFlash('success', "Vous n'êtes pas autorisé à accéder à cette page");
 
             if ($redirect) {
@@ -423,7 +483,11 @@ class GroupeGnController extends AbstractController
             );
         }
 
-        $form = $this->createForm(GroupeGnForm::class, $groupeGn, ['allow_extra_fields' => true])
+        $form = $this->createForm(
+            GroupeGnForm::class,
+            $groupeGn,
+            ['allow_extra_fields' => true, 'gn' => $groupeGn->getGn()]
+        )
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
 
         if ($redirect) {
@@ -438,7 +502,8 @@ class GroupeGnController extends AbstractController
 
             // Titre si territoire
             if (null === $groupeGn->getGroupe()->getTerritoire()) {
-                if ($groupeGn->getSuzerin() || $groupeGn->getIntendant() || $groupeGn->getCamarilla() || $groupeGn->getConnetable() || $groupeGn->getNavigateur()) {
+                if ($groupeGn->getSuzerin() || $groupeGn->getIntendant() || $groupeGn->getCamarilla(
+                ) || $groupeGn->getConnetable() || $groupeGn->getNavigateur()) {
                     $this->addFlash('error', 'Les titres ne sont possibles que si le groupe à un territoire');
                 }
                 $groupeGn->setSuzerin(null);
@@ -468,56 +533,6 @@ class GroupeGnController extends AbstractController
             'groupe' => $groupe,
             'groupeGn' => $groupeGn,
             'form' => $form->createView(),
-        ]);
-    }
-
-    protected function canManageGroup(?GroupeGn $groupeGn = null, bool $throw = false): bool
-    {
-        // Admin
-        if ($this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value)) {
-            return true;
-        }
-
-        /** @var User $user */
-        $user = $this->getUser();
-
-        if (!$user) {
-            return $throw ? throw new AccessDeniedException() : false;
-        }
-
-        $groupe = $groupeGn?->getGroupe();
-
-        // Est le responsable ?
-        if ($groupe && $groupe->getUserRelatedByResponsableId()?->getId() === $user->getId()) {
-            return true;
-        }
-
-        return $throw ? throw new AccessDeniedException() : false;
-    }
-
-    protected function canSeeGroup(?GroupeGn $groupeGn = null, bool $throw = false): bool
-    {
-        if ($this->canManageGroup($groupeGn, false)) {
-            return true;
-        }
-        /** @var User $user */
-        $user = $this->getUser();
-
-        if (!$user) {
-            return $throw ? throw new AccessDeniedException() : false;
-        }
-
-        if (!$groupeGn) {
-            return $throw ? throw new AccessDeniedException() : false;
-        }
-
-        /** @var GroupeGnRepository $groupeGnRepository */
-        $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
-
-        if ($groupeGnRepository->userIsMemberOfGroupe($user, $groupeGn)) {
-            return true;
-        }
-
-        return $throw ? throw new AccessDeniedException() : false;
+        ], new Response(null, !$form->isSubmitted() || $form->isValid() ? 200 : 422));
     }
 }

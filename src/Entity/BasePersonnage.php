@@ -71,7 +71,7 @@ abstract class BasePersonnage
     protected ?bool $sensible = null;
 
     #[Column(type: Types::BOOLEAN, nullable: false)]
-    private bool $bracelet = false;
+    protected ?bool $bracelet = null;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceGain::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
@@ -1548,7 +1548,12 @@ abstract class BasePersonnage
 
     public function isBracelet(): bool
     {
-        return $this->bracelet;
+        return (bool) $this->bracelet;
+    }
+
+    public function isBraceletSetted(): bool
+    {
+        return null !== $this->bracelet;
     }
 
     public function setBracelet(?bool $bracelet): static
