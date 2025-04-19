@@ -14,9 +14,9 @@
                             {% if debriefing.gn %}
                                 GN {{ debriefing.gn.label }} -&nbsp;
                             {% endif %}
-                            <a href="{{ path('debriefing.detail', {'debriefing': debriefing.id}) }}">{{ debriefing.titre|default('Pas de titre') }}</a>
 
                             {% if isAdmin %}
+                            <a href="{{ path('debriefing.detail', {'debriefing': debriefing.id}) }}">{{ debriefing.titre|default('Pas de titre') }}</a>
                             <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
                                 <div class="btn-group" role="group" aria-label="...">
                                     <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
@@ -29,11 +29,23 @@
                                                 class="fa fa-eraser"></i></a>
                                 </div>
                             </div>
+                            {% else %}
+                                {{ debriefing.titre|default('Pas de titre') }}
                             {% endif %}
                         </h3>
                     </div>
                     <p class="list-group-item-text text-warning">
-                        {{ debriefing.visibility }}
+                        {% if debriefing.visibility == 'GROUPE_MEMBER' %}
+                            Debriefing visible en qualité de membre du groupe
+                        {% elseif debriefing.visibility == 'GROUPE_OWNER' %}
+                            Debriefing visible en qualité de responsable du groupe
+                        {% elseif debriefing.visibility == 'PRIVATE' %}
+                            Debriefing visible en qualité de scénariste
+                        {% elseif debriefing.visibility == 'AUTHOR' %}
+                            Debriefing visible en qualité d'auteur
+                        {% elseif debriefing.visibility == 'PUBLIC' %}
+                            Debriefing visible à tous les joueurs
+                        {% endif %}
                     </p>
                     <p class="list-group-item-text">
                         Scenariste : {{ debriefing.user.username }}

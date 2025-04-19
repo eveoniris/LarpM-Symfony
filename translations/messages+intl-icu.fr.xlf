@@ -737,9 +737,13 @@
         <source>Supprimer un sort</source>
         <target>Supprimer un sort</target>
       </trans-unit>
-      <trans-unit id="zT_S9OV" resname="groupeGn.titre.unique">
-        <source>Le personnage {personnageName}, a déjà un titre {titres}. Il ne doit plus l'avoir pour pouvoir en avoir un nouveau</source>
+      <trans-unit id="yJ11j.W" resname="groupeGn.titre.unique">
+        <source>groupeGn.titre.unique</source>
         <target>Le personnage {personnageName}, a déjà un titre {titres}. Il ne doit plus l'avoir pour pouvoir en avoir un nouveau</target>
+      </trans-unit>
+      <trans-unit id="U8rw8nf" resname="groupe.discord.link">
+        <source>groupe.discord.link</source>
+        <target>Le lien discord doit commencé par https://discord.gg</target>
       </trans-unit>
     </body>
   </file>

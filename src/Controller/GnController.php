@@ -16,6 +16,8 @@ use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use JetBrains\PhpStorm\Deprecated;
+use PHPUnit\Framework\Attributes\Depends;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -29,7 +31,6 @@ use Twig\Environment;
 class GnController extends AbstractController
 {
     #[Route('', name: 'list')]
-    // #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access tho this page.')]
     #[IsGranted('ROLE_USER', message: 'You are not allowed to access tho this page.')]
     public function listAction(
         Request $request,
@@ -75,7 +76,7 @@ class GnController extends AbstractController
      * Lorsqu'un GN est créé, son forum associé doit lui aussi être créé.
      */
     #[Route('/add', name: 'add')]
-    #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ORGA')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(GnForm::class, new Gn())
@@ -240,6 +241,7 @@ class GnController extends AbstractController
      * Impression des backgrounds des chefs de groupe.
      */
     #[Route('/{gn}/backgrounds/chefs', name: 'groupes.backgrounds.chefs')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function backgroundsChefAction(#[MapEntity] Gn $gn): Response
     {
         $groupes = $gn->getGroupes();
@@ -259,6 +261,7 @@ class GnController extends AbstractController
      * Impression des backgrounds des groupes.
      */
     #[Route('/{gn}/backgrounds/groupes', name: 'groupes.backgrounds.groupes')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function backgroundsGroupeAction(#[MapEntity] Gn $gn): Response
     {
         $groupes = $gn->getGroupes();
@@ -278,6 +281,7 @@ class GnController extends AbstractController
      * Impression des backgrounds des chefs de groupe.
      */
     #[Route('/{gn}/backgrounds/membres', name: 'groupes.backgrounds.membres')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function backgroundsMembresAction(#[MapEntity] Gn $gn): Response
     {
         $groupes = $gn->getGroupes();
@@ -297,6 +301,7 @@ class GnController extends AbstractController
      * Gestion des billets d'un GN.
      */
     #[Route('/{gn}/personnages', name: 'billet')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function billetAction(Request $request, EntityManagerInterface $entityManager, Gn $gn): Response
     {
         $participant = null;
@@ -311,6 +316,7 @@ class GnController extends AbstractController
      * Liste des participants à un jeu n'ayant pas encore de billets.
      */
     #[Route('/{gn}/participants/withoutbillet', name: 'participants.withoutbillet')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function participantsWithoutBilletAction(#[MapEntity] Gn $gn): Response
     {
         $participants = $gn->getParticipantsWithoutBillet();
@@ -325,6 +331,7 @@ class GnController extends AbstractController
      * Liste des participants à un jeu ayant un billet mais pas encore de groupe.
      */
     #[Route('/{gn}/participants/withoutgroup', name: 'participants.withoutgroup')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function participantsWithoutGroupAction(#[MapEntity] Gn $gn): Response
     {
         $participants = $gn->getParticipantsWithoutGroup();
@@ -339,6 +346,7 @@ class GnController extends AbstractController
      * Liste des participants à un jeu ayant un billet mais pas encore de personnage.
      */
     #[Route('/{gn}/participants/withoutperso', name: 'participants.withoutperso')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function participantsWithoutPersoAction(#[MapEntity] Gn $gn): Response
     {
         $participants = $gn->getParticipantsWithoutPerso();
@@ -353,6 +361,7 @@ class GnController extends AbstractController
      * Liste des participants à un jeu ayant un billet mais pas encore de groupe au format CSV.
      */
     #[Route('/{gn}/participants/withoutgroup/csv', name: 'participants.withoutgroup.csv')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function participantsWithoutGroupCSVAction(#[MapEntity] Gn $gn): void
     {
         $participants = $gn->getParticipantsWithoutGroup();
@@ -393,6 +402,7 @@ class GnController extends AbstractController
      * Liste des participants à un jeu n'ayant pas encore de billets au format CSV.
      */
     #[Route('/{gn}/participants/withoutbillet/csv', name: 'participants.withoutbillet.csv')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function participantsWithoutBilletCSVAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -436,6 +446,7 @@ class GnController extends AbstractController
      * Liste des participants à un jeu n'ayant pas encore de personnage au format CSV.
      */
     #[Route('/{gn}/participants/withoutperso/csv', name: 'participants.withoutperso.csv')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function participantsWithoutPersoCSVAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -508,6 +519,7 @@ class GnController extends AbstractController
      * Liste des participants à un jeu (CSV).
      */
     #[Route('/{gn}/participantsCSV', name: 'participants.csv')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function participantsCSVAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -582,6 +594,7 @@ class GnController extends AbstractController
      * Génére le fichier à envoyer à la FédéGN.
      */
     #[Route('/{gn}/fedegn', name: 'fedegn')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function fedegnAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn): void
     {
         $participants = $gn->getParticipantsFedeGn();
@@ -648,7 +661,7 @@ class GnController extends AbstractController
     }
 
     #[Route('/{gn}/delete', name: 'delete')]
-    #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ORGA')]
     public function deleteAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -675,7 +688,7 @@ class GnController extends AbstractController
     }
 
     #[Route('/{gn}/update', name: 'update')]
-    #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -705,6 +718,7 @@ class GnController extends AbstractController
      * Affiche la billetterie d'un GN.
      */
     #[Route('/{gn}/billetterie', name: 'billetterie')]
+    #[IsGranted('ROLE_USER', message: 'You are not allowed to access tho this page.')]
     public function billetterieAction(
         EntityManagerInterface $entityManager,
         Request $request,
@@ -729,6 +743,7 @@ class GnController extends AbstractController
      * Liste des personnages renommé prévu sur le jeu.
      */
     #[Route('/{gn}/renom', name: 'renom')]
+    #[IsGranted('ROLE_USER', message: 'You are not allowed to access tho this page.')]
     public function renomAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn): Response
     { // trouver tous les personnages participants au prochain GN et ayant une renommé supérieur à 10
         $personnages = $gn->getPersonnagesRenom(10);
@@ -743,6 +758,7 @@ class GnController extends AbstractController
      * Liste des pnjs prévu sur le jeu.
      */
     #[Route('/{gn}/pnjs', name: 'pnjs')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function pnjsAction(#[MapEntity] Gn $gn): Response
     {
         $pnjs = $gn->getParticipantsPnj();
@@ -757,6 +773,7 @@ class GnController extends AbstractController
      * Liste des groupes prévu sur le jeu.
      */
     #[Route('/{gn}/groupes', name: 'groupes')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function groupesAction(#[MapEntity] Gn $gn): Response
     {
         $groupes = $gn->getGroupes();
@@ -776,6 +793,7 @@ class GnController extends AbstractController
      * Liste des groupes réservés.
      */
     #[Route('/{gn}/groupes/reserves', name: 'groupesReserves')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function groupesReservesAction(#[MapEntity] Gn $gn): Response
     {
         $groupes = $gn->getGroupesReserves();
@@ -795,6 +813,7 @@ class GnController extends AbstractController
      * Liste des groupes recherchant des joueurs.
      */
     #[Route('/{gn}/groupes/avecPlace', name: 'groupesPlaces')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function groupesPlacesAction(#[MapEntity] Gn $gn): Response
     {
         $groupesPlaces = new ArrayCollection();
@@ -822,6 +841,7 @@ class GnController extends AbstractController
      * Impression fiche de perso pour le gn.
      */
     #[Route('/{gn}/printPerso', name: 'print.perso')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function printPersoAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -841,6 +861,7 @@ class GnController extends AbstractController
      * Impression fiche de perso pour le gn.
      */
     #[Route('/{gn}/printInter', name: 'print.inter')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function printInterAction(
         Request $request,
         EntityManagerInterface $entityManager,

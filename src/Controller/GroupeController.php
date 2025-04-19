@@ -14,6 +14,7 @@ use App\Entity\Ingredient;
 use App\Entity\Participant;
 use App\Entity\Ressource;
 use App\Entity\Territoire;
+use App\Entity\User;
 use App\Enum\Role;
 use App\Form\BackgroundForm;
 use App\Form\Groupe\GroupeCompositionForm;
@@ -38,6 +39,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -510,6 +512,39 @@ class GroupeController extends AbstractController
             $groupe = $form->getData();
             $entityManager->persist($groupe);
             $entityManager->flush();
+
+            $this->addFlash('success', 'La description du groupe a été sauvegardé.');
+
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+        }
+
+        return $this->render('groupe/description.twig', [
+            'groupe' => $groupe,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{groupe}/description-membres', name: 'description.membres')]
+    #[IsGranted('ROLE_USER')]
+    public function descriptionMembresAction(
+        Request $request,
+        #[MapEntity] Groupe $groupe,
+    ): RedirectResponse|Response {
+
+        $this->checkHasAccess(
+            [Role::ORGA, Role::SCENARISTE],
+            fn () => $this->personnageService->isUserIsGroupeResponsable($groupe)
+        );
+
+        $form = $this->createForm(GroupeDescriptionForm::class, $groupe)
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $groupe = $form->getData();
+            $this->entityManager->persist($groupe);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'La description du groupe a été sauvegardé.');
 
@@ -1075,18 +1110,18 @@ class GroupeController extends AbstractController
                     'ISO-8859-1'
                 );
                 $line[] = $quete['groupe']->getTerritoire() ? mb_convert_encoding(
-                    (string)$quete['groupe']->getTerritoire()->getNom(),
+                    (string) $quete['groupe']->getTerritoire()->getNom(),
                     'ISO-8859-1'
                 ) : '';
 
                 foreach ($quete['quete']['needs'] as $ressources) {
-                    $line[] = mb_convert_encoding((string)$ressources->getLabel(), 'ISO-8859-1');
+                    $line[] = mb_convert_encoding((string) $ressources->getLabel(), 'ISO-8859-1');
                 }
 
                 $line[] = '';
                 $line[] = '';
                 foreach ($quete['quete']['recompenses'] as $recompense) {
-                    $line[] = mb_convert_encoding((string)$recompense, 'ISO-8859-1');
+                    $line[] = mb_convert_encoding((string) $recompense, 'ISO-8859-1');
                 }
 
                 $line[] = '';
@@ -1226,7 +1261,7 @@ class GroupeController extends AbstractController
         foreach ($participants as $participant) {
             $formBuilder->add($participant->getId(), 'choice', [
                 'label' => $participant->getUser()->getEtatCivil()->getNom().' '.$participant->getUser()->getEtatCivil(
-                    )->getPrenom().' '.$participant->getUser()->getEmail(),
+                )->getPrenom().' '.$participant->getUser()->getEmail(),
                 'choices' => $availableTaverns,
                 'data' => $participant->getTavernId(),
                 'multiple' => false,
@@ -1467,7 +1502,6 @@ class GroupeController extends AbstractController
 
         return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
     }
-
 
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/update/{groupe}', name: 'update')]

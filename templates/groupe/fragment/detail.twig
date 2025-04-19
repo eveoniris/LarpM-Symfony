@@ -5,8 +5,8 @@
 <div class="row">
     <div class="col-md-6 pt-2">
 
-        <div class="card text-bg mb-3 overflow-auto">
-            <div class="card-header"><h6>Scénariste</h6></div>
+        <div class="card text-bg mb-3 overflow-auto ">
+            <div class="header"><h5>Scénariste</h5></div>
             <div class="card-body">
                 <div>
                     {% if groupe.scenariste %}
@@ -29,15 +29,37 @@
         </div>
 
         <div class="card text-bg mb-3 overflow-auto">
-            <div class="card-header">
-                <h6> Description{% if canSeePrivateDetail %} <small>(Visible par tous)</small>{% endif %}</h6>
+            <div class="header">
+                <h5>Description publique</h5>
             </div>
 
             <div class="card-body">
                 {% if is_granted('ROLE_SCENARISTE', app.user) %}
                     <div class="d-flex justify-content-end m-2">
                         <a class="btn btn-secondary" href="{{ path('groupe.description', {'groupe': groupe.id}) }}">
-                            <i class="fa fa-pencil"></i> Modifier la description</a>
+                            <i class="fa fa-pencil"></i> Modifier</a>
+                    </div>
+                {% endif %}
+
+                {% if not groupe.description %}
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                    Attention, ce groupe n'a pas de description.
+                {% else %}
+                    {{ groupe.description|markdown_to_html }}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card text-bg mb-3 overflow-auto">
+            <div class="header">
+                <h5>Description aux membres</h5>
+            </div>
+
+            <div class="card-body">
+                {% if is_granted('ROLE_SCENARISTE', app.user) or user %}
+                    <div class="d-flex justify-content-end m-2">
+                        <a class="btn btn-secondary" href="{{ path('groupe.description.membres', {'groupe': groupe.id}) }}">
+                            <i class="fa fa-pencil"></i> Modifier</a>
                     </div>
                 {% endif %}
 
@@ -54,8 +76,10 @@
         {% set groupeGn = participant.groupeGn %}
         {% if is_granted('ROLE_SCENARISTE', app.user) or participant.isResponsable(groupeGn.groupe, groupeGn) %}
             <div class="card text-bg mb-3 overflow-auto">
-                <div class="card-header">
-                    <h6>Code</h6>
+                <div class="header">
+                    <h5>Code pour le GN {{ groupeGn.gn.label }} (visible en qualité
+                        de {% if is_granted('ROLE_SCENARISTE', app.user) %}scénariste{% else %}chef de groupe{% endif %}
+                        ) </h5>
                 </div>
 
                 <div class="card-body">
@@ -67,10 +91,24 @@
             </div>
         {% endif %}
 
+        <div class="card text-bg mb-3 overflow-auto">
+            <div class="header">
+                <h5>Server Discord </h5>
+            </div>
+
+            <div class="card-body">
+                {% if groupe.discord %}
+                    <a href="{{ groupe.discord }}" target="_blank">{{ groupe.discord }}</a>
+                {% else %}
+                    {% include '_partials/noResult.twig' with {'content' : 'Aucun', 'css' : 'w-100'} %}
+                {% endif %}
+            </div>
+        </div>
+
         {# disabled for now #}
         {% if false %}
             <div class="card text-bg mb-3 overflow-auto">
-                <div class="card-header">Jeu stratégique</div>
+                <div class="header"><h5>Jeu stratégique</h5></div>
                 <div class="card-body">
                     {% if groupe.jeuStrategique %}
                         <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
@@ -82,7 +120,7 @@
             </div>
 
             <div class="card text-bg mb-3 overflow-auto">
-                <div class="card-header">Jeu maritime</div>
+                <div class="header"><h5>Jeu maritime</h5></div>
                 <div class="card-body">
                     {% if groupe.jeuMaritime %}
                         <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
@@ -96,7 +134,7 @@
 
         {% if canSeePrivateDetail %}
             <div class="card text-bg mb-3 overflow-auto">
-                <div class="card-header"><h6>Economie</h6></div>
+                <div class="header"><h5>Economie</h5></div>
                 <div class="card-body">
                     <strong>Richesse : </strong>
                     <ul>
@@ -163,7 +201,7 @@
         {# disabled for now #}
         {% if false %}
             <div class="card text-bg mb-3 overflow-auto">
-                <div class="card-header"><h6> Composition du groupe</h6></div>
+                <div class="header"><h5>Composition du groupe</h5></div>
                 <div class="card-body">
                     <p class="list-group-item-text"><strong>Nombre de places ouvertes
                             : </strong>{{ groupe.classeOpen }}
@@ -197,7 +235,34 @@
     <div class="col-md-6 pt-2">
 
         <div class="card text-bg mb-3 overflow-auto">
-            <div class="card-header"><h6>Territoires</h6></div>
+            <div class="header"><h5>Résume pour {{ groupeGn.gn.label }}</h5></div>
+            <div class="card-body">
+                {# Card notif si groupe VEROUILLE  #}
+                {% set nbPlace = groupe.placeTotal|default(0) %}
+                {% set nbMembres =  groupeGn.participants|length|default(0) %}
+                {% set nbLibre =  nbPlace - nbMembres %}
+                {% set lockHtml %}
+                    {% if groupe.lock %}
+                        Le groupe est fermé. Les joueurs ne peuvent plus et modifier leur personnage
+                    {% else %}
+                        Le groupe est ouvert. Les joueurs peuvent créer et modifier leur personnage
+                    {% endif %}
+                {% endset %}
+
+                {% include '_partials/listItems.twig'
+                    with { 'items' : [
+                    {'title': 'Places totales', 'text': nbPlace ~ ' joueurs possibles dans ce groupe.'},
+                    {'title': 'Membres', 'text': nbMembres},
+                    {'title': 'Places libre', 'text': nbLibre},
+                    {'title': 'Etat du groupe', 'text': lockHtml},
+                ]
+                } %}
+            </div>
+
+        </div>
+
+        <div class="card text-bg mb-3 overflow-auto">
+            <div class="header"><h5>Territoires</h5></div>
             <div class="card-body">
                 <div class="mb-2">
                     <div class="header">
@@ -256,12 +321,6 @@
                         </div>
                     </div>
 
-                    <div class="mb-2">
-                        <div class="header">
-                            <h5>Places totales</h5>
-                        </div>
-                        {{ groupe.placeTotal|default(0) }} joueurs possibles dans ce groupe.
-                    </div>
                 {% endif %}
             </div>
         </div>
@@ -269,7 +328,7 @@
         {# diplomatie is off for now #}
         {% if canSeePrivateDetail and false %}
             <div class="card text-bg mb-3 overflow-auto">
-                <div class="card-header"><h6> Diplomatie</h6></div>
+                <div class="header"><h5> Diplomatie</h5></div>
                 <div class="card-body">
 
                     <div class="header">
@@ -333,7 +392,7 @@
         {% endif %}
 
         <div class="card text-bg mb-3 overflow-auto" data-turbo="false">
-            <div class="card-header"><h6> Jeux</h6></div>
+            <div class="header"><h5>Jeux</h5></div>
             <div class="card-body">
 
                 {% if is_granted('ROLE_SCENARISTE', app.user) %}
@@ -368,9 +427,9 @@
             </div>
         </div>
 
-        {% if canSeePrivateDetail %}
+        {% if isAdmin %}
             <div class="card text-bg mb-3 overflow-auto">
-                <div class="card-header"><h6> Intrigues</h6></div>
+                <div class="header"><h5>Intrigues</h5></div>
                 <div class="text-body">
                     <ul>
                         {% for intrigueHasGroupe in groupe.intrigueHasGroupes %}

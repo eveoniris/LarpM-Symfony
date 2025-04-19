@@ -125,7 +125,7 @@ class BackgroundController extends AbstractController
                 'required' => true,
                 'label' => 'Visibilité',
                 'choices' => array(
-                    'Seul les scénaristes peuvent voir ceci' => 'PRIVATE',
+                    'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
                     'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
                     'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
                     'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
@@ -191,7 +191,7 @@ class BackgroundController extends AbstractController
                 'required' => true,
                 'label' => 'Visibilité',
                 'choices' => array(
-                    'Seul les scénaristes peuvent voir ceci' => 'PRIVATE',
+                    'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
                     'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
                     'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
                     'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',

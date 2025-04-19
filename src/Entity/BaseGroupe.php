@@ -148,6 +148,12 @@ class BaseGroupe
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
     private ?Collection $groupeBonus;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $discord = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description_membres = null;
+
     public function __construct()
     {
         $this->backgrounds = new ArrayCollection();
@@ -883,6 +889,30 @@ class BaseGroupe
         if ($this->groupeBonus->removeElement($groupeBonus) && $groupeBonus->getGroupe() === $this) {
             $groupeBonus->setGroupe(null);
         }
+
+        return $this;
+    }
+
+    public function getDiscord(): ?string
+    {
+        return $this->discord;
+    }
+
+    public function setDiscord(?string $discord): static
+    {
+        $this->discord = $discord;
+
+        return $this;
+    }
+
+    public function getDescriptionMembres(): ?string
+    {
+        return $this->description_membres;
+    }
+
+    public function setDescriptionMembres(?string $description_membres): static
+    {
+        $this->description_membres = $description_membres;
 
         return $this;
     }

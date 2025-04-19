@@ -26,16 +26,16 @@ class PersonnageEditForm extends AbstractType
             ->add('intrigue', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['Oui' => true, 'Non' => false],
-                'label' => 'Participer aux intrigues',
+                'label' => 'Participer aux intrigues (aide de camps)',
             ])
             ->add('sensible', ChoiceType::class, [
                 'required' => true,
-                'choices' => ['Non' => false, true => 'Oui'],
+                'choices' => ['Non' => false, 'Oui' => true],
                 'label' => 'Personnage sensible',
             ])
             ->add('bracelet', ChoiceType::class, [
                 'required' => true,
-                'choices' => ['Non' => false, true => 'Oui'],
+                'choices' => ['Non' => false, 'Oui' => true],
                 'label' => 'Possédez-vous votre bracelet de langue',
                 'help' => 'Si vous cochez Oui. Vous ne recevrez pas de bracelet de langue dans votre enveloppe personnage ',
             ]);
