@@ -6,33 +6,35 @@
             <span><i class="fa-solid fa-user-tie text-warning"></i> Chef de groupe</span>
         {% endif %}
 
-        {% if session.isSuzerin(participant) %}
-            <span>
+        {% if canSeePrivateDetail %}
+            {% if session.isSuzerin(participant) %}
+                <span>
                 <i class="fa-solid fa-crown text-warning"></i> Suzerin
             </span>
-            {% set hasTitre = true %}
-        {% elseif participant.getPersonnage().getId() is defined %}
-            {% if session.isCamarilla(participant) %}
-                <span><i class="fa-solid fa-brain text-warning"></i> Eminence grise</span>
                 {% set hasTitre = true %}
-            {% endif %}
-            {% if session.isNavigateur(participant) %}
-                <span><i class="fa-solid fa-compass text-warning"></i> Navigateur</span>
-                {% set hasTitre = true %}
-            {% endif %}
-            {% if session.isConnetable(participant) %}
-                <span><i class="fa-solid fa-chess-rook text-warning"></i> Chef de guerre</span>
-                {% set hasTitre = true %}
-            {% endif %}
-            {% if session.isIntendant(participant) %}
-                <span><i class="fa-solid fa-boxes text-warning"></i> Intendant</span>
-                {% set hasTitre = true %}
-            {% endif %}
-            {% if hasTitre == false %}
+            {% elseif participant.getPersonnage().getId() is defined %}
+                {% if session.isCamarilla(participant) %}
+                    <span><i class="fa-solid fa-brain text-warning"></i> Eminence grise</span>
+                    {% set hasTitre = true %}
+                {% endif %}
+                {% if session.isNavigateur(participant) %}
+                    <span><i class="fa-solid fa-compass text-warning"></i> Navigateur</span>
+                    {% set hasTitre = true %}
+                {% endif %}
+                {% if session.isConnetable(participant) %}
+                    <span><i class="fa-solid fa-chess-rook text-warning"></i> Chef de guerre</span>
+                    {% set hasTitre = true %}
+                {% endif %}
+                {% if session.isIntendant(participant) %}
+                    <span><i class="fa-solid fa-boxes text-warning"></i> Intendant</span>
+                    {% set hasTitre = true %}
+                {% endif %}
+                {% if hasTitre == false %}
+                    Membre
+                {% endif %}
+            {% else %}
                 Membre
             {% endif %}
-        {% else %}
-            Membre
         {% endif %}
     </div>
 

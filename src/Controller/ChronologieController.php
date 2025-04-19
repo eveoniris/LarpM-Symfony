@@ -106,9 +106,9 @@ class ChronologieController extends AbstractController
                 'required' => true,
                 'label' => 'Visibilité',
                 'choices' => array(
-                    'Seul les scénaristes peuvent voir ceci' => 'PRIVATE',
+                    'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
                     'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
-                    'Seul les membres d\'un groupe lié à ce territoire peuvent voir ceci' => 'GROUPE_MEMBER',
+                    'Seuls les membres d\'un groupe lié à ce territoire peuvent voir ceci' => 'GROUPE_MEMBER',
                 ),
             ])
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -142,9 +142,9 @@ class ChronologieController extends AbstractController
                 'required' => true,
                 'label' => 'Visibilité',
                 'choices' => array(
-                    'Seul les scénaristes peuvent voir ceci' => 'PRIVATE',
+                    'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
                     'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
-                    'Seul les membres d\'un groupe lié à ce territoire peuvent voir ceci' => 'GROUPE_MEMBER',
+                    'Seuls les membres d\'un groupe lié à ce territoire peuvent voir ceci' => 'GROUPE_MEMBER',
                 ),
             ])
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);

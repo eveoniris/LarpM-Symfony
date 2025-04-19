@@ -76,7 +76,6 @@ class Groupe extends BaseGroupe implements \Stringable
      */
     public function getGroupeGnById(int $gnId): ?GroupeGn
     {
-
         foreach ($this->getGroupeGns() as $groupeGn) {
             if ((int) $groupeGn->getGn()->getId() === $gnId) {
                 return $groupeGn;
@@ -210,15 +209,13 @@ class Groupe extends BaseGroupe implements \Stringable
 
     /**
      * Fourni les backgrounds du groupe en fonction de la visibilitée.
-     *
-     * @param unknown $visibility
      */
-    public function getBacks($visibility = null): Collection
+    public function getBacks(?string $visibility = null): Collection
     {
         $backgrounds = new ArrayCollection();
         foreach ($this->getBackgrounds() as $background) {
-            if (null != $visibility) {
-                if ($background->getVisibility() == $visibility) {
+            if (null !== $visibility) {
+                if ($background->getVisibility() === $visibility) {
                     $backgrounds[] = $background;
                 }
             } else {

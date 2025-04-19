@@ -163,13 +163,6 @@ class GroupeGnForm extends AbstractType
         foreach ($fields as $field => $label) {
             $builder->add($field, EntityType::class, [...$fieldCallback($field, $label), 'label' => $label]);
         }
-
-        /*
-        $builder->add('suzerin', EntityType::class, [...$fields, 'label' => 'Suzerin'])
-            ->add('connetable', EntityType::class, [...$fields, 'label' => 'Chef de guerre'])
-            ->add('intendant', EntityType::class, [...$fields, 'label' => 'Intendant'])
-            ->add('navigateur', EntityType::class, [...$fields, 'label' => 'Navigateur'])
-            ->add('camarilla', EntityType::class, [...$fields, 'label' => 'Eminence grise']);*/
     }
 
     /**

@@ -1,27 +1,40 @@
 <?php
 
-
 namespace App\Form\Groupe;
 
 use App\Entity\Groupe;
+use App\Enum\Role;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Groupe\GroupeDescriptionForm.
- *
- * @author kevin
- */
 class GroupeDescriptionForm extends AbstractType
 {
+    public function __construct(
+        private readonly Security $security,
+    ) {
+    }
+
     /**
      * Contruction du formulaire.
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-            'label' => 'Description du groupe',
+        if ($this->security->isGranted(Role::SCENARISTE->value) || $this->security->isGranted(Role::ORGA->value)) {
+            $builder->add('description', TextareaType::class, [
+                'label' => 'Description publique du groupe',
+                'required' => false,
+                'attr' => [
+                    'class' => 'tinymce',
+                    'row' => 9,
+                ],
+            ]);
+        }
+
+        $builder->add('description_membres', TextareaType::class, [
+            'label' => 'Description du groupe pour les membres',
             'required' => false,
             'attr' => [
                 'class' => 'tinymce',

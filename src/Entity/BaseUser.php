@@ -134,6 +134,7 @@ abstract class BaseUser
 
     #[OneToMany(mappedBy: 'user', targetEntity: Participant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
+    #[OrderBy(['id' => 'ASC'])]
     protected Collection $participants;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Personnage::class)]
