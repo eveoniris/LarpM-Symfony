@@ -13,13 +13,14 @@
 		]
 	} %}
 
+	<div class="well bs-component">
+
 	<div class="header">
 		<h5>Choix d'une nouvelle potion</h5>
 	</div>
 
-	<div class="well bs-component">
 
-		{% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Votre compétence vous permet de choisir une nouvelle potion. Le descriptif des potions disponibles est visible en bas de page."} %}
+		{% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Votre compétence vous permet de choisir une nouvelle recette de potion. Le descriptif des potions disponibles est visible en bas de page."} %}
 
 			{{ form(form) }}
 	</div>

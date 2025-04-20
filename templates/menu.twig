@@ -78,7 +78,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item text-body-emphasis"
-                               href="{{ path('religion.index') }}">Religions</a></li>
+                               href="{{ path('religion.list') }}">Religions</a></li>
                         <li><a class="dropdown-item text-body-emphasis" href="{{ path('world') }}">Carte</a></li>
                         {% if is_granted('ROLE_CARTOGRAPHE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                             <li>

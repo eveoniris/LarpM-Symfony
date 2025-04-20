@@ -131,7 +131,7 @@ class Participant extends BaseParticipant implements \Stringable
     {
         foreach ($this->getPotionsDepart() as $potion) {
             if ($potion->getNiveau() === $niveau) {
-                $return = $potion;
+                return $potion;
             }
         }
 
@@ -152,6 +152,18 @@ class Participant extends BaseParticipant implements \Stringable
         }
 
         return $return;
+    }
+
+    public function hasPotionsDepart(Potion $potionDepart): bool
+    {
+        /** @var Potion $potion */
+        foreach ($this->getPotionsDepart() as $potion) {
+            if ($potion->getNumero() === $potionDepart->getNumero()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function getPotionsRandomByLevel($niveau = 1)

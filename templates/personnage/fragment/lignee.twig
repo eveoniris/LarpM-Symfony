@@ -42,11 +42,13 @@
                                             href="{{ path('lignee.detail', {'lignee':lignage.lignee.id}) }}"> {{ lignage.lignee.nom }}</a>
                                 </div>
 
-                                <a class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                   title="Supprimer"
-                                   href="{{ path('personnage.delete.lignee', {'personnage':personnage.id, 'personnageLignee': lignage.id}) }}"><i
-                                            class="fa fa-eraser"></i></a>
-
+                                {% if isAdmin %}
+                                    <a class="btn btn-secondary btn-sm" data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom"
+                                       title="Supprimer"
+                                       href="{{ path('personnage.delete.lignee', {'personnage':personnage.id, 'personnageLignee': lignage.id}) }}"><i
+                                                class="fa fa-eraser"></i></a>
+                                {% endif %}
                             </div>
                         {% endif %}
                         <li class="list-group-item">

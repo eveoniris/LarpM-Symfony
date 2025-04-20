@@ -42,7 +42,7 @@ class ReligionController extends AbstractController
     /**
      * affiche la liste des religions.
      */
-    #[Route('/religion', name: 'religion.index')]
+    #[Route('/religion', name: 'religion.list')]
     #[Route('/religion', name: 'religion.list')]
     public function indexAction(Request $request, ReligionRepository $religionRepository): Response
     {
@@ -127,7 +127,7 @@ class ReligionController extends AbstractController
             // l'utilisateur est redirigé soit vers la liste des religions, soit vers de nouveau
             // vers le formulaire d'ajout d'une religion
             if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('religion.index', [], 303);
+                return $this->redirectToRoute('religion.list', [], 303);
             }
 
             if ($form->get('save_continue')->isClicked()) {
@@ -188,7 +188,7 @@ class ReligionController extends AbstractController
                 /*$entityManager->remove($religion);
                 $entityManager->flush();
                 $this->addFlash('success', 'La religion a été supprimée.');*/
-                // return $this->redirectToRoute('religion.index', [], 303);
+                // return $this->redirectToRoute('religion.list', [], 303);
                 return $this->redirectToRoute('religion.delete', ['religion' => $religion->getId()], 303);
             }
         }
@@ -234,7 +234,7 @@ class ReligionController extends AbstractController
             $entityManager->flush();
             $this->addFlash('success', 'La religion a été supprimée.');
 
-            return $this->redirectToRoute('religion.index', [], 303);
+            return $this->redirectToRoute('religion.list', [], 303);
         }
 
         return $this->render('religion/delete.twig', [

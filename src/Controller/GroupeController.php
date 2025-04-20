@@ -597,9 +597,9 @@ class GroupeController extends AbstractController
         }
 
         // est-ce un personnage titré (peut être extérieur au groupe)
+        $groupeGn = $groupe->getGroupeGns()->last();
         if (!$canSeePrivateDetail) {
             /** @var GroupeGn $groupeGn */
-            $groupeGn = $groupe->getGroupeGns()->last();
             if ($groupeGn) {
                 $canSeePrivateDetail = $groupeGn->hasTitle($this->getUser());
                 $canEdit = $groupeGn->hasTitle($this->getUser());
@@ -610,6 +610,7 @@ class GroupeController extends AbstractController
             'groupe/detail.twig',
             [
                 'groupe' => $groupe,
+                'groupeGn' => $groupeGn,
                 'tab' => $request->get('tab', 'detail'),
                 'canSeePrivateDetail' => $canSeePrivateDetail,
                 'canEdit' => $canEdit,

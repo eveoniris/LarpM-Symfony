@@ -176,12 +176,32 @@ class CompetenceService
             // Dans ce service, nous ne traitons que les bonus de type XP
             // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
             if ($bonus->isXp() && (null === $bonus->getCompetence() || $this->getCompetence()->getId(
-            ) === $bonus->getCompetence()->getId())) {
+                    ) === $bonus->getCompetence()->getId())) {
                 $count += $bonus->getValeur();
             }
         }
 
         return $count;
+    }
+
+    public function getPersonnage(): Personnage
+    {
+        if (!isset($this->personnage)) {
+            throw new \RuntimeException('Personnage is not set');
+        }
+
+        return $this->personnage;
+    }
+
+    public function setPersonnage(?Personnage $personnage): self
+    {
+        $this->personnage = $personnage;
+
+        if ($personnage) {
+            $this->classe = $personnage->getClasse();
+        }
+
+        return $this;
     }
 
     public function getCompetence(): Competence
@@ -224,7 +244,7 @@ class CompetenceService
                 // Dans ce service, nous ne traitons que les bonus de type XP
                 // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
                 if ($bonus->isXp() && (null === $bonus->getCompetence() || $this->getCompetence()->getId(
-                ) === $bonus->getCompetence()->getId())) {
+                        ) === $bonus->getCompetence()->getId())) {
                     $count += $bonus->getValeur();
                 }
             }
@@ -243,6 +263,22 @@ class CompetenceService
         return 0;
     }
 
+    public function getCompetenceLevel(): Level
+    {
+        if (!isset($this->competenceLevel)) {
+            throw new \RuntimeException('Competence level is not set');
+        }
+
+        return $this->competenceLevel;
+    }
+
+    public function setCompetenceLevel(?Level $competenceLevel): self
+    {
+        $this->competenceLevel = $competenceLevel;
+
+        return $this;
+    }
+
     public function getClasse(): Classe
     {
         if (!isset($this->classe)) {
@@ -259,18 +295,18 @@ class CompetenceService
         return $this;
     }
 
-    public function getCompetenceLevel(): Level
+    public function getCompetenceFamily(): CompetenceFamily
     {
-        if (!isset($this->competenceLevel)) {
-            throw new \RuntimeException('Competence level is not set');
+        if (!isset($this->competenceFamily)) {
+            throw new \RuntimeException('Competence family is not set');
         }
 
-        return $this->competenceLevel;
+        return $this->competenceFamily;
     }
 
-    public function setCompetenceLevel(?Level $competenceLevel): self
+    public function setCompetenceFamily(?CompetenceFamily $competenceFamily): self
     {
-        $this->competenceLevel = $competenceLevel;
+        $this->competenceFamily = $competenceFamily;
 
         return $this;
     }
@@ -321,10 +357,13 @@ class CompetenceService
      */
     final public function giveBonus(): void
     {
+        dump('CAN GEY BONUS ? ');
         if (!$this->canGetBonus()) {
+            dump('NO');
+
             return;
         }
-
+        dump('YES ');
         $this->give();
     }
 
@@ -361,26 +400,6 @@ class CompetenceService
         return $this;
     }
 
-    public function getPersonnage(): Personnage
-    {
-        if (!isset($this->personnage)) {
-            throw new \RuntimeException('Personnage is not set');
-        }
-
-        return $this->personnage;
-    }
-
-    public function setPersonnage(?Personnage $personnage): self
-    {
-        $this->personnage = $personnage;
-
-        if ($personnage) {
-            $this->classe = $personnage->getClasse();
-        }
-
-        return $this;
-    }
-
     public function getCompetenceService(Competence $competence): self
     {
         $service = match ($competence->getCompetenceFamily()?->getCompetenceFamilyType()?->value) {
@@ -394,22 +413,6 @@ class CompetenceService
         };
 
         return $service->setCompetence($competence);
-    }
-
-    public function getCompetenceFamily(): CompetenceFamily
-    {
-        if (!isset($this->competenceFamily)) {
-            throw new \RuntimeException('Competence family is not set');
-        }
-
-        return $this->competenceFamily;
-    }
-
-    public function setCompetenceFamily(?CompetenceFamily $competenceFamily): self
-    {
-        $this->competenceFamily = $competenceFamily;
-
-        return $this;
     }
 
     public function getService(string $class): self

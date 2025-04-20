@@ -64,6 +64,15 @@ class PersonnageUpdateForm extends AbstractType
                 ]);
         }
 
+        /** @var Personnage $personnage */
+        $personnage = $builder->getData();
+        $braceletAttr = [];
+        $braceletIcon = '';
+        if (false === $personnage->isBraceletSetted()) {
+            $braceletAttr = ['class' => 'text-danger'];
+            $braceletIcon = '<i class="fa-solid fa-circle-exclamation me-1"></i>';
+        }
+
         $builder->add('surnom', TextType::class, [
             'required' => false,
             'label' => '',
@@ -81,14 +90,13 @@ class PersonnageUpdateForm extends AbstractType
             ->add('bracelet', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['Non' => false, 'Oui' => true],
-                'label' => 'Possédez-vous votre bracelet de langue',
+                'label_attr' => $braceletAttr,
+                'label_html' => true,
+                'label' => $braceletIcon.'Possédez-vous votre bracelet de langue ?',
                 'help' => 'Si vous cochez Oui. Vous ne recevrez pas de bracelet de langue dans votre enveloppe personnage ',
             ]);
     }
 
-    /**
-     * Définition de l'entité concerné.
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

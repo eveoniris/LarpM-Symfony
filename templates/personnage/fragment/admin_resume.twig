@@ -25,7 +25,7 @@
                      {'path' : path('personnage.update.priere', {'personnage': personnage.id}), 'label': 'Modifier la liste des prieres' },
                      {'path' : path('personnage.update.technologie', {'personnage': personnage.id}), 'label': 'Modifier la liste des technologies' },
                      {'path' : path('personnage.update.connaissance', {'personnage': personnage.id}), 'label': 'Modifier la liste des connaissances' },
-                    ]
+                 ]
              } %}
          {% endif %}
 
@@ -50,8 +50,8 @@
                                 href="{{ path('personnage.delete.religion', {'personnage': personnage.id, 'personnageReligion': personnageReligion.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
-                         <div class="list-group-item-text">
-                             Sans - <span class="badge display-6 rounded-pill text-bg-secondary">Fervent</span>
+                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                             Sans religion
                          </div>
                      {% endfor %}
                  </div>
@@ -80,9 +80,13 @@
                                  {% endif %}
                              </div>
                              {% if personnageLangue.id is defined and personnageLangue.id %}
-                             <a class="btn btn-sm btn-secondary"
-                                href="{{ path('personnage.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Supprimer</a>
+                                 <a class="btn btn-sm btn-secondary"
+                                    href="{{ path('personnage.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Supprimer</a>
                              {% endif %}
+                         </div>
+                     {% else %}
+                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                             Aucune
                          </div>
                      {% endfor %}
                  </div>
@@ -140,8 +144,7 @@
 
              <div class="card mb-4">
                  <div class="card-header">
-
-                     <h6>Potions</h6>
+                     <h6>Recette de potions</h6>
                  </div>
                  {% set potionsAnomalie = personnage.getPotionAnomalieMessage() %}
                  {% if potionsAnomalie != "" %}
@@ -159,13 +162,47 @@
                                  <a href="{{ path('magie.potion.detail', {'potion': potion.id }) }}">{{ potion.label }}</a>
                                  - Niveau {{ potion.niveau }}
                              </div>
-                             <a class="btn btn-sm btn-secondary"
-                                href="{{ path('personnage.delete.potion', {'personnage': personnage.id, 'potion': potion.id }) }}">Supprimer</a>
+                             <div>
+                                 {% if personnage.lastParticipant %}
+                                     <a class="btn btn-sm btn-secondary"
+                                        href="{{ path('participant.potion.depart.add', {'personnage': personnage.id, 'potion': potion.id, 'participant':personnage.lastParticipant.id }) }}">potion
+                                         de départ</a>
+                                 {% endif %}
+                                 <a class="btn btn-sm btn-secondary"
+                                    href="{{ path('personnage.delete.potion', {'personnage': personnage.id, 'potion': potion.id }) }}">Supprimer</a>
+                             </div>
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucune</div>
                      {% endfor %}
                  </div>
+             </div>
+
+             <div class="card mb-4">
+                 {% if personnage.lastParticipant.gn is defined %}
+                     <div class="card-header">
+                         <h6>Potions de départ pour {{ personnage.lastParticipant.gn.label }}</h6>
+                     </div>
+                     <div class="list-group border-0">
+                         {% for potion in personnage.lastParticipant.potionsDepart %}
+                             <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                                 <div class="list-group-item-text">
+                                     {% if potion.secret %}
+                                         <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Secret"></i> -
+                                     {% endif %}
+                                     <a href="{{ path('magie.potion.detail', {'potion': potion.id }) }}">{{ potion.label }}</a>
+                                     - Niveau {{ potion.niveau }}
+                                 </div>
+                                 <a class="btn btn-sm btn-secondary"
+                                    href="{{ path('participant.potion.depart.delete', {'personnage': personnage.id, 'potion': potion.id, 'participant': participant.id }) }}">Supprimer</a>
+                             </div>
+                         {% else %}
+                             <div class="list-group-item rounded-top-0">Aucune</div>
+                         {% endfor %}
+                     </div>
+                 {% endif %}
              </div>
 
              <div class="card mb-4">
@@ -251,8 +288,8 @@
                                  <a href="{{ path('bonus.detail', {'bonus': bonus.id }) }}">{{ bonus.titre }}</a><br :>
                                  {{ bonus.description }}
                              </div>
-                            {# Todo see how to display "type: origin/groupe/merveille/... #}
-                            {# see how to delete #}
+                             {# Todo see how to display "type: origin/groupe/merveille/... #}
+                             {# see how to delete #}
                          </div>
                      {% else %}
                          <div class="list-group-item rounded-top-0">Aucun</div>

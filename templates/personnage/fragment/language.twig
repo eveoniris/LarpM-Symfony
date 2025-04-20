@@ -5,48 +5,52 @@
 {% if isAdmin is not defined %}
     {% set isAdmin = false %}
 {% endif %}
+{% set langues = personnageService.allLangues(personnage) %}
 
-{# languages connu #}
-<div class="{{ css }}">
-    <div class="header">
-        <h5>Langues connues</h5>
-    </div>
-    <div class="list-group">
-        {% for personnageLangue in personnageService.allLangues(personnage) %}
-            <div class="list-group-item d-flex justify-content-between">
-                <div>
-                    {% if personnageLangue.langue.secret %}
-                        <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
-                           data-bs-placement="top"
-                           title="Secret"></i><span class="text-warning">Secret</span> -
-                    {% endif %}
-                    <strong>{{ personnageLangue.langue }}</strong>&nbsp;
-                    <small>({{ personnageLangue.langue.groupeLangue.couleur }}, obtenu grâce à
-                        votre {{ personnageLangue.source }})</small>
-                </div>
+{% if langues|length > 0 %}
 
-                <div class="btn-group" role="group">
-                    <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
-                            href="#langue_{{ personnageLangue.langue.id }}_{{ personnageLangue.langue.label|url_encode }}"
-                            aria-expanded="false"
-                            aria-controls="langue_{{ personnageLangue.langue.id }}_{{ personnageLangue.langue.label|url_encode }}"
-                            role="button">
-                        <i class="fa-solid fa-circle-info"></i>
-                    </button>
-                    {% if personnageLangue.langue.documentUrl %}
-                        <a class="btn btn-secondary btn-sm"
-                           title="Télécharger l'abécédaire" data-bs-toggle="tooltip"
-                           data-bs-placement="top"
-                           href="{{ path('participant.langue.document',{'participant': participant.id, 'langue' : personnageLangue.langue.id, 'filename': personnageLangue.langue.printlabel }) }}">
-                            <i class="fa fa-file"></i>
-                        </a>
-                    {% endif %}
+    {# languages connu #}
+    <div class="{{ css }}">
+        <div class="header">
+            <h5>Langues connues</h5>
+        </div>
+        <div class="list-group">
+            {% for personnageLangue in langues %}
+                <div class="list-group-item d-flex justify-content-between">
+                    <div>
+                        {% if personnageLangue.langue.secret %}
+                            <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               title="Secret"></i><span class="text-warning">Secret</span> -
+                        {% endif %}
+                        <strong>{{ personnageLangue.langue }}</strong>&nbsp;
+                        <small>({{ personnageLangue.langue.groupeLangue.couleur }}, obtenu grâce à
+                            votre {{ personnageLangue.source }})</small>
+                    </div>
+
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                                href="#langue_{{ personnageLangue.langue.id }}_{{ personnageLangue.langue.label|url_encode }}"
+                                aria-expanded="false"
+                                aria-controls="langue_{{ personnageLangue.langue.id }}_{{ personnageLangue.langue.label|url_encode }}"
+                                role="button">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </button>
+                        {% if personnageLangue.langue.documentUrl %}
+                            <a class="btn btn-secondary btn-sm"
+                               title="Télécharger l'abécédaire" data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               href="{{ path('participant.langue.document',{'participant': participant.id, 'langue' : personnageLangue.langue.id, 'filename': personnageLangue.langue.printlabel }) }}">
+                                <i class="fa fa-file"></i>
+                            </a>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
-            <div class="list-group-item bg-body-secondary collapse"
-                 id="langue_{{ personnageLangue.langue.id }}_{{ personnageLangue.langue.label|url_encode }}">
-                {{ personnageLangue.langue.description|markdown_to_html }}
-            </div>
-        {% endfor %}
+                <div class="list-group-item bg-body-secondary collapse"
+                     id="langue_{{ personnageLangue.langue.id }}_{{ personnageLangue.langue.label|url_encode }}">
+                    {{ personnageLangue.langue.description|markdown_to_html }}
+                </div>
+            {% endfor %}
+        </div>
     </div>
-</div>
+{% endif %}

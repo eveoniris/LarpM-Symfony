@@ -1114,20 +1114,20 @@ class Personnage extends BasePersonnage implements \Stringable
         foreach ($this->getCompetences() as $competence) {
             for ($i = 0; $i < 4; ++$i) {
                 $v = $competence->getAttributeValue(AttributeType::$POTIONS[$i]);
-                if (null != $v) {
+                if (null !== $v) {
                     $expectedByLevel[$i] += $v;
                 }
             }
 
-            if ($competence->getCompetenceFamily()->getLabel() == CompetenceFamily::$LITTERATURE
-                && 1 == $competence->getLevel()->getIndex()) {
+            if ($competence->getCompetenceFamily()?->getLabel() === CompetenceFamily::$LITTERATURE
+                && 1 === $competence->getLevel()?->getIndex()) {
                 $litteratureApprenti = $competence;
             }
         }
 
         for ($i = 0; $i < 4; ++$i) {
             // error_log($this->nom . " PA " . $expectedByLevel[$i] . " " . $countByLevel[$i]);
-            if (null == $litteratureApprenti && $expectedByLevel[$i] < $countByLevel[$i]) {
+            if (null === $litteratureApprenti && $expectedByLevel[$i] < $countByLevel[$i]) {
                 return ($countByLevel[$i] - $expectedByLevel[$i]).' potion(s) de niveau '.($i + 1).' en trop à vérifier ';
             }
 
@@ -1446,8 +1446,9 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function isKnownPotion(Potion $p): bool
     {
+        /** @var Potion $potion */
         foreach ($this->getPotions() as $potion) {
-            if ($potion == $p) {
+            if ($potion->getNumero() === $p->getNumero()) {
                 return true;
             }
         }

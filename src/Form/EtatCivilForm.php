@@ -56,7 +56,7 @@ class EtatCivilForm extends AbstractType
                 'label' => 'Problèmes médicaux',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'Indiquez içi les problèmes médicaux qui vous semblent pertinants',
+                    'placeholder' => 'Indiquez içi les problèmes médicaux qui vous semblent pertinents',
                 ],
             ])
             ->add('personne_a_prevenir', TextType::class, [

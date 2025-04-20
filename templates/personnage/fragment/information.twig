@@ -79,7 +79,15 @@
     {% endset %}
 
     {# Joueur #}
-    {% set joueurHtml = "Ce personnage n'est pas lié à un joueur" %}
+    {% set joueurHtml %}
+        <span class="text-danger">Ce personnage n'est pas lié à un joueur</span>
+        <a href="{{ path('personnage.transfert', {'personnage': personnage.id}) }}"
+           data-bs-toggle="tooltip" data-bs-placement="bottom"
+           title="Transférer"
+           class="btn btn-sm btn-secondary ms-2">
+            <i class="fa fa-edit" aria-hidden="true"></i>
+        </a>
+    {% endset %}
     {% if personnage.user %}
         {% set joueurHtml %}
             <a href="{{ path('user.view',{'user': personnage.user.id}) }}">
@@ -89,7 +97,15 @@
     {% endif %}
 
     {# Scenariste #}
-    {% set scenaristeHtml = "Ce personnage n'est pas lié à un joueur" %}
+    {% set scenaristeHtml %}
+        <span class="text-danger">Ce personnage n'est pas lié à un joueur</span>
+        <a href="{{ path('personnage.transfert', {'personnage': personnage.id}) }}"
+           data-bs-toggle="tooltip" data-bs-placement="bottom"
+           title="Transférer"
+           class="btn btn-sm btn-secondary ms-2">
+            <i class="fa fa-edit" aria-hidden="true"></i>
+        </a>
+    {% endset %}
     {% if personnage.user %}
         {% if participant is not defined %}
             {% set participant = personnage.user.participants|last %}
@@ -290,10 +306,19 @@
     {% set persoSecondaireHtml %}
         {% if participant is defined %}
             {% if participant.personnageSecondaire is defined and participant.personnageSecondaire.classe is defined %}
-                {{ participant.personnageSecondaire.classe.label }}
+                    <div>{{ participant.personnageSecondaire.classe.label }}</div>
+                    <div>
+                       <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}"
+                           data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Modifier"
+                           class="btn btn-sm btn-secondary ms-2">
+                            <i class="fa fa-edit" aria-hidden="true"></i>
+                        </a>
+                    </div>
             {% else %}
-                <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">Choisir
-                    son personnage secondaire</a>
+                <a class="text-danger" href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">
+                    Choisir son personnage secondaire
+                </a>
             {% endif %}
         {% else %}
             {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'title': 'Prérequis !', 'content' : "Le personnage ne dispose d'aucune participation à un GN"} %}
@@ -302,7 +327,7 @@
 
 
     {% set titreHtml %}
-        <span>{{ personnageService.getTitre(personnage) }}</span>
+        <span>{{ personnageService.getTitre(personnage)|default('-') }}</span>
     {% endset %}
 
     <div>
