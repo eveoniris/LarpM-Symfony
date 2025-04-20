@@ -17,9 +17,12 @@ class IndexController extends AbstractController
     #[Route('/', name: 'homepage')]
     public function index(AnnonceRepository $annonceRepository): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         return $this->render('index/index.html.twig', [
             'controller_name' => 'IndexController',
-            'user' => $this->getUser(),
+            'user' => $user,
+            'participants' => $user?->getParticipants(),
             'annonces' => $annonceRepository->findBy([], ['id' => 'DESC']),
         ]);
     }

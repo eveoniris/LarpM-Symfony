@@ -88,6 +88,7 @@
             {% set rootPath = 'groupeGn' %}
             {% set groupeGnId = groupeGn.Id %}
         {% endif %}
+
         <div class="row" style="min-height:300px;">
             <div class="col-md-12">
                 <div>
@@ -98,7 +99,7 @@
                             >Détail</a>
                         </li>
 
-                        {% if rootPath == 'groupeGn' %}
+                        {% if false and rootPath == 'groupeGn' %}
                             <li class="nav-item">
                                 <a class="nav-link{% if tab == 'membres' %} active{% endif %}"
                                     href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'membres', 'gn': groupeGn.gn.id, 'groupeGn': groupeGnId})) }}"
@@ -166,7 +167,7 @@
                     <!-- Tab panes -->
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" role="tabpanel">
-                            {% include "groupe/fragment/#{tab|default('detail')}.twig" with {'groupe': groupe, 'groupeGn': groupeGnId} %}
+                            {% include "groupe/fragment/#{tab|default('detail')}.twig" with {'groupe': groupe, 'groupeGn': groupeGn} %}
                         </div>
                     </div>
                 </div>

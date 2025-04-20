@@ -50,60 +50,70 @@
             </div>
         </div>
 
-        <div class="card text-bg mb-3 overflow-auto">
-            <div class="header">
-                <h5>Description aux membres</h5>
-            </div>
-
-            <div class="card-body">
-                {% if is_granted('ROLE_SCENARISTE', app.user) or user %}
-                    <div class="d-flex justify-content-end m-2">
-                        <a class="btn btn-secondary" href="{{ path('groupe.description.membres', {'groupe': groupe.id}) }}">
-                            <i class="fa fa-pencil"></i> Modifier</a>
-                    </div>
-                {% endif %}
-
-                {% if not groupe.description %}
-                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                    Attention, ce groupe n'a pas de description.
-                {% else %}
-                    {{ groupe.description|markdown_to_html }}
-                {% endif %}
-            </div>
-        </div>
-
-        {% set participant = app.user.getLastParticipant %}
-        {% set groupeGn = participant.groupeGn %}
-        {% if is_granted('ROLE_SCENARISTE', app.user) or participant.isResponsable(groupeGn.groupe, groupeGn) %}
+        {% if canSeePrivateDetail %}
             <div class="card text-bg mb-3 overflow-auto">
                 <div class="header">
-                    <h5>Code pour le GN {{ groupeGn.gn.label }} (visible en qualité
-                        de {% if is_granted('ROLE_SCENARISTE', app.user) %}scénariste{% else %}chef de groupe{% endif %}
-                        ) </h5>
+                    <h5>Description aux membres</h5>
                 </div>
 
                 <div class="card-body">
-                    <strong>{{ groupe.code }}</strong>
-                    <div class="list-group-item-text">
-                        Ce code permet à des joueurs invité par le chef de groupe de participer au groupe.
+                    {% if is_granted('ROLE_SCENARISTE', app.user) or user is defined %}
+                        <div class="d-flex justify-content-end m-2">
+                            <a class="btn btn-secondary"
+                               href="{{ path('groupe.description.membres', {'groupe': groupe.id}) }}">
+                                <i class="fa fa-pencil"></i> Modifier</a>
+                        </div>
+                    {% endif %}
+
+                    {% if not groupe.descriptionMembres %}
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                        Attention, ce groupe n'a pas de description.
+                    {% else %}
+                        {{ groupe.descriptionMembres|markdown_to_html }}
+                    {% endif %}
+                </div>
+            </div>
+
+            {% set participant = null %}
+            {% if groupeGn is not defined and participant.groupeGn.groupe.id == groupe.id and  app.user.getLastParticipant is defined %}
+                {% set participant = app.user.getLastParticipant %}
+            {% endif %}
+
+            {% if groupeGn is not defined and participant.groupeGn.groupe.id == groupe.id %}
+                {% set groupeGn = participant.groupeGn %}
+            {% endif %}
+
+            {% if groupeGn.gn is defined and (is_granted('ROLE_SCENARISTE', app.user) or (participant and participant.isResponsable(groupeGn.groupe, groupeGn))) %}
+                <div class="card text-bg mb-3 overflow-auto">
+                    <div class="header">
+                        <h5>Code pour le GN {{ groupeGn.gn.label }} (visible en qualité
+                            de {% if is_granted('ROLE_SCENARISTE', app.user) %}scénariste{% else %}chef de groupe{% endif %}
+                            ) </h5>
                     </div>
+
+                    <div class="card-body">
+                        <strong>{{ groupeGn.code|default('Non définie') }}</strong>
+                        <div class="list-group-item-text">
+                            Ce code permet à des joueurs invité par le chef de groupe de participer au groupe.
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="card text-bg mb-3 overflow-auto">
+                <div class="header">
+                    <h5>Server Discord </h5>
+                </div>
+
+                <div class="card-body">
+                    {% if groupe.discord %}
+                        <a href="{{ groupe.discord }}" target="_blank">{{ groupe.discord }}</a>
+                    {% else %}
+                        {% include '_partials/noResult.twig' with {'content' : 'Aucun', 'css' : 'w-100'} %}
+                    {% endif %}
                 </div>
             </div>
         {% endif %}
-
-        <div class="card text-bg mb-3 overflow-auto">
-            <div class="header">
-                <h5>Server Discord </h5>
-            </div>
-
-            <div class="card-body">
-                {% if groupe.discord %}
-                    <a href="{{ groupe.discord }}" target="_blank">{{ groupe.discord }}</a>
-                {% else %}
-                    {% include '_partials/noResult.twig' with {'content' : 'Aucun', 'css' : 'w-100'} %}
-                {% endif %}
-            </div>
-        </div>
 
         {# disabled for now #}
         {% if false %}
@@ -234,32 +244,33 @@
     </div>
     <div class="col-md-6 pt-2">
 
-        <div class="card text-bg mb-3 overflow-auto">
-            <div class="header"><h5>Résume pour {{ groupeGn.gn.label }}</h5></div>
-            <div class="card-body">
-                {# Card notif si groupe VEROUILLE  #}
-                {% set nbPlace = groupe.placeTotal|default(0) %}
-                {% set nbMembres =  groupeGn.participants|length|default(0) %}
-                {% set nbLibre =  nbPlace - nbMembres %}
-                {% set lockHtml %}
-                    {% if groupe.lock %}
-                        Le groupe est fermé. Les joueurs ne peuvent plus et modifier leur personnage
-                    {% else %}
-                        Le groupe est ouvert. Les joueurs peuvent créer et modifier leur personnage
-                    {% endif %}
-                {% endset %}
+        {% if groupeGn.gn is defined %}
+            <div class="card text-bg mb-3 overflow-auto">
+                <div class="header"><h5>Résume pour {{ groupeGn.gn.label }}</h5></div>
+                <div class="card-body">
+                    {# Card notif si groupe VEROUILLE  #}
+                    {% set nbPlace = groupe.placeTotal|default(0) %}
+                    {% set nbMembres =  groupeGn.participants|length|default(0) %}
+                    {% set nbLibre =  nbPlace - nbMembres %}
+                    {% set lockHtml %}
+                        {% if groupe.lock %}
+                            Le groupe est fermé. Les joueurs ne peuvent plus et modifier leur personnage
+                        {% else %}
+                            Le groupe est ouvert. Les joueurs peuvent créer et modifier leur personnage
+                        {% endif %}
+                    {% endset %}
 
-                {% include '_partials/listItems.twig'
-                    with { 'items' : [
-                    {'title': 'Places totales', 'text': nbPlace ~ ' joueurs possibles dans ce groupe.'},
-                    {'title': 'Membres', 'text': nbMembres},
-                    {'title': 'Places libre', 'text': nbLibre},
-                    {'title': 'Etat du groupe', 'text': lockHtml},
-                ]
-                } %}
+                    {% include '_partials/listItems.twig'
+                        with { 'items' : [
+                        {'title': 'Places totales', 'text': nbPlace ~ ' joueurs possibles dans ce groupe.'},
+                        {'title': 'Membres', 'text': nbMembres},
+                        {'title': 'Places libre', 'text': nbLibre},
+                        {'title': 'Etat du groupe', 'text': lockHtml},
+                    ]
+                    } %}
+                </div>
             </div>
-
-        </div>
+        {% endif %}
 
         <div class="card text-bg mb-3 overflow-auto">
             <div class="header"><h5>Territoires</h5></div>

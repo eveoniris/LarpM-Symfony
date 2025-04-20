@@ -6,10 +6,10 @@
         </div>
         <div class="w-100 mx-2 mt-1">
             <div class="d-flex justify-content-between">
-                <div>
-                    {{ text }}
-                </div>
                 {% if item.collapse.id is defined %}
+                    <div>
+                        {{ text }}
+                    </div>
                     <button class="btn btn-sm btn-secondary ms-2" role="button"
                             data-bs-toggle="collapse"
                             data-bs-target="#{{ item.collapse.id }}"
@@ -18,6 +18,8 @@
                             aria-controls="{{ item.collapse.id }}">
                         <i class="fa {% if item.collapse.icon is defined %}{{item.collapse.icon}}{% else %}fa-info{% endif %}" aria-hidden="true"></i>
                     </button>
+                {% else %}
+                    {{ text }}
                 {% endif %}
             </div>
         </div>

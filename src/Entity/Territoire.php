@@ -459,7 +459,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
         }
 
         foreach ($this->getTerritoires() as $territoire) {
-            if (!$groupes->contains($territoire - $this->getGroupesPj())) {
+            if (!$groupes->contains($territoire)) {
                 $groupes->add($territoire->getGroupesPj());
             }
         }

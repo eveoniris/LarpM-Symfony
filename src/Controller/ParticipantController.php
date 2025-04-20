@@ -22,7 +22,6 @@ use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\PersonnageChronologie;
 use App\Entity\PersonnageLangues;
-use App\Entity\PersonnageSecondaire;
 use App\Entity\PersonnagesReligions;
 use App\Entity\PersonnageTrigger;
 use App\Entity\Postulant;
@@ -47,6 +46,7 @@ use App\Form\BreakAllianceForm;
 use App\Form\CancelRequestedAllianceForm;
 use App\Form\CancelRequestedPeaceForm;
 use App\Form\DeclareWarForm;
+use App\Form\DeleteForm;
 use App\Form\FindJoueurForm;
 use App\Form\Groupe\GroupeInscriptionForm;
 use App\Form\Groupe\GroupeSecondairePostulerForm;
@@ -71,6 +71,7 @@ use App\Form\RequestPeaceForm;
 use App\Form\TrombineForm;
 use App\Manager\GroupeManager;
 use App\Repository\DomaineRepository;
+use App\Repository\PersonnageSecondaireRepository;
 use App\Repository\PotionRepository;
 use App\Repository\SecondaryGroupRepository;
 use App\Service\PagerService;
@@ -81,6 +82,7 @@ use Imagine\Gd\Imagine;
 use JetBrains\PhpStorm\Deprecated;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -2975,30 +2977,34 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/personnageSecondaire', name: 'participant.personnageSecondaire')]
     public function personnageSecondaireAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
+        PersonnageSecondaireRepository $repo,
     ): RedirectResponse|Response {
-        $repo = $entityManager->getRepository('\\'.PersonnageSecondaire::class);
-        $personnageSecondaires = $repo->findAll();
-
         $form = $this->createForm(ParticipantPersonnageSecondaireForm::class, $participant)
-            ->add('choice', SubmitType::class, ['label' => 'Enregistrer']);
+            ->add('choice', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $participant = $form->getData();
-            $entityManager->persist($participant);
-            $entityManager->flush();
+            $this->entityManager->persist($participant);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage secondaire a été enregistré.');
 
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGroupeGn()->getGn()->getId()], 303);
+            return $this->redirectToRoute(
+                'personnage.detail',
+                [
+                    'gn' => $participant->getGroupeGn()->getGn()->getId(),
+                    'personnage' => $participant->getPersonnage()->getId(),
+                ],
+                303
+            );
         }
 
         return $this->render('participant/personnageSecondaire.twig', [
             'participant' => $participant,
-            'personnageSecondaires' => $personnageSecondaires,
+            'personnageSecondaires' => $repo->findAll(),
             'form' => $form->createView(),
         ]);
     }
@@ -3108,6 +3114,7 @@ class ParticipantController extends AbstractController
      * Choix d'une nouvelle potion.
      */
     #[Route('/participant/{participant}/potion/{niveau}/add', name: 'participant.potion')]
+    #[IsGranted(Role::USER->value)]
     public function potionAddAction(
         Request $request,
         #[MapEntity] Participant $participant,
@@ -3129,9 +3136,7 @@ class ParticipantController extends AbstractController
             4 => 'ALCHIMIE MAITRE',
         ];
         foreach ($niveaux as $i => $tag) {
-            if ($niveau === $i
-                && (!$personnage->hasTrigger($tag) && $participant->hasPotionsDepartByLevel($i))
-            ) {
+            if ($niveau === $i && (!$personnage->hasTrigger($tag))) {
                 $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de potions supplémentaires.');
 
                 return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
@@ -3210,14 +3215,56 @@ class ParticipantController extends AbstractController
         ]);
     }
 
+    #[Route('/participant/{participant}/potion/{potion}/depart/add', name: 'participant.potion.depart.add')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::SCENARISTE->value.'")'))]
+    public function potionDepartAddAction(
+        Request $request,
+        #[MapEntity] Participant $participant,
+        #[MapEntity] Potion $potion,
+    ): RedirectResponse|Response
+    {
+        $personnage = $participant->getPersonnage();
+
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        if ($participant->hasPotionsDepart($potion)) {
+            $this->addFlash('error', 'Désolé, cette potion est déjà dans les potions de départ.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        if (!$personnage->isKnownPotion($potion)) {
+            $this->addFlash('error', 'Désolé, le personnage ne connait cette potion.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        $participant->addPotionDepart($potion);
+        $this->entityManager->persist($participant);
+
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+        return $this->redirectToRoute(
+            'personnage.detail',
+            ['personnage' => $personnage->getId()],
+            303
+        );
+    }
+
     /**
      * Choix d'une nouvelle potion de départ.
      */
     #[Route('/participant/{participant}/potion/depart', name: 'participant.potion.depart')]
+    #[IsGranted(Role::USER->value)]
     public function potionDepartAction(
         Request $request,
         #[MapEntity] Participant $participant,
-        PotionRepository $potionRepository,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
@@ -3265,8 +3312,8 @@ class ParticipantController extends AbstractController
             $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
             return $this->redirectToRoute(
-                'gn.personnage',
-                ['gn' => $participant->getGn()->getId(), 'tab' => 'competences'],
+                'personnage.detail',
+                ['personnage' => $personnage->getId()],
                 303
             );
         }
@@ -3285,8 +3332,6 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/potion/{potion}/detail', name: 'participant.potion.detail')]
     public function potionDetailAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
         Potion $potion,
     ): RedirectResponse|Response {
@@ -3311,10 +3356,62 @@ class ParticipantController extends AbstractController
         ]);
     }
 
-    /**
-     * Affichage à destination d'un membre du groupe secondaire.
-     */
-    // TODO Fix access if SECRET and not a member !
+    #[Route('/participant/{participant}/potion/{potion}/depart/delete', name: 'participant.potion.depart.delete')]
+    public function potionDepartDeleteAction(
+        Request $request,
+        #[MapEntity] Participant $participant,
+        #[MapEntity] Potion $potion,
+    ): RedirectResponse|Response {
+        $personnage = $participant->getPersonnage();
+
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        if (!$participant->hasPotionsDepart($potion)) {
+            $this->addFlash('error', "Le personnage n'a pas cette potion de départ");
+
+            return $this->redirectToRoute('personnage.detail', ['gn' => $participant->getGn()->getId(), 'personnage' => $participant->getPersonnage()?->getId()], 303);
+        }
+
+        $form = $this->createForm(DeleteForm::class, $potion, ['class' => $potion::class]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $potion = $form->getData();
+
+            // Retrait de la potion au personnage
+            $participant->removePotionDepart($potion);
+            $this->entityManager->persist($participant);
+
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+            return $this->redirectToRoute(
+                'gn.personnage',
+                ['gn' => $participant->getGn()->getId(), 'tab' => 'competences'],
+                303
+            );
+        }
+
+        return $this->render('_partials/delete.twig', [
+            'title' => 'Supprimer une potion de départ',
+            'form' => $form->createView(),
+            'entity' => $potion,
+            'breadcrumb' => [
+                ['route' => $this->generateUrl('personnage.list'), 'name' => 'Liste des personnages'],
+                [
+                    'route' => $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId()]),
+                    'name' => $personnage->getNom(),
+                ],
+                ['name' => 'Supprimer une potion de départ'],
+            ],
+            'content' => '',
+        ]);
+    }
 
     /**
      * Obtenir le document lié à une potion.

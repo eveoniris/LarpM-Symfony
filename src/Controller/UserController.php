@@ -818,8 +818,8 @@ class UserController extends AbstractController
                         $user->setConfirmationToken($user->generateToken());
                     }
 
-                    $entityManager->persist($user);
-                    $entityManager->flush();
+                    $this->entityManager->persist($user);
+                    $this->entityManager->flush();
 
                     if ($this->isEmailConfirmationRequired) {
                         $this->mailer->sendConfirmEmail($user);
@@ -884,7 +884,6 @@ class UserController extends AbstractController
 
     #[Route('/user/reset-password/{token}', name: 'user.reset-password', requirements: ['token' => Requirement::ASCII_SLUG])]
     public function resetPasswordAction(
-        EntityManagerInterface $entityManager,
         UserRepository $userRepository,
         Request $request,
         string $token,
@@ -940,8 +939,8 @@ class UserController extends AbstractController
                 );
 
                 // First set : importing from VA
-                $roles = [];
-                if (!$user->getPwd() && $rights = explode(',', $user->getRights())) {
+                $roles = $user->getRoles();
+                if (empty($user->getPwd()) && $rights = explode(',', $user->getRights())) {
                     // Get role from V1
                     foreach ($rights as $right) {
                         if (empty($right)) {
@@ -959,8 +958,8 @@ class UserController extends AbstractController
                 $user->setConfirmationToken(null);
                 $user->setEnabled(true);
 
-                $entityManager->persist($user);
-                $entityManager->flush();
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
                 $security->login(
                     $user,
                     'form_login',

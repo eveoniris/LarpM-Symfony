@@ -3,18 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\Annonce;
-use App\Entity\EtatCivil;
 use App\Entity\Gn;
 use App\Entity\Langue;
-use App\Entity\Restriction;
 use App\Entity\Territoire;
-use App\Form\EtatCivilForm;
-use App\Form\UserRestrictionForm;
+use App\Entity\User;
+use App\Repository\TerritoireRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
+use JetBrains\PhpStorm\Deprecated;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\When;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,42 +27,27 @@ class HomepageController extends AbstractController
      * Fourni la liste des pays, leur geographie et leur description.
      */
     #[Route('/world/countries.json', name: 'world.countries.json')]
-    public function countriesAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    public function countriesAction(): JsonResponse
     {
         return $this->getWorldTerritoireGeoData('countries');
     }
 
-    private function getWorldTerritoireGeoData(string $type): JsonResponse
+    /**
+     * Fourni la liste des fiefs.
+     */
+    #[Route('/world/fiefs.json', name: 'world.fiefs.json')]
+    public function fiefsAction(): JsonResponse
     {
-        $repoTerritoire = $this->entityManager->getRepository(Territoire::class);
-
-        $territoires = match ($type) {
-            'fiefs' => $repoTerritoire->findFiefs(),
-            'countries' => $repoTerritoire->findRoot(),
-            'regions' => $repoTerritoire->findRegions(),
-            default => throw new \Exception('Unknown territoire type : '.$type),
-        };
-
-        $data = [];
-        foreach ($territoires as $territoire) {
-            $data[] = $this->addGeoData($territoire);
-        }
-
-        return new JsonResponse($data);
+        return $this->getWorldTerritoireGeoData('fiefs');
     }
 
-    private function addGeoData($data): array
+    /**
+     * Fourni la liste des régions.
+     */
+    #[Route('/world/regions.json', name: 'world.regions.json')]
+    public function regionsAction(): JsonResponse
     {
-        return [
-            'id' => $data->getId(),
-            'geom' => $data->getGeojson(),
-            'name' => $data->getNom(),
-            'color' => $data->getColor(),
-            'description' => strip_tags((string)$data->getDescription()),
-            'groupes' => array_values($data->getGroupesPj()),
-            'desordre' => $data->getStatutIndex(),
-            'langue' => $data->getLanguePrincipale(),
-        ];
+        return $this->getWorldTerritoireGeoData('regions');
     }
 
     /**
@@ -83,15 +66,6 @@ class HomepageController extends AbstractController
     public function evenementAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         return $this->render('evenement.twig');
-    }
-
-    /**
-     * Fourni la liste des fiefs.
-     */
-    #[Route('/world/fiefs.json', name: 'world.fiefs.json')]
-    public function fiefsAction(): JsonResponse
-    {
-        return $this->getWorldTerritoireGeoData('fiefs');
     }
 
     #[Route('/api/{gn}/gdata', name: 'api.gdata', requirements: ['gn' => Requirement::DIGITS])]
@@ -183,7 +157,8 @@ class HomepageController extends AbstractController
         return new JsonResponse($groupes);
     }
 
-    public function indexAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    #[Deprecated]
+    public function indexAction(): RedirectResponse|Response
     {
         if (!$this->getUser()) {
             return $this->notConnectedIndexAction();
@@ -193,12 +168,16 @@ class HomepageController extends AbstractController
             return $this->redirectToRoute('newUser.step1', [], 303);
         }
 
-        $repoAnnonce = $entityManager->getRepository(Annonce::class);
+        $repoAnnonce = $this->entityManager->getRepository(Annonce::class);
         $annonces = $repoAnnonce->findBy(['archive' => false, 'gn' => null], ['update_date' => 'DESC']);
+
+        /** @var User $user */
+        $user = $this->getUser();
 
         return $this->render('homepage/index.twig', [
             'annonces' => $annonces,
-            'user' => $this->getUser(),
+            'participants' => $user->getParticipants(),
+            'user' => $user,
         ]);
     }
 
@@ -300,15 +279,6 @@ class HomepageController extends AbstractController
     }
 
     /**
-     * Fourni la liste des régions.
-     */
-    #[Route('/world/regions.json', name: 'world.regions.json')]
-    public function regionsAction(EntityManagerInterface $entityManager): JsonResponse
-    {
-        return $this->getWorldTerritoireGeoData('regions');
-    }
-
-    /**
      * Met à jour la geographie d'un pays.
      */
     public function updateCountryGeomAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
@@ -327,7 +297,7 @@ class HomepageController extends AbstractController
             'id' => $territoire->getId(),
             'geom' => $territoire->getGeojson(),
             'name' => $territoire->getNom(),
-            'description' => strip_tags((string)$territoire->getDescription()),
+            'description' => strip_tags((string) $territoire->getDescription()),
             'groupes' => array_values($territoire->getGroupesPj()),
         ];
 
@@ -341,5 +311,39 @@ class HomepageController extends AbstractController
     public function worldAction(): Response
     {
         return $this->render('world.twig');
+    }
+
+    private function getWorldTerritoireGeoData(string $type): JsonResponse
+    {
+        /** @var TerritoireRepository $repoTerritoire */
+        $repoTerritoire = $this->entityManager->getRepository(Territoire::class);
+
+        $territoires = match ($type) {
+            'fiefs' => $repoTerritoire->findFiefs(),
+            'countries' => $repoTerritoire->findRoot(),
+            'regions' => $repoTerritoire->findRegions(),
+            default => throw new \Exception('Unknown territoire type : '.$type),
+        };
+
+        $data = [];
+        foreach ($territoires as $territoire) {
+            $data[] = $this->addGeoData($territoire);
+        }
+
+        return new JsonResponse($data);
+    }
+
+    private function addGeoData($data): array
+    {
+        return [
+            'id' => $data->getId(),
+            'geom' => $data->getGeojson(),
+            'name' => $data->getNom(),
+            'color' => $data->getColor(),
+            'description' => strip_tags((string) $data->getDescription()),
+            'groupes' => array_values($data->getGroupesPj()),
+            'desordre' => $data->getStatutIndex(),
+            'langue' => $data->getLanguePrincipale(),
+        ];
     }
 }

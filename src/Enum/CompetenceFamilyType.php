@@ -99,6 +99,7 @@ enum CompetenceFamilyType: string
     {
         return match ($value) {
             'AgilitÃ©' => self::AGILITY,
+            'Alchimie' => self::ALCHEMY,
             'Armes d\'hast' => self::POLEARMS,
             'Armes Ã  1 main', 'Armes à 1 main' => self::ONE_HANDED_WEAPON,
             'Armes Ã  2 mains', 'Armes à 2 mains' => self::TWO_HANDED_WEAPON,

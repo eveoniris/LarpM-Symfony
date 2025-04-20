@@ -37,11 +37,6 @@ class GroupeGnRepository extends BaseRepository
         return reset($groupeGns);
     }
 
-    /**
-     * @param Personnage $personnage
-     * @param Gn|null $gn
-     * @param GroupeGn|null $notInGroupGn to exclude (when )
-     */
     public function getTitres(Personnage $personnage, ?Gn $gn = null): string
     {
         $rsm = new ResultSetMapping();
@@ -104,7 +99,7 @@ class GroupeGnRepository extends BaseRepository
                 DQL
             );
 
-        return (bool)$query
+        return (bool) $query
             ->setParameter('uid', $user->getId())
             ->setParameter('gid', $groupeGn->getId())
             ->getSingleScalarResult();

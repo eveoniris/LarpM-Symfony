@@ -251,7 +251,7 @@ class PersonnageController extends AbstractController
 
                 $this->log($competence, 'competence_add', true);
 
-                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'competences'], 303);
             }
 
             $form->get('id')->addError(new FormError($service->getErrorsAsString()));
@@ -2784,7 +2784,7 @@ class PersonnageController extends AbstractController
         if (!$lastCompetence) {
             $this->addFlash('error', 'Désolé, le personnage n\'a pas encore acquis de compétences');
 
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'competences'], 303);
         }
 
         $competence = new Competence();
@@ -2808,7 +2808,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'La compétence a été retirée');
 
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'competences'], 303);
         }
 
         return $this->render('personnage/removeCompetence.twig', [

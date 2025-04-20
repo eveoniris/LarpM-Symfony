@@ -4,65 +4,68 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Page d'accueil</a></li>
-		<li><a href="{{ path('gn.detail', {'gn' : participant.gn.id}) }}">{{ participant.gn.label }}</a></li>
-		<li class="active">Choix du personnage secondaire</li>
-	</ol>
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : participant.gn.label, 'route': path('gn.detail', {'gn': participant.gn.id}) },
+            {'name' : 'Choix du personnage secondaire' }
+        ]
+    } %}
 
-	<div class="row">
-	
-		<div class="col-md-6">
-			<div class="well">	
-				{{ form_start(form, {"attr": {"action": path('participant.personnageSecondaire', {'participant': participant.id}) }}) }}
-					<fieldset>
-						<legend>Choix de votre personnage secondaire</legend>
-						
-						
-						
-						
-							<div class="row">
-								<div class="col-md-2">
-									<p class="text-primary">
-										<i class="fa fa-exclamation fa-4x"></i>
-									</p>
-								</div>
-								<div class="col-md-10">
-									<p class="text-primary">
-									Le personnage secondaire est un archétype que vous pouvez utiliser dans le cas 
-									ou <strong>votre personnage principal viendrait à trépasser</strong> (ce que nous ne souhaitons pas, mais l'Hyborée
-									 est un monde violent dans lequel les pires choses sont possibles) ou <strong>si vous souhaitez l'utiliser
-									 dans une instance à la place de l'autre</strong> (plus utile, ou toute autre raison)
-									 </p>
-								</div>
-							 </div>
-						
-						{{ form(form) }}
-					</fieldset>
-				{{ form_end(form) }}
-			</div>
-		</div>
-		
-		<div class="col-md-6">
-			<div class="well">
-				
-				
-				<table class="table table-condensed table-striped table-bordered">
-					<caption >
-						<h5>Détail des archétypes</h5>
-					</caption>
-					<tbody>
-						{%  for personnageSecondaire in personnageSecondaires %}
-							<tr>
-								<td><strong>{{ personnageSecondaire.classe.label }}</strong></td>
-								<td>
-									{{ personnageSecondaire.competences|join(' / ') }}
-								</td>
-							</tr>
-						{%  endfor %}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-{% endblock body %}
+<div class="well well-sm">
+
+    <div class="header">
+        <h5>Choix du personnage secondaire</h5>
+    </div>
+
+    {% set noticeHtml %}
+        Le personnage secondaire est un archétype que vous pouvez utiliser dans le cas
+        où <strong>votre personnage principal viendrait à trépasser</strong>
+        (ce que nous ne souhaitons pas, mais l'Hyborée est un monde violent dans lequel les pires choses sont possibles) ou
+        <strong>si vous souhaitez l'utiliser dans une instance à la place de l'autre</strong>
+        (plus utile, ou toute autre raison)
+    {% endset %}
+
+    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : noticeHtml} %}
+
+    <div class="row">
+
+        <div class="col-md-6">
+            {{ form_start(form) }}
+            <div class="card text-bg mb-3 overflow-auto">
+                <div class="header"><h5>{{ field_label(form.personnageSecondaire) }}</h5></div>
+                <div class="card-body">
+                    {{ form_errors(form) }}
+
+                    {{ form_widget(form.personnageSecondaire) }}
+
+                    <div class="w-100 d-flex justify-content-center m-2">
+                        {{ form_row(form.choice, { 'label': 'Enregistrer', 'attr' : {'class' : 'btn btn-secondary'} }) }}
+                    </div>
+                </div>
+            </div>
+            {{ form_end(form) }}
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card text-bg mb-3 overflow-auto">
+                <div class="header mb-0 pb-0"><h5 class="mb-0">Détail des archétypes</h5></div>
+                <div class="card-body p-0">
+
+                    <table class="table table-condensed table-striped table-bordered m-0">
+                        <tbody>
+                        {% for personnageSecondaire in personnageSecondaires %}
+                            <tr>
+                                <th>{{ personnageSecondaire.classe.label }}</th>
+                                <td>
+                                    {% include 'classe/fragment/competenceFamiliesBadges.twig' with {'competenceFamilies': personnageSecondaire.competences} %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock body %}

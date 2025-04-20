@@ -1,86 +1,142 @@
+<div class="row">
+    <div class="col-md-3">
+        <div class="well well-sm">
+            {# si l'utilisateur est scénariste, lui afficher les liens vers les groupes dont il a la responsabilité #}
+            {% if is_granted('ROLE_SCENARISTE', app.user) %}
+                {% include 'homepage/fragment/scenariste.twig' with {'user': user} %}
+            {% endif %}
 
-	<div class="row">
-		<div class="col-md-3">
-			<div class="well well-sm">
-				{# si l'utilisateur est scénariste, lui afficher les liens vers les groupes dont il a la responsabilité #}
-				{% if is_granted('ROLE_SCENARISTE', app.user) %}
-					{% include 'homepage/fragment/scenariste.twig' with {'user': user} %}
-				{% endif %}
+            {# gestion administrative #}
+            {% include 'homepage/fragment/administration.twig' with {'user': user} %}
+        </div>
+    </div>
+    <div class="col-md-9">
+        {# affichage des événements passé et futur #}
+        <div class="well well-sm">
+            <div class="header">
+                <h5>Vos participations aux grandeurs natures</h5>
+            </div>
 
-				{# gestion administrative #}
-				{% include 'homepage/fragment/administration.twig' with {'user': user} %}
-			</div>
-		</div>
-		<div class="col-md-9">
-			{# affichage des événements passé et futur #}
-			<div class="well well-sm">
-				<div class="header">
-					<h5>Vos inscriptions</h5>
-				</div>
-
-				{% if not user or not user.participants %}
-					<p>Vous ne participez à aucun jeu. Nous vous proposons de parcourir la liste des jeux proposés par Eve-Oniris et d'en sélectionner un.</p>
-				{% endif %}
-
-				<ul class="list-group">
-					<li class="list-group-item">
-						<a href="{{ path('gn.list') }}">Voir la liste des Grandeurs natures</a>
-					</li>
-				{% for participant in user.participants %}
-					<li class="list-group-item">
-    					<a href="{{ path('gn.detail', {'gn': participant.gn.id}) }}">
-    						{{ participant.gn.label }}
-    					</a>
-						&nbsp;//&nbsp;
-    					{% if not participant.gn.isPast %}
-	    					{% if participant.billet %}
-	    						<span class="text-success">{{ participant.billet.label }}</span>
-	    					{% else %}
-	    						<span class="text-danger">Un billet est obligatoire pour l'accès au jeu :
-	    						<a href="{{ path('gn.billetterie', {'gn': participant.gn.id}) }}">Billetterie</a>
-	    						</span>
-	    					{% endif %}
-	    				{% else %}
-	    					<span class="text-notice">Le jeu est terminé</span>
-	    				{% endif %}
-						{% if participant.personnage  %}
-							// <a href="{{ path('gn.personnage',{'gn': participant.gn.id}) }}">{{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}</a>
-						{% else %}
-							// Vous n'avez pas de personnage actif pour ce jeu.
-						{% endif %}
-						{% if participant.groupeGn %}
-							- <a href="{{ path('groupeGn.groupe',{'groupeGn': participant.groupeGn.id}) }}">{{ participant.groupeGn.groupe.nom }}</a>
-						{% else %}
-							- <a href="{{ path('participant.groupe.join', {'participant': participant.id}) }}"><i class="fa fa-users"></i> Rejoindre un groupe</a>
-						{% endif %}
-    				</li>
-    			{% endfor %}
-				</ul>
-			</div>
+            {% if participants is not defined %}
+                {% set noParticipationHtml %}
+                    Vous ne participez à aucun jeu. Nous vous proposons de parcourir <a
+                        href="{{ path('gn.list') }}">la liste des jeux
+                    proposés</a> par Eve-Oniris et d'en sélectionner un.
+                {% endset %}
+                {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : noParticipationHtml} %}
+            {% else %}
 
 
-			{% if is_granted('ROLE_SCENARISTE', app.user) %}
-				<div class="well well-sm">
-					<div class="header">
-						<h5>Intrigues liées à vos groupes</h5>
-					</div>
-					<a href="{{ path('intrigue.list') }}">Liste de toutes les intrigues actives</a>
-					<div class="list-group">
-						{% for groupe in app.user.groupeScenariste %}
-							{% for intrigueHasGroupe in groupe.intrigueHasGroupes %}
-								{% if intrigueHasGroupe.intrigue.state ==  "ACTIF" %}
-									<a class="list-group-item text-success" href="{{ path('intrigue.detail', {'intrigue': intrigueHasGroupe.intrigue.id}) }}">{{groupe.nom}} -- {{ intrigueHasGroupe.intrigue.titre }}</a>
-								{% endif %}
-							{% else %}
-								<a class="list-group-item text-danger" href="{{ path('intrigue.add') }}">Attention, aucune intrigue active ne concerne votre groupe {{ groupe.nom }}. Vous devriez peut-être en définir une.</a>
-							{% endfor %}
-						{% endfor %}
-					</div>
-				</div>
-			{% endif %}
+                <div class="d-flex justify-content-end mb-2">
+                    <a class="btn btn-sm btn-secondary" href="{{ path('gn.list') }}">Voir la liste des grandeurs
+                        natures</a>
+                </div>
 
-			{# affichage des annonces #}
-			{% include 'homepage/fragment/annonces.twig' with {'annonces': annonces} %}
+                <table class="table table-condensed table-striped table-bordered table-hover">
+                    {% include '_partials/thead.twig' with  { 'route': 'connaissance.list', 'rows': [
+                        {'name' : 'GN', 'css' : 'text-center'},
+                        {'name' : 'Statut', 'css' : 'text-center'},
+                        {'name' : 'Billet', 'css' : 'text-center'},
+                        {'name' : 'Groupe', 'css' : 'text-center'},
+                        {'name' : 'Personnage', 'css' : 'text-center'},
+                    ]} %}
+                    <tbody>
+                    {% for participant in participants|sort((a, b) => a.id <=> b.id) %}
+                        <tr>
+                            <td class="text-center col-1 align-middle">
+                                <a href="{{ path('gn.detail', {'gn': participant.gn.id}) }}">
+                                    {{ participant.gn.label }}
+                                </a>
+                            </td>
+                            <td class="text-center col-1 align-middle">
+                                {% if participant.gn.isPast %}
+                                    <span class="text-notice">Terminé</span>
+                                {% else %}
+                                    <span class="text-notice">Inscrit</span>
+                                {% endif %}
+                            </td>
+                            <td class="col-2 text-center align-middle">
+                                {% if participant.billet %}
+                                    <span class="text-success"><i
+                                                class="fa-solid fa-ticket"></i> {{ participant.billet.label }}</span>
+                                {% else %}
+                                    <div>
+                                        <span class="text-danger">Un billet est obligatoire pour l'accès au jeu !</span>
+                                        <a class="btn btn-small btn-secondary"
+                                           href="{{ path('gn.billetterie', {'gn': participant.gn.id}) }}"><i
+                                                    class="fa-solid fa-ticket"></i> Billetterie</a>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td class="col-4 align-middle">
+                                {% if participant.groupeGn %}
+                                    <i class="fa fa-users"></i> <a
+                                        href="{{ path('groupeGn.groupe',{'groupeGn': participant.groupeGn.id}) }}">{{ participant.groupeGn.groupe.nom }}</a>
+                                {% else %}
+                                    <div class="w-100 d-flex justify-content-center">
+                                        <a class="btn btn-sm btn-secondary"
+                                           href="{{ path('participant.groupe.join', {'participant': participant.id}) }}">
+                                            <i class="fa fa-users"></i> Rejoindre un groupe
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td class="col-4 align-middle">
+                                {% if participant.personnage %}
+                                    <i class="fa fa-user"></i> <a
+                                        href="{{ path('gn.personnage',{'gn': participant.gn.id}) }}">{{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}</a>
+                                {% else %}
+                                    {% if participant.session %}
+                                        <div class="w-100 d-flex justify-content-center">
+                                            <a class="btn btn-sm btn-secondary me-2"
+                                               href="{{ path('participant.personnage.old', {'participant': participant.id}) }}">
+                                                <i class="fa fa-clock-rotate-left"></i> Reprendre un ancien
+                                            </a>
+                                            <a class="btn btn-sm btn-secondary"
+                                               href="{{ path('participant.personnage.new', {'participant': participant.id}) }}">
+                                                <i class="fa-solid fa-user-plus"></i> Créer un nouveau
+                                            </a>
+                                        </div>
+                                    {% else %}
+                                        <div class="d-flex justify-content-center">
+                                            <span class="text-danger">Requiert un groupe</span>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
 
-		</div>
-	</div>
+        {% if is_granted('ROLE_SCENARISTE', app.user) %}
+            <div class="well well-sm">
+                <div class="header">
+                    <h5>Intrigues liées à vos groupes</h5>
+                </div>
+                <a href="{{ path('intrigue.list') }}">Liste de toutes les intrigues actives</a>
+                <div class="list-group">
+                    {% for groupe in app.user.groupeScenariste %}
+                        {% for intrigueHasGroupe in groupe.intrigueHasGroupes %}
+                            {% if intrigueHasGroupe.intrigue.state ==  "ACTIF" %}
+                                <a class="list-group-item text-success"
+                                   href="{{ path('intrigue.detail', {'intrigue': intrigueHasGroupe.intrigue.id}) }}">{{ groupe.nom }}
+                                    -- {{ intrigueHasGroupe.intrigue.titre }}</a>
+                            {% endif %}
+                        {% else %}
+                            <a class="list-group-item text-danger" href="{{ path('intrigue.add') }}">Attention, aucune
+                                intrigue active ne concerne votre groupe {{ groupe.nom }}. Vous devriez peut-être en
+                                définir une.</a>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {# affichage des annonces #}
+        {% include 'homepage/fragment/annonces.twig' with {'annonces': annonces} %}
+
+    </div>
+</div>

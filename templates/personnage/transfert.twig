@@ -16,7 +16,7 @@
 	<div class="well bs-component">
 		{{ form_start(form, {"attr": {"action": path('personnage.transfert',{'personnage':personnage.id}) }}) }}
 			<fieldset>
-				<legend>Tranfert de #{{ personnage.id }} - {{ personnage.nom }} ({{ personnage.surnom }}) - <small>appartient actuellement à {{ personnage.user }}</small></legend>
+				<legend>Tranfert de #{{ personnage.id }} - {{ personnage.nom }} ({{ personnage.surnom }}) - <small>appartient actuellement à {{ personnage.user|default('personne') }}</small></legend>
 						
 				
 	

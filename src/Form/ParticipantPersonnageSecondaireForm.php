@@ -3,15 +3,13 @@
 
 namespace App\Form;
 
+use App\Entity\Participant;
+use App\Entity\PersonnageSecondaire;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\ParticipantPersonnageSecondaireForm.
- *
- * @author kevin
- */
 class ParticipantPersonnageSecondaireForm extends AbstractType
 {
     /**
@@ -19,11 +17,11 @@ class ParticipantPersonnageSecondaireForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('personnageSecondaire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+        $builder->add('personnageSecondaire', EntityType::class, [
             'label' => 'Choisissez un archétype',
             'required' => true,
             'expanded' => true,
-            'class' => \App\Entity\PersonnageSecondaire::class,
+            'class' => PersonnageSecondaire::class,
             'choice_label' => 'label']);
     }
 
@@ -33,7 +31,7 @@ class ParticipantPersonnageSecondaireForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'class' => \App\Entity\Participant::class,
+            'class' => Participant::class,
         ]);
     }
 
