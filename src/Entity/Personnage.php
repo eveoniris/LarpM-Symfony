@@ -149,7 +149,7 @@ class Personnage extends BasePersonnage implements \Stringable
             ++$heroisme;
         }
 
-        if ($this->getCompetenceNiveau('Sauvagerie') >= 1) {
+        if ($this->getCompetenceNiveau(CompetenceFamilyType::SAVAGERY) >= 1) {
             ++$heroisme;
         }
 
@@ -475,12 +475,12 @@ class Personnage extends BasePersonnage implements \Stringable
      *
      * @param unknown $label
      */
-    public function getCompetencePugilat($label): int|float
+    public function getCompetencePugilat(string $label): int|float
     {
         $niveau = 0;
         foreach ($this->getCompetences() as $competence) {
-            if ($competence->getCompetenceFamily()->getLabel() == $label) {
-                $niveau += $competence->getLevel()->getIndex();
+            if ($competence->getCompetenceFamily()?->getLabel() === $label) {
+                $niveau += $competence->getLevel()?->getIndex();
             }
         }
 
