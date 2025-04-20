@@ -33,7 +33,7 @@
 
             {% if personnage.materiel %}
                 <div class="list-group-item  d-flex justify-content-between">
-                    <div class="list-group-item-text">{{ personnage.materiel }}</div>
+                    <div class="list-group-item-text">{{ personnage.materiel|markdown_to_html }}</div>
                 </div>
             {% endif %}
         </div>

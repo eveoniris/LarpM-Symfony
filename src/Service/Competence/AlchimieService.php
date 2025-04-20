@@ -12,7 +12,6 @@ class AlchimieService extends CompetenceService
 
     public function give(): void
     {
-        dump('APLLY RULE');
         $this->applyRules($this->getRules());
     }
 
@@ -24,7 +23,6 @@ class AlchimieService extends CompetenceService
     public function getRules(): array
     {
         // TODO FILTER if personnage know all
-        dump('GET RULE');
         return [
             // le personnage doit choisir 2 potions de niveau apprenti
             Level::NIVEAU_1 => [PersonnageTrigger::TAG_ALCHIMIE_APPRENTI => 2],

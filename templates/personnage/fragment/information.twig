@@ -286,6 +286,7 @@
     {% endif %}
 
     {% set heroisme = personnageService.allHeroisme(personnage)|default(0) %}
+
     {% set heroismeCollapse = false %}
     {% if canSeeDetail and heroisme > 0 %}
         {% set heroismeCollapseHtml %}
