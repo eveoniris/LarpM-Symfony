@@ -611,9 +611,9 @@ class PersonnageService
         return $all;
     }
 
-    public function getAllHeroismeDisplay(Personnage $personnage): Collection
+    public function getAllHeroismeDisplay(Personnage $personnage): array
     {
-        $history = $personnage->getHeroismeHistories();
+        $history = $personnage->getDisplayHeroisme();
 
         foreach ($this->getAllBonus($personnage, BonusType::HEROISME) as $bonus) {
             if (!$bonus->isHeroisme()) {
@@ -865,7 +865,7 @@ class PersonnageService
 
     public function getAllPugilatDisplay(Personnage $personnage): array
     {
-        $history = $personnage->getDisplayPugilat();
+        $histories = $personnage->getDisplayPugilat();
 
         foreach ($this->getAllBonus($personnage, BonusType::PUGILAT) as $bonus) {
             if (!$bonus->isPugilat()) {
@@ -881,10 +881,10 @@ class PersonnageService
             $pugilatHistory->setPugilat((int) $bonus->getValeur());
             $pugilatHistory->setExplication($bonus->getTitre());
 
-            $history[] = $pugilatHistory;
+            $histories[] = $pugilatHistory;
         }
 
-        return $history;
+        return $histories;
     }
 
     public function getAllRenomme(Personnage $personnage): int

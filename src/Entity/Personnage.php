@@ -290,11 +290,7 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function getDisplayHeroisme(): array
     {
-        $heroismeHistories = [];
-
-        foreach ($this->getHeroismeHistories() as $heroismeHistory) {
-            $heroismeHistories[] = $heroismeHistory;
-        }
+        $heroismeHistories = [...$this->getHeroismeHistories()];
 
         if ($this->getCompetenceNiveau('Agilité') >= 2) {
             $heroismeHistory = new HeroismeHistory();
@@ -350,16 +346,12 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function getDisplayPugilat(): array
     {
-        $pugilatHistories = [];
+        $pugilatHistories = [...$this->getPugilatHistories()];
 
         $pugilatHistory = new PugilatHistory();
         $pugilatHistory->setPugilat(1);
         $pugilatHistory->setExplication('Score de base');
         $pugilatHistories[] = $pugilatHistory;
-
-        foreach ($this->getPugilatHistories() as $pugilatHistory) {
-            $pugilatHistories[] = $pugilatHistory;
-        }
 
         if ($this->getCompetencePugilat('Agilité') > 0) {
             $pugilatHistory = new PugilatHistory();
