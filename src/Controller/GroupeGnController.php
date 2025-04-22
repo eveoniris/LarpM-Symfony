@@ -14,6 +14,7 @@ use App\Form\GroupeGn\GroupeGnPlaceAvailableForm;
 use App\Form\GroupeGn\GroupeGnResponsableForm;
 use App\Repository\GroupeGnRepository;
 use App\Repository\ParticipantRepository;
+use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -26,19 +27,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Translation\TranslatableMessage;
 
-/**
- * LarpManager\Controllers\GroupeGnController.
- *
- * @author kevin
- */
+
 class GroupeGnController extends AbstractController
 {
     /**
      * Ajout d'un groupe à un jeu.
      */
     #[Route('/groupeGn/{groupe}/add/', name: 'groupeGn.add')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA), message: 'You are not allowed to access to this.')]
     public function addAction(
         Request $request,
         #[MapEntity] Groupe $groupe,

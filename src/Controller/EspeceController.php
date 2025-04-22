@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Enum\Role;
 use App\Form\Espece\EspeceForm;
 use App\Repository\EspeceRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -22,6 +23,7 @@ class EspeceController extends AbstractController
 {
     #[Route(name: 'index')]
     #[Route(name: 'list')]
+    #[IsGranted(new MultiRolesExpression(Role::REGLE), message: 'You are not allowed to access to this.')]
     public function indexAction(
         Request $request,
         PagerService $pagerService,

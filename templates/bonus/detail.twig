@@ -67,7 +67,7 @@
 
                     <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Type</div>
-                        <div class="list-group-item-text ps-1">{{ bonus.type.value }}</div>
+                        <div class="list-group-item-text ps-1">{{ bonus.type.value|default('-') }}</div>
                     </div>
 
                     <div class="list-group-item">
@@ -78,6 +78,11 @@
                     <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Domaine d'application</div>
                         <div class="list-group-item-text ps-1">{{ bonus.application }}</div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Compétence</div>
+                        <div class="list-group-item-text ps-1">{{ bonus.competence.label|default('-') }}</div>
                     </div>
 
                     <div class="list-group-item">

@@ -9,8 +9,8 @@ use App\Repository\ClasseRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +26,7 @@ class ClasseController extends AbstractController
     public function indexAction(
         Request $request,
         PagerService $pagerService,
-        ClasseRepository $classeRepository
+        ClasseRepository $classeRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($classeRepository)->setLimit(50);
 
@@ -45,8 +45,9 @@ class ClasseController extends AbstractController
     }
 
     #[Route('/add', name: 'add')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
     public function addAction(
-        Request $request
+        Request $request,
     ): Response {
         return $this->handleCreateOrUpdate(
             $request,
@@ -56,9 +57,10 @@ class ClasseController extends AbstractController
     }
 
     #[Route('/{classe}/update', name: 'update')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
     public function updateAction(
         Request $request,
-        #[MapEntity] Classe $classe
+        #[MapEntity] Classe $classe,
     ): RedirectResponse|Response {
         return $this->handleCreateOrUpdate(
             $request,
@@ -68,18 +70,19 @@ class ClasseController extends AbstractController
     }
 
     #[Route('/{classe}', name: 'detail', requirements: ['classe' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::ADMIN, Role::REGLE), message: 'You are not allowed to access to this.')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
     public function detailAction(#[MapEntity] Classe $classe): Response
     {
         return $this->render('classe/detail.twig', ['classe' => $classe]);
     }
 
     #[Route('/{classe}/personnages', name: 'personnages', requirements: ['classe' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
     public function personnagesAction(
         Request $request,
         #[MapEntity] Classe $classe,
         PersonnageService $personnageService,
-        ClasseRepository $classeRepository
+        ClasseRepository $classeRepository,
     ): Response {
         $routeName = 'classe.personnages';
         $routeParams = ['classe' => $classe->getId()];
@@ -130,8 +133,9 @@ class ClasseController extends AbstractController
         'GET',
         'POST',
     ])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
     public function deleteAction(
-        #[MapEntity] Classe $classe
+        #[MapEntity] Classe $classe,
     ): RedirectResponse|Response {
         return $this->genericDelete(
             $classe,
@@ -156,13 +160,12 @@ class ClasseController extends AbstractController
     #[Route('/{classe}/image/{sexe}', name: 'image', methods: ['GET'])]
     public function imageAction(
         #[MapEntity] Classe $classe,
-        string $sexe
+        string $sexe,
     ): Response {
         $image = $classe->getImageM();
         if ('F' === $sexe) {
             $image = $classe->getImageF();
         }
-
 
         $filename = __DIR__.'/../../assets/img/'.$image;
 
@@ -179,7 +182,7 @@ class ClasseController extends AbstractController
         array $breadcrumb = [],
         array $routes = [],
         array $msg = [],
-        ?callable $entityCallback = null
+        ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         return parent::handleCreateOrUpdate(
             request: $request,

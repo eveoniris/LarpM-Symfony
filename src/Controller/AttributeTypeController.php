@@ -23,7 +23,7 @@ class AttributeTypeController extends AbstractController
     public function indexAction(
         Request $request,
         PagerService $pagerService,
-        AttributeTypeRepository $attributeTypeRepository
+        AttributeTypeRepository $attributeTypeRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($attributeTypeRepository);
 
@@ -91,7 +91,7 @@ class AttributeTypeController extends AbstractController
         array $breadcrumb = [],
         array $routes = [],
         array $msg = [],
-        ?callable $entityCallback = null
+        ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         return parent::handleCreateOrUpdate(
             request: $request,

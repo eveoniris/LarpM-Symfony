@@ -89,6 +89,7 @@ class BilletController extends AbstractController
     #[Route('/billet/{billet}/detail', name: 'billet.detail')]
     public function detailAction(Request $request, #[MapEntity] Billet $billet): Response
     {
+        // TODO ? access si possède le billet ?
         return $this->render(
             'billet\detail.twig',
             ['billet' => $billet]
