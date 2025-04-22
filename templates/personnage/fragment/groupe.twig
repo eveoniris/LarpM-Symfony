@@ -11,7 +11,7 @@
         <div class="list-group">
             {% if participant.groupeGn %}
                 <div class="list-group-item">
-                    <a href="{{ path('groupeGn.groupe', {'groupeGn': participant.groupeGn.id }) }}">{{ participant.session.groupe.id }} - {{ participant.session.groupe.nom }}</a>
+                    <a href="{{ path('groupe.detail', {'groupeGn': participant.groupeGn.id, 'groupe': participant.groupeGn.grouope.id }) }}">{{ participant.session.groupe.id }} - {{ participant.session.groupe.nom }}</a>
                 </div>
 
                 {% if participant.session.groupe.scenariste %}

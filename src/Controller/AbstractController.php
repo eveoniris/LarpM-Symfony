@@ -34,6 +34,22 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
 {
+    public const IS_ADMIN = 'isAdmin';
+    public const CAN_WRITE = 'canWrite';
+    public const CAN_READ = 'canRead';
+    public const CAN_READ_PRIVATE = 'canReadPrivate';
+    public const CAN_READ_SECRET = 'canReadSecret';
+    public const CAN_MANAGE = 'canManage';
+
+    protected array $can = [
+        self::CAN_WRITE => false,
+        self::CAN_READ => false,
+        self::CAN_MANAGE => false,
+        self::CAN_READ_PRIVATE => false,
+        self::CAN_READ_SECRET => false,
+        self::IS_ADMIN => false,
+    ];
+
     public function __construct(
         protected EntityManagerInterface $entityManager,
         protected RequestStack $requestStack,
@@ -48,9 +64,47 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     ) {
     }
 
+    public function setCan(string $who, bool $permission): AbstractController
+    {
+        $this->can[$who] = $permission;
+
+        return $this;
+    }
+
+    public function can($key): bool
+    {
+        return $this->getCan()[$key] ?? false;
+    }
+
     protected function ListSearchForm(): FormInterface
     {
         return $this->pageRequest->getForm();
+    }
+
+    protected function checkHasAccess(array $roles, ?callable $callable): void
+    {
+        /** @var User $loggedUser */
+        $loggedUser = $this->getUser();
+        // Doit être connecté
+        if (!$loggedUser || !$this->isGranted(Role::USER->value)) {
+            throw new AccessDeniedException();
+        }
+
+        // Est un niveau admin suffisant
+        if ($roles) {
+            /** @var Role $role */
+            foreach ($roles as $role) {
+                if ($this->isGranted($role->value)) {
+                    return;
+                }
+            }
+        }
+
+        if (is_callable($callable) && $callable()) {
+            return;
+        }
+
+        throw new AccessDeniedException();
     }
 
     protected function genericDelete(
@@ -119,13 +173,39 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             }
         }
 
+        $parameters = [...$this->getCan(), ...$parameters];
+
+       // dump($parameters);
+
         return parent::render($view, $parameters, $response);
+    }
+
+    protected function getCan(array $values = []): array
+    {
+        $can = [...$this->can, ...$values];
+        if ($can[self::IS_ADMIN] || $this->isGranted(Role::ADMIN->value)) {
+            foreach ($can as &$c) {
+                $c = true;
+            }
+        }
+
+        if ($can[self::CAN_WRITE]) {
+            $can[self::CAN_READ] = true;
+        }
+
+        if ($can[self::CAN_READ_PRIVATE]) {
+            $can[self::CAN_READ] = true;
+        }
+
+        return $can;
     }
 
     protected function getRequestLimit(int $defLimit = 10): int
     {
         return $this->pageRequest->getLimit($defLimit);
     }
+
+    // TODO change to orderBy service
 
     #[Deprecated]
     protected function getRequestOrder(
@@ -157,8 +237,6 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     {
         return $this->pageRequest->getOrderBy()->setDefaultOrderDir($defOrderDir)->getSort();
     }
-
-    // TODO change to orderBy service
 
     protected function getRequestPage(int $defPage = 1): int
     {
@@ -354,6 +432,25 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return null;
     }
 
+    /*
+     * Sample
+     *
+     * For a modal confirm button :
+     * ->add('delete', ButtonType::class, [
+     *     'label' => 'Supprimer',
+     *     'attr' => [
+     *         'value' => 'Submit',
+     *         'data-bs-toggle' => 'modal',
+     *         'data-bs-target' => '#mainModal',
+     *         'data-bs-title' => 'Confirmation',
+     *         'data-bs-body' => 'Confirmez-vous vouloir supprimer cette entrée ?',
+     *         'data-bs-action' => $this->generateUrl('age.delete', ['age' => $age->getId()]),
+     *         'class' => 'btn btn-secondary btn-confirm-conf',
+     *     ],
+     * ]
+     * );
+     */
+
     protected function sendCsv(
         string $title,
         ?BaseRepository $repository = null,
@@ -466,25 +563,6 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return $response;
     }
 
-    /*
-     * Sample
-     *
-     * For a modal confirm button :
-     * ->add('delete', ButtonType::class, [
-     *     'label' => 'Supprimer',
-     *     'attr' => [
-     *         'value' => 'Submit',
-     *         'data-bs-toggle' => 'modal',
-     *         'data-bs-target' => '#mainModal',
-     *         'data-bs-title' => 'Confirmation',
-     *         'data-bs-body' => 'Confirmez-vous vouloir supprimer cette entrée ?',
-     *         'data-bs-action' => $this->generateUrl('age.delete', ['age' => $age->getId()]),
-     *         'class' => 'btn btn-secondary btn-confirm-conf',
-     *     ],
-     * ]
-     * );
-     */
-
     protected function sendNoImageAvailable($path = 'no'): BinaryFileResponse
     {
         $response = new BinaryFileResponse(
@@ -499,32 +577,5 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         return $response->send();
-    }
-
-    protected function checkHasAccess(array $roles, ?callable $callable): void
-    {
-
-        /** @var User $loggedUser */
-        $loggedUser = $this->getUser();
-        // Doit être connecté
-        if (!$loggedUser || !$this->isGranted(Role::USER->value)) {
-            throw new AccessDeniedException();
-        }
-
-        // Est un niveau admin suffisant
-        if ($roles) {
-            /** @var Role $role */
-            foreach ($roles as $role) {
-                if ($this->isGranted($role->value)) {
-                    return;
-                }
-            }
-        }
-
-        if (is_callable($callable) && $callable()) {
-            return;
-        }
-
-        throw new AccessDeniedException();
     }
 }

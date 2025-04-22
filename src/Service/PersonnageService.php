@@ -1265,9 +1265,23 @@ class PersonnageService
             return false;
         }
 
-        // $groupeGn = $groupe->getGroupeGns()->last()->get
+        /** @var GroupeGn $groupeGn */
+        if (!$groupeGn = $groupe->getGroupeGns()->last()) {
+            return false;
+        }
 
-        return false;
+        return $groupeGn->getParticipant()?->getUser()?->getId()
+            ?? $groupe->getUserRelatedByResponsableId()?->getId() === $user->getId();
+    }
+
+    public function isUserIsGroupeMember(Groupe $groupe): bool
+    {
+        /** @var User $user */
+        if (!$user = $this->security->getUser()) {
+            return false;
+        }
+
+        return $user->getLastParticipant()?->getGroupe()?->getId() === $groupe->getId();
     }
 
     public function getGroupeDebriefingVisibleForCurrentUser(Groupe $groupe): ArrayCollection
@@ -1334,12 +1348,10 @@ class PersonnageService
 
     public function isMemberOfGroup(Personnage $personnage, Groupe $groupe): bool
     {
-        return $groupe->getPersonnages()->contains($personnage);
-    }
+        /** @var GroupeGn $groupeGn * */
+        $groupeGn = $groupe->getGroupeGns()->last();
 
-    public function getGroupeVisibility(Personnage $personnage, Groupe $groupe): string
-    {
-        $groupe->getPersonnage();
+        return $groupeGn->getPersonnages()->contains($personnage);
     }
 
     public function getHumanEspece(): Espece

@@ -14,7 +14,6 @@ use App\Entity\Ingredient;
 use App\Entity\Participant;
 use App\Entity\Ressource;
 use App\Entity\Territoire;
-use App\Entity\User;
 use App\Enum\Role;
 use App\Form\BackgroundForm;
 use App\Form\Groupe\GroupeCompositionForm;
@@ -40,7 +39,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -532,7 +530,6 @@ class GroupeController extends AbstractController
         Request $request,
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-
         $this->checkHasAccess(
             [Role::ORGA, Role::SCENARISTE],
             fn () => $this->personnageService->isUserIsGroupeResponsable($groupe)
@@ -564,10 +561,12 @@ class GroupeController extends AbstractController
      */
     #[Route('/{groupe}', name: 'detail')]
     #[Route('/{groupe}/gn/{gn}', name: 'detail.gn')]
+    #[Route('/{groupe}/gn/{gn}/{groupeGn}', name: 'groupeGn')]
     public function detailAction(
         Request $request,
         #[MapEntity] ?Groupe $groupe,
         #[MapEntity] ?Gn $gn = null,
+        #[MapEntity] ?GroupeGn $groupeGn = null,
     ): RedirectResponse|Response {
         /*
          * Si le groupe existe, on affiche son détail
@@ -579,42 +578,15 @@ class GroupeController extends AbstractController
             return $this->redirectToRoute('groupe.list');
         }
 
-        $canSeePrivateDetail = $this->isGranted(Role::WARGAME->value);
-        $canEdit = $this->isGranted(Role::WARGAME->value);
-        // Est-ce un membre du groupe ?
-        if (!$canSeePrivateDetail) {
-            $responsable = $groupe->getUserRelatedByResponsableId();
-            $user = $this->getUser();
-            if ($responsable && $user && $responsable?->getId() === $user?->getId()) {
-                $canSeePrivateDetail = true;
-            } else {
-                /** @var Participant $participant */
-                $participant = $this->getUser()?->getLastParticipant();
-                if ($participant) {
-                    $canSeePrivateDetail = $participant->getGroupeGn()?->getGroupe()->getId() === $groupe->getId();
-                }
-            }
-        }
-
-        // est-ce un personnage titré (peut être extérieur au groupe)
-        $groupeGn = $groupe->getGroupeGns()->last();
-        if (!$canSeePrivateDetail) {
-            /** @var GroupeGn $groupeGn */
-            if ($groupeGn) {
-                $canSeePrivateDetail = $groupeGn->hasTitle($this->getUser());
-                $canEdit = $groupeGn->hasTitle($this->getUser());
-            }
-        }
+        $this->hasAccess($groupe, $gn, $groupeGn, [Role::WARGAME]);
 
         return $this->render(
             'groupe/detail.twig',
             [
                 'groupe' => $groupe,
+                'gn' => $gn,
                 'groupeGn' => $groupeGn,
                 'tab' => $request->get('tab', 'detail'),
-                'canSeePrivateDetail' => $canSeePrivateDetail,
-                'canEdit' => $canEdit,
-                'gn' => $gn,
             ]
         );
     }
@@ -1656,5 +1628,42 @@ class GroupeController extends AbstractController
         return $this->render('groupe/users.twig', [
             'groupe' => $groupe,
         ]);
+    }
+
+    protected function hasAccess(Groupe $groupe, ?Gn $gn = null, ?GroupeGn $groupeGn = null, array $roles = []): void
+    {
+        if ($isResponsable = $this->personnageService->isUserIsGroupeResponsable($groupe)) {
+            $isMembre = true;
+        } else {
+            $isMembre = $this->personnageService->isUserIsGroupeMember($groupe);
+        }
+
+        $groupeGn ??= $groupe->getGroupeGns()->last();
+        if (!$groupeGn && $gn) {
+            foreach ($groupe->getGroupeGns() as $grpGn) {
+                if ($grpGn?->getGn()?->getId() === $gn->getId()) {
+                    $groupeGn = $grpGn;
+                }
+            }
+        }
+
+        $hasTitle = false;
+        if ($groupeGn) {
+            $hasTitle = $groupeGn->hasTitle($this->getUser());
+        }
+
+        // TODO check if membre can read secret
+
+        $this->setCan(self::IS_ADMIN, $this->isGranted(Role::WARGAME->value));
+        $this->setCan(self::CAN_MANAGE, $isResponsable);
+        $this->setCan(self::CAN_READ_PRIVATE, $isResponsable || $isMembre);
+        $this->setCan(self::CAN_READ_SECRET, $isResponsable);
+        $this->setCan(self::CAN_WRITE, $isResponsable || $hasTitle);
+        $this->setCan(self::CAN_READ, $isMembre);
+
+        $this->checkHasAccess(
+            $roles,
+            fn () => $this->can(self::CAN_READ)
+        );
     }
 }

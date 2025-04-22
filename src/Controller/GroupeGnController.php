@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Groupe;
 use App\Entity\GroupeGn;
 use App\Entity\Participant;
-use App\Entity\Personnage;
 use App\Entity\User;
 use App\Enum\Role;
 use App\Form\GroupeGn\GroupeGnForm;
@@ -16,20 +15,17 @@ use App\Repository\GroupeGnRepository;
 use App\Repository\ParticipantRepository;
 use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
+use JetBrains\PhpStorm\Deprecated;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\FormError;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Translation\TranslatableMessage;
-
 
 class GroupeGnController extends AbstractController
 {
@@ -78,8 +74,9 @@ class GroupeGnController extends AbstractController
     /**
      * Détail d'un groupe.
      */
-    #[Route('/groupeGn/{groupeGn}/detail', name: 'groupeGn.detail')]
-    #[Route('/groupeGn/{groupeGn}', name: 'groupeGn.groupe')]
+    // #[Route('/groupeGn/{groupeGn}/detail', name: 'groupeGn.detail')]
+    // #[Route('/groupeGn/{groupeGn}', name: 'groupeGn.groupe')]
+    #[Deprecated]
     public function groupeAction(
         Request $request,
         #[MapEntity] GroupeGn $groupeGn,
@@ -158,7 +155,7 @@ class GroupeGnController extends AbstractController
     /**
      * Modification du jeu de domaine du groupe.
      */
-    #[Route('/groupeGn/{groupe}/jeudedomaine/{groupeGn}', name: 'groupeGn.jeudedomaine')]
+    #[Route('/groupeGn/{groupeGn}/wargame', name: 'groupeGn.wargame')]
     public function jeudedomaineAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -239,7 +236,7 @@ class GroupeGnController extends AbstractController
                 $this->addFlash('success', 'Le joueur a été ajouté à votre groupe.');
             }
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
         return $this->render('groupeGn/add.twig', [
@@ -384,7 +381,7 @@ class GroupeGnController extends AbstractController
 
             $this->addFlash('success', 'Vos modifications ont été enregistré.');
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
         return $this->render('groupeGn/placeAvailable.twig', [
@@ -454,33 +451,14 @@ class GroupeGnController extends AbstractController
     /**
      * Modification de la participation à un jeu du groupe.
      */
-    #[Route('/groupeGn/{groupe}/update/{groupeGn}/', name: 'groupeGn.update')]
+    #[Route('/groupeGn/{groupeGn}/update', name: 'groupeGn.update')]
     public function updateAction(
         Request $request,
-        #[MapEntity] Groupe $groupe,
         #[MapEntity] GroupeGn $groupeGn,
     ): RedirectResponse|Response {
         $redirect = $request->get('redirect');
 
-
-        $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
-        $personnage = $this->entityManager->getRepository(Personnage::class);
-
-
-        // Seul un admin ou le suzerin peu changer cela
-        if (!$this->isGranted(Role::WARGAME->value) || !$this->getUser()?->getId() === $groupeGn->getSuzerin()?->getId(
-        )) {
-            $this->addFlash('success', "Vous n'êtes pas autorisé à accéder à cette page");
-
-            if ($redirect) {
-                return $this->redirect($redirect.'&tab=domaine&gn='.$groupeGn->getGn()->getId());
-            }
-
-            return $this->redirectToRoute(
-                'groupeGn.list',
-                ['groupe' => $groupe->getId(), 'tab' => 'domaine', 'gn' => $groupeGn->getGn()->getId()]
-            );
-        }
+        $this->hasAccess($groupeGn, [Role::WARGAME]);
 
         $form = $this->createForm(
             GroupeGnForm::class,
@@ -519,19 +497,54 @@ class GroupeGnController extends AbstractController
             $this->addFlash('success', 'La participation au jeu a été enregistré.');
 
             if ($redirect) {
-                return $this->redirect($redirect.'&tab=domaine&gn='.$groupeGn->getGn()->getId());
+                return $this->redirect($redirect.'&tab=domaine');
             }
 
             return $this->redirectToRoute(
-                'groupeGn.list',
-                ['groupe' => $groupe->getId(), 'tab' => 'domaine', 'gn' => $groupeGn->getGn()->getId()]
+                'groupe.detail',
+                [
+                    'groupe' => $groupeGn->getGroupe()->getId(),
+                    'gn' => $groupeGn->getGn()->getId(),
+                    'groupeGn' => $groupeGn->getId(),
+                    'tab' => 'domaine',
+                ]
             );
         }
 
         return $this->render('groupeGn/update.twig', [
-            'groupe' => $groupe,
+            'groupe' => $groupeGn->getGroupe(),
             'groupeGn' => $groupeGn,
             'form' => $form->createView(),
         ], new Response(null, !$form->isSubmitted() || $form->isValid() ? 200 : 422));
+    }
+
+    protected function hasAccess(GroupeGn $groupeGn, array $roles = []): void
+    {
+        $isResponsable = $this->getUser()?->getId() === $groupeGn->getParticipant()?->getUser()?->getId();
+
+        $isMembre = $isResponsable;
+        if (!$isMembre) {
+            foreach ($groupeGn->getParticipants() as $participant) {
+                if ($participant->getUser()?->getId() === $this->getUser()->getId()) {
+                    $isMembre = true;
+                }
+            }
+        }
+
+        $hasTitle = $groupeGn->hasTitle($this->getUser());
+
+        // TODO check if membre can read secret
+
+        $this->setCan(self::IS_ADMIN, $this->isGranted(Role::WARGAME->value));
+        $this->setCan(self::CAN_MANAGE, $isResponsable);
+        $this->setCan(self::CAN_READ_PRIVATE, $isResponsable || $isMembre);
+        $this->setCan(self::CAN_READ_SECRET, $isResponsable);
+        $this->setCan(self::CAN_WRITE, $isResponsable || $hasTitle);
+        $this->setCan(self::CAN_READ, $isMembre);
+
+        $this->checkHasAccess(
+            $roles,
+            fn () => $this->can(self::CAN_READ)
+        );
     }
 }

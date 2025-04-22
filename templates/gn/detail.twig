@@ -320,7 +320,7 @@
                         <ul class="list-group">
                             {% if participant.session %}
                                 <li class="list-group-item"><a
-                                            href="{{ path('groupeGn.groupe', {'groupeGn': participant.session.id}) }}"><i
+                                            href="{{ path('groupe.detail', {'groupeGn': participant.session.id, 'groupe': participant.session.groupe.id }) }}"><i
                                                 class="fa fa-users"></i> {{ participant.session.groupe.nom }}</a></li>
                             {% else %}
                                 <li class="list-group-item"><a

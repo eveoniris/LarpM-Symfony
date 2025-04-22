@@ -16,10 +16,6 @@
 
     {% include '_partials/breadcrumb.twig' with {'items' :breadcrumb} %}
 
-    {% if canSeePrivateDetail is not defined %}
-        {% set canSeePrivateDetail = false %}
-    {% endif %}
-
     <div class="d-flex justify-content-end">
         <div class="w-auto mb-2 p-0">
             {% if is_granted('ROLE_SCENARISTE', app.user) %}
@@ -70,7 +66,7 @@
                         </div>
                     </div>
                 </div>
-             {% endif %}
+            {% endif %}
         </div>
     </div>
 
@@ -82,57 +78,45 @@
 
         <h4 class="bold">{{ groupe.label }}</h4>
 
-        {% set rootPath = 'groupe' %}
-            {% set groupeGnId = null %}
-        {% if groupeGn is defined %}
-            {% set rootPath = 'groupeGn' %}
-            {% set groupeGnId = groupeGn.Id %}
-        {% endif %}
-
         <div class="row" style="min-height:300px;">
             <div class="col-md-12">
                 <div>
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
                             <a class="nav-link{% if tab == 'detail' %} active{% endif %}"
-                               href="{{ path(rootPath~'.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'detail', 'groupeGn': groupeGnId})) }}"
+                               href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'detail', 'groupeGn': groupeGn.id|default()})) }}"
                             >Détail</a>
                         </li>
 
-                        {% if false and rootPath == 'groupeGn' %}
-                            <li class="nav-item">
-                                <a class="nav-link{% if tab == 'membres' %} active{% endif %}"
-                                    href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'membres', 'gn': groupeGn.gn.id, 'groupeGn': groupeGnId})) }}"
-                                >Membres</a>
-                            </li>
-                        {% else %}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle{% if tab == 'membres' %} active{% endif %}"
-                                   data-bs-toggle="dropdown" href="#" role="button"
-                                   aria-expanded="false">Membres</a>
-                                <ul class="dropdown-menu p-0 border-2 rounded-2 border-secondary">
-                                    {% for session in groupe.groupeGns|reverse %}
-                                        <li class="d-grid gap-2{% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}">
-                                            <a class="dropdown-item {% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}"
-                                               href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'membres', 'gn': session.gn.id})) }}"
-                                            >{{ session.gn }}</a></li>
-                                    {% else %}
-                                        <li class="d-grid gap-2 rounded-top-2">
-                                            <a class="dropdown-item rounded-top-2" href="{{ path('groupeGn.add', {'groupe': groupe.id}) }}">Ajouter une session</a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </li>
-                        {% endif %}
 
-                        {% if canSeePrivateDetail %}
-                        {% if isAdmin %}
-                            <li class="nav-item">
-                                <a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
-                                   href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'enveloppe', 'groupeGn': groupeGnId})) }}"
-                                >Enveloppe</a>
-                            </li>
-                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle{% if tab == 'membres' %} active{% endif %}"
+                               data-bs-toggle="dropdown" href="#" role="button"
+                               aria-expanded="false">Membres</a>
+                            <ul class="dropdown-menu p-0 border-2 rounded-2 border-secondary">
+                                {% for session in groupe.groupeGns|reverse %}
+                                    <li class="d-grid gap-2{% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}">
+                                        <a class="dropdown-item {% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}"
+                                           href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'membres', 'gn': session.gn.id, 'groupeGn': session.id})) }}"
+                                        >{{ session.gn }}</a></li>
+                                {% else %}
+                                    <li class="d-grid gap-2 rounded-top-2">
+                                        <a class="dropdown-item rounded-top-2"
+                                           href="{{ path('groupeGn.add', {'groupe': groupe.id}) }}">Ajouter une
+                                            session</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+
+                        {% if canRead %}
+                            {% if isAdmin %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
+                                       href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'enveloppe', 'groupeGn': groupeGnId})) }}"
+                                    >Enveloppe</a>
+                                </li>
+                            {% endif %}
 
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle{% if tab == 'domaine' %} active{% endif %}"
@@ -143,7 +127,7 @@
                                     {% for session in groupe.groupeGns|reverse %}
                                         <li class="d-grid gap-2{% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}">
                                             <a class="dropdown-item {% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}"
-                                               href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'domaine', 'gn': session.gn.id, 'groupeGn': groupeGnId})) }}"
+                                               href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'domaine', 'gn': session.gn.id, 'groupeGn': session.id})) }}"
                                             >{{ session.gn }}</a></li>
                                     {% endfor %}
 
@@ -152,13 +136,13 @@
 
                             <li class="nav-item">
                                 <a class="nav-link{% if tab == 'backgrounds' %} active{% endif %}"
-                                   href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'backgrounds', 'groupeGn': groupeGnId})) }}"
+                                   href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'backgrounds', 'groupeGn': groupeGn.id|default()})) }}"
                                 >Backgrounds</a>
                             </li>
 
                             <li class="nav-item">
                                 <a class="nav-link{% if tab == 'debriefings' %} active{% endif %}"
-                                   href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'debriefings', 'groupeGn': groupeGnId})) }}"
+                                   href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'debriefings', 'groupeGn': groupeGn.id|default()})) }}"
                                 >Debriefings</a>
                             </li>
                         {% endif %}

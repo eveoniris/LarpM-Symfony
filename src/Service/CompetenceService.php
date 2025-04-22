@@ -182,7 +182,7 @@ class CompetenceService
                 $bonus->isXp()
                 && (
                     // null === $bonus->getCompetence() || TODO : at this time we do not allow to give xp to ALL competences
-                    $this->getCompetence()->getId() === $bonus->getCompetence()->getId()
+                    $this->getCompetence()->getId() === $bonus->getCompetence()?->getId()
                 )
             ) {
                 $count += $bonus->getValeur();

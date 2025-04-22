@@ -289,23 +289,6 @@ class PersonnageController extends AbstractController
             }
         }
 
-        /*
-         * Autre option :
-         * if (!$user) {
-         * $this->addFlash('error', 'Désolé, vous devez être identifié pour accéder à cette page');
-         * $this->redirectToRoute('app_login', [], 303);
-         * }
-         *
-         * if (
-         * !($this->isGranted('ROLE_ADMIN') || $this->isGranted(Role::SCENARISTE->value))
-         * && $user->getId() !== $personnage->getUser()?->getId()
-         * ) {
-         * $this->addFlash('error', "Vous n'avez pas les permissions requises pour modifier une trombine");
-         * $this->redirect($request->headers->get('referer'));
-         * $this->redirectToRoute('homepage', [], 303);
-         * }
-         */
-
         throw new AccessDeniedException();
     }
 
@@ -2360,9 +2343,10 @@ class PersonnageController extends AbstractController
         PersonnageService $personnageService,
         Environment $twig,
     ): Response {
-        // Fiche public
-        $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
-        if (!$isAdmin && $personnage->getUser()?->getId() !== $this->getUser()?->getId()) {
+
+        // Fiche publique: Disabled for now
+        // $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
+        /*if (!$isAdmin && $personnage->getUser()?->getId() !== $this->getUser()?->getId()) {
             return $this->render(
                 'personnage/publicResume.twig',
                 [
@@ -2370,7 +2354,10 @@ class PersonnageController extends AbstractController
                     'participant' => $personnage->getLastParticipant(),
                 ]
             );
-        }
+        }*/
+
+        // Fiche pour le PJ ou admin
+        $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
 
         // Ensure human
         if (!$personnage->getEspeces()) {
@@ -2379,15 +2366,12 @@ class PersonnageController extends AbstractController
             $this->entityManager->flush();
         }
 
-        // Fiche pour le PJ ou admin
-        $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
-
         $descendants = $this->entityManager->getRepository(Personnage::class)->findDescendants($personnage);
         $tab = $request->get('tab', 'general');
         if (!$twig->getLoader()->exists('personnage/fragment/tab_'.$tab.'.twig')) {
             $tab = 'general';
         }
-        if (!$isAdmin && 'enveloppe' === $tab) {
+        if (!$this->can(self::IS_ADMIN) && 'enveloppe' === $tab) {
             $tab = 'general';
         }
 

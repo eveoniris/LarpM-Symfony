@@ -7,7 +7,7 @@
         <div class="col-md-12">
             <div class="header"><h5>Participations au GN {{ session.gn }}</h5></div>
 
-            {% if canSeePrivateDetail %}
+            {% if canReadPrivate %}
             <div class="card mb-2">
                 <div class="card-body">
                     {% if not session.code %}
