@@ -67,7 +67,7 @@
                                             <a href="{{ path('groupe.detail',{'groupe':participant.groupeGn.groupe.id}) }}">#{{ participant.groupeGn.groupe.numero }}
                                                 - {{ participant.groupeGn.groupe.nom }}</a>
                                         {% else %}
-                                            <a href="{{ path('groupeGn.groupe',{'groupeGn':participant.groupeGn.id}) }}">#{{ participant.groupeGn.groupe.numero }}
+                                            <a href="{{ path('groupe.detail',{'groupeGn':participant.groupeGn.id, 'groupe':participant.groupeGn.groupe.id}) }}">#{{ participant.groupeGn.groupe.numero }}
                                                 - {{ participant.groupeGn.groupe.nom }}</a>
                                         {% endif %}
                                     </div>

@@ -6,7 +6,7 @@
             <span><i class="fa-solid fa-user-tie text-warning"></i> Chef de groupe</span>
         {% endif %}
 
-        {% if canSeePrivateDetail %}
+        {% if canReadPrivate %}
             {% if session.isSuzerin(participant) %}
                 <span>
                 <i class="fa-solid fa-crown text-warning"></i> Suzerin
@@ -77,7 +77,7 @@
             </div>
         </li>
 
-        {% if canSeePrivateDetail %}
+        {% if canReadPrivate %}
             <li class="list-group-item list-group-item-secondary m-0 p-0 g-0">
                 <div class="d-flex justify-content-start">
                     <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">

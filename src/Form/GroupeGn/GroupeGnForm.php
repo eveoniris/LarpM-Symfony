@@ -91,12 +91,6 @@ class GroupeGnForm extends AbstractType
             return;
         }
 
-        // Seul un admin ou le suzerin peu changer cela
-        if (!$this->security->isGranted(Role::WARGAME->value) || !$this->security->getUser()?->getId(
-        ) === $groupeGn->getSuzerin()?->getId()) {
-            return;
-        }
-
         $fieldCallback = function (string $child, string $label) use ($options, $groupeGn) {
             return [
                 'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId(
@@ -129,6 +123,8 @@ class GroupeGnForm extends AbstractType
                             }
 
                             $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
+
+                            // TODO : allow on it self ;
 
                             $titres = $groupeGnRepository->getTitres($personnage, $options['gn'] ?? null);
 

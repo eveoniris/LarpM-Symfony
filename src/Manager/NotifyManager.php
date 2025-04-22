@@ -200,7 +200,7 @@ class NotifyManager
 		$notification = new Notification();
 		$notification->setText('Vous avez été désigné responsable du groupe : '.$groupeGn->getGroupe()->getNom());
 		$notification->setUser($user);
-		$notification->setUrl($this->app['url_generator']->generate('groupeGn.groupe', array('groupeGn' => $groupeGn->getId()), true));
+		$notification->setUrl($this->app['url_generator']->generate('groupe.detail', array('groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()), true));
 				
 		$this->app['orm.em']->persist($notification);
 		$this->app['orm.em']->flush();
@@ -228,9 +228,9 @@ class NotifyManager
 		$notification = new Notification();
 		$notification->setText('Vous avez été ajouté au groupe : '.$groupeGn->getGroupe()->getNom());
 		$notification->setUser($user);
-		$notification->setUrl($this->app['url_generator']->generate('groupeGn.groupe', array('groupeGn' => $groupeGn->getId()), true));
-	
-		$this->app['orm.em']->persist($notification);
+        $notification->setUrl($this->app['url_generator']->generate('groupe.detail', array('groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()), true));
+
+        $this->app['orm.em']->persist($notification);
 		$this->app['orm.em']->flush();
 	
 		$url = $this->app['url_generator']->generate('homepage', array(), true);

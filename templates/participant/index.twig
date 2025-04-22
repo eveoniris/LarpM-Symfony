@@ -20,7 +20,7 @@
 			<ul class="list-group">
 				<li class="list-group-item">
 				{% if groupeGn %}
-					<a href="{{ path('groupeGn.groupe', {'groupeGn': groupeGn.id}) }}"><i class="fa fa-users"></i>{{ groupeGn.groupe.nom }}</a>
+					<a href="{{ path('groupe.detail', {'groupeGn': groupeGn.id, 'groupe': groupeGn.groupe.id}) }}"><i class="fa fa-users"></i>{{ groupeGn.groupe.nom }}</a>
 				{% else %}
 					<a href="{{ path('participant.groupe.join', {'participant': participant.id}) }}"><i class="fa fa-users"></i> Rejoindre un groupe</a>
 				{% endif %}

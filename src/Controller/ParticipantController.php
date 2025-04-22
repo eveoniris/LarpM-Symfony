@@ -118,7 +118,7 @@ class ParticipantController extends AbstractController
                 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
             );
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
         $form = $this->createForm(AcceptAllianceForm::class, $alliance)
@@ -137,7 +137,7 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez accepté la proposition d\'alliance.');
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
         return $this->render('groupe/acceptAlliance.twig', [
@@ -168,7 +168,7 @@ class ParticipantController extends AbstractController
                 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
             );
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
         $form = $this->createForm(AcceptPeaceForm::class, $war)
@@ -191,7 +191,7 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez fait la paix !');
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
         return $this->render('groupe/acceptPeace.twig', [
@@ -632,7 +632,7 @@ class ParticipantController extends AbstractController
                 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
             );
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
         }
 
         $form = $this->createForm(BreakAllianceForm::class, $alliance)
@@ -654,7 +654,8 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez brisé une alliance.');
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         return $this->render('groupe/breakAlliance.twig', [
@@ -685,7 +686,8 @@ class ParticipantController extends AbstractController
                 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
             );
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         $form = $this->createForm(CancelRequestedAllianceForm::class, $alliance)
@@ -703,7 +705,8 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Votre demande d\'alliance a été annulée.');
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         return $this->render('groupe/cancelAlliance.twig', [
@@ -735,7 +738,8 @@ class ParticipantController extends AbstractController
                 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
             );
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         $form = $this->createForm(CancelRequestedPeaceForm::class, $war)
@@ -758,7 +762,8 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez annulé votre proposition de paix.');
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         return $this->render('groupe/cancelPeace.twig', [
@@ -1485,7 +1490,8 @@ class ParticipantController extends AbstractController
                 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
             );
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         // un groupe ne peux pas faire de déclaration de guerre si il a 3 ou plus ennemis
@@ -1495,7 +1501,8 @@ class ParticipantController extends AbstractController
                 'Désolé, vous avez déjà 3 ennemis ou plus, impossible de faire une nouvelle déclaration de guerre .'
             );
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         $war = new GroupeEnemy();
@@ -1518,13 +1525,15 @@ class ParticipantController extends AbstractController
             if ($requestedGroupe == $groupe) {
                 $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir votre propre groupe comme ennemi ...');
 
-                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
             }
 
             if ($groupe->isEnemyTo($requestedGroupe)) {
                 $this->addFlash('error', 'Désolé, vous êtes déjà en guerre avec ce groupe');
 
-                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
             }
 
             if ($requestedGroupe->getEnnemies()->count() >= 5) {
@@ -1533,13 +1542,15 @@ class ParticipantController extends AbstractController
                     'Désolé, le groupe demandé dispose déjà de 5 ennemis, ce qui est le maximum possible.'
                 );
 
-                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
             }
 
             if ($groupe->isEnemyTo($requestedGroupe)) {
                 $this->addFlash('error', 'Désolé, vous êtes déjà allié avec ce groupe');
 
-                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
             }
 
             $entityManager->persist($war);
@@ -1549,7 +1560,8 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Votre déclaration de guerre vient d\'être envoyée.');
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         return $this->render('groupe/declareWar.twig', [
@@ -2980,11 +2992,18 @@ class ParticipantController extends AbstractController
      * Choix du personnage secondaire par un utilisateur.
      */
     #[Route('/participant/{participant}/personnageSecondaire', name: 'participant.personnageSecondaire')]
+    #[IsGranted(Role::USER->value)]
     public function personnageSecondaireAction(
         Request $request,
         Participant $participant,
         PersonnageSecondaireRepository $repo,
     ): RedirectResponse|Response {
+        $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
+
+        if (!$isAdmin && $participant->getPersonnage()?->getUser()?->getId() !== $this->getUser()?->getId()) {
+            throw new AccessDeniedException();
+        }
+
         $form = $this->createForm(ParticipantPersonnageSecondaireForm::class, $participant)
             ->add('choice', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
 
@@ -3226,8 +3245,7 @@ class ParticipantController extends AbstractController
         Request $request,
         #[MapEntity] Participant $participant,
         #[MapEntity] Potion $potion,
-    ): RedirectResponse|Response
-    {
+    ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -3524,7 +3542,8 @@ class ParticipantController extends AbstractController
                 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
             );
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         $form = $this->createForm(RefuseAllianceForm::class, $alliance)
@@ -3542,7 +3561,8 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez refusé la proposition d\'alliance.');
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         return $this->render('groupe/refuseAlliance.twig', [
@@ -3573,7 +3593,8 @@ class ParticipantController extends AbstractController
                 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
             );
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         $form = $this->createForm(RefusePeaceForm::class, $war)
@@ -3593,7 +3614,8 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez refusé la proposition de paix.');
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         return $this->render('groupe/refusePeace.twig', [
@@ -3999,14 +4021,16 @@ class ParticipantController extends AbstractController
                 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
             );
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         // un groupe ne peux pas avoir plus de 3 alliances
         if ($groupe->getAlliances()->count() >= 3) {
             $this->addFlash('error', 'Désolé, vous avez déjà 3 alliances, ce qui est le maximum possible.');
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         // un groupe ne peux pas avoir plus d'alliances que d'ennemis
@@ -4016,7 +4040,8 @@ class ParticipantController extends AbstractController
                 'Désolé, vous n\'avez pas suffisement d\'ennemis pour pouvoir vous choisir un allié.'
             );
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         $alliance = new GroupeAllie();
@@ -4040,13 +4065,15 @@ class ParticipantController extends AbstractController
                     'Désolé, vous ne pouvez pas choisir votre propre groupe pour faire une alliance ...'
                 );
 
-                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
             }
 
             if ($groupe->isAllyTo($requestedGroupe)) {
                 $this->addFlash('error', 'Désolé, vous êtes déjà allié avec ce groupe');
 
-                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
             }
 
             if ($groupe->isEnemyTo($requestedGroupe)) {
@@ -4055,7 +4082,8 @@ class ParticipantController extends AbstractController
                     'Désolé, vous êtes ennemi avec ce groupe. Impossible de faire une alliance, faites d\'abord la paix !'
                 );
 
-                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
             }
 
             if ($requestedGroupe->getAlliances()->count() >= 3) {
@@ -4064,7 +4092,8 @@ class ParticipantController extends AbstractController
                     'Désolé, le groupe demandé dispose déjà de 3 alliances, ce qui est le maximum possible.'
                 );
 
-                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
             }
 
             if ($requestedGroupe->getEnnemies()->count() - $requestedGroupe->getAlliances()->count() <= 0) {
@@ -4073,7 +4102,8 @@ class ParticipantController extends AbstractController
                     'Désolé, le groupe demandé n\'a pas suffisement d\'ennemis pour pouvoir obtenir un allié supplémentaire.'
                 );
 
-                return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
             }
 
             $entityManager->persist($alliance);
@@ -4083,7 +4113,8 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Votre demande a été envoyée.');
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         return $this->render('groupe/requestAlliance.twig', [
@@ -4113,7 +4144,8 @@ class ParticipantController extends AbstractController
                 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
             );
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         $form = $this->createForm(RequestPeaceForm::class, $war)
@@ -4136,7 +4168,8 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Votre demande de paix vient d\'être envoyée.');
 
-            return $this->redirectToRoute('groupeGn.groupe', ['groupeGn' => $groupeGn->getId()]);
+            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+        
         }
 
         return $this->render('groupe/requestPeace.twig', [

@@ -91,7 +91,7 @@ class Participant extends BaseParticipant implements \Stringable
      */
     public function getGroupe(): ?Groupe
     {
-        if (null != $this->getGroupeGn()) {
+        if (null !== $this->getGroupeGn()) {
             return $this->getGroupeGn()->getGroupe();
         }
 

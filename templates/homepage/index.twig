@@ -71,7 +71,7 @@
                             <td class="col-4 align-middle">
                                 {% if participant.groupeGn %}
                                     <i class="fa fa-users"></i> <a
-                                        href="{{ path('groupeGn.groupe',{'groupeGn': participant.groupeGn.id}) }}">{{ participant.groupeGn.groupe.nom }}</a>
+                                        href="{{ path('groupe.detail',{'groupeGn': participant.groupeGn.id, 'groupe': participant.groupeGn.groupe.id}) }}">{{ participant.groupeGn.groupe.nom }}</a>
                                 {% else %}
                                     <div class="w-100 d-flex justify-content-center">
                                         <a class="btn btn-sm btn-secondary"
