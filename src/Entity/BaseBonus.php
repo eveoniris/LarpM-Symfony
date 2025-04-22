@@ -169,6 +169,12 @@ abstract class BaseBonus
         return $this->competence ?? null;
     }
 
+    public function setCompetence(?Competence $competence): static
+    {
+        $this->competence = $competence;
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

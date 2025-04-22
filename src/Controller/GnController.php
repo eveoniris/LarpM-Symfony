@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Gn;
 use App\Entity\Loi;
 use App\Entity\Personnage;
+use App\Enum\Role;
 use App\Form\Gn\GnDeleteForm;
 use App\Form\Gn\GnForm;
 use App\Manager\GroupeManager;
@@ -12,6 +13,7 @@ use App\Repository\GnRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\QuestionRepository;
 use App\Repository\RessourceRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -53,7 +55,7 @@ class GnController extends AbstractController
 
     // TODO
     #[Route('/user', name: 'user.list')]
-    #[IsGranted('ROLE_USER', message: 'You are not allowed to access tho this page.')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA), message: 'You are not allowed to access to this.')]
     public function listUserAction(Request $request, GnRepository $gnRepository): Response
     {
         $page = $request->query->getInt('page', 1);
@@ -128,6 +130,7 @@ class GnController extends AbstractController
      * Fiche de personnage d'un participant au GN.
      */
     #[Route('/{gn}/personnage', name: 'personnage')]
+    #[IsGranted(new MultiRolesExpression(Role::USER), message: 'You are not allowed to access to this.')]
     public function personnageAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -168,6 +171,7 @@ class GnController extends AbstractController
      * Les personnages present pendant le jeu.
      */
     #[Route('/{gn}/personnages', name: 'personnages')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA), message: 'You are not allowed to access to this.')]
     public function personnagesAction(
         Request $request,
         #[MapEntity] Gn $gn,
@@ -215,6 +219,7 @@ class GnController extends AbstractController
     }
 
     #[Route('/{gn}/groupes/enveloppes', name: 'groupes.enveloppes')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA), message: 'You are not allowed to access to this.')]
     public function printAllAction(#[MapEntity] Gn $gn, RessourceRepository $ressourceRepository): Response
     {
         $groupeGns = $gn->getGroupeGns();

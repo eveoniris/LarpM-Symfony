@@ -1132,7 +1132,7 @@ class UserController extends AbstractController
         /** @var User $loggedUser */
         $loggedUser = $this->getUser();
 
-        $this->checkHasAccess($roles, fn () => $user->getId() === $loggedUser->getId());
+        $this->checkHasAccess($roles, static fn () => $user->getId() === $loggedUser->getId());
 
         /*
          * Autre option :

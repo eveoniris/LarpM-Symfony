@@ -30,6 +30,7 @@ use App\Form\Groupe\GroupeScenaristeForm;
 use App\Manager\GroupeManager;
 use App\Repository\GroupeRepository;
 use App\Repository\TerritoireRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -415,6 +416,7 @@ class GroupeController extends AbstractController
      * Modifier la composition du groupe.
      */
     #[Route('/{groupe}/composition', name: 'composition')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE), message: 'You are not allowed to access to this.')]
     public function compositionAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -567,8 +569,6 @@ class GroupeController extends AbstractController
         #[MapEntity] ?Groupe $groupe,
         #[MapEntity] ?Gn $gn = null,
     ): RedirectResponse|Response {
-        // TODO had access like personnage detail
-
         /*
          * Si le groupe existe, on affiche son détail
          * Sinon on envoie une erreur
@@ -1650,6 +1650,7 @@ class GroupeController extends AbstractController
     /**
      * Gestion des membres du groupe.
      */
+    // TODO (no route ? Deprecated ?)
     public function usersAction(Request $request, EntityManagerInterface $entityManager, Groupe $groupe): Response
     {
         return $this->render('groupe/users.twig', [

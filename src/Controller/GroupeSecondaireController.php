@@ -525,4 +525,13 @@ class GroupeSecondaireController extends AbstractController
 
         return false;
     }
+
+    protected function can(SecondaryGroup $secondaryGroup, ?Membre $membre = null): array
+    {
+        return [
+            'canSeeSecret' => $this->canSeeSecret( $secondaryGroup,  $membre ),
+            'canEdit' => false,
+            'isAdmin' => $this->isGranted(ROLE::SCENARISTE->value) || $this->isGranted(ROLE::ORGA->value),
+        ];
+    }
 }

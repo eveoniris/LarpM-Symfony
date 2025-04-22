@@ -161,6 +161,9 @@ class CompetenceService
 
     public function getBonusCout(): int
     {
+        // dump('ORIG:' . $this->getOrigineBonusCout());
+        //  dump('Merv:' . $this->getMerveilleBonusCout());
+        //  dump('App:' . $this->getApprentissageBonusCout());
         return $this->getOrigineBonusCout()
             + $this->getMerveilleBonusCout()
             + $this->getApprentissageBonusCout();
@@ -175,8 +178,13 @@ class CompetenceService
             $bonus = $origineBonus->getBonus();
             // Dans ce service, nous ne traitons que les bonus de type XP
             // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
-            if ($bonus->isXp() && (null === $bonus->getCompetence() || $this->getCompetence()->getId(
-                    ) === $bonus->getCompetence()->getId())) {
+            if (
+                $bonus->isXp()
+                && (
+                    // null === $bonus->getCompetence() || TODO : at this time we do not allow to give xp to ALL competences
+                    $this->getCompetence()->getId() === $bonus->getCompetence()->getId()
+                )
+            ) {
                 $count += $bonus->getValeur();
             }
         }
@@ -244,7 +252,7 @@ class CompetenceService
                 // Dans ce service, nous ne traitons que les bonus de type XP
                 // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
                 if ($bonus->isXp() && (null === $bonus->getCompetence() || $this->getCompetence()->getId(
-                        ) === $bonus->getCompetence()->getId())) {
+                ) === $bonus->getCompetence()->getId())) {
                     $count += $bonus->getValeur();
                 }
             }
@@ -257,7 +265,7 @@ class CompetenceService
     {
         $apprentissage = $this->getPersonnage()->getApprentissage($this->getCompetence());
         if ($apprentissage) {
-            return 1;
+            return 1; // TODO ERROR
         }
 
         return 0;

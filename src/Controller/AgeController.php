@@ -23,7 +23,7 @@ class AgeController extends AbstractController
     public function indexAction(
         Request $request,
         PagerService $pagerService,
-        AgeRepository $ageRepository
+        AgeRepository $ageRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($ageRepository);
 
@@ -38,7 +38,7 @@ class AgeController extends AbstractController
         #[MapEntity] Age $age,
         Request $request,
         PagerService $pagerService,
-        PersonnageRepository $personnageRepository
+        PersonnageRepository $personnageRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($personnageRepository);
 
@@ -70,7 +70,7 @@ class AgeController extends AbstractController
     ])]
     public function updateAction(
         Request $request,
-        #[MapEntity] Age $age
+        #[MapEntity] Age $age,
     ): RedirectResponse|Response {
         return $this->handleCreateOrUpdate($request, $age, AgeForm::class);
     }
@@ -82,7 +82,7 @@ class AgeController extends AbstractController
         array $breadcrumb = [],
         array $routes = [],
         array $msg = [],
-        ?callable $entityCallback = null
+        ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         return parent::handleCreateOrUpdate(
             request: $request,
@@ -100,7 +100,7 @@ class AgeController extends AbstractController
                 'title_add' => $this->translator->trans('Ajouter un age'),
                 'title_update' => $this->translator->trans('Modifier un age'),
             ],
-        entityCallback:  $entityCallback
+            entityCallback: $entityCallback
         );
     }
 

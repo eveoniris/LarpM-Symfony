@@ -8,7 +8,6 @@ use App\Form\BackgroundDeleteForm;
 use App\Form\BackgroundFindForm;
 use App\Form\BackgroundForm;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -48,9 +47,9 @@ class BackgroundController extends AbstractController
             $limit,
             $offset
         );
-        
+
         $paginator = $repo->findPaginatedQuery(
-            $backgrounds, 
+            $backgrounds,
             $this->getRequestLimit(),
             $this->getRequestPage()
         );
@@ -114,23 +113,24 @@ class BackgroundController extends AbstractController
         $groupeId = $request->get('groupe');
         $background = new Background();
 
-        if ( $groupeId )
-		{
-			$groupe = $entityManager->find('\App\Entity\Groupe', $groupeId);
-			if ( $groupe ) $background->setGroupe($groupe);
-		}
+        if ($groupeId) {
+            $groupe = $entityManager->find('\App\Entity\Groupe', $groupeId);
+            if ($groupe) {
+                $background->setGroupe($groupe);
+            }
+        }
 
         $form = $this->createForm(BackgroundForm::class, $background, ['groupeId' => $groupeId])
             ->add('visibility', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'label' => 'Visibilité',
-                'choices' => array(
+                'choices' => [
                     'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
                     'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
                     'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
                     'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
                     'Seul l\'auteur peut voir ceci' => 'AUTHOR',
-                ),
+                ],
             ])
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -149,7 +149,7 @@ class BackgroundController extends AbstractController
         }
 
         return $this->render('background/add.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
 
@@ -190,13 +190,13 @@ class BackgroundController extends AbstractController
             ->add('visibility', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => true,
                 'label' => 'Visibilité',
-                'choices' => array(
+                'choices' => [
                     'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
                     'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
                     'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
                     'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
                     'Seul l\'auteur peut voir ceci' => 'AUTHOR',
-                ),
+                ],
             ])
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 

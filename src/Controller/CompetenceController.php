@@ -12,6 +12,7 @@ use App\Form\CompetenceForm;
 use App\Repository\CompetenceFamilyRepository;
 use App\Repository\CompetenceRepository;
 use App\Repository\LevelRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,7 +36,7 @@ class CompetenceController extends AbstractController
         Request $request,
         PagerService $pagerService,
         CompetenceRepository $competenceRepository,
-        CompetenceFamilyRepository $competenceFamilyRepository
+        CompetenceFamilyRepository $competenceFamilyRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($competenceRepository)->setLimit(50);
 
@@ -56,6 +57,7 @@ class CompetenceController extends AbstractController
      * Liste des perso ayant cette compétence.
      */
     #[Route('/perso', name: 'perso')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
     public function persoAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $competence = $request->get('competence');
@@ -69,7 +71,7 @@ class CompetenceController extends AbstractController
         Request $request,
         #[MapEntity] Competence $competence,
         PersonnageService $personnageService,
-        CompetenceRepository $competenceRepository
+        CompetenceRepository $competenceRepository,
     ): Response {
         $routeName = 'competence.personnages';
         $routeParams = ['competence' => $competence->getId()];
@@ -122,6 +124,7 @@ class CompetenceController extends AbstractController
      * Liste du matériel necessaire par compétence.
      */
     #[Route('/competence/materiel', name: 'materiel')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
     public function materielAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $repo = $entityManager->getRepository('\\'.Competence::class);
@@ -189,7 +192,7 @@ class CompetenceController extends AbstractController
     #[IsGranted('ROLE_REGLE')]
     public function updateAction(
         Request $request,
-        #[MapEntity] Competence $competence
+        #[MapEntity] Competence $competence,
     ): RedirectResponse|Response {
         /*
         is it needed on update ?
@@ -214,7 +217,7 @@ class CompetenceController extends AbstractController
     ])]
     #[IsGranted('ROLE_REGLE')]
     public function deleteAction(
-        #[MapEntity] Competence $competence
+        #[MapEntity] Competence $competence,
     ): RedirectResponse|Response {
         return $this->genericDelete(
             $competence,
@@ -240,7 +243,7 @@ class CompetenceController extends AbstractController
     #[Route('/remove-document', name: 'document.remove')]
     public function removeDocumentAction(
         EntityManagerInterface $entityManager,
-        Competence $competence
+        Competence $competence,
     ): RedirectResponse {
         $competence->setDocumentUrl(null);
 
@@ -279,7 +282,7 @@ class CompetenceController extends AbstractController
         array $breadcrumb = [],
         array $routes = [],
         array $msg = [],
-        ?callable $entityCallback = null
+        ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         if (!$entityCallback) {
             /** @var Competence $competence */
