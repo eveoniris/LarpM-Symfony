@@ -884,7 +884,7 @@ class PersonnageService
 
             $histories[] = $pugilatHistory;
         }
-        dump($histories);
+
         return $histories;
     }
 
