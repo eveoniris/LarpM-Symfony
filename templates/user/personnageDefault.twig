@@ -7,12 +7,7 @@
     {% include '_partials/breadcrumb.twig' with {'items' :[{'name' : "Mes personnage par défaut" }]} %}
 
     <div class="well well-sm">
-        {{ form_start(form, {"attr": {"action": path('user.personnageDefault', {'user': user.id}) }}) }}
-        <fieldset>
-
-            {{ form(form) }}
-        </fieldset>
-        {{ form_end(form) }}
+        {{ form(form) }}
     </div>
 
 {% endblock body %}

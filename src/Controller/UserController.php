@@ -748,9 +748,9 @@ class UserController extends AbstractController
      * Choix du personnage par défaut de l'utilisateur.
      */
     #[Route('/user/{user}/personage/default', name: 'user.personnageDefault')]
-    public function personnageDefaultAction(EntityManagerInterface $entityManager, Request $request, #[MapEntity] User $user)
+    public function personnageDefaultAction(Request $request, #[MapEntity] User $user)
     {
-        if (!$this->isGranted('ROLE_ADMIN') && !$user === $this->getUser()) {
+        if (!$this->isGranted('ROLE_ADMIN') || !$user === $this->getUser()) {
             $this->addFlash('error', 'Vous n\'avez pas les droits nécessaires pour cette opération.');
 
             return $this->redirectToRoute('homepage', [], 303);
@@ -764,8 +764,8 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $form->getData();
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Vos informations ont été enregistrées.');
 
