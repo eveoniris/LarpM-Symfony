@@ -103,6 +103,7 @@ class PersonnageService
             'label' => 'Pugilat',
             'fieldName' => 'pugilat',
             'sortFieldName' => 'pugilat',
+            'canOrder' => false,
             'tooltip' => 'Points de pugilat',
             'css' => 'col-md-1 align-middle text-center',
         ],
@@ -883,7 +884,7 @@ class PersonnageService
 
             $histories[] = $pugilatHistory;
         }
-
+        dump($histories);
         return $histories;
     }
 
