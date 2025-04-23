@@ -365,13 +365,11 @@ class CompetenceService
      */
     final public function giveBonus(): void
     {
-        dump('CAN GEY BONUS ? ');
         if (!$this->canGetBonus()) {
-            dump('NO');
 
             return;
         }
-        dump('YES ');
+
         $this->give();
     }
 

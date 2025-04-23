@@ -79,7 +79,7 @@ class QualityController extends AbstractController
         foreach ($quality->getQualityValeurs() as $qualityValeur) {
             $originalQualityValeurs->add($qualityValeur);
         }
-        dump($quality);
+        //dump($quality);
 
         $form = $this->createForm(QualityForm::class, $quality)
             ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
