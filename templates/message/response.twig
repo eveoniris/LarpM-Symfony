@@ -1,0 +1,33 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Répondre à un message{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path('messagerie') }}">Messagerie</a></li>
+        <li class="active">Répondre à un message</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="well well-sm">
+                <div class="header">
+                    <h5>Répondre à un message</h5>
+                </div>
+                {{ form(form) }}
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-conan">
+                <div class="panel-heading">{{ message.userRelatedByAuteur.userName }}
+                    -- {{ message.creationDate|date('Y-m-d H:i:s') }} -- <strong>{{ message.title }}</strong></div>
+                <div class="panel-body">{{ message.text|markdown_to_html }}</div>
+                <div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

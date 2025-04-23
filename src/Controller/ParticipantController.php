@@ -3699,7 +3699,7 @@ class ParticipantController extends AbstractController
 
             $message =
                 <<<HTML
-                Désolé, il n\'est plus possible de modifier ce personnage. <br />
+                Désolé, il n'est plus possible de modifier ce personnage. <br />
                 Le <a href="$href">groupe est verrouillé</a>.<br />
                 Contactez votre scénariste si vous pensez que cela est une erreur
                 HTML;

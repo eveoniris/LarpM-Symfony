@@ -400,13 +400,13 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $logAction->setUser($this->getUser());
         $logAction->setType($type);
 
-        if (method_exists($entity, 'toLog')) {
+        if (!is_array($entity) && method_exists($entity, 'toLog')) {
             $entityValue = $entity->toLog();
         } else {
             $entityValue = (array) $entity;
             // Clean a bit
             foreach ($entityValue as $key => $value) {
-                $cleanKey = str_replace([$entity::class, ' ', '*'], ['', '', ''], $key);
+                $cleanKey = str_replace([is_array($entity) ? '_' : $entity::class, ' ', '*'], ['', '', ''], $key);
                 if ($cleanKey !== $key) {
                     $entityValue[$cleanKey] = $value;
                     unset($entityValue[$key]);

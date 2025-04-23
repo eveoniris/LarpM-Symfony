@@ -22,15 +22,15 @@ class Personnage extends BasePersonnage implements \Stringable
 {
     use EntityFileUploadTrait;
 
+    public Personnage $personnageChoosen;
+
+    // For some FormBuilder search
     #[Assert\File(['maxSize' => 6000000])]
     #[Assert\Image(
         minWidth: 200,
         minHeight: 200,
     )]
     protected ?UploadedFile $file;
-
-    // For some FormBuilder search
-    public Personnage $personnageChoosen;
     protected bool $isCreation = false;
 
     /**
@@ -58,47 +58,6 @@ class Personnage extends BasePersonnage implements \Stringable
     public function __toString(): string
     {
         return (string) $this->getPublicName();
-    }
-
-    public function handleUpload(
-        FileUploader $fileUploader,
-        DocumentType $docType = DocumentType::Photos,
-        FolderType $folderType = FolderType::Trombine,
-    ): void {
-        // la propriété « file » peut être vide si le champ n'est pas requis
-        if (empty($this->file)) {
-            return;
-        }
-
-        $fileUploader->upload($this->file, $folderType, $docType, null, 70);
-
-        // Try Rezise
-        try {
-            $image = (new Imagine())->open($fileUploader->getStoredFileWithPath());
-            $image->resize($image->getSize()->widen(480));
-            $image->save($fileUploader->getStoredFileWithPath());
-        } catch (\RuntimeException $e) {
-            dump($e);
-        }
-
-        $this->setTrombineUrl($fileUploader->getStoredFileName());
-
-        // « nettoie » la propriété « file » comme vous n'en aurez plus besoin
-        $this->file = null;
-    }
-
-    public function getTrombine(string $projectDir): string
-    {
-        if (!isset($this->documentType)) {
-            $this->initFile();
-        }
-
-        return $this->getDocumentFilePath($projectDir).$this->getTrombineUrl();
-    }
-
-    public function getFilename(): ?string
-    {
-        return $this->getTrombineUrl();
     }
 
     /**
@@ -161,6 +120,62 @@ class Personnage extends BasePersonnage implements \Stringable
     }
 
     /**
+     * Fourni le niveau d'une compétence d'un personnage.
+     */
+    public function getCompetenceNiveau(string|CompetenceFamilyType $label): int
+    {
+        if ($label instanceof CompetenceFamilyType) {
+            $competences = $this->getCompetencesFromFamilyType($label);
+        } elseif ($type = CompetenceFamilyType::getFromLabel($label)) {
+            $competences = $this->getCompetencesFromFamilyType($type);
+        } else {
+            $competences = $this->getCompetencesByFamilyLabel($label);
+        }
+
+        $niveau = 0;
+        foreach ($competences as $competence) {
+            $niveau = max($niveau, $competence->getLevel()?->getIndex());
+        }
+
+        return $niveau;
+    }
+
+    /**
+     * @return Competence[]
+     */
+    public function getCompetencesFromFamilyType(CompetenceFamilyType $type): array
+    {
+        $competences = [];
+        try {
+            foreach ($this->getCompetences() as $competence) {
+                if ($competence->getCompetenceFamily()?->getId() === $type->getId()) {
+                    $competences[] = $competence;
+                }
+            }
+        } catch (\Exception $e) {
+            // LOG $e ?
+        }
+
+        return $competences;
+    }
+
+    public function getCompetencesByFamilyLabel(string $label): array
+    {
+        $competences = [];
+        try {
+            foreach ($this->getCompetences() as $competence) {
+                if ($competence->getLabel() === $label) {
+                    $competences[] = $competence;
+                }
+            }
+        } catch (\Exception $e) {
+            // LOG $e ?
+        }
+
+        return $competences;
+    }
+
+    /**
      * Ajoute des points de pugilat à un personnage.
      *
      * @param unknown $pugilat
@@ -182,26 +197,26 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         $this->pugilat = 1
-            + $this->getCompetencePugilat('Agilité')
-            + $this->getCompetencePugilat('Armes à distance')
-            + $this->getCompetencePugilat('Armes à 1 main')
-            + $this->getCompetencePugilat('Armes à 2 mains')
-            + $this->getCompetencePugilat("Armes d'hast")
-            + $this->getCompetencePugilat('Armure')
-            + $this->getCompetencePugilat('Attaque sournoise')
-            + $this->getCompetencePugilat('Protection')
-            + $this->getCompetencePugilat('Résistance')
-            + $this->getCompetencePugilat('Sauvagerie')
-            + $this->getCompetencePugilat('Stratégie')
-            + $this->getCompetencePugilat('Survie');
+            + $this->getCompetencePugilat(CompetenceFamilyType::AGILITY)
+            + $this->getCompetencePugilat(CompetenceFamilyType::RANGED_WEAPONS)
+            + $this->getCompetencePugilat(CompetenceFamilyType::ONE_HANDED_WEAPON)
+            + $this->getCompetencePugilat(CompetenceFamilyType::TWO_HANDED_WEAPON)
+            + $this->getCompetencePugilat(CompetenceFamilyType::POLEARMS)
+            + $this->getCompetencePugilat(CompetenceFamilyType::ARMOR)
+            + $this->getCompetencePugilat(CompetenceFamilyType::SNEAK_ATTACK)
+            + $this->getCompetencePugilat(CompetenceFamilyType::PROTECTION)
+            + $this->getCompetencePugilat(CompetenceFamilyType::RESISTANCE)
+            + $this->getCompetencePugilat(CompetenceFamilyType::SAVAGERY)
+            + $this->getCompetencePugilat(CompetenceFamilyType::STRATEGY)
+            + $this->getCompetencePugilat(CompetenceFamilyType::SURVIVAL);
 
         // Forge au niveau Initié ajoute 5 points
-        if ($this->getCompetenceNiveau('Forge') >= 2) {
+        if ($this->getCompetenceNiveau(CompetenceFamilyType::FORGE) >= 2) {
             $this->pugilat += 5;
         }
 
         // Sauvagerie au niveau Initié ajoute 5 points
-        if ($this->getCompetenceNiveau('Sauvagerie') >= 2) {
+        if ($this->getCompetenceNiveau(CompetenceFamilyType::SAVAGERY) >= 2) {
             $this->pugilat += 5;
         }
 
@@ -210,6 +225,26 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         return $this->pugilat;
+    }
+
+    /**
+     * Fourni le niveau d'une compétence pour le score de pugilat.
+     *
+     * @param unknown $label
+     */
+    public function getCompetencePugilat(CompetenceFamilyType|string $label): int|float
+    {
+        $niveau = 0;
+        foreach ($this->getCompetences() as $competence) {
+            if ($label instanceof CompetenceFamilyType && $competence->getCompetenceFamily()?->getCompetenceFamilyType(
+            )?->value === $label->value) {
+                $niveau += $competence->getLevel()?->getIndex();
+            } elseif ($competence->getCompetenceFamily()?->getLabel() === $label) {
+                $niveau += $competence->getLevel()?->getIndex();
+            }
+        }
+
+        return $niveau;
     }
 
     /**
@@ -225,6 +260,23 @@ class Personnage extends BasePersonnage implements \Stringable
     }
 
     /**
+     * Fourni le score de Renommée.
+     *
+     * @override BasePersonnage::getRenomme()
+     */
+    public function getRenomme(): int
+    {
+        // $renomme = $this->renomme ?? 0;
+        $renomme = 0;
+
+        foreach ($this->getRenommeHistories() as $renommeHistory) {
+            $renomme += $renommeHistory->getRenomme();
+        }
+
+        return $renomme;
+    }
+
+    /**
      * Ajoute des points d'experience à un personnage.
      *
      * @param int $xp
@@ -234,6 +286,18 @@ class Personnage extends BasePersonnage implements \Stringable
         $this->setXp($this->getXp() + $xp);
 
         return $this;
+    }
+
+    public function getApprentissage(Competence $competence): ?PersonnageApprentissage
+    {
+        /** @var PersonnageApprentissage $apprentissage */
+        foreach ($this->getApprentissages() as $apprentissage) {
+            if ($apprentissage->getCompetence()?->getId() === $competence->getId()) {
+                return $apprentissage;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -353,167 +417,47 @@ class Personnage extends BasePersonnage implements \Stringable
         $pugilatHistory->setExplication('Score de base');
         $pugilatHistories[] = $pugilatHistory;
 
-        if ($this->getCompetencePugilat('Agilité') > 0) {
-            $pugilatHistory = new PugilatHistory();
-            $pugilatHistory->setPugilat($this->getCompetencePugilat('Agilité'));
-            $pugilatHistory->setExplication('Compétence Agilité niveau '.$this->getCompetenceNiveau('Agilité'));
-            $pugilatHistories[] = $pugilatHistory;
-        }
+        $config = [
+            [CompetenceFamilyType::AGILITY, LevelType::APPRENTICE->getIndex(), null],
+            [CompetenceFamilyType::RANGED_WEAPONS,  LevelType::APPRENTICE->getIndex(), null],
+            [CompetenceFamilyType::ONE_HANDED_WEAPON,  LevelType::APPRENTICE->getIndex(), null],
+            [CompetenceFamilyType::TWO_HANDED_WEAPON,  LevelType::APPRENTICE->getIndex(), null],
+            [CompetenceFamilyType::POLEARMS,  LevelType::APPRENTICE->getIndex(), null],
+            [CompetenceFamilyType::ARMOR,  LevelType::APPRENTICE->getIndex(), null],
+            [CompetenceFamilyType::FORGE,  LevelType::INITIATED->getIndex(), 5],
+            [CompetenceFamilyType::SNEAK_ATTACK,  LevelType::APPRENTICE->getIndex(), null],
+            [CompetenceFamilyType::PROTECTION, LevelType::APPRENTICE->getIndex(), null],
+            [CompetenceFamilyType::RESISTANCE, LevelType::APPRENTICE->getIndex(), null],
+            [CompetenceFamilyType::STRATEGY, LevelType::APPRENTICE->getIndex(), null],
+            [CompetenceFamilyType::SURVIVAL, LevelType::APPRENTICE->getIndex(), null],
+            [
+                CompetenceFamilyType::SAVAGERY,
+                LevelType::APPRENTICE->getIndex(),
+                static fn (int $niveau, int $pugilat) => $niveau >= 2 ? $pugilat + 5 : $pugilat],
+        ];
 
-        if ($this->getCompetencePugilat('Armes à distance') > 0) {
-            $pugilatHistory = new PugilatHistory();
-            $pugilatHistory->setPugilat($this->getCompetencePugilat('Armes à distance'));
-            $pugilatHistory->setExplication(
-                'Compétence Armes à distance niveau '.$this->getCompetenceNiveau('Armes à distance')
-            );
-            $pugilatHistories[] = $pugilatHistory;
-        }
+        /**
+         * @var CompetenceFamilyType $family
+         */
+        foreach ($config as [$family, $level, $value]) {
+            $competenceLevel = $this->getCompetenceNiveau($family);
+            $competencePugilat = $this->getCompetencePugilat($family);
 
-        if ($this->getCompetencePugilat('Armes à 1 main') > 0) {
-            $pugilatHistory = new PugilatHistory();
-            $pugilatHistory->setPugilat($this->getCompetencePugilat('Armes à 1 main'));
-            $pugilatHistory->setExplication(
-                'Compétence Armes à 1 main niveau '.$this->getCompetenceNiveau('Armes à 1 main')
-            );
-            $pugilatHistories[] = $pugilatHistory;
-        }
-
-        if ($this->getCompetencePugilat('Armes à 2 mains') > 0) {
-            $pugilatHistory = new PugilatHistory();
-            $pugilatHistory->setPugilat($this->getCompetencePugilat('Armes à 2 mains'));
-            $pugilatHistory->setExplication(
-                'Compétence Armes à 2 mains niveau '.$this->getCompetenceNiveau('Armes à 2 mains')
-            );
-            $pugilatHistories[] = $pugilatHistory;
-        }
-
-        if ($this->getCompetencePugilat("Armes d'hast") > 0) {
-            $pugilatHistory = new PugilatHistory();
-            $pugilatHistory->setPugilat($this->getCompetencePugilat("Armes d'hast"));
-            $pugilatHistory->setExplication(
-                'Compétence Armes d\'hast niveau '.$this->getCompetenceNiveau("Armes d'hast")
-            );
-            $pugilatHistories[] = $pugilatHistory;
-        }
-
-        if ($this->getCompetencePugilat('Armure') > 0) {
-            $pugilatHistory = new PugilatHistory();
-            $pugilatHistory->setPugilat($this->getCompetencePugilat('Armure'));
-            $pugilatHistory->setExplication('Compétence Armure niveau '.$this->getCompetenceNiveau('Armure'));
-            $pugilatHistories[] = $pugilatHistory;
-        }
-
-        if ($this->getCompetenceNiveau('Forge') >= 2) {
-            $pugilatHistory = new PugilatHistory();
-            $pugilatHistory->setPugilat(5);
-            $pugilatHistory->setExplication('Compétence Forge niveau '.$this->getCompetenceNiveau('Forge'));
-            $pugilatHistories[] = $pugilatHistory;
-        }
-
-        if ($this->getCompetencePugilat('Attaque sournoise') > 0) {
-            $pugilatHistory = new PugilatHistory();
-            $pugilatHistory->setPugilat($this->getCompetencePugilat('Attaque sournoise'));
-            $pugilatHistory->setExplication(
-                'Compétence Attaque sournoise niveau '.$this->getCompetenceNiveau('Attaque sournoise')
-            );
-            $pugilatHistories[] = $pugilatHistory;
-        }
-
-        if ($this->getCompetencePugilat('Protection') > 0) {
-            $pugilatHistory = new PugilatHistory();
-            $pugilatHistory->setPugilat($this->getCompetencePugilat('Protection'));
-            $pugilatHistory->setExplication('Compétence Protection niveau '.$this->getCompetenceNiveau('Protection'));
-            $pugilatHistories[] = $pugilatHistory;
-        }
-
-        if ($this->getCompetencePugilat('Résistance') > 0) {
-            $pugilatHistory = new PugilatHistory();
-            $pugilatHistory->setPugilat($this->getCompetencePugilat('Résistance'));
-            $pugilatHistory->setExplication('Compétence Résistance niveau '.$this->getCompetenceNiveau('Résistance'));
-            $pugilatHistories[] = $pugilatHistory;
-        }
-
-        if ($this->getCompetencePugilat('Sauvagerie') > 0) {
-            $pugilatHistory = new PugilatHistory();
-            $extra = 0;
-            if ($this->getCompetenceNiveau('Sauvagerie') >= 2) {
-                $extra = 5;
+            if ($competencePugilat >= $level) {
+                $pugilatHistory = new PugilatHistory();
+                if (is_callable($value)) {
+                    $pugilatHistory->setPugilat($value($competenceLevel, $competencePugilat));
+                } else {
+                    $pugilatHistory->setPugilat($value ?? $competencePugilat);
+                }
+                $pugilatHistory->setExplication(
+                    sprintf('Compétence %s niveau %d', strtolower($family->getLabel()), $competenceLevel)
+                );
+                $pugilatHistories[] = $pugilatHistory;
             }
-
-            $pugilatHistory->setPugilat($extra + $this->getCompetencePugilat('Sauvagerie'));
-            $pugilatHistory->setExplication('Compétence Sauvagerie niveau '.$this->getCompetenceNiveau('Sauvagerie'));
-            $pugilatHistories[] = $pugilatHistory;
-        }
-
-        if ($this->getCompetencePugilat('Stratégie') > 0) {
-            $pugilatHistory = new PugilatHistory();
-            $pugilatHistory->setPugilat($this->getCompetencePugilat('Stratégie'));
-            $pugilatHistory->setExplication('Compétence Stratégie niveau '.$this->getCompetenceNiveau('Stratégie'));
-            $pugilatHistories[] = $pugilatHistory;
-        }
-
-        if ($this->getCompetencePugilat('Survie') > 0) {
-            $pugilatHistory = new PugilatHistory();
-            $pugilatHistory->setPugilat($this->getCompetencePugilat('Survie'));
-            $pugilatHistory->setExplication('Compétence Survie niveau '.$this->getCompetenceNiveau('Survie'));
-            $pugilatHistories[] = $pugilatHistory;
         }
 
         return $pugilatHistories;
-    }
-
-    /**
-     * Fourni le niveau d'une compétence pour le score de pugilat.
-     *
-     * @param unknown $label
-     */
-    public function getCompetencePugilat(string $label): int|float
-    {
-        $niveau = 0;
-        foreach ($this->getCompetences() as $competence) {
-            if ($competence->getCompetenceFamily()?->getLabel() === $label) {
-                $niveau += $competence->getLevel()?->getIndex();
-            }
-        }
-
-        return $niveau;
-    }
-
-    /**
-     * Fourni le niveau d'une compétence d'un personnage.
-     */
-    public function getCompetenceNiveau(string|CompetenceFamilyType $label): int
-    {
-        if ($label instanceof CompetenceFamilyType) {
-            $competences = $this->getCompetencesFromFamilyType($label);
-        } elseif ($type = CompetenceFamilyType::getFromLabel($label)) {
-            $competences = $this->getCompetencesFromFamilyType($type);
-        } else {
-            $competences = $this->getCompetencesByFamilyLabel($label);
-        }
-
-        $niveau = 0;
-        foreach ($competences as $competence) {
-            $niveau = max($niveau, $competence->getLevel()?->getIndex());
-        }
-
-        return $niveau;
-    }
-
-    public function getCompetencesByFamilyLabel(string $label): array
-    {
-        $competences = [];
-        try {
-            foreach ($this->getCompetences() as $competence) {
-                if ($competence->getLabel() === $label) {
-                    $competences[] = $competence;
-                }
-            }
-        } catch (\Exception $e) {
-            // LOG $e ?
-        }
-
-        return $competences;
     }
 
     /**
@@ -531,6 +475,35 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         return 1;
+    }
+
+    public function getFilename(): ?string
+    {
+        return $this->getTrombineUrl();
+    }
+
+    public function getFirstParticipantGnGroupe(): ?Groupe
+    {
+        $participant = $this->getFirstParticipant();
+        if ($participant?->getGn()?->getLabel() === $participant?->getGroupeGn()?->getGn()?->getLabel()) {
+            return $participant?->getGroupeGn()?->getGroupe();
+        }
+
+        return null;
+    }
+
+    public function getFirstParticipant(): ?Participant
+    {
+        if (!$this->getParticipants()->isEmpty()) {
+            return $this->getParticipants()->first();
+        }
+
+        return null;
+    }
+
+    public function getFullLabel(): string
+    {
+        return $this->getLabel();
     }
 
     /**
@@ -564,39 +537,6 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         return null;
-    }
-
-    /**
-     * Fourni l'identité complete d'un personnage.
-     */
-    public function getIdentity(bool $withId = true, bool $full = false): string
-    {
-        if ($full && $participant = $this->getParticipants()->last()) {
-            $groupeLabel = $participant?->getGroupeGn()?->getGroupe()?->getNom();
-
-            return sprintf(
-                '%s (%s)',
-                $withId ? $this->getIdName() : $this->getPublicName(),
-                $participant?->getGn()?->getLabel().($groupeLabel ? ' - ' : '').$groupeLabel
-            );
-        }
-
-        return $withId ? $this->getIdName() : $this->getNameSurname();
-    }
-
-    public function getLigneeIdentity(bool $withId = true, bool $full = false): string
-    {
-        return $this->getIdentity($withId, $full).' ('.$this->getAge()->getLabel().')';
-    }
-
-    public function getIdName(): string
-    {
-        return $this->getId().' - '.$this->getNameSurname();
-    }
-
-    public function getNameSurname(): string
-    {
-        return $this->getNom().(empty(trim($this->getSurnom())) ? '' : ' - ').$this->getSurnom();
     }
 
     public function getIdentityByLabel($gnLabel): string
@@ -670,16 +610,6 @@ class Personnage extends BasePersonnage implements \Stringable
         return null;
     }
 
-    public function getFirstParticipantGnGroupe(): ?Groupe
-    {
-        $participant = $this->getFirstParticipant();
-        if ($participant?->getGn()?->getLabel() === $participant?->getGroupeGn()?->getGn()?->getLabel()) {
-            return $participant?->getGroupeGn()?->getGroupe();
-        }
-
-        return null;
-    }
-
     /**
      * Retourne le dernier participant du personnage.
      */
@@ -692,13 +622,37 @@ class Personnage extends BasePersonnage implements \Stringable
         return null;
     }
 
-    public function getFirstParticipant(): ?Participant
+    public function getLigneeIdentity(bool $withId = true, bool $full = false): string
     {
-        if (!$this->getParticipants()->isEmpty()) {
-            return $this->getParticipants()->first();
+        return $this->getIdentity($withId, $full).' ('.$this->getAge()->getLabel().')';
+    }
+
+    /**
+     * Fourni l'identité complete d'un personnage.
+     */
+    public function getIdentity(bool $withId = true, bool $full = false): string
+    {
+        if ($full && $participant = $this->getParticipants()->last()) {
+            $groupeLabel = $participant?->getGroupeGn()?->getGroupe()?->getNom();
+
+            return sprintf(
+                '%s (%s)',
+                $withId ? $this->getIdName() : $this->getPublicName(),
+                $participant?->getGn()?->getLabel().($groupeLabel ? ' - ' : '').$groupeLabel
+            );
         }
 
-        return null;
+        return $withId ? $this->getIdName() : $this->getNameSurname();
+    }
+
+    public function getIdName(): string
+    {
+        return $this->getId().' - '.$this->getNameSurname();
+    }
+
+    public function getNameSurname(): string
+    {
+        return $this->getNom().(empty(trim($this->getSurnom())) ? '' : ' - ').$this->getSurnom();
     }
 
     /**
@@ -773,6 +727,11 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         return $potions;
+    }
+
+    public function getPrintLabel(): ?string
+    {
+        return (new AsciiSlugger())->slug($this->getLabel());
     }
 
     /**
@@ -990,6 +949,15 @@ class Personnage extends BasePersonnage implements \Stringable
         return null;
     }
 
+    public function getTrombine(string $projectDir): string
+    {
+        if (!isset($this->documentType)) {
+            $this->initFile();
+        }
+
+        return $this->getDocumentFilePath($projectDir).$this->getTrombineUrl();
+    }
+
     /**
      * Retourne le nom complet de l'utilisateur (nom prénom).
      */
@@ -1013,6 +981,33 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         return $total;
+    }
+
+    public function handleUpload(
+        FileUploader $fileUploader,
+        DocumentType $docType = DocumentType::Photos,
+        FolderType $folderType = FolderType::Trombine,
+    ): void {
+        // la propriété « file » peut être vide si le champ n'est pas requis
+        if (empty($this->file)) {
+            return;
+        }
+
+        $fileUploader->upload($this->file, $folderType, $docType, null, 70);
+
+        // Try Rezise
+        try {
+            $image = (new Imagine())->open($fileUploader->getStoredFileWithPath());
+            $image->resize($image->getSize()->widen(480));
+            $image->save($fileUploader->getStoredFileWithPath());
+        } catch (\RuntimeException $e) {
+            dump($e);
+        }
+
+        $this->setTrombineUrl($fileUploader->getStoredFileName());
+
+        // « nettoie » la propriété « file » comme vous n'en aurez plus besoin
+        $this->file = null;
     }
 
     /**
@@ -1205,16 +1200,18 @@ class Personnage extends BasePersonnage implements \Stringable
         return '';
     }
 
-    public function getApprentissage(Competence $competence): ?PersonnageApprentissage
+    public function hasCompetenceId(int $id): bool
     {
-        /** @var PersonnageApprentissage $apprentissage */
-        foreach ($this->getApprentissages() as $apprentissage) {
-            if ($apprentissage->getCompetence()?->getId() === $competence->getId()) {
-                return $apprentissage;
+        try {
+            foreach ($this->getCompetences() as $competence) {
+                if ($competence->getId() === $id) {
+                    return true;
+                }
             }
+        } catch (\Exception $e) {
         }
 
-        return null;
+        return false;
     }
 
     public function hasCompetenceLevel(CompetenceFamilyType $type, Level|LevelType $level): bool
@@ -1245,23 +1242,6 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         return false;
-    }
-
-    /**
-     * Fourni le score de Renommée.
-     *
-     * @override BasePersonnage::getRenomme()
-     */
-    public function getRenomme(): int
-    {
-        // $renomme = $this->renomme ?? 0;
-        $renomme = 0;
-
-        foreach ($this->getRenommeHistories() as $renommeHistory) {
-            $renomme += $renommeHistory->getRenomme();
-        }
-
-        return $renomme;
     }
 
     /**
@@ -1382,13 +1362,6 @@ class Personnage extends BasePersonnage implements \Stringable
         return false;
     }
 
-    public function isKnownLoi(Loi $loi): bool
-    {
-        // TODO
-
-        return false;
-    }
-
     /**
      * Vérifie si le personnage connait ce document.
      */
@@ -1429,6 +1402,13 @@ class Personnage extends BasePersonnage implements \Stringable
                 return true;
             }
         }
+
+        return false;
+    }
+
+    public function isKnownLoi(Loi $loi): bool
+    {
+        // TODO
 
         return false;
     }
@@ -1526,39 +1506,6 @@ class Personnage extends BasePersonnage implements \Stringable
         return !empty($this->getCompetencesFromFamilyType($type));
     }
 
-    public function hasCompetenceId(int $id): bool
-    {
-        try {
-            foreach ($this->getCompetences() as $competence) {
-                if ($competence->getId() === $id) {
-                    return true;
-                }
-            }
-        } catch (\Exception $e) {
-        }
-
-        return false;
-    }
-
-    /**
-     * @return Competence[]
-     */
-    public function getCompetencesFromFamilyType(CompetenceFamilyType $type): array
-    {
-        $competences = [];
-        try {
-            foreach ($this->getCompetences() as $competence) {
-                if ($competence->getCompetenceFamily()?->getId() === $type->getId()) {
-                    $competences[] = $competence;
-                }
-            }
-        } catch (\Exception $e) {
-            // LOG $e ?
-        }
-
-        return $competences;
-    }
-
     /**
      * Indique si le personnage est sensible.
      *
@@ -1654,15 +1601,5 @@ class Personnage extends BasePersonnage implements \Stringable
         $this->groupe = null;
 
         return $this;
-    }
-
-    public function getFullLabel(): string
-    {
-        return $this->getLabel();
-    }
-
-    public function getPrintLabel(): ?string
-    {
-        return (new AsciiSlugger())->slug($this->getLabel());
     }
 }

@@ -84,7 +84,7 @@ class GroupeForm extends AbstractType
         ])->add('discord', TextType::class, [
             'required' => false,
             'label' => 'Lien discord',
-            'helper' => 'https://discord.gg/xxxx',
+            'help' => 'https://discord.gg/xxxx',
             'constraints' => [
                 new Assert\Callback([
                     'callback' => function (?Groupe $groupe, ExecutionContextInterface $context) {
