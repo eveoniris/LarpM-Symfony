@@ -14,19 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController
 {
-    #[Route('/', name: 'homepage')]
-    public function index(AnnonceRepository $annonceRepository): Response
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-        return $this->render('index/index.html.twig', [
-            'controller_name' => 'IndexController',
-            'user' => $user,
-            'participants' => $user?->getParticipants(),
-            'annonces' => $annonceRepository->findBy([], ['id' => 'DESC']),
-        ]);
-    }
-
     #[Route('/design', name: 'design')]
     public function designAction(Request $request): Response
     {
@@ -38,6 +25,21 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/design.twig', ['user' => $this->getUser()]);
+    }
+
+    #[Route('/', name: 'homepage')]
+    public function index(AnnonceRepository $annonceRepository): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        return $this->render('index/index.html.twig', [
+            'controller_name' => 'IndexController',
+            'user' => $user,
+            'allowRememberMe' => true,
+            'participants' => $user?->getParticipants(),
+            'annonces' => $annonceRepository->findBy([], ['id' => 'DESC']),
+        ]);
     }
 
     /** Testing mail send */
@@ -74,7 +76,7 @@ class IndexController extends AbstractController
     public function pwd(
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager,
-        Request $request
+        Request $request,
     ): Response {
         // Only in dev
         if ('dev' !== $this->getParameter('kernel.environment')) {
@@ -109,7 +111,7 @@ class IndexController extends AbstractController
         // hash the password (based on the security.yaml config for the $user class)
         $hashedPassword = $passwordHasher->hashPassword(
             $user,
-            $plaintextPassword
+            $plaintextPassword,
         );
         $user->setPassword($hashedPassword);
 

@@ -4,37 +4,33 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("user.messagerie") }}">Messagerie</a></li>
-		<li class="active">Répondre à un message</li>
-	</ol>
-	
-		
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('user.messagerie.message.response',{'id': user.id, 'message':message.id}) }}" 
-				method="POST" {{ form_enctype(form) }}
-				novalidate >
-			<fieldset>
-				<legend>Répondre à un message</legend>
-				
-				<div class="list-group">
-					<div class="list-group-item">
-						<div class="list-group-item-heading">
-							<u>{{ message.title }}</u>&nbsp;envoyé par&nbsp;<strong>{{ message.userRelatedByAuteur.personnage.publicName }}</strong><br />
-							<em>Envoyé le {{ message.creationDate|date('Y-m-d H:i:s') }}</em>
-						</div>
-						<div class="list-group-item-text">
-							<p>{{ message.text|markdown_to_html }}</p>
-						</div>
-					</div>
-				</div>
-				
-				
-							
-				{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
-	</div>
-	
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path("user.messagerie") }}">Messagerie</a></li>
+        <li class="active">Répondre à un message</li>
+    </ol>
+
+
+    <div class="well bs-component">
+        <fieldset>
+            <legend>Répondre à un message</legend>
+
+            <div class="list-group">
+                <div class="list-group-item">
+                    <div class="list-group-item-heading">
+                        <u>{{ message.title }}</u>&nbsp;envoyé
+                        par&nbsp;<strong>{{ message.userRelatedByAuteur.personnage.publicName }}</strong><br/>
+                        <em>Envoyé le {{ message.creationDate|date('Y-m-d H:i:s') }}</em>
+                    </div>
+                    <div class="list-group-item-text">
+                        <p>{{ message.text|markdown_to_html }}</p>
+                    </div>
+                </div>
+            </div>
+
+
+            {{ form(form) }}
+        </fieldset>
+    </div>
+
 {% endblock body %}
