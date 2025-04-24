@@ -38,7 +38,7 @@
     {% if materielHtml %}
         <strong>Lié aux compétences</strong>
         <ul>
-            {{materielHtml}}
+            {{ materielHtml }}
         </ul>
     {% endif %}
 
@@ -128,7 +128,7 @@
         <li>1 Fiche de personnage (dans une pochette plastifiée)</li>
         <li>1 Fiche retour de personnage</li>
         {% for materiel in personnageService.allMateriel(personnage) %}
-            <li>{{ materiel }}</li>
+            <li>{{ materiel|markdown_to_html }}</li>
         {% endfor %}
     </ul>
 

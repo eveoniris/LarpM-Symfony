@@ -1,21 +1,22 @@
 <div class="well bs-component">
-	{{ form_start(form, {"attr": {"action": action }}) }}
-		<fieldset>
-			<legend>{{ legend }}</legend>
-				
-										
-				{{ form_row(form.classe) }}
-				
-				<h5>Compétences</h5>
-				<p>Composez votre personnage secondaire avec une ou plusieurs competences.</p>
-					
-				<ul class="list-group mb-2 competences" data-prototype="{{ form_widget(form.personnageSecondaireCompetences.vars.prototype)|e }}">
-					{% for competence in form.personnageSecondaireCompetences %}
-				       	<li class="list-group-item">{{ form_widget(competence) }}</li>
-				    {% endfor %}
-				</ul>
-								
-				{{ form_rest(form) }}
-		</fieldset>
-	{{ form_end(form) }}
+    {{ form_start(form, {"attr": {"action": action }}) }}
+    <fieldset>
+        <legend>{{ legend }}</legend>
+
+
+        {{ form_row(form.classe) }}
+
+        <h5>Compétences</h5>
+        <p>Composez votre personnage secondaire avec une ou plusieurs competences.</p>
+
+        <ul class="list-group mb-2 competences"
+            data-prototype="{{ form_widget(form.personnageSecondaireCompetences.vars.prototype)|e }}">
+            {% for competence in form.personnageSecondaireCompetences %}
+                <li class="list-group-item">{{ form_widget(competence) }}</li>
+            {% endfor %}
+        </ul>
+
+        @
+    </fieldset>
+    {{ form_end(form) }}
 </div>

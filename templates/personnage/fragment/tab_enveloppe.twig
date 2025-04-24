@@ -19,6 +19,7 @@
                     {'path' : path('personnage.update.ingredient', {'personnage': personnage.id}), 'label': 'Modifier la liste des ingrédients' },
                     {'path' : path('personnage.update.ressource', {'personnage': personnage.id}), 'label': 'Modifier la liste des ressources' },
                     {'path' : path('personnage.update.richesse', {'personnage': personnage.id}), 'label': 'Modifier la richesse' },
+                    {'path' : path('personnage.update.materiel', {'personnage': personnage.id}), 'label': 'Modifier le materiel' },
                     {'path' : path('personnage.enveloppe.print', {'personnage': personnage.id}), 'label': "Imprimer l'enveloppe" },
                 ]
             } %}
@@ -143,7 +144,7 @@
                 <div class="list-group-item">
                     <h6 class="list-group-item-heading">Matériel :</h6>
                     {% for materiel in personnageService.allMateriel(personnage) %}
-                        <div class="list-group-item-text">{{ materiel }}</div>
+                        <div class="list-group-item-text">{{ materiel|markdown_to_html }}</div>
                     {% else %}
                         <div class="list-group-item-text">Aucun</div>
                     {% endfor %}
