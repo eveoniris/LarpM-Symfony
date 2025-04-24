@@ -1,19 +1,24 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
-    secret: '%env(APP_SECRET)%'
-    #csrf_protection: true
+  secret: '%env(APP_SECRET)%'
+  #csrf_protection: true
 
-    # Note that the session will be started ONLY if you read or write from it.
-    session: true
+  http_method_override: false
+  handle_all_throwables: true
+  php_errors:
+    log: true
 
-    #esi: true
-    #fragments: true
+  # Note that the session will be started ONLY if you read or write from it.
+  session: true
 
-    assets:
-        base_path: '/build/img'
+  #esi: true
+  #fragments: true
+
+  assets:
+    base_path: '/build/img'
 
 when@test:
-    framework:
-        test: true
-        session:
-            storage_factory_id: session.storage.factory.mock_file
+  framework:
+    test: true
+    session:
+      storage_factory_id: session.storage.factory.mock_file
