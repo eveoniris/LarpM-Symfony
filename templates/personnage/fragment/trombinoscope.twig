@@ -22,7 +22,7 @@
         } %}
     {% endif %}
 
-    <div class="thumbnail d-flex justify-content-center">
+    <div class="thumbnail d-flex justify-content-center" data-turbo="false">
         {% if personnage.trombineUrl %}
             <a href="{{ path('personnage.trombine', {'personnage' : personnage.id }) }}">
             <img class="media-object" style="max-width: 400px; max-height: 400px;"

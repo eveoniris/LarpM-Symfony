@@ -61,7 +61,33 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected LoggerInterface $logger,
         protected PersonnageService $personnageService,
         // Cache $cache, // TODO : later
-    ) {
+    )
+    {
+    }
+
+    public function can($key): bool
+    {
+        return $this->getCan()[$key] ?? false;
+    }
+
+    protected function getCan(array $values = []): array
+    {
+        $can = [...$this->can, ...$values];
+        if ($can[self::IS_ADMIN] || $this->isGranted(Role::ADMIN->value)) {
+            foreach ($can as &$c) {
+                $c = true;
+            }
+        }
+
+        if ($can[self::CAN_WRITE]) {
+            $can[self::CAN_READ] = true;
+        }
+
+        if ($can[self::CAN_READ_PRIVATE]) {
+            $can[self::CAN_READ] = true;
+        }
+
+        return $can;
     }
 
     public function setCan(string $who, bool $permission): AbstractController
@@ -69,11 +95,6 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $this->can[$who] = $permission;
 
         return $this;
-    }
-
-    public function can($key): bool
-    {
-        return $this->getCan()[$key] ?? false;
     }
 
     protected function ListSearchForm(): FormInterface
@@ -165,39 +186,19 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
             $parameters['playerViewToggleUrl'] = $this->generateUrl(
                 $request->attributes->get('_route'),
-                $currentParameters
+                $currentParameters,
             );
 
-            if (false !== (bool) $request->get('playerView')) {
+            if (false !== (bool)$request->get('playerView')) {
                 return parent::render('admin/'.$view, $parameters, $response);
             }
         }
 
         $parameters = [...$this->getCan(), ...$parameters];
 
-       // dump($parameters);
+        // dump($parameters);
 
         return parent::render($view, $parameters, $response);
-    }
-
-    protected function getCan(array $values = []): array
-    {
-        $can = [...$this->can, ...$values];
-        if ($can[self::IS_ADMIN] || $this->isGranted(Role::ADMIN->value)) {
-            foreach ($can as &$c) {
-                $c = true;
-            }
-        }
-
-        if ($can[self::CAN_WRITE]) {
-            $can[self::CAN_READ] = true;
-        }
-
-        if ($can[self::CAN_READ_PRIVATE]) {
-            $can[self::CAN_READ] = true;
-        }
-
-        return $can;
     }
 
     protected function getRequestLimit(int $defLimit = 10): int
@@ -213,7 +214,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string $defOrderDir = 'ASC',
         ?string $alias = null,
         ?array $allowedFields = null, // TODO: check SF security Form on Self Entity's attributes
-    ): array {
+    ): array
+    {
         $request = $this->requestStack?->getCurrentRequest();
         if (!$request) {
             return [];
@@ -268,12 +270,14 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $routes['root'] = $root; // ensure if from other
         } catch (\ErrorException $e) {
             $this->logger->error($e);
-            throw new \RuntimeException(<<<'EOF'
+            throw new \RuntimeException(
+                <<<'EOF'
                 Unable to get the root route.
                 If you do not define a main route as class attributes (ie: #[Route('/groupe', name: 'groupe.')]), 
                 You may need to provide the argument $routes['root'] from the calling methods.
                 Sample: ['root' => 'groupe.'] from GroupeController::handleCreateOrUpdate()
-                EOF);
+                EOF,
+            );
         }
 
         $routes['add'] ??= $root.'add';
@@ -317,7 +321,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                     'attr' => [
                         'class' => 'btn btn-secondary',
                     ],
-                ]
+                ],
             )
                 ->add('save_continue', SubmitType::class, [
                     'label' => $msg['save_continue'],
@@ -396,14 +400,14 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     protected function log(mixed $entity, string $type, bool $flush = false): void
     {
         $logAction = new LogAction();
-        $logAction->setDate(new DateTime());
+        $logAction->setDate(new \DateTime());
         $logAction->setUser($this->getUser());
         $logAction->setType($type);
 
         if (!is_array($entity) && method_exists($entity, 'toLog')) {
             $entityValue = $entity->toLog();
         } else {
-            $entityValue = (array) $entity;
+            $entityValue = (array)$entity;
             // Clean a bit
             foreach ($entityValue as $key => $value) {
                 $cleanKey = str_replace([is_array($entity) ? '_' : $entity::class, ' ', '*'], ['', '', ''], $key);
@@ -414,7 +418,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             }
         }
 
-        $entityData = ['class' => $entity::class, 'data' => $entityValue];
+        $entityData = ['class' => is_array($entity) ? '_' : $entity::class, 'data' => $entityValue];
 
         $logAction->setData($entityData);
         $this->entityManager->persist($logAction);
@@ -546,13 +550,13 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         if ($hasAttachement) {
             $response->setContentDisposition(
                 ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                $documentLabel.'.pdf'
+                $documentLabel.'.pdf',
             );
         } else {
             $response
                 ->setContentDisposition(
                     ResponseHeaderBag::DISPOSITION_INLINE,
-                    $documentLabel.'.pdf'
+                    $documentLabel.'.pdf',
                 );
         }
 
@@ -567,8 +571,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     {
         $response = new BinaryFileResponse(
             $this->fileUploader->getDirectory(
-                FolderType::Private
-            ).'No_Image_Available.jpg'
+                FolderType::Private,
+            ).'No_Image_Available.jpg',
         );
         $response->headers->set('Content-Type', 'image/jpeg');
         $response->headers->set('Content-Control', 'private');

@@ -11,7 +11,7 @@
 
         {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : " Téléversez une photo de vous pour le trombinoscope. Ce trombinoscope sera visible par les orgas, et les membres de vos groupes." } %}
 
-        <div class="text-center">
+        <div class="text-center" data-turbo="false">
             {% if personnage.trombineUrl %}
                 <img width="160" src="{{ path('personnage.trombine', {'personnage' : personnage.id }) }}"
                      alt="{{ personnage.publicName }}"/>
