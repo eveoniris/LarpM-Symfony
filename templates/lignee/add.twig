@@ -11,20 +11,7 @@
     </ol>
 
     <div class="well bs-component">
-        {{ form_start(form, {"attr": {"action": path('lignee.add')}}" method="POST" {{ form_enctype(form) }} novalidate>
-            <fieldset>
-                <legend>Nouvelle lignée</legend>
-                
-
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        {{ form_row(form.nom) }}
-                        {{ form_row(form.description) }}
-                    </div>
-                </div>
-                {{ form_rest(form) }}
-            </fieldset>
-        {{ form_end(form) }}
+        {{ form(form) }}
     </div>
 
 {% endblock body %}

@@ -4,42 +4,42 @@
 
 {% block body %}
 
-	<div class="well well-sm">
-		<div class="header">
-			<h5>Gestion des droits</h5>
-		</div>
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Gestion des droits</h5>
+        </div>
 
-	</div>
+    </div>
 
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-xs-12 col-md-12">
-			
-				{{ form_start(form, {"attr": {"action": path('user.right') }}" method="POST">
-				<table class="table">
-				<thead>
-					<tr>
-						<th />
-						{% for role in roles %}
-                            <th><a href="#" data-toggle="tooltip" title="{{ role.descr}}">{{ role.label }}</a></th>
-                		{% endfor %}		
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-				{% for user in users %}
-						<th>{{ user.id }} - {{ user.username }}</th>
-						{% for role in roles %}
-							<td><input type="checkbox" name="user[{{ user.id }}][{{ role.label }}]" {% if user.hasRole(role.label) %}checked="checked" {% endif %} /></td>
-						{% endfor %}
-						</tr>
-				{% endfor %}
-				</tbody>
-				</table>
-				<input type="submit" value="Enregistrer" />
-				{{ form_end(form) }}
-			</div>
-		</div>
-	</div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12 col-md-12">
+
+                {{ form_start(form) }}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        {% for role in roles %}
+                            <th><a href="#" data-toggle="tooltip" title="{{ role.descr }}">{{ role.label }}</a></th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        {% for user in users %}
+                        <th>{{ user.id }} - {{ user.username }}</th>
+                        {% for role in roles %}
+                            <td><input type="checkbox" name="user[{{ user.id }}][{{ role.label }}]"
+                                       {% if user.hasRole(role.label) %}checked="checked" {% endif %} /></td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <input type="submit" value="Enregistrer"/>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
 
 {% endblock body %}
