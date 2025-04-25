@@ -20,9 +20,13 @@ class TrombinoscopeController extends AbstractController
      * Le trombinoscope général.
      */
     #[Route('/trombinoscope', name: 'trombinoscope.index')]
-    public function indexAction(Request $request, PagerService $pagerService, ParticipantRepository $participantRepository, EntityManagerInterface $entityManager): Response
-    {
-        $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
+    public function indexAction(
+        Request $request,
+        PagerService $pagerService,
+        ParticipantRepository $participantRepository,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        $gnRepo = $entityManager->getRepository(Gn::class);
         $gn = $gnRepo->findNext();
 
         $pagerService->setRequest($request)->setRepository($participantRepository)->setLimit(50);
@@ -112,7 +116,7 @@ class TrombinoscopeController extends AbstractController
      * Permet de selectionner des personnages pour faire un trombinoscope.
      */
     #[Route('/trombinoscope/perso', name: 'trombinoscope.perso')]
-    public function persoAction(Request $request,  EntityManagerInterface $entityManager): Response
+    public function persoAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $personnages = null;
         $titre = null;
@@ -133,7 +137,7 @@ class TrombinoscopeController extends AbstractController
             $data = $form->getData();
             $titre = $data['titre'];
             $ids = $data['ids'];
-            $ids = explode(' ', (string) $ids);
+            $ids = explode(' ', (string)$ids);
             $repo = $entityManager->getRepository('\\'.\App\Entity\Personnage::class);
             $personnages = $repo->findByIds($ids);
 

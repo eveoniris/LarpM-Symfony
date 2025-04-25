@@ -17,33 +17,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 namespace App\Controller;
 
+use App\Enum\Role;
 use App\Form\PnjInscriptionForm;
 use App\Manager\GroupeManager;
+use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * LarpManager\Controllers\PnjController
- *
- * @author kevin
- *
- */
+// TODO
+#[IsGranted(new MultiRolesExpression(Role::ORGA))]
 class PnjController extends AbstractController
 {
-	/**
-	 * 
-	 */
-	public function listAction(Request $request,  EntityManagerInterface $entityManager)
-	{
-		$gn = GroupeManager::getGnActif($entityManager);
-		
-		$pnjs = $gn->getParticipantsPnj();
+    /**
+     *
+     */
+    public function listAction(Request $request, EntityManagerInterface $entityManager)
+    {
+        $gn = GroupeManager::getGnActif($entityManager);
 
-		return $this->render('pnj/list.twig', array(
-			'pnjs' => $pnjs,	
-		));
-	}
+        $pnjs = $gn->getParticipantsPnj();
+
+        return $this->render('pnj/list.twig', [
+            'pnjs' => $pnjs,
+        ]);
+    }
 }

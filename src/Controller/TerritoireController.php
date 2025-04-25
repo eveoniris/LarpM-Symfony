@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Chronologie;
 use App\Entity\Construction;
 use App\Entity\Groupe;
-use App\Entity\Loi;
 use App\Entity\Personnage;
 use App\Entity\Territoire;
 use App\Entity\User;
@@ -27,6 +27,7 @@ use App\Form\Territoire\TerritoireLoiForm;
 use App\Form\Territoire\TerritoireStatutForm;
 use App\Form\Territoire\TerritoireStrategieForm;
 use App\Repository\TerritoireRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -46,7 +47,7 @@ class TerritoireController extends AbstractController
      * Modifier les listes de cibles pour les quêtes commerciales.
      */
     // #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/add', name: 'territoire.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
@@ -82,17 +83,14 @@ class TerritoireController extends AbstractController
      * Récupération de l'image du blason d'un territoire.
      */
     #[Route('/territoire/{territoire}/blason', name: 'territoire.blason', methods: ['GET'])]
-    public function blasonAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
-    ): Response {
+    public function blasonAction(#[MapEntity] Territoire $territoire): Response
+    {
         $filename = __DIR__.'/../../assets/img/blasons/'.$territoire->getBlason();
 
         if (!file_exists($filename)) {
             // get old ?
             $path = $this->fileUploader->getProjectDirectory(
-            ).FolderType::Photos->value.DocumentType::Blason->value.'/';
+                ).FolderType::Photos->value.DocumentType::Blason->value.'/';
             $filename = $path.$territoire->getBlason();
 
             if (!file_exists($filename)) {
@@ -113,7 +111,7 @@ class TerritoireController extends AbstractController
     /**
      * Ajoute une construction dans un territoire.
      */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/{territoire}/constructionAdd', name: 'territoire.constructionAdd')]
     public function constructionAddAction(
         Request $request,
@@ -171,7 +169,7 @@ class TerritoireController extends AbstractController
     /**
      * Retire une construction d'un territoire.
      */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/{territoire}/constructionRemove/{construction}', name: 'territoire.constructionRemove')]
     public function constructionRemoveAction(
         Request $request,
@@ -208,12 +206,12 @@ class TerritoireController extends AbstractController
      * Supression d'un territoire.
      */
     #[Route('/territoire/{territoire}/delete', name: 'territoire.delete')]
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     public function deleteAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Territoire $territoire,
-    ) {
+    ): RedirectResponse|Response {
         $form = $this->createForm(TerritoireDeleteForm::class, $territoire)
             ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
@@ -255,6 +253,7 @@ class TerritoireController extends AbstractController
      * Detail d'un territoire pour les joueurs.
      */
     #[Route('/territoire/{territoire}', name: 'territoire.detail', requirements: ['territoire' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::USER))]
     public function detailAction(
         #[MapEntity] Territoire $territoire,
     ): Response {
@@ -275,22 +274,23 @@ class TerritoireController extends AbstractController
                 'territoire' => $territoire,
                 'isAdmin' => $isAdmin,
                 'canSeeDetail' => $canSeeDetail,
-            ]
+            ],
         );
     }
 
     /**
      * Ajoute un événement à un territoire.
      */
+    // TODO
     #[Route('/territoire/{territoire}/eventAdd', name: 'territoire.eventAdd')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function eventAddAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Territoire $territoire,
-    ) {
+    ):RedirectResponse|Response {
         $event = $request->get('event');
 
-        $event = new \App\Entity\Chronologie();
+        $event ??= new Chronologie();
 
         $form = $this->createForm(EventForm::class, $event)
             ->add('add', SubmitType::class, ['label' => 'Ajouter']);
@@ -300,8 +300,8 @@ class TerritoireController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $event = $form->getData();
 
-            $entityManager->persist($event);
-            $entityManager->flush();
+            $this->entityManager->persist($event);
+            $this->entityManager->flush();
             $this->addFlash('success', 'L\'evenement a été ajouté.');
 
             return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
@@ -318,11 +318,12 @@ class TerritoireController extends AbstractController
      * Supprime un événement.
      */
     #[Route('/territoire/{territoire}/eventDelete', name: 'territoire.eventDelete')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function eventDeleteAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Territoire $territoire,
-    ) {
+    ): RedirectResponse|Response {
         $event = $request->get('event');
 
         $form = $this->createForm(ChronologieDeleteForm::class, $event)
@@ -351,11 +352,12 @@ class TerritoireController extends AbstractController
      * Met à jour un événement.
      */
     #[Route('/territoire/{territoire}/eventUpdate', name: 'territoire.eventUpdate')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function eventUpdateAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Territoire $territoire,
-    ) {
+    ): RedirectResponse|Response {
         $event = $request->get('event');
 
         $form = $this->createForm(ChronologieForm::class, $event)
@@ -384,13 +386,13 @@ class TerritoireController extends AbstractController
      * Liste des fiefs.
      */
     #[Route('/territoire/fief', name: 'territoire.fief')]
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE, Role::CARTOGRAPHE))]
     public function fiefAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
+        $limit = (int)($request->get('limit') ?: 50);
+        $page = (int)($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
@@ -398,7 +400,7 @@ class TerritoireController extends AbstractController
         $pays = isset($formData['pays']) ? $entityManager->find(Territoire::class, $formData['pays']) : null;
         $province = isset($formData['provinces']) ? $entityManager->find(
             Territoire::class,
-            $formData['provinces']
+            $formData['provinces'],
         ) : null;
         $groupe = isset($formData['groupe']) ? $entityManager->find(Groupe::class, $formData['groupe']) : null;
         $optionalParameters = '';
@@ -422,7 +424,7 @@ class TerritoireController extends AbstractController
                 'listeProvinces' => $listeProvinces,
                 'method' => 'get',
                 'csrf_protection' => false,
-            ]
+            ],
         );
 
         $form->handleRequest($request);
@@ -468,7 +470,7 @@ class TerritoireController extends AbstractController
             $limit,
             $offset,
             $criteria,
-            ['by' => $order_by, 'dir' => $order_dir]
+            ['by' => $order_by, 'dir' => $order_dir],
         );
 
         // $numResults = count($fiefs);
@@ -480,7 +482,7 @@ class TerritoireController extends AbstractController
         $paginator = $repo->findPaginatedQuery(
             $fiefs,
             $this->getRequestLimit(),
-            $this->getRequestPage()
+            $this->getRequestPage(),
         );
 
         $isAdmin = $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::CARTOGRAPHE->value);
@@ -512,7 +514,7 @@ class TerritoireController extends AbstractController
         // Got only main territory
         $queryBuilder = $territoireRepository->root(
             $territoireRepository->createQueryBuilder($alias),
-            true
+            true,
         );
 
 
@@ -524,14 +526,14 @@ class TerritoireController extends AbstractController
                 'paginator' => $territoireRepository->searchPaginated($pagerService, $queryBuilder),
                 'isAdmin' => $isAdmin,
                 'pagerService' => $pagerService,
-            ]
+            ],
         );
     }
 
     /**
      * Liste des pays avec le nombre de noble.
      */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/noble', name: 'territoire.noble')]
     public function nobleAction(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -543,7 +545,7 @@ class TerritoireController extends AbstractController
     /**
      * Impression des territoires.
      */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/print', name: 'territoire.print')]
     public function printAction(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -555,7 +557,7 @@ class TerritoireController extends AbstractController
     /**
      * Liste des fiefs pour les quêtes.
      */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/quete', name: 'territoire.quete')]
     public function queteAction(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -567,7 +569,7 @@ class TerritoireController extends AbstractController
     /**
      * Modifie un territoire.
      */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/{territoire}/update', name: 'territoire.update')]
     public function updateAction(
         Request $request,
@@ -598,13 +600,13 @@ class TerritoireController extends AbstractController
     /**
      * Met à jour le blason d'un territoire.
      */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/{territoire}/updateBlason', name: 'territoire.updateBlason')]
     public function updateBlasonAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Territoire $territoire,
-    ) {
+    ): RedirectResponse|Response {
         $form = $this->createForm(TerritoireBlasonForm::class, $territoire)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -620,7 +622,7 @@ class TerritoireController extends AbstractController
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
                 $this->addFlash(
                     'error',
-                    'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)'
+                    'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)',
                 );
 
                 return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
@@ -648,7 +650,7 @@ class TerritoireController extends AbstractController
         ]);
     }
 
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/{territoire}/updateBonus', name: 'territoire.updateBonus')]
     public function updateBonusAction(
         Request $request,
@@ -677,7 +679,7 @@ class TerritoireController extends AbstractController
         ]);
     }
 
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/{territoire}/updateCibles', name: 'territoire.updateCibles')]
     public function updateCiblesAction(
         Request $request,
@@ -709,7 +711,7 @@ class TerritoireController extends AbstractController
     /**
      * Met à jour la culture d'un territoire.
      */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/{territoire}/updateCulture', name: 'territoire.updateCulture')]
     public function updateCultureAction(
         Request $request,
@@ -739,7 +741,7 @@ class TerritoireController extends AbstractController
     /**
      * Mise à jour de la liste des ingrédients fourni par un territoire.
      */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/{territoire}/updateIngredients', name: 'territoire.updateIngredients')]
     public function updateIngredientsAction(
         Request $request,
@@ -771,7 +773,7 @@ class TerritoireController extends AbstractController
     /**
      * Ajoute une loi à un territoire.
      */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/{territoire}/updateLoi', name: 'territoire.updateLoi')]
     public function updateLoiAction(
         Request $request,
@@ -803,13 +805,13 @@ class TerritoireController extends AbstractController
     /**
      * Met à jour le statut d'un territoire.
      */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/{territoire}/updateStatut', name: 'territoire.updateStatut')]
     public function updateStatutAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Territoire $territoire,
-    ) {
+    ): RedirectResponse|Response {
         $form = $this->createForm(TerritoireStatutForm::class, $territoire)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -833,13 +835,13 @@ class TerritoireController extends AbstractController
     /**
      * Modifie le jeu strategique d'un territoire.
      */
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::CARTOGRAPHE->value.'")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/{territoire}/update/strategie', name: 'territoire.updateStrategie')]
     public function updateStrategieAction(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity] Territoire $territoire,
-    ) {
+    ): RedirectResponse|Response {
         $form = $this->createForm(TerritoireStrategieForm::class, $territoire)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 

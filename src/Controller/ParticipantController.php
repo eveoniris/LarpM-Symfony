@@ -74,6 +74,7 @@ use App\Repository\DomaineRepository;
 use App\Repository\PersonnageSecondaireRepository;
 use App\Repository\PotionRepository;
 use App\Repository\SecondaryGroupRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -103,6 +104,8 @@ class ParticipantController extends AbstractController
      * Accepter une alliance.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/acceptAlliance', name: 'participant.groupe.acceptAlliance')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    // TODO
     public function acceptAllianceAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -115,10 +118,13 @@ class ParticipantController extends AbstractController
         if (true == $groupe->getLock()) {
             $this->addFlash(
                 'error',
-                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)',
             );
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         $form = $this->createForm(AcceptAllianceForm::class, $alliance)
@@ -137,7 +143,10 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez accepté la proposition d\'alliance.');
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         return $this->render('groupe/acceptAlliance.twig', [
@@ -153,6 +162,8 @@ class ParticipantController extends AbstractController
      * Accepter la paix.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/acceptPeace', name: 'participant.groupe.acceptPeace')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    // TODO
     public function acceptPeaceAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -165,10 +176,13 @@ class ParticipantController extends AbstractController
         if (true == $groupe->getLock()) {
             $this->addFlash(
                 'error',
-                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)',
             );
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         $form = $this->createForm(AcceptPeaceForm::class, $war)
@@ -191,7 +205,10 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez fait la paix !');
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         return $this->render('groupe/acceptPeace.twig', [
@@ -207,8 +224,11 @@ class ParticipantController extends AbstractController
      * Affiche le formulaire d'ajout d'un joueur.
      */
     #[Route('/participant/add', name: 'participant.add')]
-    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
-    {
+    // TODO
+    public function addAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponse|Response {
         $joueur = new Participant();
 
         $form = $this->createForm(JoueurForm::class, $joueur)
@@ -238,6 +258,7 @@ class ParticipantController extends AbstractController
      * Detail d'un joueur.
      */
     #[Route('/participant/{participant}/detail', name: 'participant.detail')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function adminDetailAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -256,6 +277,7 @@ class ParticipantController extends AbstractController
      * Création d'un nouveau personnage. L'utilisateur doit être dans un groupe et son billet doit être valide.
      */
     #[Route('/participant/{participant}/personnageNew', name: 'participant.personnage.new')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function adminPersonnageNewAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -396,6 +418,7 @@ class ParticipantController extends AbstractController
      * Reprendre un ancien personnage.
      */
     #[Route('/participant/{participant}/personnageOld', name: 'participant.personnage.old')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function adminPersonnageOldAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -453,6 +476,7 @@ class ParticipantController extends AbstractController
      * Met a jours les points d'expérience des joueurs.
      */
     #[Route('/participant/{participant}/xp', name: 'participant.xp')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function adminXpAction(
         EntityManagerInterface $entityManager,
         Request $request,
@@ -497,6 +521,7 @@ class ParticipantController extends AbstractController
      * Liste des background pour le joueur.
      */
     #[Route('/participant/{participant}/background', name: 'participant.background')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function backgroundAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -507,7 +532,7 @@ class ParticipantController extends AbstractController
         if (!$personnage) {
             $this->addFlash(
                 'error',
-                'Désolé, Vous devez faire votre personnage pour pouvoir consulter votre background.'
+                'Désolé, Vous devez faire votre personnage pour pouvoir consulter votre background.',
             );
 
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
@@ -527,16 +552,16 @@ class ParticipantController extends AbstractController
         $backsGroupe = new ArrayCollection(
             array_merge(
                 $participant->getGroupeGn()->getGroupe()->getBacks('PUBLIC')->toArray(),
-                $backsGroupe->toArray()
-            )
+                $backsGroupe->toArray(),
+            ),
         );
 
         // recherche les backgrounds liés au groupe (visibilité == GROUP_MEMBER)
         $backsGroupe = new ArrayCollection(
             array_merge(
                 $participant->getGroupeGn()->getGroupe()->getBacks('GROUPE_MEMBER')->toArray(),
-                $backsGroupe->toArray()
-            )
+                $backsGroupe->toArray(),
+            ),
         );
 
         // recherche les backgrounds liés au groupe (visibilité == GROUP_OWNER)
@@ -544,8 +569,8 @@ class ParticipantController extends AbstractController
             $backsGroupe = new ArrayCollection(
                 array_merge(
                     $participant->getGroupeGn()->getGroupe()->getBacks('GROUPE_OWNER')->toArray(),
-                    $backsGroupe->toArray()
-                )
+                    $backsGroupe->toArray(),
+                ),
             );
         }
 
@@ -583,12 +608,13 @@ class ParticipantController extends AbstractController
      * Ajout d'un billet à un utilisateur. L'utilisateur doit participer au même jeu que celui du billet qui lui est affecté.
      */
     #[Route('/participant/{participant}/billet', name: 'participant.billet')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function billetAction(
         EntityManagerInterface $entityManager,
         Request $request,
         #[MapEntity] Participant $participant,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ParticipantBilletForm::class, $participant, ['gnId' => $participant->getGn()->getId()]
+        $form = $this->createForm(ParticipantBilletForm::class, $participant, ['gnId' => $participant->getGn()->getId()],
         )
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -617,6 +643,8 @@ class ParticipantController extends AbstractController
      * Briser une alliance.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/breakAlliance', name: 'participant.groupe.breakAlliance')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    // TODO
     public function breakAllianceAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -629,10 +657,13 @@ class ParticipantController extends AbstractController
         if (true == $groupe->getLock()) {
             $this->addFlash(
                 'error',
-                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)',
             );
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         $form = $this->createForm(BreakAllianceForm::class, $alliance)
@@ -654,8 +685,10 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez brisé une alliance.');
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         return $this->render('groupe/breakAlliance.twig', [
@@ -671,6 +704,8 @@ class ParticipantController extends AbstractController
      * Annuler une demande d'alliance.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/cancelRequestedAlliance', name: 'participant.groupe.cancelRequestedAlliance')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    // TODO
     public function cancelRequestedAllianceAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -683,11 +718,13 @@ class ParticipantController extends AbstractController
         if (true == $groupe->getLock()) {
             $this->addFlash(
                 'error',
-                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)',
             );
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         $form = $this->createForm(CancelRequestedAllianceForm::class, $alliance)
@@ -705,8 +742,10 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Votre demande d\'alliance a été annulée.');
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         return $this->render('groupe/cancelAlliance.twig', [
@@ -722,6 +761,7 @@ class ParticipantController extends AbstractController
      * Annuler la demande de paix.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/cancelRequestedPeace', name: 'participant.groupe.cancelRequestedPeace')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function cancelRequestedPeaceAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -735,11 +775,13 @@ class ParticipantController extends AbstractController
         if (true == $groupe->getLock()) {
             $this->addFlash(
                 'error',
-                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)',
             );
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         $form = $this->createForm(CancelRequestedPeaceForm::class, $war)
@@ -762,8 +804,10 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez annulé votre proposition de paix.');
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         return $this->render('groupe/cancelPeace.twig', [
@@ -869,6 +913,7 @@ class ParticipantController extends AbstractController
      * Liste des classes pour le joueur.
      */
     #[Route('/participant/{participant}/classe/list', name: 'participant.classe.list')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function classeListAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -894,7 +939,7 @@ class ParticipantController extends AbstractController
         Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
-
+        // Acess user or deprecated to PCont?
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
@@ -904,7 +949,7 @@ class ParticipantController extends AbstractController
         if (true == $participant->getGroupeGn()->getGroupe()->getLock()) {
             $this->addFlash(
                 'error',
-                'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur'
+                'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur',
             );
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
@@ -922,7 +967,7 @@ class ParticipantController extends AbstractController
         $choices = [];
         foreach ($availableCompetences as $competence) {
             $choices[$competence->getId()] = $competence->getLabel(
-            ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
+                ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
         }
 
         $form = $this->createFormBuilder($participant)
@@ -947,7 +992,7 @@ class ParticipantController extends AbstractController
             if ($xp - $cout < 0) {
                 $this->addFlash(
                     'error',
-                    'Vos n\'avez pas suffisement de points d\'expérience pour acquérir cette compétence.'
+                    'Vos n\'avez pas suffisement de points d\'expérience pour acquérir cette compétence.',
                 );
 
                 return $this->redirectToRoute('homepage', [], 303);
@@ -1021,8 +1066,8 @@ class ParticipantController extends AbstractController
                     foreach ($religion->getSpheres() as $sphere) {
                         foreach ($sphere->getPrieres() as $priere) {
                             if ($priere->getNiveau() == $competence->getLevel()->getId() && !$personnage->hasPriere(
-                                $priere
-                            )) {
+                                    $priere,
+                                )) {
                                 $priere->addPersonnage($personnage);
                                 $personnage->addPriere($priere);
                             }
@@ -1031,7 +1076,7 @@ class ParticipantController extends AbstractController
                 } else {
                     $this->addFlash(
                         'error',
-                        'Pour obtenir la compétence Prêtrise, vous devez être FERVENT ou FANATIQUE'
+                        'Pour obtenir la compétence Prêtrise, vous devez être FERVENT ou FANATIQUE',
                     );
 
                     return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
@@ -1487,22 +1532,26 @@ class ParticipantController extends AbstractController
         if (true == $groupe->getLock()) {
             $this->addFlash(
                 'error',
-                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)',
             );
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         // un groupe ne peux pas faire de déclaration de guerre si il a 3 ou plus ennemis
         if ($groupe->getEnnemies()->count() >= 3) {
             $this->addFlash(
                 'error',
-                'Désolé, vous avez déjà 3 ennemis ou plus, impossible de faire une nouvelle déclaration de guerre .'
+                'Désolé, vous avez déjà 3 ennemis ou plus, impossible de faire une nouvelle déclaration de guerre .',
             );
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         $war = new GroupeEnemy();
@@ -1525,32 +1574,40 @@ class ParticipantController extends AbstractController
             if ($requestedGroupe == $groupe) {
                 $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir votre propre groupe comme ennemi ...');
 
-                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+                return $this->redirectToRoute(
+                    'groupe.groupe.detail',
+                    ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+                );
             }
 
             if ($groupe->isEnemyTo($requestedGroupe)) {
                 $this->addFlash('error', 'Désolé, vous êtes déjà en guerre avec ce groupe');
 
-                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+                return $this->redirectToRoute(
+                    'groupe.groupe.detail',
+                    ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+                );
             }
 
             if ($requestedGroupe->getEnnemies()->count() >= 5) {
                 $this->addFlash(
                     'error',
-                    'Désolé, le groupe demandé dispose déjà de 5 ennemis, ce qui est le maximum possible.'
+                    'Désolé, le groupe demandé dispose déjà de 5 ennemis, ce qui est le maximum possible.',
                 );
 
-                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+                return $this->redirectToRoute(
+                    'groupe.groupe.detail',
+                    ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+                );
             }
 
             if ($groupe->isEnemyTo($requestedGroupe)) {
                 $this->addFlash('error', 'Désolé, vous êtes déjà allié avec ce groupe');
 
-                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+                return $this->redirectToRoute(
+                    'groupe.groupe.detail',
+                    ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+                );
             }
 
             $entityManager->persist($war);
@@ -1560,8 +1617,10 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Votre déclaration de guerre vient d\'être envoyée.');
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         return $this->render('groupe/declareWar.twig', [
@@ -1723,7 +1782,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', array('gn' => $participant->getGn()->getId())),303);
         }
         */
-        $form = $this->createForm(ParticipantGroupeForm::class, $participant, ['gnId' => $participant->getGn()->getId()]
+        $form = $this->createForm(ParticipantGroupeForm::class, $participant, ['gnId' => $participant->getGn()->getId()],
         )
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -1795,7 +1854,7 @@ class ParticipantController extends AbstractController
             if (!$groupeGn->getResponsable()) {
                 $this->addFlash(
                     'error',
-                    "Le groupe n'a pas encore de responsable, vous ne pouvez pas le rejoindre pour le moment."
+                    "Le groupe n'a pas encore de responsable, vous ne pouvez pas le rejoindre pour le moment.",
                 );
 
                 return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
@@ -1856,7 +1915,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute(
                 'participant.groupeSecondaire.detail',
                 ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()],
-                303
+                303,
             );
         }
 
@@ -2039,7 +2098,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute(
                 'participant.groupeSecondaire.detail',
                 ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()],
-                303
+                303,
             );
         }
 
@@ -2087,7 +2146,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute(
                 'participant.groupeSecondaire.detail',
                 ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()],
-                303
+                303,
             );
         }
 
@@ -2129,7 +2188,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute(
                 'participant.groupeSecondaire.detail',
                 ['participant' => $participant->getId(), 'groupeSecondaire' => $groupeSecondaire->getId()],
-                303
+                303,
             );
         }
 
@@ -2499,7 +2558,7 @@ class ParticipantController extends AbstractController
         if (true == $personnage->getGroupe()->getLock()) {
             $this->addFlash(
                 'error',
-                'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contacter votre scénariste si vous pensez que cela est une erreur'
+                'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contacter votre scénariste si vous pensez que cela est une erreur',
             );
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
@@ -2508,7 +2567,7 @@ class ParticipantController extends AbstractController
         if ($personnage->getTerritoire()) {
             $this->addFlash(
                 'error',
-                'Désolé, il n\'est pas possible de modifier votre origine. Veuillez contacter votre orga pour exposer votre problème.'
+                'Désolé, il n\'est pas possible de modifier votre origine. Veuillez contacter votre orga pour exposer votre problème.',
             );
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
@@ -2603,7 +2662,7 @@ class ParticipantController extends AbstractController
         if (true === $groupeGn->getGroupe()->getLock()) {
             $this->addFlash(
                 'error',
-                'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.'
+                'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.',
             );
 
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
@@ -2641,7 +2700,7 @@ class ParticipantController extends AbstractController
                 [
                     'label' => 'Valider mon personnage',
                     'attr' => ['onclick' => "return confirm('Confirmez vous le personnage ?')"],
-                ]
+                ],
             );
 
         $form->handleRequest($request);
@@ -2817,7 +2876,7 @@ class ParticipantController extends AbstractController
         if (true == $groupeGn->getGroupe()->getLock()) {
             $this->addFlash(
                 'error',
-                'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.'
+                'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.',
             );
 
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
@@ -2926,7 +2985,7 @@ class ParticipantController extends AbstractController
 
                 // Noblesse expert : +2 Renommee
                 if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel()->getId(
-                )) {
+                    )) {
                     $renomme_history = new RenommeHistory();
                     $renomme_history->setRenomme(2);
                     $renomme_history->setExplication('[Nouvelle participation] Noblesse Expert');
@@ -3022,7 +3081,7 @@ class ParticipantController extends AbstractController
                     'gn' => $participant->getGroupeGn()->getGn()->getId(),
                     'personnage' => $participant->getPersonnage()->getId(),
                 ],
-                303
+                303,
             );
         }
 
@@ -3059,13 +3118,13 @@ class ParticipantController extends AbstractController
             if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
                 $this->addFlash(
                     'error',
-                    'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)'
+                    'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)',
                 );
 
                 return $this->redirectToRoute(
                     'participant.personnage.trombine',
                     ['participant' => $participant->getId(), 'personnage' => $personnage->getId()],
-                    303
+                    303,
                 );
             }
 
@@ -3239,47 +3298,6 @@ class ParticipantController extends AbstractController
         ]);
     }
 
-    #[Route('/participant/{participant}/potion/{potion}/depart/add', name: 'participant.potion.depart.add')]
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::SCENARISTE->value.'")'))]
-    public function potionDepartAddAction(
-        Request $request,
-        #[MapEntity] Participant $participant,
-        #[MapEntity] Potion $potion,
-    ): RedirectResponse|Response {
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        if ($participant->hasPotionsDepart($potion)) {
-            $this->addFlash('error', 'Désolé, cette potion est déjà dans les potions de départ.');
-
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
-        }
-
-        if (!$personnage->isKnownPotion($potion)) {
-            $this->addFlash('error', 'Désolé, le personnage ne connait cette potion.');
-
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
-        }
-
-        $participant->addPotionDepart($potion);
-        $this->entityManager->persist($participant);
-
-        $this->entityManager->flush();
-
-        $this->addFlash('success', 'Vos modifications ont été enregistrées.');
-
-        return $this->redirectToRoute(
-            'personnage.detail',
-            ['personnage' => $personnage->getId()],
-            303
-        );
-    }
-
     /**
      * Choix d'une nouvelle potion de départ.
      */
@@ -3337,7 +3355,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute(
                 'personnage.detail',
                 ['personnage' => $personnage->getId()],
-                303
+                303,
             );
         }
 
@@ -3347,6 +3365,108 @@ class ParticipantController extends AbstractController
             'participant' => $participant,
             'potions' => $potions,
             'niveau' => $niveau,
+        ]);
+    }
+
+    #[Route('/participant/{participant}/potion/{potion}/depart/add', name: 'participant.potion.depart.add')]
+    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::SCENARISTE->value.'")'))]
+    public function potionDepartAddAction(
+        Request $request,
+        #[MapEntity] Participant $participant,
+        #[MapEntity] Potion $potion,
+    ): RedirectResponse|Response {
+        $personnage = $participant->getPersonnage();
+
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        if ($participant->hasPotionsDepart($potion)) {
+            $this->addFlash('error', 'Désolé, cette potion est déjà dans les potions de départ.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        if (!$personnage->isKnownPotion($potion)) {
+            $this->addFlash('error', 'Désolé, le personnage ne connait cette potion.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        $participant->addPotionDepart($potion);
+        $this->entityManager->persist($participant);
+
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+        return $this->redirectToRoute(
+            'personnage.detail',
+            ['personnage' => $personnage->getId()],
+            303,
+        );
+    }
+
+    #[Route('/participant/{participant}/potion/{potion}/depart/delete', name: 'participant.potion.depart.delete')]
+    public function potionDepartDeleteAction(
+        Request $request,
+        #[MapEntity] Participant $participant,
+        #[MapEntity] Potion $potion,
+    ): RedirectResponse|Response {
+        $personnage = $participant->getPersonnage();
+
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        if (!$participant->hasPotionsDepart($potion)) {
+            $this->addFlash('error', "Le personnage n'a pas cette potion de départ");
+
+            return $this->redirectToRoute(
+                'personnage.detail',
+                ['gn' => $participant->getGn()->getId(), 'personnage' => $participant->getPersonnage()?->getId()],
+                303,
+            );
+        }
+
+        $form = $this->createForm(DeleteForm::class, $potion, ['class' => $potion::class]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $potion = $form->getData();
+
+            // Retrait de la potion au personnage
+            $participant->removePotionDepart($potion);
+            $this->entityManager->persist($participant);
+
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+            return $this->redirectToRoute(
+                'gn.personnage',
+                ['gn' => $participant->getGn()->getId(), 'tab' => 'competences'],
+                303,
+            );
+        }
+
+        return $this->render('_partials/delete.twig', [
+            'title' => 'Supprimer une potion de départ',
+            'form' => $form->createView(),
+            'entity' => $potion,
+            'breadcrumb' => [
+                ['route' => $this->generateUrl('personnage.list'), 'name' => 'Liste des personnages'],
+                [
+                    'route' => $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId()]),
+                    'name' => $personnage->getNom(),
+                ],
+                ['name' => 'Supprimer une potion de départ'],
+            ],
+            'content' => '',
         ]);
     }
 
@@ -3376,63 +3496,6 @@ class ParticipantController extends AbstractController
             'potion' => $potion,
             'participant' => $participant,
             'filename' => $potion->getPrintLabel(),
-        ]);
-    }
-
-    #[Route('/participant/{participant}/potion/{potion}/depart/delete', name: 'participant.potion.depart.delete')]
-    public function potionDepartDeleteAction(
-        Request $request,
-        #[MapEntity] Participant $participant,
-        #[MapEntity] Potion $potion,
-    ): RedirectResponse|Response {
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        if (!$participant->hasPotionsDepart($potion)) {
-            $this->addFlash('error', "Le personnage n'a pas cette potion de départ");
-
-            return $this->redirectToRoute('personnage.detail', ['gn' => $participant->getGn()->getId(), 'personnage' => $participant->getPersonnage()?->getId()], 303);
-        }
-
-        $form = $this->createForm(DeleteForm::class, $potion, ['class' => $potion::class]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $potion = $form->getData();
-
-            // Retrait de la potion au personnage
-            $participant->removePotionDepart($potion);
-            $this->entityManager->persist($participant);
-
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
-
-            return $this->redirectToRoute(
-                'gn.personnage',
-                ['gn' => $participant->getGn()->getId(), 'tab' => 'competences'],
-                303
-            );
-        }
-
-        return $this->render('_partials/delete.twig', [
-            'title' => 'Supprimer une potion de départ',
-            'form' => $form->createView(),
-            'entity' => $potion,
-            'breadcrumb' => [
-                ['route' => $this->generateUrl('personnage.list'), 'name' => 'Liste des personnages'],
-                [
-                    'route' => $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId()]),
-                    'name' => $personnage->getNom(),
-                ],
-                ['name' => 'Supprimer une potion de départ'],
-            ],
-            'content' => '',
         ]);
     }
 
@@ -3503,7 +3566,7 @@ class ParticipantController extends AbstractController
         Priere $priere,
     ): BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
-
+        // TODO acess user
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
@@ -3527,6 +3590,7 @@ class ParticipantController extends AbstractController
      * RefUser une alliance.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/refuseAlliance', name: 'participant.groupe.refuseAlliance')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function refuseAllianceAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -3539,11 +3603,13 @@ class ParticipantController extends AbstractController
         if (true == $groupe->getLock()) {
             $this->addFlash(
                 'error',
-                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)',
             );
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         $form = $this->createForm(RefuseAllianceForm::class, $alliance)
@@ -3561,8 +3627,10 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez refusé la proposition d\'alliance.');
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         return $this->render('groupe/refuseAlliance.twig', [
@@ -3578,6 +3646,7 @@ class ParticipantController extends AbstractController
      * RefUser la paix.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/refusePeace', name: 'participant.groupe.refusePeace')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function refusePeaceAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -3590,11 +3659,13 @@ class ParticipantController extends AbstractController
         if (true == $groupe->getLock()) {
             $this->addFlash(
                 'error',
-                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)',
             );
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         $form = $this->createForm(RefusePeaceForm::class, $war)
@@ -3614,8 +3685,10 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Vous avez refusé la proposition de paix.');
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         return $this->render('groupe/refusePeace.twig', [
@@ -3684,7 +3757,7 @@ class ParticipantController extends AbstractController
         PersonnageService $personnageService,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
-
+        // TODO user acess to this personnage
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage avant de choisir une religion !');
 
@@ -3693,9 +3766,9 @@ class ParticipantController extends AbstractController
 
         if (true === $participant->getGroupeGn()?->getGroupe()->getLock()) {
             $href = $this->generateUrl(
-                'groupe.detail',
-                ['groupe' => $participant->getGroupeGn()?->getGroupe()->getId()]
-            ).'#groupe_lock';
+                    'groupe.detail',
+                    ['groupe' => $participant->getGroupeGn()?->getGroupe()->getId()],
+                ).'#groupe_lock';
 
             $message =
                 <<<HTML
@@ -3713,13 +3786,13 @@ class ParticipantController extends AbstractController
         if ($personnage->isFanatique()) {
             $this->addFlash(
                 'error',
-                'Désolé, vous êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. Veuillez contacter votre orga en cas de problème.'
+                'Désolé, vous êtes un Fanatique, il vous est impossible de choisir une nouvelle religion. Veuillez contacter votre orga en cas de problème.',
             );
 
             return $this->redirectToRoute(
                 'personnage.detail',
                 ['personnage' => $personnage->getId(), 'tab' => 'religions'],
-                303
+                303,
             );
         }
 
@@ -3735,7 +3808,7 @@ class ParticipantController extends AbstractController
         if (0 === $availableReligions->count()) {
             $this->addFlash(
                 'error',
-                'Désolé, il n\'y a plus de religion disponnibles (Sérieusement ? vous êtes éclectique, c\'est bien, mais ... faudrait savoir ce que vous voulez non ? L\'heure n\'est-il pas venu de faire un choix parmi tous ces dieux ?)'
+                'Désolé, il n\'y a plus de religion disponnibles (Sérieusement ? vous êtes éclectique, c\'est bien, mais ... faudrait savoir ce que vous voulez non ? L\'heure n\'est-il pas venu de faire un choix parmi tous ces dieux ?)',
             );
 
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
@@ -3752,7 +3825,7 @@ class ParticipantController extends AbstractController
             ->add(
                 'save',
                 SubmitType::class,
-                ['label' => 'Valider votre religion', 'attr' => ['class' => 'btn btn-secondary']]
+                ['label' => 'Valider votre religion', 'attr' => ['class' => 'btn btn-secondary']],
             );
 
         $form->handleRequest($request);
@@ -3766,7 +3839,7 @@ class ParticipantController extends AbstractController
                 if ($personnage->hasCompetence(CompetenceFamilyType::PRIESTHOOD)) {
                     $this->addFlash(
                         'error',
-                        "Par Chrom! Un prêtre sans religion ?! C'est non !"
+                        "Par Chrom! Un prêtre sans religion ?! C'est non !",
                     );
                 } else {
                     $personnagesReligions = $personnage->getPersonnagesReligions();
@@ -3778,17 +3851,17 @@ class ParticipantController extends AbstractController
                     if (1 < $personnageReligion->getReligionLevel()?->getIndex()) {
                         $this->addFlash(
                             'error',
-                            "Etre sans religion ne permet pas d'être plus que pratiquant"
+                            "Etre sans religion ne permet pas d'être plus que pratiquant",
                         );
                         $religionLevel = $this->entityManager->getRepository(ReligionLevel::class)->findOneBy(
-                            ['index' => 1]
+                            ['index' => 1],
                         );
                         $personnageReligion->setReligionLevel($religionLevel);
                     }
                 }
 
-            // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
-            // n'autoriser qu'un Fervent que si l'utilisateur n'a pas encore Fervent.
+                // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
+                // n'autoriser qu'un Fervent que si l'utilisateur n'a pas encore Fervent.
             } elseif (3 === $personnageReligion->getReligionLevel()?->getIndex()) {
                 $personnagesReligions = $personnage->getPersonnagesReligions();
                 foreach ($personnagesReligions as $oldReligion) {
@@ -3798,7 +3871,7 @@ class ParticipantController extends AbstractController
                 if ($personnage->isFervent()) {
                     $this->addFlash(
                         'error',
-                        'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.'
+                        'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.',
                     );
 
                     return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
@@ -3813,7 +3886,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute(
                 'personnage.detail',
                 ['personnage' => $personnage->getId(), 'tab' => 'religions'],
-                303
+                303,
             );
         }
 
@@ -3829,6 +3902,7 @@ class ParticipantController extends AbstractController
      * Choix d'une nouvelle description de religion.
      */
     #[Route('/participant/{participant}/religionDescription', name: 'participant.religionDescription')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function religionDescriptionAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -3891,6 +3965,7 @@ class ParticipantController extends AbstractController
      * Liste des religions.
      */
     #[Route('/participant/{participant}/religion/list', name: 'participant.religion.list')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function religionListAction(
         Participant $participant,
     ): Response {
@@ -3907,12 +3982,13 @@ class ParticipantController extends AbstractController
      * Retire la participation de l'utilisateur à un jeu.
      */
     #[Route('/participant/{participant}/remove', name: 'participant.remove')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function removeAction(
         EntityManagerInterface $entityManager,
         Request $request,
         #[MapEntity] Participant $participant,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ParticipantRemoveForm::class, $participant, ['gnId' => $participant->getGn()->getId()]
+        $form = $this->createForm(ParticipantRemoveForm::class, $participant, ['gnId' => $participant->getGn()->getId()],
         )
             ->add('save', SubmitType::class, ['label' => 'Oui, retirer la participation de cet utilisateur']);
 
@@ -3965,6 +4041,7 @@ class ParticipantController extends AbstractController
      * @param unknown $reponse
      */
     #[Route('/participant/{participant}/question/{question}/reponse', name: 'participant.reponse')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function reponseAction(
         EntityManagerInterface $entityManager,
         Request $request,
@@ -3989,6 +4066,7 @@ class ParticipantController extends AbstractController
      * Supprimer une réponse à une question.
      */
     #[Route('/participant/{participant}/reponse/{reponse}/delete', name: 'participant.reponse.delete')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function reponseDeleteAction(
         EntityManagerInterface $entityManager,
         Request $request,
@@ -4007,6 +4085,7 @@ class ParticipantController extends AbstractController
      * Demander une nouvelle alliance.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/requestAlliance', name: 'participant.groupe.requestAlliance')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function requestAllianceAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -4018,30 +4097,36 @@ class ParticipantController extends AbstractController
         if (true == $groupe->getLock()) {
             $this->addFlash(
                 'error',
-                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)',
             );
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         // un groupe ne peux pas avoir plus de 3 alliances
         if ($groupe->getAlliances()->count() >= 3) {
             $this->addFlash('error', 'Désolé, vous avez déjà 3 alliances, ce qui est le maximum possible.');
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         // un groupe ne peux pas avoir plus d'alliances que d'ennemis
         if ($groupe->getEnnemies()->count() - $groupe->getAlliances()->count() <= 0) {
             $this->addFlash(
                 'error',
-                'Désolé, vous n\'avez pas suffisement d\'ennemis pour pouvoir vous choisir un allié.'
+                'Désolé, vous n\'avez pas suffisement d\'ennemis pour pouvoir vous choisir un allié.',
             );
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         $alliance = new GroupeAllie();
@@ -4062,48 +4147,58 @@ class ParticipantController extends AbstractController
             if ($requestedGroupe == $groupe) {
                 $this->addFlash(
                     'error',
-                    'Désolé, vous ne pouvez pas choisir votre propre groupe pour faire une alliance ...'
+                    'Désolé, vous ne pouvez pas choisir votre propre groupe pour faire une alliance ...',
                 );
 
-                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+                return $this->redirectToRoute(
+                    'groupe.groupe.detail',
+                    ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+                );
             }
 
             if ($groupe->isAllyTo($requestedGroupe)) {
                 $this->addFlash('error', 'Désolé, vous êtes déjà allié avec ce groupe');
 
-                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+                return $this->redirectToRoute(
+                    'groupe.groupe.detail',
+                    ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+                );
             }
 
             if ($groupe->isEnemyTo($requestedGroupe)) {
                 $this->addFlash(
                     'error',
-                    'Désolé, vous êtes ennemi avec ce groupe. Impossible de faire une alliance, faites d\'abord la paix !'
+                    'Désolé, vous êtes ennemi avec ce groupe. Impossible de faire une alliance, faites d\'abord la paix !',
                 );
 
-                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+                return $this->redirectToRoute(
+                    'groupe.groupe.detail',
+                    ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+                );
             }
 
             if ($requestedGroupe->getAlliances()->count() >= 3) {
                 $this->addFlash(
                     'error',
-                    'Désolé, le groupe demandé dispose déjà de 3 alliances, ce qui est le maximum possible.'
+                    'Désolé, le groupe demandé dispose déjà de 3 alliances, ce qui est le maximum possible.',
                 );
 
-                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+                return $this->redirectToRoute(
+                    'groupe.groupe.detail',
+                    ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+                );
             }
 
             if ($requestedGroupe->getEnnemies()->count() - $requestedGroupe->getAlliances()->count() <= 0) {
                 $this->addFlash(
                     'error',
-                    'Désolé, le groupe demandé n\'a pas suffisement d\'ennemis pour pouvoir obtenir un allié supplémentaire.'
+                    'Désolé, le groupe demandé n\'a pas suffisement d\'ennemis pour pouvoir obtenir un allié supplémentaire.',
                 );
 
-                return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+                return $this->redirectToRoute(
+                    'groupe.groupe.detail',
+                    ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+                );
             }
 
             $entityManager->persist($alliance);
@@ -4113,8 +4208,10 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Votre demande a été envoyée.');
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         return $this->render('groupe/requestAlliance.twig', [
@@ -4129,6 +4226,7 @@ class ParticipantController extends AbstractController
      * Demander la paix.
      */
     #[Route('/participant/{participant}/groupe/{groupe}/requestPeace', name: 'participant.groupe.requestPeace')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function requestPeaceAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -4141,11 +4239,13 @@ class ParticipantController extends AbstractController
         if (true == $groupe->getLock()) {
             $this->addFlash(
                 'error',
-                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)'
+                'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)',
             );
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         $form = $this->createForm(RequestPeaceForm::class, $war)
@@ -4168,8 +4268,10 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Votre demande de paix vient d\'être envoyée.');
 
-            return $this->redirectToRoute('groupe.groupe.detail', ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()]);
-        
+            return $this->redirectToRoute(
+                'groupe.groupe.detail',
+                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
+            );
         }
 
         return $this->render('groupe/requestPeace.twig', [
@@ -4241,6 +4343,7 @@ class ParticipantController extends AbstractController
      * Recherche d'un joueur.
      */
     #[Route('/participant/search', name: 'participant.search')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function searchAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(FindJoueurForm::class, [])
@@ -4305,7 +4408,7 @@ class ParticipantController extends AbstractController
         #[MapEntity] Sort $sort,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
-
+        // TODO user access
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
@@ -4336,7 +4439,7 @@ class ParticipantController extends AbstractController
         Sort $sort,
     ): BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
-
+        // TODO user acess
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
@@ -4362,7 +4465,7 @@ class ParticipantController extends AbstractController
         Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
-
+        // TODO USER has perso
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
@@ -4448,6 +4551,7 @@ class ParticipantController extends AbstractController
      * Met à jour les informations d'un joueur.
      */
     #[Route('/participant/orga/{participant}/detail', name: 'participant.orga.detail')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,

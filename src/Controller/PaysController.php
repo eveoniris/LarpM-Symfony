@@ -6,23 +6,20 @@ use App\Form\PaysForm;
 use App\Form\PaysMinimalForm;
 use Symfony\Component\HttpFoundation\Request;
 
+// TODO
 class PaysController extends AbstractController
 {
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $repo = $entityManager->getRepository('\App\Entity\Pays');
-        $pays = $repo->findAll();
-
-        return $this->render('pays/index.twig', ['listPays' => $pays]);
-    }
-
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    public function addAction(Request $request, EntityManagerInterface $entityManager)
     {
         $pays = new \App\Entity\Pays();
 
         $form = $this->createForm(PaysMinimalForm::class, $pays)
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add(
+                'save_continue',
+                \Symfony\Component\Form\Extension\Core\Type\SubmitType::class,
+                ['label' => 'Sauvegarder & continuer'],
+            );
 
         $form->handleRequest($request);
 
@@ -33,7 +30,7 @@ class PaysController extends AbstractController
             $entityManager->persist($pays);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le pays a été ajouté.');
+            $this->addFlash('success', 'Le pays a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('pays', [], 303);
@@ -47,7 +44,39 @@ class PaysController extends AbstractController
         ]);
     }
 
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    public function detailAction(Request $request, EntityManagerInterface $entityManager)
+    {
+        $id = $request->get('index');
+
+        $pays = $entityManager->find('\App\Entity\Pays', $id);
+
+        if ($pays) {
+            return $this->render('pays/detail.twig', ['pays' => $pays]);
+        } else {
+            $this->addFlash('error', 'Le pays n\'a pas été trouvé.');
+
+            return $this->redirectToRoute('pays');
+        }
+    }
+
+    public function detailExportAction(Request $request, EntityManagerInterface $entityManager): void
+    {
+        $id = $request->get('index');
+    }
+
+    public function exportAction(Request $request, EntityManagerInterface $entityManager): void
+    {
+    }
+
+    public function indexAction(Request $request, EntityManagerInterface $entityManager)
+    {
+        $repo = $entityManager->getRepository('\App\Entity\Pays');
+        $pays = $repo->findAll();
+
+        return $this->render('pays/index.twig', ['listPays' => $pays]);
+    }
+
+    public function updateAction(Request $request, EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
@@ -66,11 +95,11 @@ class PaysController extends AbstractController
                 $pays->setUpdateDate(new \DateTime('NOW'));
                 $entityManager->persist($pays);
                 $entityManager->flush();
-               $this->addFlash('success', 'Le pays a été mis à jour.');
+                $this->addFlash('success', 'Le pays a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($pays);
                 $entityManager->flush();
-               $this->addFlash('success', 'Le pays a été supprimé.');
+                $this->addFlash('success', 'Le pays a été supprimé.');
             }
 
             return $this->redirectToRoute('pays');
@@ -80,29 +109,5 @@ class PaysController extends AbstractController
             'pays' => $pays,
             'form' => $form->createView(),
         ]);
-    }
-
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $id = $request->get('index');
-
-        $pays = $entityManager->find('\App\Entity\Pays', $id);
-
-        if ($pays) {
-            return $this->render('pays/detail.twig', ['pays' => $pays]);
-        } else {
-           $this->addFlash('error', 'Le pays n\'a pas été trouvé.');
-
-            return $this->redirectToRoute('pays');
-        }
-    }
-
-    public function detailExportAction(Request $request,  EntityManagerInterface $entityManager): void
-    {
-        $id = $request->get('index');
-    }
-
-    public function exportAction(Request $request,  EntityManagerInterface $entityManager): void
-    {
     }
 }

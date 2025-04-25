@@ -6,6 +6,7 @@ use App\Entity\Gn;
 use App\Entity\GroupeGn;
 use App\Entity\Personnage;
 use App\Enum\Role;
+use App\Repository\GroupeGnRepository;
 use App\Repository\PersonnageRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Join;
@@ -91,7 +92,7 @@ class GroupeGnForm extends AbstractType
             return;
         }
 
-        $fieldCallback = function (string $child, string $label) use ($options, $groupeGn) {
+        $fieldCallback = function (string $child, string $label) use ($groupeGn) {
             return [
                 'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId(
                 ).' - '.$personnage->getNameSurname(),
@@ -102,7 +103,7 @@ class GroupeGnForm extends AbstractType
                 'empty_data' => null,
                 // On veut tous les personnages vivant du GN (pas que ceux du groupe)
                 'query_builder' => static fn (PersonnageRepository $personnageRepository,
-                ) => $personnageRepository // TODO and PID not IN groupeGn titres
+                ) => $personnageRepository // TODO? and PID not IN groupeGn titres
                 ->createQueryBuilder('p')
                     ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
                     // ->leftjoin('parti.groupeGn', 'g', Join::WITH, 'g.id = parti.groupeGn') // AND titre_id is null
@@ -115,18 +116,23 @@ class GroupeGnForm extends AbstractType
                 'constraints' => [
                     new Assert\Callback([
                         'callback' => function (?Personnage $personnage, ExecutionContextInterface $context) use (
-                            $options,
-                            $child
+                            $child,
+                            $groupeGn,
                         ) {
                             if (!$personnage) {
                                 return;
                             }
 
+                            /** @var GroupeGnRepository $groupeGnRepository */
                             $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
 
                             // TODO : allow on it self ;
 
-                            $titres = $groupeGnRepository->getTitres($personnage, $options['gn'] ?? null);
+                            $titres = $groupeGnRepository->getTitres(
+                                $personnage,
+                                $groupeGn?->getGn(),
+                                $groupeGn,
+                            );
 
                             if (!empty($titres)) {
                                 $context
@@ -136,8 +142,8 @@ class GroupeGnForm extends AbstractType
                                             [
                                                 '%personnageName%' => $personnage->getIdName(),
                                                 '%titres%' => $titres,
-                                            ]
-                                        )
+                                            ],
+                                        ),
                                     )
                                     ->atPath('['.$child.']')
                                     ->addViolation();
@@ -166,10 +172,7 @@ class GroupeGnForm extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-            'class' => GroupeGn::class,
-            'gn' => null,
-        ]);
+        $resolver->setDefaults(['class' => GroupeGn::class]);
     }
 
     /**
