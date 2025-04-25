@@ -10,12 +10,18 @@ use App\Entity\User;
 use App\Enum\LevelType;
 use App\Service\OrderBy;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 
 class CompetenceRepository extends BaseRepository
 {
+    public function competenceFamily(QueryBuilder $query, CompetenceFamily $competenceFamily): QueryBuilder
+    {
+        $query->andWhere($this->alias.'.competenceFamily = :value');
+
+        return $query->setParameter('value', $competenceFamily);
+    }
+
     /**
      * Find all competences ordered by label.
      *
@@ -25,9 +31,20 @@ class CompetenceRepository extends BaseRepository
     {
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT c FROM App\Entity\Competence c JOIN c.competenceFamily cf JOIN c.level l ORDER BY cf.label ASC, l.index ASC'
+                'SELECT c FROM App\Entity\Competence c JOIN c.competenceFamily cf JOIN c.level l ORDER BY cf.label ASC, l.index ASC',
             )
             ->getResult();
+    }
+
+    public function getPersonnages(Competence $competence): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        return $personnageRepository->createQueryBuilder('p')
+            ->innerJoin('p.competences', 'c')
+            ->where('c.id = :cid')
+            ->setParameter('cid', $competence->getId());
     }
 
     /**
@@ -48,11 +65,11 @@ class CompetenceRepository extends BaseRepository
     /**
      * Fourni la liste des compétences de premier niveau.
      */
-    public function getRootCompetences(EntityManagerInterface $entityManager): ArrayCollection
+    public function getRootCompetences(): ArrayCollection
     {
         $rootCompetences = new ArrayCollection();
 
-        $repo = $entityManager->getRepository(CompetenceFamily::class);
+        $repo = $this->entityManager->getRepository(CompetenceFamily::class);
         $competenceFamilies = $repo->findAll();
 
         foreach ($competenceFamilies as $competenceFamily) {
@@ -64,26 +81,9 @@ class CompetenceRepository extends BaseRepository
 
         // trie des competences disponibles
         $iterator = $rootCompetences->getIterator();
-        $iterator->uasort(function ($a, $b) {
-            return ($a->getLabel() < $b->getLabel()) ? -1 : 1;
-        });
+        $iterator->uasort(static fn($a, $b) => $a->getLabel() <=> $b->getLabel());
 
         return new ArrayCollection(iterator_to_array($iterator));
-    }
-
-    public function search(
-        mixed $search = null,
-        string|array|null $attributes = self::SEARCH_NOONE,
-        ?OrderBy $orderBy = null,
-        ?string $alias = null,
-        ?QueryBuilder $query = null
-    ): QueryBuilder {
-        $alias ??= static::getEntityAlias();
-        $query ??= $this->createQueryBuilder($alias);
-        $query->join($alias.'.competenceFamily', 'competenceFamily');
-        $query->join($alias.'.level', 'level');
-
-        return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
     public function level(QueryBuilder $query, LevelType|Level $level): QueryBuilder
@@ -98,11 +98,19 @@ class CompetenceRepository extends BaseRepository
         return $query->setParameter('level', $value);
     }
 
-    public function competenceFamily(QueryBuilder $query, CompetenceFamily $competenceFamily): QueryBuilder
-    {
-        $query->andWhere($this->alias.'.competenceFamily = :value');
+    public function search(
+        mixed $search = null,
+        string|array|null $attributes = self::SEARCH_NOONE,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null,
+    ): QueryBuilder {
+        $alias ??= static::getEntityAlias();
+        $query ??= $this->createQueryBuilder($alias);
+        $query->join($alias.'.competenceFamily', 'competenceFamily');
+        $query->join($alias.'.level', 'level');
 
-        return $query->setParameter('value', $competenceFamily);
+        return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
     public function searchAttributes(): array
@@ -165,17 +173,6 @@ class CompetenceRepository extends BaseRepository
         ];
     }
 
-    public function getPersonnages(Competence $competence): QueryBuilder
-    {
-        /** @var PersonnageRepository $personnageRepository */
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
-
-        return $personnageRepository->createQueryBuilder('p')
-            ->innerJoin('p.competences', 'c')
-            ->where('c.id = :cid')
-            ->setParameter('cid', $competence->getId());
-    }
-
     public function userHasCompetence(User $user, Competence $competence): bool
     {
         $rsm = new ResultSetMapping();
@@ -193,11 +190,11 @@ class CompetenceRepository extends BaseRepository
                 WHERE pc.competence_id = :cid and u.id = :uid
                 LIMIT 1;
                 SQL,
-                $rsm
+                $rsm,
             )
             ->setParameter('uid', $user->getId())
             ->setParameter('cid', $competence->getId());
 
-        return (bool) $query->getResult();
+        return (bool)$query->getResult();
     }
 }

@@ -7,6 +7,7 @@ use App\Entity\Competence;
 use App\Enum\BonusApplication;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
+use App\Repository\CompetenceRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -59,17 +60,18 @@ class BonusForm extends AbstractType
                 'label' => "Dommaine d'application du bonus",
                 'help' => "Pour un bonus d'origine choisir NATIVE: Le bonus ne sera donné que si le personage est natif du pays du groupe de sa première participation",
             ])
-        ->add('competence', EntityType::class, [
-            'required' => false,
-            'label' => 'Choisissez la compétence à donner pour type COMPETENCE',
-            'multiple' => false,
-            'autocomplete' => true,
-            'expanded' => false,
-            'class' => Competence::class,
-            'choice_label' => 'label',
-            'placeholder' => 'Aucune',
-            'empty_data' => null,
-        ])
+            ->add('competence', EntityType::class, [
+                'required' => false,
+                'label' => 'Choisissez la compétence à donner pour type COMPETENCE',
+                'multiple' => false,
+                'autocomplete' => true,
+                'expanded' => false,
+                'class' => Competence::class,
+                'query_builder' => static fn(CompetenceRepository $er) => $er->getQueryBuilderFindAllOrderedByLabel(),
+                'choice_label' => 'label',
+                'placeholder' => 'Aucune',
+                'empty_data' => null,
+            ])
             ->add('json_data', TextareaType::class, [
                 'required' => false,
                 'label' => 'Données fonctionnel (pour un dev)',
@@ -78,9 +80,9 @@ class BonusForm extends AbstractType
             ])->get('json_data')
             ->addModelTransformer(
                 new CallbackTransformer(
-                    static fn ($data) => json_encode($data, JSON_THROW_ON_ERROR),
-                    static fn ($data) => json_decode($data, true, 512, JSON_THROW_ON_ERROR)
-                )
+                    static fn($data) => json_encode($data, JSON_THROW_ON_ERROR),
+                    static fn($data) => json_decode($data, true, 512, JSON_THROW_ON_ERROR),
+                ),
             );
     }
 
