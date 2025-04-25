@@ -29,6 +29,146 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class CompetenceController extends AbstractController
 {
     /**
+     * Ajout d'une compétence.
+     */
+    #[Route('/competence/add', name: 'add')]
+    #[IsGranted('ROLE_REGLE')]
+    public function addAction(Request $request): RedirectResponse|Response
+    {
+        $competence = new Competence();
+
+        // l'identifiant de la famille de competence peux avoir été passé en paramètre
+        // pour initialiser le formulaire avec une valeur par défaut.
+
+        // TODO : dans ce cas, il ne faut proposer que les niveaux pour lesquels une compétence
+        // n'a pas été défini pour cette famille
+        // voir si réalisable dans le Forma
+
+        $competenceFamilyId = $request->get('competenceFamily');
+        $levelIndex = $request->get('level');
+
+        if ($competenceFamilyId) {
+            $competenceFamily = $this->entityManager->find(CompetenceFamily::class, $competenceFamilyId);
+            if ($competenceFamily) {
+                $competence->setCompetenceFamily($competenceFamily);
+            }
+        }
+
+        if ($levelIndex) {
+            /** @var LevelRepository $repo */
+            $repo = $this->entityManager->getRepository(Level::class);
+            $level = $repo->findOneBy(['index' => $levelIndex + 1]);
+            if ($level) {
+                $competence->setLevel($level);
+            }
+        }
+
+        return $this->handleCreateOrUpdate(
+            $request,
+            $competence,
+            CompetenceForm::class,
+        );
+    }
+
+    protected function handleCreateOrUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
+        ?callable $entityCallback = null,
+    ): RedirectResponse|Response {
+        if (!$entityCallback) {
+            /** @var Competence $competence */
+            $entityCallback = fn(mixed $competence, FormInterface $form): ?Competence => $competence->handleUpload(
+                $this->fileUploader,
+            );
+        }
+
+        return parent::handleCreateOrUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                ...$msg,
+                'entity' => $this->translator->trans('competence'),
+                'entity_added' => $this->translator->trans('La competence a été ajoutée'),
+                'entity_updated' => $this->translator->trans('La competence a été mise à jour'),
+                'entity_deleted' => $this->translator->trans('La competence a été supprimée'),
+                'entity_list' => $this->translator->trans('Liste des competences'),
+                'title_add' => $this->translator->trans('Ajouter une competence'),
+                'title_update' => $this->translator->trans('Modifier une competence'),
+            ],
+            entityCallback: $entityCallback,
+        );
+    }
+
+    #[Route('/{competence}/delete', name: 'delete', requirements: ['competence' => Requirement::DIGITS], methods: [
+        'DELETE',
+        'GET',
+        'POST',
+    ])]
+    #[IsGranted('ROLE_REGLE')]
+    public function deleteAction(
+        #[MapEntity] Competence $competence,
+    ): RedirectResponse|Response {
+        return $this->genericDelete(
+            $competence,
+            'Supprimer une competence',
+            'La competence a été supprimée',
+            'competence.list',
+            [
+                ['route' => $this->generateUrl('competence.list'), 'name' => 'Liste des compétences'],
+                [
+                    'route' => $this->generateUrl('competence.detail', ['competence' => $competence->getId()]),
+                    'competence' => $competence->getId(),
+                    'name' => $competence->getLabel(),
+                ],
+                ['name' => 'Supprimer une competence'],
+            ],
+        );
+    }
+
+    /**
+     * Detail d'une compétence.
+     */
+    #[Route('/{competence}', name: 'detail')]
+    #[IsGranted('ROLE_REGLE')]
+    public function detailAction(#[MapEntity] Competence $competence): Response
+    {
+        return $this->render('competence/detail.twig', ['competence' => $competence]);
+    }
+
+    /**
+     * Téléchargement du document lié à une compétence.
+     */
+    #[Route('/{competence}/document', name: 'document', requirements: ['competence' => Requirement::DIGITS])]
+    // TODO a voter strategies ?
+    public function getDocumentAction(
+        CompetenceRepository $competenceRepository,
+        #[MapEntity] Competence $competence,
+    ) {
+        // on ne peut télécharger que les documents des compétences que l'on connait
+        if (!$this->getUser()) {
+            return $this->render('security/denied.html.twig');
+        }
+
+        $hasCompetence = $competenceRepository->userHasCompetence(
+            $this->getUser(),
+            $competence,
+        ); // $this->getUser()->getPersonnages()->getCompetences()->contains($competence)
+
+        if (!$this->isGranted(Role::REGLE->value) && !$hasCompetence) {
+            return $this->render('security/denied.html.twig');
+        }
+
+        return $this->sendDocument($competence);
+    }
+
+    /**
      * Liste des compétences.
      */
     #[Route('', name: 'list')]
@@ -41,7 +181,9 @@ class CompetenceController extends AbstractController
         $pagerService->setRequest($request)->setRepository($competenceRepository)->setLimit(50);
 
         $alias = $competenceRepository->getAlias();
-        $queryBuilder = $competenceRepository->createQueryBuilder($alias);
+        $queryBuilder = $competenceRepository->createQueryBuilder($alias)
+            ->orderBy('competenceFamily.label', 'ASC')
+            ->addOrderBy('level.index', 'ASC');
 
         if (!$this->isGranted('ROLE_REGLE')) {
             $queryBuilder = $competenceRepository->level($queryBuilder, LevelType::APPRENTICE);
@@ -54,10 +196,27 @@ class CompetenceController extends AbstractController
     }
 
     /**
+     * Liste du matériel necessaire par compétence.
+     */
+    #[Route('/competence/materiel', name: 'materiel')]
+    #[IsGranted(new MultiRolesExpression(
+        Role::SCENARISTE, Role::REGLE, Role::ORGA,
+    ), message: 'You are not allowed to access to this.')]
+    public function materielAction(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $repo = $entityManager->getRepository('\\'.Competence::class);
+        $competences = $repo->findAllOrderedByLabel();
+
+        return $this->render('competence/materiel.twig', ['competences' => $competences]);
+    }
+
+    /**
      * Liste des perso ayant cette compétence.
      */
     #[Route('/perso', name: 'perso')]
-    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
+    #[IsGranted(new MultiRolesExpression(
+        Role::SCENARISTE, Role::REGLE, Role::ORGA,
+    ), message: 'You are not allowed to access to this.')]
     public function persoAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $competence = $request->get('competence');
@@ -111,78 +270,31 @@ class CompetenceController extends AbstractController
             $columnKeys,
             $additionalViewParams,
             $personnages,
-            $competenceRepository->getPersonnages($competence)
+            $competenceRepository->getPersonnages($competence),
         );
 
         return $this->render(
             $twigFilePath,
-            $viewParams
+            $viewParams,
         );
     }
 
     /**
-     * Liste du matériel necessaire par compétence.
+     * Retire le document d'une competence.
      */
-    #[Route('/competence/materiel', name: 'materiel')]
-    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
-    public function materielAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $repo = $entityManager->getRepository('\\'.Competence::class);
-        $competences = $repo->findAllOrderedByLabel();
-
-        return $this->render('competence/materiel.twig', ['competences' => $competences]);
-    }
-
-    /**
-     * Ajout d'une compétence.
-     */
-    #[Route('/competence/add', name: 'add')]
     #[IsGranted('ROLE_REGLE')]
-    public function addAction(Request $request): RedirectResponse|Response
-    {
-        $competence = new Competence();
+    #[Route('/remove-document', name: 'document.remove')]
+    public function removeDocumentAction(
+        EntityManagerInterface $entityManager,
+        Competence $competence,
+    ): RedirectResponse {
+        $competence->setDocumentUrl(null);
 
-        // l'identifiant de la famille de competence peux avoir été passé en paramètre
-        // pour initialiser le formulaire avec une valeur par défaut.
+        $entityManager->persist($competence);
+        $entityManager->flush();
+        $this->addFlash('success', 'La compétence a été mise à jour.');
 
-        // TODO : dans ce cas, il ne faut proposer que les niveaux pour lesquels une compétence
-        // n'a pas été défini pour cette famille
-        // voir si réalisable dans le Forma
-
-        $competenceFamilyId = $request->get('competenceFamily');
-        $levelIndex = $request->get('level');
-
-        if ($competenceFamilyId) {
-            $competenceFamily = $this->entityManager->find(CompetenceFamily::class, $competenceFamilyId);
-            if ($competenceFamily) {
-                $competence->setCompetenceFamily($competenceFamily);
-            }
-        }
-
-        if ($levelIndex) {
-            /** @var LevelRepository $repo */
-            $repo = $this->entityManager->getRepository(Level::class);
-            $level = $repo->findOneBy(['index' => $levelIndex + 1]);
-            if ($level) {
-                $competence->setLevel($level);
-            }
-        }
-
-        return $this->handleCreateOrUpdate(
-            $request,
-            $competence,
-            CompetenceForm::class
-        );
-    }
-
-    /**
-     * Detail d'une compétence.
-     */
-    #[Route('/{competence}', name: 'detail')]
-    #[IsGranted('ROLE_REGLE')]
-    public function detailAction(#[MapEntity] Competence $competence): Response
-    {
-        return $this->render('competence/detail.twig', ['competence' => $competence]);
+        return $this->redirectToRoute('competence.list', [], 303);
     }
 
     /**
@@ -206,106 +318,7 @@ class CompetenceController extends AbstractController
         return $this->handleCreateOrUpdate(
             $request,
             $competence,
-            CompetenceForm::class
-        );
-    }
-
-    #[Route('/{competence}/delete', name: 'delete', requirements: ['competence' => Requirement::DIGITS], methods: [
-        'DELETE',
-        'GET',
-        'POST',
-    ])]
-    #[IsGranted('ROLE_REGLE')]
-    public function deleteAction(
-        #[MapEntity] Competence $competence,
-    ): RedirectResponse|Response {
-        return $this->genericDelete(
-            $competence,
-            'Supprimer une competence',
-            'La competence a été supprimée',
-            'competence.list',
-            [
-                ['route' => $this->generateUrl('competence.list'), 'name' => 'Liste des compétences'],
-                [
-                    'route' => $this->generateUrl('competence.detail', ['competence' => $competence->getId()]),
-                    'competence' => $competence->getId(),
-                    'name' => $competence->getLabel(),
-                ],
-                ['name' => 'Supprimer une competence'],
-            ]
-        );
-    }
-
-    /**
-     * Retire le document d'une competence.
-     */
-    #[IsGranted('ROLE_REGLE')]
-    #[Route('/remove-document', name: 'document.remove')]
-    public function removeDocumentAction(
-        EntityManagerInterface $entityManager,
-        Competence $competence,
-    ): RedirectResponse {
-        $competence->setDocumentUrl(null);
-
-        $entityManager->persist($competence);
-        $entityManager->flush();
-        $this->addFlash('success', 'La compétence a été mise à jour.');
-
-        return $this->redirectToRoute('competence.list', [], 303);
-    }
-
-    /**
-     * Téléchargement du document lié à une compétence.
-     */
-    #[Route('/{competence}/document', name: 'document', requirements: ['competence' => Requirement::DIGITS])]
-    // TODO a voter strategies ?
-    public function getDocumentAction(CompetenceRepository $competenceRepository, #[MapEntity] Competence $competence)
-    {
-        // on ne peut télécharger que les documents des compétences que l'on connait
-        if (!$this->getUser()) {
-            return $this->render('security/denied.html.twig');
-        }
-
-        $hasCompetence = $competenceRepository->userHasCompetence($this->getUser(), $competence); // $this->getUser()->getPersonnages()->getCompetences()->contains($competence)
-
-        if (!$this->isGranted(Role::REGLE->value) && !$hasCompetence) {
-            return $this->render('security/denied.html.twig');
-        }
-
-        return $this->sendDocument($competence);
-    }
-
-    protected function handleCreateOrUpdate(
-        Request $request,
-        $entity,
-        string $formClass,
-        array $breadcrumb = [],
-        array $routes = [],
-        array $msg = [],
-        ?callable $entityCallback = null,
-    ): RedirectResponse|Response {
-        if (!$entityCallback) {
-            /** @var Competence $competence */
-            $entityCallback = fn (mixed $competence, FormInterface $form): ?Competence => $competence->handleUpload($this->fileUploader);
-        }
-
-        return parent::handleCreateOrUpdate(
-            request: $request,
-            entity: $entity,
-            formClass: $formClass,
-            breadcrumb: $breadcrumb,
-            routes: $routes,
-            msg: [
-                ...$msg,
-                'entity' => $this->translator->trans('competence'),
-                'entity_added' => $this->translator->trans('La competence a été ajoutée'),
-                'entity_updated' => $this->translator->trans('La competence a été mise à jour'),
-                'entity_deleted' => $this->translator->trans('La competence a été supprimée'),
-                'entity_list' => $this->translator->trans('Liste des competences'),
-                'title_add' => $this->translator->trans('Ajouter une competence'),
-                'title_update' => $this->translator->trans('Modifier une competence'),
-            ],
-            entityCallback: $entityCallback
+            CompetenceForm::class,
         );
     }
 }
