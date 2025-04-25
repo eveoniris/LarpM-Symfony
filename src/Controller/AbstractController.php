@@ -128,6 +128,15 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         throw new AccessDeniedException();
     }
 
+    /** Allow code completion to User entity instead of Interface (less methods) */
+    protected function getUser(): ?User
+    {
+        /** @var User $user */
+        $user = parent::getUser();
+
+        return $user;
+    }
+
     protected function genericDelete(
         $entity,
         string $title,
@@ -201,12 +210,12 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return parent::render($view, $parameters, $response);
     }
 
+    // TODO change to orderBy service
+
     protected function getRequestLimit(int $defLimit = 10): int
     {
         return $this->pageRequest->getLimit($defLimit);
     }
-
-    // TODO change to orderBy service
 
     #[Deprecated]
     protected function getRequestOrder(

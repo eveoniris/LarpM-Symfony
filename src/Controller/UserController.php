@@ -33,15 +33,12 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Requirement\Requirement;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\DisabledException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
@@ -53,13 +50,14 @@ class UserController extends AbstractController
     private bool $isPasswordResetEnabled = true;
 
     /**
+     * TODO
      * Affiche le détail d'un billet d'un utilisateur.
      */
     public function UserHasBilletDetailAction(
         EntityManagerInterface $entityManager,
         Request $request,
         UserHasBillet $UserHasBillet,
-    ) {
+    ): RedirectResponse|Response {
         if ($UserHasBillet->getUser() != $this->getUser()) {
             $this->addFlash('error', 'Vous ne pouvez pas acceder à cette information');
 
@@ -68,18 +66,6 @@ class UserController extends AbstractController
 
         return $this->render('UserHasBillet/detail.twig', [
             'UserHasBillet' => $UserHasBillet,
-        ]);
-    }
-
-    /**
-     * Affiche la liste des billets de l'utilisateur.
-     */
-    public function UserHasBilletListAction(EntityManagerInterface $entityManager, Request $request): Response
-    {
-        $UserHasBillets = $this->getUser()->getUserHasBillets();
-
-        return $this->render('UserHasBillet/list.twig', [
-            'UserHasBillets' => $UserHasBillets,
         ]);
     }
 
@@ -136,15 +122,15 @@ class UserController extends AbstractController
             if (empty($type) || '*' === $type) {
                 if (is_numeric($value)) {
                     $criterias[] = Criteria::create()->where(
-                        Criteria::expr()?->contains($alias.'.id', $value)
+                        Criteria::expr()?->contains($alias.'.id', $value),
                     );
                 } else {
                     $criterias[] = Criteria::create()->where(
-                        Criteria::expr()?->contains($alias.'.username', $value)
+                        Criteria::expr()?->contains($alias.'.username', $value),
                     )->orWhere(
-                        Criteria::expr()?->contains($alias.'.email', $value)
+                        Criteria::expr()?->contains($alias.'.email', $value),
                     )->orWhere(
-                        Criteria::expr()?->contains($alias.'.roles', $value)
+                        Criteria::expr()?->contains($alias.'.roles', $value),
                     )/*->orWhere(
                         Criteria::expr()?->contains('ec'.'.nom', $value)
                     )->orWhere(
@@ -154,7 +140,7 @@ class UserController extends AbstractController
                 }
             } else {
                 $criterias[] = Criteria::create()->andWhere(
-                    Criteria::expr()?->contains($alias.'.'.$type, $value)
+                    Criteria::expr()?->contains($alias.'.'.$type, $value),
                 );
             }
         }
@@ -162,7 +148,7 @@ class UserController extends AbstractController
         $orderBy = $this->getRequestOrder(
             defOrderBy: 'username',
             alias: $alias,
-            allowedFields: $userRepository->getFieldNames()
+            allowedFields: $userRepository->getFieldNames(),
         );
 
         $paginator = $userRepository->getPaginator(
@@ -170,7 +156,7 @@ class UserController extends AbstractController
             page: $this->getRequestPage(),
             orderBy: $orderBy,
             alias: $alias,
-            criterias: $criterias
+            criterias: $criterias,
         );
 
         return $this->render(
@@ -178,7 +164,7 @@ class UserController extends AbstractController
             [
                 'paginator' => $paginator,
                 'form' => $form->createView(),
-            ]
+            ],
         );
     }
 
@@ -189,9 +175,7 @@ class UserController extends AbstractController
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     public function adminNewAction(
         Request $request,
-        UserRepository $userRepository,
         UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
         $form = $this->createForm(UserNewForm::class, [])
             ->add('save', SubmitType::class, ['label' => "Créer l'utilisateur"]);
@@ -211,7 +195,7 @@ class UserController extends AbstractController
             $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
             $user->setPassword($hashedPassword);
 
-            $entityManager->persist($user);
+            $this->entityManager->persist($user);
 
             if ($data['gn']) {
                 $participant = new Participant();
@@ -222,10 +206,10 @@ class UserController extends AbstractController
                     $participant->setBillet($data['billet']);
                 }
 
-                $entityManager->persist($participant);
+                $this->entityManager->persist($participant);
             }
 
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             // TODO // NOTIFY $app['notify']->newUser($user, $plainPassword);
 
@@ -238,18 +222,14 @@ class UserController extends AbstractController
             'user/new.twig',
             [
                 'form' => $form->createView(),
-            ]
+            ],
         );
     }
 
     /**
      * Genere un mot de passe aléatoire.
-     *
-     * @param number $length
-     *
-     * @return string $password
      */
-    protected function generatePassword($length = 10): string
+    protected function generatePassword(int $length = 10): string
     {
         $alphabets = range('A', 'Z');
         $numbers = range('0', '9');
@@ -289,7 +269,7 @@ class UserController extends AbstractController
             $user,
             'form_login',
             'main',
-            [(new RememberMeBadge())->enable()]
+            [(new RememberMeBadge())->enable()],
         );
 
         $this->addFlash('alert', 'Merci ! Votre compte a été activé.');
@@ -373,17 +353,25 @@ class UserController extends AbstractController
                 'error' => implode("\n", $errors),
                 'user' => $user,
                 'available_roles' => $availableLabels,
-            ]
+            ],
         );
+    }
+
+    protected function hasAccess(User $user, array $roles = []): void
+    {
+        /** @var User $loggedUser */
+        $loggedUser = $this->getUser();
+
+        $this->checkHasAccess($roles, static fn() => $user->getId() === $loggedUser->getId());
     }
 
     /**
      * Enregistrement de l'état-civil.
      */
     #[Route('/user/etatCivil', name: 'user.etatCivil')]
-    public function etatCivilAction(EntityManagerInterface $entityManager, Request $request)
+    public function etatCivilAction(Request $request): RedirectResponse|Response
     {
-        $etatCivil = $this->getUser()->getEtatCivil();
+        $etatCivil = $this->getUser()?->getEtatCivil();
 
         if (!$etatCivil) {
             $etatCivil = new EtatCivil();
@@ -396,11 +384,11 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $etatCivil = $form->getData();
-            $this->getUser()->setEtatCivil($etatCivil);
+            $this->getUser()?->setEtatCivil($etatCivil);
 
-            $entityManager->persist($this->getUser());
-            $entityManager->persist($etatCivil);
-            $entityManager->flush();
+            $this->entityManager->persist($this->getUser());
+            $this->entityManager->persist($etatCivil);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Vos informations ont été enregistrées.');
 
@@ -440,7 +428,7 @@ class UserController extends AbstractController
         if (false !== $this->isGranted('ROLE_USER') && null !== $this->getUser()?->getId()) {
             $this->addFlash(
                 'alert',
-                'Vous êtes déjà connecté'
+                'Vous êtes déjà connecté',
             );
 
             return $this->redirectToRoute('user.view', ['user' => $this->getUser()?->getId()]);
@@ -459,7 +447,7 @@ class UserController extends AbstractController
                     'attr' => [
                         'class' => 'btn btn-secondary',
                     ],
-                ]
+                ],
             );
 
         $form->handleRequest($request);
@@ -468,8 +456,8 @@ class UserController extends AbstractController
             'email',
             $request->query->get(
                 'email',
-                $request->getSession()->get('_security.last_username')
-            )
+                $request->getSession()->get('_security.last_username'),
+            ),
         );
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $email = '';
@@ -495,7 +483,7 @@ class UserController extends AbstractController
                 $url = $this->generateUrl(
                     'user.reset-password',
                     ['token' => $user->getConfirmationToken()],
-                    UrlGeneratorInterface::ABSOLUTE_URL
+                    UrlGeneratorInterface::ABSOLUTE_URL,
                 );
                 $resetExpireAt = Carbon::createFromTimestamp($user->getTimePasswordResetRequested())
                     ->addSeconds($params->get('passwordTokenTTL'))
@@ -507,7 +495,7 @@ class UserController extends AbstractController
                 $subject = $this->renderBlock(
                     'user/email/forgotPassword.twig',
                     'subject',
-                    $context
+                    $context,
                 ) ?: 'Mot de passe oublié';
                 $textBody = $this->renderBlock('user/email/forgotPassword.twig', 'body_text', $context);
                 $context['subject'] = $subject;
@@ -523,7 +511,7 @@ class UserController extends AbstractController
 
                 $this->addFlash(
                     'alert',
-                    'Les instructions pour enregistrer votre mot de passe ont été envoyé par mail.'
+                    'Les instructions pour enregistrer votre mot de passe ont été envoyé par mail.',
                 );
                 $request->getSession()->get('_security.last_username', $email);
 
@@ -545,7 +533,7 @@ class UserController extends AbstractController
      * Formulaire de participation à un jeu.
      */
     #[Route('/user/{gn}/participe', name: 'user.gn.participe')]
-    public function gnParticipeAction(EntityManagerInterface $entityManager, Request $request, Gn $gn)
+    public function gnParticipeAction(Request $request, Gn $gn): RedirectResponse|Response
     {
         $form = $this->createFormBuilder($gn)
             ->getForm();
@@ -553,7 +541,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid() && (!$gn->getBesoinValidationCi(
-        ) || 'ok' == $request->request->get('acceptCi'))) {
+                ) || 'ok' === $request->request->get('acceptCi'))) {
             $participant = new Participant();
             $participant->setUser($this->getUser());
             $participant->setGn($gn);
@@ -562,8 +550,8 @@ class UserController extends AbstractController
                 $participant->setValideCiLe(new \DateTime('NOW'));
             }
 
-            $entityManager->persist($participant);
-            $entityManager->flush();
+            $this->entityManager->persist($participant);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Vous participez maintenant à '.$gn->getLabel().' !');
 
@@ -580,18 +568,18 @@ class UserController extends AbstractController
      * Formulaire de validation des cg , si cette validation n'a pas été réalisé à la participation.
      */
     #[Route('/user/{gn}/validationci', name: 'user.gn.validationci')]
-    public function gnValidCiAction(EntityManagerInterface $entityManager, Request $request, Gn $gn)
+    public function gnValidCiAction(Request $request, Gn $gn): RedirectResponse|Response
     {
         $form = $this->createFormBuilder()->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid() && 'ok' == $request->request->get('acceptCi')) {
-            $participant = $this->getUser()->getParticipant($gn);
+        if ($form->isSubmitted() && $form->isValid() && 'ok' === $request->request->get('acceptCi')) {
+            $participant = $this->getUser()?->getParticipant($gn);
             $participant->setValideCiLe(new \DateTime('NOW'));
 
-            $entityManager->persist($participant);
-            $entityManager->flush();
+            $this->entityManager->persist($participant);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Vous avez validé les condition d\'inscription pour '.$gn->getLabel().' !');
 
@@ -605,17 +593,17 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/like', name: 'user.like')]
-    public function likeAction(EntityManagerInterface $entityManager, Request $request, User $User): RedirectResponse
+    public function likeAction(User $user): RedirectResponse
     {
-        if ($User == $this->getUser()) {
+        if ($user === $this->getUser()) {
             $this->addFlash(
                 'error',
-                'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !'
+                'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !',
             );
         } else {
-            $User->addCoeur();
-            $entityManager->persist($User);
-            $entityManager->flush();
+            $user->addCoeur();
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
             // NOTIFY $app['notify']->coeur($this->getUser(), $User);
             $this->addFlash('success', 'Votre coeur a été envoyé !');
         }
@@ -623,7 +611,6 @@ class UserController extends AbstractController
         return $this->redirectToRoute('User.view', ['id' => $User->getId()]);
     }
 
-    #[Route('/user', name: 'user.login')]
     public function loginAction(EntityManagerInterface $entityManager, Request $request): Response
     {
         $authException = $app['User.last_auth_exception']($request);
@@ -647,6 +634,8 @@ class UserController extends AbstractController
             'allowRememberMe' => isset($app['security.remember_me.response_listener']),
         ]);
     }
+
+    // TODO CHECK #[Route('/user', name: 'user.login')]
 
     #[Route('/user/new/step1', name: 'user.new-step1')]
     public function newUserStep1Action(EntityManagerInterface $entityManager): Response
@@ -680,14 +669,14 @@ class UserController extends AbstractController
             ->add(
                 'valider',
                 SubmitType::class,
-                ['label' => 'Étape suivante', 'attr' => ['class' => 'btn btn-secondary']]
+                ['label' => 'Étape suivante', 'attr' => ['class' => 'btn btn-secondary']],
             );
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $etatCivil = $form->getData();
-            $this->getUser()->setEtatCivil($etatCivil);
+            $this->getUser()?->setEtatCivil($etatCivil);
 
             $this->entityManager->persist($this->getUser());
             $this->entityManager->flush();
@@ -701,13 +690,14 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/new/step3', name: 'user.new-step3')]
-    public function newUserStep3Action(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
-    {
+    public function newUserStep3Action(
+        Request $request,
+    ): RedirectResponse|Response {
         $form = $this->createForm(UserRestrictionForm::class, $this->getUser())
             ->add(
                 'valider',
                 SubmitType::class,
-                ['label' => 'Étape suivante', 'attr' => ['class' => 'btn btn-secondary']]
+                ['label' => 'Étape suivante', 'attr' => ['class' => 'btn btn-secondary']],
             );
 
         $form->handleRequest($request);
@@ -720,12 +710,12 @@ class UserController extends AbstractController
                 $restriction->setUserRelatedByAuteurId($this->getUser());
                 $restriction->setLabel($newRestriction);
 
-                $entityManager->persist($restriction);
+                $this->entityManager->persist($restriction);
                 $User->addRestriction($restriction);
             }
 
-            $entityManager->persist($User);
-            $entityManager->flush();
+            $this->entityManager->persist($User);
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('user.new-step4', [], 303);
         }
@@ -748,13 +738,9 @@ class UserController extends AbstractController
      * Choix du personnage par défaut de l'utilisateur.
      */
     #[Route('/user/{user}/personage/default', name: 'user.personnageDefault')]
-    public function personnageDefaultAction(Request $request, #[MapEntity] User $user)
+    public function personnageDefaultAction(Request $request, #[MapEntity] User $user): RedirectResponse|Response
     {
-        if (!$this->isGranted('ROLE_ADMIN') || !$user === $this->getUser()) {
-            $this->addFlash('error', 'Vous n\'avez pas les droits nécessaires pour cette opération.');
-
-            return $this->redirectToRoute('homepage', [], 303);
-        }
+        $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
 
         $form = $this->createForm(UserPersonnageDefaultForm::class, $this->getUser(), ['user_id' => $user->getId()])
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -809,7 +795,7 @@ class UserController extends AbstractController
                 if ($form->isValid()) {
                     $hashedPassword = $passwordHasher->hashPassword(
                         $user,
-                        $password
+                        $password,
                     );
                     $user->setPassword($hashedPassword);
 
@@ -830,11 +816,15 @@ class UserController extends AbstractController
                         ]);
                     }
 
-                    $security->login($user, 'form_login', 'main', [(new RememberMeBadge())->enable()]
+                    $security->login(
+                        $user,
+                        'form_login',
+                        'main',
+                        [(new RememberMeBadge())->enable()],
                     );
                     $this->addFlash(
                         'success',
-                        'Votre compte a été créé ! vous pouvez maintenant rejoindre un groupe et créer votre personnage'
+                        'Votre compte a été créé ! vous pouvez maintenant rejoindre un groupe et créer votre personnage',
                     );
 
                     return $this->redirectToRoute('homepage');
@@ -904,14 +894,14 @@ class UserController extends AbstractController
                     'attr' => [
                         'class' => 'btn btn-secondary',
                     ],
-                ]
+                ],
             );
 
         $form->handleRequest($request);
 
         $user = $userRepository->findOneByConfirmationToken($token);
 
-        if (!$user || $user->isPasswordResetRequestExpired((int) $params->get('passwordTokenTTL'))) {
+        if (!$user || $user->isPasswordResetRequestExpired((int)$params->get('passwordTokenTTL'))) {
             $this->addFlash('alert', 'Sorry, your password reset link has expired.');
 
             // throw new GoneHttpException('This action is expired');
@@ -935,7 +925,7 @@ class UserController extends AbstractController
                 // Set the password and log in.
                 $hashedPassword = $passwordHasher->hashPassword(
                     $user,
-                    $password
+                    $password,
                 );
 
                 // First set : importing from VA
@@ -964,7 +954,7 @@ class UserController extends AbstractController
                     $user,
                     'form_login',
                     'main',
-                    [(new RememberMeBadge())->enable()]
+                    [(new RememberMeBadge())->enable()],
                 );
                 $this->addFlash('alert', 'Your password has been reset and you are now signed in.');
 
@@ -984,7 +974,7 @@ class UserController extends AbstractController
      * Choix des restrictions alimentaires par l'utilisateur.
      */
     #[Route('/user/restriction', name: 'user.restriction')]
-    public function restrictionAction(EntityManagerInterface $entityManager, Request $request)
+    public function restrictionAction(Request $request): RedirectResponse|Response
     {
         $form = $this->createForm(UserRestrictionForm::class, $this->getUser())
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -999,12 +989,12 @@ class UserController extends AbstractController
                 $restriction->setUserRelatedByAuteurId($this->getUser());
                 $restriction->setLabel($newRestriction);
 
-                $entityManager->persist($restriction);
+                $this->entityManager->persist($restriction);
                 $User->addRestriction($restriction);
             }
 
-            $entityManager->persist($User);
-            $entityManager->flush();
+            $this->entityManager->persist($User);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Vos informations ont été enregistrées.');
 
@@ -1017,29 +1007,16 @@ class UserController extends AbstractController
     }
 
     /**
-     * Met a jours les droits des utilisateurs.
+     * TODO
+     * Affiche la liste des billets de l'utilisateur.
      */
-    public function rightAction(EntityManagerInterface $entityManager, Request $request): Response
+    public function userHasBilletListAction(EntityManagerInterface $entityManager, Request $request): Response
     {
-        $Users = $app['User.manager']->findAll();
+        $UserHasBillets = $this->getUser()->getUserHasBillets();
 
-        if ('POST' == $request->getMethod()) {
-            $newRoles = $request->get('User');
-
-            foreach ($Users as $User) {
-                $User->setRoles(array_keys($newRoles[$User->getId()]));
-                $entityManager->persist($User);
-            }
-
-            $entityManager->flush();
-        }
-
-        // trouve tous les rôles
-        return $this->render('user/right.twig', [
-            'Users' => $Users,
-            'roles' => $app['larp.manager']->getAvailableRoles(),
-        ]
-        );
+        return $this->render('UserHasBillet/list.twig', [
+            'UserHasBillets' => $UserHasBillets,
+        ]);
     }
 
     /**
@@ -1049,12 +1026,8 @@ class UserController extends AbstractController
      */
     #[Route('/user/{user}', name: 'user.view', requirements: ['user' => Requirement::DIGITS])]
     #[Route('/user/{user}', name: 'user.detail', requirements: ['user' => Requirement::DIGITS])]
-    public function viewAction(Request $request, #[MapEntity] User $user): Response
+    public function viewAction(#[MapEntity] User $user): Response
     {
-        if (!$user) {
-            throw new NotFoundHttpException('No user was found with that ID.');
-        }
-
         if (!$user->isEnabled() && !$this->isGranted('ROLE_ADMIN')) {
             throw new NotFoundHttpException('That User is disabled (pending email confirmation).');
         }
@@ -1066,7 +1039,7 @@ class UserController extends AbstractController
      * Affiche le détail de l'utilisateur courant.
      */
     #[Route('/self', name: 'user.self')]
-    public function viewSelfAction(Request $request): Response|RedirectResponse
+    public function viewSelfAction(): Response|RedirectResponse
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -1079,76 +1052,7 @@ class UserController extends AbstractController
             'App\Controller\UserController::viewAction',
             [
                 'id' => $user->getId(),
-            ]
+            ],
         );
-    }
-
-    /**
-     * Création d'un utilisateur.
-     *
-     * @throws \InvalidArgumentException
-     */
-    protected function createUserFromRequest(EntityManagerInterface $entityManager, Request $request): User
-    {
-        if ($request->request->get('password') != $request->request->get('confirm_password')) {
-            throw new \InvalidArgumentException("Passwords don't match.");
-        }
-
-        $user = new User();
-        if (!empty($plainPassword)) {
-            $this->setUserPassword($user, $plainPassword);
-        }
-
-        if (null !== $name) {
-            $user->setUsername($name);
-        }
-
-        if (!empty($roles)) {
-            $user->setRoles($roles);
-        }
-
-        $User = $app['User.manager']->createUser(
-            $request->request->get('email'),
-            $request->request->get('password'),
-            $request->request->get('name') ?: null,
-            ['ROLE_USER']
-        );
-
-        if ($Username = $request->request->get('Username')) {
-            $User->setUsername($Username);
-        }
-
-        $errors = $app['User.manager']->validate($User);
-
-        if (!empty($errors)) {
-            throw new \InvalidArgumentException(implode("\n", $errors));
-        }
-
-        return $User;
-    }
-
-    protected function hasAccess(User $user, array $roles = []): void
-    {
-        /** @var User $loggedUser */
-        $loggedUser = $this->getUser();
-
-        $this->checkHasAccess($roles, static fn () => $user->getId() === $loggedUser->getId());
-
-        /*
-         * Autre option :
-         * if (!$user) {
-         * $this->addFlash('error', 'Désolé, vous devez être identifié pour accéder à cette page');
-         * $this->redirectToRoute('app_login', [], 303);
-         * }
-         *
-         * if (
-         * !($this->isGranted('ROLE_ADMIN') || $this->isGranted(Role::SCENARISTE->value))
-         * && $user->getId() !== $personnage->getUser()?->getId()
-         * ) {
-         * $this->addFlash('error', "Vous n'avez pas les permissions requises pour modifier une trombine");
-         * $this->redirect($request->headers->get('referer'));
-         * $this->redirectToRoute('homepage', [], 303);
-         * }
-         */
     }
 }

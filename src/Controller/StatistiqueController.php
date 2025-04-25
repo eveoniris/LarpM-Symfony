@@ -12,7 +12,9 @@ use App\Entity\Langue;
 use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\User;
+use App\Enum\Role;
 use App\Manager\RandomColor;
+use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -23,6 +25,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted(new MultiRolesExpression(Role::ADMIN))]
 class StatistiqueController extends AbstractController
 {
     /**
@@ -187,7 +190,7 @@ class StatistiqueController extends AbstractController
                 GROUP BY pr.religion_id, rl.label
                 ORDER BY pratiquants DESC;
                 SQL,
-            $rsm
+            $rsm,
         )->setParameter('gnid', $gn->getId());
 
         return new JsonResponse($query->getResult());

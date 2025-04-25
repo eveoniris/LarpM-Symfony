@@ -21,25 +21,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class RuleController extends AbstractController
 {
     /**
-     * Page de gestion des règles.
-     */
-    #[Route('/rule', name: 'rule.list')]
-    #[Route('/rule', name: 'rules.list')]
-    public function listAction(Request $request, PagerService $pagerService, RuleRepository $ruleRepository): Response
-    {
-        $pagerService->setRequest($request)->setRepository($ruleRepository)->setLimit(25);
-
-        return $this->render(
-            'rule\list.twig',
-            [
-                'pagerService' => $pagerService,
-                'paginator' => $ruleRepository->searchPaginated($pagerService),
-                'isAdmin' => $this->isGranted(Role::REGLE->value),
-            ]
-        );
-    }
-
-    /**
      * Ajout d'une règle.
      */
     #[IsGranted(Role::REGLE->value)]
@@ -87,50 +68,50 @@ class RuleController extends AbstractController
         ]);*/
     }
 
-    /**
-     * Détail d'une règle.
-     */
-    #[IsGranted(Role::REGLE->value)]
-    #[Route('/rule/{rule}/detail', name: 'rule.detail', requirements: ['rule' => Requirement::DIGITS])]
-    #[Route('/rule/{rule}', requirements: ['rule' => Requirement::DIGITS])]
-    public function detailAction(#[MapEntity] Rule $rule): Response
-    {
-        return $this->render('rule/detail.twig', [
-            'rule' => $rule,
-        ]);
-    }
-
-    /**
-     * Mise à jour d'une règle.
-     */
-    #[IsGranted(Role::REGLE->value)]
-    #[Route('/rule/{rule}/update', name: 'rule.update', requirements: ['rule' => Requirement::DIGITS])]
-    public function updateAction(Request $request, #[MapEntity] Rule $rule): Response
-    {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $rule,
-            RuleForm::class,
-        );
-
-        /* Old
-        $form = $this->createForm(RuleUpdateForm::class, $rule)
-            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $rule = $form->getData();
-            $this->entityManager->persist($rule);
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'Vos modifications été enregistrées');
+    protected function handleCreateOrUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
+        ?callable $entityCallback = null,
+    ): RedirectResponse|Response {
+        if (!$entityCallback) {
+            /** @var Rule $rule */
+            $entityCallback = fn(mixed $rule, FormInterface $form): ?Rule => $rule->handleUpload($this->fileUploader);
         }
 
-        return $this->render('rule/update.twig', [
-            'form' => $form->createView(),
-            'rule' => $rule,
-        ]);*/
+        if (null === $breadcrumb) {
+            $breadcrumb = [['route' => $this->generateUrl('rule.list'), 'name' => 'Liste des règles']];
+
+            if ($entity->getId()) {
+                $breadcrumb[] = [
+                    'route' => $this->generateUrl('rule.detail', ['rule' => $entity->getId()]),
+                    'name' => $entity->getLabel(),
+                ];
+                $breadcrumb[] = ['name' => 'Modifier une règle'];
+            }
+        }
+
+        return parent::handleCreateOrUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: [...$routes, 'root' => 'rule.'],
+            msg: [
+                'entity' => $this->translator->trans('Règle'),
+                'entity_added' => $this->translator->trans('La règle a été ajoutée'),
+                'entity_updated' => $this->translator->trans('La règle a été mise à jour'),
+                'entity_deleted' => $this->translator->trans('La règle a été supprimée'),
+                'entity_list' => $this->translator->trans('Liste des règles'),
+                'title_add' => $this->translator->trans('Ajouter une règle'),
+                'title_update' => $this->translator->trans('Modifier une règle'),
+                ...$msg,
+            ],
+            entityCallback: $entityCallback,
+        );
     }
 
     /**
@@ -168,57 +149,77 @@ class RuleController extends AbstractController
     }
 
     /**
+     * Détail d'une règle.
+     */
+    #[IsGranted(Role::REGLE->value)]
+    #[Route('/rule/{rule}/detail', name: 'rule.detail', requirements: ['rule' => Requirement::DIGITS])]
+    #[Route('/rule/{rule}', requirements: ['rule' => Requirement::DIGITS])]
+    public function detailAction(#[MapEntity] Rule $rule): Response
+    {
+        return $this->render('rule/detail.twig', [
+            'rule' => $rule,
+        ]);
+    }
+
+    /**
      * Télécharger une règle.
      */
     #[Route('/rule/{rule}/document', name: 'rule.document', requirements: ['rule' => Requirement::DIGITS])]
     public function documentAction(#[MapEntity] Rule $rule, Request $request): Response
     {
-        return $this->sendDocument($rule, null, !(bool) $request->get('stream', false));
+        // TODO access ?
+        return $this->sendDocument($rule, null, !(bool)$request->get('stream', false));
     }
 
-    protected function handleCreateOrUpdate(
-        Request $request,
-        $entity,
-        string $formClass,
-        array $breadcrumb = [],
-        array $routes = [],
-        array $msg = [],
-        ?callable $entityCallback = null,
-    ): RedirectResponse|Response {
-        if (!$entityCallback) {
-            /** @var Rule $rule */
-            $entityCallback = fn (mixed $rule, FormInterface $form): ?Rule => $rule->handleUpload($this->fileUploader);
-        }
+    /**
+     * Page de gestion des règles.
+     */
+    #[Route('/rule', name: 'rule.list')]
+    #[Route('/rule', name: 'rules.list')]
+    public function listAction(Request $request, PagerService $pagerService, RuleRepository $ruleRepository): Response
+    {
+        $pagerService->setRequest($request)->setRepository($ruleRepository)->setLimit(25);
 
-        if (null === $breadcrumb) {
-            $breadcrumb = [['route' => $this->generateUrl('rule.list'), 'name' => 'Liste des règles']];
-
-            if ($entity->getId()) {
-                $breadcrumb[] = [
-                    'route' => $this->generateUrl('rule.detail', ['rule' => $entity->getId()]),
-                    'name' => $entity->getLabel(),
-                ];
-                $breadcrumb[] = ['name' => 'Modifier une règle'];
-            }
-        }
-
-        return parent::handleCreateOrUpdate(
-            request: $request,
-            entity: $entity,
-            formClass: $formClass,
-            breadcrumb: $breadcrumb,
-            routes: [...$routes, 'root' => 'rule.'],
-            msg: [
-                'entity' => $this->translator->trans('Règle'),
-                'entity_added' => $this->translator->trans('La règle a été ajoutée'),
-                'entity_updated' => $this->translator->trans('La règle a été mise à jour'),
-                'entity_deleted' => $this->translator->trans('La règle a été supprimée'),
-                'entity_list' => $this->translator->trans('Liste des règles'),
-                'title_add' => $this->translator->trans('Ajouter une règle'),
-                'title_update' => $this->translator->trans('Modifier une règle'),
-                ...$msg,
+        return $this->render(
+            'rule\list.twig',
+            [
+                'pagerService' => $pagerService,
+                'paginator' => $ruleRepository->searchPaginated($pagerService),
+                'isAdmin' => $this->isGranted(Role::REGLE->value),
             ],
-            entityCallback: $entityCallback
         );
+    }
+
+    /**
+     * Mise à jour d'une règle.
+     */
+    #[IsGranted(Role::REGLE->value)]
+    #[Route('/rule/{rule}/update', name: 'rule.update', requirements: ['rule' => Requirement::DIGITS])]
+    public function updateAction(Request $request, #[MapEntity] Rule $rule): Response
+    {
+        return $this->handleCreateOrUpdate(
+            $request,
+            $rule,
+            RuleForm::class,
+        );
+
+        /* Old
+        $form = $this->createForm(RuleUpdateForm::class, $rule)
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $rule = $form->getData();
+            $this->entityManager->persist($rule);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vos modifications été enregistrées');
+        }
+
+        return $this->render('rule/update.twig', [
+            'form' => $form->createView(),
+            'rule' => $rule,
+        ]);*/
     }
 }

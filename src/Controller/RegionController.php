@@ -2,26 +2,27 @@
 
 namespace App\Controller;
 
+use App\Enum\Role;
 use App\Form\RegionForm;
+use App\Security\MultiRolesExpression;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+// TODO deprecated ?
+#[IsGranted(new MultiRolesExpression(Role::ADMIN))]
 class RegionController extends AbstractController
 {
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $repo = $entityManager->getRepository('\App\Entity\Region');
-        $regions = $repo->findAll();
-
-        return $this->render('region/index.twig', ['regions' => $regions]);
-    }
-
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    public function addAction(Request $request, EntityManagerInterface $entityManager)
     {
         $region = new \App\Entity\Region();
 
         $form = $this->createForm(RegionForm::class, $region)
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add(
+                'save_continue',
+                \Symfony\Component\Form\Extension\Core\Type\SubmitType::class,
+                ['label' => 'Sauvegarder & continuer'],
+            );
 
         $form->handleRequest($request);
 
@@ -32,7 +33,7 @@ class RegionController extends AbstractController
             $entityManager->persist($region);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La région a été ajouté.');
+            $this->addFlash('success', 'La région a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('region', [], 303);
@@ -46,7 +47,39 @@ class RegionController extends AbstractController
         ]);
     }
 
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    public function detailAction(Request $request, EntityManagerInterface $entityManager)
+    {
+        $id = $request->get('index');
+
+        $region = $entityManager->find('\App\Entity\Region', $id);
+
+        if ($region) {
+            return $this->render('region/detail.twig', ['region' => $region]);
+        } else {
+            $this->addFlash('error', 'La région n\'a pas été trouvée.');
+
+            return $this->redirectToRoute('region');
+        }
+    }
+
+    public function detailExportAction(Request $request, EntityManagerInterface $entityManager): void
+    {
+        $id = $request->get('index');
+    }
+
+    public function exportAction(Request $request, EntityManagerInterface $entityManager): void
+    {
+    }
+
+    public function indexAction(Request $request, EntityManagerInterface $entityManager)
+    {
+        $repo = $entityManager->getRepository('\App\Entity\Region');
+        $regions = $repo->findAll();
+
+        return $this->render('region/index.twig', ['regions' => $regions]);
+    }
+
+    public function updateAction(Request $request, EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
@@ -65,13 +98,13 @@ class RegionController extends AbstractController
                 $region->setUpdateDate(new \DateTime('NOW'));
                 $entityManager->persist($region);
                 $entityManager->flush();
-               $this->addFlash('success', 'La région a été mise à jour.');
+                $this->addFlash('success', 'La région a été mise à jour.');
 
                 return $this->redirectToRoute('region.detail', ['index' => $id]);
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($region);
                 $entityManager->flush();
-               $this->addFlash('success', 'La région a été supprimée.');
+                $this->addFlash('success', 'La région a été supprimée.');
 
                 return $this->redirectToRoute('region');
             }
@@ -81,29 +114,5 @@ class RegionController extends AbstractController
             'region' => $region,
             'form' => $form->createView(),
         ]);
-    }
-
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $id = $request->get('index');
-
-        $region = $entityManager->find('\App\Entity\Region', $id);
-
-        if ($region) {
-            return $this->render('region/detail.twig', ['region' => $region]);
-        } else {
-           $this->addFlash('error', 'La région n\'a pas été trouvée.');
-
-            return $this->redirectToRoute('region');
-        }
-    }
-
-    public function detailExportAction(Request $request,  EntityManagerInterface $entityManager): void
-    {
-        $id = $request->get('index');
-    }
-
-    public function exportAction(Request $request,  EntityManagerInterface $entityManager): void
-    {
     }
 }

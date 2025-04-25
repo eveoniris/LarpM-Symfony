@@ -37,7 +37,7 @@ class GroupeGnRepository extends BaseRepository
         return reset($groupeGns);
     }
 
-    public function getTitres(Personnage $personnage, ?Gn $gn = null): string
+    public function getTitres(Personnage $personnage, ?Gn $gn = null, ?GroupeGn $excludeGroupeGn = null): string
     {
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('titre', 'titre', 'string');
@@ -71,10 +71,17 @@ class GroupeGnRepository extends BaseRepository
             $sql .= ' AND ggn.gn_id = :gnid';
         }
 
+        if ($excludeGroupeGn) {
+            $sql .= ' AND ggn.id <> :ggnid';
+        }
+
         $sql .= ' ORDER BY ggn.gn_id DESC LIMIT 1';
         $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
         if ($gn) {
             $query->setParameter('gnid', $gn->getId());
+        }
+        if ($excludeGroupeGn) {
+            $query->setParameter('ggnid', $excludeGroupeGn->getId());
         }
 
         try {
@@ -96,10 +103,10 @@ class GroupeGnRepository extends BaseRepository
                 INNER JOIN u.participants as part
                 INNER JOIN part.groupeGn as grp
                 WHERE u.id = :uid AND grp.id = :gid
-                DQL
+                DQL,
             );
 
-        return (bool) $query
+        return (bool)$query
             ->setParameter('uid', $user->getId())
             ->setParameter('gid', $groupeGn->getId())
             ->getSingleScalarResult();
