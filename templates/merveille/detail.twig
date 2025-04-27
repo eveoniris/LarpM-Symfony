@@ -69,20 +69,21 @@
 
                     <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Date création</div>
-                        <div class="list-group-item-text ps-1">{{ merveille.dateCreation }}</div>
+                        <div class="list-group-item-text ps-1">{% if merveille.dateCreation %}{{ merveille.dateCreation|date("m/d/Y") }}{% else %}-{% endif %}</div>
                     </div>
 
                     <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Date destruction</div>
-                        <div class="list-group-item-text ps-1">{{ merveille.dateDestruction }}</div>
+                        <div class="list-group-item-text ps-1">{% if merveille.dateDestruction %}{{ merveille.dateDestruction|date("m/d/Y") }}{% else %}-{% endif %}</div>
                     </div>
 
                     <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Bonus</div>
                         <div class="list-group-item-text ps-1">
                             {% if merveille.bonus.titre is defined %}
-                            <a href="{{ path('bonus.detail',{'bonus': merveille.bonus.id}) }}">{{ merveille.bonus.titre|markdown_to_html }}</a><br/>
-                            {{ merveille.description|markdown_to_html }}
+                                <a href="{{ path('bonus.detail',{'bonus': merveille.bonus.id}) }}">{{ merveille.bonus.titre|markdown_to_html }}</a>
+                                <br/>
+                                {{ merveille.description|markdown_to_html }}
                             {% else %}
                                 Aucun
                             {% endif %}
@@ -93,7 +94,8 @@
                         <div class="list-group-item-heading fw-bold mb-1">Territoire</div>
                         <div class="list-group-item-text ps-1">
                             {% if merveille.territoire.nom is defined %}
-                                <a href="{{ path('territoire.detail',{'territoire': merveille.territoire.id}) }}">{{ merveille.territoire.nom }}</a><br/>
+                                <a href="{{ path('territoire.detail',{'territoire': merveille.territoire.id}) }}">{{ merveille.territoire.nom }}</a>
+                                <br/>
                             {% else %}
                                 Aucun
                             {% endif %}

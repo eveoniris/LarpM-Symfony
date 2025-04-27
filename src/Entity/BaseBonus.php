@@ -18,35 +18,26 @@ use Doctrine\ORM\Mapping\JoinColumn;
 #[ORM\DiscriminatorMap(['base' => 'BaseBonus', 'extended' => 'Bonus'])]
 abstract class BaseBonus
 {
+    #[ORM\OneToOne(targetEntity: Competence::class, cascade: ['persist'])]
+    protected Competence $competence;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $titre = null;
-
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
-
     #[ORM\Column(length: 32, nullable: true)]
     private ?string $type = null;
-
     #[ORM\Column(nullable: true)]
     private ?int $valeur = null;
-
     #[ORM\Column(length: 32, nullable: true)]
     private ?string $periode = null;
-
     #[ORM\Column(length: 32, nullable: true)]
     private ?string $application = null;
-
     #[ORM\Column(nullable: true)]
     private ?array $json_data = null;
-
-    #[ORM\OneToOne(targetEntity: Competence::class, cascade: ['persist'])]
-    protected Competence $competence;
-
     /**
      * @var Collection<int, Territoire>
      */
@@ -78,12 +69,14 @@ abstract class BaseBonus
         $this->originesBonus = new ArrayCollection();
     }
 
-    /**
-     * @return Collection<int, Territoire>
-     */
-    public function getOrigineBonus(): Collection
+    public function addGroupeBonus(GroupeBonus $groupeBonus): static
     {
-        return $this->originesBonus;
+        if (!$this->groupeBonus->contains($groupeBonus)) {
+            $this->groupeBonus->add($groupeBonus);
+            $groupeBonus->setBonus($this);
+        }
+
+        return $this;
     }
 
     public function addOrigineBonus(OrigineBonus $origine): static
@@ -96,54 +89,6 @@ abstract class BaseBonus
         return $this;
     }
 
-    public function removeOrigineBonus(OrigineBonus $origine): static
-    {
-        $this->originesBonus->removeElement($origine);
-        if ($origine->getBonus() === $this) {
-            $origine->setBonus(null);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, GroupeBonus>
-     */
-    public function getGroupeBonus(): Collection
-    {
-        return $this->groupeBonus;
-    }
-
-    public function addGroupeBonus(GroupeBonus $groupeBonus): static
-    {
-        if (!$this->groupeBonus->contains($groupeBonus)) {
-            $this->groupeBonus->add($groupeBonus);
-            $groupeBonus->setBonus($this);
-        }
-
-        return $this;
-    }
-
-    public function removeGroupeBonus(GroupeBonus $groupeBonus): static
-    {
-        if ($this->groupeBonus->removeElement($groupeBonus)) {
-            // set the owning side to null (unless already changed)
-            if ($groupeBonus->getGroupe() === $this) {
-                $groupeBonus->setBonus(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, PersonnageBonus>
-     */
-    public function getPersonnageBonus(): Collection
-    {
-        return $this->personnageBonus;
-    }
-
     public function addPersonnageBonus(PersonnageBonus $personnageBonus): static
     {
         if (!$this->personnageBonus->contains($personnageBonus)) {
@@ -154,12 +99,14 @@ abstract class BaseBonus
         return $this;
     }
 
-    public function removePersonnageBonus(PersonnageBonus $personnageBonus): static
+    public function getApplication(): ?string
     {
-        // set the owning side to null (unless already changed)
-        if ($this->groupeBonus->removeElement($personnageBonus) && $personnageBonus->getPersonnage() === $this) {
-            $personnageBonus->setBonus(null);
-        }
+        return $this->application;
+    }
+
+    public function setApplication(?string $application): static
+    {
+        $this->application = $application;
 
         return $this;
     }
@@ -172,29 +119,6 @@ abstract class BaseBonus
     public function setCompetence(?Competence $competence): static
     {
         $this->competence = $competence;
-        return $this;
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function getTitre(): ?string
-    {
-        return $this->titre;
-    }
-
-    public function setTitre(?string $titre): static
-    {
-        $this->titre = $titre;
 
         return $this;
     }
@@ -211,14 +135,80 @@ abstract class BaseBonus
         return $this;
     }
 
-    public function getValeur(): ?int
+    /**
+     * @return Collection<int, GroupeBonus>
+     */
+    public function getGroupeBonus(): Collection
     {
-        return $this->valeur;
+        return $this->groupeBonus;
     }
 
-    public function setValeur(?int $valeur): static
+    public function getId(): ?int
     {
-        $this->valeur = $valeur;
+        return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getJsonData(): ?array
+    {
+        return $this->json_data;
+    }
+
+    public function setJsonData(?array $json_data): static
+    {
+        $this->json_data = $json_data;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Territoire>
+     */
+    public function getOrigineBonus(): Collection
+    {
+        return $this->originesBonus;
+    }
+
+    public function getPeriode(): ?BonusPeriode
+    {
+        return BonusPeriode::tryFrom($this->periode);
+    }
+
+    public function setPeriode(string|BonusPeriode|null $periode): static
+    {
+        if ($periode instanceof BonusPeriode) {
+            $this->periode = $periode->value;
+
+            return $this;
+        }
+
+        $this->periode = $periode;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PersonnageBonus>
+     */
+    public function getPersonnageBonus(): Collection
+    {
+        return $this->personnageBonus;
+    }
+
+    public function getTitre(): ?string
+    {
+        return $this->titre;
+    }
+
+    public function setTitre(?string $titre): static
+    {
+        $this->titre = $titre;
 
         return $this;
     }
@@ -241,44 +231,46 @@ abstract class BaseBonus
         return $this;
     }
 
-    public function getPeriode(): ?BonusPeriode
+    public function getValeur(): ?int
     {
-        return BonusPeriode::tryFrom($this->periode);
+        return $this->valeur;
     }
 
-    public function setPeriode(string|BonusPeriode|null $periode): static
+    public function setValeur(?int $valeur): static
     {
-        if ($periode instanceof BonusPeriode) {
-            $this->type = $periode->value;
+        $this->valeur = $valeur;
 
-            return $this;
+        return $this;
+    }
+
+    public function removeGroupeBonus(GroupeBonus $groupeBonus): static
+    {
+        if ($this->groupeBonus->removeElement($groupeBonus)) {
+            // set the owning side to null (unless already changed)
+            if ($groupeBonus->getGroupe() === $this) {
+                $groupeBonus->setBonus(null);
+            }
         }
 
-        $this->type = $periode;
+        return $this;
+    }
+
+    public function removeOrigineBonus(OrigineBonus $origine): static
+    {
+        $this->originesBonus->removeElement($origine);
+        if ($origine->getBonus() === $this) {
+            $origine->setBonus(null);
+        }
 
         return $this;
     }
 
-    public function getApplication(): ?string
+    public function removePersonnageBonus(PersonnageBonus $personnageBonus): static
     {
-        return $this->application;
-    }
-
-    public function setApplication(?string $application): static
-    {
-        $this->application = $application;
-
-        return $this;
-    }
-
-    public function getJsonData(): ?array
-    {
-        return $this->json_data;
-    }
-
-    public function setJsonData(?array $json_data): static
-    {
-        $this->json_data = $json_data;
+        // set the owning side to null (unless already changed)
+        if ($this->groupeBonus->removeElement($personnageBonus) && $personnageBonus->getPersonnage() === $this) {
+            $personnageBonus->setBonus(null);
+        }
 
         return $this;
     }

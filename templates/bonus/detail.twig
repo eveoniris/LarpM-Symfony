@@ -72,7 +72,7 @@
 
                     <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Périodicité</div>
-                        <div class="list-group-item-text ps-1">{{ bonus.periode.value }}</div>
+                        <div class="list-group-item-text ps-1">{{ bonus.periode.value|default('-') }}</div>
                     </div>
 
                     <div class="list-group-item">

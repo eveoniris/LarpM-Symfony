@@ -95,7 +95,7 @@ class Personnage extends BasePersonnage implements \Stringable
         if ($this->getCompetenceNiveau(CompetenceFamilyType::AGILITY) >= LevelType::INITIATED->getIndex()) {
             ++$heroisme;
         }
-        
+
         if ($this->getCompetenceNiveau(CompetenceFamilyType::ONE_HANDED_WEAPON) >= LevelType::EXPERT->getIndex()) {
             ++$heroisme;
         }
@@ -237,7 +237,10 @@ class Personnage extends BasePersonnage implements \Stringable
         $niveau = 0;
         foreach ($this->getCompetences() as $competence) {
             if ($label instanceof CompetenceFamilyType && $competence->getCompetenceFamily()?->getCompetenceFamilyType(
-                )?->value === $label->value) {
+                )?->getId() === $label->getId()) {
+                $niveau += $competence->getLevel()?->getIndex();
+            } elseif ($label instanceof CompetenceFamilyType && $competence->getCompetenceFamily()?->getId(
+                ) === $label->getId()) {
                 $niveau += $competence->getLevel()?->getIndex();
             } elseif ($competence->getCompetenceFamily()?->getLabel() === $label) {
                 $niveau += $competence->getLevel()?->getIndex();
@@ -437,11 +440,12 @@ class Personnage extends BasePersonnage implements \Stringable
             $competenceLevel = $this->getCompetenceNiveau($family);
             $competencePugilat = $this->getCompetencePugilat($family);
 
-            if ($competencePugilat >= $level) {
+            if ($competenceLevel >= $level) {
                 $pugilatHistory = new PugilatHistory();
                 if (is_callable($value)) {
                     $pugilatHistory->setPugilat($value($competenceLevel, $competencePugilat));
                 } else {
+                    dump($value, $competencePugilat, $family);
                     $pugilatHistory->setPugilat($value ?? $competencePugilat);
                 }
                 $pugilatHistory->setExplication(
@@ -1194,6 +1198,21 @@ class Personnage extends BasePersonnage implements \Stringable
         return '';
     }
 
+    public function hasCompetenceFamiliyId(?int $type): bool
+    {
+        if (!$type) {
+            return false;
+        }
+
+        foreach ($this->getCompetences() as $competence) {
+            if ($competence->getCompetenceFamily()?->getId() === $type) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function hasCompetenceId(int $id): bool
     {
         try {
@@ -1208,8 +1227,16 @@ class Personnage extends BasePersonnage implements \Stringable
         return false;
     }
 
-    public function hasCompetenceLevel(CompetenceFamilyType $type, Level|LevelType $level): bool
+    public function hasCompetenceLevel(?CompetenceFamilyType $type, Level|LevelType|null $level): bool
     {
+        if (null === $type) {
+            return false;
+        }
+
+        if (null === $level) {
+            return false;
+        }
+
         $index = $level->getIndex();
         foreach ($this->getCompetencesFromFamilyType($type) as $competence) {
             if ($competence?->getLevel()?->getIndex() === $index) {

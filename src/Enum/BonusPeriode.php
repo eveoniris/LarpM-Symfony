@@ -10,4 +10,5 @@ enum BonusPeriode: string
     case UNIQUE = 'UNIQUE';
     case CONSTANT = 'CONSTANT';
     case NATIVE = 'NATIVE';
+    case RETOUR_DE_JEU = 'RETOUR_DE_JEU';
 }

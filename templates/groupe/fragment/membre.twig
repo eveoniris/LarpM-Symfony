@@ -40,7 +40,6 @@
 
 
     <div class="card-img text-center">
-        {# TODO get good trombine ? #}
         {% if participant.personnage %}
             <a href="{{ path('personnage.detail', {'personnage': participant.personnage.id}) }}">
                 {% if participant.personnage.trombineUrl %}
@@ -117,6 +116,21 @@
                 </div>
             </div>
         </li>
+
+        {% if canReadPrivate %}
+            <li class="list-group-item list-group-item-secondary m-0 p-0 g-0">
+                <div class="d-flex justify-content-start">
+                    <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
+                        Classe
+                    </div>
+                    <div class="col-md-10 px-2 align-middle py-1">
+                        <a href="{{ path('classe.detail', {'classe': participant.personnage.classe.id}) }}">
+                            {{ participant.personnage.classe }}
+                        </a>
+                    </div>
+                </div>
+            </li>
+        {% endif %}
 
         {% if isAdmin %}
             <li class="list-group-item m-0 p-0 g-0">

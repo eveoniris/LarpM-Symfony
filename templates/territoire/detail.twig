@@ -237,9 +237,13 @@
                         </div>
                     {% endif %}
 
+
+
                     {% if isAdmin %}
                         <div class="list-group-item">
-                            <h4 class="list-group-item-heading">Bonus d'origine des personnages </h4>
+                            <h4 class="list-group-item-heading">
+                                <i class="fa fa-user-secret text-warning"></i> Bonus d'origine des personnages
+                            </h4>
 
                             {% if territoire.getValideOrigineBonus()|length > 0 %}
                                 <ul>
@@ -275,35 +279,48 @@
                     </div>
 
                     <div class="list-group-item">
-                        <h4 class="list-group-item-heading">Liste des merveilles rattachées à ce territoire
-                            ({{ territoire.merveilles|length }} merveilles)</h4>
+                        <h4 class="list-group-item-heading">Groupe rattaché à ce territoire</h4>
                         <div class="list-group-item-text">
-                            <ul>
-                                {% for merveille in territoire.merveilles %}
-                                    <li>
-                                        <strong>
-                                            {% if isAdmin %}
-                                                <a href="{{ path('merveille.detail',{'merveille': merveille.id}) }}">{{ merveille.label }}</a>
-                                            {% else %}
-                                                {{ merveille.label }}
-                                            {% endif %}
-                                        </strong>
-                                        <br/>
-                                        <div>
-                                            {% if canSeePrivateDetail or isMappingInitiated %}
-                                                {{ merveille.descriptionCartographe|markdown_to_html }}
-                                            {% endif %}
-                                            {% if isAdmin %}
-                                                <hr>
-                                                <h6>Description scénariste</h6>
-                                                {{ merveille.descriptionScenariste|markdown_to_html }}
-                                            {% endif %}
-                                        </div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
+                            {% if territoire.groupe.id is defined %}
+                                <a href="{{ path('groupe.detail',{'groupe': territoire.groupe.id}) }}">{{ territoire.groupe.nom }}</a>
+                            {% else %}
+                                Aucun
+                            {% endif %}
                         </div>
                     </div>
+
+                    {% if territoire.merveilles|length > 0 %}
+                        <div class="list-group-item">
+                            <h4 class="list-group-item-heading">Liste des merveilles rattachées à ce territoire
+                                ({{ territoire.merveilles|length }} merveilles)</h4>
+                            <div class="list-group-item-text">
+                                <ul>
+                                    {% for merveille in territoire.merveilles %}
+                                        <li>
+                                            <strong>
+                                                {% if isAdmin %}
+                                                    <a href="{{ path('merveille.detail',{'merveille': merveille.id}) }}">{{ merveille.label }}</a>
+                                                {% else %}
+                                                    {{ merveille.label }}
+                                                {% endif %}
+                                            </strong>
+                                            <br/>
+                                            <div>
+                                                {% if canSeePrivateDetail or isMappingInitiated %}
+                                                    {{ merveille.descriptionCartographe|markdown_to_html }}
+                                                {% endif %}
+                                                {% if isAdmin %}
+                                                    <hr>
+                                                    <h6>Description scénariste</h6>
+                                                    {{ merveille.descriptionScenariste|markdown_to_html }}
+                                                {% endif %}
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
 
                     {% if isAdmin %}
                         <div class="list-group-item">

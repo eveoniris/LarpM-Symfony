@@ -33,7 +33,7 @@ class BonusForm extends AbstractType
             ->add('description', TextareaType::class, [
                 'required' => false,
                 'label' => 'Description succinte',
-                'help' => "Sera afficher sur les fiches. Cela peut-être le descriptif de ce que fait la compétence",
+                'help' => 'Sera afficher sur les fiches. Cela peut-être le descriptif de ce que fait la compétence',
             ])
             ->add('type', EnumType::class, [
                 'required' => false,
@@ -51,13 +51,13 @@ class BonusForm extends AbstractType
                     'Aucun' => null,
                     ...BonusApplication::toArray(),
                 ],
-                'label' => "Dommaine d'application du bonus",
+                'label' => "Domaine d'application du bonus",
                 'help' => "Peu usuel, où devrait s'afficher ou être pris en compte le bonus",
             ])
             ->add('periode', EnumType::class, [
                 'required' => false,
                 'class' => BonusPeriode::class,
-                'label' => "Dommaine d'application du bonus",
+                'label' => "Période d'application du bonus",
                 'help' => "Pour un bonus d'origine choisir NATIVE: Le bonus ne sera donné que si le personage est natif du pays du groupe de sa première participation",
             ])
             ->add('competence', EntityType::class, [
@@ -67,7 +67,7 @@ class BonusForm extends AbstractType
                 'autocomplete' => true,
                 'expanded' => false,
                 'class' => Competence::class,
-                'query_builder' => static fn(CompetenceRepository $er) => $er->getQueryBuilderFindAllOrderedByLabel(),
+                'query_builder' => static fn (CompetenceRepository $er) => $er->getQueryBuilderFindAllOrderedByLabel(),
                 'choice_label' => 'label',
                 'placeholder' => 'Aucune',
                 'empty_data' => null,
@@ -76,12 +76,11 @@ class BonusForm extends AbstractType
                 'required' => false,
                 'label' => 'Données fonctionnel (pour un dev)',
                 'help' => "C'est en JSON, via une liste de mot clé et ID. LANGUE, INGREDIENT, GROUPE. Et un mot clé 'condition' pour un tableau de valeur AND. Regarder les bonus existants",
-
             ])->get('json_data')
             ->addModelTransformer(
                 new CallbackTransformer(
-                    static fn($data) => json_encode($data, JSON_THROW_ON_ERROR),
-                    static fn($data) => json_decode($data, true, 512, JSON_THROW_ON_ERROR),
+                    static fn ($data) => json_encode($data, JSON_THROW_ON_ERROR),
+                    static fn ($data) => json_decode($data, true, 512, JSON_THROW_ON_ERROR),
                 ),
             );
     }

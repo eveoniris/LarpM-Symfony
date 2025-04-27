@@ -10,13 +10,13 @@
         <link rel="shortcut icon" href="{{ app.request.basepath }}/favicon.ico" type="image/x-icon">
         <link rel="icon" href="{{ app.request.basepath }}/favicon.ico" type="image/x-icon"/>
 
-    {% block stylesheets %}
+        {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
-    {% endblock %}
+        {% endblock %}
 
     {% block javascripts %}
-            <script src="{{ app.request.basepath }}/worldmap/js/jquery-3.7.1.min.js"></script>
-            {{ encore_entry_script_tags('app') }}
+        <script src="{{ app.request.basepath }}/worldmap/js/jquery-3.7.1.min.js"></script>
+        {{ encore_entry_script_tags('app') }}
     {% endblock %}
     {% endblock head %}
 </head>
@@ -31,7 +31,7 @@
 {% endblock %}
 
 {# corps de la page #}
-<div id="content" class="container-fluid">
+<div id="content" class="container-fluid" data-turbo="false">
     {% for message in app.session.getFlashBag.get('info') %}
         <div class="alert alert-info d-flex align-items-center" role="alert">
             <div class="p-2 flex-grow-1"><i class="fa-solid fa-circle-info"></i> {{ message|raw }}</div>
@@ -74,8 +74,14 @@
                     ...
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="footer-close-mainmodal">Fermer</button>
-                    <form method="POST" id="mainModalFooterForm"><button type="button" class="btn btn-secondary btn-modal-confirm" id="footer-confirm-mainmodal">Confirmer</button></form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="footer-close-mainmodal">
+                        Fermer
+                    </button>
+                    <form method="POST" id="mainModalFooterForm">
+                        <button type="button" class="btn btn-secondary btn-modal-confirm" id="footer-confirm-mainmodal">
+                            Confirmer
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

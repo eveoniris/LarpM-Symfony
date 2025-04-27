@@ -28,10 +28,10 @@ use App\Form\Territoire\TerritoireStatutForm;
 use App\Form\Territoire\TerritoireStrategieForm;
 use App\Repository\TerritoireRepository;
 use App\Security\MultiRolesExpression;
+use App\Service\GeoJson;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -90,7 +90,7 @@ class TerritoireController extends AbstractController
         if (!file_exists($filename)) {
             // get old ?
             $path = $this->fileUploader->getProjectDirectory(
-                ).FolderType::Photos->value.DocumentType::Blason->value.'/';
+            ).FolderType::Photos->value.DocumentType::Blason->value.'/';
             $filename = $path.$territoire->getBlason();
 
             if (!file_exists($filename)) {
@@ -287,7 +287,7 @@ class TerritoireController extends AbstractController
     public function eventAddAction(
         Request $request,
         #[MapEntity] Territoire $territoire,
-    ):RedirectResponse|Response {
+    ): RedirectResponse|Response {
         $event = $request->get('event');
 
         $event ??= new Chronologie();
@@ -391,8 +391,8 @@ class TerritoireController extends AbstractController
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int)($request->get('limit') ?: 50);
-        $page = (int)($request->get('page') ?: 1);
+        $limit = (int) ($request->get('limit') ?: 50);
+        $page = (int) ($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
@@ -517,7 +517,6 @@ class TerritoireController extends AbstractController
             true,
         );
 
-
         $isAdmin = $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::CARTOGRAPHE->value);
 
         return $this->render(
@@ -564,6 +563,47 @@ class TerritoireController extends AbstractController
         $territoires = $entityManager->getRepository('\\'.Territoire::class)->findFiefs();
 
         return $this->render('territoire/quete.twig', ['territoires' => $territoires]);
+    }
+
+    #[Route('/territoire/geoJsonTest', name: 'territoire.geojson.test')]
+    public function testGeoAction(GeoJson $geoJson, TerritoireRepository $territoireRepository)
+    {
+        $mDist = 10.0;
+        $comparator = $geoJson->setMaxDistance($mDist);
+
+        /** @var Territoire $asgard */
+        $asgard = $territoireRepository->findOneBy(['id' => 80]);
+        /** @var Territoire $hyperbore */
+        $hyperbore = $territoireRepository->findOneBy(['id' => 28]);
+
+        $pointsCorrespondants = $comparator->comparePoints(
+            json_decode(
+                $asgard->getGeojson(),
+                true,
+            ),
+            json_decode(
+                $hyperbore->getGeojson(),
+                true,
+            ),
+        );
+
+        echo 'Comparons la proximité Géo de Asgard avec Hyperborée : <br />';
+        foreach ($pointsCorrespondants as $match) {
+            echo sprintf(
+                "<br />Points trouvés : [%f, %f] et [%f, %f] - Distance : %.2f km\n",
+                $match['point1'][0],
+                $match['point1'][1],
+                $match['point2'][0],
+                $match['point2'][1],
+                $match['distance'],
+            ).PHP_EOL;
+        }
+
+        echo '<br /><br />Soit un total de '.count(
+            $pointsCorrespondants,
+        ).' points géographiquement proches de moins de '.$mDist.'km';
+
+        return new Response();
     }
 
     /**
