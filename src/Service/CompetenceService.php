@@ -9,10 +9,10 @@ use App\Entity\ExperienceGain;
 use App\Entity\ExperienceUsage;
 use App\Entity\Level;
 use App\Entity\LogAction;
+use App\Entity\Merveille;
 use App\Entity\Personnage;
 use App\Entity\PersonnageTrigger;
 use App\Entity\RenommeHistory;
-use App\Entity\Territoire;
 use App\Enum\CompetenceFamilyType;
 use App\Service\Competence\AlchimieService;
 use App\Service\Competence\ArtisantService;
@@ -46,6 +46,7 @@ class CompetenceService
         protected readonly EntityManagerInterface $entityManager,
         protected readonly UrlGeneratorInterface $urlGenerator,
         protected readonly Security $security,
+        protected readonly ConditionsService $conditionService,
     ) {
         $this->init();
     }
@@ -126,7 +127,7 @@ class CompetenceService
         if ($cout > 0 && $this->getPersonnage()->getXp() - $cout < 0) {
             $this->addError(
                 "Vous n'avez pas suffisamment de points d'expérience pour acquérir cette compétence.",
-                self::ERR_CODE_XP
+                self::ERR_CODE_XP,
             );
         }
 
@@ -161,9 +162,6 @@ class CompetenceService
 
     public function getBonusCout(): int
     {
-        // dump('ORIG:' . $this->getOrigineBonusCout());
-        //  dump('Merv:' . $this->getMerveilleBonusCout());
-        //  dump('App:' . $this->getApprentissageBonusCout());
         return $this->getOrigineBonusCout()
             + $this->getMerveilleBonusCout()
             + $this->getApprentissageBonusCout();
@@ -237,7 +235,7 @@ class CompetenceService
         $count = 0;
 
         foreach ($this->getPersonnage()?->getLastParticipant()?->getGroupe()?->getTerritoires() ?? [] as $territoire) {
-            /** @var Territoire $territoire */
+            /** @var Merveille $merveille */
             foreach ($territoire->getMerveilles() as $merveille) {
                 if (!$merveille->isActive()) {
                     continue;
@@ -249,10 +247,33 @@ class CompetenceService
                     continue;
                 }
 
+                if (!$this->conditionService->isValidConditions(
+                    $this->getPersonnage(),
+                    $bonus->getJsonData()['condition'] ?? [],
+                    $bonus,
+                )
+                ) {
+                    //    continue;
+                }
+
+                if (!$this->conditionService->isValidConditions(
+                    $this->getCompetence()->getCompetenceFamily(),
+                    $bonus->getJsonData()['condition'] ?? [],
+                    $bonus,
+                )
+                ) {
+                    continue;
+                }
+
                 // Dans ce service, nous ne traitons que les bonus de type XP
                 // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
-                if ($bonus->isXp() && (null === $bonus->getCompetence() || $this->getCompetence()->getId(
-                ) === $bonus->getCompetence()->getId())) {
+                if (
+                    $bonus->isXp()
+                    && (
+                        null === $bonus->getCompetence()
+                        || $this->getCompetence()->getId() === $bonus->getCompetence()->getId()
+                    )
+                ) {
                     $count += $bonus->getValeur();
                 }
             }
@@ -261,11 +282,27 @@ class CompetenceService
         return $count;
     }
 
+    public function getCompetenceFamily(): CompetenceFamily
+    {
+        if (!isset($this->competenceFamily)) {
+            throw new \RuntimeException('Competence family is not set');
+        }
+
+        return $this->competenceFamily;
+    }
+
+    public function setCompetenceFamily(?CompetenceFamily $competenceFamily): self
+    {
+        $this->competenceFamily = $competenceFamily;
+
+        return $this;
+    }
+
     public function getApprentissageBonusCout(): int
     {
         $apprentissage = $this->getPersonnage()->getApprentissage($this->getCompetence());
         if ($apprentissage) {
-            return 1; // TODO ERROR
+            return 1;
         }
 
         return 0;
@@ -299,22 +336,6 @@ class CompetenceService
     public function setClasse(?Classe $classe): self
     {
         $this->classe = $classe;
-
-        return $this;
-    }
-
-    public function getCompetenceFamily(): CompetenceFamily
-    {
-        if (!isset($this->competenceFamily)) {
-            throw new \RuntimeException('Competence family is not set');
-        }
-
-        return $this->competenceFamily;
-    }
-
-    public function setCompetenceFamily(?CompetenceFamily $competenceFamily): self
-    {
-        $this->competenceFamily = $competenceFamily;
 
         return $this;
     }
@@ -366,7 +387,6 @@ class CompetenceService
     final public function giveBonus(): void
     {
         if (!$this->canGetBonus()) {
-
             return;
         }
 
@@ -427,6 +447,7 @@ class CompetenceService
             $this->entityManager,
             $this->urlGenerator,
             $this->security,
+            $this->conditionService,
         );
     }
 

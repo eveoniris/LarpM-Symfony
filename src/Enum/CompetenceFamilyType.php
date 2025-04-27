@@ -53,13 +53,13 @@ enum CompetenceFamilyType: string
     public static function tryFromOlder(string $value): ?CompetenceFamilyType
     {
         return match ($value) {
-            'AgilitÃ©' => self::AGILITY,
+            'AgilitÃ©', 'Agilité' => self::AGILITY,
             'Alchimie' => self::ALCHEMY,
             'Armes d\'hast' => self::POLEARMS,
-            'Armes Ã  1 main', 'Armes à 1 main' => self::ONE_HANDED_WEAPON,
-            'Armes Ã  2 mains', 'Armes à 2 mains' => self::TWO_HANDED_WEAPON,
-            'Armes Ã  distance', 'Amres à distance' => self::RANGED_WEAPONS,
-            'Armure' => self::ARMOR,
+            'Armes Ã  1 main', 'Armes à 1 main', "Armes Ã\u{A0} 1 main" => self::ONE_HANDED_WEAPON,
+            'Armes Ã  2 mains', 'Armes à 2 mains', "Armes Ã\u{A0} 2 mains" => self::TWO_HANDED_WEAPON,
+            'Armes Ã  distance', 'Armes à distance', "Armes Ã\u{A0} à distance" => self::RANGED_WEAPONS,
+            'Armure', 'Armurerie' => self::ARMOR,
             'Artisanat' => self::CRAFTSMANSHIP,
             'Arts' => self::ARTS,
             'Attaque sournoise' => self::SNEAK_ATTACK,
@@ -142,7 +142,7 @@ enum CompetenceFamilyType: string
             self::POLEARMS->value => 'Armes d\'hast',
             self::ONE_HANDED_WEAPON->value => 'Armes à 1 main',
             self::TWO_HANDED_WEAPON->value => 'Armes à 2 mains',
-            self::RANGED_WEAPONS->value => 'Amres à distance',
+            self::RANGED_WEAPONS->value => 'Armes à distance',
             self::ARMOR->value => 'Armure',
             self::CRAFTSMANSHIP->value => 'Artisanat',
             self::ARTS->value => 'Arts',

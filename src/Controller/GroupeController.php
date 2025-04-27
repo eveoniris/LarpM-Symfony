@@ -59,7 +59,7 @@ class GroupeController extends AbstractController
             $request,
             new Groupe(),
 
-            GroupeForm::class
+            GroupeForm::class,
         );
     }
 
@@ -90,7 +90,7 @@ class GroupeController extends AbstractController
                 'title_add' => $this->translator->trans('Ajouter un groupe'),
                 'title_update' => $this->translator->trans('Modifier un groupe'),
             ],
-            entityCallback: $entityCallback
+            entityCallback: $entityCallback,
         );
     }
 
@@ -489,7 +489,7 @@ class GroupeController extends AbstractController
                     'content' => $groupe->getDescription(),
                 ],
                 ['name' => 'Supprimer un groupe'],
-            ]
+            ],
         );
     }
 
@@ -532,7 +532,7 @@ class GroupeController extends AbstractController
     ): RedirectResponse|Response {
         $this->checkHasAccess(
             [Role::ORGA, Role::SCENARISTE],
-            fn () => $this->personnageService->isUserIsGroupeResponsable($groupe)
+            fn() => $this->personnageService->isUserIsGroupeResponsable($groupe),
         );
 
         $form = $this->createForm(GroupeDescriptionForm::class, $groupe)
@@ -587,7 +587,44 @@ class GroupeController extends AbstractController
                 'gn' => $gn,
                 'groupeGn' => $groupeGn,
                 'tab' => $request->get('tab', 'detail'),
-            ]
+            ],
+        );
+    }
+
+    protected function hasAccess(Groupe $groupe, ?Gn $gn = null, ?GroupeGn $groupeGn = null, array $roles = []): void
+    {
+        if ($isResponsable = $this->groupeService->isUserIsGroupeResponsable($groupe)) {
+            $isMembre = true;
+        } else {
+            $isMembre = $this->groupeService->isUserIsGroupeMember($groupe);
+        }
+
+        $groupeGn ??= $groupe->getGroupeGns()->last();
+        if (!$groupeGn && $gn) {
+            foreach ($groupe->getGroupeGns() as $grpGn) {
+                if ($grpGn?->getGn()?->getId() === $gn->getId()) {
+                    $groupeGn = $grpGn;
+                }
+            }
+        }
+
+        $hasTitle = false;
+        if ($groupeGn) {
+            $hasTitle = $groupeGn->hasTitle($this->getUser());
+        }
+
+        // TODO check if membre can read secret
+
+        $this->setCan(self::IS_ADMIN, $this->isGranted(Role::WARGAME->value));
+        $this->setCan(self::CAN_MANAGE, $isResponsable);
+        $this->setCan(self::CAN_READ_PRIVATE, $isResponsable || $isMembre);
+        $this->setCan(self::CAN_READ_SECRET, $isResponsable);
+        $this->setCan(self::CAN_WRITE, $isResponsable || $hasTitle);
+        $this->setCan(self::CAN_READ, $isMembre);
+
+        $this->checkHasAccess(
+            $roles,
+            fn() => $this->can(self::CAN_READ),
         );
     }
 
@@ -685,7 +722,7 @@ class GroupeController extends AbstractController
                 'code',
                 'creation_date',
             ],
-            ','
+            ',',
         );
 
         foreach ($groupes as $groupe) {
@@ -770,7 +807,7 @@ class GroupeController extends AbstractController
 
         $this->addFlash(
             'success',
-            'Le groupe est verrouillé. Cela bloque la création et la modification des personnages membres de ce groupe'
+            'Le groupe est verrouillé. Cela bloque la création et la modification des personnages membres de ce groupe',
         );
 
         return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
@@ -827,6 +864,10 @@ class GroupeController extends AbstractController
     }
 
     /**
+     * Imprimmer toutes les enveloppes de tous les groupes.
+     */
+
+    /**
      * Modification du nombre de place disponibles dans un groupe.
      */
     #[IsGranted('ROLE_SCENARISTE')]
@@ -857,10 +898,6 @@ class GroupeController extends AbstractController
             'groupe' => $groupe,
         ]);
     }
-
-    /**
-     * Imprimmer toutes les enveloppes de tous les groupes.
-     */
 
     /** @deprecated:  see GnController* */
     #[IsGranted('ROLE_SCENARISTE')]
@@ -986,7 +1023,7 @@ class GroupeController extends AbstractController
                 'groupe' => $groupe,
                 'participants' => $participants,
                 'quetes' => $quetes,
-            ]
+            ],
         );
     }
 
@@ -1080,21 +1117,21 @@ class GroupeController extends AbstractController
                 $line = [];
                 $line[] = mb_convert_encoding(
                     '#'.$quete['groupe']->getNumero().' '.$quete['groupe']->getNom(),
-                    'ISO-8859-1'
+                    'ISO-8859-1',
                 );
                 $line[] = $quete['groupe']->getTerritoire() ? mb_convert_encoding(
-                    (string) $quete['groupe']->getTerritoire()->getNom(),
-                    'ISO-8859-1'
+                    (string)$quete['groupe']->getTerritoire()->getNom(),
+                    'ISO-8859-1',
                 ) : '';
 
                 foreach ($quete['quete']['needs'] as $ressources) {
-                    $line[] = mb_convert_encoding((string) $ressources->getLabel(), 'ISO-8859-1');
+                    $line[] = mb_convert_encoding((string)$ressources->getLabel(), 'ISO-8859-1');
                 }
 
                 $line[] = '';
                 $line[] = '';
                 foreach ($quete['quete']['recompenses'] as $recompense) {
-                    $line[] = mb_convert_encoding((string) $recompense, 'ISO-8859-1');
+                    $line[] = mb_convert_encoding((string)$recompense, 'ISO-8859-1');
                 }
 
                 $line[] = '';
@@ -1234,7 +1271,7 @@ class GroupeController extends AbstractController
         foreach ($participants as $participant) {
             $formBuilder->add($participant->getId(), 'choice', [
                 'label' => $participant->getUser()->getEtatCivil()->getNom().' '.$participant->getUser()->getEtatCivil(
-                )->getPrenom().' '.$participant->getUser()->getEmail(),
+                    )->getPrenom().' '.$participant->getUser()->getEmail(),
                 'choices' => $availableTaverns,
                 'data' => $participant->getTavernId(),
                 'multiple' => false,
@@ -1402,6 +1439,11 @@ class GroupeController extends AbstractController
     }
 
     /**
+     * Modification d'un groupe.
+     */
+    // TODO
+
+    /**
      * Retirer un territoire du controle du groupe.
      */
     #[IsGranted('ROLE_SCENARISTE')]
@@ -1435,10 +1477,6 @@ class GroupeController extends AbstractController
         ]);
     }
 
-    /**
-     * Modification d'un groupe.
-     */
-    // TODO
     /**
      * devérouillage d'un groupe.
      */
@@ -1587,6 +1625,10 @@ class GroupeController extends AbstractController
     }
 
     /**
+     * Gestion des membres du groupe.
+     */
+    // TODO (no route ? Deprecated ?)
+    /**
      * Mise à jour du background d'un groupe.
      */
     #[IsGranted('ROLE_SCENARISTE')]
@@ -1619,51 +1661,11 @@ class GroupeController extends AbstractController
         ]);
     }
 
-    /**
-     * Gestion des membres du groupe.
-     */
-    // TODO (no route ? Deprecated ?)
+
     public function usersAction(Request $request, EntityManagerInterface $entityManager, Groupe $groupe): Response
     {
         return $this->render('groupe/users.twig', [
             'groupe' => $groupe,
         ]);
-    }
-
-    protected function hasAccess(Groupe $groupe, ?Gn $gn = null, ?GroupeGn $groupeGn = null, array $roles = []): void
-    {
-        if ($isResponsable = $this->personnageService->isUserIsGroupeResponsable($groupe)) {
-            $isMembre = true;
-        } else {
-            $isMembre = $this->personnageService->isUserIsGroupeMember($groupe);
-        }
-
-        $groupeGn ??= $groupe->getGroupeGns()->last();
-        if (!$groupeGn && $gn) {
-            foreach ($groupe->getGroupeGns() as $grpGn) {
-                if ($grpGn?->getGn()?->getId() === $gn->getId()) {
-                    $groupeGn = $grpGn;
-                }
-            }
-        }
-
-        $hasTitle = false;
-        if ($groupeGn) {
-            $hasTitle = $groupeGn->hasTitle($this->getUser());
-        }
-
-        // TODO check if membre can read secret
-
-        $this->setCan(self::IS_ADMIN, $this->isGranted(Role::WARGAME->value));
-        $this->setCan(self::CAN_MANAGE, $isResponsable);
-        $this->setCan(self::CAN_READ_PRIVATE, $isResponsable || $isMembre);
-        $this->setCan(self::CAN_READ_SECRET, $isResponsable);
-        $this->setCan(self::CAN_WRITE, $isResponsable || $hasTitle);
-        $this->setCan(self::CAN_READ, $isMembre);
-
-        $this->checkHasAccess(
-            $roles,
-            fn () => $this->can(self::CAN_READ)
-        );
     }
 }

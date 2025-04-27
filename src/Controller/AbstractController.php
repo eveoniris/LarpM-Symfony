@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use _PHPStan_c875e8309\Nette\Utils\DateTime;
 use App\Entity\Document;
 use App\Entity\LogAction;
 use App\Entity\User;
@@ -11,6 +10,7 @@ use App\Enum\Role;
 use App\Form\DeleteForm;
 use App\Repository\BaseRepository;
 use App\Service\FileUploader;
+use App\Service\GroupeService;
 use App\Service\MailService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
@@ -60,9 +60,9 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected MailService $mailer,
         protected LoggerInterface $logger,
         protected PersonnageService $personnageService,
+        protected GroupeService $groupeService,
         // Cache $cache, // TODO : later
-    )
-    {
+    ) {
     }
 
     public function can($key): bool
@@ -198,7 +198,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 $currentParameters,
             );
 
-            if (false !== (bool)$request->get('playerView')) {
+            if (false !== (bool) $request->get('playerView')) {
                 return parent::render('admin/'.$view, $parameters, $response);
             }
         }
@@ -223,8 +223,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string $defOrderDir = 'ASC',
         ?string $alias = null,
         ?array $allowedFields = null, // TODO: check SF security Form on Self Entity's attributes
-    ): array
-    {
+    ): array {
         $request = $this->requestStack?->getCurrentRequest();
         if (!$request) {
             return [];
@@ -279,14 +278,12 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $routes['root'] = $root; // ensure if from other
         } catch (\ErrorException $e) {
             $this->logger->error($e);
-            throw new \RuntimeException(
-                <<<'EOF'
+            throw new \RuntimeException(<<<'EOF'
                 Unable to get the root route.
                 If you do not define a main route as class attributes (ie: #[Route('/groupe', name: 'groupe.')]), 
                 You may need to provide the argument $routes['root'] from the calling methods.
                 Sample: ['root' => 'groupe.'] from GroupeController::handleCreateOrUpdate()
-                EOF,
-            );
+                EOF, );
         }
 
         $routes['add'] ??= $root.'add';
@@ -416,7 +413,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         if (!is_array($entity) && method_exists($entity, 'toLog')) {
             $entityValue = $entity->toLog();
         } else {
-            $entityValue = (array)$entity;
+            $entityValue = (array) $entity;
             // Clean a bit
             foreach ($entityValue as $key => $value) {
                 $cleanKey = str_replace([is_array($entity) ? '_' : $entity::class, ' ', '*'], ['', '', ''], $key);

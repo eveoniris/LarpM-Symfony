@@ -405,11 +405,9 @@ class UserController extends AbstractController
      */
     #[Route('/user/fedegn', name: 'user.fedegn')]
     public function fedegnAction(
-        EntityManagerInterface $entityManager,
-        Request $request,
         FedegnManager $fedegnManager,
     ): Response {
-        $etatCivil = $this->getUser()->getEtatCivil();
+        $etatCivil = $this->getUser()?->getEtatCivil();
 
         // $statutEtatCivil = $fedegnManager->test($etatCivil);
         return $this->render('user/fedegn.twig', [

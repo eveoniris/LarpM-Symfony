@@ -285,7 +285,7 @@
                      {% for bonus in personnageService.getAllBonus(personnage) %}
                          <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              <div class="list-group-item-text">
-                                 <a href="{{ path('bonus.detail', {'bonus': bonus.id }) }}">{{ bonus.titre }}</a><br :>
+                                 <a href="{{ path('bonus.detail', {'bonus': bonus.id }) }}">{{ bonus.titre }}</a><br/>
                                  {{ bonus.description }}
                              </div>
                              {# Todo see how to display "type: origin/groupe/merveille/... #}

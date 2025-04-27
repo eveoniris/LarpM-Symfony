@@ -9,7 +9,6 @@ use App\Repository\PersonnageBonusRepository;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,7 +43,7 @@ class BonusController extends AbstractController
      * Ajout d'un bonus.
      */
     #[Route('/add', name: 'add')]
-    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    public function addAction(Request $request): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate(
             $request,
@@ -126,7 +125,7 @@ class BonusController extends AbstractController
         $routeParams = ['bonus' => $bonus->getId()];
         $twigFilePath = 'bonus/personnages.twig';
         $columnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser'];
-        $personnages = new ArrayCollection();//todo $bonus->getPersonnages();
+        $personnages = new ArrayCollection(); // todo $bonus->getPersonnages();
         $additionalViewParams = [
             'bonus' => $bonus,
         ];
