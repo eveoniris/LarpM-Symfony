@@ -148,10 +148,6 @@ class RuleController extends AbstractController
         ]);
     }
 
-    /**
-     * Détail d'une règle.
-     */
-    #[IsGranted(Role::REGLE->value)]
     #[Route('/rule/{rule}/detail', name: 'rule.detail', requirements: ['rule' => Requirement::DIGITS])]
     #[Route('/rule/{rule}', requirements: ['rule' => Requirement::DIGITS])]
     public function detailAction(#[MapEntity] Rule $rule): Response
@@ -167,8 +163,7 @@ class RuleController extends AbstractController
     #[Route('/rule/{rule}/document', name: 'rule.document', requirements: ['rule' => Requirement::DIGITS])]
     public function documentAction(#[MapEntity] Rule $rule, Request $request): Response
     {
-        // TODO access ?
-        return $this->sendDocument($rule, null, !(bool)$request->get('stream', false));
+        return $this->sendDocument($rule, null, !(bool) $request->get('stream', false));
     }
 
     /**

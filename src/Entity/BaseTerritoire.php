@@ -247,209 +247,174 @@ abstract class BaseTerritoire
     }
 
     /**
-     * Set the value of id.
+     * Add Chronologie entity to collection (one to many).
      */
-    public function setId(int $id): static
+    public function addChronologie(Chronologie $chronologie): static
     {
-        $this->id = $id;
+        $this->chronologies[] = $chronologie;
 
         return $this;
     }
 
     /**
-     * Get the value of id.
+     * Add Construction entity to collection.
      */
-    public function getId(): int
+    public function addConstruction(Construction $construction): static
     {
-        return $this->id;
-    }
-
-    /**
-     * Set the value of nom.
-     */
-    public function setNom(string $nom): static
-    {
-        $this->nom = $nom;
+        $construction->addTerritoire($this);
+        $this->constructions[] = $construction;
 
         return $this;
     }
 
     /**
-     * Get the value of nom.
+     * Add Territoire entity to collection (one to many).
      */
-    public function getNom(): string
+    public function addTerritoire(Territoire $territoire): static
     {
-        return $this->nom ?? '';
-    }
-
-    /**
-     * Set the value of description.
-     */
-    public function setDescription(string $description): static
-    {
-        $this->description = $description;
+        $this->territoires[] = $territoire;
 
         return $this;
     }
 
     /**
-     * Get the value of description.
+     * Add Groupe entity to collection (one to many).
      */
-    public function getDescription(): string
+    public function addGroupe(Groupe $groupe): static
     {
-        return $this->description ?? '';
-    }
-
-    /**
-     * Set the value of capitale.
-     */
-    public function setCapitale(string $capitale): static
-    {
-        $this->capitale = $capitale;
+        $this->groupes[] = $groupe;
 
         return $this;
     }
 
     /**
-     * Get the value of capitale.
+     * Add Ingredient entity to collection.
      */
-    public function getCapitale(): string
+    public function addIngredient(Ingredient $ingredient): static
     {
-        return $this->capitale ?? '';
-    }
-
-    /**
-     * Set the value of politique.
-     */
-    public function setPolitique(?string $politique): static
-    {
-        $this->politique = $politique;
+        $ingredient->addTerritoire($this);
+        $this->ingredients[] = $ingredient;
 
         return $this;
     }
 
     /**
-     * Get the value of politique.
+     * Add Langue entity to collection.
      */
-    public function getPolitique(): string
+    public function addLangue(Langue $langue): static
     {
-        return $this->politique ?? '';
-    }
-
-    /**
-     * Set the value of dirigeant.
-     */
-    public function setDirigeant(?string $dirigeant): static
-    {
-        $this->dirigeant = $dirigeant;
+        $langue->addTerritoireSecondaire($this);
+        $this->langues[] = $langue;
 
         return $this;
     }
 
     /**
-     * Get the value of dirigeant.
+     * Add Loi entity to collection.
      */
-    public function getDirigeant(): string
+    public function addLoi(Loi $loi): static
     {
-        return $this->dirigeant ?? '';
+        $loi->addTerritoire($this);
+        $this->lois[] = $loi;
+
+        return $this;
     }
 
-    /**
-     * Set the value of population.
-     */
-    public function setPopulation(?string $population)
+    public function addMerveille(Merveille $merveille): static
     {
-        $this->population = $population;
+        if (!$this->merveilles->contains($merveille)) {
+            $this->merveilles->add($merveille);
+            $merveille->setTerritoire($this);
+        }
+
+        return $this;
+    }
+
+    public function addOrigineBonus(OrigineBonus $origineBonus): static
+    {
+        if (!$this->originesBonus->contains($origineBonus)) {
+            $this->originesBonus->add($origineBonus);
+            $origineBonus->setTerritoire($this);
+        }
 
         return $this;
     }
 
     /**
-     * Get the value of population.
+     * Add Personnage entity to collection (one to many).
      */
-    public function getPopulation(): string
+    public function addPersonnage(Personnage $personnage): static
     {
-        return $this->population ?? '';
-    }
-
-    /**
-     * Set the value of symbole.
-     */
-    public function setSymbole(?string $symbole): static
-    {
-        $this->symbole = $symbole;
+        $this->personnages[] = $personnage;
 
         return $this;
     }
 
     /**
-     * Get the value of symbole.
+     * Ajoute une religion dans la collection de religion.
      */
-    public function getSymbole(): string
+    public function addReligion(Religion $religion): static
     {
-        return $this->symbole ?? '';
-    }
-
-    /**
-     * Set the value of tech_level.
-     */
-    public function setTechLevel(?string $tech_level): static
-    {
-        $this->tech_level = $tech_level;
+        $religion->addTerritoireSecondaire($this);
+        $this->religions[] = $religion;
 
         return $this;
     }
 
     /**
-     * Get the value of tech_level.
+     * Add Rumeur entity to collection (one to many).
      */
-    public function getTechLevel(): string
+    public function addRumeur(Rumeur $rumeur): static
     {
-        return $this->tech_level ?? '';
-    }
-
-    /**
-     * Set the value of type_racial.
-     */
-    public function setTypeRacial(?string $type_racial): static
-    {
-        $this->type_racial = $type_racial;
+        $this->rumeurs[] = $rumeur;
 
         return $this;
     }
 
     /**
-     * Get the value of type_racial.
+     * Add Territoire entity to collection (many to many).
      */
-    public function getTypeRacial(): string
+    public function addTerritoireCible(Territoire $territoire): static
     {
-        return $this->type_racial ?? '';
-    }
-
-    /**
-     * Set the value of inspiration.
-     */
-    public function setInspiration(?string $inspiration): static
-    {
-        $this->inspiration = $inspiration;
+        $this->territoireCibles[] = $territoire;
 
         return $this;
     }
 
     /**
-     * Get the value of inspiration.
+     * Add Territoire entity to collection (many to many).
      */
-    public function getInspiration(): string
+    public function addTerritoireStart(Territoire $territoire): static
     {
-        return $this->inspiration ?? '';
+        $this->territoireStarts[] = $territoire;
+
+        return $this;
     }
 
     /**
-     * Set the value of armes_predilection.
+     * Add TitreTerritoire entity to collection (one to many).
      */
-    public function setArmesPredilection(?string $armes_predilection): static
+    public function addTitreTerritoire(TitreTerritoire $titreTerritoire): static
     {
-        $this->armes_predilection = $armes_predilection;
+        $this->titreTerritoires[] = $titreTerritoire;
+
+        return $this;
+    }
+
+    /**
+     * Get Appelation entity (many to one).
+     */
+    public function getAppelation(): Appelation
+    {
+        return $this->appelation;
+    }
+
+    /**
+     * Set Appelation entity (many to one).
+     */
+    public function setAppelation(?Appelation $appelation = null): static
+    {
+        $this->appelation = $appelation;
 
         return $this;
     }
@@ -463,93 +428,65 @@ abstract class BaseTerritoire
     }
 
     /**
-     * Set the value of vetements.
+     * Set the value of armes_predilection.
      */
-    public function setVetements(?string $vetements): static
+    public function setArmesPredilection(?string $armes_predilection): static
     {
-        $this->vetements = $vetements;
+        $this->armes_predilection = $armes_predilection;
 
         return $this;
     }
 
     /**
-     * Get the value of vetements.
+     * Get the value of blason.
      */
-    public function getVetements(): string
+    public function getBlason(): string
     {
-        return $this->vetements ?? '';
+        return $this->blason ?? '';
     }
 
     /**
-     * Set the value of noms_masculin.
+     * Set the value of blason.
      */
-    public function setNomsMasculin(?string $noms_masculin): static
+    public function setBlason(string $blason): static
     {
-        $this->noms_masculin = $noms_masculin;
+        $this->blason = $blason;
 
         return $this;
     }
 
     /**
-     * Get the value of noms_masculin.
+     * Get the value of capitale.
      */
-    public function getNomsMasculin(): string
+    public function getCapitale(): string
     {
-        return $this->noms_masculin ?? '';
+        return $this->capitale ?? '';
     }
 
     /**
-     * Set the value of noms_feminin.
+     * Set the value of capitale.
      */
-    public function setNomsFeminin(?string $noms_feminin): static
+    public function setCapitale(?string $capitale): static
     {
-        $this->noms_feminin = $noms_feminin;
+        $this->capitale = $capitale;
 
         return $this;
     }
 
     /**
-     * Get the value of noms_feminin.
+     * Get Chronologie entity collection (one to many).
      */
-    public function getNomsFeminin(): string
+    public function getChronologies(): Collection
     {
-        return $this->noms_feminin ?? '';
+        return $this->chronologies;
     }
 
     /**
-     * Set the value of frontieres.
+     * Get the value of color.
      */
-    public function setFrontieres(?string $frontieres): static
+    public function getColor(): string
     {
-        $this->frontieres = $frontieres;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of frontieres.
-     */
-    public function getFrontieres(): string
-    {
-        return $this->frontieres ?? '';
-    }
-
-    /**
-     * Set the value of geojson.
-     */
-    public function setGeojson(?string $geojson): static
-    {
-        $this->geojson = $geojson;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of geojson.
-     */
-    public function getGeojson(): ?string
-    {
-        return $this->geojson;
+        return $this->color ?? '';
     }
 
     /**
@@ -563,31 +500,388 @@ abstract class BaseTerritoire
     }
 
     /**
-     * Get the value of color.
+     * Get Construction entity collection.
      */
-    public function getColor(): string
+    public function getConstructions(): Collection
     {
-        return $this->color ?? '';
+        return $this->constructions;
     }
 
     /**
-     * Set the value of tresor.
-     *
-     * @param int $tresor
+     * Get Culture entity (many to one).
      */
-    public function setTresor($tresor): static
+    public function getCulture(): ?Culture
     {
-        $this->tresor = $tresor;
+        return $this->culture;
+    }
+
+    /**
+     * Set Culture entity (many to one).
+     */
+    public function setCulture(?Culture $culture = null): static
+    {
+        $this->culture = $culture;
 
         return $this;
     }
 
     /**
-     * Get the value of tresor.
+     * Get the value of description.
      */
-    public function getTresor(): ?int
+    public function getDescription(): string
     {
-        return $this->tresor;
+        return $this->description ?? '';
+    }
+
+    /**
+     * Set the value of description.
+     */
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of description_secrete.
+     */
+    public function getDescriptionSecrete(): string
+    {
+        return $this->description_secrete ?? '';
+    }
+
+    /**
+     * Set the value of description_secrete.
+     */
+    public function setDescriptionSecrete(?string $description_secrete): static
+    {
+        $this->description_secrete = $description_secrete;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of dirigeant.
+     */
+    public function getDirigeant(): string
+    {
+        return $this->dirigeant ?? '';
+    }
+
+    /**
+     * Set the value of dirigeant.
+     */
+    public function setDirigeant(?string $dirigeant): static
+    {
+        $this->dirigeant = $dirigeant;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of frontieres.
+     */
+    public function getFrontieres(): string
+    {
+        return $this->frontieres ?? '';
+    }
+
+    /**
+     * Set the value of frontieres.
+     */
+    public function setFrontieres(?string $frontieres): static
+    {
+        $this->frontieres = $frontieres;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of geojson.
+     */
+    public function getGeojson(): ?string
+    {
+        return $this->geojson;
+    }
+
+    /**
+     * Set the value of geojson.
+     */
+    public function setGeojson(?string $geojson): static
+    {
+        $this->geojson = $geojson;
+
+        return $this;
+    }
+
+    /**
+     * Get Groupe entity (many to one).
+     */
+    public function getGroupe(): ?Groupe
+    {
+        return $this->groupe;
+    }
+
+    /**
+     * Set Groupe entity (many to one).
+     */
+    public function setGroupe(?Groupe $groupe = null): static
+    {
+        $this->groupe = $groupe;
+
+        return $this;
+    }
+
+    /**
+     * Get Groupe entity collection (one to many).
+     */
+    public function getGroupes(): ?Collection
+    {
+        return $this->groupes;
+    }
+
+    /**
+     * Get the value of id.
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set the value of id.
+     */
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get Ingredient entity collection.
+     */
+    public function getIngredients(): Collection
+    {
+        return $this->ingredients;
+    }
+
+    /**
+     * Get the value of inspiration.
+     */
+    public function getInspiration(): string
+    {
+        return $this->inspiration ?? '';
+    }
+
+    /**
+     * Set the value of inspiration.
+     */
+    public function setInspiration(?string $inspiration): static
+    {
+        $this->inspiration = $inspiration;
+
+        return $this;
+    }
+
+    /**
+     * Get Langue entity (many to one).
+     */
+    public function getLangue(): ?Langue
+    {
+        return $this->langue;
+    }
+
+    /**
+     * Set Langue entity (many to one).
+     */
+    public function setLangue(?Langue $langue = null): static
+    {
+        $this->langue = $langue;
+
+        return $this;
+    }
+
+    /**
+     * Get Langue entity collection.
+     */
+    public function getLangues(): Collection
+    {
+        return $this->langues;
+    }
+
+    /**
+     * Get Loi entity collection.
+     */
+    public function getLois(): Collection
+    {
+        return $this->lois;
+    }
+
+    /**
+     * @return Collection<int, Merveille>
+     */
+    public function getMerveilles(): Collection
+    {
+        return $this->merveilles;
+    }
+
+    /**
+     * Get the value of nom.
+     */
+    public function getNom(): string
+    {
+        return $this->nom ?? '';
+    }
+
+    /**
+     * Set the value of nom.
+     */
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of noms_feminin.
+     */
+    public function getNomsFeminin(): string
+    {
+        return $this->noms_feminin ?? '';
+    }
+
+    /**
+     * Set the value of noms_feminin.
+     */
+    public function setNomsFeminin(?string $noms_feminin): static
+    {
+        $this->noms_feminin = $noms_feminin;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of noms_masculin.
+     */
+    public function getNomsMasculin(): string
+    {
+        return $this->noms_masculin ?? '';
+    }
+
+    /**
+     * Set the value of noms_masculin.
+     */
+    public function setNomsMasculin(?string $noms_masculin): static
+    {
+        $this->noms_masculin = $noms_masculin;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of ordre_social.
+     */
+    public function getOrdreSocial(): int
+    {
+        return $this->ordre_social;
+    }
+
+    /**
+     * Set the value of ordre_social.
+     *
+     * @param int $ordre_social
+     */
+    public function setOrdreSocial(string $ordre_social): static
+    {
+        $this->ordre_social = $ordre_social;
+
+        return $this;
+    }
+
+    public function getOriginesBonus(): ?Collection
+    {
+        return $this->originesBonus;
+    }
+
+    /**
+     * Get Personnage entity collection (one to many).
+     */
+    public function getPersonnages(): Collection
+    {
+        return $this->personnages;
+    }
+
+    /**
+     * Get the value of politique.
+     */
+    public function getPolitique(): string
+    {
+        return $this->politique ?? '';
+    }
+
+    /**
+     * Set the value of politique.
+     */
+    public function setPolitique(?string $politique): static
+    {
+        $this->politique = $politique;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of population.
+     */
+    public function getPopulation(): string
+    {
+        return $this->population ?? '';
+    }
+
+    /**
+     * Set the value of population.
+     */
+    public function setPopulation(?string $population)
+    {
+        $this->population = $population;
+
+        return $this;
+    }
+
+    /**
+     * Get Religion entity (many to one).
+     */
+    public function getReligion(): ?Religion
+    {
+        return $this->religion;
+    }
+
+    /**
+     * Set Religion entity (many to one).
+     */
+    public function setReligion(?Religion $religion = null): static
+    {
+        $this->religion = $religion;
+
+        return $this;
+    }
+
+    /**
+     * Fourni la collection de religions.
+     */
+    public function getReligions(): Collection
+    {
+        return $this->religions;
+    }
+
+    /**
+     * Get the value of resistance.
+     */
+    public function getResistance(): ?int
+    {
+        return $this->resistance;
     }
 
     /**
@@ -603,47 +897,19 @@ abstract class BaseTerritoire
     }
 
     /**
-     * Get the value of resistance.
+     * Get Rumeur entity collection (one to many).
      */
-    public function getResistance(): ?int
+    public function getRumeurs(): Collection
     {
-        return $this->resistance;
+        return $this->rumeurs;
     }
 
     /**
-     * Set the value of blason.
+     * Get the value of statut.
      */
-    public function setBlason(string $blason): static
+    public function getStatut(): string
     {
-        $this->blason = $blason;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of blason.
-     */
-    public function getBlason(): string
-    {
-        return $this->blason ?? '';
-    }
-
-    /**
-     * Set the value of description_secrete.
-     */
-    public function setDescriptionSecrete(?string $description_secrete): static
-    {
-        $this->description_secrete = $description_secrete;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of description_secrete.
-     */
-    public function getDescriptionSecrete(): string
-    {
-        return $this->description_secrete ?? '';
+        return $this->statut ?? '';
     }
 
     /**
@@ -657,77 +923,37 @@ abstract class BaseTerritoire
     }
 
     /**
-     * Get the value of statut.
+     * Get the value of symbole.
      */
-    public function getStatut(): string
+    public function getSymbole(): string
     {
-        return $this->statut ?? '';
+        return $this->symbole ?? '';
     }
 
     /**
-     * Set the value of ordre_social.
-     *
-     * @param int $ordre_social
+     * Set the value of symbole.
      */
-    public function setOrdreSocial(string $ordre_social): static
+    public function setSymbole(?string $symbole): static
     {
-        $this->ordre_social = $ordre_social;
+        $this->symbole = $symbole;
 
         return $this;
     }
 
     /**
-     * Get the value of ordre_social.
+     * Get the value of tech_level.
      */
-    public function getOrdreSocial(): int
+    public function getTechLevel(): string
     {
-        return $this->ordre_social;
+        return $this->tech_level ?? '';
     }
 
     /**
-     * Add Chronologie entity to collection (one to many).
+     * Set the value of tech_level.
      */
-    public function addChronologie(Chronologie $chronologie): static
+    public function setTechLevel(?string $tech_level): static
     {
-        $this->chronologies[] = $chronologie;
-
-        return $this;
-    }
-
-    /**
-     * Remove Chronologie entity from collection (one to many).
-     */
-    public function removeChronologie(Chronologie $chronologie): static
-    {
-        $this->chronologies->removeElement($chronologie);
-
-        return $this;
-    }
-
-    /**
-     * Get Chronologie entity collection (one to many).
-     */
-    public function getChronologies(): Collection
-    {
-        return $this->chronologies;
-    }
-
-    /**
-     * Add Territoire entity to collection (many to many).
-     */
-    public function addTerritoireCible(Territoire $territoire): static
-    {
-        $this->territoireCibles[] = $territoire;
-
-        return $this;
-    }
-
-    /**
-     * Remove Territoire entity from collection (many to many).
-     */
-    public function removeTerritoireCible(Territoire $territoire): static
-    {
-        $this->territoireCibles->removeElement($territoire);
+        $this->tech_level = $tech_level;
 
         return $this;
     }
@@ -741,189 +967,11 @@ abstract class BaseTerritoire
     }
 
     /**
-     * Add Territoire entity to collection (many to many).
+     * Get TerritoireGuerre entity (one to one).
      */
-    public function addTerritoireStart(Territoire $territoire): static
+    public function getTerritoireGuerre(): TerritoireGuerre
     {
-        $this->territoireStarts[] = $territoire;
-
-        return $this;
-    }
-
-    /**
-     * Remove Territoire entity from collection (many to many).
-     */
-    public function removeTerritoireStart(Territoire $territoire): static
-    {
-        $this->territoireStarts->removeElement($territoire);
-
-        return $this;
-    }
-
-    /**
-     * Get TerritoireStarts entity collection.
-     */
-    public function getTerritoireStarts(): Collection
-    {
-        return $this->territoireStarts;
-    }
-
-    /**
-     * Add Groupe entity to collection (one to many).
-     */
-    public function addGroupe(Groupe $groupe): static
-    {
-        $this->groupes[] = $groupe;
-
-        return $this;
-    }
-
-    /**
-     * Remove Groupe entity from collection (one to many).
-     */
-    public function removeGroupe(Groupe $groupe): static
-    {
-        $this->groupes->removeElement($groupe);
-
-        return $this;
-    }
-
-    /**
-     * Get Groupe entity collection (one to many).
-     */
-    public function getGroupes(): ?Collection
-    {
-        return $this->groupes;
-    }
-
-    /**
-     * Add Personnage entity to collection (one to many).
-     */
-    public function addPersonnage(Personnage $personnage): static
-    {
-        $this->personnages[] = $personnage;
-
-        return $this;
-    }
-
-    /**
-     * Remove Personnage entity from collection (one to many).
-     */
-    public function removePersonnage(Personnage $personnage): static
-    {
-        $this->personnages->removeElement($personnage);
-
-        return $this;
-    }
-
-    /**
-     * Get Personnage entity collection (one to many).
-     */
-    public function getPersonnages(): Collection
-    {
-        return $this->personnages;
-    }
-
-    /**
-     * Add Rumeur entity to collection (one to many).
-     */
-    public function addRumeur(Rumeur $rumeur): static
-    {
-        $this->rumeurs[] = $rumeur;
-
-        return $this;
-    }
-
-    /**
-     * Remove Rumeur entity from collection (one to many).
-     */
-    public function removeRumeur(Rumeur $rumeur): static
-    {
-        $this->rumeurs->removeElement($rumeur);
-
-        return $this;
-    }
-
-    /**
-     * Get Rumeur entity collection (one to many).
-     */
-    public function getRumeurs(): Collection
-    {
-        return $this->rumeurs;
-    }
-
-    /**
-     * Add Territoire entity to collection (one to many).
-     */
-    public function addTerritoire(Territoire $territoire): static
-    {
-        $this->territoires[] = $territoire;
-
-        return $this;
-    }
-
-    /**
-     * Remove Territoire entity from collection (one to many).
-     */
-    public function removeTerritoire(Territoire $territoire): static
-    {
-        $this->territoires->removeElement($territoire);
-
-        return $this;
-    }
-
-    /**
-     * Get Territoire entity collection (one to many).
-     */
-    public function getTerritoires(): Collection
-    {
-        return $this->territoires;
-    }
-
-    /**
-     * Add TitreTerritoire entity to collection (one to many).
-     */
-    public function addTitreTerritoire(TitreTerritoire $titreTerritoire): static
-    {
-        $this->titreTerritoires[] = $titreTerritoire;
-
-        return $this;
-    }
-
-    /**
-     * Remove TitreTerritoire entity from collection (one to many).
-     */
-    public function removeTitreTerritoire(TitreTerritoire $titreTerritoire): static
-    {
-        $this->titreTerritoires->removeElement($titreTerritoire);
-
-        return $this;
-    }
-
-    /**
-     * Get TitreTerritoire entity collection (one to many).
-     */
-    public function getTitreTerritoires(): Collection
-    {
-        return $this->titreTerritoires;
-    }
-
-    /**
-     * Set Territoire entity (many to one).
-     */
-    public function setTerritoire(?Territoire $territoire = null): static
-    {
-        $this->territoire = $territoire;
-
-        return $this;
-    }
-
-    /**
-     * Get Territoire entity (many to one).
-     */
-    public function getTerritoire(): ?Territoire
-    {
-        return $this->territoire;
+        return $this->territoireGuerre;
     }
 
     /**
@@ -937,110 +985,91 @@ abstract class BaseTerritoire
     }
 
     /**
-     * Get TerritoireGuerre entity (one to one).
+     * Get TerritoireStarts entity collection.
      */
-    public function getTerritoireGuerre(): TerritoireGuerre
+    public function getTerritoireStarts(): Collection
     {
-        return $this->territoireGuerre;
+        return $this->territoireStarts;
     }
 
     /**
-     * Set Appelation entity (many to one).
+     * Get Territoire entity collection (one to many).
      */
-    public function setAppelation(?Appelation $appelation = null): static
+    public function getTerritoires(): Collection
     {
-        $this->appelation = $appelation;
+        return $this->territoires;
+    }
+
+    /**
+     * Get TitreTerritoire entity collection (one to many).
+     */
+    public function getTitreTerritoires(): Collection
+    {
+        return $this->titreTerritoires;
+    }
+
+    /**
+     * Get the value of tresor.
+     */
+    public function getTresor(): ?int
+    {
+        return $this->tresor;
+    }
+
+    /**
+     * Set the value of tresor.
+     *
+     * @param int $tresor
+     */
+    public function setTresor($tresor): static
+    {
+        $this->tresor = $tresor;
 
         return $this;
     }
 
     /**
-     * Get Appelation entity (many to one).
+     * Get the value of type_racial.
      */
-    public function getAppelation(): Appelation
+    public function getTypeRacial(): string
     {
-        return $this->appelation;
+        return $this->type_racial ?? '';
     }
 
     /**
-     * Set Langue entity (many to one).
+     * Set the value of type_racial.
      */
-    public function setLangue(?Langue $langue = null): static
+    public function setTypeRacial(?string $type_racial): static
     {
-        $this->langue = $langue;
+        $this->type_racial = $type_racial;
 
         return $this;
     }
 
     /**
-     * Get Langue entity (many to one).
+     * Get the value of vetements.
      */
-    public function getLangue(): ?Langue
+    public function getVetements(): string
     {
-        return $this->langue;
+        return $this->vetements ?? '';
     }
 
     /**
-     * Set Religion entity (many to one).
+     * Set the value of vetements.
      */
-    public function setReligion(?Religion $religion = null): static
+    public function setVetements(?string $vetements): static
     {
-        $this->religion = $religion;
+        $this->vetements = $vetements;
 
         return $this;
     }
 
     /**
-     * Get Religion entity (many to one).
+     * Remove Chronologie entity from collection (one to many).
      */
-    public function getReligion(): ?Religion
+    public function removeChronologie(Chronologie $chronologie): static
     {
-        return $this->religion;
-    }
-
-    /**
-     * Set Groupe entity (many to one).
-     */
-    public function setGroupe(?Groupe $groupe = null): static
-    {
-        $this->groupe = $groupe;
-
-        return $this;
-    }
-
-    /**
-     * Get Groupe entity (many to one).
-     */
-    public function getGroupe(): ?Groupe
-    {
-        return $this->groupe;
-    }
-
-    /**
-     * Set Culture entity (many to one).
-     */
-    public function setCulture(?Culture $culture = null): static
-    {
-        $this->culture = $culture;
-
-        return $this;
-    }
-
-    /**
-     * Get Culture entity (many to one).
-     */
-    public function getCulture(): ?Culture
-    {
-        return $this->culture;
-    }
-
-    /**
-     * Add Construction entity to collection.
-     */
-    public function addConstruction(Construction $construction): static
-    {
-        $construction->addTerritoire($this);
-        $this->constructions[] = $construction;
+        $this->chronologies->removeElement($chronologie);
 
         return $this;
     }
@@ -1057,50 +1086,21 @@ abstract class BaseTerritoire
     }
 
     /**
-     * Get Construction entity collection.
+     * Remove Territoire entity from collection (one to many).
      */
-    public function getConstructions(): Collection
+    public function removeTerritoire(Territoire $territoire): static
     {
-        return $this->constructions;
-    }
-
-    /**
-     * Add Loi entity to collection.
-     */
-    public function addLoi(Loi $loi): static
-    {
-        $loi->addTerritoire($this);
-        $this->lois[] = $loi;
+        $this->territoires->removeElement($territoire);
 
         return $this;
     }
 
     /**
-     * Remove Loi entity from collection.
+     * Remove Groupe entity from collection (one to many).
      */
-    public function removeLoi(Loi $loi): static
+    public function removeGroupe(Groupe $groupe): static
     {
-        $loi->removeTerritoire($this);
-        $this->lois->removeElement($loi);
-
-        return $this;
-    }
-
-    /**
-     * Get Loi entity collection.
-     */
-    public function getLois(): Collection
-    {
-        return $this->lois;
-    }
-
-    /**
-     * Add Ingredient entity to collection.
-     */
-    public function addIngredient(Ingredient $ingredient): static
-    {
-        $ingredient->addTerritoire($this);
-        $this->ingredients[] = $ingredient;
+        $this->groupes->removeElement($groupe);
 
         return $this;
     }
@@ -1117,25 +1117,6 @@ abstract class BaseTerritoire
     }
 
     /**
-     * Get Ingredient entity collection.
-     */
-    public function getIngredients(): Collection
-    {
-        return $this->ingredients;
-    }
-
-    /**
-     * Add Langue entity to collection.
-     */
-    public function addLangue(Langue $langue): static
-    {
-        $langue->addTerritoireSecondaire($this);
-        $this->langues[] = $langue;
-
-        return $this;
-    }
-
-    /**
      * Remove Langue entity from collection.
      */
     public function removeLangue(Langue $langue): static
@@ -1147,60 +1128,23 @@ abstract class BaseTerritoire
     }
 
     /**
-     * Get Langue entity collection.
+     * Remove Loi entity from collection.
      */
-    public function getLangues(): Collection
+    public function removeLoi(Loi $loi): static
     {
-        return $this->langues;
-    }
-
-    /**
-     * Ajoute une religion dans la collection de religion.
-     */
-    public function addReligion(Religion $religion): static
-    {
-        $religion->addTerritoireSecondaire($this);
-        $this->religions[] = $religion;
+        $loi->removeTerritoire($this);
+        $this->lois->removeElement($loi);
 
         return $this;
     }
 
-    /**
-     * Retire une religion de la collection de religion.
-     */
-    public function removeReligion(Religion $religion): static
+    public function removeMerveille(Merveille $merveille): static
     {
-        $religion->removeTerritoireSecondaire($this);
-        $this->religions->removeElement($religion);
-
-        return $this;
-    }
-
-    /**
-     * Fourni la collection de religions.
-     */
-    public function getReligions(): Collection
-    {
-        return $this->religions;
-    }
-
-    public function setGroupeNull(): static
-    {
-        $this->groupe = null;
-
-        return $this;
-    }
-
-    public function getOriginesBonus(): ?Collection
-    {
-        return $this->originesBonus;
-    }
-
-    public function addOrigineBonus(OrigineBonus $origineBonus): static
-    {
-        if (!$this->originesBonus->contains($origineBonus)) {
-            $this->originesBonus->add($origineBonus);
-            $origineBonus->setTerritoire($this);
+        if ($this->merveilles->removeElement($merveille)) {
+            // set the owning side to null (unless already changed)
+            if ($merveille->getTerritoire() === $this) {
+                $merveille->setTerritoire(null);
+            }
         }
 
         return $this;
@@ -1219,31 +1163,87 @@ abstract class BaseTerritoire
     }
 
     /**
-     * @return Collection<int, Merveille>
+     * Get Territoire entity (many to one).
      */
-    public function getMerveilles(): Collection
+    public function getTerritoire(): ?Territoire
     {
-        return $this->merveilles;
+        return $this->territoire;
     }
 
-    public function addMerveille(Merveille $merveille): static
+    /**
+     * Set Territoire entity (many to one).
+     */
+    public function setTerritoire(?Territoire $territoire = null): static
     {
-        if (!$this->merveilles->contains($merveille)) {
-            $this->merveilles->add($merveille);
-            $merveille->setTerritoire($this);
-        }
+        $this->territoire = $territoire;
 
         return $this;
     }
 
-    public function removeMerveille(Merveille $merveille): static
+    /**
+     * Remove Personnage entity from collection (one to many).
+     */
+    public function removePersonnage(Personnage $personnage): static
     {
-        if ($this->merveilles->removeElement($merveille)) {
-            // set the owning side to null (unless already changed)
-            if ($merveille->getTerritoire() === $this) {
-                $merveille->setTerritoire(null);
-            }
-        }
+        $this->personnages->removeElement($personnage);
+
+        return $this;
+    }
+
+    /**
+     * Retire une religion de la collection de religion.
+     */
+    public function removeReligion(Religion $religion): static
+    {
+        $religion->removeTerritoireSecondaire($this);
+        $this->religions->removeElement($religion);
+
+        return $this;
+    }
+
+    /**
+     * Remove Rumeur entity from collection (one to many).
+     */
+    public function removeRumeur(Rumeur $rumeur): static
+    {
+        $this->rumeurs->removeElement($rumeur);
+
+        return $this;
+    }
+
+    /**
+     * Remove Territoire entity from collection (many to many).
+     */
+    public function removeTerritoireCible(Territoire $territoire): static
+    {
+        $this->territoireCibles->removeElement($territoire);
+
+        return $this;
+    }
+
+    /**
+     * Remove Territoire entity from collection (many to many).
+     */
+    public function removeTerritoireStart(Territoire $territoire): static
+    {
+        $this->territoireStarts->removeElement($territoire);
+
+        return $this;
+    }
+
+    /**
+     * Remove TitreTerritoire entity from collection (one to many).
+     */
+    public function removeTitreTerritoire(TitreTerritoire $titreTerritoire): static
+    {
+        $this->titreTerritoires->removeElement($titreTerritoire);
+
+        return $this;
+    }
+
+    public function setGroupeNull(): static
+    {
+        $this->groupe = null;
 
         return $this;
     }

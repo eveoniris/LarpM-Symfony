@@ -25,82 +25,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ReligionController extends AbstractController
 {
     /**
-     * Liste des perso ayant cette religion.
-     */
-    #[Route('/religion/{religion}/perso', name: 'religion.perso')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-    public function persoAction(Request $request, Religion $religion): Response
-    {
-        return $this->render(
-            'religion/perso.twig',
-            [
-                'religion' => $religion,
-            ]
-        );
-    }
-
-    /**
-     * affiche la liste des religions.
-     */
-    #[Route('/religion', name: 'religion.list')]
-    #[Route('/religion', name: 'religion.list')]
-    public function indexAction(Request $request, ReligionRepository $religionRepository): Response
-    {
-        $page = $request->query->getInt('page', 1);
-        $orderBy = $request->query->getString('order_by', 'label');
-        $orderDir = $request->query->getString('order_dir', 'ASC');
-        $limit = 10;
-
-        if ($this->isGranted('ROLE_REGLE')) {
-            $where = '1=1';
-        } else {
-            $where = 'religion.secret = 0';
-        }
-
-        $paginator = $religionRepository->findPaginated($page, $limit, $orderBy, $orderDir, $where);
-
-        return $this->render(
-            'religion\list.twig',
-            [
-                'paginator' => $paginator,
-                'limit' => $limit,
-                'page' => $page,
-                'isAdmin' => $this->isGranted(Role::SCENARISTE->value),
-            ]
-        );
-    }
-
-    /**
-     * affiche la liste des religions.
-     */
-    #[Route('/religion/mail', name: 'religion.mail')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-    public function mailAction(ReligionRepository $religionRepository): Response
-    {
-        return $this->render(
-            'religion/mail.twig',
-            [
-                'religions' => $religionRepository->getUserEmailsByReligions(),
-            ]
-        );
-    }
-
-    /**
-     * Detail d'une religion.
-     */
-    #[Route('/religion/{religion}/detail', name: 'religion.detail')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-    public function detailAction(Religion $religion): Response
-    {
-        return $this->render(
-            'religion/detail.twig',
-            [
-                'religion' => $religion,
-            ]
-        );
-    }
-
-    /**
      * Ajoute une religion.
      */
     #[Route('/religion/add', name: 'religion.add')]
@@ -111,8 +35,7 @@ class ReligionController extends AbstractController
 
         $form = $this->createForm(ReligionForm::class, $religion)
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer'])
-        ;
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -139,67 +62,26 @@ class ReligionController extends AbstractController
             'religion/add.twig',
             [
                 'form' => $form->createView(),
-            ]
+            ],
         );
     }
 
     /**
-     * Modifie une religion. Si l'utilisateur clique sur "sauvegarder", la religion est sauvegardée et
-     * l'utilisateur est redirigé vers la liste des religions.
-     * Si l'utilisateur clique sur "supprimer", la religion est supprimée et l'utilisateur est
-     * redirigé vers la liste des religions.
+     * Récupération de l'image du blason d'une religion.
      */
-    #[Route('/religion/{religion}/update', name: 'religion.update')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-    public function updateAction(EntityManagerInterface $entityManager, Request $request, Religion $religion)
-    {
-        $form = $this->createForm(ReligionForm::class, $religion)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer'])
-        ;
+    #[Route('/religion/{religion}/blason', name: 'religion.blason', methods: ['GET'])]
+    public function blasonAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Religion $religion,
+    ): Response {
+        $blason = $religion->getBlason();
+        $filename = __DIR__.'/../../assets/img/religions/'.$blason;
 
-        $originalSpheres = new ArrayCollection();
-        foreach ($religion->getSpheres() as $sphere) {
-            $originalSpheres->add($sphere);
-        }
+        $response = new Response(file_get_contents($filename));
+        $response->headers->set('Content-Type', 'image/png');
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $religion = $form->getData();
-
-            if ($form->get('update')->isClicked()) {
-                foreach ($religion->getSpheres() as $sphere) {
-                    if (false == $sphere->getReligions()->contains($religion)) {
-                        $sphere->addReligion($religion);
-                    }
-                }
-                foreach ($originalSpheres as $sphere) {
-                    if (false == $religion->getspheres()->contains($sphere)) {
-                        $sphere->removeReligion($religion);
-                    }
-                }
-                $entityManager->persist($religion);
-                $entityManager->flush();
-                $this->addFlash('success', 'La religion a été mise à jour.');
-
-                return $this->redirectToRoute('religion.detail', ['religion' => $religion->getId()], 303);
-            // return $this->redirectToRoute('religion.detail', [], 303);
-            } elseif ($form->get('delete')->isClicked()) {
-                /*$entityManager->remove($religion);
-                $entityManager->flush();
-                $this->addFlash('success', 'La religion a été supprimée.');*/
-                // return $this->redirectToRoute('religion.list', [], 303);
-                return $this->redirectToRoute('religion.delete', ['religion' => $religion->getId()], 303);
-            }
-        }
-
-        return $this->render(
-            'religion/update.twig',
-            [
-                'religion' => $religion,
-                'form' => $form->createView(),
-            ]
-        );
+        return $response;
     }
 
     /**
@@ -207,8 +89,11 @@ class ReligionController extends AbstractController
      */
     #[Route('/religion/{religion}/delete', name: 'religion.delete')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Religion $religion): RedirectResponse|Response
-    {
+    public function deleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Religion $religion,
+    ): RedirectResponse|Response {
         $form = $this->createForm(ReligionDeleteForm::class, $religion)
             ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
@@ -244,88 +129,48 @@ class ReligionController extends AbstractController
     }
 
     /**
-     * Récupération de l'image du blason d'une religion.
+     * Detail d'une religion.
      */
-    #[Route('/religion/{religion}/blason', name: 'religion.blason', methods: ['GET'])]
-    public function blasonAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Religion $religion): Response
+    #[Route('/religion/{religion}/detail', name: 'religion.detail')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    public function detailAction(Religion $religion): Response
     {
-        $blason = $religion->getBlason();
-        $filename = __DIR__.'/../../assets/img/religions/'.$blason;
-
-        $response = new Response(file_get_contents($filename));
-        $response->headers->set('Content-Type', 'image/png');
-
-        return $response;
+        return $this->render(
+            'religion/detail.twig',
+            [
+                'religion' => $religion,
+            ],
+        );
     }
 
     /**
-     * Met à jour le blason d'une religion.
+     * Affiche la liste des religions.
      */
-    #[Route('/religion/{religion}/updateBlason', name: 'religion.update.blason')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-    public function updateBlasonAction(Request $request, EntityManagerInterface $entityManager, Religion $religion)
+    #[Route('/religion', name: 'religion.list')]
+    public function indexAction(Request $request, ReligionRepository $religionRepository): Response
     {
-        $form = $this->createForm(ReligionBlasonForm::class, $religion)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
+        $page = $request->query->getInt('page', 1);
+        $orderBy = $request->query->getString('order_by', 'label');
+        $orderDir = $request->query->getString('order_dir', 'ASC');
+        $limit = 10;
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $files = $request->files->get($form->getName());
-
-            $path = __DIR__.'/../../assets/img/blasons/';
-            $filename = $files['blason']->getClientOriginalName();
-            $extension = $files['blason']->guessExtension();
-
-            if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
-                $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
-
-                return $this->redirectToRoute('religion.detail', ['religion' => $religion->getId()], 303);
-            }
-
-            $blasonFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
-
-            $imagine = new Imagine();
-            $image = $imagine->open($files['blason']->getPathname());
-            $image->resize($image->getSize()->widen(160));
-            $image->save($path.$blasonFilename);
-
-            $religion->setBlason($blasonFilename);
-            $entityManager->persist($religion);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le blason a été enregistré');
-
-            return $this->redirectToRoute('religion.detail', ['religion' => $religion->getId()], 303);
+        if ($this->isGranted('ROLE_REGLE')) {
+            $where = '1=1';
+        } else {
+            $where = 'religion.secret = 0';
         }
 
-        return $this->render('religion/blason.twig', [
-            'religion' => $religion,
-            'form' => $form->createView(),
-        ]);
-    }
+        $paginator = $religionRepository->findPaginated($page, $limit, $orderBy, $orderDir, $where);
 
-    /**
-     * affiche la liste des niveaux de fanatisme.
-     */
-    #[Route('/religion/level', name: 'religion.level')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-    public function levelIndexAction(Request $request, EntityManagerInterface $entityManager)
-    {
-        $repo = $entityManager->getRepository(ReligionLevel::class);
-        $religionLevels = $repo->findAllOrderedByIndex();
-
-        return $this->render('religion/level/index.twig', ['religionLevels' => $religionLevels]);
-    }
-
-    /**
-     * Detail d'un niveau de fanatisme.
-     */
-    #[Route('/religion/level/{religionLevel}/detail', name: 'religion.level.detail')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-    public function levelDetailAction(Request $request, EntityManagerInterface $entityManager, ReligionLevel $religionLevel)
-    {
-        return $this->render('religion/level/detail.twig', ['religionLevel' => $religionLevel]);
+        return $this->render(
+            'religion\list.twig',
+            [
+                'paginator' => $paginator,
+                'limit' => $limit,
+                'page' => $page,
+                'isAdmin' => $this->isGranted(Role::SCENARISTE->value),
+            ],
+        );
     }
 
     /**
@@ -367,6 +212,32 @@ class ReligionController extends AbstractController
     }
 
     /**
+     * Detail d'un niveau de fanatisme.
+     */
+    #[Route('/religion/level/{religionLevel}/detail', name: 'religion.level.detail')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    public function levelDetailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ReligionLevel $religionLevel,
+    ) {
+        return $this->render('religion/level/detail.twig', ['religionLevel' => $religionLevel]);
+    }
+
+    /**
+     * affiche la liste des niveaux de fanatisme.
+     */
+    #[Route('/religion/level', name: 'religion.level')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    public function levelIndexAction(Request $request, EntityManagerInterface $entityManager)
+    {
+        $repo = $entityManager->getRepository(ReligionLevel::class);
+        $religionLevels = $repo->findAllOrderedByIndex();
+
+        return $this->render('religion/level/index.twig', ['religionLevels' => $religionLevels]);
+    }
+
+    /**
      * Modifie un niveau de religion. Si l'utilisateur clique sur "sauvegarder", le niveau de religion est sauvegardée et
      * l'utilisateur est redirigé vers la liste des niveaux de religions.
      * Si l'utilisateur clique sur "supprimer", le niveau religion est supprimée et l'utilisateur est
@@ -374,8 +245,11 @@ class ReligionController extends AbstractController
      */
     #[Route('/religion/level/{religionLevel}/update', name: 'religion.level.update')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-    public function levelUpdateAction(Request $request, EntityManagerInterface $entityManager, ReligionLevel $religionLevel)
-    {
+    public function levelUpdateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ReligionLevel $religionLevel,
+    ) {
         $form = $this->createForm(ReligionLevelForm::class, $religionLevel)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
             ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
@@ -390,7 +264,11 @@ class ReligionController extends AbstractController
                 $entityManager->flush();
                 $this->addFlash('success', 'Le niveau de religion a été mise à jour.');
 
-                return $this->redirectToRoute('religion.level.detail', ['religionLevel' => $religionLevel->getId()], 303);
+                return $this->redirectToRoute(
+                    'religion.level.detail',
+                    ['religionLevel' => $religionLevel->getId()],
+                    303,
+                );
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($religionLevel);
                 $entityManager->flush();
@@ -402,6 +280,144 @@ class ReligionController extends AbstractController
 
         return $this->render('religion/level/update.twig', [
             'religionLevel' => $religionLevel,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * affiche la liste des religions.
+     */
+    #[Route('/religion/mail', name: 'religion.mail')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    public function mailAction(ReligionRepository $religionRepository): Response
+    {
+        return $this->render(
+            'religion/mail.twig',
+            [
+                'religions' => $religionRepository->getUserEmailsByReligions(),
+            ],
+        );
+    }
+
+    /**
+     * Liste des perso ayant cette religion.
+     */
+    #[Route('/religion/{religion}/perso', name: 'religion.perso')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    public function persoAction(Request $request, Religion $religion): Response
+    {
+        return $this->render(
+            'religion/perso.twig',
+            [
+                'religion' => $religion,
+            ],
+        );
+    }
+
+    /**
+     * Modifie une religion. Si l'utilisateur clique sur "sauvegarder", la religion est sauvegardée et
+     * l'utilisateur est redirigé vers la liste des religions.
+     * Si l'utilisateur clique sur "supprimer", la religion est supprimée et l'utilisateur est
+     * redirigé vers la liste des religions.
+     */
+    #[Route('/religion/{religion}/update', name: 'religion.update')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    public function updateAction(EntityManagerInterface $entityManager, Request $request, Religion $religion)
+    {
+        $form = $this->createForm(ReligionForm::class, $religion)
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+
+        $originalSpheres = new ArrayCollection();
+        foreach ($religion->getSpheres() as $sphere) {
+            $originalSpheres->add($sphere);
+        }
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $religion = $form->getData();
+
+            if ($form->get('update')->isClicked()) {
+                foreach ($religion->getSpheres() as $sphere) {
+                    if (false == $sphere->getReligions()->contains($religion)) {
+                        $sphere->addReligion($religion);
+                    }
+                }
+                foreach ($originalSpheres as $sphere) {
+                    if (false == $religion->getspheres()->contains($sphere)) {
+                        $sphere->removeReligion($religion);
+                    }
+                }
+                $entityManager->persist($religion);
+                $entityManager->flush();
+                $this->addFlash('success', 'La religion a été mise à jour.');
+
+                return $this->redirectToRoute('religion.detail', ['religion' => $religion->getId()], 303);
+                // return $this->redirectToRoute('religion.detail', [], 303);
+            } elseif ($form->get('delete')->isClicked()) {
+                /*$entityManager->remove($religion);
+                $entityManager->flush();
+                $this->addFlash('success', 'La religion a été supprimée.');*/
+                // return $this->redirectToRoute('religion.list', [], 303);
+                return $this->redirectToRoute('religion.delete', ['religion' => $religion->getId()], 303);
+            }
+        }
+
+        return $this->render(
+            'religion/update.twig',
+            [
+                'religion' => $religion,
+                'form' => $form->createView(),
+            ],
+        );
+    }
+
+    /**
+     * Met à jour le blason d'une religion.
+     */
+    #[Route('/religion/{religion}/updateBlason', name: 'religion.update.blason')]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    public function updateBlasonAction(Request $request, EntityManagerInterface $entityManager, Religion $religion)
+    {
+        $form = $this->createForm(ReligionBlasonForm::class, $religion)
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $files = $request->files->get($form->getName());
+
+            $path = __DIR__.'/../../assets/img/blasons/';
+            $filename = $files['blason']->getClientOriginalName();
+            $extension = $files['blason']->guessExtension();
+
+            if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
+                $this->addFlash(
+                    'error',
+                    'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)',
+                );
+
+                return $this->redirectToRoute('religion.detail', ['religion' => $religion->getId()], 303);
+            }
+
+            $blasonFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
+
+            $imagine = new Imagine();
+            $image = $imagine->open($files['blason']->getPathname());
+            $image->resize($image->getSize()->widen(160));
+            $image->save($path.$blasonFilename);
+
+            $religion->setBlason($blasonFilename);
+            $entityManager->persist($religion);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le blason a été enregistré');
+
+            return $this->redirectToRoute('religion.detail', ['religion' => $religion->getId()], 303);
+        }
+
+        return $this->render('religion/blason.twig', [
+            'religion' => $religion,
             'form' => $form->createView(),
         ]);
     }

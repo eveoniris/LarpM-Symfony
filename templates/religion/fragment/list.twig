@@ -13,12 +13,30 @@
                                 href="{{ path('religion.perso', {'religion': religion.id}) }}">{{ religion.personnagesReligions|length }}
                             personnages</a>)</small>
                 {% else %}
-                {{ religion.label }}
+                    {{ religion.label }}
                 {% endif %}
             </h5>
         </div>
 
-        <div class="list-group-item-text d-flex justify-content-between">
+        {% if isAdmin %}
+            <div class="d-flex justify-content-end">
+                <div class="btn-toolbar" role="toolbar" aria-label="...">
+                    <div class="btn-group" role="group" aria-label="...">
+                        <a href="{{ path('religion.detail', {'religion': religion.id}) }}" class="btn btn-secondary"
+                           data-toggle="tooltip" data-placement="top" title="Détail" role="button"><i
+                                    class="fa fa-eye"></i></a>
+                        <a href="{{ path('religion.update', {'religion': religion.id}) }}" class="btn btn-secondary"
+                           data-toggle="tooltip" data-placement="top" title="Modifier" role="button"><i
+                                    class="fa fa-pencil"></i></a>
+                        <a href="{{ path('religion.delete', {'religion': religion.id}) }}" class="btn btn-secondary"
+                           data-toggle="tooltip" data-placement="top" title="Supprimer" role="button"><i
+                                    class="fa fa-eraser"></i></a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="list-group-item-text d-flex justify-content-start">
             {% if religion.blason %}
                 <div class="align-self-center me-2">
                     <img width="160" src="{{ path('religion.blason', {'religion' : religion.id }) }}"
@@ -28,29 +46,13 @@
 
             <div>
                 {% if religion.description %}
-                    <p class="text-default">{{ religion.description|markdown_to_html }}</p>
+                    <div class="text-default">{{ religion.description|markdown_to_html }}</div>
                 {% else %}
                     <p class="text-warning">Attention, cette religion n'a pas de description</p>
                 {% endif %}
             </div>
 
-            {% if isAdmin %}
-                <div>
-                    <div class="btn-toolbar" role="toolbar" aria-label="...">
-                        <div class="btn-group" role="group" aria-label="...">
-                            <a href="{{ path('religion.detail', {'religion': religion.id}) }}" class="btn btn-secondary"
-                               data-toggle="tooltip" data-placement="top" title="Détail" role="button"><i
-                                        class="fa fa-eye"></i></a>
-                            <a href="{{ path('religion.update', {'religion': religion.id}) }}" class="btn btn-secondary"
-                               data-toggle="tooltip" data-placement="top" title="Modifier" role="button"><i
-                                        class="fa fa-pencil"></i></a>
-                            <a href="{{ path('religion.delete', {'religion': religion.id}) }}" class="btn btn-secondary"
-                               data-toggle="tooltip" data-placement="top" title="Supprimer" role="button"><i
-                                        class="fa fa-eraser"></i></a>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
+
         </div>
     </div>
 {% endfor %}

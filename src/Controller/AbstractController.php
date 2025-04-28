@@ -62,7 +62,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected PersonnageService $personnageService,
         protected GroupeService $groupeService,
         // Cache $cache, // TODO : later
-    ) {
+    )
+    {
     }
 
     public function can($key): bool
@@ -223,7 +224,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string $defOrderDir = 'ASC',
         ?string $alias = null,
         ?array $allowedFields = null, // TODO: check SF security Form on Self Entity's attributes
-    ): array {
+    ): array
+    {
         $request = $this->requestStack?->getCurrentRequest();
         if (!$request) {
             return [];
@@ -278,12 +280,14 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $routes['root'] = $root; // ensure if from other
         } catch (\ErrorException $e) {
             $this->logger->error($e);
-            throw new \RuntimeException(<<<'EOF'
+            throw new \RuntimeException(
+                <<<'EOF'
                 Unable to get the root route.
                 If you do not define a main route as class attributes (ie: #[Route('/groupe', name: 'groupe.')]), 
                 You may need to provide the argument $routes['root'] from the calling methods.
                 Sample: ['root' => 'groupe.'] from GroupeController::handleCreateOrUpdate()
-                EOF, );
+                EOF,
+            );
         }
 
         $routes['add'] ??= $root.'add';
@@ -500,17 +504,21 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return $response;
     }
 
+    /**
+     * La gestion du droit d'accès aux documents doit se faire dans :
+     * le Manager ou Controller ou Service appellant.
+     */
     protected function sendDocument(
         mixed $entity,
         ?Document $document = null,
         bool $hasAttachement = true,
     ): BinaryFileResponse {
-        // TODO check usage of entity Document
-
-        // TODO on ne peux télécharger que les documents des compétences que l'on connait
-        // TODO on ne peux télécharger que les documents auquel on a accéss
         if (null === $entity && $document instanceof Document) {
             $entity = $document;
+        }
+
+        if (!is_object($entity)) {
+            throw new \RuntimeException('Entity must be an object');
         }
 
         if (method_exists($entity, 'getHasDocument')) {
@@ -537,6 +545,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $projectDir = $this->getParameter('kernel.project_dir')
             ? $this->getParameter('kernel.project_dir').'/'
             : $this->fileUploader->getProjectDirectory();
+
         $entity->setProjectDir($projectDir);
         $filename = $entity->getDocument();
         $documentUrl = $entity->getDocumentUrl();
@@ -548,7 +557,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         if (!$documentUrl || !file_exists($filename)) {
-            throw new NotFoundHttpException("Le document n'existe pas");
+            throw new NotFoundHttpException("Le document n'existe pas".$filename);
         }
 
         $response = (new BinaryFileResponse($filename, Response::HTTP_OK));
@@ -557,11 +566,14 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $response->setContentDisposition(
                 ResponseHeaderBag::DISPOSITION_ATTACHMENT,
                 $documentLabel.'.pdf',
+                $documentLabel.'.pdf',
             );
         } else {
+            $response->headers->set('Content-Disposition', 'inline; filename='.$this->slugger->slug($filename).'.pdf');
             $response
                 ->setContentDisposition(
                     ResponseHeaderBag::DISPOSITION_INLINE,
+                    $documentLabel.'.pdf',
                     $documentLabel.'.pdf',
                 );
         }
