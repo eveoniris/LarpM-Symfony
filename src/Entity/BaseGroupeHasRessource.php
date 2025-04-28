@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -17,10 +18,10 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupeHasRessource', 'extended' => 'GroupeHasRessource'])]
 abstract class BaseGroupeHasRessource
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[ORM\Column(type: Types::INTEGER)]
     protected int $quantite;
 
     #[ORM\ManyToOne(targetEntity: Groupe::class, cascade: ['persist', 'remove'], inversedBy: 'groupeHasRessources')]
@@ -32,39 +33,11 @@ abstract class BaseGroupeHasRessource
     protected Ressource $ressource;
 
     /**
-     * Set the value of id.
+     * Get Groupe entity (many to one).
      */
-    public function setId(int $id): static
+    public function getGroupe(): Groupe
     {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of id.
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set the value of quantite.
-     */
-    public function setQuantite(int $quantite): static
-    {
-        $this->quantite = $quantite;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of quantite.
-     */
-    public function getQuantite(): int
-    {
-        return $this->quantite;
+        return $this->groupe;
     }
 
     /**
@@ -78,19 +51,37 @@ abstract class BaseGroupeHasRessource
     }
 
     /**
-     * Get Groupe entity (many to one).
+     * Get the value of id.
      */
-    public function getGroupe(): Groupe
+    public function getId(): int
     {
-        return $this->groupe;
+        return $this->id;
     }
 
     /**
-     * Set Ressource entity (many to one).
+     * Set the value of id.
      */
-    public function setRessource(Ressource $ressource = null): static
+    public function setId(int $id): static
     {
-        $this->ressource = $ressource;
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of quantite.
+     */
+    public function getQuantite(): int
+    {
+        return $this->quantite;
+    }
+
+    /**
+     * Set the value of quantite.
+     */
+    public function setQuantite(int $quantite): static
+    {
+        $this->quantite = $quantite;
 
         return $this;
     }
@@ -101,6 +92,16 @@ abstract class BaseGroupeHasRessource
     public function getRessource(): Ressource
     {
         return $this->ressource;
+    }
+
+    /**
+     * Set Ressource entity (many to one).
+     */
+    public function setRessource(Ressource $ressource = null): static
+    {
+        $this->ressource = $ressource;
+
+        return $this;
     }
 
     /* public function __sleep()

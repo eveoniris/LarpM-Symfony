@@ -12,8 +12,6 @@ use App\Entity\Ingredient;
 use App\Entity\Item;
 use App\Entity\Loi;
 use App\Entity\Merveille;
-use App\Entity\Personnage;
-use App\Entity\PersonnageIngredient;
 use App\Entity\Rarete;
 use App\Entity\Ressource;
 use App\Entity\Territoire;
@@ -45,7 +43,32 @@ readonly class GroupeService
      */
     public function getAllIngredient(Groupe $groupe): Collection
     {
-        $all = $groupe->getIngredients();
+        $all = clone $groupe->getGroupeHasIngredients();
+
+        /** @var Territoire $territoire */
+        foreach ($groupe->getTerritoires() as $territoire) {
+            /** @var Ingredient $ingredientProvided */
+            foreach ($territoire->getIngredients() as $ingredientProvided) {
+                // Clone to avoid unwanted overwriting
+                $ingredient = clone $ingredientProvided;
+                $nb = 5;
+                if ('Instable' === $territoire->getStatut()) {
+                    $nb = 3;
+                }
+
+                $ingredient->setLabel(
+                    '<strong>'.$ingredient->getLabel().'</strong> fourni(e)s par <strong>'.$territoire->getNom(
+                    ).'</strong>',
+                );
+
+                $groupeHasIngredident = new GroupeHasIngredient();
+                $groupeHasIngredident->setQuantite($nb);
+                $groupeHasIngredident->setIngredient($ingredient);
+                $groupeHasIngredident->setGroupe($groupe);
+
+                $this->addIngredientToAll($groupeHasIngredident, $all);
+            }
+        }
 
         foreach ($this->getAllBonus($groupe, BonusType::INGREDIENT) as $bonus) {
             if (!$bonus->isIngredient()) {
@@ -77,15 +100,33 @@ readonly class GroupeService
                     // Generate one
                     $ingredient = new Ingredient();
                     $ingredient->setLabel($data['label'] ?? $bonus->getTitre() ?: 'BONUS');
-                    $ingredient->setNiveau((int)($data['niveau'] ?? 1));
+                    $ingredient->setNiveau((int) ($data['niveau'] ?? 1));
                     $ingredient->setDose($data['dose'] ?? 'unité');
                 }
 
-                $this->addIngredientToAll($groupe, $ingredient, $all);
+                $groupeHasIngredident = new GroupeHasIngredient();
+                $groupeHasIngredident->setQuantite(((int) $data['nombre']) ?: 1);
+                $groupeHasIngredident->setIngredient($ingredient);
+                $groupeHasIngredident->setGroupe($groupe);
+
+                $this->addIngredientToAll($groupeHasIngredident, $all);
             }
         }
 
         return $all;
+    }
+
+    private function addIngredientToAll(GroupeHasIngredient $groupeIngredient, Collection $all): void
+    {
+        /** @var GroupeHasIngredient $existing */
+        foreach ($all as $existing) {
+            if (($existing->getIngredient()?->getId() === $groupeIngredient->getIngredient()?->getId())
+                && ($existing->getIngredient()?->getLabel() === $groupeIngredient->getIngredient()?->getLabel())) {
+                return;
+            }
+        }
+
+        $all->add($groupeIngredient);
     }
 
     /**
@@ -183,28 +224,12 @@ readonly class GroupeService
         return $all;
     }
 
-    private function addIngredientToAll(Groupe $groupe, Ingredient $ingredient, Collection $all): void
-    {
-        /** @var PersonnageIngredient $existing */
-        foreach ($all as $existing) {
-            if ((int)$existing->getIngredient()?->getId() === (int)$ingredient->getId()
-                && $existing->getIngredient()?->getLabel() === $ingredient->getLabel()) {
-                return;
-            }
-        }
-
-        $groupeIngredient = new GroupeHasIngredient();
-        $groupeIngredient->setGroupe($groupe);
-        $groupeIngredient->setIngredient($ingredient);
-        $all->add($groupeIngredient);
-    }
-
     /**
      * @return Collection<int, Item>
      */
     public function getAllItems(Groupe $groupe): Collection
     {
-        $all = $groupe->getItems();
+        $all = clone $groupe->getItems();
 
         foreach ($this->getAllBonus($groupe, BonusType::ITEM) as $bonus) {
             if (!$bonus->isItem()) {
@@ -232,12 +257,12 @@ readonly class GroupeService
                     // Generate one
                     $item = new Item();
                     $item->setLabel($itemData['label'] ?? $bonus->getTitre());
-                    $item->setNumero($itemData['numero'] ?? (int)$bonus->getValeur());
+                    $item->setNumero($itemData['numero'] ?? (int) $bonus->getValeur());
                     $item->setIdentification($itemData['identification'] ?? 0);
                     $item->setCouleur($itemData['couleur'] ?? 'aucune');
                     $item->setDescription($itemData['description'] ?? $bonus->getDescription());
                     $item->setSpecial($itemData['special'] ?? null);
-                    $item->setQuality(isset($itemData['quality']) ? (int)$itemData['quality'] : null);
+                    $item->setQuality(isset($itemData['quality']) ? (int) $itemData['quality'] : null);
                 }
 
                 $this->addItemToAll($groupe, $item, $all);
@@ -291,7 +316,32 @@ readonly class GroupeService
      */
     public function getAllRessource(Groupe $groupe): Collection
     {
-        $all = $groupe->getGroupeHasRessources();
+        // Clone to avoid unwanted overwriting
+        $all = clone $groupe->getGroupeHasRessources();
+
+        /** @var Territoire $territoire */
+        foreach ($groupe->getTerritoires() as $territoire) {
+            /** @var Ressource $ressourceExported */
+            foreach ($territoire->getExportations() as $ressourceExported) {
+                // Clone to avoid unwanted overwriting
+                $ressource = clone $ressourceExported;
+                $nbRessource = 3;
+                if ('Instable' === $territoire->getStatut()) {
+                    $nbRessource = 2;
+                }
+                $ressource->setLabel(
+                    '<strong>'.$ressource->getLabel().'</strong> fourni(e)s par <strong>'.$territoire->getNom(
+                    ).'</strong>',
+                );
+
+                $ressourceGroupe = new GroupeHasRessource();
+                $ressourceGroupe->setQuantite($nbRessource);
+                $ressourceGroupe->setRessource($ressource);
+                $ressource = null;
+
+                $this->addRessourceToAll($ressourceGroupe, $all);
+            }
+        }
 
         foreach ($this->getAllBonus($groupe, BonusType::RESSOURCE) as $bonus) {
             if (!$bonus->isRessource()) {
@@ -336,7 +386,7 @@ readonly class GroupeService
                 }
 
                 $ressourceGroupe = new GroupeHasRessource();
-                $ressourceGroupe->setQuantite(((int)$data['nombre']) ?: 1);
+                $ressourceGroupe->setQuantite(((int) $data['nombre']) ?: 1);
                 $ressourceGroupe->setRessource($ressource);
 
                 $this->addRessourceToAll($ressourceGroupe, $all);
@@ -345,7 +395,7 @@ readonly class GroupeService
 
             // If we use bonus values instead (condition tested before)
             $ressourceGroupe = new GroupeHasRessource();
-            $ressourceGroupe->setQuantite((int)$bonus->getValeur());
+            $ressourceGroupe->setQuantite((int) $bonus->getValeur());
             $ressource = new Ressource();
             $ressource->setLabel($bonus->getTitre().' - '.$bonus->getDescription());
             $rarete = new Rarete();
@@ -376,7 +426,61 @@ readonly class GroupeService
 
     public function getAllRichesse(Groupe $groupe): int
     {
-        $all = $groupe->getRichesse();
+        $all = 0;
+        foreach ($this->getAllRichesseDisplay($groupe) as $richesse) {
+            $all += $richesse['value'] ?? 0;
+        }
+
+        return $all ?? 0;
+    }
+
+    public function getAllRichesseDisplay(Groupe $groupe): array
+    {
+        $histories = [];
+
+        /** @var Territoire $territoire */
+        foreach ($groupe->getTerritoires() as $territoire) {
+            $tresor = $territoire->getTresor();
+            $base = $tresor;
+            $constructions = [];
+
+            foreach ($territoire->getConstructions() as $construction) {
+                //  Comptoir commercial
+                if (6 === $construction->getId()) {
+                    $tresor += 5;
+                    $constructions[] = '+ 5 '.$construction->getLabel();
+                }
+
+                // Foyer d'orfèvre
+                if (23 === $construction->getId()) {
+                    $tresor += 10;
+                    $constructions[] = '+ 10 '.$construction->getLabel();
+                }
+
+                // Port
+                if (10 === $construction->getId()) {
+                    $tresor += 5;
+                    $constructions[] = '+ 5 '.$construction->getLabel();
+                }
+            }
+
+            $isInstable = 'instable' === strtolower($territoire->getStatut());
+            $value = $tresor / ($isInstable ? 2 : 1);
+
+            $label = sprintf(
+                "<strong>%s pièces d'argent</strong> fournies par <strong>%s</strong>. Etat %s : 3 x %d.%s",
+                $value,
+                $territoire->getNom(),
+                $isInstable ? 'instable 0.5 x' : 'normal',
+                $base,
+                $constructions ? ' '.implode(', ', $constructions) : '',
+            );
+
+            $histories[] = [
+                'label' => $label,
+                'value' => $value,
+            ];
+        }
 
         foreach ($this->getAllBonus($groupe, BonusType::RICHESSE) as $bonus) {
             if (!$bonus->isRichesse()) {
@@ -392,10 +496,15 @@ readonly class GroupeService
                 continue;
             }
 
-            $all += (int)$bonus->getValeur();
+            $histories[] = [
+                'label' => $bonus->getTitre(),
+                'value' => (int) $bonus->getValeur(),
+            ];
         }
 
-        return $all ?? 0;
+        $histories[] = ['label' => 'Richesse supplémentaire', 'value' => $groupe->getRichesse()];
+
+        return $histories;
     }
 
     /**

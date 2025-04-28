@@ -177,7 +177,7 @@ abstract class BaseBonus
 
     public function getPeriode(): ?BonusPeriode
     {
-        return BonusPeriode::tryFrom($this->periode);
+        return $this->periode ? BonusPeriode::tryFrom($this->periode) : null;
     }
 
     public function setPeriode(string|BonusPeriode|null $periode): static

@@ -1,0 +1,59 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Technologie{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des utilisation des points XP' },
+        ]
+    } %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Liste des utilisations des points XP</h5>
+        </div>
+
+        {% include '_partials/formListSearch.twig' with
+            {
+                'actionPath' : path('xp.usage')
+            } %}
+    </div>
+
+    {% include '_partials/pagination.html.twig' %}
+
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'technologie.list', 'rows': [
+            {'name' : 'Date', 'field' : 'operation_date', 'css' : 'text-center'},
+            {'name' : 'Experience', 'field' : 'xp_use', 'css' : 'text-center'},
+            {'name' : 'Personnage', 'field' : 'personnage.id', 'css' : 'text-center'},
+            {'name' : 'Competence', 'field' : 'competence.id', 'css' : 'text-center'},
+        ]} %}
+        <tbody>
+        {% for xp in paginator %}
+            <tr>
+                <td class="text-center align-middle col-2">{{ xp.operationDate|date("m/d/Y H:i:s")|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle col-1">{{ xp.xpUse|highlight(pagerService.searchValue) }}</td>
+                <td class="align-middle col-4">
+                    <a href="{{ path('personnage.detail', {'personnage': xp.personnage.id}) }}">
+                        {{ xp.personnage.idName }}
+                    </a>
+                </td>
+                <td class="align-middle col-3">
+                    <a href="{{ path('competence.detail', {'competence': xp.competence.id}) }}">
+                        {{ xp.competence.label }}
+                    </a>
+                </td>
+            </tr>
+        {% else %}
+            {% include '_partials/noResultTableRow.twig' %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include '_partials/pagination.html.twig' %}
+
+
+{% endblock %}

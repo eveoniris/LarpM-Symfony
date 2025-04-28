@@ -19,67 +19,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/merveille', name: 'merveille.')]
 class MerveilleController extends AbstractController
 {
-    #[Route(name: 'index')]
-    #[Route(name: 'list')]
-    public function indexAction(
-        Request $request,
-        PagerService $pagerService,
-        MerveilleRepository $merveilleRepository,
-    ): Response {
-        $pagerService->setRequest($request)->setRepository($merveilleRepository);
-
-        return $this->render('merveille/list.twig', [
-            'pagerService' => $pagerService,
-            'paginator' => $merveilleRepository->searchPaginated($pagerService),
-        ]);
-    }
-
     #[Route('/add', name: 'add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate(
             $request,
             new Merveille(),
-            MerveilleForm::class
-        );
-    }
-
-    #[Route('/{merveille}/detail', name: 'detail', requirements: ['merveille' => Requirement::DIGITS])]
-    public function detailAction(#[MapEntity] Merveille $merveille): Response
-    {
-        return $this->render('merveille\detail.twig', [
-            'merveille' => $merveille,
-        ]);
-    }
-
-    #[Route('/{merveille}/udpate', name: 'update', requirements: ['merveille' => Requirement::DIGITS])]
-    public function updateAction(Request $request, #[MapEntity] Merveille $merveille): RedirectResponse|Response
-    {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $merveille,
-            MerveilleForm::class
-        );
-    }
-
-    #[Route('/{merveille}/delete', name: 'delete', requirements: ['merveille' => Requirement::DIGITS])]
-    public function deleteAction(
-        #[MapEntity] Merveille $merveille,
-    ): RedirectResponse|Response {
-        return $this->genericDelete(
-            $merveille,
-            'Supprimer une merveille',
-            'La merveille a été supprimée',
-            'merveille.list',
-            [
-                ['route' => $this->generateUrl('merveille.list'), 'name' => 'Liste des merveilles'],
-                [
-                    'route' => $this->generateUrl('merveille.detail', ['merveille' => $merveille->getId()]),
-                    'merveille' => $merveille->getId(),
-                    'name' => $merveille->getLabel(),
-                ],
-                ['name' => 'Supprimer une merveille'],
-            ]
+            MerveilleForm::class,
         );
     }
 
@@ -108,7 +54,61 @@ class MerveilleController extends AbstractController
                 'title_update' => $this->translator->trans('Modifier une merveille'),
                 ...$msg,
             ],
-            entityCallback: $entityCallback
+            entityCallback: $entityCallback,
+        );
+    }
+
+    #[Route('/{merveille}/delete', name: 'delete', requirements: ['merveille' => Requirement::DIGITS])]
+    public function deleteAction(
+        #[MapEntity] Merveille $merveille,
+    ): RedirectResponse|Response {
+        return $this->genericDelete(
+            $merveille,
+            'Supprimer une merveille',
+            'La merveille a été supprimée',
+            'merveille.list',
+            [
+                ['route' => $this->generateUrl('merveille.list'), 'name' => 'Liste des merveilles'],
+                [
+                    'route' => $this->generateUrl('merveille.detail', ['merveille' => $merveille->getId()]),
+                    'merveille' => $merveille->getId(),
+                    'name' => $merveille->getLabel(),
+                ],
+                ['name' => 'Supprimer une merveille'],
+            ],
+        );
+    }
+
+    #[Route('/{merveille}/detail', name: 'detail', requirements: ['merveille' => Requirement::DIGITS])]
+    public function detailAction(#[MapEntity] Merveille $merveille): Response
+    {
+        return $this->render('merveille\detail.twig', [
+            'merveille' => $merveille,
+        ]);
+    }
+
+    #[Route(name: 'index')]
+    #[Route(name: 'list')]
+    public function indexAction(
+        Request $request,
+        PagerService $pagerService,
+        MerveilleRepository $merveilleRepository,
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($merveilleRepository)->setLimit(50);
+
+        return $this->render('merveille/list.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $merveilleRepository->searchPaginated($pagerService),
+        ]);
+    }
+
+    #[Route('/{merveille}/udpate', name: 'update', requirements: ['merveille' => Requirement::DIGITS])]
+    public function updateAction(Request $request, #[MapEntity] Merveille $merveille): RedirectResponse|Response
+    {
+        return $this->handleCreateOrUpdate(
+            $request,
+            $merveille,
+            MerveilleForm::class,
         );
     }
 }

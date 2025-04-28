@@ -15,30 +15,16 @@
     {% endif %}</h6>
 <div class="card p-2 mb-2">
     <p>La richesse de votre groupe est composé des pièces d'argent fournies par les territoires qu'il contrôle, ainsi de
-        ce qui reste des enveloppes de retour du jeu précédent</p>
+        ce qui reste des enveloppes de retour du jeu précédent.</p>
     <ul>
-        {% if groupe.hasRichesse %}
-            {% for territoire in groupe.territoires %}
-                <li><strong>{{ 3*territoire.richesse|default(0) }} pièces d'argent</strong> fournies par
-                    <strong>{{ territoire.nom }}</strong>. Etat {{ territoire.statut|default('stable')|lower }}
-                    : {% if territoire.statut == 'Instable' %}0.5 x {% endif %}3 x ( {{ territoire.tresor|default(0) }}
-                    [Fief]
-                    {% for construction in territoire.constructions %}
-                    {% if construction.id == 6 or construction.id == 10 %}
-                        + 5 [{{ construction.label }}]
-                    {% endif %}
-                    {% if construction.id == 23 %}
-                        + 10 [{{ construction.label }}]
-                    {% endif %}
-                    {% endfor %})
-                </li>
-            {% endfor %}
+        {% set allRichesse = groupeService.allRichesseDisplay(groupe) %}
+        {% for richesse in allRichesse %}
+            <li>{{ richesse.label|raw }}</li>
         {% else %}
-            <li>Aucune pièces d'argent fournies par les territoires</li>
-        {% endif %}
-        <li><strong>{{ groupe.richesse|default(0) }} pièces d'argent</strong> supplémentaires</li>
+            <li>Aucune</li>
+        {% endfor %}
     </ul>
-    TOTAL : {{ groupe.richesseTotale|default(0) }} pièces d'argent
+    TOTAL : {{ groupeService.allRichesse(groupe)|default(0) }} pièces d'argent
 </div>
 
 <h6><strong>Ressources</strong>
@@ -48,29 +34,17 @@
     {% endif %}
 </h6>
 <div class="card p-2 mb-2">
-    <p>Les ressources de votre groupe sont composés des ressources fournis par les territoires qu'il contrôle, ainsi de
-        ce qui reste des enveloppes de retour du jeu précédent</p>
+    <p>Les ressources de votre groupe sont composés des ressources fournies par les territoires qu'il contrôle, ainsi de
+        ce qui reste des enveloppes de retour du jeu précédent.</p>
     <ul>
-        {% if groupe.hasRessource %}
-            {% for territoire in groupe.territoires %}
-                {% for ressource in territoire.exportations %}
-                    {% set nbRessource = 3 %}
-                    {% if territoire.statut == 'Instable' %}
-                        {% set nbRessource = 2 %}
-                    {% endif %}
-                    <li><strong>{{ nbRessource }} {{ ressource.label }}</strong> fourni(e)s par
-                        <strong>{{ territoire.nom }}</strong></li>
-                {% endfor %}
-            {% endfor %}
-        {% else %}
-            <li>Aucune ressource fourni par les territoire</li>
-        {% endif %}
+        {% set allRessource = groupeService.allRessource(groupe) %}
 
-        {% for groupeHasRessource in groupe.groupeHasRessources %}
-            <li><strong>{{ groupeHasRessource.quantite }} {{ groupeHasRessource.ressource.label }}</strong></li>
+        {% for groupeRessource in allRessource %}
+            <li>{{ groupeRessource.quantite }} {{ groupeRessource.ressource.label|raw }}</li>
         {% else %}
             <li>Aucune ressource additionnelle</li>
         {% endfor %}
+
     </ul>
 </div>
 
@@ -80,30 +54,19 @@
                 href="{{ path('groupe.ingredients', {'groupe': groupe.id}) }}">Modifier les ingrédients</a>
     {% endif %}
 </h6>
+
 <div class="card p-2 mb-2">
     <p>Les ingrédients de votre groupe sont fournis par les territoires qu'il contrôle, ainsi de ce qui reste des
-        enveloppes de retour du jeu précédent</p>
+        enveloppes de retour du jeu précédent.</p>
     <ul>
-        {% if groupe.hasIngredient %}
-            {% for territoire in groupe.territoires %}
-                {% set nbIngredient = 5 %}
-                {% if territoire.statut == 'Instable' %}
-                    {% set nbIngredient = 3 %}
-                {% endif %}
-                {% for ingredient in territoire.ingredients %}
-                    <li><strong>{{ nbIngredient }} {{ ingredient.label }}</strong> fourni(e)s par
-                        <strong>{{ territoire.nom }}</strong></li>
-                {% endfor %}
-            {% endfor %}
-        {% else %}
-            <li>Aucun ingrédient fourni par les territoires</li>
-        {% endif %}
+        {% set allIngredient = groupeService.allIngredient(groupe) %}
 
-        {% for groupeHasIngredient in groupe.groupeHasIngredients %}
-            <li><strong>{{ groupeHasIngredient.quantite }} {{ groupeHasIngredient.ingredient.fullLabel }}</strong></li>
+        {% for groupeHasIngredient in allIngredient %}
+            <li>{{ groupeHasIngredient.quantite }} {{ groupeHasIngredient.ingredient.label|raw }}</li>
         {% else %}
             <li>Aucun ingrédient additionnel</li>
         {% endfor %}
+
     </ul>
 </div>
 
@@ -137,9 +100,11 @@
     <p>Vous pouvez ajoutez des objets dans l'enveloppe de groupe. Si l'objet que vous voulez ajouter n'existe pas
         encore, vous pouvez le créer vous-même.</p>
     <ul>
-        {% for item in groupe.items %}
+        {% set allItems = groupeService.allItems(groupe) %}
+        {% for item in allItems %}
             <li>
-                <a href="{{ path('item.detail', {'item':item.id}) }}"><strong>{{ item.numero }}</strong>&nbsp;{{ item.label }}
+                <a href="{{ path('item.detail', {'item':item.id}) }}">
+                    <strong>{{ item.numero }}</strong>&nbsp;{{ item.label }}
                 </a></li>
         {% else %}
             <li>Aucun</li>
@@ -155,7 +120,14 @@
     {% endif %}
 </h6>
 <div class="card p-2 mb-2">
-    {{ groupe.materiel|default('Aucun')|markdown_to_html }}
+    {% set allMateriel = groupeService.allMateriel(groupe) %}
+    {% for materiel in allMateriel %}
+        {{ materiel|default('Aucun')|markdown_to_html }}<br/>
+    {% else %}
+        Aucun
+    {% endfor %}
+
+
 </div>
 
 {% if groupe.nextSession %}

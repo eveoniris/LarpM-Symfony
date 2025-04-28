@@ -21,9 +21,8 @@ use Doctrine\ORM\Mapping\Table;
 #[InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseRessource', 'extended' => 'Ressource'])]
-
 class BaseRessource
-{   
+{
     #[Id]
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     #[GeneratedValue(strategy: 'AUTO')]
@@ -78,6 +77,71 @@ class BaseRessource
         $this->importateurs = new ArrayCollection();
     }
 
+    public function addExportateur($territoire): static
+    {
+        $this->exportateurs[] = $territoire;
+
+        return $this;
+    }
+
+    /**
+     * Add GroupeHasRessource entity to collection (one to many).
+     */
+    public function addGroupeHasRessource(GroupeHasRessource $groupeHasRessource): static
+    {
+        $this->groupeHasRessources[] = $groupeHasRessource;
+
+        return $this;
+    }
+
+    public function addImportateur($territoire): static
+    {
+        $this->importateurs[] = $territoire;
+
+        return $this;
+    }
+
+    /**
+     * Add PersonnageRessource entity to collection (one to many).
+     */
+    public function addPersonnageRessource(PersonnageRessource $personnageRessource): static
+    {
+        $this->personnageRessources[] = $personnageRessource;
+
+        return $this;
+    }
+
+    /**
+     * Add TechnologiesRessources entity to collection (one to many).
+     */
+    public function addTechnologieRessource(TechnologiesRessources $technologieRessource): static
+    {
+        $this->technologiesRessources[] = $technologieRessource;
+
+        return $this;
+    }
+
+    public function getExportateurs(): Collection
+    {
+        return $this->exportateurs;
+    }
+
+    /**
+     * Get GroupeHasRessource entity collection (one to many).
+     */
+    public function getGroupeHasRessources(): Collection
+    {
+        return $this->groupeHasRessources;
+    }
+
+    /**
+     * Get the value of id.
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
     /**
      * Set the value of id.
      */
@@ -88,12 +152,17 @@ class BaseRessource
         return $this;
     }
 
-    /**
-     * Get the value of id.
-     */
-    public function getId(): int
+    public function getImportateurs(): Collection
     {
-        return $this->id;
+        return $this->importateurs;
+    }
+
+    /**
+     * Get the value of label.
+     */
+    public function getLabel(): string
+    {
+        return $this->label ?? '';
     }
 
     /**
@@ -107,19 +176,42 @@ class BaseRessource
     }
 
     /**
-     * Get the value of label.
+     * Get PersonnageRessource entity collection (one to many).
      */
-    public function getLabel(): string
+    public function getPersonnageRessources(): Collection
     {
-        return $this->label ?? '';
+        return $this->personnageRessources;
     }
 
     /**
-     * Add GroupeHasRessource entity to collection (one to many).
+     * Get Rarete entity (many to one).
      */
-    public function addGroupeHasRessource(GroupeHasRessource $groupeHasRessource): static
+    public function getRarete(): Rarete
     {
-        $this->groupeHasRessources[] = $groupeHasRessource;
+        return $this->rarete;
+    }
+
+    /**
+     * Set Rarete entity (many to one).
+     */
+    public function setRarete(Rarete $rarete = null): static
+    {
+        $this->rarete = $rarete;
+
+        return $this;
+    }
+
+    /**
+     * Get TechnologiesRessources entity collection (one to many).
+     */
+    public function getTechnologiesRessources(): Collection
+    {
+        return $this->technologiesRessources;
+    }
+
+    public function removeExportateur($territoire): static
+    {
+        $this->exportateurs->removeElement($territoire);
 
         return $this;
     }
@@ -134,20 +226,9 @@ class BaseRessource
         return $this;
     }
 
-    /**
-     * Get GroupeHasRessource entity collection (one to many).
-     */
-    public function getGroupeHasRessources(): Collection
+    public function removeImportateur($territoire): static
     {
-        return $this->groupeHasRessources;
-    }
-
-    /**
-     * Add PersonnageRessource entity to collection (one to many).
-     */
-    public function addPersonnageRessource(PersonnageRessource $personnageRessource): static
-    {
-        $this->personnageRessources[] = $personnageRessource;
+        $this->importateurs->removeElement($territoire);
 
         return $this;
     }
@@ -163,93 +244,11 @@ class BaseRessource
     }
 
     /**
-     * Get PersonnageRessource entity collection (one to many).
-     */
-    public function getPersonnageRessources(): Collection
-    {
-        return $this->personnageRessources;
-    }
-
-    /**
-     * Add TechnologiesRessources entity to collection (one to many).
-     */
-    public function addTechnologieRessource(TechnologiesRessources $technologieRessource): static
-    {
-        $this->technologiesRessources[] = $technologieRessource;
-
-        return $this;
-    }
-
-    /**
      * Remove TechnologiesRessources entity from collection (one to many).
      */
     public function removeTechnologieRessource(TechnologiesRessources $technologieRessource): static
     {
         $this->technologiesRessources->removeElement($technologieRessource);
-
-        return $this;
-    }
-
-    /**
-     * Get TechnologiesRessources entity collection (one to many).
-     */
-    public function getTechnologiesRessources(): Collection
-    {
-        return $this->technologiesRessources;
-    }
-
-    /**
-     * Set Rarete entity (many to one).
-     */
-    public function setRarete(Rarete $rarete = null): static
-    {
-        $this->rarete = $rarete;
-
-        return $this;
-    }
-
-    /**
-     * Get Rarete entity (many to one).
-     */
-    public function getRarete(): Rarete
-    {
-        return $this->rarete;
-    }
-
-    public function getExportateurs(): Collection
-    {
-        return $this->exportateurs;
-    }
-
-    public function getImportateurs(): Collection
-    {
-        return $this->importateurs;
-    }
-
-    public function addImportateur($territoire): static
-    {
-        $this->importateurs[] = $territoire;
-
-        return $this;
-    }
-
-    public function removeImportateur($territoire): static
-    {
-        $this->importateurs->removeElement($territoire);
-
-        return $this;
-    }
-
-    public function addExportateur($territoire): static
-    {
-        $this->exportateurs[] = $territoire;
-
-        return $this;
-    }
-
-    public function removeExportateur($territoire): static
-    {
-        $this->exportateurs->removeElement($territoire);
 
         return $this;
     }
