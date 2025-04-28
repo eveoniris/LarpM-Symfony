@@ -45,8 +45,10 @@
 
     {% if personnage.isBraceletSetted == false %}
         {% set messageBracelet %}
-            Vous n'avez pas encore indiqué si vous avez vos propres bracelets de langue, ou si nous devons vous en fournir dans votre enveloppe de jeu.<br />
-            <a href="{{ path('personnage.update', {'personnage': personnage.id}) }}#personnage_update_form_bracelet">mettre à jour ma préférence</a>
+            Vous n'avez pas encore indiqué si vous avez vos propres bracelets de langue, ou si nous devons vous en fournir dans votre enveloppe de jeu.
+            <br/>
+            <a href="{{ path('personnage.update', {'personnage': personnage.id}) }}#personnage_update_form_bracelet">mettre
+                à jour ma préférence</a>
         {% endset %}
         {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : messageBracelet} %}
     {% endif %}
@@ -55,20 +57,30 @@
         <div class="d-flex justify-content-between">
             {% for espece in personnage.especes %}
                 <div>
-                    <a href="{{ path('espece.detail', {'espece': espece.id}) }}"
-                       class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0 me-1">
+                    {% if isAdmin %}
+                        <a href="{{ path('espece.detail', {'espece': espece.id}) }}"
+                           class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0 me-1">
+                            {% if espece.isSecret %}<i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                                       data-placement="top"
+                                                       title="Secret"></i> - {% endif %} {{ espece.nom }}
+                        </a>
+                    {% else %}
                         {% if espece.isSecret %}<i class="fa fa-user-secret text-warning" data-toggle="tooltip"
                                                    data-placement="top"
                                                    title="Secret"></i> - {% endif %} {{ espece.nom }}
-                    </a>
+                    {% endif %}
                 </div>
             {% else %}
                 {% set humanEspece = personnageService.getHumanEspece() %}
                 <div>
-                    <a href="{{ path('espece.detail', {'espece': humanEspece.id}) }}"
-                       class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0 me-1">
+                    {% if isAdmin %}
+                        <a href="{{ path('espece.detail', {'espece': humanEspece.id}) }}"
+                           class="badge text-bg-secondary rounded-pill link-underline link-underline-opacity-0 me-1">
+                            {{ humanEspece.nom }}
+                        </a>
+                    {% else %}
                         {{ humanEspece.nom }}
-                    </a>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>
@@ -303,17 +315,18 @@
     {% set persoSecondaireHtml %}
         {% if participant is defined %}
             {% if participant.personnageSecondaire is defined and participant.personnageSecondaire.classe is defined %}
-                    <div>{{ participant.personnageSecondaire.classe.label }}</div>
-                    <div>
-                       <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}"
-                           data-bs-toggle="tooltip" data-bs-placement="bottom"
-                           title="Modifier"
-                           class="btn btn-sm btn-secondary ms-2">
-                            <i class="fa fa-edit" aria-hidden="true"></i>
-                        </a>
-                    </div>
+                <div>{{ participant.personnageSecondaire.classe.label }}</div>
+                <div>
+                    <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier"
+                       class="btn btn-sm btn-secondary ms-2">
+                        <i class="fa fa-edit" aria-hidden="true"></i>
+                    </a>
+                </div>
             {% elseif isAdmin %}
-                <a class="text-danger" href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">
+                <a class="text-danger"
+                   href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">
                     Choisir son personnage secondaire
                 </a>
             {% endif %}
