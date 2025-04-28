@@ -28,6 +28,7 @@ use App\Form\Groupe\GroupeRichesseForm;
 use App\Form\Groupe\GroupeScenaristeForm;
 use App\Manager\GroupeManager;
 use App\Repository\GroupeRepository;
+use App\Repository\RessourceRepository;
 use App\Repository\TerritoireRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
@@ -950,7 +951,7 @@ class GroupeController extends AbstractController
         EntityManagerInterface $entityManager,
         #[MapEntity] Groupe $groupe,
     ): Response {
-        // recherche les personnages du prochains GN membre du groupe
+        // recherche les personnages du prochain GN membre du groupe
         $session = $groupe->getNextSession();
         $participants = $session->getParticipants();
 
@@ -966,16 +967,15 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/print/materiel/groupe', name: 'print.materiel.groupe')]
     public function printMaterielGroupeAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Groupe $groupe,
+        RessourceRepository $ressourceRepository,
     ): Response {
-        // recherche les personnages du prochains GN membre du groupe
+        // recherche les personnages du prochain GN membre du groupe
         $session = $groupe->getNextSession();
-        $participants = $session->getParticipants();
+        $participants = $session?->getParticipants();
 
-        $ressourceRares = new ArrayCollection($entityManager->getRepository(Ressource::class)->findRare());
-        $ressourceCommunes = new ArrayCollection($entityManager->getRepository(Ressource::class)->findCommun());
+        $ressourceRares = new ArrayCollection($ressourceRepository->findRare());
+        $ressourceCommunes = new ArrayCollection($ressourceRepository->findCommun());
         $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
 
         return $this->render('groupe/printMaterielGroupe.twig', [
@@ -1120,18 +1120,18 @@ class GroupeController extends AbstractController
                     'ISO-8859-1',
                 );
                 $line[] = $quete['groupe']->getTerritoire() ? mb_convert_encoding(
-                    (string)$quete['groupe']->getTerritoire()->getNom(),
+                    (string) $quete['groupe']->getTerritoire()->getNom(),
                     'ISO-8859-1',
                 ) : '';
 
                 foreach ($quete['quete']['needs'] as $ressources) {
-                    $line[] = mb_convert_encoding((string)$ressources->getLabel(), 'ISO-8859-1');
+                    $line[] = mb_convert_encoding((string) $ressources->getLabel(), 'ISO-8859-1');
                 }
 
                 $line[] = '';
                 $line[] = '';
                 foreach ($quete['quete']['recompenses'] as $recompense) {
-                    $line[] = mb_convert_encoding((string)$recompense, 'ISO-8859-1');
+                    $line[] = mb_convert_encoding((string) $recompense, 'ISO-8859-1');
                 }
 
                 $line[] = '';
