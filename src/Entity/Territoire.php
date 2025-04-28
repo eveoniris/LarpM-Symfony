@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\Entity;
 class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringable
 {
     private ArrayCollection $valideOrigineBonus;
+
     /**
      * Constructeur.
      */
@@ -25,6 +26,312 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
         $this->setOrdreSocial(3);
         $this->valideOrigineBonus = new ArrayCollection();
         parent::__construct();
+    }
+
+    /**
+     * Affichage.
+     */
+    public function __toString(): string
+    {
+        return $this->getNom();
+    }
+
+    /**
+     * Add Ressource entity to collection.
+     *
+     * @return Territoire
+     */
+    public function addExportation(Ressource $ressource): static
+    {
+        $ressource->addExportateur($this);
+        $this->exportations[] = $ressource;
+
+        return $this;
+    }
+
+    /**
+     * Add Ressource entity to collection.
+     *
+     * @return Territoire
+     */
+    public function addImportation(Ressource $ressource): static
+    {
+        $ressource->addImportateur($this);
+        $this->importations[] = $ressource;
+
+        return $this;
+    }
+
+    /**
+     * Fourni tous les ancêtres d'un territoire.
+     */
+    public function getAncestors(): Collection
+    {
+        $ancestors = new ArrayCollection();
+        if ($this->getTerritoire()) {
+            $ancestors[] = $this->getTerritoire();
+            $ancestors = new ArrayCollection(
+                array_merge($ancestors->toArray(), $this->getTerritoire()->getAncestors()->toArray()),
+            );
+        }
+
+        return $ancestors;
+    }
+
+    /**
+     * Fourni la culture d'un territoire ou à défaut la culture du territoire parent.
+     */
+    public function getCulture(): ?Culture
+    {
+        if (isset($this->culture)) {
+            return parent::getCulture();
+        }
+
+        if ($this->getTerritoire()) {
+            return $this->getTerritoire()->getCulture();
+        }
+
+        return null;
+    }
+
+    /**
+     * Fourni la defense d'un territoire.
+     */
+    public function getDefense(): int|float
+    {
+        $defense = 0;
+        if (0 !== $this->getResistance()) {
+            $defense += $this->getResistance();
+        }
+
+        foreach ($this->getConstructions() as $construction) {
+            $defense += $construction->getDefense();
+        }
+
+        return $defense;
+    }
+
+    /**
+     * Get Ressource entity collection.
+     *
+     * @return Collection
+     */
+    public function getExportations()
+    {
+        return $this->exportations;
+    }
+
+    /**
+     * Fourni le nom de tous les groupes présents dans ce territoire.
+     */
+    public function getGroupesNom(): array
+    {
+        $groupes = [];
+
+        if ($this->getGroupe()) {
+            $groupes[] = $this->getGroupe()->getNom();
+        }
+
+        foreach ($this->getTerritoires() as $territoire) {
+            $groupes = array_merge($groupes, $territoire->getGroupes());
+        }
+
+        return array_unique($groupes);
+    }
+
+    /**
+     * Fourni le nom de tous les groupes de PJ présents dans ce territoire.
+     */
+    public function getGroupesPj(): array
+    {
+        $groupes = new ArrayCollection();
+        if ($this->getGroupe() && $this->getGroupe()->getPj()) {
+            $groupes->add($this->getGroupe()->getNom());
+        }
+
+        foreach ($this->getTerritoires() as $territoire) {
+            if (!$groupes->contains($territoire)) {
+                $groupes->add($territoire->getGroupesPj());
+            }
+        }
+
+        return $groupes->toArray();
+    }
+
+    /**
+     * Get Ressource entity collection.
+     *
+     * @return Collection
+     */
+    public function getImportations($rarete = null)
+    {
+        if ($rarete) {
+            $importations = new ArrayCollection();
+            foreach ($this->importations as $ressource) {
+                if ($ressource->getRarete()->getLabel() == $rarete) {
+                    $importations[] = $ressource;
+                }
+            }
+
+            return $importations;
+        }
+
+        return $this->importations;
+    }
+
+    /**
+     * Fourni la langue principale du territoire.
+     */
+    public function getLanguePrincipale()
+    {
+        return $this->getLangue();
+    }
+
+    /**
+     * Fourni le nombre de personnages nobles rattachés à ce territoire.
+     */
+    public function getNbrNoble(): array
+    {
+        $nobles = [];
+        foreach ($this->getGroupesFull() as $groupe) {
+            foreach ($groupe->getPersonnages() as $personnage) {
+                if ($personnage->hasCompetence('Noblesse')) {
+                    $nobles[] = $personnage->getId();
+                }
+            }
+        }
+
+        foreach ($this->getTerritoires() as $territoire) {
+            $nobles = array_unique(array_merge($nobles, $territoire->getNbrNoble()));
+            /*
+            echo "<pre>";
+            echo $territoire->getNom()." : ".count($territoire->getNbrNoble())."/".count($nobles);
+            echo "</pre>";
+            echo "<hr />";
+            */
+        }
+
+        return array_unique($nobles);
+    }
+
+    public function getGroupesFull(): array
+    {
+        $groupes = [];
+        if ($this->getGroupe()) {
+            $groupes[] = $this->getGroupe();
+        }
+
+        foreach ($this->getTerritoires() as $territoire) {
+            $groupes = array_merge($groupes, $territoire->getGroupesFull());
+        }
+
+        return array_unique($groupes);
+    }
+
+    /**
+     * Fourni le nom complet d'un territoire.
+     */
+    public function getNomComplet(): string
+    {
+        $string = $this->getNom();
+
+        if ($this->getGroupe()) {
+            $string .= ' (#'.$this->getGroupe()->getNumero().' '.$this->getGroupe()->getNom().')';
+        }
+
+        return $string;
+    }
+
+    /**
+     * Fourni le nom complet d'un territoire.
+     */
+    public function getNomTree()
+    {
+        $string = $this->getNom();
+
+        if (0 != $this->getTerritoires()->count()) {
+            $string .= ' > ';
+            $string .= implode(', ', $this->getTerritoires()->toArray());
+        }
+
+        return $string;
+    }
+
+    /**
+     * Fourni la religion principale du territoire.
+     */
+    public function getReligionPrincipale()
+    {
+        return $this->getReligion();
+    }
+
+    /**
+     * Fourni la richesse d'un territoire, en fonction de son statut (1/2 si instable), et des constructions.
+     */
+    public function getRichesse(): float|int|null
+    {
+        $tresor = parent::getTresor();
+        if (0 === $tresor) {
+            $tresor = 0;
+        }
+
+        // TODO ajouter les revenus des bâtiments.
+        foreach ($this->getConstructions() as $construction) {
+            if (6 === $construction->getId()) { /* Comptoir commercial */
+                $tresor += 5;
+            }
+
+            if (23 === $construction->getId()) { /* Foyer d'orfèvre */
+                $tresor += 10;
+            }
+
+            if (10 === $construction->getId()) { /* Port */
+                $tresor += 5;
+            }
+        }
+
+        // gestion de l'état du territoire
+        return match ($this->getStatut()) {
+            'Normal' => $tresor,
+            'Instable' => ceil($tresor / 2),
+            default => $tresor,
+        };
+    }
+
+    /**
+     * Fourni l'indicateur d'ordre/Instable.
+     */
+    public function getStatutIndex(): int
+    {
+        return match ($this->getStatut()) {
+            'Normal' => 0,
+            'Instable' => 1,
+            default => 0,
+        };
+    }
+
+    /**
+     * Fourni l'arbre des territoires'.
+     */
+    public function getTree()
+    {
+        if ($this->getTerritoire()) {
+            return $this.' --- '.$this->getTerritoire().' --- '.$this->getTerritoire()->getRoot();
+        } else {
+            return $this;
+        }
+    }
+
+    /**
+     * Fourni le territoire racine.
+     */
+    public function getRoot()
+    {
+        if ($this->getTerritoire()) {
+            return $this->getTerritoire()->getRoot();
+        } else {
+            return $this;
+        }
     }
 
     /**
@@ -45,6 +352,22 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
         }
 
         return $this->valideOrigineBonus;
+    }
+
+    /**
+     * Determine si un territoire dispose d'une construction.
+     *
+     * @param unknown $label
+     */
+    public function hasConstruction($label): bool
+    {
+        foreach ($this->getConstructions() as $construction) {
+            if ($construction->getLabel() == $label) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -106,247 +429,6 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     }
 
     /**
-     * Affichage.
-     */
-    public function __toString(): string
-    {
-        return $this->getNom();
-    }
-
-    /**
-     * Determine si un territoire dispose d'une construction.
-     *
-     * @param unknown $label
-     */
-    public function hasConstruction($label): bool
-    {
-        foreach ($this->getConstructions() as $construction) {
-            if ($construction->getLabel() == $label) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Fourni la richesse d'un territoire, en fonction de son statut (1/2 si instable), et des constructions.
-     */
-    public function getRichesse()
-    {
-        $tresor = parent::getTresor();
-        if (0 === $tresor) {
-            $tresor = 0;
-        }
-
-        // TODO ajouter les revenus des bâtiments.
-        foreach ($this->getConstructions() as $construction) {
-            if (6 == $construction->getId()) { /* Comptoir commercial */
-                $tresor += 5;
-            }
-
-            if (23 == $construction->getId()) { /* Foyer d'orfèvre */
-                $tresor += 10;
-            }
-
-            if (10 == $construction->getId()) { /* Port */
-                $tresor += 5;
-            }
-        }
-
-        // gestion de l'état du territoire
-        return match ($this->getStatut()) {
-            'Normal' => $tresor,
-            'Instable' => ceil($tresor / 2),
-            default => $tresor,
-        };
-    }
-
-    /**
-     * Fourni la culture d'un territoire ou à défaut la culture du territoire parent.
-     */
-    public function getCulture(): ?Culture
-    {
-        if (isset($this->culture)) {
-            return parent::getCulture();
-        }
-
-        if ($this->getTerritoire()) {
-            return $this->getTerritoire()->getCulture();
-        }
-
-        return null;
-    }
-
-    /**
-     * Fourni le nombre de personnages nobles rattachés à ce territoire.
-     */
-    public function getNbrNoble(): array
-    {
-        $nobles = [];
-        foreach ($this->getGroupesFull() as $groupe) {
-            foreach ($groupe->getPersonnages() as $personnage) {
-                if ($personnage->hasCompetence('Noblesse')) {
-                    $nobles[] = $personnage->getId();
-                }
-            }
-        }
-
-        foreach ($this->getTerritoires() as $territoire) {
-            $nobles = array_unique(array_merge($nobles, $territoire->getNbrNoble()));
-            /*
-            echo "<pre>";
-            echo $territoire->getNom()." : ".count($territoire->getNbrNoble())."/".count($nobles);
-            echo "</pre>";
-            echo "<hr />";
-            */
-        }
-
-        return array_unique($nobles);
-    }
-
-    /**
-     * Fourni la defense d'un territoire.
-     */
-    public function getDefense(): int|float
-    {
-        $defense = 0;
-        if (0 !== $this->getResistance()) {
-            $defense += $this->getResistance();
-        }
-
-        foreach ($this->getConstructions() as $construction) {
-            $defense += $construction->getDefense();
-        }
-
-        return $defense;
-    }
-
-    /**
-     * Fourni le territoire racine.
-     */
-    public function getRoot()
-    {
-        if ($this->getTerritoire()) {
-            return $this->getTerritoire()->getRoot();
-        } else {
-            return $this;
-        }
-    }
-
-    /**
-     * Fourni l'arbre des territoires'.
-     */
-    public function getTree()
-    {
-        if ($this->getTerritoire()) {
-            return $this.' --- '.$this->getTerritoire().' --- '.$this->getTerritoire()->getRoot();
-        } else {
-            return $this;
-        }
-    }
-
-    /**
-     * Fourni tous les ancêtres d'un territoire.
-     */
-    public function getAncestors(): Collection
-    {
-        $ancestors = new ArrayCollection();
-        if ($this->getTerritoire()) {
-            $ancestors[] = $this->getTerritoire();
-            $ancestors = new ArrayCollection(array_merge($ancestors->toArray(), $this->getTerritoire()->getAncestors()->toArray()));
-        }
-
-        return $ancestors;
-    }
-
-    /**
-     * Calcule le nombre d'étape necessaire pour revenir au parent le plus ancien.
-     */
-    public function stepCount($count = 0)
-    {
-        if ($this->getTerritoire()) {
-            return $this->getTerritoire()->stepCount($count + 1);
-        }
-
-        return $count;
-    }
-
-    /**
-     * Fourni la langue principale du territoire.
-     */
-    public function getLanguePrincipale()
-    {
-        return $this->getLangue();
-    }
-
-    /**
-     * Défini la langue principale du territoire.
-     */
-    public function setLanguePrincipale(Langue $langue)
-    {
-        return $this->setLangue($langue);
-    }
-
-    /**
-     * Fourni la religion principale du territoire.
-     */
-    public function getReligionPrincipale()
-    {
-        return $this->getReligion();
-    }
-
-    /**
-     * Défini la religion principale d'un territoire.
-     */
-    public function setReligionPrincipale(Religion $religion)
-    {
-        return $this->setReligion($religion);
-    }
-
-    /**
-     * Fourni le nom complet d'un territoire.
-     */
-    public function getNomTree()
-    {
-        $string = $this->getNom();
-
-        if (0 != $this->getTerritoires()->count()) {
-            $string .= ' > ';
-            $string .= implode(', ', $this->getTerritoires()->toArray());
-        }
-
-        return $string;
-    }
-
-    /**
-     * Fourni le nom complet d'un territoire.
-     */
-    public function getNomComplet(): string
-    {
-        $string = $this->getNom();
-
-        if ($this->getGroupe()) {
-            $string .= ' (#'.$this->getGroupe()->getNumero().' '.$this->getGroupe()->getNom().')';
-        }
-
-        return $string;
-    }
-
-    /**
-     * Add Ressource entity to collection.
-     *
-     * @return Territoire
-     */
-    public function addExportation(Ressource $ressource): static
-    {
-        $ressource->addExportateur($this);
-        $this->exportations[] = $ressource;
-
-        return $this;
-    }
-
-    /**
      * Remove Ressource entity from collection.
      *
      * @return Territoire
@@ -355,29 +437,6 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     {
         $ressource->removeExportateur($this);
         $this->exportations->removeElement($ressource);
-
-        return $this;
-    }
-
-    /**
-     * Get Ressource entity collection.
-     *
-     * @return Collection
-     */
-    public function getExportations()
-    {
-        return $this->exportations;
-    }
-
-    /**
-     * Add Ressource entity to collection.
-     *
-     * @return Territoire
-     */
-    public function addImportation(Ressource $ressource): static
-    {
-        $ressource->addImportateur($this);
-        $this->importations[] = $ressource;
 
         return $this;
     }
@@ -396,86 +455,30 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     }
 
     /**
-     * Get Ressource entity collection.
-     *
-     * @return Collection
+     * Défini la langue principale du territoire.
      */
-    public function getImportations($rarete = null)
+    public function setLanguePrincipale(Langue $langue)
     {
-        if ($rarete) {
-            $importations = new ArrayCollection();
-            foreach ($this->importations as $ressource) {
-                if ($ressource->getRarete()->getLabel() == $rarete) {
-                    $importations[] = $ressource;
-                }
-            }
-
-            return $importations;
-        }
-
-        return $this->importations;
-    }
-
-    public function getGroupesFull(): array
-    {
-        $groupes = [];
-        if ($this->getGroupe()) {
-            $groupes[] = $this->getGroupe();
-        }
-
-        foreach ($this->getTerritoires() as $territoire) {
-            $groupes = array_merge($groupes, $territoire->getGroupesFull());
-        }
-
-        return array_unique($groupes);
+        return $this->setLangue($langue);
     }
 
     /**
-     * Fourni le nom de tous les groupes présents dans ce territoire.
+     * Défini la religion principale d'un territoire.
      */
-    public function getGroupesNom(): array
+    public function setReligionPrincipale(Religion $religion)
     {
-        $groupes = [];
-
-        if ($this->getGroupe()) {
-            $groupes[] = $this->getGroupe()->getNom();
-        }
-
-        foreach ($this->getTerritoires() as $territoire) {
-            $groupes = array_merge($groupes, $territoire->getGroupes());
-        }
-
-        return array_unique($groupes);
+        return $this->setReligion($religion);
     }
 
     /**
-     * Fourni le nom de tous les groupes de PJ présents dans ce territoire.
+     * Calcule le nombre d'étape necessaire pour revenir au parent le plus ancien.
      */
-    public function getGroupesPj(): array
+    public function stepCount($count = 0)
     {
-        $groupes = new ArrayCollection();
-        if ($this->getGroupe() && $this->getGroupe()->getPj()) {
-            $groupes->add($this->getGroupe()->getNom());
+        if ($this->getTerritoire()) {
+            return $this->getTerritoire()->stepCount($count + 1);
         }
 
-        foreach ($this->getTerritoires() as $territoire) {
-            if (!$groupes->contains($territoire)) {
-                $groupes->add($territoire->getGroupesPj());
-            }
-        }
-
-        return $groupes->toArray();
-    }
-
-    /**
-     * Fourni l'indicateur d'ordre/Instable.
-     */
-    public function getStatutIndex(): int
-    {
-        return match ($this->getStatut()) {
-            'Normal' => 0,
-            'Instable' => 1,
-            default => 0,
-        };
+        return $count;
     }
 }

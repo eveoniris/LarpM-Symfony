@@ -5,8 +5,11 @@ namespace App\Controller;
 use App\Entity\Personnage;
 use App\Entity\PersonnageBonus;
 use App\Enum\BonusPeriode;
+use App\Repository\ExperienceGainRepository;
+use App\Repository\ExperienceUsageRepository;
 use App\Repository\PersonnageRepository;
 use App\Repository\UserRepository;
+use App\Service\PagerService;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse as RedirectResponseAlias;
@@ -20,6 +23,88 @@ class AdminController extends AbstractController
 {
     // Returns a file size limit in bytes based on the PHP upload_max_filesize
     // and post_max_size
+    #[Route('/originebonus', name: 'originebonus')]
+    public function bonusOrigineAction(PersonnageRepository $rep): void
+    {
+        /** @var Personnage $personnage */
+        foreach ($rep->findBy(['vivant' => true]) as $personnage) {
+            if (!$territoire = $personnage->getTerritoire()) {
+                continue;
+            }
+            if (!$groupe = $personnage->getFirstParticipantGnGroupe()) {
+                continue;
+            }
+
+            if (!$origine = $groupe->getTerritoire()) {
+                continue;
+            }
+
+            if ($territoire->getId() !== $groupe->getTerritoire()?->getId()) {
+                continue;
+            }
+
+            foreach ($origine->getValideOrigineBonus() as $bonus) {
+                if (BonusPeriode::NATIVE === $bonus->getPeriode()) {
+                    $pBonus = new PersonnageBonus();
+                    $pBonus->setPersonnage($personnage);
+                    $pBonus->setBonus($bonus);
+                    $this->entityManager->persist($pBonus);
+                    $this->entityManager->flush($pBonus);
+                }
+            }
+        }
+
+        echo 'ok';
+        exit;
+    }
+
+    /**
+     * Vider le cache.
+     */
+    #[Route('/admin/cache/empty', name: 'admin.cache.empty')]
+    public function cacheEmptyAction(): RedirectResponseAlias
+    {
+        shell_exec('php -d memory_limit=-1 '.__DIR__.'/../../bin/console cache:clear');
+
+        $this->addFlash('success', 'Le cache a été vidé.');
+
+        return $this->redirectToRoute('admin', [], 303);
+    }
+
+    /**
+     * Page d'accueil de l'interface d'administration.
+     */
+    #[Route('/admin', name: 'admin')]
+    public function indexAction(): Response
+    {
+        $extensions = get_loaded_extensions();
+        $phpVersion = PHP_VERSION;
+        $zendVersion = zend_version();
+        $uploadMaxSize = $this->file_upload_max_size();
+
+        // taille du cache
+        $cacheTotalSpace = $this->foldersize(__DIR__.'/../../var/cache');
+        if ($cacheTotalSpace) {
+            $cacheTotalSpace = $this->getSymbolByQuantity($cacheTotalSpace);
+        }
+
+        // taille du log
+        $logTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../var/log'));
+
+        // taille des documents
+        $docTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../private/doc'));
+
+        return $this->render('index.twig', [
+            'phpVersion' => $phpVersion,
+            'zendVersion' => $zendVersion,
+            'uploadMaxSize' => $uploadMaxSize,
+            'extensions' => $extensions,
+            'cacheTotalSpace' => $cacheTotalSpace,
+            'logTotalSpace' => $logTotalSpace,
+            'docTotalSpace' => $docTotalSpace,
+        ]);
+    }
+
     private function file_upload_max_size(): float|int
     {
         static $max_size = -1;
@@ -57,17 +142,6 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Simplifie une taille en bytes et fourni le symbole adequat.
-     */
-    private function getSymbolByQuantity($bytes): string
-    {
-        $symbols = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-        $exp = $bytes ? floor(log($bytes) / log(1024)) : 0;
-
-        return sprintf('%.2f '.$symbols[$exp], $bytes / pow(1024, floor($exp)));
-    }
-
-    /**
      * Calcul la taille d'un dossier.
      *
      * @param unknown $path
@@ -95,37 +169,14 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Page d'accueil de l'interface d'administration.
+     * Simplifie une taille en bytes et fourni le symbole adequat.
      */
-    #[Route('/admin', name: 'admin')]
-    public function indexAction(): Response
+    private function getSymbolByQuantity($bytes): string
     {
-        $extensions = get_loaded_extensions();
-        $phpVersion = PHP_VERSION;
-        $zendVersion = zend_version();
-        $uploadMaxSize = $this->file_upload_max_size();
+        $symbols = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+        $exp = $bytes ? floor(log($bytes) / log(1024)) : 0;
 
-        // taille du cache
-        $cacheTotalSpace = $this->foldersize(__DIR__.'/../../var/cache');
-        if ($cacheTotalSpace) {
-            $cacheTotalSpace = $this->getSymbolByQuantity($cacheTotalSpace);
-        }
-
-        // taille du log
-        $logTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../var/log'));
-
-        // taille des documents
-        $docTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../private/doc'));
-
-        return $this->render('index.twig', [
-            'phpVersion' => $phpVersion,
-            'zendVersion' => $zendVersion,
-            'uploadMaxSize' => $uploadMaxSize,
-            'extensions' => $extensions,
-            'cacheTotalSpace' => $cacheTotalSpace,
-            'logTotalSpace' => $logTotalSpace,
-            'docTotalSpace' => $docTotalSpace,
-        ]);
+        return sprintf('%.2f '.$symbols[$exp], $bytes / pow(1024, floor($exp)));
     }
 
     /**
@@ -182,19 +233,6 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Vider le cache.
-     */
-    #[Route('/admin/cache/empty', name: 'admin.cache.empty')]
-    public function cacheEmptyAction(): RedirectResponseAlias
-    {
-        shell_exec('php -d memory_limit=-1 '.__DIR__.'/../../bin/console cache:clear');
-
-        $this->addFlash('success', 'Le cache a été vidé.');
-
-        return $this->redirectToRoute('admin', [], 303);
-    }
-
-    /**
      * Vider les logs.
      */
     #[Route('/admin/log/empty', name: 'admin.log.empty')]
@@ -219,7 +257,7 @@ class AdminController extends AbstractController
         $orderBy = $this->getRequestOrder(
             defOrderBy: 'email',
             alias: $alias,
-            allowedFields: $repository->getFieldNames()
+            allowedFields: $repository->getFieldNames(),
         );
 
         $paginator = $repository->getPaginator(
@@ -227,49 +265,57 @@ class AdminController extends AbstractController
             page: $this->getRequestPage(),
             orderBy: $orderBy,
             alias: $alias,
-            criterias: [Criteria::create()->where(
-                Criteria::expr()?->isNull($alias.'.etatCivil')
-            )]
+            criterias: [
+                Criteria::create()->where(
+                    Criteria::expr()?->isNull($alias.'.etatCivil'),
+                ),
+            ],
         );
 
         return $this->render(
             'admin/rappels.twig',
-            ['paginator' => $paginator, 'orderDir' => $this->getRequestOrderDir()]
+            ['paginator' => $paginator, 'orderDir' => $this->getRequestOrderDir()],
         );
     }
 
-    #[Route('/originebonus', name: 'originebonus')]
-    public function bonusOrigineAction(PersonnageRepository $rep): void
-    {
-        /** @var Personnage $personnage */
-        foreach ($rep->findBy(['vivant' => true]) as $personnage) {
-            if (!$territoire = $personnage->getTerritoire()) {
-                continue;
-            }
-            if (!$groupe = $personnage->getFirstParticipantGnGroupe()) {
-                continue;
-            }
+    #[Route('/admin/xp/gain', name: 'xp.gain')]
+    // TODO CSV Export
+    public function xpGainAction(
+        Request $request,
+        PagerService $pagerService,
+        ExperienceGainRepository $experienceGainRepository,
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($experienceGainRepository)->setLimit(50);
+        $pagerService->getOrderBy()->setDefaultOrderDir('DESC');
 
-            if (!$origine = $groupe->getTerritoire()) {
-                continue;
-            }
+        return $this->render(
+            'admin/xpGain.twig',
+            [
+                'pagerService' => $pagerService,
+                'paginator' => $experienceGainRepository->searchPaginated($pagerService),
+            ],
+        );
+    }
 
-            if ($territoire->getId() !== $groupe->getTerritoire()?->getId()) {
-                continue;
-            }
+    #[Route('/admin/xp/usage', name: 'xp.usage')]
+    // TODO CSV Export
+    public function xpUsageAction(
+        Request $request,
+        PagerService $pagerService,
+        ExperienceUsageRepository $experienceUsageRepository,
+    ): Response {
+        $pagerService->setRequest($request)
+            ->setRepository($experienceUsageRepository)
+            ->setLimit(50);
 
-            foreach ($origine->getValideOrigineBonus() as $bonus) {
-                if (BonusPeriode::NATIVE === $bonus->getPeriode()) {
-                    $pBonus = new PersonnageBonus();
-                    $pBonus->setPersonnage($personnage);
-                    $pBonus->setBonus($bonus);
-                    $this->entityManager->persist($pBonus);
-                    $this->entityManager->flush($pBonus);
-                }
-            }
-        }
+        $pagerService->getOrderBy()->setDefaultOrderDir('DESC');
 
-        echo 'ok';
-        exit;
+        return $this->render(
+            'admin/xpUsage.twig',
+            [
+                'pagerService' => $pagerService,
+                'paginator' => $experienceUsageRepository->searchPaginated($pagerService),
+            ],
+        );
     }
 }

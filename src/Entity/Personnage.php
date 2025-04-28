@@ -445,7 +445,6 @@ class Personnage extends BasePersonnage implements \Stringable
                 if (is_callable($value)) {
                     $pugilatHistory->setPugilat($value($competenceLevel, $competencePugilat));
                 } else {
-                    dump($value, $competencePugilat, $family);
                     $pugilatHistory->setPugilat($value ?? $competencePugilat);
                 }
                 $pugilatHistory->setExplication(

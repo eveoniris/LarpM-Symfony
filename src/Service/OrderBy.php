@@ -37,16 +37,6 @@ final class OrderBy
         return $this;
     }
 
-    public function setDefaultOrderDir(string $default): self
-    {
-        $default = strtoupper($default);
-        if ($this->isAllowed($default)) {
-            $this->sort = $default;
-        }
-
-        return $this;
-    }
-
     protected function getRequestOrderDir(?Request $request = null): string
     {
         $request ??= $this->requestStack?->getCurrentRequest();
@@ -72,12 +62,11 @@ final class OrderBy
         ?Request $request = null,
         ?string $alias = null,
     ): ?string {
-        $x = !empty($request?->get('order_by'));
         $request ??= $this->requestStack?->getCurrentRequest();
         if (!$request) {
             return null;
         }
-//dd($x, $request->get('order_by'));
+
         $this->orderBy = $request->query->getString('order_by')
             ?: $request->get('order_by') ?: null;
 
@@ -94,6 +83,23 @@ final class OrderBy
         return $this->orderBy;
     }
 
+    public function getAlias(): ?string
+    {
+        return $this->alias;
+    }
+
+    public function setAlias(?string $alias): self
+    {
+        $this->alias = $alias;
+
+        return $this;
+    }
+
+    public function getOrderBy(): ?string
+    {
+        return $this->orderBy;
+    }
+
     public function getSort(): string
     {
         if (empty($this->sort)) {
@@ -103,19 +109,12 @@ final class OrderBy
         return $this->sort ?? self::ASC;
     }
 
-    public function getOrderBy(): ?string
+    public function setDefaultOrderDir(string $default): self
     {
-        return $this->orderBy;
-    }
-
-    public function getAlias(): ?string
-    {
-        return $this->alias;
-    }
-
-    public function setAlias(?string $alias): self
-    {
-        $this->alias = $alias;
+        $default = strtoupper($default);
+        if ($this->isAllowed($default)) {
+            $this->sort = $default;
+        }
 
         return $this;
     }

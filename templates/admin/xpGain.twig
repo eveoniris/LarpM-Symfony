@@ -1,0 +1,57 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Technologie{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des gains de point XP' },
+        ]
+    } %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Liste des gains de points XP</h5>
+        </div>
+
+        {% include '_partials/formListSearch.twig' with
+            {
+                'actionPath' : path('xp.gain')
+            } %}
+    </div>
+
+    {% include '_partials/pagination.html.twig' %}
+
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'technologie.list', 'rows': [
+            {'name' : 'Date', 'field' : 'operation_date', 'css' : 'text-center'},
+            {'name' : 'Experience', 'field' : 'xp_gain', 'css' : 'text-center'},
+            {'name' : 'Personnage', 'field' : 'personnage.id', 'css' : 'text-center'},
+            {'name' : 'Competence', 'field' : 'competence.id', 'css' : 'text-center'},
+        ]} %}
+        <tbody>
+        {% for xp in paginator %}
+            <tr>
+                <td class="text-center align-middle col-2">{{ xp.operationDate|date("m/d/Y H:i:s")|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle col-1">{{ xp.xpGain|highlight(pagerService.searchValue) }}</td>
+                <td class="align-middle col-4">
+                    <a href="{{ path('personnage.detail', {'personnage': xp.personnage.id}) }}">
+                        {{ xp.personnage.idName }}
+                    </a>
+                </td>
+                <td class="align-middle col-3">
+                    {{ xp.explanation }}
+                </td>
+            </tr>
+        {% else %}
+            {% include '_partials/noResultTableRow.twig' %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include '_partials/pagination.html.twig' %}
+
+
+{% endblock %}
