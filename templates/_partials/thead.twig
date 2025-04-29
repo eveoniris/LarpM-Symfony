@@ -44,11 +44,18 @@
         {% set css = row.css %}
     {% endif %}
 
+    {% if row.style is not defined %}
+        {% set style = '' %}
+    {% else %}
+        {% set style = row.style %}
+    {% endif %}
+
     {% if options.visible == true %}
         {% if options.field is defined %}
             <th class="{{ css }}" scope="col">{% include '_partials/orderBy.twig' with options %}</th>
         {% elseif row.name is defined %}
-            <th class="{{ css }}" scope="col">{{ row.name }}</th>
+            <th class="{{ css }}" {% if row.style is defined %}style="{{ row.style }}"{% endif %}
+                scope="col">{{ row.name }}</th>
         {% endif %}
     {% endif %}
 

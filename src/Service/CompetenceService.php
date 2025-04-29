@@ -33,7 +33,7 @@ class CompetenceService
 
     public const COUT_GRATUIT = 0;
     public const COUT_DEFAUT = -1;
-
+    private static array $classesCompetencesFamilies = [];
     protected ?Competence $competence;
     protected ?CompetenceFamily $competenceFamily;
     protected ?Level $competenceLevel;
@@ -475,6 +475,53 @@ class CompetenceService
         }
 
         return $competences;
+    }
+
+    public function isCreation(Classe $classe, CompetenceFamily $competenceFamily): bool
+    {
+        return $this->isCompetenceFamilyTypeOf('creation', $classe, $competenceFamily);
+    }
+
+    private function isCompetenceFamilyTypeOf(string $type, Classe $classe, CompetenceFamily $competenceFamily): bool
+    {
+        if (!isset(self::$classesCompetencesFamilies[$classe->getId()][$type])) {
+            self::$classesCompetencesFamilies[$classe->getId()][$type] = match ($type) {
+                'normale' => $classe->getCompetenceFamilyNormales(),
+                'meconnue' => ['*'], // not in others
+                'creation' => $classe->getCompetenceFamilyCreations(),
+                'favorite' => $classe->getCompetenceFamilyFavorites(),
+            };
+        }
+
+        if ($type === 'meconnue') {
+            return !$this->isCompetenceFamilyTypeOf('normale', $classe, $competenceFamily)
+                && !$this->isCompetenceFamilyTypeOf('favorite', $classe, $competenceFamily)
+                && !$this->isCompetenceFamilyTypeOf('creation', $classe, $competenceFamily);
+        }
+
+        /** @var CompetenceFamily $competenceFamilyType */
+        foreach (self::$classesCompetencesFamilies[$classe->getId()][$type] as $competenceFamilyType) {
+            if ($competenceFamily->getId() === $competenceFamilyType->getid()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isFavorite(Classe $classe, CompetenceFamily $competenceFamily): bool
+    {
+        return $this->isCompetenceFamilyTypeOf('favorite', $classe, $competenceFamily);
+    }
+
+    public function isMeconnue(Classe $classe, CompetenceFamily $competenceFamily): bool
+    {
+        return $this->isCompetenceFamilyTypeOf('meconue', $classe, $competenceFamily);
+    }
+
+    public function isNormale(Classe $classe, CompetenceFamily $competenceFamily): bool
+    {
+        return $this->isCompetenceFamilyTypeOf('normale', $classe, $competenceFamily);
     }
 
     public function removeCompetence(int $cout = self::COUT_DEFAUT): self
