@@ -273,11 +273,11 @@ class CompetenceService
                     // Valeur minimum ?
                     if ($bonus->getJsonData()['min'] ?? null) {
                         // If parameters is not "true" is a loop
-                        $bonusValue = max(
-                            $this->getCompetenceCout(baseOnly: true) - $bonus->getValeur(),
-                            $bonus->getJsonData()['min'],
-                        );
-                        $count += $bonusValue;
+                        if (
+                            $this->getCompetenceCout(baseOnly: true) - $bonus->getValeur() > $bonus->getJsonData(
+                            )['min']) {
+                            $count += $bonus->getValeur();
+                        }
                     } elseif ($bonus->getJsonData()['COMPETENCE_FAMILLE'] ?? null) {
                         $bonusJsonData = $bonus->getJsonData()['COMPETENCE_FAMILLE'];
                         $family = $this->getCompetenceFamily();
