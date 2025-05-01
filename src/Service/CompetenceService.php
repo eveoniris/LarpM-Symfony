@@ -286,10 +286,12 @@ class CompetenceService
                             $canApply = true;
                         }
                         if (
-                            strtoupper($bonusJsonData['type'] ?? null) === $family?->getCompetenceFamilyType()->value
+                            strtoupper($bonusJsonData['type'] ?? null)
+                            === strtoupper($family?->getCompetenceFamilyType()->value)
                         ) {
                             $canApply = true;
                         }
+
                         // On considère le cout de compétence comme favorite
                         // On retire donc 1xp de cout en normal, 2 en méconnue
                         if ($canApply && 'FAVORITE' === $bonusJsonData['value']) {
@@ -298,16 +300,20 @@ class CompetenceService
                                 $this->getPersonnage()->getClasse(),
                                 $this->getCompetenceFamily(),
                             )) {
-                                $count += $this->getCompetenceLevel()->getCoutFavori() - $this->getCompetenceLevel(
-                                    )->getCout();
+                                $count += abs(
+                                    $this->getCompetenceLevel()->getCoutFavori() - $this->getCompetenceLevel()->getCout(
+                                    ),
+                                );
                             }
                             // CAS MECONNUE
                             if ($this->isMeconnue(
                                 $this->getPersonnage()->getClasse(),
                                 $this->getCompetenceFamily(),
                             )) {
-                                $count += $this->getCompetenceLevel()->getCoutMeconu() - $this->getCompetenceLevel(
-                                    )->getCout();
+                                $count += abs(
+                                    $this->getCompetenceLevel()->getCoutMeconu() - $this->getCompetenceLevel(
+                                    )->getCoutFavori(),
+                                );
                             }
                         }
                     } else {
