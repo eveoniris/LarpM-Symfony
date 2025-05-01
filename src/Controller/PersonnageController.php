@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Age;
-use App\Entity\Background;
 use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\Connaissance;
@@ -31,7 +30,6 @@ use App\Entity\PersonnageTrigger;
 use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\PugilatHistory;
-use App\Entity\Religion;
 use App\Entity\RenommeHistory;
 use App\Entity\Ressource;
 use App\Entity\Sort;
@@ -69,6 +67,7 @@ use App\Form\TriggerForm;
 use App\Form\TrombineForm;
 use App\Manager\GroupeManager;
 use App\Manager\PersonnageManager;
+use App\Repository\CompetenceRepository;
 use App\Repository\ConnaissanceRepository;
 use App\Repository\DomaineRepository;
 use App\Repository\GnRepository;
@@ -78,7 +77,9 @@ use App\Repository\PotionRepository;
 use App\Repository\PriereRepository;
 use App\Repository\SortRepository;
 use App\Repository\TechnologieRepository;
+use App\Repository\TerritoireRepository;
 use App\Security\MultiRolesExpression;
+use App\Service\CompetenceService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -518,12 +519,6 @@ class PersonnageController extends AbstractController
     }
 
     /**
-     * Permet de faire vieillir les personnages
-     * Cela va donner un Jeton Vieillesse à tous les personnages et changer la catégorie d'age des personnages cumulants deux jetons vieillesse.
-     */
-    // TODO
-
-    /**
      * Ajoute une lignée au personnage.
      */
     #[Route('/{personnage}/addLignee', name: 'add.lignee')]
@@ -572,6 +567,12 @@ class PersonnageController extends AbstractController
             'lignee' => $personnageLignee,
         ]);
     }
+
+    /**
+     * Permet de faire vieillir les personnages
+     * Cela va donner un Jeton Vieillesse à tous les personnages et changer la catégorie d'age des personnages cumulants deux jetons vieillesse.
+     */
+    // TODO
 
     /**
      * Ajoute une potion à un personnage.
@@ -1013,10 +1014,6 @@ class PersonnageController extends AbstractController
         );
     }
 
-    /**
-     * Affiche le détail d'un personnage (pour les orgas).
-     */
-    // #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
 
     #[Route('/{personnage}/domaine/{domaine}/delete', name: 'delete.domaine')]
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
@@ -1039,6 +1036,10 @@ class PersonnageController extends AbstractController
         );
     }
 
+    /**
+     * Affiche le détail d'un personnage (pour les orgas).
+     */
+    // #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
     /**
      * Retire une langue d'un personnage.
      */
@@ -2591,8 +2592,8 @@ class PersonnageController extends AbstractController
         $orderBy = $request->get('order_by') ?: 'id';
         $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
         $isAsc = 'ASC' == $orderDir;
-        $limit = (int)($request->get('limit') ?: 50);
-        $page = (int)($request->get('page') ?: 1);
+        $limit = (int) ($request->get('limit') ?: 50);
+        $page = (int) ($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
@@ -2820,6 +2821,56 @@ class PersonnageController extends AbstractController
         $app['personnage.manager']->setCurrentPersonnage($personnage->getId());
 
         return $this->redirectToRoute('homepage', [], 303);
+    }
+
+    #[Route('/{personnage}/competence/test', name: 'test.competence')]
+    #[IsGranted(Role::ADMIN->value)]
+    public function testAction(
+        Request $request,
+        PersonnageService $personnageService,
+        CompetenceService $competenceService,
+        #[MapEntity] Personnage $personnage,
+        CompetenceRepository $competenceRepository,
+        TerritoireRepository $territoireRepository,
+    ) {
+        $protectionApprenti = $competenceRepository->findOneBy(['id' => 117]);
+        $ressistanceApp = $competenceRepository->findOneBy(['id' => 122]);
+        $agiliteApprenti = $competenceRepository->findOneBy(['id' => 1]);
+        $territoire = $territoireRepository->findOneBy(['id' => 213]);
+
+
+        $data = 'Resistance<br />';
+        $data .= ($personnageService->getCompetenceCout($personnage, $ressistanceApp));
+
+        $data .= '<br />Agilite<br />';
+        $data .= ($personnageService->getCompetenceCout($personnage, $agiliteApprenti));
+
+
+        $data .= '<br />Protection<br />';
+        $data .= ($personnageService->getCompetenceCout($personnage, $agiliteApprenti));
+
+
+        $a = [
+            "min" => 1,
+            "condition" => [
+                [
+                    "type" => "COMPETENCE_FAMILLE",
+                    "value" => "PROTECTION",
+                ],
+            ],
+        ];
+        dump(json_encode($a));
+        dump(
+            $competenceService
+                ->setPersonnage($personnage)
+                ->setCompetence($protectionApprenti)
+                ->getCompetenceCout(),
+        );
+
+        return $this->render('personnage/test.twig', [
+            'personnage' => $personnage,
+            'data' => $data,
+        ]);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Bonus;
 use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
@@ -139,9 +140,12 @@ class CompetenceService
     /**
      * Calcul le cout d'une compétence en fonction de la classe du personnage.
      */
-    public function getCompetenceCout(): int
+    public function getCompetenceCout(bool $baseOnly = false): int
     {
-        $bonusCout = $this->getBonusCout();
+        $bonusCout = 0;
+        if (!$baseOnly) {
+            $bonusCout = $this->getBonusCout();
+        }
 
         if (Level::NIVEAU_1 === $this->getCompetenceLevel()->getIndex()
             && $this->getClasse()->getCompetenceFamilyCreations()->contains($this->getCompetenceFamily())
@@ -230,11 +234,15 @@ class CompetenceService
         return $this;
     }
 
-    public function getMerveilleBonusCout(): int // PersonnageApprentissage
+    public function getMerveilleBonusCout(): int
     {
         $count = 0;
+        $territoires = $this->getPersonnage()
+            ?->getLastParticipant()
+            ?->getGroupe()
+            ?->getTerritoires() ?? new ArrayCollection();
 
-        foreach ($this->getPersonnage()?->getLastParticipant()?->getGroupe()?->getTerritoires() ?? [] as $territoire) {
+        foreach ($territoires as $territoire) {
             /** @var Merveille $merveille */
             foreach ($territoire->getMerveilles() as $merveille) {
                 if (!$merveille->isActive()) {
@@ -247,22 +255,10 @@ class CompetenceService
                     continue;
                 }
 
-                if (!$this->conditionService->isValidConditions(
-                    $this->getPersonnage(),
-                    $bonus->getJsonData()['condition'] ?? [],
-                    $bonus,
-                )
-                ) {
-                    //    continue;
-                }
-
-                if (!$this->conditionService->isValidConditions(
-                    $this->getCompetence()->getCompetenceFamily(),
-                    $bonus->getJsonData()['condition'] ?? [],
-                    $bonus,
-                )
-                ) {
-                    continue;
+                foreach ([$this->getPersonnage(), $this->getCompetence()->getCompetenceFamily()] as $entity) {
+                    if (!$this->isValidConditions($entity, $bonus->getJsonData()['condition'] ?? [], $bonus)) {
+                        continue 2; // next merveille
+                    }
                 }
 
                 // Dans ce service, nous ne traitons que les bonus de type XP
@@ -274,7 +270,49 @@ class CompetenceService
                         || $this->getCompetence()->getId() === $bonus->getCompetence()->getId()
                     )
                 ) {
-                    $count += $bonus->getValeur();
+                    // Valeur minimum ?
+                    if ($bonus->getJsonData()['min'] ?? null) {
+                        // If parameters is not "true" is a loop
+                        $bonusValue = max(
+                            $this->getCompetenceCout(baseOnly: true) - $bonus->getValeur(),
+                            $bonus->getJsonData()['min'],
+                        );
+                        $count += $bonusValue;
+                    } elseif ($bonus->getJsonData()['COMPETENCE_FAMILLE'] ?? null) {
+                        $bonusJsonData = $bonus->getJsonData()['COMPETENCE_FAMILLE'];
+                        $family = $this->getCompetenceFamily();
+                        $canApply = false;
+                        if (($bonusJsonData['id'] ?? null) === $family?->getId()) {
+                            $canApply = true;
+                        }
+                        if (
+                            strtoupper($bonusJsonData['type'] ?? null) === $family?->getCompetenceFamilyType()->value
+                        ) {
+                            $canApply = true;
+                        }
+                        // On considère le cout de compétence comme favorite
+                        // On retire donc 1xp de cout en normal, 2 en méconnue
+                        if ($canApply && 'FAVORITE' === $bonusJsonData['value']) {
+                            // CAS NORMAL
+                            if ($this->isNormale(
+                                $this->getPersonnage()->getClasse(),
+                                $this->getCompetenceFamily(),
+                            )) {
+                                $count += $this->getCompetenceLevel()->getCoutFavori() - $this->getCompetenceLevel(
+                                    )->getCout();
+                            }
+                            // CAS MECONNUE
+                            if ($this->isMeconnue(
+                                $this->getPersonnage()->getClasse(),
+                                $this->getCompetenceFamily(),
+                            )) {
+                                $count += $this->getCompetenceLevel()->getCoutMeconu() - $this->getCompetenceLevel(
+                                    )->getCout();
+                            }
+                        }
+                    } else {
+                        $count += $bonus->getValeur();
+                    }
                 }
             }
         }
@@ -298,14 +336,62 @@ class CompetenceService
         return $this;
     }
 
-    public function getApprentissageBonusCout(): int
+    protected function isValidConditions(Personnage|CompetenceFamily $entity, array $conditions, Bonus $bonus): bool
     {
-        $apprentissage = $this->getPersonnage()->getApprentissage($this->getCompetence());
-        if ($apprentissage) {
-            return 1;
+        return $this->conditionService->isValidConditions(
+            $entity,
+            $bonus->getJsonData()['condition'] ?? [],
+            $bonus,
+            $this,
+        );
+    }
+
+    public function isNormale(Classe $classe, CompetenceFamily $competenceFamily): bool
+    {
+        return $this->isCompetenceFamilyTypeOf('normale', $classe, $competenceFamily);
+    }
+
+    private function isCompetenceFamilyTypeOf(string $type, Classe $classe, CompetenceFamily $competenceFamily): bool
+    {
+        if (!isset(self::$classesCompetencesFamilies[$classe->getId()][$type])) {
+            self::$classesCompetencesFamilies[$classe->getId()][$type] = match ($type) {
+                'normale' => $classe->getCompetenceFamilyNormales(),
+                'meconnue' => ['*'], // not in others
+                'creation' => $classe->getCompetenceFamilyCreations(),
+                'favorite' => $classe->getCompetenceFamilyFavorites(),
+            };
         }
 
-        return 0;
+        if ('meconnue' === $type) {
+            return !$this->isCompetenceFamilyTypeOf('normale', $classe, $competenceFamily)
+                && !$this->isCompetenceFamilyTypeOf('favorite', $classe, $competenceFamily)
+                && !$this->isCompetenceFamilyTypeOf('creation', $classe, $competenceFamily);
+        }
+
+        /** @var CompetenceFamily $competenceFamilyType */
+        foreach (self::$classesCompetencesFamilies[$classe->getId()][$type] as $competenceFamilyType) {
+            if ($competenceFamily->getId() === $competenceFamilyType->getid()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getClasse(): Classe
+    {
+        if (!isset($this->classe)) {
+            throw new \RuntimeException('Classe is not set');
+        }
+
+        return $this->classe;
+    }
+
+    public function setClasse(?Classe $classe): self
+    {
+        $this->classe = $classe;
+
+        return $this;
     }
 
     public function getCompetenceLevel(): Level
@@ -324,20 +410,19 @@ class CompetenceService
         return $this;
     }
 
-    public function getClasse(): Classe
+    public function isMeconnue(Classe $classe, CompetenceFamily $competenceFamily): bool
     {
-        if (!isset($this->classe)) {
-            throw new \RuntimeException('Classe is not set');
-        }
-
-        return $this->classe;
+        return $this->isCompetenceFamilyTypeOf('meconnue', $classe, $competenceFamily);
     }
 
-    public function setClasse(?Classe $classe): self
+    public function getApprentissageBonusCout(): int
     {
-        $this->classe = $classe;
+        $apprentissage = $this->getPersonnage()->getApprentissage($this->getCompetence());
+        if ($apprentissage) {
+            return 1;
+        }
 
-        return $this;
+        return 0;
     }
 
     final public function addError($error, ?int $code = null): void
@@ -482,46 +567,9 @@ class CompetenceService
         return $this->isCompetenceFamilyTypeOf('creation', $classe, $competenceFamily);
     }
 
-    private function isCompetenceFamilyTypeOf(string $type, Classe $classe, CompetenceFamily $competenceFamily): bool
-    {
-        if (!isset(self::$classesCompetencesFamilies[$classe->getId()][$type])) {
-            self::$classesCompetencesFamilies[$classe->getId()][$type] = match ($type) {
-                'normale' => $classe->getCompetenceFamilyNormales(),
-                'meconnue' => ['*'], // not in others
-                'creation' => $classe->getCompetenceFamilyCreations(),
-                'favorite' => $classe->getCompetenceFamilyFavorites(),
-            };
-        }
-
-        if ($type === 'meconnue') {
-            return !$this->isCompetenceFamilyTypeOf('normale', $classe, $competenceFamily)
-                && !$this->isCompetenceFamilyTypeOf('favorite', $classe, $competenceFamily)
-                && !$this->isCompetenceFamilyTypeOf('creation', $classe, $competenceFamily);
-        }
-
-        /** @var CompetenceFamily $competenceFamilyType */
-        foreach (self::$classesCompetencesFamilies[$classe->getId()][$type] as $competenceFamilyType) {
-            if ($competenceFamily->getId() === $competenceFamilyType->getid()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public function isFavorite(Classe $classe, CompetenceFamily $competenceFamily): bool
     {
         return $this->isCompetenceFamilyTypeOf('favorite', $classe, $competenceFamily);
-    }
-
-    public function isMeconnue(Classe $classe, CompetenceFamily $competenceFamily): bool
-    {
-        return $this->isCompetenceFamilyTypeOf('meconue', $classe, $competenceFamily);
-    }
-
-    public function isNormale(Classe $classe, CompetenceFamily $competenceFamily): bool
-    {
-        return $this->isCompetenceFamilyTypeOf('normale', $classe, $competenceFamily);
     }
 
     public function removeCompetence(int $cout = self::COUT_DEFAUT): self
