@@ -1,0 +1,11 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ personnage.nom }} Test{% endblock title %}
+
+{% block body %}
+
+    <div class="well well-sm">
+        {{ data|raw }}
+    </div>
+
+{% endblock body %}

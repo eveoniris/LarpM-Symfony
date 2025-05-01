@@ -9,6 +9,22 @@ use Doctrine\ORM\QueryBuilder;
 
 class BonusRepository extends BaseRepository
 {
+    /**
+     * Uniquement les personnage_bonus
+     * Pas les origines ou groupes.
+     */
+    public function getPersonnages(Bonus $bonus): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        return $personnageRepository->createQueryBuilder('perso')
+            ->innerJoin('perso.personnageBonus', 'pb')
+            ->innerJoin('pb.bonus', 'bonus')
+            ->where('bonus.id = :bonusid')
+            ->setParameter('bonusid', $bonus->getId());
+    }
+
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
@@ -31,7 +47,7 @@ class BonusRepository extends BaseRepository
             $alias.'.titre',
             $alias.'.description',
             $alias.'.type',
-            $alias.'.period',
+            $alias.'.periode',
             $alias.'.application',
         ];
     }
@@ -85,21 +101,5 @@ class BonusRepository extends BaseRepository
             'periode' => $this->translator->trans('Périodicité', domain: 'repository'),
             'application' => $this->translator->trans("Domaine d'application", domain: 'repository'),
         ];
-    }
-
-    /**
-     * Uniquement les personnage_bonus
-     * Pas les origines ou groupes.
-     */
-    public function getPersonnages(Bonus $bonus): QueryBuilder
-    {
-        /** @var PersonnageRepository $personnageRepository */
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
-
-        return $personnageRepository->createQueryBuilder('perso')
-            ->innerJoin('perso.personnageBonus', 'pb')
-            ->innerJoin('pb.bonus', 'bonus')
-            ->where('bonus.id = :bonusid')
-            ->setParameter('bonusid', $bonus->getId());
     }
 }
