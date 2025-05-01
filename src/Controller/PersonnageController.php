@@ -2836,10 +2836,14 @@ class PersonnageController extends AbstractController
         $protectionApprenti = $competenceRepository->findOneBy(['id' => 117]);
         $ressistanceApp = $competenceRepository->findOneBy(['id' => 122]);
         $agiliteApprenti = $competenceRepository->findOneBy(['id' => 1]);
-        $territoire = $territoireRepository->findOneBy(['id' => 213]);
+        $richesseApprenti = $competenceRepository->findOneBy(['id' => 127]);
 
 
-        $data = 'Resistance<br />';
+        $data = '<br />Richesse<br />';
+        $data .= ($personnageService->getCompetenceCout($personnage, $richesseApprenti));
+
+
+        $data .= '<br />Resistance<br />';
         $data .= ($personnageService->getCompetenceCout($personnage, $ressistanceApp));
 
         $data .= '<br />Agilite<br />';
