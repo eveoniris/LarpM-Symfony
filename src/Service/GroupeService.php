@@ -75,8 +75,7 @@ readonly class GroupeService
                 continue;
             }
 
-            $data = $bonus->getDataAsList('ingredients');
-
+            $data = $bonus->getDataAsList('ingredient');
             foreach ($data as $ingredientData) {
                 if (!isset($ingredientData['id']) || !is_numeric($ingredientData['id'])) {
                     continue;
@@ -84,8 +83,7 @@ readonly class GroupeService
 
                 if (!$this->conditionsService->isValidConditions(
                     $groupe,
-                    $bonus->getConditions($ingredientData['condition']),
-                    $bonus,
+                    $bonus->getConditions($ingredientData['condition'] ?? []),
                 )) {
                     // on passe à l'item suivant
                     continue;
@@ -104,8 +102,23 @@ readonly class GroupeService
                     $ingredient->setDose($data['dose'] ?? 'unité');
                 }
 
+                $source = '';
+                if ($bonus->getSourceTmp()) {
+                    $source .= $bonus->getSourceTmp().' - ';
+                }
+                if ($bonus->getMerveille()) {
+                    $source .= $bonus->getMerveille()->getLabel();
+                }
+                if ($bonus->getOrigine()) {
+                    $source .= $bonus->getOrigine()->getNom();
+                }
+
+                $ingredient->setLabel(
+                    '<strong>'.$ingredient->getLabel().'</strong> fourni(e)s par <strong>'.$source.'</strong>',
+                );
+
                 $groupeHasIngredident = new GroupeHasIngredient();
-                $groupeHasIngredident->setQuantite(((int) $data['nombre']) ?: 1);
+                $groupeHasIngredident->setQuantite(((int) ($data['nombre'] ?? $bonus->getValeur())) ?: 1);
                 $groupeHasIngredident->setIngredient($ingredient);
                 $groupeHasIngredident->setGroupe($groupe);
 
@@ -168,6 +181,8 @@ readonly class GroupeService
                 continue;
             }
 
+            $bonus->setSourceTmp('GROUPE');
+
             if (!$all->containsKey($bonus->getId())) {
                 $all->offsetSet($bonus->getId(), $bonus);
             }
@@ -196,11 +211,16 @@ readonly class GroupeService
                 if (!$merveille->isActive()) {
                     continue;
                 }
+
+                // Todo merveille can had N bonus
                 $bonus = $merveille->getBonus();
 
                 if (null === $bonus) {
                     continue;
                 }
+
+                // For display as bonnus can have a lot of merveille
+                $bonus->setMerveille($merveille);
 
                 // On évite les types non désirés
                 if (!$withDisabled && !$bonus->isValid()) {
@@ -243,7 +263,7 @@ readonly class GroupeService
                     continue;
                 }
 
-                if (!$this->conditionsService->isValidConditions($groupe, $itemData['condition'] ?? [], $bonus)) {
+                if (!$this->conditionsService->isValidConditions($groupe, $itemData['condition'] ?? [])) {
                     // on passe à l'item suivant
                     continue;
                 }
@@ -264,6 +284,18 @@ readonly class GroupeService
                     $item->setSpecial($itemData['special'] ?? null);
                     $item->setQuality(isset($itemData['quality']) ? (int) $itemData['quality'] : null);
                 }
+
+                $source = '';
+                if ($bonus->getSourceTmp()) {
+                    $source .= $bonus->getSourceTmp().' - ';
+                }
+                if ($bonus->getMerveille()) {
+                    $source .= $bonus->getMerveille()->getLabel();
+                }
+                if ($bonus->getOrigine()) {
+                    $source .= $bonus->getOrigine()->getNom();
+                }
+                $item->setLabel('<strong>'.$item->getLabel().'</strong> fourni(e)s par <strong>'.$source.'</strong>');
 
                 $this->addItemToAll($groupe, $item, $all);
             }
@@ -299,13 +331,35 @@ readonly class GroupeService
             if (!$this->conditionsService->isValidConditions(
                 $groupe,
                 $bonus->getJsonData()['condition'] ?? [],
-                $bonus,
             )) {
                 // on passe à l'item suivant
                 continue;
             }
 
-            $all[] = $bonus->getTitre().' - '.$bonus->getDescription();
+            $source = '';
+            if ($bonus->getSourceTmp()) {
+                $source .= $bonus->getSourceTmp().' - ';
+            }
+            if ($bonus->getMerveille()) {
+                $source .= $bonus->getMerveille()->getLabel();
+            }
+            if ($bonus->getOrigine()) {
+                $source .= $bonus->getOrigine()->getNom();
+            }
+
+            $prefix = '';
+            if (BonusPeriode::RETOUR_DE_JEU->value === $bonus->getPeriode()->value) {
+                $prefix = 'RETOUR DE JEU : ';
+            }
+
+            $all[] = sprintf(
+                '%s<strong>%s</strong> : <strong>%s</strong>%s',
+                $prefix,
+                $source,
+                $bonus->getTitre(),
+                ' '.$bonus->getDescription(),
+            );
+
         }
 
         return $all;
@@ -352,7 +406,6 @@ readonly class GroupeService
             if (!$this->conditionsService->isValidConditions(
                 $groupe,
                 $bonus->getJsonData()['condition'] ?? [],
-                $bonus,
             )) {
                 // on passe au bonus suivant
                 continue;
@@ -366,7 +419,7 @@ readonly class GroupeService
                     continue;
                 }
 
-                if (!$this->conditionsService->isValidConditions($groupe, $row['condition'] ?? [], $bonus)) {
+                if (!$this->conditionsService->isValidConditions($groupe, $row['condition'] ?? [])) {
                     // on passe à l'item suivant
                     continue;
                 }
@@ -384,6 +437,21 @@ readonly class GroupeService
                     $rarete->setLabel($data['rarete'] ?? 'Commun');
                     $ressource->setRarete($rarete);
                 }
+
+                $source = '';
+                if ($bonus->getSourceTmp()) {
+                    $source .= $bonus->getSourceTmp().' - ';
+                }
+                if ($bonus->getMerveille()) {
+                    $source .= $bonus->getMerveille()->getLabel();
+                }
+                if ($bonus->getOrigine()) {
+                    $source .= $bonus->getOrigine()->getNom();
+                }
+                $ressource->setLabel(
+                    '<strong>'.$ressource->getLabel().'</strong> fourni(e)s par <strong>'.$source.'</strong>',
+                );
+
 
                 $ressourceGroupe = new GroupeHasRessource();
                 $ressourceGroupe->setQuantite(((int) $data['nombre']) ?: 1);
@@ -490,19 +558,32 @@ readonly class GroupeService
             if (!$this->conditionsService->isValidConditions(
                 $groupe,
                 $bonus->getJsonData()['condition'] ?? [],
-                $bonus,
             )) {
                 // on passe à l'item suivant
                 continue;
             }
 
+            $source = '';
+            if ($bonus->getSourceTmp()) {
+                $source .= $bonus->getSourceTmp().' - ';
+            }
+            if ($bonus->getMerveille()) {
+                $source .= $bonus->getMerveille()->getLabel();
+            }
+            if ($bonus->getOrigine()) {
+                $source .= $bonus->getOrigine()->getNom();
+            }
+
             $histories[] = [
-                'label' => $bonus->getTitre(),
+                'label' => '<strong>'.$bonus->getTitre(
+                    ).'</strong> fourni(e)s par <strong>'.$source.'</strong></strong> fourni(e)s par <strong>'.$source.'</strong>',
                 'value' => (int) $bonus->getValeur(),
             ];
         }
 
-        $histories[] = ['label' => 'Richesse supplémentaire', 'value' => $groupe->getRichesse()];
+        if ($groupe->getRichesse() > 0) {
+            $histories[] = ['label' => 'Richesse supplémentaire', 'value' => $groupe->getRichesse()];
+        }
 
         return $histories;
     }

@@ -1,0 +1,32 @@
+{% extends 'base.print.twig' %}
+
+{% block title %}
+    Liste des merveilles
+{% endblock %}
+
+{% block content %}
+    <table>
+        <caption><h4>Liste des merveilles</h4></caption>
+        <tbody>
+        {% for merveille in merveilles %}
+            {% if (loop.first or loop.index % 2 != 0) %}
+                <tr>
+            {% endif %}
+            <td style="width:50%;">
+                <strong>{{ merveille.nom }}</strong> {% if merveille.territoire.nom is defined %}({{ merveille.territoire.nom }}){% endif %}
+                <br/>
+                {% if merveille.descriptionCartographe %}
+                    {{ merveille.descriptionCartographe|striptags }}
+                {% else %}
+                    {{ merveille.description|striptags }}
+                {% endif %}
+            </td>
+            {% if (loop.last or loop.index % 2 == 0) %}
+                {% if loop.index % 2 != 0 %}
+                    <td></td> {% endif %}
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

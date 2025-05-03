@@ -256,7 +256,7 @@ class CompetenceService
                 }
 
                 foreach ([$this->getPersonnage(), $this->getCompetence()->getCompetenceFamily()] as $entity) {
-                    if (!$this->isValidConditions($entity, $bonus->getJsonData()['condition'] ?? [], $bonus)) {
+                    if (!$this->isValidConditions($entity, $bonus->getJsonData()['condition'] ?? [])) {
                         continue 2; // next merveille
                     }
                 }
@@ -342,12 +342,11 @@ class CompetenceService
         return $this;
     }
 
-    protected function isValidConditions(Personnage|CompetenceFamily $entity, array $conditions, Bonus $bonus): bool
+    protected function isValidConditions(Personnage|CompetenceFamily $entity, array $conditions): bool
     {
         return $this->conditionService->isValidConditions(
             $entity,
-            $bonus->getJsonData()['condition'] ?? [],
-            $bonus,
+            $conditions,
             $this,
         );
     }

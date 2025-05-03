@@ -900,6 +900,31 @@ class GroupeController extends AbstractController
         ]);
     }
 
+    /**
+     * Impression matériel pour le groupe.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/{groupe}/print/materiel/groupe', name: 'print.materiel.groupe')]
+    public function printMaterielGroupeAction(
+        #[MapEntity] Groupe $groupe,
+        RessourceRepository $ressourceRepository,
+    ): Response {
+        // recherche les personnages du prochain GN membre du groupe
+        $session = $groupe->getNextSession();
+        $participants = $session?->getParticipants();
+
+        $ressourceRares = new ArrayCollection($ressourceRepository->findRare());
+        $ressourceCommunes = new ArrayCollection($ressourceRepository->findCommun());
+        $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
+
+        return $this->render('groupe/printMaterielGroupe.twig', [
+            'groupe' => $groupe,
+            'participants' => $participants,
+            'quete' => $quete,
+            'session' => $session,
+        ]);
+    }
+
     /** @deprecated:  see GnController* */
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/print', name: 'print')]
@@ -946,11 +971,8 @@ class GroupeController extends AbstractController
      */
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/print/materiel', name: 'print.materiel')]
-    public function printMaterielAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Groupe $groupe,
-    ): Response {
+    public function printMaterielAction(#[MapEntity] Groupe $groupe): Response
+    {
         // recherche les personnages du prochain GN membre du groupe
         $session = $groupe->getNextSession();
         $participants = $session->getParticipants();
@@ -958,31 +980,6 @@ class GroupeController extends AbstractController
         return $this->render('groupe/printMateriel.twig', [
             'groupe' => $groupe,
             'participants' => $participants,
-        ]);
-    }
-
-    /**
-     * Impression matériel pour le groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/print/materiel/groupe', name: 'print.materiel.groupe')]
-    public function printMaterielGroupeAction(
-        #[MapEntity] Groupe $groupe,
-        RessourceRepository $ressourceRepository,
-    ): Response {
-        // recherche les personnages du prochain GN membre du groupe
-        $session = $groupe->getNextSession();
-        $participants = $session?->getParticipants();
-
-        $ressourceRares = new ArrayCollection($ressourceRepository->findRare());
-        $ressourceCommunes = new ArrayCollection($ressourceRepository->findCommun());
-        $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
-
-        return $this->render('groupe/printMaterielGroupe.twig', [
-            'groupe' => $groupe,
-            'participants' => $participants,
-            'quete' => $quete,
-            'session' => $session,
         ]);
     }
 

@@ -406,7 +406,14 @@
                         {% for bonus in groupeService.getAllBonus(groupe) %}
                             <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                                 <div class="list-group-item-text">
-                                    <a href="{{ path('bonus.detail', {'bonus': bonus.id }) }}">{{ bonus.titre }}</a><br/>
+                                    {% if bonus.merveille.id is defined %}
+                                        <a href="{{ path('merveille.detail', {'merveille': bonus.merveille.id }) }}">{{ bonus.merveille.nom }}</a>:
+                                    {% endif %}
+                                    <a href="{{ path('bonus.detail', {'bonus': bonus.id }) }}">{{ bonus.titre }}</a>
+                                    {% if bonus.sourceTmp %}
+                                        <span class="badge text-bg-secondary rounded-pill">{{ bonus.sourceTmp }}</span>
+                                    {% endif %}
+                                    <br/>
                                     {{ bonus.description }}
                                 </div>
                                 {# Todo see how to display "type: origin/groupe/merveille/... #}

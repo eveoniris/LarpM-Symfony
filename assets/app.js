@@ -53,7 +53,7 @@ var $mainModal = $('#mainModal');
 
 function openModalX(title, body, footer, htmlOptions) {
     let defaultOptions = {
-        'width' : null,
+        'width': null,
         'height': null
     };
 
@@ -100,15 +100,15 @@ function getDataSet(value, defaultValue) {
 
 function openEventDataModal(elmt, withAjaxCall) {
     let htmlOptions = {};
-    let hasError    = false;
-    let closeLabel  = getDataSet(elmt.data('modal-close'), 'Fermer');
+    let hasError = false;
+    let closeLabel = getDataSet(elmt.data('modal-close'), 'Fermer');
     let submitLabel = getDataSet(elmt.data('modal-submit'), 'Valider');
-    let header      = getDataSet(elmt.data('modal-header'), 'Confirmation');
-    let body        = getDataSet(elmt.data('modal-body'), 'Todo');
-    let footer      = getDataSet(elmt.data('modal-footer'), '<a href="#" class="btn btn-secondary" data-dismiss="modal">' + closeLabel + '</a> <a href="#" class="btn btn-secondary btn-modal-valid">' + submitLabel + '</a>');
-    let width       = getDataSet(elmt.data('modal-width'), false);
-    let height      = getDataSet(elmt.data('modal-height'), false);
-    let href        = getDataSet(elmt.attr('href'), false);
+    let header = getDataSet(elmt.data('modal-header'), 'Confirmation');
+    let body = getDataSet(elmt.data('modal-body'), 'Todo');
+    let footer = getDataSet(elmt.data('modal-footer'), '<a href="#" class="btn btn-secondary" data-dismiss="modal">' + closeLabel + '</a> <a href="#" class="btn btn-secondary btn-modal-valid">' + submitLabel + '</a>');
+    let width = getDataSet(elmt.data('modal-width'), false);
+    let height = getDataSet(elmt.data('modal-height'), false);
+    let href = getDataSet(elmt.attr('href'), false);
 
     if (width) {
         htmlOptions.width = width;
@@ -159,6 +159,7 @@ $(document).ready(function () {
         toolbar: tinyMCEtoolbar,
         link_assume_external_targets: true,
         skin: "oxide-dark",
+        entity_encoding: 'raw',
         content_css: "dark"
     };
     let tinyMCEThemeLight = {
@@ -167,6 +168,7 @@ $(document).ready(function () {
         toolbar: tinyMCEtoolbar,
         link_assume_external_targets: true,
         skin: "oxide",
+        entity_encoding: 'raw',
         content_css: ""
     };
     let tinyMCEThemeDarkFull = {
@@ -175,6 +177,7 @@ $(document).ready(function () {
         toolbar: tinyMCEtoolbar,
         link_assume_external_targets: true,
         skin: "oxide-dark",
+        entity_encoding: 'raw',
         content_css: "dark"
     };
     let tinyMCEThemeLightFull = {
@@ -183,6 +186,7 @@ $(document).ready(function () {
         toolbar: tinyMCEtoolbar,
         link_assume_external_targets: true,
         skin: "oxide",
+        entity_encoding: 'raw',
         content_css: ""
     };
 
@@ -249,15 +253,15 @@ $(document).ready(function () {
             // Load content from an ajax call
             if (ajaxContentPath) {
                 $.ajax({
-                    url    : href,
-                    type   : getDataSet(ajaxContentPath, 'GET'),
+                    url: href,
+                    type: getDataSet(ajaxContentPath, 'GET'),
                     success: function (html) {
                         modalBody.innerHTML = html;
                     },
-                    error  : function (e) {
+                    error: function (e) {
                         modalBody.innerHTML = e.responseText;
                     },
-                    async  : false // <- this turns it into synchronous
+                    async: false // <- this turns it into synchronous
                 });
             } else {
                 modalBody.innerHTML = body

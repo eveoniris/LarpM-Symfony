@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\Bonus;
 use App\Entity\CompetenceFamily;
 use App\Entity\Groupe;
 use App\Entity\Personnage;
@@ -12,10 +11,37 @@ use App\Enum\LevelType;
 
 class ConditionsService
 {
+    public function isAllConditionsValid(Groupe|Personnage|CompetenceFamily $entity, array $list): bool
+    {
+        if (empty($list)) {
+            return true;
+        }
+
+        foreach ($list as $key => $row) {
+            if (
+                in_array(
+                    $key,
+                    ['condition', 'conditions'],
+
+                    true,
+                ) && !$this->isValidConditions(
+                    $entity,
+                    $row,
+                )) {
+                return false;
+            }
+
+            if (is_array($row) && !$this->isAllConditionsValid($entity, $row)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function isValidConditions(
         Groupe|Personnage|CompetenceFamily $entity,
         array $conditions,
-        Bonus $bonus,
         mixed $service = null,
     ): bool {
         if (empty($conditions)) {
@@ -40,7 +66,7 @@ class ConditionsService
                 $condition = ['type' => $key, 'value' => $condition];
             }
 
-            if ($this->isValidCondition($entity, $condition, $bonus, $service)) {
+            if ($this->isValidCondition($entity, $condition, $service)) {
                 // First OR mean TRUE
                 if ('OR' === $mode) {
                     return true;
@@ -58,7 +84,6 @@ class ConditionsService
     protected function isValidCondition(
         Groupe|Personnage|CompetenceFamily $entity,
         array $condition,
-        Bonus $bonus,
         mixed $service = null,
     ): bool {
         // condition non testable

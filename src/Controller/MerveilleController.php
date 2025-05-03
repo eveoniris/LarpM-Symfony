@@ -102,6 +102,14 @@ class MerveilleController extends AbstractController
         ]);
     }
 
+    #[Route('/print', name: 'print')]
+    public function printAction(MerveilleRepository $merveilleRepository): Response
+    {
+        return $this->render('merveille\print.twig', [
+            'merveilles' => $merveilleRepository->findAllActiveOrderedByLabel(),
+        ]);
+    }
+
     #[Route('/{merveille}/udpate', name: 'update', requirements: ['merveille' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Merveille $merveille): RedirectResponse|Response
     {

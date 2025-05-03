@@ -2,11 +2,19 @@
 
 namespace App\Repository;
 
-use App\Entity\Merveille;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
-
 class MerveilleRepository extends BaseRepository
 {
-
+    public function findAllActiveOrderedByLabel()
+    {
+        return $this->getEntityManager()
+            ->createQuery(
+                <<<'DQL'
+                SELECT m 
+                FROM App\Entity\Merveille m 
+                WHERE m.statut = 'active'
+                ORDER BY m.nom ASC
+                DQL,
+            )
+            ->getResult();
+    }
 }

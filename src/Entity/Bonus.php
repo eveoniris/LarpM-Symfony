@@ -15,6 +15,10 @@ class Bonus extends BaseBonus
     // Pour faire voyager une éventuelle source
     private string $sourceTmp = '';
 
+    // La merveille qui utilise le bonus (pour affichage)
+    private ?Merveille $merveille = null;
+    private ?Territoire $origine = null;
+
     /**
      * @var Collection<int, Merveille>
      */
@@ -25,6 +29,16 @@ class Bonus extends BaseBonus
     {
         parent::__construct();
         $this->merveilles = new ArrayCollection();
+    }
+
+    public function addMerveille(Merveille $merveille): static
+    {
+        if (!$this->merveilles->contains($merveille)) {
+            $this->merveilles->add($merveille);
+            $merveille->setBonus($this);
+        }
+
+        return $this;
     }
 
     public function getConditions(?array $row = null): array
@@ -61,6 +75,9 @@ class Bonus extends BaseBonus
             if (is_numeric($row)) {
                 return [[$requiredParam => $row]];
             }
+            if (isset($row[$requiredParam])) {
+                return [[$requiredParam => $row]];
+            }
         }
 
         return [];
@@ -82,7 +99,7 @@ class Bonus extends BaseBonus
             return $data[$key] ?? $data[$key.'s'] ?? $data[rtrim($key, 's')] ?? $default;
         }
 
-        return $data ?? $default;
+        return empty($data) ?: $default;
     }
 
     public function getDataAsString(): string
@@ -91,9 +108,38 @@ class Bonus extends BaseBonus
     }
 
     /** Alias Interface purpose */
-    public function getLabel(): string
+    public function getLabel(): ?string
     {
         return $this->getTitre();
+    }
+
+    public function getMerveille(): ?Merveille
+    {
+        return $this->merveille;
+    }
+
+    public function setMerveille(Merveille $merveille): void
+    {
+        $this->setSourceTmp('MERVEILLE');
+        $this->merveille = $merveille;
+    }
+
+    /**
+     * @return Collection<int, Merveille>
+     */
+    public function getMerveilles(): Collection
+    {
+        return $this->merveilles;
+    }
+
+    public function getOrigine(): ?Territoire
+    {
+        return $this->origine;
+    }
+
+    public function setOrigine(?Territoire $origine): void
+    {
+        $this->origine = $origine;
     }
 
     public function getSourceTmp(): string
@@ -214,24 +260,6 @@ class Bonus extends BaseBonus
     public function isXp(): bool
     {
         return BonusType::XP->value === $this->getType()->value;
-    }
-
-    /**
-     * @return Collection<int, Merveille>
-     */
-    public function getMerveilles(): Collection
-    {
-        return $this->merveilles;
-    }
-
-    public function addMerveille(Merveille $merveille): static
-    {
-        if (!$this->merveilles->contains($merveille)) {
-            $this->merveilles->add($merveille);
-            $merveille->setBonus($this);
-        }
-
-        return $this;
     }
 
     public function removeMerveille(Merveille $merveille): static

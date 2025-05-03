@@ -50,8 +50,7 @@
 
 <h6><strong>Ingrédients</strong>
     {% if isAdmin %}
-        <a
-                href="{{ path('groupe.ingredients', {'groupe': groupe.id}) }}">Modifier les ingrédients</a>
+        <a href="{{ path('groupe.ingredients', {'groupe': groupe.id}) }}">Modifier les ingrédients</a>
     {% endif %}
 </h6>
 
@@ -160,16 +159,18 @@
 
                         Objets :
                         {% if isAdmin %}
-                            <a href=" {{ path('personnage.items', {'personnage': participant.personnage.id}) }}">Modifier
-                                la
-                                liste
-                                des objets</a>
+                            <a href=" {{ path('personnage.items', {'personnage': participant.personnage.id}) }}">
+                                Modifier la liste des objets</a>
                         {% endif %}
+
+                        {% set items = personnageService.allItems(participant.personnage) %}
                         <ul>
-                            {% for item in participant.personnage.items %}
+                            {% for item in items %}
                                 <li>
-                                    <a href="{{ path('item.detail', {'item':item.id}) }}"><strong>{{ item.numero }}</strong>&nbsp;{{ item.label }}
-                                    </a></li>
+                                    <a href="{{ path('item.detail', {'item':item.id}) }}">
+                                        <strong>{{ item.numero }}</strong>&nbsp;{{ item.label }}
+                                    </a>
+                                </li>
                             {% else %}
                                 <li>Aucun</li>
                             {% endfor %}
@@ -219,8 +220,9 @@
                             <a href="{{ path('personnage.update.ingredient', {'personnage': participant.personnage.id}) }}">Modifier
                                 la liste des ingrédients</a>
                         {% endif %}
+
                         <ul>
-                            {% for personnageIngredient in participant.personnage.personnageIngredients %}
+                            {% for personnageIngredient in personnageService.allIngredient(participant.personnage) %}
                                 <li>{{ personnageIngredient.nombre }} {{ personnageIngredient.ingredient }}
                                     - {{ personnageIngredient.ingredient.color }}
                                     : {{ personnageIngredient.ingredient.dose }}</li>
@@ -235,7 +237,7 @@
                                 la liste des ressources</a>
                         {% endif %}
                         <ul>
-                            {% for personnageRessource in participant.personnage.personnageRessources %}
+                            {% for personnageRessource in personnageService.allRessource(participant.personnage) %}
                                 <li>{{ personnageRessource.nombre }} {{ personnageRessource.ressource }}</li>
                             {% else %}
                                 <li>Aucun</li>
@@ -248,7 +250,7 @@
                                 la richesse</a>
                         {% endif %}
                         <ul>
-                            <li>{{ participant.personnage.richesse|default(0) }} PA</li>
+                            <li>{{ personnageService.allRichesse(participant.personnage)|default(0) }} PA</li>
                         </ul>
 
                         Technologies :
