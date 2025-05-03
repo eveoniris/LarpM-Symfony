@@ -42,10 +42,10 @@
                     {{ merveille.id|highlight(pagerService.searchValue) }}
                 </td>
                 <td class="text-center align-middle col-1">{{ merveille.nom|highlight(pagerService.searchValue) }}</td>
-                <td>
+                <td class="align-middle">
                     {{ merveille.description|markdown_to_html|highlight(pagerService.searchValue) }}
                 </td>
-                <td>
+                <td class="align-middle">
                     {% if merveille.bonus.titre is defined %}
                         <strong>{{ merveille.bonus.titre|highlight(pagerService.searchValue) }}</strong><br/>
                         {{ merveille.bonus.description|markdown_to_html|highlight(pagerService.searchValue) }}
@@ -53,17 +53,17 @@
                         aucun
                     {% endif %}
                 </td>
-                <td class="col-1 text-center">
+                <td class="col-1 text-center align-middle">
                     {{ merveille.statut|highlight(pagerService.searchValue) }}
                 </td>
-                <td class="col-1 text-center">
+                <td class="col-1 text-center align-middle">
                     {% if merveille.territoire.nom is defined %}
-                        {{ merveille.territoire.nom|highlight(pagerService.searchValue) }}
+                        <a href="{{ path('territoire.detail', {'territoire': merveille.territoire.id }) }}">{{ merveille.territoire.nom|highlight(pagerService.searchValue) }}</a>
                     {% else %}
                         aucun
                     {% endif %}
                 </td>
-                <td class="col-1">
+                <td class="col-1 align-middle">
                     <div class="btn-toolbar pull-right" role="toolbar">
                         <div class="btn-group-vertical" role="group">
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"

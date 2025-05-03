@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="list-group-item">
-                        <div class="list-group-item-heading fw-bold mb-1">Description carthographe</div>
+                        <div class="list-group-item-heading fw-bold mb-1">Description cartographe</div>
                         <div class="list-group-item-text ps-1">{{ merveille.descriptionCartographe|markdown_to_html }}</div>
                     </div>
 
@@ -95,7 +95,6 @@
                         <div class="list-group-item-text ps-1">
                             {% if merveille.territoire.nom is defined %}
                                 <a href="{{ path('territoire.detail',{'territoire': merveille.territoire.id}) }}">{{ merveille.territoire.nom }}</a>
-                                <br/>
                             {% else %}
                                 Aucun
                             {% endif %}
