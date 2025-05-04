@@ -5,8 +5,6 @@ namespace App\Entity;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use App\Repository\BonusRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BonusRepository::class)]
@@ -19,31 +17,24 @@ class Bonus extends BaseBonus
     private ?Merveille $merveille = null;
     private ?Territoire $origine = null;
 
-    /**
-     * @var Collection<int, Merveille>
-     */
-    #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: Merveille::class)]
-    private Collection $merveilles;
-
     public function __construct()
     {
         parent::__construct();
-        $this->merveilles = new ArrayCollection();
-    }
-
-    public function addMerveille(Merveille $merveille): static
-    {
-        if (!$this->merveilles->contains($merveille)) {
-            $this->merveilles->add($merveille);
-            $merveille->setBonus($this);
-        }
-
-        return $this;
     }
 
     public function getConditions(?array $row = null): array
     {
-        return ($row ?? $this->getJsonData())['condition'] ?? [];
+        if (empty($row)) {
+            $row = $this->getJsonData();
+        }
+
+        foreach (['condition', 'conditions', 'CONDITION', 'CONDITIONS'] as $key) {
+            if ($row[$key] ?? false) {
+                return $row[$key];
+            }
+        }
+
+        return [];
     }
 
     public function getDataAsList(?string $key = null, string $requiredParam = 'id'): array
@@ -80,7 +71,7 @@ class Bonus extends BaseBonus
             }
         }
 
-        return [];
+        return is_array($row) ? $row : [$row];
     }
 
     /**
@@ -96,7 +87,17 @@ class Bonus extends BaseBonus
         $data = $this->getJsonData() ?: [];
 
         if ($key) {
-            return $data[$key] ?? $data[$key.'s'] ?? $data[rtrim($key, 's')] ?? $default;
+            // Handle plural
+            foreach ([$key, $key.'s', rtrim($key, 's')] as $multiKey) {
+                // Handle case-insensitive
+                foreach ([$multiKey, strtoupper($multiKey), strtolower($multiKey)] as $k) {
+                    if ($data[$k] ?? false) {
+                        return $data[$k];
+                    }
+                }
+            }
+
+            return $default;
         }
 
         return empty($data) ?: $default;
@@ -122,14 +123,6 @@ class Bonus extends BaseBonus
     {
         $this->setSourceTmp('MERVEILLE');
         $this->merveille = $merveille;
-    }
-
-    /**
-     * @return Collection<int, Merveille>
-     */
-    public function getMerveilles(): Collection
-    {
-        return $this->merveilles;
     }
 
     public function getOrigine(): ?Territoire
@@ -260,17 +253,5 @@ class Bonus extends BaseBonus
     public function isXp(): bool
     {
         return BonusType::XP->value === $this->getType()->value;
-    }
-
-    public function removeMerveille(Merveille $merveille): static
-    {
-        if ($this->merveilles->removeElement($merveille)) {
-            // set the owning side to null (unless already changed)
-            if ($merveille->getBonus() === $this) {
-                $merveille->setBonus(null);
-            }
-        }
-
-        return $this;
     }
 }

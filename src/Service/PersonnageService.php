@@ -260,40 +260,86 @@ class PersonnageService
                 continue;
             }
 
-            if (!$this->conditionsService->isValidConditions($personnage, $bonus->getConditions(), $bonus)) {
-                // on passe à l'item suivant
-                continue;
+            // Si aucune n'est valide, on passe au bonus suivant
+            // if (!$this->conditionsService->isAllConditionsValid($personnage, $bonus->getConditions())) {
+            //    continue;
+            // }
+
+            // On récupère les éventuelles données de bonus à donner de type "competence"
+            $competencesBonus = $bonus->getDataAsList('competence');
+
+            // On résoud chaque possibilité
+            foreach ($competencesBonus as $competenceBonus) {
+                if (!$this->conditionsService->isValidConditions(
+                    $personnage,
+                    $competenceBonus,
+                    $this,
+                    isDataSet: true,
+                )) {
+                    continue;
+                }
+
+                if ($bonus->getCompetence()) {
+                    $all->add($bonus->getCompetence());
+                    continue;
+                }
+
+                // On utilise les données brutes du bonus en attendant leur existence en réel "Competence".
+                $competence = new Competence();
+                $competence->setDescription($bonus->getDescription());
+
+                // cas spéciaux description
+                $competence->setDescription($bonus->getDescription());
+                if ($description = $this->conditionsService->getKeyValue('description', $competenceBonus)) {
+                    $competence->setDescription($description);
+                }
+
+                // cas spéciaux index/level
+                $index = $bonus->getData('index', Level::NIVEAU_1);
+                if ($level = $this->conditionsService->getKeyValue('level', $competenceBonus)) {
+                    $index = $level;
+                } elseif ($level = $this->conditionsService->getKeyValue('index', $competenceBonus)) {
+                    $index = $level;
+                }
+
+                if (is_numeric($index)) {
+                    $competence->setLevel(
+                        $this->entityManager->getRepository(Level::class)->findOneBy(['index' => $index]),
+                    );
+                } else {
+                    $competence->setLevel(
+                        $this->entityManager->getRepository(Level::class)->findOneBy(['label' => $index]),
+                    );
+                }
+
+                $materiel = $bonus->getData('materiel', null);
+                if ($mat = $this->conditionsService->getKeyValue('materiel', $competenceBonus)) {
+                    $materiel = $mat;
+                }
+                if (empty($materiel) || !is_string($materiel)) {
+                    $materiel = $bonus->getDescription();
+                }
+                $competence->setMateriel($materiel);
+
+                $family = new CompetenceFamily();
+                $family->setId($bonus->getId() * -1);
+
+                $titre = $bonus->getTitre();
+                if ($tit = $this->conditionsService->getKeyValue('titre', $competenceBonus)) {
+                    $titre = $tit;
+                }
+                if ($bonus->getOrigine()) {
+                    $titre = "Bonus d'origine : ".$personnage->getOrigine()?->getNom();
+                }
+                if (empty($titre)) {
+                    $titre = $bonus->getTitre();
+                }
+
+                $family->setLabel($titre);
+                $competence->setCompetenceFamily($family);
+
+                $this->addCompetenceToAll($competence, $all);
             }
-
-            // May need to add later a list of skills ?
-            $data = $bonus->getDataAsList('competence');
-
-            if ($bonus->getCompetence()) {
-                $all->add($bonus->getCompetence());
-                continue;
-            }
-
-            // On utilise les données brutes du bonus en attendant leur existence en réel "Competence".
-            $competence = new Competence();
-            $competence->setDescription($bonus->getDescription());
-            $competence->setLevel(
-                $this->entityManager->getRepository(Level::class)->findOneBy(
-                    ['index' => $bonus->getData('index', Level::NIVEAU_1)],
-                ),
-            );
-
-            $materiel = $bonus->getData('materiel', null);
-            if ($materiel) {
-                $competence->setMateriel(
-                    is_string($materiel) || empty($materiel) ? $bonus->getDescription() : $materiel,
-                );
-            }
-            $family = new CompetenceFamily();
-            $family->setId(-1);
-            $family->setLabel($bonus->getTitre() ?: "Bonus d'origine : ".$personnage->getOrigine()?->getNom());
-            $competence->setCompetenceFamily($family);
-
-            $this->addCompetenceToAll($competence, $all);
         }
 
         return $all;
@@ -317,10 +363,10 @@ class PersonnageService
 
         $this->getGroupeBonus($personnage, $type, $withDisabled, $periode, $all);
 
+        $this->getMerveilleBonus($personnage, $type, $withDisabled, $periode, $all);
+
         // Ajout des bonus liés au personnage
         $this->getPersonnageBonus($personnage, $type, $withDisabled, $periode, $all);
-
-        $this->getMerveilleBonus($personnage, $type, $withDisabled, $periode, $all);
 
         return $all;
     }
@@ -362,10 +408,6 @@ class PersonnageService
             }
             unset($origineBonus);
 
-            if (!$this->conditionsService->isAllConditionsValid($personnage, $bonus->getJsonData() ?? [])) {
-                continue;
-            }
-
             $bonus->setSourceTmp('ORIGINE');
 
             if (!$all->containsKey($bonus->getId())) {
@@ -384,6 +426,24 @@ class PersonnageService
         ?Collection &$all = null,
     ): ArrayCollection {
         return $this->groupeService->getGroupeBonus(
+            $personnage->getLastParticipantGnGroupe(),
+            $type,
+            $withDisabled,
+            $periode,
+            $all,
+        );
+    }
+
+    public function getMerveilleBonus(
+        Personnage $personnage,
+        ?BonusType $type = null,
+        bool $withDisabled = false,
+        ?BonusPeriode $periode = null,
+        ?Collection &$all = null,
+    ): ArrayCollection {
+        $all ??= new ArrayCollection();
+
+        return $this->groupeService->getMerveilleBonus(
             $personnage->getLastParticipantGnGroupe(),
             $type,
             $withDisabled,
@@ -424,36 +484,22 @@ class PersonnageService
         return $all;
     }
 
-    public function getMerveilleBonus(
+    public function getTitre(
         Personnage $personnage,
-        ?BonusType $type = null,
-        bool $withDisabled = false,
-        ?BonusPeriode $periode = null,
-        ?Collection &$all = null,
-    ): ArrayCollection {
-        $all ??= new ArrayCollection();
-
-        return $this->groupeService->getMerveilleBonus(
-            $personnage->getLastParticipantGnGroupe(),
-            $type,
-            $withDisabled,
-            $periode,
-            $all,
-        );
-    }
-
-    public function getTitre(Personnage $personnage, ?Gn $gn = null): ?string
-    {
+        ?Gn $gn = null,
+    ): ?string {
         return $this->entityManager->getRepository(GroupeGn::class)->getTitres($personnage, $gn);
     }
 
-    private function addCompetenceToAll(Competence $competence, Collection $all): void
-    {
+    private function addCompetenceToAll(
+        Competence $competence,
+        Collection $all,
+    ): void {
         /** @var Competence $existing */
         foreach ($all as $existing) {
             if (
-                $existing?->getId() === $competence->getId()
-                && $existing?->getLabel() === $competence->getLabel()
+                ($existing->getId() === $competence->getId())
+                && ($existing->getLabel() === $competence->getLabel())
             ) {
                 return;
             }
@@ -462,8 +508,9 @@ class PersonnageService
         $all->add($competence);
     }
 
-    public function getAllHeroisme(Personnage $personnage): int
-    {
+    public function getAllHeroisme(
+        Personnage $personnage,
+    ): int {
         $all = $personnage->getHeroisme();
 
         foreach ($this->getAllBonus($personnage, BonusType::HEROISME) as $bonus) {
@@ -485,8 +532,9 @@ class PersonnageService
         return $all;
     }
 
-    public function getAllHeroismeDisplay(Personnage $personnage): array
-    {
+    public function getAllHeroismeDisplay(
+        Personnage $personnage,
+    ): array {
         $history = $personnage->getDisplayHeroisme();
 
         foreach ($this->getAllBonus($personnage, BonusType::HEROISME) as $bonus) {
@@ -518,8 +566,9 @@ class PersonnageService
     /**
      * @return Collection<int, PersonnageIngredient>
      */
-    public function getAllIngredient(Personnage $personnage): Collection
-    {
+    public function getAllIngredient(
+        Personnage $personnage,
+    ): Collection {
         $all = $personnage->getPersonnageIngredients();
 
         foreach ($this->getAllBonus($personnage, BonusType::INGREDIENT) as $bonus) {
@@ -562,8 +611,11 @@ class PersonnageService
         return $all;
     }
 
-    private function addIngredientToAll(Personnage $personnage, Ingredient $ingredient, Collection $all): void
-    {
+    private function addIngredientToAll(
+        Personnage $personnage,
+        Ingredient $ingredient,
+        Collection $all,
+    ): void {
         /** @var PersonnageIngredient $existing */
         foreach ($all as $existing) {
             if (
@@ -583,8 +635,9 @@ class PersonnageService
     /**
      * @return Collection<int, Item>
      */
-    public function getAllItems(Personnage $personnage): Collection
-    {
+    public function getAllItems(
+        Personnage $personnage,
+    ): Collection {
         $all = $personnage->getItems();
 
         foreach ($this->getAllBonus($personnage, BonusType::ITEM) as $bonus) {
@@ -628,8 +681,11 @@ class PersonnageService
         return $all;
     }
 
-    private function addItemToAll(Personnage $personnage, Item $item, Collection $items): void
-    {
+    private function addItemToAll(
+        Personnage $personnage,
+        Item $item,
+        Collection $items,
+    ): void {
         /** @var Item $row */
         foreach ($items as $row) {
             if (
@@ -643,8 +699,9 @@ class PersonnageService
         $items->add($item);
     }
 
-    public function getAllLangues(Personnage $personnage): Collection
-    {
+    public function getAllLangues(
+        Personnage $personnage,
+    ): Collection {
         /** @var Collection<int, PersonnageLangues> $allLanguages */
         $all = $personnage->getPersonnageLangues();
 
@@ -654,22 +711,35 @@ class PersonnageService
                 continue;
             }
 
-            $data = $bonus->getDataAsList('langues');
+            // Si aucune n'est valide, on passe au bonus suivant
+            //if (!$this->conditionsService->isAllConditionsValid($personnage, $bonus->getConditions())) {
+            //    continue;
+            //}
 
-            foreach ($data as $row) {
-                if (!isset($row['id']) || !is_numeric($row['id'])) {
+            // On récupère les éventuelles données de bonus à donner de type "langue"
+            $languesBonus = $bonus->getDataAsList('langue');
+
+            // On résoud chaque possibilité
+            foreach ($languesBonus as $langueBonus) {
+                // Rien à donner ?
+                $id = $this->conditionsService->getKeyValue('id', $langueBonus);
+                if (empty($id) || !is_numeric($id)) {
                     continue;
                 }
 
-                if (!$this->conditionsService->isValidConditions($personnage, $row['condition'] ?? [])) {
-                    // on passe à l'item suivant
+                if (!$this->conditionsService->isValidConditions(
+                    $personnage,
+                    $langueBonus,
+                    $this,
+                    isDataSet: true,
+                )) {
                     continue;
                 }
 
                 // Attribution
                 $langue = $this->entityManager
                     ->getRepository(Langue::class)
-                    ->findOneBy(['id' => $row['id']]);
+                    ->findOneBy(['id' => $id]);
 
                 if (!$langue) {
                     // Generate one
@@ -689,8 +759,12 @@ class PersonnageService
         return $all;
     }
 
-    private function addLangueToAll(Personnage $personnage, Langue $langue, Collection $all, Bonus $bonus): void
-    {
+    private function addLangueToAll(
+        Personnage $personnage,
+        Langue $langue,
+        Collection $all,
+        Bonus $bonus,
+    ): void {
         /** @var PersonnageLangues $existing */
         foreach ($all as $existing) {
             if (
@@ -708,8 +782,9 @@ class PersonnageService
         $all->add($personnageLangue);
     }
 
-    public function getAllMateriel(Personnage $personnage): array
-    {
+    public function getAllMateriel(
+        Personnage $personnage,
+    ): array {
         $all = $personnage->getMateriel() ? [$personnage->getMateriel()] : [];
 
         foreach ($this->getAllBonus($personnage, BonusType::MATERIEL) as $bonus) {
@@ -731,8 +806,9 @@ class PersonnageService
         return $all;
     }
 
-    public function getAllPugilat(Personnage $personnage): int
-    {
+    public function getAllPugilat(
+        Personnage $personnage,
+    ): int {
         $pugilat = $personnage->getPugilat();
 
         foreach ($this->getAllBonus($personnage, BonusType::PUGILAT) as $bonus) {
@@ -754,8 +830,9 @@ class PersonnageService
         return $pugilat;
     }
 
-    public function getAllPugilatDisplay(Personnage $personnage): array
-    {
+    public function getAllPugilatDisplay(
+        Personnage $personnage,
+    ): array {
         $histories = $personnage->getDisplayPugilat();
 
         foreach ($this->getAllBonus($personnage, BonusType::PUGILAT) as $bonus) {
@@ -781,8 +858,9 @@ class PersonnageService
         return $histories;
     }
 
-    public function getAllRenomme(Personnage $personnage): int
-    {
+    public function getAllRenomme(
+        Personnage $personnage,
+    ): int {
         $allRenomme = $personnage->getRenomme();
 
         foreach ($this->getAllBonus($personnage, BonusType::RENOMME) as $bonus) {
@@ -804,8 +882,9 @@ class PersonnageService
         return $allRenomme;
     }
 
-    public function getAllRenommeDisplay(Personnage $personnage): Collection
-    {
+    public function getAllRenommeDisplay(
+        Personnage $personnage,
+    ): Collection {
         $history = $personnage->getRenommeHistories();
 
         foreach ($this->getAllBonus($personnage, BonusType::RENOMME) as $bonus) {
@@ -837,8 +916,9 @@ class PersonnageService
     /**
      * @return Collection<int, PersonnageRessource>
      */
-    public function getAllRessource(Personnage $personnage): Collection
-    {
+    public function getAllRessource(
+        Personnage $personnage,
+    ): Collection {
         $all = $personnage->getPersonnageRessources();
 
         foreach ($this->getAllBonus($personnage, BonusType::RESSOURCE) as $bonus) {
@@ -906,8 +986,10 @@ class PersonnageService
         return $all;
     }
 
-    private function addRessourceToAll(PersonnageRessource $personnageRessource, Collection $all): void
-    {
+    private function addRessourceToAll(
+        PersonnageRessource $personnageRessource,
+        Collection $all,
+    ): void {
         /** @var PersonnageRessource $existing */
         foreach ($all as $existing) {
             if (
@@ -921,8 +1003,9 @@ class PersonnageService
         $all->add($personnageRessource);
     }
 
-    public function getAllRichesse(Personnage $personnage): int
-    {
+    public function getAllRichesse(
+        Personnage $personnage,
+    ): int {
         $all = $personnage->getRichesse();
 
         foreach ($this->getAllBonus($personnage, BonusType::RICHESSE) as $bonus) {
@@ -944,8 +1027,9 @@ class PersonnageService
         return $all ?? 0;
     }
 
-    public function getAvailableCompetences(Personnage $personnage): ArrayCollection
-    {
+    public function getAvailableCompetences(
+        Personnage $personnage,
+    ): ArrayCollection {
         $availableCompetences = new ArrayCollection();
 
         // les compétences de niveau supérieur sont disponibles
@@ -970,8 +1054,9 @@ class PersonnageService
         return new ArrayCollection(iterator_to_array($iterator));
     }
 
-    public function getUnknownCompetences(Personnage $personnage): ArrayCollection
-    {
+    public function getUnknownCompetences(
+        Personnage $personnage,
+    ): ArrayCollection {
         $unknownCompetences = new ArrayCollection();
 
         $competenceFamilies = $this->entityManager->getRepository(CompetenceFamily::class)->findAll();
@@ -988,8 +1073,10 @@ class PersonnageService
         return $unknownCompetences;
     }
 
-    public function knownCompetenceFamily(Personnage $personnage, CompetenceFamily $competenceFamily): bool
-    {
+    public function knownCompetenceFamily(
+        Personnage $personnage,
+        CompetenceFamily $competenceFamily,
+    ): bool {
         foreach ($personnage->getCompetences() as $competence) {
             if ($competence->getCompetenceFamily() === $competenceFamily) {
                 return true;
@@ -1043,8 +1130,10 @@ class PersonnageService
         return $availableDomaines;
     }
 
-    public function getAvailableLangues(Personnage $personnage, int $diffusion = 0): ArrayCollection
-    {
+    public function getAvailableLangues(
+        Personnage $personnage,
+        int $diffusion = 0,
+    ): ArrayCollection {
         $availableLangues = new ArrayCollection();
 
         $repo = $this->entityManager->getRepository(Langue::class);
@@ -1110,8 +1199,9 @@ class PersonnageService
     /**
      * Available visibility: 'PRIVATE', 'PUBLIC', 'GROUPE_MEMBER', 'GROUPE_OWNER', 'AUTHOR'.
      */
-    public function getGroupeBackgroundsVisibleForCurrentUser(Groupe $groupe): ArrayCollection
-    {
+    public function getGroupeBackgroundsVisibleForCurrentUser(
+        Groupe $groupe,
+    ): ArrayCollection {
         $backgrounds = new ArrayCollection();
 
         // Public require at least a logged user
@@ -1167,13 +1257,15 @@ class PersonnageService
         return $backgrounds;
     }
 
-    public function getPersonnages(User $user): string
-    {
+    public function getPersonnages(
+        User $user,
+    ): string {
         return $user->getPersonnages();
     }
 
-    public function getGroupeDebriefingVisibleForCurrentUser(Groupe $groupe): ArrayCollection
-    {
+    public function getGroupeDebriefingVisibleForCurrentUser(
+        Groupe $groupe,
+    ): ArrayCollection {
         $debriefings = new ArrayCollection();
 
         // Public require at least a logged user
@@ -1261,8 +1353,9 @@ class PersonnageService
     /**
      * @return Collection<int, Loi>
      */
-    public function getLois(Personnage $personnage): array|Collection
-    {
+    public function getLois(
+        Personnage $personnage,
+    ): array|Collection {
         // Toutes les lois pour un expert
         if ($personnage->hasCompetenceLevel(CompetenceFamilyType::POLITICAL, LevelType::EXPERT)) {
             return $this->entityManager->getRepository(Loi::class)->findAll();
@@ -1450,8 +1543,10 @@ class PersonnageService
         );
     }
 
-    public function hasEspece(Personnage $personnage, Espece $espece): bool
-    {
+    public function hasEspece(
+        Personnage $personnage,
+        Espece $espece,
+    ): bool {
         foreach ($personnage->getEspeces() as $especePersonnage) {
             if ($especePersonnage->getId() === $espece->getId()) {
                 return true;
@@ -1461,8 +1556,9 @@ class PersonnageService
         return false;
     }
 
-    public function hasReligionSans(Personnage $personnage): bool
-    {
+    public function hasReligionSans(
+        Personnage $personnage,
+    ): bool {
         /** @var ReligionRepository $religionRepository */
         $religionRepository = $this->entityManager->getRepository(Religion::class);
         $qb = $religionRepository->createQueryBuilder('rl');
@@ -1474,8 +1570,10 @@ class PersonnageService
         return $religion && $this->knownReligion($personnage, $religion);
     }
 
-    public function isMemberOfGroup(Personnage $personnage, Groupe $groupe): bool
-    {
+    public function isMemberOfGroup(
+        Personnage $personnage,
+        Groupe $groupe,
+    ): bool {
         /** @var GroupeGn $groupeGn * */
         $groupeGn = $groupe->getGroupeGns()->last();
 

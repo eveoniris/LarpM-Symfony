@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -20,7 +21,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageSecondaire', 'extended' => 'PersonnageSecondaire'])]
 abstract class BasePersonnageSecondaire
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: Participant::class)]
@@ -57,24 +58,6 @@ abstract class BasePersonnageSecondaire
     }
 
     /**
-     * Set the value of id.
-     */
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of id.
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
      * Add Participant entity to collection (one to many).
      */
     public function addParticipant(Participant $participant): static
@@ -85,49 +68,13 @@ abstract class BasePersonnageSecondaire
     }
 
     /**
-     * Remove Participant entity from collection (one to many).
-     */
-    public function removeParticipant(Participant $participant): static
-    {
-        $this->participants->removeElement($participant);
-
-        return $this;
-    }
-
-    /**
-     * Get Participant entity collection (one to many).
-     */
-    public function getParticipants(): Collection
-    {
-        return $this->participants;
-    }
-
-    /**
      * Add PersonnageSecondaireCompetence entity to collection (one to many).
      */
-    public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): static
-    {
+    public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence,
+    ): static {
         $this->personnageSecondaireCompetences[] = $personnageSecondaireCompetence;
 
         return $this;
-    }
-
-    /**
-     * Remove PersonnageSecondaireCompetence entity from collection (one to many).
-     */
-    public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): static
-    {
-        $this->personnageSecondaireCompetences->removeElement($personnageSecondaireCompetence);
-
-        return $this;
-    }
-
-    /**
-     * Get PersonnageSecondaireCompetence entity collection (one to many).
-     */
-    public function getPersonnageSecondaireCompetences(): Collection
-    {
-        return $this->personnageSecondaireCompetences;
     }
 
     /**
@@ -141,21 +88,11 @@ abstract class BasePersonnageSecondaire
     }
 
     /**
-     * Remove User entity from collection (one to many).
+     * Get Classe entity (many to one).
      */
-    public function removeUser(User $user): ?User
+    public function getClasse(): ?Classe
     {
-        $this->users->removeElement($user);
-
-        return $this;
-    }
-
-    /**
-     * Get User entity collection (one to many).
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
+        return $this->classe;
     }
 
     /**
@@ -169,11 +106,75 @@ abstract class BasePersonnageSecondaire
     }
 
     /**
-     * Get Classe entity (many to one).
+     * Get the value of id.
      */
-    public function getClasse(): ?Classe
+    public function getId(): int
     {
-        return $this->classe;
+        return $this->id;
+    }
+
+    /**
+     * Set the value of id.
+     */
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get Participant entity collection (one to many).
+     */
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    /**
+     * Get PersonnageSecondaireCompetence entity collection (one to many).
+     */
+    public function getPersonnageSecondaireCompetences(): Collection
+    {
+        return $this->personnageSecondaireCompetences;
+    }
+
+    /**
+     * Get User entity collection (one to many).
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    /**
+     * Remove Participant entity from collection (one to many).
+     */
+    public function removeParticipant(Participant $participant): static
+    {
+        $this->participants->removeElement($participant);
+
+        return $this;
+    }
+
+    /**
+     * Remove PersonnageSecondaireCompetence entity from collection (one to many).
+     */
+    public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence,
+    ): static {
+        $this->personnageSecondaireCompetences->removeElement($personnageSecondaireCompetence);
+
+        return $this;
+    }
+
+    /**
+     * Remove User entity from collection (one to many).
+     */
+    public function removeUser(User $user): ?User
+    {
+        $this->users->removeElement($user);
+
+        return $this;
     }
 
     /* public function __sleep()

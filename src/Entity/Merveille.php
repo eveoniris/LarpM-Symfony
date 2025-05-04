@@ -38,7 +38,7 @@ class Merveille
     #[ORM\ManyToOne(inversedBy: 'merveilles')]
     private ?Territoire $territoire = null;
 
-    #[ORM\ManyToOne(inversedBy: 'merveilles')]
+    #[ORM\ManyToOne(targetEntity: Bonus::class, inversedBy: 'merveilles')]
     private ?Bonus $bonus = null;
 
     public function getId(): ?int

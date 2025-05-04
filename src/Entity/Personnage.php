@@ -57,7 +57,7 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function __toString(): string
     {
-        return (string)$this->getPublicName();
+        return (string) $this->getPublicName();
     }
 
     /**
@@ -182,7 +182,7 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function addPugilat(int $pugilat): static
     {
-        $this->setPugilat($this->getPugilat() + (int)$pugilat);
+        $this->setPugilat($this->getPugilat() + (int) $pugilat);
 
         return $this;
     }
@@ -341,8 +341,8 @@ class Personnage extends BasePersonnage implements \Stringable
         foreach ($this->getCompetencesFromFamilyType($famillyType) as $competence) {
             $index = $competence->getLevel()?->getIndex();
 
-            if (null === $level || $niveau < (int)$index) {
-                $niveau = (int)$index;
+            if (null === $level || $niveau < (int) $index) {
+                $niveau = (int) $index;
                 $level = $competence->getLevel();
             }
         }
@@ -462,16 +462,31 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function getEnergieVitale(): int
     {
-        $User = $this->getUser();
-        if (!$User) {
+        $user = $this->getUser();
+        if (!$user) {
             return 1;
         }
 
-        if ($User->getAgeJoueur() < 18) {
+        if ($user->getAgeJoueur() < 18) {
             return 0;
         }
 
+        if ($this->isOmbrelin()) {
+            return 2;
+        }
+
         return 1;
+    }
+
+    public function isOmbrelin(): bool
+    {
+        foreach ($this->getEspeces() as $espece) {
+            if ($espece->isOmbrelin()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function getFilename(): ?string
@@ -998,7 +1013,7 @@ class Personnage extends BasePersonnage implements \Stringable
     {
         $total = 0;
         foreach ($this->getExperienceGains() as $gain) {
-            $pos = strpos((string)$gain->getExplanation(), 'Suppression de la compétence');
+            $pos = strpos((string) $gain->getExplanation(), 'Suppression de la compétence');
             if (false === $pos) {
                 $total += $gain->getXpGain();
             }
@@ -1033,7 +1048,7 @@ class Personnage extends BasePersonnage implements \Stringable
         $label = '';
         foreach ($this->getPersonnageLangues() as $personnageLangue) {
             $label = $label.' '.$personnageLangue->getLangue();
-            if (str_starts_with((string)$personnageLangue->getLangue(), 'Ancien')) {
+            if (str_starts_with((string) $personnageLangue->getLangue(), 'Ancien')) {
                 ++$compteLangueAncienne;
             } else {
                 ++$compteLangue;
@@ -1287,7 +1302,7 @@ class Personnage extends BasePersonnage implements \Stringable
                     return true;
                 }
 
-                if ((int)$religion->getReligionLevel()?->getId() === $levelId) {
+                if ((int) $religion->getReligionLevel()?->getId() === $levelId) {
                     return true;
                 }
             }
@@ -1524,6 +1539,17 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         return !empty($this->getCompetencesFromFamilyType($type));
+    }
+
+    public function isProfond(): bool
+    {
+        foreach ($this->getEspeces() as $espece) {
+            if ($espece->isProfond()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

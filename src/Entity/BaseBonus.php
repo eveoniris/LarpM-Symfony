@@ -62,11 +62,18 @@ abstract class BaseBonus
     #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: 'false')]
     private ?Collection $groupeBonus;
 
+    /**
+     * @var Collection<int, Merveille>
+     */
+    #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: Merveille::class)]
+    private Collection $merveilles;
+
     public function __construct()
     {
         $this->personnageBonus = new ArrayCollection();
         $this->groupeBonus = new ArrayCollection();
         $this->originesBonus = new ArrayCollection();
+        $this->merveilles = new ArrayCollection();
     }
 
     public function addGroupeBonus(GroupeBonus $groupeBonus): static
@@ -78,6 +85,17 @@ abstract class BaseBonus
 
         return $this;
     }
+
+    public function addMerveille(Merveille $merveille): static
+    {
+        if (!$this->merveilles->contains($merveille)) {
+            $this->merveilles->add($merveille);
+            $merveille->setBonus($this);
+        }
+
+        return $this;
+    }
+
 
     public function addOrigineBonus(OrigineBonus $origine): static
     {
@@ -168,6 +186,14 @@ abstract class BaseBonus
     }
 
     /**
+     * @return Collection<int, Merveille>
+     */
+    public function getMerveilles(): Collection
+    {
+        return $this->merveilles;
+    }
+
+    /**
      * @return Collection<int, Territoire>
      */
     public function getOrigineBonus(): Collection
@@ -249,6 +275,18 @@ abstract class BaseBonus
             // set the owning side to null (unless already changed)
             if ($groupeBonus->getGroupe() === $this) {
                 $groupeBonus->setBonus(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function removeMerveille(Merveille $merveille): static
+    {
+        if ($this->merveilles->removeElement($merveille)) {
+            // set the owning side to null (unless already changed)
+            if ($merveille->getBonus() === $this) {
+                $merveille->setBonus(null);
             }
         }
 

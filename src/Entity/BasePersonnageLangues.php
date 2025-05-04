@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -19,10 +20,10 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageLangues', 'extended' => 'PersonnageLangues'])]
 abstract class BasePersonnageLangues
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'source', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(name: 'source', type: Types::STRING, length: 45)]
     protected string $source = '';
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageLangues')]
@@ -35,6 +36,14 @@ abstract class BasePersonnageLangues
     protected Langue $langue;
 
     /**
+     * Get the value of id.
+     */
+    public function getId(): ?int
+    {
+        return $this->id ?? null;
+    }
+
+    /**
      * Set the value of id.
      */
     public function setId(int $id): static
@@ -45,47 +54,11 @@ abstract class BasePersonnageLangues
     }
 
     /**
-     * Get the value of id.
+     * Get Langue entity (many to one).
      */
-    public function getId(): ?int
+    public function getLangue(): ?Langue
     {
-        return $this->id ?? null;
-    }
-
-    /**
-     * Set the value of source.
-     */
-    public function setSource(string $source): static
-    {
-        $this->source = $source;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of source.
-     */
-    public function getSource(): string
-    {
-        return $this->source ?? '';
-    }
-
-    /**
-     * Set Personnage entity (many to one).
-     */
-    public function setPersonnage(Personnage $personnage = null): static
-    {
-        $this->personnage = $personnage;
-
-        return $this;
-    }
-
-    /**
-     * Get Personnage entity (many to one).
-     */
-    public function getPersonnage(): ?Personnage
-    {
-        return $this->personnage;
+        return $this->langue;
     }
 
     /**
@@ -99,11 +72,39 @@ abstract class BasePersonnageLangues
     }
 
     /**
-     * Get Langue entity (many to one).
+     * Get Personnage entity (many to one).
      */
-    public function getLangue(): ?Langue
+    public function getPersonnage(): ?Personnage
     {
-        return $this->langue;
+        return $this->personnage;
+    }
+
+    /**
+     * Set Personnage entity (many to one).
+     */
+    public function setPersonnage(Personnage $personnage = null): static
+    {
+        $this->personnage = $personnage;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of source.
+     */
+    public function getSource(): string
+    {
+        return $this->source ?? '';
+    }
+
+    /**
+     * Set the value of source.
+     */
+    public function setSource(string $source): static
+    {
+        $this->source = $source;
+
+        return $this;
     }
 
     /* public function __sleep()

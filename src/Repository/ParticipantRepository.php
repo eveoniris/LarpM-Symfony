@@ -15,6 +15,20 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class ParticipantRepository extends BaseRepository
 {
+    public function findAllWithoutPersonnageSecondaire(Gn $gn)
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                    SELECT p FROM App\Entity\Participant p
+                    WHERE p.personnageSecondaire IS NULL and p.gn = :gnid
+                DQL,
+            );
+        $query->setParameter('gnid', $gn->getId());
+
+        return $query->getResult();
+    }
+
     /**
      * Trouve le nombre d'utilisateurs correspondant aux critères de recherche.
      */
@@ -34,6 +48,48 @@ class ParticipantRepository extends BaseRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    public function getPersonnagesAlive(Participant $participant): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        $queryBuilder = $this->getPersonnages($participant);
+
+        return $personnageRepository->alive($queryBuilder, true);
+    }
+
+    public function getPersonnages(Participant $participant): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        $queryBuilder = $personnageRepository->createQueryBuilder('perso');
+
+        return $personnageRepository->user($queryBuilder, $participant->getUser());
+    }
+
+    /*public function sortAttributes(string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        dump(1);
+
+        return [
+            //'groupe' => [OrderBy::ASC => ['groupe' => OrderBy::ASC], OrderBy::DESC => ['groupe' => OrderBy::DESC]],
+            ...parent::sortAttributes($alias),
+            // using alias like "scriptwriter" require another template loop due to the added $query->select() entity
+            //'user.username' => [OrderBy::ASC => ['user.username' => OrderBy::ASC], OrderBy::DESC => ['user.username' => OrderBy::DESC]],
+            //'player.username' => [OrderBy::ASC => ['player.username' => OrderBy::ASC], OrderBy::DESC => ['player.username' => OrderBy::DESC]],
+        ];
+    }*/
+
+    public function gn(QueryBuilder $query, Gn $gn): QueryBuilder
+    {
+        $query->andWhere($this->alias.'.gn = :gnId');
+
+        return $query->setParameter('gnId', $gn->getId());
+    }
+
     public function searchPaginatedByGn(PagerService $pageRequest, int $gnid): Paginator
     {
         $query = $this->searchByGn(
@@ -47,7 +103,7 @@ class ParticipantRepository extends BaseRepository
         return $this->findPaginatedQuery(
             $query,
             $pageRequest->getLimit(),
-            $pageRequest->getPage()
+            $pageRequest->getPage(),
         );
     }
 
@@ -57,7 +113,7 @@ class ParticipantRepository extends BaseRepository
         string|array|null $attributes = self::SEARCH_NOONE,
         ?OrderBy $orderBy = null,
         ?string $alias = null,
-        ?QueryBuilder $query = null
+        ?QueryBuilder $query = null,
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
@@ -142,7 +198,7 @@ class ParticipantRepository extends BaseRepository
         string|array|null $attributes = self::SEARCH_NOONE,
         ?OrderBy $orderBy = null,
         ?string $alias = null,
-        ?QueryBuilder $query = null
+        ?QueryBuilder $query = null,
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
@@ -151,25 +207,10 @@ class ParticipantRepository extends BaseRepository
         $query->join('user.etatCivil', 'etatCivil');
         $query->leftJoin($alias.'.billet', 'billet');
         // Next may be a LEFT join because it's can be null
-       // $query->join($alias.'.territoire', 'territoire');
+        // $query->join($alias.'.territoire', 'territoire');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
-
-    /*public function sortAttributes(string $alias = null): array
-    {
-        $alias ??= static::getEntityAlias();
-
-        dump(1);
-
-        return [
-            //'groupe' => [OrderBy::ASC => ['groupe' => OrderBy::ASC], OrderBy::DESC => ['groupe' => OrderBy::DESC]],
-            ...parent::sortAttributes($alias),
-            // using alias like "scriptwriter" require another template loop due to the added $query->select() entity
-            //'user.username' => [OrderBy::ASC => ['user.username' => OrderBy::ASC], OrderBy::DESC => ['user.username' => OrderBy::DESC]],
-            //'player.username' => [OrderBy::ASC => ['player.username' => OrderBy::ASC], OrderBy::DESC => ['player.username' => OrderBy::DESC]],
-        ];
-    }*/
 
     public function searchAttributes(?string $alias = null): array
     {
@@ -207,32 +248,5 @@ class ParticipantRepository extends BaseRepository
             'email' => $this->translator->trans('Email', domain: 'repository'),
             'billet' => $this->translator->trans('Billet', domain: 'repository'),
         ];
-    }
-
-    public function gn(QueryBuilder $query, Gn $gn): QueryBuilder
-    {
-        $query->andWhere($this->alias.'.gn = :gnId');
-
-        return $query->setParameter('gnId', $gn->getId());
-    }
-
-    public function getPersonnages(Participant $participant): QueryBuilder
-    {
-        /** @var PersonnageRepository $personnageRepository */
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
-
-        $queryBuilder = $personnageRepository->createQueryBuilder('perso');
-
-        return $personnageRepository->user($queryBuilder, $participant->getUser());
-    }
-
-    public function getPersonnagesAlive(Participant $participant): QueryBuilder
-    {
-        /** @var PersonnageRepository $personnageRepository */
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
-
-        $queryBuilder = $this->getPersonnages($participant);
-
-        return $personnageRepository->alive($queryBuilder, true);
     }
 }

@@ -219,7 +219,7 @@ readonly class GroupeService
                     continue;
                 }
 
-                // For display as bonnus can have a lot of merveille
+                // To display on the bonus, Entity can have a lot of merveille
                 $bonus->setMerveille($merveille);
 
                 // On évite les types non désirés
