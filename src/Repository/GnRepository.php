@@ -11,27 +11,6 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 class GnRepository extends BaseRepository
 {
     /**
-     * Recherche le prochain GN (le plus proche de la date du jour).
-     */
-    public function findNext()
-    {
-        // AND g.date_debut > CURRENT_DATE()
-        $gns = $this->getEntityManager()
-            ->createQuery('SELECT g FROM App\Entity\Gn g WHERE g.actif = true ORDER BY g.date_debut DESC')
-            ->getResult();
-
-        return $gns[0] ?? null;
-    }
-
-    /**
-     * Classe les gn par date (du plus proche au plus lointain).
-     */
-    public function findAll(): array
-    {
-        return $this->findBy([], ['date_debut' => 'DESC']);
-    }
-
-    /**
      * Trouve tous les gns actifs.
      *
      * @return ArrayCollection $gns
@@ -43,8 +22,21 @@ class GnRepository extends BaseRepository
             ->getResult();
     }
 
-    public function findPaginated(int $page, int $limit = 10, string $orderby = 'id', string $orderdir = 'ASC', $where = '1=1'): Paginator
+    /**
+     * Classe les gn par date (du plus proche au plus lointain).
+     */
+    public function findAll(): array
     {
+        return $this->findBy([], ['date_debut' => 'DESC']);
+    }
+
+    public function findPaginated(
+        int $page,
+        int $limit = 10,
+        string $orderby = 'id',
+        string $orderdir = 'ASC',
+        $where = '1=1',
+    ): Paginator {
         $limit = abs($limit);
 
         $result = [];
@@ -90,15 +82,17 @@ class GnRepository extends BaseRepository
         return $result;*/
     }
 
-    public function getPersonnages(Gn $gn): QueryBuilder
+    /**
+     * Recherche le prochain GN (le plus proche de la date du jour).
+     */
+    public function findNext()
     {
-        /** @var PersonnageRepository $personnageRepository */
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+        // AND g.date_debut > CURRENT_DATE()
+        $gns = $this->getEntityManager()
+            ->createQuery('SELECT g FROM App\Entity\Gn g WHERE g.actif = true ORDER BY g.date_debut DESC')
+            ->getResult();
 
-        return $personnageRepository->createQueryBuilder('perso')
-            ->innerJoin('perso.gn', 'gn')
-            ->where('gn.id = :gnid')
-            ->setParameter('gnid', $gn->getId());
+        return $gns[0] ?? null;
     }
 
     public function getParticipant(Gn $gn): QueryBuilder
@@ -110,5 +104,37 @@ class GnRepository extends BaseRepository
             ->innerJoin('participant.gn', 'gn')
             ->where('gn.id = :gnid')
             ->setParameter('gnid', $gn->getId());
+    }
+
+    public function getPersonnages(Gn $gn): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        return $personnageRepository->createQueryBuilder('perso')
+            ->innerJoin('perso.gn', 'gn')
+            ->where('gn.id = :gnid')
+            ->setParameter('gnid', $gn->getId());
+    }
+
+    public function lockAllGroup(Gn $gn): int
+    {
+        $connection = $this->entityManager->getConnection();
+
+        $sql =
+            <<<SQL
+                 UPDATE groupe g SET `lock` = 1
+                    WHERE id IN (
+                        SELECT groupe.id 
+                        
+                        FROM groupe 
+                            INNER JOIN groupe_gn gn ON groupe.id = gn.groupe_id 
+                        WHERE gn_id = :gnid
+                    );
+                SQL;
+
+        $statement = $connection->prepare($sql);
+
+        return $statement->executeStatement(['gnid' => $gn->getId()]);
     }
 }

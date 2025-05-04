@@ -278,6 +278,56 @@ class AdminController extends AbstractController
         );
     }
 
+    public function testConditions(
+        PersonnageRepository $personnageRepository,
+    ): Response {
+        $personnage = $personnageRepository->findBy(['id' => 4608]);
+        dump(
+            $this->conditionsService->isValidConditions(
+                $personnage,
+                [
+                    'TYPE' => 'CLASSE',
+                    'VALUE' => 21,
+                ],
+                $this,
+            ),
+        );
+
+        dump(
+            $this->conditionsService->isValidConditions(
+                $personnage,
+                [
+                    [
+                        'TYPE' => 'CLASSE',
+                        'VALUE' => 21,
+                    ],
+                ],
+                $this,
+            ),
+        );
+
+        dump(
+            $this->conditionsService->isValidConditions(
+                $personnage,
+                [
+                    'AND',
+                    [
+
+                        'TYPE' => 'CLASSE',
+                        'VALUE' => 21,
+                    ],
+                    [
+                        'TYPE' => 'RELIGION',
+                        'VALUE' => 5,
+                    ],
+                ],
+                $this,
+            ),
+        );
+
+        dd('END');
+    }
+
     #[Route('/admin/xp/gain', name: 'xp.gain')]
     // TODO CSV Export
     public function xpGainAction(

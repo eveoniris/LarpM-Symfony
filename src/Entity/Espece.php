@@ -40,31 +40,11 @@ class Espece
         $this->personnages = new ArrayCollection();
     }
 
-    public function getLabel(): string
+    public function addPersonnage(Personnage $personnage): static
     {
-        return $this->getNom() ?? '';
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(?string $nom): static
-    {
-        $this->nom = $nom;
+        if (!$this->personnages->contains($personnage)) {
+            $this->personnages->add($personnage);
+        }
 
         return $this;
     }
@@ -79,6 +59,43 @@ class Espece
         $this->description = $description;
 
         return $this;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getLabel(): string
+    {
+        return $this->getNom() ?? '';
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(?string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Personnage>
+     */
+    public function getPersonnages(): Collection
+    {
+        return $this->personnages;
     }
 
     public function getType(): ?EspeceType
@@ -99,38 +116,31 @@ class Espece
         return $this;
     }
 
+    public function isOmbrelin(): bool
+    {
+        return 'OMBRELIN' === strtoupper($this->nom);
+    }
+
+    public function isProfond(): bool
+    {
+        return 'PROFOND' === strtoupper($this->nom);
+    }
+
     public function isSecret(): ?bool
     {
         return $this->secret;
     }
 
-    public function setSecret(bool $secret): static
-    {
-        $this->secret = $secret;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Personnage>
-     */
-    public function getPersonnages(): Collection
-    {
-        return $this->personnages;
-    }
-
-    public function addPersonnage(Personnage $personnage): static
-    {
-        if (!$this->personnages->contains($personnage)) {
-            $this->personnages->add($personnage);
-        }
-
-        return $this;
-    }
-
     public function removePersonnage(Personnage $personnage): static
     {
         $this->personnages->removeElement($personnage);
+
+        return $this;
+    }
+
+    public function setSecret(bool $secret): static
+    {
+        $this->secret = $secret;
 
         return $this;
     }

@@ -74,6 +74,22 @@
         table td {
             text-align: center;
         }
+
+        table.report-container {
+            page-break-after: always;
+        }
+
+        thead.report-header {
+            display: table-header-group;
+        }
+
+        tfoot.report-footer {
+            display: table-footer-group;
+        }
+
+        .print-avoid-break {
+            page-break-inside: avoid;
+        }
     </style>
 
     {% block style %}
