@@ -4,32 +4,36 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Page d'accueil</a></li>
-		<li><a href="{{ path('gn.detail', {'gn' : participant.gn.id}) }}">{{ participant.gn.label }}</a></li>
-		<li><a href="{{ path('gn.personnage', {'gn': participant.gn.id}) }}">{{ participant.personnage.nom }}</a></li>
-		<li class="active">Politique</li>
-	</ol>
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Page d'accueil</a></li>
+        <li><a href="{{ path('gn.detail', {'gn' : participant.gn.id}) }}">{{ participant.gn.label }}</a></li>
+        <li><a href="{{ path('gn.personnage', {'gn': participant.gn.id}) }}">{{ participant.personnage.nom }}</a></li>
+        <li class="active">Politique</li>
+    </ol>
 
-	<div class="well">
-		<ul>
-		{% set tempArray = {} %}
-		{% for groupe in groupes %}
-			{% for groupeTmp in groupes %}
-				{% if groupeTmp != groupe %}
-					
-						{% if groupe.isAllyTo(groupeTmp) %}
-							{% set tempArray = tempArray|merge({(groupeTmp.id):(groupeTmp.id)}) %}
-							<li><strong>{{ groupe.nom }}</strong> est allié à <strong>{{ groupeTmp.nom }}</strong></li>
-						{% elseif groupe.isEnemyTo(groupeTmp) %}
-							{% set tempArray = tempArray|merge({(groupeTmp.id):(groupeTmp.id)}) %}
-							<li><strong>{{ groupe.nom }}</strong> est l'ennemi de <strong>{{ groupeTmp.nom }}</strong></li>
-						{% endif %}
-					
-				{% endif %}
-			{% endfor %}
-		{% endfor %}
-		</ul>			
-	</div>
+    <div class="well">
+        <div class="header"><h5>Relations diplomatiques</h5></div>
+        <ul>
+            {% set tempArray = {} %}
+            {% for groupe in groupes %}
+                {% for groupeTmp in groupes %}
+                    {% if groupeTmp != groupe %}
+
+                        {% if groupe.isAllyTo(groupeTmp) %}
+                            {% set tempArray = tempArray|merge({(groupeTmp.id):(groupeTmp.id)}) %}
+                            <li><strong>{{ groupe.nom }}</strong> est allié à <strong>{{ groupeTmp.nom }}</strong></li>
+                        {% elseif groupe.isEnemyTo(groupeTmp) %}
+                            {% set tempArray = tempArray|merge({(groupeTmp.id):(groupeTmp.id)}) %}
+                            <li><strong>{{ groupe.nom }}</strong> est l'ennemi de <strong>{{ groupeTmp.nom }}</strong>
+                            </li>
+                        {% endif %}
+
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+            {% if tempArray|length == 0 %}
+                <li>Aucune</li>
+            {% endif %}
+        </ul>
+    </div>
 {% endblock body %}
-

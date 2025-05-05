@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Document;
+use App\Entity\Groupe;
 use App\Entity\LogAction;
 use App\Entity\User;
 use App\Enum\FolderType;
@@ -103,6 +104,39 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return $this->pageRequest->getForm();
     }
 
+    protected function checkGroupeLocked(
+        ?Groupe $groupe,
+        ?string $route = null,
+        ?array $routeParams = null,
+        ?string $msg = null,
+    ): ?Response {
+        if (!$groupe) {
+            return null;
+        }
+
+        if (!$groupe->getLock()) {
+            return null;
+        }
+
+        $href = $this->generateUrl('groupe.detail', ['groupe' => $groupe->getId()]).'#groupe_lock';
+
+        $renderMsg = [];
+        if ($msg) {
+            $renderMsg[] = $msg;
+        }
+        $renderMsg[] = <<<HTML
+            Le <a href="$href">groupe est verrouillé</a> et il n'est plus possible de le modifier.<br />
+            Contactez votre scénariste si vous pensez que cela est une erreur
+            HTML;
+
+        $this->addFlash('error', implode('<br />', $renderMsg));
+
+        $route ??= 'groupe.detail';
+        $routeParams ??= ['groupe' => $groupe->getId()];
+
+        return $this->redirectToRoute($route, $routeParams, 303);
+    }
+
     protected function checkHasAccess(array $roles, ?callable $callable): void
     {
         /** @var User $loggedUser */
@@ -186,6 +220,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         ]);
     }
 
+    // TODO change to orderBy service
+
     protected function render(string $view, array $parameters = [], ?Response $response = null): Response
     {
         // TODO enhance
@@ -210,8 +246,6 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
         return parent::render($view, $parameters, $response);
     }
-
-    // TODO change to orderBy service
 
     protected function getRequestLimit(int $defLimit = 10): int
     {
@@ -435,17 +469,6 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $flush && $this->entityManager->flush();
     }
 
-    protected function redirectToReferer(Request $request): ?RedirectResponse
-    {
-        $referer = $request->headers->get('referer');
-
-        if ($referer) {
-            return $this->redirect($referer, 303);
-        }
-
-        return null;
-    }
-
     /*
      * Sample
      *
@@ -464,6 +487,17 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
      * ]
      * );
      */
+
+    protected function redirectToReferer(Request $request): ?RedirectResponse
+    {
+        $referer = $request->headers->get('referer');
+
+        if ($referer) {
+            return $this->redirect($referer, 303);
+        }
+
+        return null;
+    }
 
     protected function sendCsv(
         string $title,
