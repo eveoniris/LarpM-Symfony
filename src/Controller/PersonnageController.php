@@ -84,14 +84,12 @@ use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\IntegerType;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use JetBrains\PhpStorm\Deprecated;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -185,7 +183,7 @@ class PersonnageController extends AbstractController
     /**
      * Page d'accueil de gestion des personnage.
      */
-    public function accueilAction(Request $request, EntityManagerInterface $entityManager): Response
+    public function accueilAction(Request $request): Response
     {
         return $this->render('personnage/accueil.twig', []);
     }
@@ -194,11 +192,13 @@ class PersonnageController extends AbstractController
     #[IsGranted(Role::USER->value)]
     public function addCompetenceAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
         PersonnageService $personnageService,
     ): RedirectResponse|Response {
         $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
+
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
 
         $availableCompetences = $personnageService->getAvailableCompetences($personnage);
         $referer = $request->headers->get('referer');
@@ -239,7 +239,7 @@ class PersonnageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $competenceId = $data->getId();
-            $competence = $entityManager->find(Competence::class, $competenceId);
+            $competence = $this->entityManager->find(Competence::class, $competenceId);
 
             $service = null;
 
@@ -268,6 +268,7 @@ class PersonnageController extends AbstractController
             'form' => $form->createView(),
             'isAdmin' => $this->isGranted(Role::ADMIN->value) || $this->isGranted(Role::SCENARISTE->value),
             'personnage' => $personnage,
+            'participant' => $participant,
             'competences' => $availableCompetences,
         ]);
     }
@@ -299,33 +300,64 @@ class PersonnageController extends AbstractController
         throw new AccessDeniedException();
     }
 
+    protected function getParticipant(Personnage $personnage, Request $request): ?Participant
+    {
+        if ($id = $request->get('participant')) {
+            $participant = $this->entityManager->getRepository(Participant::class)->findOneBy(['id' => $id]);
+            if ($participant) {
+                return $participant;
+            }
+        }
+
+        return $personnage->getLastParticipant();
+    }
+
+    protected function checkPersonnageGroupeLock(
+        Personnage $personnage,
+        ?Participant $participant,
+        ?string $route = null,
+        ?array $routeParams = null,
+        ?string $msg = null,
+    ): ?Response {
+        if (!$participant) {
+            $participant = $personnage->getLastParticipant();
+        }
+
+        return $this->checkGroupeLocked(
+            $personnage->getLastParticipantGnGroupe(),
+            $route ?? 'personnage.detail',
+            $routeParams ?? ['personnage' => $personnage->getId(), 'participant' => $participant->getId()],
+            $msg ?? "Désolé, il n'est plus possible de modifier ce personnage.",
+        );
+    }
+
     /**
      * Ajout d'un personnage (orga seulement).
      */
     #[Route('/admin/add', name: 'admin.add')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function adminAddAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         PersonnageService $personnageService,
     ): Response {
         $personnage = new Personnage();
-        $gnActif = GroupeManager::getGnActif($entityManager);
+        $gnActif = GroupeManager::getGnActif($this->entityManager);
 
         $participant = $request->get('participant');
         if (!$participant) {
             // essaye de récupérer le participant du gn actif
 
             if ($gnActif) {
-                $participant = $this->getUser()->getParticipant($gnActif);
+                $participant = $this->getUser()?->getParticipant($gnActif);
             }
 
             if (!$participant) {
                 // sinon récupère le dernier dans la liste
-                $participant = $this->getUser()->getLastParticipant();
+                $participant = $this->getUser()?->getLastParticipant();
             }
         } else {
-            $participant = $entityManager->getRepository('\\'.Participant::class)->find($participant);
+            $participant = $this->entityManager->getRepository(Participant::class)->find($participant);
         }
 
         $form = $this->createForm(PersonnageForm::class, $personnage)
@@ -356,7 +388,7 @@ class PersonnageController extends AbstractController
             $historique->setOperationDate(new \DateTime('NOW'));
             $historique->setPersonnage($personnage);
             $historique->setXpGain($gnActif->getXpCreation());
-            $entityManager->persist($historique);
+            $this->entityManager->persist($historique);
 
             // ajout des compétences acquises à la création
             $competenceHandler = $personnageService->addClasseCompetencesFamilyCreation($personnage);
@@ -370,7 +402,7 @@ class PersonnageController extends AbstractController
                 if ($firstCompetence) {
                     $personnage->addCompetence($firstCompetence);
                     $firstCompetence->addPersonnage($personnage);
-                    $entityManager->persist($firstCompetence);
+                    $this->entityManager->persist($firstCompetence);
                 }
             }*/
 
@@ -383,22 +415,22 @@ class PersonnageController extends AbstractController
                 $historique->setOperationDate(new \DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($xpAgeBonus);
-                $entityManager->persist($historique);
+                $this->entityManager->persist($historique);
             }
 
-            $entityManager->persist($personnage);
+            $this->entityManager->persist($personnage);
             if ($participant) {
-                $entityManager->persist($participant);
+                $this->entityManager->persist($participant);
             }
 
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre personnage a été sauvegardé.');
             if ($participant && $participant->getGroupe()) {
                 return $this->redirectToRoute('groupe.detail', ['groupe' => $participant->getGroupe()->getId()], 303);
-            } else {
-                return $this->redirectToRoute('homepage', [], 303);
             }
+
+            return $this->redirectToRoute('homepage', [], 303);
         }
 
         return $this->render('personnage/add.twig', [
@@ -411,10 +443,10 @@ class PersonnageController extends AbstractController
      * Ajoute un background au personnage.
      */
     #[Route('/{personnage}/addBackground', name: 'add.background')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminAddBackgroundAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $background = new PersonnageBackground();
@@ -428,8 +460,8 @@ class PersonnageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $background = $form->getData();
 
-            $entityManager->persist($background);
-            $entityManager->flush();
+            $this->entityManager->persist($background);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le background a été sauvegardé.');
 
@@ -451,10 +483,10 @@ class PersonnageController extends AbstractController
      * Ajoute un evenement de chronologie au personnage.
      */
     #[Route('/{personnage}/addChronologie', name: 'add.chronologie')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminAddChronologieAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $personnageChronologie = new PersonnageChronologie();
@@ -479,8 +511,8 @@ class PersonnageController extends AbstractController
             $personnageChronologie->setEvenement($evenement);
             $personnageChronologie->setPersonnage($personnage);
 
-            $entityManager->persist($personnageChronologie);
-            $entityManager->flush();
+            $this->entityManager->persist($personnageChronologie);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'L\'évènement a été ajouté à la chronologie.');
 
@@ -502,11 +534,14 @@ class PersonnageController extends AbstractController
      * Ajoute une connaissance à un personnage.
      */
     #[Route('/{personnage}/connaissance/{connaissance}/add', name: 'add.connaissance')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminAddConnaissanceAction(
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Connaissance $connaissance,
     ): RedirectResponse {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $personnage->addConnaissance($connaissance);
         $this->entityManager->flush();
 
@@ -522,10 +557,10 @@ class PersonnageController extends AbstractController
      * Ajoute une lignée au personnage.
      */
     #[Route('/{personnage}/addLignee', name: 'add.lignee')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminAddLigneeAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $personnageLignee = new PersonnageLignee();
@@ -549,8 +584,8 @@ class PersonnageController extends AbstractController
             $personnageLignee->setParent2($parent2);
             $personnageLignee->setLignee($lignee);
 
-            $entityManager->persist($personnageLignee);
-            $entityManager->flush();
+            $this->entityManager->persist($personnageLignee);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'La lignée a été ajoutée.');
 
@@ -569,31 +604,28 @@ class PersonnageController extends AbstractController
     }
 
     /**
-     * Permet de faire vieillir les personnages
-     * Cela va donner un Jeton Vieillesse à tous les personnages et changer la catégorie d'age des personnages cumulants deux jetons vieillesse.
-     */
-    // TODO
-
-    /**
      * Ajoute une potion à un personnage.
      */
     #[Route('/{personnage}/addPotion', name: 'add.potion')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
+    // TODO check
     public function adminAddPotionAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $potionID = $request->get('potion');
 
-        $potion = $entityManager->getRepository(Potion::class)
+        $potion = $this->entityManager->getRepository(Potion::class)
             ->find($potionID);
 
         $nomPotion = $potion->getLabel();
 
         $personnage->addPotion($potion);
 
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         $this->addFlash('success', $nomPotion.' a été ajoutée.');
 
@@ -604,12 +636,15 @@ class PersonnageController extends AbstractController
      * Ajoute une priere à un personnage.
      */
     #[Route('/{personnage}/priere/{priere}/add', name: 'add.priere')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminAddPriereAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Priere $priere,
     ): RedirectResponse {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $priere->addPersonnage($personnage);
 
         $this->entityManager->flush();
@@ -626,7 +661,7 @@ class PersonnageController extends AbstractController
      * Ajoute une religion à un personnage.
      */
     #[Route('/{personnage}/addReligion', name: 'add.religion')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     #[Deprecated] // TODO import from Participant::religionAddAction()
     public function adminAddReligionAction(
         Request $request,
@@ -642,6 +677,9 @@ class PersonnageController extends AbstractController
 
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
+
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
 
         $personnageReligion = new PersonnagesReligions();
         $personnageReligion->setPersonnage($personnage);
@@ -711,12 +749,15 @@ class PersonnageController extends AbstractController
      * Ajoute un sort à un personnage.
      */
     #[Route('/{personnage}/sort/{sort}/add', name: 'add.sort')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminAddSortAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Sort $sort,
     ): RedirectResponse {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $personnage->addSort($sort);
 
         $this->entityManager->flush();
@@ -733,12 +774,15 @@ class PersonnageController extends AbstractController
      * Ajoute une technologie à un personnage.
      */
     #[Route('/{personnage}/technologie/{technologie}/add', name: 'add.technologie')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminAddTechnologieAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Technologie $technologie,
     ): RedirectResponse {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $personnage->addTechnologie($technologie);
 
         $this->entityManager->flush();
@@ -755,12 +799,15 @@ class PersonnageController extends AbstractController
      * Supression d'un personnage (orga seulement).
      */
     #[Route('/{personnage}/delete', name: 'delete')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminDeleteAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $form = $this->createForm(PersonnageDeleteForm::class, $personnage)
             ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
@@ -771,56 +818,56 @@ class PersonnageController extends AbstractController
 
             foreach ($personnage->getExperienceGains() as $xp) {
                 $personnage->removeExperienceGain($xp);
-                $entityManager->remove($xp);
+                $this->entityManager->remove($xp);
             }
 
             foreach ($personnage->getExperienceUsages() as $xp) {
                 $personnage->removeExperienceUsage($xp);
-                $entityManager->remove($xp);
+                $this->entityManager->remove($xp);
             }
 
             foreach ($personnage->getMembres() as $membre) {
                 $personnage->removeMembre($membre);
-                $entityManager->remove($membre);
+                $this->entityManager->remove($membre);
             }
 
             foreach ($personnage->getPersonnagesReligions() as $personnagesReligions) {
                 $personnage->removePersonnagesReligions($personnagesReligions);
-                $entityManager->remove($personnagesReligions);
+                $this->entityManager->remove($personnagesReligions);
             }
 
             foreach ($personnage->getPostulants() as $postulant) {
                 $personnage->removePostulant($postulant);
-                $entityManager->remove($postulant);
+                $this->entityManager->remove($postulant);
             }
 
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 $personnage->removePersonnageLangues($personnageLangue);
-                $entityManager->remove($personnageLangue);
+                $this->entityManager->remove($personnageLangue);
             }
 
             foreach ($personnage->getPersonnageTriggers() as $trigger) {
                 $personnage->removePersonnageTrigger($trigger);
-                $entityManager->remove($trigger);
+                $this->entityManager->remove($trigger);
             }
 
             foreach ($personnage->getPersonnageBackgrounds() as $background) {
                 $personnage->removePersonnageBackground($background);
-                $entityManager->remove($background);
+                $this->entityManager->remove($background);
             }
 
             foreach ($personnage->getPersonnageHasTokens() as $token) {
                 $personnage->removePersonnageHasToken($token);
-                $entityManager->remove($token);
+                $this->entityManager->remove($token);
             }
 
             foreach ($personnage->getParticipants() as $participant) {
                 $participant->setPersonnage();
-                $entityManager->persist($participant);
+                $this->entityManager->persist($participant);
             }
 
-            $entityManager->remove($personnage);
-            $entityManager->flush();
+            $this->entityManager->remove($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été supprimé.');
 
@@ -837,10 +884,10 @@ class PersonnageController extends AbstractController
         'personnage' => Requirement::DIGITS,
         'background' => Requirement::DIGITS,
     ])]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminDeleteBackgroundAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         #[MapEntity] Personnage $personnage,
         #[MapEntity] PersonnageBackground $background,
     ): RedirectResponse|Response {
@@ -868,10 +915,10 @@ class PersonnageController extends AbstractController
         'personnage' => Requirement::DIGITS,
         'personnageChronologie' => Requirement::DIGITS,
     ])]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminDeleteChronologieAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         #[MapEntity] Personnage $personnage,
         #[MapEntity] PersonnageChronologie $personnageChronologie,
     ): RedirectResponse|Response {
@@ -904,7 +951,7 @@ class PersonnageController extends AbstractController
         'personnage' => Requirement::DIGITS,
         'personnageLignee' => Requirement::DIGITS,
     ])]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminDeleteLigneeAction(
         #[MapEntity] Personnage $personnage,
         #[MapEntity] PersonnageLignee $personnageLignee,
@@ -930,11 +977,11 @@ class PersonnageController extends AbstractController
     /**
      * Télécharger la liste des personnages au format CSV.
      */
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     #[Route('/admin/download', name: 'admin.download', requirements: [])]
-    public function adminDownloadAction(Request $request, EntityManagerInterface $entityManager): void
+    public function adminDownloadAction(Request $request): void
     {
-        // TODO
+        // TODO ?
     }
 
     /**
@@ -948,6 +995,9 @@ class PersonnageController extends AbstractController
         Request $request,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $form = $this->createFormBuilder()
             ->add('materiel', TextareaType::class, [
                 'required' => false,
@@ -986,23 +1036,26 @@ class PersonnageController extends AbstractController
     /**
      * Imprimer la liste des personnages.
      */
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     #[Route('/admin.print', name: 'admin.print')]
-    public function adminPrintAction(Request $request, EntityManagerInterface $entityManager): void
+    public function adminPrintAction(Request $request): void
     {
-        // TODO
+        // TODO ?
     }
 
     /**
      * Retire une connaissance à un personnage.
      */
     #[Route('/{personnage}/connaissance/{connaissance}/delete', name: 'delete.connaissance')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminRemoveConnaissanceAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Connaissance $connaissance,
     ): RedirectResponse {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $personnage->removeConnaissance($connaissance);
         $this->entityManager->flush();
 
@@ -1014,14 +1067,16 @@ class PersonnageController extends AbstractController
         );
     }
 
-
     #[Route('/{personnage}/domaine/{domaine}/delete', name: 'delete.domaine')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminRemoveDomaineAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Domaine $domaine,
     ): RedirectResponse {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $nomDomaine = $domaine->getLabel();
 
         $domaine->removePersonnage($personnage);
@@ -1039,17 +1094,20 @@ class PersonnageController extends AbstractController
     /**
      * Affiche le détail d'un personnage (pour les orgas).
      */
-    // #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    // #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     /**
      * Retire une langue d'un personnage.
      */
     #[Route('/{personnage}/deleteLangue/{personnageLangue}', name: 'delete.langue')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminRemoveLangueAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] PersonnageLangues $personnageLangue,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $form = $this->createFormBuilder()
             ->add(
                 'save',
@@ -1080,12 +1138,15 @@ class PersonnageController extends AbstractController
      * Retire une potion à un personnage.
      */
     #[Route('/{personnage}/potion/{potion}/delete', name: 'delete.potion')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminRemovePotionAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Potion $potion,
     ): RedirectResponse {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $nomPotion = $potion->getLabel();
         $personnage->removePotion($potion);
 
@@ -1103,12 +1164,15 @@ class PersonnageController extends AbstractController
      * Retire une priere à un personnage.
      */
     #[Route('/{personnage}/priere/{priere}/delete', name: 'priere.delete')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminRemovePriereAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Priere $priere,
     ): RedirectResponse {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $priere->removePersonnage($personnage);
 
         $this->entityManager->flush();
@@ -1125,13 +1189,14 @@ class PersonnageController extends AbstractController
      * Retire une religion d'un personnage.
      */
     #[Route('/{personnage}/religion/{personnageReligion}/delete', name: 'delete.religion')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminRemoveReligionAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] PersonnagesReligions $personnageReligion,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         return $this->genericDelete(
             $personnageReligion,
             'Supprimer une religion',
@@ -1156,12 +1221,15 @@ class PersonnageController extends AbstractController
      * Retire un sort à un personnage.
      */
     #[Route('/{personnage}/sort/{sort}/delete', name: 'delete.sort')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminRemoveSortAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Sort $sort,
     ): RedirectResponse {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $personnage->removeSort($sort);
 
         $this->entityManager->flush();
@@ -1178,12 +1246,15 @@ class PersonnageController extends AbstractController
      * Retire une technologie à un personnage.
      */
     #[Route('/{personnage}/technologie/{technologie}/delete', name: 'delete.technologie')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminRemoveTechnologieAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Technologie $technologie,
     ): RedirectResponse {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $personnage->removeTechnologie($technologie);
 
         $this->entityManager->flush();
@@ -1200,12 +1271,14 @@ class PersonnageController extends AbstractController
      * Modification du statut d'un personnage.
      */
     #[Route('/{personnage}/statut', name: 'statut')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminStatutAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $form = $this->createForm(PersonnageStatutForm::class, $personnage)
             ->add('submit', SubmitType::class, ['label' => 'Valider']);
 
@@ -1221,11 +1294,11 @@ class PersonnageController extends AbstractController
             $personnageChronologie->setAnnee($anneeGN);
             $personnageChronologie->setEvenement($evenement);
             $personnageChronologie->setPersonnage($personnage);
-            $entityManager->persist($personnageChronologie);
+            $this->entityManager->persist($personnageChronologie);
             */
 
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le statut du personnage a été modifié');
 
@@ -1242,14 +1315,16 @@ class PersonnageController extends AbstractController
      * Ajoute un jeton vieillesse au personnage.
      */
     #[Route('/{personnage}/addToken', name: 'token.add')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminTokenAddAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $token = $request->get('token');
-        $token = $entityManager->getRepository('\\'.Token::class)->findOneByTag($token);
+        $token = $this->entityManager->getRepository(Token::class)->findOneByTag($token);
 
         // donne un jeton vieillesse
         $personnageHasToken = new PersonnageHasToken();
@@ -1257,13 +1332,15 @@ class PersonnageController extends AbstractController
         $personnageHasToken->setPersonnage($personnage);
 
         $personnage->addPersonnageHasToken($personnageHasToken);
-        $entityManager->persist($personnageHasToken);
+        $this->entityManager->persist($personnageHasToken);
 
         $personnage->setAgeReel($personnage->getAgeReel() + 5); // ajoute 5 ans à l'age réél
 
         if (0 == $personnage->getPersonnageHasTokens()->count() % 2) {
             if (5 != $personnage->getAge()->getId()) {
-                $age = $entityManager->getRepository('\\'.Age::class)->findOneById($personnage->getAge()->getId() + 1);
+                $age = $this->entityManager->getRepository('\\'.Age::class)->findOneById(
+                    $personnage->getAge()->getId() + 1,
+                );
                 $personnage->setAge($age);
             } else {
                 $personnage->setVivant(false);
@@ -1278,12 +1355,12 @@ class PersonnageController extends AbstractController
                 $personnageChronologie->setAnnee($anneeGN);
                 $personnageChronologie->setEvenement($evenement);
                 $personnageChronologie->setPersonnage($personnage);
-                $entityManager->persist($personnageChronologie);
+                $this->entityManager->persist($personnageChronologie);
             }
         }
 
-        $entityManager->persist($personnage);
-        $entityManager->flush();
+        $this->entityManager->persist($personnage);
+        $this->entityManager->flush();
         $this->addFlash('success', 'Le jeton '.$token->getTag().' a été ajouté.');
 
         return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
@@ -1293,22 +1370,24 @@ class PersonnageController extends AbstractController
      * Retire un jeton d'un personnage.
      */
     #[Route('/{personnage}/deleteToken', name: 'token.delete')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminTokenDeleteAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         #[MapEntity] Personnage $personnage,
         PersonnageHasToken $personnageHasToken,
     ): RedirectResponse {
         $personnage->removePersonnageHasToken($personnageHasToken);
         // $personnage->setAgeReel($personnage->getAgeReel() - 5);
         if (0 != $personnage->getPersonnageHasTokens()->count() % 2 && 5 != $personnage->getAge()->getId()) {
-            $age = $entityManager->getRepository('\\'.Age::class)->findOneById($personnage->getAge()->getId() - 1);
+            $age = $this->entityManager->getRepository('\\'.Age::class)->findOneById(
+                $personnage->getAge()->getId() - 1,
+            );
             $personnage->setAge($age);
         }
 
-        $entityManager->remove($personnageHasToken);
-        $entityManager->persist($personnage);
+        $this->entityManager->remove($personnageHasToken);
+        $this->entityManager->persist($personnage);
 
         // Chronologie : Fruits & Légumes
         foreach ($personnage->getParticipants() as $participant) {
@@ -1322,9 +1401,9 @@ class PersonnageController extends AbstractController
         $personnageChronologie->setAnnee($anneeGN);
         $personnageChronologie->setEvenement($evenement);
         $personnageChronologie->setPersonnage($personnage);
-        $entityManager->persist($personnageChronologie);
+        $this->entityManager->persist($personnageChronologie);
 
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         $this->addFlash('success', 'Le jeton a été retiré.');
 
@@ -1335,12 +1414,14 @@ class PersonnageController extends AbstractController
      * Ajoute un trigger.
      */
     #[Route('/{personnage}/addTrigger', name: 'trigger.add')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminTriggerAddAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $trigger = new PersonnageTrigger();
         $trigger->setPersonnage($personnage);
         $trigger->setDone(false);
@@ -1353,8 +1434,8 @@ class PersonnageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $trigger = $form->getData();
 
-            $entityManager->persist($trigger);
-            $entityManager->flush();
+            $this->entityManager->persist($trigger);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le déclencheur a été ajouté.');
 
@@ -1371,10 +1452,9 @@ class PersonnageController extends AbstractController
      * Modifier l'age d'un personnage.
      */
     #[Route('/{personnage}/updateAge', name: 'update.age')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdateAgeAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         // TODO update route redirect to personnage Detail
@@ -1421,10 +1501,10 @@ class PersonnageController extends AbstractController
         'personnage' => Requirement::DIGITS,
         'background' => Requirement::DIGITS,
     ])]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdateBackgroundAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         #[MapEntity] Personnage $personnage,
         #[MapEntity] PersonnageBackground $background,
     ): RedirectResponse|Response {
@@ -1434,8 +1514,8 @@ class PersonnageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $background = $form->getData();
 
-            $entityManager->persist($background);
-            $entityManager->flush();
+            $this->entityManager->persist($background);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le background a été sauvegardé.');
 
@@ -1457,13 +1537,16 @@ class PersonnageController extends AbstractController
      * Affiche la liste des connaissances pour modification.
      */
     #[Route('/{personnage}/updateConnaissance', name: 'update.connaissance')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdateConnaissanceAction(
         Request $request,
         PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
         ConnaissanceRepository $connaissanceRepository,
     ): Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $pagerService->setRequest($request)->setRepository($connaissanceRepository)->setLimit(50);
 
         return $this->render('personnage/updateConnaissance.twig', [
@@ -1477,11 +1560,14 @@ class PersonnageController extends AbstractController
      * Modifie la liste des domaines de magie.
      */
     #[Route('/{personnage}/updateDomaine', name: 'update.domaine')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdateDomaineAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $originalDomaines = new ArrayCollection();
         foreach ($personnage->getDomaines() as $domaine) {
             $originalDomaines[] = $domaine;
@@ -1529,11 +1615,14 @@ class PersonnageController extends AbstractController
      * Modification de l'héroisme d'un personnage.
      */
     #[Route('/{personnage}/updateHeroisme', name: 'update.heroisme')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdateHeroismeAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $form = $this->createForm(PersonnageUpdateHeroismeForm::class)
             ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
 
@@ -1569,12 +1658,15 @@ class PersonnageController extends AbstractController
      * Modifie la liste des ingrédients.
      */
     #[Route('/{personnage}/updateIngredient', name: 'update.ingredient')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdateIngredientAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $originalPersonnageIngredients = new ArrayCollection();
 
         /*
@@ -1596,7 +1688,7 @@ class PersonnageController extends AbstractController
              */
             foreach ($personnage->getPersonnageIngredients() as $personnageIngredient) {
                 if ($personnageIngredient->getNombre() < 1) {
-                    $entityManager->remove($personnageIngredient);
+                    $this->entityManager->remove($personnageIngredient);
                 } else {
                     $personnageIngredient->setPersonnage($personnage);
                 }
@@ -1607,7 +1699,7 @@ class PersonnageController extends AbstractController
              */
             foreach ($originalPersonnageIngredients as $personnageIngredient) {
                 if (false === $personnage->getPersonnageIngredients()->contains($personnageIngredient)) {
-                    $entityManager->remove($personnageIngredient);
+                    $this->entityManager->remove($personnageIngredient);
                 }
             }
 
@@ -1617,7 +1709,7 @@ class PersonnageController extends AbstractController
              *  Gestion des ingrédients alloués au hasard
              */
             if ($random && $random > 0) {
-                $ingredients = $entityManager->getRepository(Ingredient::class)->findAllOrderedByLabel();
+                $ingredients = $this->entityManager->getRepository(Ingredient::class)->findAllOrderedByLabel();
                 shuffle($ingredients);
                 $needs = new ArrayCollection(array_slice($ingredients, 0, $random));
 
@@ -1626,12 +1718,12 @@ class PersonnageController extends AbstractController
                     $pi->setIngredient($ingredient);
                     $pi->setNombre(1);
                     $pi->setPersonnage($personnage);
-                    $entityManager->persist($pi);
+                    $this->entityManager->persist($pi);
                 }
             }
 
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
@@ -1652,11 +1744,14 @@ class PersonnageController extends AbstractController
      * Modifie l'origine d'un personnage.
      */
     #[Route('/{personnage}/updateOrigine', name: 'update.origine')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdateOriginAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $form = $this->createForm(PersonnageOriginForm::class, $personnage)
             ->add(
                 'save',
@@ -1673,7 +1768,7 @@ class PersonnageController extends AbstractController
             // et récupérer les langues de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 if ('ORIGINE' === $personnageLangue->getSource(
-                    ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
+                ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
                     $personnage->removePersonnageLangues($personnageLangue);
                     $this->entityManager->remove($personnageLangue);
                 }
@@ -1708,13 +1803,16 @@ class PersonnageController extends AbstractController
      * Affiche la liste des potions pour modification.
      */
     #[Route('/{personnage}/updatePotion', name: 'update.potion')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdatePotionAction(
         Request $request,
         PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
         PotionRepository $potionRepository,
     ): Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $pagerService->setRequest($request)->setRepository($potionRepository)->setLimit(50);
 
         return $this->render(
@@ -1732,13 +1830,16 @@ class PersonnageController extends AbstractController
      * Affiche la liste des prières pour modifications.
      */
     #[Route('/{personnage}/priere/update', name: 'update.priere')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdatePriereAction(
         Request $request,
         PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
         PriereRepository $priereRepository,
     ): Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $pagerService->setRequest($request)->setRepository($priereRepository)->setLimit(50);
 
         return $this->render(
@@ -1755,11 +1856,14 @@ class PersonnageController extends AbstractController
      * Modification du pugilat d'un personnage.
      */
     #[Route('/{personnage}/updatePugilat', name: 'update.pugilat')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdatePugilatAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $form = $this->createForm(PersonnageUpdatePugilatForm::class)
             ->add(
                 'save',
@@ -1799,11 +1903,14 @@ class PersonnageController extends AbstractController
      * Modification de la renommee du personnage.
      */
     #[Route('/{personnage}/updateRenomme', name: 'update.renomme')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdateRenommeAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $form = $this->createForm(PersonnageUpdateRenommeForm::class)
             ->add(
                 'save',
@@ -1843,12 +1950,14 @@ class PersonnageController extends AbstractController
      * Modifie la liste des ressources.
      */
     #[Route('/{personnage}/updateRessource', name: 'update.ressource')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdateRessourceAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $originalPersonnageRessources = new ArrayCollection();
 
         /*
@@ -1877,7 +1986,7 @@ class PersonnageController extends AbstractController
              */
             foreach ($originalPersonnageRessources as $personnageRessource) {
                 if (false === $personnage->getPersonnageRessources()->contains($personnageRessource)) {
-                    $entityManager->remove($personnageRessource);
+                    $this->entityManager->remove($personnageRessource);
                 }
             }
 
@@ -1887,7 +1996,7 @@ class PersonnageController extends AbstractController
              *  Gestion des ressources communes alloués au hasard
              */
             if ($randomCommun && $randomCommun > 0) {
-                $ressourceCommune = $entityManager->getRepository(Ressource::class)->findCommun();
+                $ressourceCommune = $this->entityManager->getRepository(Ressource::class)->findCommun();
                 shuffle($ressourceCommune);
                 $needs = new ArrayCollection(array_slice($ressourceCommune, 0, $randomCommun));
 
@@ -1896,7 +2005,7 @@ class PersonnageController extends AbstractController
                     $pr->setRessource($ressource);
                     $pr->setNombre(1);
                     $pr->setPersonnage($personnage);
-                    $entityManager->persist($pr);
+                    $this->entityManager->persist($pr);
                 }
             }
 
@@ -1906,7 +2015,7 @@ class PersonnageController extends AbstractController
              *  Gestion des ressources rares alloués au hasard
              */
             if ($randomRare && $randomRare > 0) {
-                $ressourceRare = $entityManager->getRepository(Ressource::class)->findRare();
+                $ressourceRare = $this->entityManager->getRepository(Ressource::class)->findRare();
                 shuffle($ressourceRare);
                 $needs = new ArrayCollection(array_slice($ressourceRare, 0, $randomRare));
 
@@ -1915,12 +2024,12 @@ class PersonnageController extends AbstractController
                     $pr->setRessource($ressource);
                     $pr->setNombre(1);
                     $pr->setPersonnage($personnage);
-                    $entityManager->persist($pr);
+                    $this->entityManager->persist($pr);
                 }
             }
 
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
@@ -1941,12 +2050,14 @@ class PersonnageController extends AbstractController
      * Modifie la richesse.
      */
     #[Route('/{personnage}/updateRichesse', name: 'update.richesse')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdateRichesseAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $form = $this->createForm(PersonnageRichesseForm::class, $personnage);
 
         $form->handleRequest($request);
@@ -1954,8 +2065,8 @@ class PersonnageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
 
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
@@ -1976,13 +2087,16 @@ class PersonnageController extends AbstractController
      * Affiche la liste des sorts pour modification.
      */
     #[Route('/{personnage}/updateSort', name: 'update.sort')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdateSortAction(
         Request $request,
         PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
         SortRepository $sortRepository,
     ): Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $pagerService->setRequest($request)->setRepository($sortRepository)->setLimit(50);
 
         return $this->render(
@@ -1999,13 +2113,16 @@ class PersonnageController extends AbstractController
      * Modification des technologies d'un personnage.
      */
     #[Route('/{personnage}/updateTechnologie', name: 'update.technologie')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminUpdateTechnologieAction(
         Request $request,
         PagerService $pagerService,
         #[MapEntity] Personnage $personnage,
         TechnologieRepository $technologieRepository,
     ): Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $pagerService->setRequest($request)->setRepository($technologieRepository)->setLimit(50);
 
         $competences = $personnage->getCompetences();
@@ -2015,7 +2132,7 @@ class PersonnageController extends AbstractController
         $limit = 1;
         foreach ($competences as $competence) {
             if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily(
-                )?->getCompetenceFamilyType()?->value) {
+            )?->getCompetenceFamilyType()?->value) {
                 if ($competence->getLevel()?->getIndex() >= 2) {
                     $message = false;
                     $errorLevel = 0;
@@ -2049,12 +2166,14 @@ class PersonnageController extends AbstractController
      * Gestion des points d'expérience d'un personnage (pour les orgas).
      */
     #[Route('/{personnage}/xp', name: 'xp')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function adminXpAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $form = $this->createForm(PersonnageXpForm::class, [])
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -2074,9 +2193,9 @@ class PersonnageController extends AbstractController
             $historique->setExplanation($data['explanation']);
             $historique->setPersonnage($personnage);
 
-            $entityManager->persist($personnage);
-            $entityManager->persist($historique);
-            $entityManager->flush();
+            $this->entityManager->persist($personnage);
+            $this->entityManager->persist($historique);
+            $this->entityManager->flush();
 
             $this->log(
                 ['personnage' => $personnage->getid(), 'xp' => $data['xp'], 'explanation' => $data['explanation']],
@@ -2096,7 +2215,7 @@ class PersonnageController extends AbstractController
     }
 
     #[Route('/{personnage}/apprentissage', name: 'apprentissage', requirements: ['personnage' => Requirement::DIGITS])]
-    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function apprentissageAddAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
@@ -2123,7 +2242,7 @@ class PersonnageController extends AbstractController
                 'autocomplete' => true,
                 'label' => 'Enseignant',
                 'class' => Personnage::class,
-                'choice_label' => static fn(Personnage $personnage) => $personnage->getIdName(),
+                'choice_label' => static fn (Personnage $personnage) => $personnage->getIdName(),
             ])
             ->add('competence', ChoiceType::class, [
                 'required' => true,
@@ -2131,7 +2250,7 @@ class PersonnageController extends AbstractController
                 'autocomplete' => true,
                 'label' => 'Compétence étudiée',
                 'choices' => $availableCompetences,
-                'choice_label' => static fn(Competence $competence) => $competence->getLabel(),
+                'choice_label' => static fn (Competence $competence) => $competence->getLabel(),
             ]);
 
         /** @var GnRepository $gnRepository */
@@ -2284,7 +2403,7 @@ class PersonnageController extends AbstractController
         'personnage' => Requirement::DIGITS,
         'apprentissage' => Requirement::DIGITS,
     ])]
-    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function apprentissageDeleteAction(
         #[MapEntity] Personnage $personnage,
         #[MapEntity] PersonnageApprentissage $apprentissage,
@@ -2314,7 +2433,7 @@ class PersonnageController extends AbstractController
         'personnage' => Requirement::DIGITS,
         'apprentissage' => Requirement::DIGITS,
     ])]
-    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function apprentissageDetailAction(
         #[MapEntity] Personnage $personnage,
         #[MapEntity] PersonnageApprentissage $apprentissage,
@@ -2381,15 +2500,18 @@ class PersonnageController extends AbstractController
     }
 
     /**
-     * Gestion des documents lié à un personnage.
+     * Gestion des documents liés à un personnage.
      */
     #[Route('/{personnage}/documents', name: 'documents')]
     #[IsGranted(Role::SCENARISTE->value)]
     public function documentAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $form = $this->createForm(PersonnageDocumentForm::class, $personnage)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn-secondary']]);
 
@@ -2397,8 +2519,8 @@ class PersonnageController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le document a été ajouté au personnage.');
 
@@ -2431,7 +2553,7 @@ class PersonnageController extends AbstractController
     #[Route('/{personnage}/export', name: 'export')]
     public function exportAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         #[MapEntity] Personnage $personnage,
     ): Response {
         $participant = $personnage->getParticipants()->last();
@@ -2455,7 +2577,7 @@ class PersonnageController extends AbstractController
     #[Route('/{personnage}/trombine', name: 'trombine')]
     public function getTrombineAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         #[MapEntity] Personnage $personnage,
     ): Response {
         // PROD path https://larpmanager.eveoniris.com/ => ???
@@ -2471,7 +2593,7 @@ class PersonnageController extends AbstractController
         if (!file_exists($filename)) {
             // get old ?
             $path = $this->fileUploader->getProjectDirectory(
-                ).FolderType::Private->value.DocumentType::Image->value.'/';
+            ).FolderType::Private->value.DocumentType::Image->value.'/';
             $filename = $path.$personnage->getTrombineUrl();
 
             if (!file_exists($filename)) {
@@ -2538,9 +2660,12 @@ class PersonnageController extends AbstractController
     #[Route('/{personnage}/items', name: 'items')]
     public function itemAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $form = $this->createForm(PersonnageItemForm::class, $personnage)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
@@ -2548,8 +2673,8 @@ class PersonnageController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'L\'objet a été ajouté au personnage.');
 
@@ -2570,7 +2695,7 @@ class PersonnageController extends AbstractController
      * Liste des personnages.
      */
     #[Route('/list', name: 'list')]
-    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function listAction(Request $request): Response
     {
         // handle the request and return an array containing the parameters for the view
@@ -2584,7 +2709,7 @@ class PersonnageController extends AbstractController
      */
     public function getSearchViewParameters(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         string $routeName,
         array $columnKeys = [],
     ): array {
@@ -2598,16 +2723,22 @@ class PersonnageController extends AbstractController
         $criteria = [];
 
         $formData = $request->query->all('personnage_find_form');
-        $religion = isset($formData['religion']) ? $entityManager->find(
+        $religion = isset($formData['religion']) ? $this->entityManager->find(
             'App\Entity\Religion',
             $formData['religion'],
         ) : null;
-        $competence = isset($formData['competence']) ? $entityManager->find(
+        $competence = isset($formData['competence']) ? $this->entityManager->find(
             'App\Entity\Competence',
             $formData['competence'],
         ) : null;
-        $classe = isset($formData['classe']) ? $entityManager->find('App\Entity\Classe', $formData['classe']) : null;
-        $groupe = isset($formData['groupe']) ? $entityManager->find('App\Entity\Groupe', $formData['groupe']) : null;
+        $classe = isset($formData['classe']) ? $this->entityManager->find(
+            'App\Entity\Classe',
+            $formData['classe'],
+        ) : null;
+        $groupe = isset($formData['groupe']) ? $this->entityManager->find(
+            'App\Entity\Groupe',
+            $formData['groupe'],
+        ) : null;
         $optionalParameters = '';
 
         // construit le formulaire contenant les filtres de recherche
@@ -2652,7 +2783,7 @@ class PersonnageController extends AbstractController
             $optionalParameters .= "&personnageFind[groupe]={$groupe->getId()}";
         }
 
-        $repo = $entityManager->getRepository(Personnage::class);
+        $repo = $this->entityManager->getRepository(Personnage::class);
 
         // attention, il y a des propriétés sur lesquelles on ne peut pas appliquer le order by
         // car elles ne sont pas en base mais calculées, ça compliquerait trop le sql
@@ -2725,8 +2856,10 @@ class PersonnageController extends AbstractController
      * Création d'un nouveau personnage.
      */
     #[Route('/{personnage}/add', name: 'add')]
-    public function newAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
-    {
+    // TODO Ou est-ce utilisé ?
+    public function newAction(
+        Request $request,
+    ): RedirectResponse|Response {
         $personnage = new Personnage();
 
         $form = $this->createForm(PersonnageForm::class, $personnage)
@@ -2737,9 +2870,9 @@ class PersonnageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
             $this->getUser()->addPersonnage($personnage);
-            $entityManager->persist($this->getUser());
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($this->getUser());
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $app['personnage.manager']->setCurrentPersonnage($personnage);
             $this->addFlash('success', 'Votre personnage a été créé');
@@ -2757,12 +2890,15 @@ class PersonnageController extends AbstractController
      * Retire la dernière compétence acquise par un personnage.
      */
     #[Route('/{personnage}/deleteCompetence', name: 'delete.competence')]
+    #[IsGranted(Role::SCENARISTE->value)]
     public function removeCompetenceAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Personnage $personnage,
         PersonnageService $personnageService,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $lastCompetence = $personnageService->getLastCompetence($personnage);
 
         if (!$lastCompetence) {
@@ -2813,9 +2949,10 @@ class PersonnageController extends AbstractController
     /**
      * Selection du personnage courant.
      */
+    // TODO permet à un USER de choisir son personnage ACTIF
     public function selectAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         Personnage $personnage,
     ): RedirectResponse {
         $app['personnage.manager']->setCurrentPersonnage($personnage->getId());
@@ -2838,28 +2975,24 @@ class PersonnageController extends AbstractController
         $agiliteApprenti = $competenceRepository->findOneBy(['id' => 1]);
         $richesseApprenti = $competenceRepository->findOneBy(['id' => 127]);
 
-
         $data = '<br />Richesse<br />';
-        $data .= ($personnageService->getCompetenceCout($personnage, $richesseApprenti));
-
+        $data .= $personnageService->getCompetenceCout($personnage, $richesseApprenti);
 
         $data .= '<br />Resistance<br />';
-        $data .= ($personnageService->getCompetenceCout($personnage, $ressistanceApp));
+        $data .= $personnageService->getCompetenceCout($personnage, $ressistanceApp);
 
         $data .= '<br />Agilite<br />';
-        $data .= ($personnageService->getCompetenceCout($personnage, $agiliteApprenti));
-
+        $data .= $personnageService->getCompetenceCout($personnage, $agiliteApprenti);
 
         $data .= '<br />Protection<br />';
-        $data .= ($personnageService->getCompetenceCout($personnage, $agiliteApprenti));
-
+        $data .= $personnageService->getCompetenceCout($personnage, $agiliteApprenti);
 
         $a = [
-            "min" => 1,
-            "condition" => [
+            'min' => 1,
+            'condition' => [
                 [
-                    "type" => "COMPETENCE_FAMILLE",
-                    "value" => "PROTECTION",
+                    'type' => 'COMPETENCE_FAMILLE',
+                    'value' => 'PROTECTION',
                 ],
             ],
         ];
@@ -2881,7 +3014,7 @@ class PersonnageController extends AbstractController
      * Transfert d'un personnage à un autre utilisateur.
      */
     #[Route('/{personnage}/transfert', name: 'transfert')]
-    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function transfertAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
@@ -2896,6 +3029,9 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }*/
 
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $form = $this->createFormBuilder()
             ->add('participant', EntityType::class, [
                 'required' => true,
@@ -2905,9 +3041,9 @@ class PersonnageController extends AbstractController
                 'label' => 'Nouveau propriétaire',
                 'help' => 'Il doit avoir une participation, et ne pas avoir de personnage associé à celle-ci',
                 'class' => Participant::class,
-                'choice_label' => static fn(Participant $participant) => $participant->getGn()->getLabel(
-                    ).' - '.$participant->getUser()?->getFullname(),
-                'query_builder' => static fn(ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
+                'choice_label' => static fn (Participant $participant) => $participant->getGn()->getLabel(
+                ).' - '.$participant->getUser()?->getFullname(),
+                'query_builder' => static fn (ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
                     ->select('prt')
                     ->innerJoin('prt.user', 'u')
                     ->innerJoin('prt.gn', 'gn')
@@ -2953,6 +3089,9 @@ class PersonnageController extends AbstractController
             $personnage->addParticipant($newParticipant);
             $personnage->setUser($newParticipant->getUser());
 
+            // Check que le groupe de destination n'est pas lock aussi
+            $this->checkPersonnageGroupeLock($personnage, $newParticipant);
+
             $this->entityManager->persist($newParticipant);
             $this->entityManager->persist($personnage);
             $this->entityManager->flush();
@@ -2975,7 +3114,7 @@ class PersonnageController extends AbstractController
         'personnage' => Requirement::DIGITS,
         'trigger' => Requirement::DIGITS,
     ])]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function triggerDeleteAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
@@ -3007,7 +3146,8 @@ class PersonnageController extends AbstractController
     /**
      * Dé-Selection du personnage courant.
      */
-    public function unselectAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse
+    // TODO ?
+    public function unselectAction(Request $request): RedirectResponse
     {
         $app['personnage.manager']->resetCurrentPersonnage();
 
@@ -3024,6 +3164,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
+
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
 
         $form = $this->createForm(PersonnageUpdateForm::class, $personnage)
             ->add('save', SubmitType::class, [
@@ -3059,11 +3202,14 @@ class PersonnageController extends AbstractController
     }
 
     #[Route('/{personnage}/espece', name: 'espece')]
-    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function updateEspecesAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $especes = $this->entityManager->getRepository(Espece::class)->findBy([],
             ['nom' => 'ASC']);
 
@@ -3081,8 +3227,8 @@ class PersonnageController extends AbstractController
                 'class' => Espece::class,
                 'choices' => $especes,
                 'label_html' => true,
-                'choice_label' => static fn(Espece $espece) => ($espece->isSecret(
-                    ) ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '').$espece->getNom(),
+                'choice_label' => static fn (Espece $espece) => ($espece->isSecret(
+                ) ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '').$espece->getNom(),
                 'data' => $originalEspeces,
             ])
             ->add(
@@ -3146,11 +3292,14 @@ class PersonnageController extends AbstractController
      * Modifie la liste des langues.
      */
     #[Route('/{personnage}/updateLangue', name: 'update.langue')]
-    #[IsGranted(new Expression('is_granted("ROLE_ORGA") or is_granted("ROLE_SCENARISTE")'))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function updateLangueAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        $this->checkPersonnageGroupeLock($personnage, $participant);
+
         $langues = $this->entityManager->getRepository(Langue::class)->findBy([],
             ['secret' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC']);
 
@@ -3236,7 +3385,7 @@ class PersonnageController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function updateTrombineAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+
         Personnage $personnage,
     ): RedirectResponse|Response {
         /** @var User $user */
@@ -3268,8 +3417,8 @@ class PersonnageController extends AbstractController
 
             $personnage->handleUpload($this->fileUploader);
 
-            $entityManager->persist($personnage);
-            $entityManager->flush();
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre photo a été enregistrée');
 
@@ -3283,7 +3432,7 @@ class PersonnageController extends AbstractController
     }
 
     #[Route('/vieillir', name: 'vieillir')]
-    public function vieillirAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    public function vieillirAction(Request $request): RedirectResponse|Response
     {
         $form = $this->createForm()
             ->add(
@@ -3295,9 +3444,9 @@ class PersonnageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $personnages = $entityManager->getRepository('\\'.Personnage::class)->findAll();
-            $token = $entityManager->getRepository('\\'.Token::class)->findOneByTag('VIEILLESSE');
-            $ages = $entityManager->getRepository('\\'.Age::class)->findAll();
+            $personnages = $this->entityManager->getRepository('\\'.Personnage::class)->findAll();
+            $token = $this->entityManager->getRepository('\\'.Token::class)->findOneByTag('VIEILLESSE');
+            $ages = $this->entityManager->getRepository('\\'.Age::class)->findAll();
 
             if (!$token) {
                 $this->addFlash('error', "Le jeton VIEILLESSE n'existe pas !");
@@ -3311,7 +3460,7 @@ class PersonnageController extends AbstractController
                 $personnageHasToken->setToken($token);
                 $personnageHasToken->setPersonnage($personnage);
                 $personnage->addPersonnageHasToken($personnageHasToken);
-                $entityManager->persist($personnageHasToken);
+                $this->entityManager->persist($personnageHasToken);
 
                 if ($personnage->getVivant()) {
                     $personnage->setAgeReel($personnage->getAgeReel() + 5); // ajoute 5 ans à l'age réél
@@ -3333,14 +3482,14 @@ class PersonnageController extends AbstractController
                         $personnageChronologie->setAnnee($anneeGN);
                         $personnageChronologie->setEvenement($evenement);
                         $personnageChronologie->setPersonnage($personnage);
-                        $entityManager->persist($personnageChronologie);
+                        $this->entityManager->persist($personnageChronologie);
                     }
                 }
 
-                $entityManager->persist($personnage);
+                $this->entityManager->persist($personnage);
             }
 
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Tous les personnages ont reçu un jeton vieillesse.');
 

@@ -31,7 +31,11 @@ class CompetenceRepository extends BaseRepository
     {
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT c FROM App\Entity\Competence c JOIN c.competenceFamily cf JOIN c.level l ORDER BY cf.label ASC, l.index ASC',
+                'SELECT c FROM App\Entity\Competence c 
+                JOIN c.competenceFamily cf 
+                JOIN c.level l 
+                WHERE (c.secret = 0 OR c.secret IS NULL)
+                ORDER BY cf.label ASC, l.index ASC',
             )
             ->getResult();
     }
@@ -58,6 +62,7 @@ class CompetenceRepository extends BaseRepository
             ->from(Competence::class, 'c')
             ->join('c.competenceFamily', 'cf')
             ->join('c.level', 'l')
+            ->andWhere('c.secret = 0 OR c.secret IS NULL')
             ->addOrderBy('cf.label')
             ->addOrderBy('l.index');
     }
@@ -122,6 +127,7 @@ class CompetenceRepository extends BaseRepository
             'level.label as level',
             $alias.'.description', // => 'Description',
             $alias.'.materiel',
+            $alias.'.secret',
             'competenceFamily.label as competenceFamily',
         ];
     }
@@ -148,6 +154,10 @@ class CompetenceRepository extends BaseRepository
                 OrderBy::ASC => [$alias.'.materiel' => OrderBy::ASC],
                 OrderBy::DESC => [$alias.'.materiel' => OrderBy::DESC],
             ],
+            'secret' => [
+                OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC],
+            ],
         ];
     }
 
@@ -169,8 +179,20 @@ class CompetenceRepository extends BaseRepository
             'description' => $this->translator->trans('Description', domain: 'repository'),
             'level' => $this->translator->trans('Niveau', domain: 'repository'),
             'materiel' => $this->translator->trans('Matériel', domain: 'repository'),
+            'secret' => $this->translator->trans('Secrète', domain: 'repository'),
             'competenceFamily' => $this->translator->trans('Libellé', domain: 'repository'),
         ];
+    }
+
+    public function secret(QueryBuilder $query, bool $secret): QueryBuilder
+    {
+        if (!$secret) {
+            $query->andWhere($this->alias.'.secret = :value OR '.$this->alias.'.secret IS NULL');
+        } else {
+            $query->andWhere($this->alias.'.secret = :value');
+        }
+
+        return $query->setParameter('value', $secret);
     }
 
     public function userHasCompetence(User $user, Competence $competence): bool
@@ -195,6 +217,6 @@ class CompetenceRepository extends BaseRepository
             ->setParameter('uid', $user->getId())
             ->setParameter('cid', $competence->getId());
 
-        return (bool)$query->getResult();
+        return (bool) $query->getResult();
     }
 }

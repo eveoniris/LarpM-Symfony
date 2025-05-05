@@ -12,68 +12,70 @@
 
 
 {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::POLITICAL')) %}
-<div class="{{ css }}">
-    <div class="header">
-        <h5>Vos connaissances politiques</h5>
-    </div>
+    <div class="{{ css }}">
+        <div class="header">
+            <h5>Vos connaissances politiques</h5>
+        </div>
 
-    {% set hasOne = false %}
-    {% set hasAll = false %}
-    <div class="list-group">
+        {% set hasOne = false %}
+        {% set hasAll = false %}
+        <div class="list-group">
 
-        {# Liste des relations entre les pays #}
-        {% if personnage.hasCompetenceLevel(
-            constant('App\\Enum\\CompetenceFamilyType::POLITICAL'),
-            constant('App\\Enum\\LevelType::APPRENTICE'),
-        ) %}
+            {# Liste des relations entre les pays #}
+            {% if personnage.hasCompetenceLevel(
+                constant('App\\Enum\\CompetenceFamilyType::POLITICAL'),
+                constant('App\\Enum\\LevelType::APPRENTICE'),
+            ) %}
+                {# disabled (le jeu politique n'est plus utilisé)
             {% set hasOne = true %}
             <div class="list-group-item">
-                <a href="{{ path('participant.politique', {'participant': participant.id}) }}">Voir les liens
-                    politiques entre les différents fiefs</a>
-            </div>
-        {% endif %}
+                <a href="{{ path('participant.politique', {'participant': participant.id}) }}">
+                    Voir les liens politiques entre les différents fiefs
+                </a>
+            </div> #}
+            {% endif %}
 
-        {% for loi in personnageService.lois(personnage) %}
-            {% set hasOne = true %}
-            <div class="list-group-item d-flex justify-content-between">
-                <div>
-                    {{ loi.label }}
-                </div>
-                <div class="btn-group" role="group">
-                    <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
-                            href="#loi_{{ loi.id }}"
-                            aria-expanded="false" aria-controls="loi_{{ loi.id }}"
-                            role="button">
-                        <i class="fa-solid fa-circle-info"></i>
-                    </button>
-                    {% if loi.documentUrl %}
-                        {% if participant is defined %}
-                            <button class="btn btn-sm btn-secondary"
-                                    href="{{ path('participant.loi.document',{ 'loi': loi.id, 'participant': participant.id}) }}"
-                                    aria-expanded="false"
-                                    role="button">
-                                <i class="fa-solid fa-file"></i>
-                            </button>
-                        {% elseif isAdmin %}
-                            <button class="btn btn-sm btn-secondary"
-                                    href="{{ path('loi.document',{'loi': loi.id}) }}"
-                                    aria-expanded="false"
-                                    role="button">
-                                <i class="fa-solid fa-file"></i>
-                            </button>
+            {% for loi in personnageService.lois(personnage) %}
+                {% set hasOne = true %}
+                <div class="list-group-item d-flex justify-content-between">
+                    <div>
+                        {{ loi.label }}
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                                href="#loi_{{ loi.id }}"
+                                aria-expanded="false" aria-controls="loi_{{ loi.id }}"
+                                role="button">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </button>
+                        {% if loi.documentUrl %}
+                            {% if participant is defined %}
+                                <button class="btn btn-sm btn-secondary"
+                                        href="{{ path('participant.loi.document',{ 'loi': loi.id, 'participant': participant.id}) }}"
+                                        aria-expanded="false"
+                                        role="button">
+                                    <i class="fa-solid fa-file"></i>
+                                </button>
+                            {% elseif isAdmin %}
+                                <button class="btn btn-sm btn-secondary"
+                                        href="{{ path('loi.document',{'loi': loi.id}) }}"
+                                        aria-expanded="false"
+                                        role="button">
+                                    <i class="fa-solid fa-file"></i>
+                                </button>
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
+                    </div>
                 </div>
-            </div>
-            <div class="list-group-item bg-body-secondary collapse" id="loi_{{ loi.id }}">
-                {{ loi.description|markdown_to_html }}
-            </div>
-        {% endfor %}
+                <div class="list-group-item bg-body-secondary collapse" id="loi_{{ loi.id }}">
+                    {{ loi.description|markdown_to_html }}
+                </div>
+            {% endfor %}
 
-        {% if hasOne == false %}
-            {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucune'} %}
-        {% endif %}
+            {% if hasOne == false %}
+                {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucune'} %}
+            {% endif %}
+        </div>
+
     </div>
-
-</div>
 {% endif %}

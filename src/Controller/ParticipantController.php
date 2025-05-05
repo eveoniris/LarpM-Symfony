@@ -7,7 +7,6 @@ use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\Connaissance;
 use App\Entity\Document;
-use App\Entity\Domaine;
 use App\Entity\ExperienceGain;
 use App\Entity\ExperienceUsage;
 use App\Entity\Groupe;
@@ -69,8 +68,8 @@ use App\Form\RefusePeaceForm;
 use App\Form\RequestAllianceForm;
 use App\Form\RequestPeaceForm;
 use App\Form\TrombineForm;
-use App\Manager\GroupeManager;
 use App\Repository\DomaineRepository;
+use App\Repository\GnRepository;
 use App\Repository\PersonnageSecondaireRepository;
 use App\Repository\PotionRepository;
 use App\Repository\SecondaryGroupRepository;
@@ -105,17 +104,17 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/groupe/{groupe}/acceptAlliance', name: 'participant.groupe.acceptAlliance')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    #[Deprecated('Retrait du jeu diplo actuelle')]
     // TODO
     public function acceptAllianceAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
         Groupe $groupe,
     ): RedirectResponse|Response {
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
 
-        if (true == $groupe->getLock()) {
+        if ($groupe->getLock()) {
             $this->addFlash(
                 'error',
                 'Les relations diplomatiques entre pays sont actuellement gelées jusqu’au GN (pour que nous puissions avoir un état de la situation). Vous pourrez les modifier en jeu désormais (voir le jeu diplomatique)',
@@ -136,8 +135,8 @@ class ParticipantController extends AbstractController
             $alliance = $form->getData();
 
             $alliance->setGroupeAllieAccepted(true);
-            $entityManager->persist($alliance);
-            $entityManager->flush();
+            $this->entityManager->persist($alliance);
+            $this->entityManager->flush();
 
             $app['User.mailer']->sendAcceptAlliance($alliance);
 
@@ -614,7 +613,10 @@ class ParticipantController extends AbstractController
         Request $request,
         #[MapEntity] Participant $participant,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ParticipantBilletForm::class, $participant, ['gnId' => $participant->getGn()->getId()],
+        $form = $this->createForm(
+            ParticipantBilletForm::class,
+            $participant,
+            ['gnId' => $participant->getGn()->getId()],
         )
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -946,14 +948,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        if (true == $participant->getGroupeGn()->getGroupe()->getLock()) {
-            $this->addFlash(
-                'error',
-                'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contactez votre scénariste si vous pensez que cela est une erreur',
-            );
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
+        $this->checkParticipantGroupeLock($participant);
 
         $availableCompetences = $app['personnage.manager']->getAvailableCompetences($personnage);
 
@@ -1384,6 +1379,24 @@ class ParticipantController extends AbstractController
         ]);
     }
 
+    protected function checkParticipantGroupeLock(
+        Participant $participant,
+        ?string $route = null,
+        ?array $routeParams = null,
+        ?string $msg = null,
+    ): ?Response {
+        return $this->checkGroupeLocked(
+            $participant->getGroupeGn()?->getGroupe(),
+            $route ?? 'personnage.detail',
+            $routeParams ??
+            [
+                'personnage' => $participant->getPersonnage()?->getId(),
+                'participant' => $participant->getId(),
+            ],
+            $msg ?? "Désolé, il n'est plus possible de modifier ce personnage.",
+        );
+    }
+
     /**
      * Detail d'une competence.
      */
@@ -1782,7 +1795,10 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', array('gn' => $participant->getGn()->getId())),303);
         }
         */
-        $form = $this->createForm(ParticipantGroupeForm::class, $participant, ['gnId' => $participant->getGn()->getId()],
+        $form = $this->createForm(
+            ParticipantGroupeForm::class,
+            $participant,
+            ['gnId' => $participant->getGn()->getId()],
         )
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -2555,14 +2571,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        if (true == $personnage->getGroupe()->getLock()) {
-            $this->addFlash(
-                'error',
-                'Désolé, il n\'est plus possible de modifier ce personnage. Le groupe est verouillé. Contacter votre scénariste si vous pensez que cela est une erreur',
-            );
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
+        $this->checkParticipantGroupeLock($participant);
 
         if ($personnage->getTerritoire()) {
             $this->addFlash(
@@ -2659,14 +2668,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
-        if (true === $groupeGn->getGroupe()->getLock()) {
-            $this->addFlash(
-                'error',
-                'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.',
-            );
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
-        }
+        $this->checkParticipantGroupeLock($participant, 'gn.detail', ['gn' => $groupeGn->getGn()->getId()]);
 
         if ($participant->getPersonnage()) {
             $this->addFlash('error', 'Désolé, vous disposez déjà d\'un personnage.');
@@ -2873,20 +2875,13 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
-        if (true == $groupeGn->getGroupe()->getLock()) {
-            $this->addFlash(
-                'error',
-                'Désolé, ce groupe est fermé. La création de personnage est temporairement désactivée.',
-            );
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
-        }
-
         if ($participant->getPersonnage()) {
             $this->addFlash('error', 'Désolé, vous disposez déjà d\'un personnage.');
 
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
+
+        $this->checkParticipantGroupeLock($participant, 'gn.detail', ['gn' => $groupeGn->getGn()->getId()]);
 
         $groupe = $groupeGn->getGroupe();
 
@@ -3155,11 +3150,8 @@ class ParticipantController extends AbstractController
      * Fourni la page détaillant les relations entre les fiefs.
      */
     #[Route('/participant/{participant}/politique', name: 'participant.politique')]
-    public function politiqueAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        Participant $participant,
-    ): RedirectResponse|Response {
+    public function politiqueAction(Participant $participant, GnRepository $gnRepository): RedirectResponse|Response
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -3168,23 +3160,25 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        if (!$personnage->hasCompetence('Politique')) {
+        if (!$personnage->hasCompetence(CompetenceFamilyType::POLITICAL)) {
             $this->addFlash('error', 'Votre personnage ne dispose pas de la compétence Politique');
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         // recherche de tous les groupes participant au prochain GN
-        $gn = GroupeManager::getGnActif($entityManager);
+        //$gn = GroupeManager::getGnActif($this->entityManager);
+        $gn = $gnRepository->findNext();
         $groupeGns = $gn->getGroupeGns();
         $groupes = new ArrayCollection();
         foreach ($groupeGns as $groupeGn) {
             $groupe = $groupeGn->getGroupe();
-            // if ( $groupe->getTerritoires()->count() > 0 )
-            // {
-            $groupes[] = $groupe;
-            // }
+            // Seul els groupes avec un territoire ?
+            if ($groupe->getTerritoires()->count() > 0) {
+                $groupes[] = $groupe;
+            }
         }
+
 
         return $this->render('personnage/politique.twig', [
             'personnage' => $personnage,
@@ -3757,30 +3751,14 @@ class ParticipantController extends AbstractController
         PersonnageService $personnageService,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
-        // TODO user acess to this personnage
+        // TODO test user access to this personnage
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage avant de choisir une religion !');
 
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        if (true === $participant->getGroupeGn()?->getGroupe()->getLock()) {
-            $href = $this->generateUrl(
-                    'groupe.detail',
-                    ['groupe' => $participant->getGroupeGn()?->getGroupe()->getId()],
-                ).'#groupe_lock';
-
-            $message =
-                <<<HTML
-                Désolé, il n'est plus possible de modifier ce personnage. <br />
-                Le <a href="$href">groupe est verrouillé</a>.<br />
-                Contactez votre scénariste si vous pensez que cela est une erreur
-                HTML;
-
-            $this->addFlash('error', $message);
-
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
-        }
+        $this->checkParticipantGroupeLock($participant);
 
         // refUser la demande si le personnage est Fanatique
         if ($personnage->isFanatique()) {
@@ -3988,7 +3966,10 @@ class ParticipantController extends AbstractController
         Request $request,
         #[MapEntity] Participant $participant,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ParticipantRemoveForm::class, $participant, ['gnId' => $participant->getGn()->getId()],
+        $form = $this->createForm(
+            ParticipantRemoveForm::class,
+            $participant,
+            ['gnId' => $participant->getGn()->getId()],
         )
             ->add('save', SubmitType::class, ['label' => 'Oui, retirer la participation de cet utilisateur']);
 

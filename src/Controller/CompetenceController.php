@@ -176,7 +176,6 @@ class CompetenceController extends AbstractController
         Request $request,
         PagerService $pagerService,
         CompetenceRepository $competenceRepository,
-        CompetenceFamilyRepository $competenceFamilyRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($competenceRepository)->setLimit(50);
 
@@ -187,6 +186,7 @@ class CompetenceController extends AbstractController
 
         if (!$this->isGranted('ROLE_REGLE')) {
             $queryBuilder = $competenceRepository->level($queryBuilder, LevelType::APPRENTICE);
+            $queryBuilder = $competenceRepository->secret($queryBuilder, false);
         }
 
         return $this->render('competence/list.twig', [
@@ -202,12 +202,12 @@ class CompetenceController extends AbstractController
     #[IsGranted(new MultiRolesExpression(
         Role::SCENARISTE, Role::REGLE, Role::ORGA,
     ), message: 'You are not allowed to access to this.')]
-    public function materielAction(Request $request, EntityManagerInterface $entityManager): Response
+    public function materielAction(CompetenceRepository $competenceRepository): Response
     {
-        $repo = $entityManager->getRepository('\\'.Competence::class);
-        $competences = $repo->findAllOrderedByLabel();
-
-        return $this->render('competence/materiel.twig', ['competences' => $competences]);
+        return $this->render(
+            'competence/materiel.twig',
+            ['competences' => $competenceRepository->findAllOrderedByLabel()],
+        );
     }
 
     /**
@@ -217,7 +217,7 @@ class CompetenceController extends AbstractController
     #[IsGranted(new MultiRolesExpression(
         Role::SCENARISTE, Role::REGLE, Role::ORGA,
     ), message: 'You are not allowed to access to this.')]
-    public function persoAction(Request $request, EntityManagerInterface $entityManager): Response
+    public function persoAction(Request $request): Response
     {
         $competence = $request->get('competence');
 
@@ -306,15 +306,6 @@ class CompetenceController extends AbstractController
         Request $request,
         #[MapEntity] Competence $competence,
     ): RedirectResponse|Response {
-        /*
-        is it needed on update ?
-        $attributeRepos = $this->entityManager->getRepository(AttributeType::class);
-        $competence->setCompetenceAttributesAsString(
-                    $request->get('competenceAttributesAsString'),
-                    $entityManager,
-                    $attributeRepos
-                );
-        */
         return $this->handleCreateOrUpdate(
             $request,
             $competence,

@@ -1357,18 +1357,21 @@ class PersonnageService
         Personnage $personnage,
     ): array|Collection {
         // Toutes les lois pour un expert
-        if ($personnage->hasCompetenceLevel(CompetenceFamilyType::POLITICAL, LevelType::EXPERT)) {
+        if ($personnage->hasCompetenceLevel(CompetenceFamilyType::POLITICAL, LevelType::APPRENTICE)) {
             return $this->entityManager->getRepository(Loi::class)->findAll();
         }
 
-        // Lois du pays du personnage initié
+
         $lois = new ArrayCollection();
+
+        /* old rules
         if ($personnage->hasCompetenceLevel(CompetenceFamilyType::POLITICAL, LevelType::INITIATED)) {
-            /** @var Loi $loi */
+            // @var Loi $loi
             foreach ($this->groupeService->getLois($personnage->getLastParticipantGnGroupe()) as $loi) {
                 $lois->add($loi);
             }
         }
+        */
 
         return $lois;
     }
