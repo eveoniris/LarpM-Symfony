@@ -2474,6 +2474,7 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/loi/{loi}/document', name: 'participant.loi.document')]
     public function loiDocumentAction(
         Participant $participant,
+        PersonnageService $personnageService,
         Loi $loi,
     ): BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
@@ -2484,13 +2485,13 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        if (!$personnage->isKnownLoi($loi)) {
+        if (!$personnageService->isKnownLoi($personnage, $loi)) {
             $this->addFlash('error', 'Vous ne connaissez pas cette loi !');
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $this->sendDocument($loi);
+        return $this->sendDocument($loi);
     }
 
     /**
@@ -3553,14 +3554,13 @@ class ParticipantController extends AbstractController
      * Obtenir le document lié à une priere.
      */
     #[Route('/participant/{participant}/priere/{priere}/document', name: 'participant.priere.document')]
+    #[isGranted(Role::USER->value)]
     public function priereDocumentAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
         Priere $priere,
     ): BinaryFileResponse|RedirectResponse {
         $personnage = $participant->getPersonnage();
-        // TODO acess user
+
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 

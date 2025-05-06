@@ -50,19 +50,19 @@
                         </button>
                         {% if loi.documentUrl %}
                             {% if participant is defined %}
-                                <button class="btn btn-sm btn-secondary"
-                                        href="{{ path('participant.loi.document',{ 'loi': loi.id, 'participant': participant.id}) }}"
-                                        aria-expanded="false"
-                                        role="button">
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ path('participant.loi.document',{ 'loi': loi.id, 'participant': participant.id}) }}"
+                                   aria-expanded="false"
+                                   role="button">
                                     <i class="fa-solid fa-file"></i>
-                                </button>
+                                </a>
                             {% elseif isAdmin %}
-                                <button class="btn btn-sm btn-secondary"
-                                        href="{{ path('loi.document',{'loi': loi.id}) }}"
-                                        aria-expanded="false"
-                                        role="button">
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ path('loi.document',{'loi': loi.id}) }}"
+                                   aria-expanded="false"
+                                   role="button">
                                     <i class="fa-solid fa-file"></i>
-                                </button>
+                                </a>
                             {% endif %}
                         {% endif %}
                     </div>

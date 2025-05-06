@@ -507,13 +507,14 @@ class Personnage extends BasePersonnage implements \Stringable
         $fileUploader->upload($this->file, $folderType, $docType, null, 70);
 
         // Try Rezise
+        /*
         try {
             $image = (new Imagine())->open($fileUploader->getStoredFileWithPath());
             $image->resize($image->getSize()->widen(480));
             $image->save($fileUploader->getStoredFileWithPath());
         } catch (\RuntimeException $e) {
             dump($e);
-        }
+        }*/
 
         $this->setTrombineUrl($fileUploader->getStoredFileName());
 
@@ -1437,13 +1438,6 @@ class Personnage extends BasePersonnage implements \Stringable
                 return true;
             }
         }
-
-        return false;
-    }
-
-    public function isKnownLoi(Loi $loi): bool
-    {
-        // TODO
 
         return false;
     }

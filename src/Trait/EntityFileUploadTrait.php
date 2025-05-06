@@ -6,6 +6,7 @@ use App\Entity\Document;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Service\FileUploader;
+use JetBrains\PhpStorm\NoReturn;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -49,6 +50,18 @@ trait EntityFileUploadTrait
         return $projectDir.$this->getFolderType()->value.$this->getDocumentType()->value.DIRECTORY_SEPARATOR;
     }
 
+    public function getFolderType(): FolderType
+    {
+        return $this->folderType ?? $this->initFile()->folderType ?? FolderType::Private;
+    }
+
+    public function setFolderType(FolderType $folderType): static
+    {
+        $this->folderType = $folderType;
+
+        return $this;
+    }
+
     public function initFile(): self
     {
         return $this;
@@ -66,9 +79,38 @@ trait EntityFileUploadTrait
         return $this;
     }
 
+    public function getHasDocument(): Document
+    {
+        $document = new Document();
+
+        $document->setDocumentType($this->getDocumentType());
+        $document->setFolderType($this->getFolderType());
+        $document->setProjectDir($this->getProjectDir());
+        $document->setFilename($this->getFilename());
+        $document->setFilenameMaxLength($this->getFilenameMaxLength());
+        $document->setDocumentUrl($this->getDocumentUrl());
+
+        return $document;
+    }
+
     public function getProjectDir(): ?string
     {
         return $this->projectDir;
+    }
+
+    public function setProjectDir(?string $projectDir): static
+    {
+        $this->projectDir = $projectDir;
+
+        return $this;
+    }
+
+    #[NoReturn] public function getOldV1Document(?string $projectDir = null): string
+    {
+        dd($this->getDocumentFilePath($projectDir, true), $this->getDocumentUrl());
+
+
+        return $this->getDocumentFilePath($projectDir, true).$this->getDocumentUrl();
     }
 
     public function handleUpload(FileUploader $fileUploader): static
@@ -87,7 +129,7 @@ trait EntityFileUploadTrait
             $this->getDocumentType(),
             $this->getFilename(),
             $this->getFilenameMaxLength(),
-            $this->isUseUniqueId()
+            $this->isUseUniqueId(),
         );
 
         $this->afterUpload($fileUploader);
@@ -106,18 +148,6 @@ trait EntityFileUploadTrait
     public function setFile(UploadedFile $file): self
     {
         $this->file = $file;
-
-        return $this;
-    }
-
-    public function getFolderType(): FolderType
-    {
-        return $this->folderType ?? $this->initFile()->folderType ?? FolderType::Private;
-    }
-
-    public function setFolderType(FolderType $folderType): static
-    {
-        $this->folderType = $folderType;
 
         return $this;
     }
@@ -161,26 +191,5 @@ trait EntityFileUploadTrait
     protected function afterUpload(FileUploader $fileUploader): FileUploader
     {
         return $fileUploader;
-    }
-
-    public function setProjectDir(?string $projectDir): static
-    {
-        $this->projectDir = $projectDir;
-
-        return $this;
-    }
-
-    public function getHasDocument(): Document
-    {
-        $document = new Document();
-
-        $document->setDocumentType($this->getDocumentType());
-        $document->setFolderType($this->getFolderType());
-        $document->setProjectDir($this->getProjectDir());
-        $document->setFilename($this->getFilename());
-        $document->setFilenameMaxLength($this->getFilenameMaxLength());
-        $document->setDocumentUrl($this->getDocumentUrl());
-
-        return $document;
     }
 }
