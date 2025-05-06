@@ -260,6 +260,7 @@
         {% endif %}
     {% endfor %}
 
+    {#
     {% for quete in quetes %}
         <div>
             <h4>Quête commerciale pour #{{ quete.personnage.id }} {{ quete.personnage.nom }} ({{ groupe.nom }})</h4>
@@ -276,6 +277,7 @@
         </div>
         <hr class="print-page-break"/>
     {% endfor %}
+    #}
 
     <!--div style="break-after: page;clear: both;min-height: 1px;"></div-->
 {% endblock content %}

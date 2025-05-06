@@ -101,7 +101,7 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     public function addBackgroundAction(
         Request $request,
-        
+
     ): RedirectResponse|Response {
         $id = $request->get('index');
         $groupe = $this->entityManager->find(Groupe::class, $id);
@@ -117,7 +117,7 @@ class GroupeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->addFlash('success', 'Le background du groupe a été créé');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()], 303);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()], 303);
         }
 
         return $this->render('groupe/background/add.twig', [
@@ -133,7 +133,7 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/documents', name: 'documents')]
     public function adminDocumentAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
 
@@ -167,7 +167,7 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/ingredients', name: 'ingredients')]
     public function adminIngredientAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $this->checkGroupeLocked($groupe);
@@ -244,7 +244,7 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/items', name: 'items')]
     public function adminItemAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $this->checkGroupeLocked($groupe);
@@ -277,7 +277,7 @@ class GroupeController extends AbstractController
     // TODO
     public function adminParticipantAddAction(
         Request $request,
-        
+
     ): RedirectResponse|Response {
         $groupe = $request->get('groupe');
 
@@ -337,7 +337,7 @@ class GroupeController extends AbstractController
     // TODO
     public function adminParticipantRemoveAction(
         Request $request,
-        
+
     ): RedirectResponse|Response {
         $participantId = $request->get('participant');
         $groupe = $request->get('groupe');
@@ -377,7 +377,7 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/richesse', name: 'richesse')]
     public function adminRichesseAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $this->checkGroupeLocked($groupe);
@@ -410,7 +410,7 @@ class GroupeController extends AbstractController
     // TODO
     public function availableAction(
         Request $request,
-        
+
         Groupe $groupe,
     ): RedirectResponse {
         $groupe->setFree(true);
@@ -429,7 +429,7 @@ class GroupeController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE), message: 'You are not allowed to access to this.')]
     public function compositionAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $this->checkGroupeLocked($groupe);
@@ -514,7 +514,7 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     public function descriptionAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $form = $this->createForm(GroupeDescriptionForm::class, $groupe)
@@ -687,7 +687,7 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/envelope', name: 'envelope')]
     public function envelopeAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $form = $this->createForm(GroupeEnvelopeForm::class, $groupe)
@@ -812,7 +812,7 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/lock', name: 'lock')]
     public function lockAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse {
         $groupe->setLock(true);
@@ -834,7 +834,7 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/pays', name: 'pays')]
     public function paysAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $this->checkGroupeLocked($groupe);
@@ -890,7 +890,7 @@ class GroupeController extends AbstractController
     // TODO
     public function placeAction(
         Request $request,
-        
+
     ): RedirectResponse|Response {
         $id = $request->get('index');
         $groupe = $this->entityManager->find(Groupe::class, $id);
@@ -951,7 +951,7 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/print/background', name: 'print.background')]
     public function printBackgroundAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): Response {
         return $this->render('groupe/printBackground.twig', [
@@ -1010,7 +1010,7 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/print/perso', name: 'print.perso')]
     public function printPersoAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): Response {
         // recherche les personnages du prochains GN membre du groupe
@@ -1050,7 +1050,7 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/quete', name: 'quete')]
     public function queteAction(
-        
+
         #[MapEntity] Groupe $groupe,
     ): Response {
         $ressourceRares = new ArrayCollection($this->entityManager->getRepository(Ressource::class)->findRare());
@@ -1073,7 +1073,7 @@ class GroupeController extends AbstractController
     #[Route('/quetes', name: 'quetes')]
     public function quetesAction(
         Request $request,
-        
+
         SerializerInterface $serializer,
     ) {
         $repo = $this->entityManager->getRepository(Groupe::class);
@@ -1267,7 +1267,7 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/restauration', name: 'restauration')]
     public function restaurationAction(
         Request $request,
-        
+
         Groupe $groupe,
     ): RedirectResponse|Response {
         $availableTaverns = GroupeManager::getAvailableTaverns();
@@ -1331,7 +1331,7 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/scenariste', name: 'scenariste')]
     public function scenaristeAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $form = $this->createForm(GroupeScenaristeForm::class, $groupe)
@@ -1414,7 +1414,7 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/territoire/add', name: 'territoire.add')]
     public function territoireAddAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $this->checkGroupeLocked($groupe);
@@ -1531,11 +1531,11 @@ class GroupeController extends AbstractController
     #[Route('/update/{groupe}', name: 'update')]
     public function updateAction(
         Request $request,
-        
+
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $this->checkGroupeLocked($groupe);
-        
+
         $originalGroupeClasses = new ArrayCollection();
         $originalTerritoires = new ArrayCollection();
 
@@ -1649,7 +1649,7 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     public function updateBackgroundAction(
         Request $request,
-        
+
     ): RedirectResponse|Response {
         $id = $request->get('index');
         $groupe = $this->entityManager->find(Groupe::class, $id);
@@ -1667,7 +1667,7 @@ class GroupeController extends AbstractController
 
             $this->addFlash('success', 'Le background du groupe a été mis à jour');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()], 303);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()], 303);
         }
 
         return $this->render('groupe/background/update.twig', [
@@ -1677,7 +1677,7 @@ class GroupeController extends AbstractController
     }
 
 
-    public function usersAction(Request $request,  Groupe $groupe): Response
+    public function usersAction(Request $request, Groupe $groupe): Response
     {
         return $this->render('groupe/users.twig', [
             'groupe' => $groupe,

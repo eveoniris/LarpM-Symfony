@@ -77,32 +77,52 @@
         <li>Bons douche</li>
         <li>1 Etiquette bannière</li>
         <li>1 Fiche retour de groupe</li>
-        {% if groupe.territoires|length > 0 %}
-            {% for territoire in groupe.territoires %}
-                <li>1 Feuille du fief <strong>{{ territoire }}</strong></li>
-            {% endfor %}
-            <li>Lot des titres du domaine</li>
-        {% endif %}
-
         {% for materiel in allMateriel %}
             <li>{{ materiel|striptags }}</li>
         {% endfor %}
     </ul>
 
-    {% if session.bateaux > 0 or session.agents > 0 %}
-        <strong>Jeu de domaine</strong><br/>
+    <hr class="print-page-break"/>
+
+    <strong>Jeu de domaine</strong><br/>
+
+    <ul>
+        <li>Nombre de bateau <strong>{{ session.bateaux }}</strong></li>
+        <li>Nombre d'agent <strong>{{ session.agents }}</strong></li>
+        <li>Nombre d'armes de sièges <strong>{{ session.sieges }}</strong></li>
+    </ul>
+
+    {% if groupe.territoires|length > 0 %}
+        <strong>Fiefs</strong><br/>
         <ul>
-            {% if session.bateaux > 0 %}
-                <li>{{ session.bateaux }} bateaux</li>
-            {% endif %}
-            {% if session.agents > 0 %}
-                <li>{{ session.agents }} agents</li>
-            {% endif %}
+            {% for territoire in groupe.territoires %}
+                <li>1 Feuille du fief <strong>{{ territoire }}</strong></li>
+            {% endfor %}
         </ul>
     {% endif %}
 
-    <hr class="print-page-break"/>
+    {% if groupe.territoires|length > 0 %}
+        <strong>Titres</strong><br/>
+        <ul>
+            {# if session.suzerin(false) is not null #}
+            <li>Suzerain: <strong>{{ session.suzerin(false).nom|default('Aucun') }}</strong></li>
 
+            {#  if session.connetable() is not null #}
+            <li>Chef de guerre<strong>: {{ session.connetable().nom|default('Aucun') }}</strong></li>
+
+            {# if session.navigateur() is not null #}
+            <li>Navigateur<strong>: {{ session.navigateur().nom|default('Aucun') }}</strong></li>
+
+            {# if session.camarilla() is not null #}
+            <li>Éminence grise<strong>: {{ session.camarilla().nom|default('Aucun') }}</strong></li>
+
+            {# if session.intendant() is not null #}
+            <li>Intendant<strong>: {{ session.intendant().nom|default('Aucun') }}</strong></li>
+
+        </ul>
+    {% endif %}
+
+    {#
     <div>
         <h4>Quête commerciale pour #{{ groupe.numero }} {{ groupe.nom }}</h4>
         <p>La route commerciale doit partir de
@@ -116,4 +136,6 @@
         </ul>
         <strong>Récompenses : </strong>{{ quete.recompenses|join(', ') }}
     </div>
+    #}
+
 {% endblock content %}

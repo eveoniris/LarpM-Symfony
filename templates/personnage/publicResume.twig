@@ -4,54 +4,53 @@
 
 {% block body %}
 
-	{% include 'personnage/fragment/breadcrumb.twig' %}
+    {% include 'personnage/fragment/breadcrumb.twig' %}
 
-	<div class="panel mb-0 border-bottom-0">
-		<div class="header">
-			<h5>Fiche de personnage</h5>
-		</div>
+    <div class="panel mb-0 border-bottom-0">
+        <div class="header">
+            <h5>Fiche de personnage</h5>
+        </div>
 
-		<div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between">
 
-			<h3>{{ personnage.nom }}{% if personnage.surnom %} <small>({{ personnage.surnom }})</small>{% endif %}</h3>
-			<div class="fs-3">
-				{% if personnage.genre == 'Masculin' %}
-					<i class="fa fa-mars" aria-hidden="true"></i>
-				{% elseif personnage.genre == 'Feminin' %}
-					<i class="fa fa-venus" aria-hidden="true"></i>
-				{% else %}
-					<i class="fa fa-transgender-alt" aria-hidden="true"></i>
-				{% endif %}
+            <h3>{{ personnage.nom }}{% if personnage.surnom %} <small>({{ personnage.surnom }})</small>{% endif %}</h3>
+            <div class="fs-3">
+                {% if personnage.genre == 'Masculin' %}
+                    <i class="fa fa-mars" aria-hidden="true"></i>
+                {% elseif personnage.genre == 'Feminin' %}
+                    <i class="fa fa-venus" aria-hidden="true"></i>
+                {% else %}
+                    <i class="fa fa-transgender-alt" aria-hidden="true"></i>
+                {% endif %}
 
-				<small>{{ personnage.ageReel|default('x') }} ans ({{ personnage.age }})</small>
+                <small>{{ personnage.ageReel|default('x') }} ans ({{ personnage.age }})</small>
 
-				{% if personnage.vivant %}<span class="text-success">Vivant</span>{% else %}<span
-						class="text-danger">💀 Mort</span>{% endif %}
+                {% if personnage.vivant %}<span class="text-success">Vivant</span>{% else %}<span
+                        class="text-danger">💀 Mort</span>{% endif %}
 
-			</div>
-		</div>
+            </div>
+        </div>
 
 
+    </div>
 
-	</div>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active">
+            <div class="row border-top-0">
+                <div class="col-md-6">
+                    {% include 'personnage/fragment/information.twig' with {'css' : 'panel'} %}
+                </div>
 
-	<!-- Tab panes -->
-	<div class="tab-content">
-		<div role="tabpanel" class="tab-pane active" role="tabpanel">
-			<div class="row border-top-0">
-				<div class="col-md-6">
-					{% include 'personnage/fragment/information.twig' with {'css' : 'panel'} %}
-				</div>
+                <div class="col-md-6">
+                    {% include 'personnage/fragment/trombinoscope.twig' with {'personnage': personnage, 'participant': participant, 'css': 'panel'} %}
+                    {% if qrcode is defined %}
+                        {% include 'personnage/fragment/qrcode.twig' with {'personnage': personnage, 'participant': participant} %}
+                    {% endif %}
+                </div>
 
-				<div class="col-md-6">
-					{% include 'personnage/fragment/trombinoscope.twig' with {'personnage': personnage, 'participant': participant, 'css': 'panel'} %}
-					{% if qrcode is defined %}
-						{% include 'personnage/fragment/qrcode.twig' with {'personnage': personnage, 'participant': participant} %}
-					{% endif %}
-				</div>
+            </div>
 
-			</div>
-
-		</div>
-	</div>
+        </div>
+    </div>
 {% endblock body %}
