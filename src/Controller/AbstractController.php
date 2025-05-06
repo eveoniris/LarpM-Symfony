@@ -3,13 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\Document;
+use App\Entity\Gn;
 use App\Entity\Groupe;
 use App\Entity\LogAction;
+use App\Entity\Participant;
+use App\Entity\Personnage;
 use App\Entity\User;
 use App\Enum\FolderType;
 use App\Enum\Role;
 use App\Form\DeleteForm;
 use App\Repository\BaseRepository;
+use App\Repository\GnRepository;
 use App\Service\FileUploader;
 use App\Service\GroupeService;
 use App\Service\MailService;
@@ -27,6 +31,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -79,6 +84,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             foreach ($can as &$c) {
                 $c = true;
             }
+            unset($c);
         }
 
         if ($can[self::CAN_WRITE]) {
@@ -170,6 +176,46 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $user = parent::getUser();
 
         return $user;
+    }
+
+    protected function checkHasPersonnage(?Personnage $personnage = null, ?Participant $participant = null): void
+    {
+        if (!$this->getPersonnage($personnage, $participant)) {
+            throw new AccessDeniedHttpException('Vous devez avoir créé un personnage !');
+        }
+    }
+
+    protected function getPersonnage(?Personnage $personnage = null, ?Participant $participant = null): ?Personnage
+    {
+        if ($personnage) {
+            return $personnage;
+        }
+
+        if ($participant) {
+            return $participant->getPersonnage();
+        }
+
+        if ($request = $this->requestStack->getCurrentRequest()) {
+            if ($request->get('personnage') && $personnage = $this->entityManager
+                    ->getRepository(Personnage::class)
+                    ->findOneBy(['id' => $request->get('personnage')])) {
+                return $personnage;
+            }
+            if ($request->get('participant') && $participant = $this->entityManager
+                    ->getRepository(Participant::class)
+                    ->findOneBy(['id' => $request->get('participant')])) {
+                return $participant->getPersonnage();
+            }
+
+            /** @var GnRepository $gnRepository */
+            $gnRepository = $this->entityManager->getRepository(Gn::class);
+            $gnActif = $gnRepository->findNext();
+            if ($gnActif && $personnage = $this->getUser()?->getParticipant($gnActif)?->getPersonnage()) {
+                return $personnage;
+            }
+        }
+
+        return $this->getUser()?->getPersonnage();
     }
 
     protected function genericDelete(
@@ -583,10 +629,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $entity->setProjectDir($projectDir);
         $filename = $entity->getDocument();
         $documentUrl = $entity->getDocumentUrl();
-        $documentLabel = $entity->getPrintLabel();
+        $documentLabel = $entity->getPrintLabel() ?: time();
 
         // TRY FROM 1 on first failed
-        if (!file_exists($filename)) {
+        if (!file_exists($filename) && method_exists($entity, 'getOldV1Document')) {
             $filename = $entity->getOldV1Document();
         }
 

@@ -22,31 +22,91 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DocumentController extends AbstractController
 {
     /**
-     * Liste des documents.
+     * Ajouter un document.
      */
-    #[Route('', name: 'index')]
-    #[Route('', name: 'list')]
-    public function indexAction(
-        Request $request,
-        PagerService $pagerService,
-        DocumentRepository $documentRepository,
-    ): Response {
-        // TODO la recherche sur critère précis ne fonctionne pas
-        $pagerService->setRequest($request)->setRepository($documentRepository);
+    #[Route('/add', name: 'add')]
+    public function addAction(Request $request): RedirectResponse|Response
+    {
+        return $this->handleCreateOrUpdate(
+            $request,
+            new Document(),
+            DocumentForm::class,
+        );
+    }
 
-        return $this->render('document/list.twig', [
-            'pagerService' => $pagerService,
-            'paginator' => $documentRepository->searchPaginated($pagerService),
-        ]);
+    protected function handleCreateOrUpdate(
+        Request $request,
+        $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
+        ?callable $entityCallback = null,
+    ): RedirectResponse|Response {
+        if (!$entityCallback) {
+            // TODO debug why we do not store the docUrl
+            $entityCallback = function (Document $document, FormInterface $form): ?Document {
+                $document->setUser($this->getUser());
+                $document->handleUpload($this->fileUploader);
+
+                return $document;
+            };
+        }
+
+        return parent::handleCreateOrUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                'entity' => $this->translator->trans('document'),
+                'entity_added' => $this->translator->trans('Le document a été ajouté'),
+                'entity_updated' => $this->translator->trans('Le document a été mis à jour'),
+                'entity_deleted' => $this->translator->trans('Le document a été supprimé'),
+                'entity_list' => $this->translator->trans('Liste des documents'),
+                'title_add' => $this->translator->trans('Ajouter un document'),
+                'title_update' => $this->translator->trans('Modifier un documents'),
+                ...$msg,
+            ],
+            entityCallback: $entityCallback,
+        );
     }
 
     /**
-     * Imprimer la liste des documents.
+     * Suppression d'un document.
      */
-    #[Route('/print', name: 'print')]
-    public function printAction(DocumentRepository $documentRepository): Response
-    {
-        return $this->render('document/print.twig', ['documents' => $documentRepository->findAllOrderedByCode()]);
+    #[Route('/{document}/delete', name: 'delete', requirements: ['document' => Requirement::DIGITS])]
+    public function deleteAction(
+        #[MapEntity] Document $document,
+    ): RedirectResponse|Response {
+        return $this->genericDelete(
+            $document,
+            'Supprimer un document',
+            'Le document a été supprimé',
+            'document.list',
+            [
+                ['route' => $this->generateUrl('document.list'), 'name' => 'Liste des documents'],
+                [
+                    'route' => $this->generateUrl('document.detail', ['document' => $document->getId()]),
+                    'document' => $document->getId(),
+                    'name' => $document->getLabel(),
+                ],
+                ['name' => 'Supprimer un document'],
+            ],
+        );
+    }
+
+    /**
+     * Détail d'un document.
+     */
+    #[Route('/{document}', name: 'detail', requirements: ['document' => Requirement::DIGITS])]
+    public function detailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Document $document,
+    ): Response {
+        return $this->render('document/detail.twig', ['document' => $document]);
     }
 
     /**
@@ -81,7 +141,7 @@ class DocumentController extends AbstractController
                 'date de création',
                 'date de mise à jour',
             ],
-            ';'
+            ';',
         );
 
         foreach ($documents as $document) {
@@ -90,7 +150,7 @@ class DocumentController extends AbstractController
             $line[] = mb_convert_encoding((string) $document->getTitre(), 'ISO-8859-1');
             $line[] = $document->getImpression() ? mb_convert_encoding('Imprimé', 'ISO-8859-1') : mb_convert_encoding(
                 'Non imprimé',
-                'ISO-8859-1'
+                'ISO-8859-1',
             );
 
             $line[] = mb_convert_encoding((string) $document->getDescriptionRaw(), 'ISO-8859-1');
@@ -151,28 +211,32 @@ class DocumentController extends AbstractController
     }
 
     /**
-     * Ajouter un document.
+     * Liste des documents.
      */
-    #[Route('/add', name: 'add')]
-    public function addAction(Request $request): RedirectResponse|Response
-    {
-        return $this->handleCreateOrUpdate(
-            $request,
-            new Document(),
-            DocumentForm::class
-        );
+    #[Route('', name: 'index')]
+    #[Route('', name: 'list')]
+    public function indexAction(
+        Request $request,
+        PagerService $pagerService,
+        DocumentRepository $documentRepository,
+    ): Response {
+        // TODO la recherche sur critère précis ne fonctionne pas
+        $pagerService->setRequest($request)->setRepository($documentRepository);
+
+        return $this->render('document/list.twig', [
+            'isAdmin' => true,
+            'pagerService' => $pagerService,
+            'paginator' => $documentRepository->searchPaginated($pagerService),
+        ]);
     }
 
     /**
-     * Détail d'un document.
+     * Imprimer la liste des documents.
      */
-    #[Route('/{document}', name: 'detail', requirements: ['document' => Requirement::DIGITS])]
-    public function detailAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Document $document,
-    ): Response {
-        return $this->render('document/detail.twig', ['document' => $document]);
+    #[Route('/print', name: 'print')]
+    public function printAction(DocumentRepository $documentRepository): Response
+    {
+        return $this->render('document/print.twig', ['documents' => $documentRepository->findAllOrderedByCode()]);
     }
 
     /**
@@ -184,70 +248,7 @@ class DocumentController extends AbstractController
         return $this->handleCreateOrUpdate(
             $request,
             $document,
-            DocumentForm::class
-        );
-    }
-
-    /**
-     * Suppression d'un document.
-     */
-    #[Route('/{document}/delete', name: 'delete', requirements: ['document' => Requirement::DIGITS])]
-    public function deleteAction(
-        #[MapEntity] Document $document,
-    ): RedirectResponse|Response {
-        return $this->genericDelete(
-            $document,
-            'Supprimer un document',
-            'Le document a été supprimé',
-            'document.list',
-            [
-                ['route' => $this->generateUrl('document.list'), 'name' => 'Liste des documents'],
-                [
-                    'route' => $this->generateUrl('document.detail', ['document' => $document->getId()]),
-                    'document' => $document->getId(),
-                    'name' => $document->getLabel(),
-                ],
-                ['name' => 'Supprimer un document'],
-            ]
-        );
-    }
-
-    protected function handleCreateOrUpdate(
-        Request $request,
-        $entity,
-        string $formClass,
-        array $breadcrumb = [],
-        array $routes = [],
-        array $msg = [],
-        ?callable $entityCallback = null,
-    ): RedirectResponse|Response {
-        if (!$entityCallback) {
-            // TODO debug why we do not store the docUrl
-            $entityCallback = function (Document $document, FormInterface $form): ?Document {
-                $document->setUser($this->getUser());
-                $document->handleUpload($this->fileUploader);
-
-                return $document;
-            };
-        }
-
-        return parent::handleCreateOrUpdate(
-            request: $request,
-            entity: $entity,
-            formClass: $formClass,
-            breadcrumb: $breadcrumb,
-            routes: $routes,
-            msg: [
-                'entity' => $this->translator->trans('document'),
-                'entity_added' => $this->translator->trans('Le document a été ajouté'),
-                'entity_updated' => $this->translator->trans('Le document a été mis à jour'),
-                'entity_deleted' => $this->translator->trans('Le document a été supprimé'),
-                'entity_list' => $this->translator->trans('Liste des documents'),
-                'title_add' => $this->translator->trans('Ajouter un document'),
-                'title_update' => $this->translator->trans('Modifier un documents'),
-                ...$msg,
-            ],
-            entityCallback: $entityCallback
+            DocumentForm::class,
         );
     }
 }

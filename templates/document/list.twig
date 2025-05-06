@@ -10,15 +10,15 @@
     <div class="well well-sm">
 
         <div class="header">
-            <h5>Liste des documents <small>( {{ paginator|length }} documents)</small></h5>
+            <h5>Liste des documents <small>({{ paginator|length }} documents)</small></h5>
 
             {% include '_partials/formListSearch.twig' with
                 {
                     'canAdd': {'title': 'Ajouter un document', 'path': path('document.add')},
                     'actionPath' : path('document.list'),
                     'buttons' : [
-                     {'label': 'Imprimer', 'title': "Imprimer la liste", 'route': path('document.print'), 'icon': 'fa-print', 'target':'_blank'},
-                     {'label': 'Liste CSV','title': "Télécharger la liste (CSV)", 'route': path('document.download'), 'icon': 'fa-download'}
+                    {'label': 'Imprimer', 'title': "Imprimer la liste", 'route': path('document.print'), 'icon': 'fa-print', 'target':'_blank'},
+                    {'label': 'Liste CSV','title': "Télécharger la liste (CSV)", 'route': path('document.download'), 'icon': 'fa-download'}
                 ]
                 } %}
         </div>

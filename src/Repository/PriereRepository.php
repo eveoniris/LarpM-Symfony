@@ -20,19 +20,6 @@ class PriereRepository extends BaseRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    /**
-     * Trouve les prières correspondant aux critères de recherche.
-     */
-    public function findList(?string $type, $value, array $order = [], int $limit = 50, int $offset = 0)
-    {
-        $qb = $this->getQueryBuilder($type, $value);
-        $qb->setFirstResult($offset);
-        $qb->setMaxResults($limit);
-        $qb->orderBy('p.'.$order['by'], $order['dir']);
-
-        return $qb->getQuery()->getResult();
-    }
-
     protected function getQueryBuilder(?string $type, $value): QueryBuilder
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
@@ -41,7 +28,7 @@ class PriereRepository extends BaseRepository
         $qb->from(Priere::class, 'p');
 
         // retire les caractères non imprimable d'une chaine UTF-8
-        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars((string)$value));
+        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars((string) $value));
 
         if ($type && $value) {
             switch ($type) {
@@ -64,7 +51,7 @@ class PriereRepository extends BaseRepository
                     break;
                 case 'id':
                     $qb->andWhere('p.id = :value');
-                    $qb->setParameter('value', (int)$value);
+                    $qb->setParameter('value', (int) $value);
                     break;
             }
         }
@@ -72,26 +59,45 @@ class PriereRepository extends BaseRepository
         return $qb;
     }
 
+    /**
+     * Trouve les prières correspondant aux critères de recherche.
+     */
+    public function findList(?string $type, $value, array $order = [], int $limit = 50, int $offset = 0)
+    {
+        $qb = $this->getQueryBuilder($type, $value);
+        $qb->setFirstResult($offset);
+        $qb->setMaxResults($limit);
+        $qb->orderBy('p.'.$order['by'], $order['dir']);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function getPersonnages(Priere $priere): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        return $personnageRepository->createQueryBuilder('perso')
+            ->innerJoin('perso.prieres', 'p')
+            ->where('p.id = :pid')
+            ->setParameter('pid', $priere->getId());
+    }
+
+    // TODO Sphere as ENUM ?
+
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
         ?OrderBy $orderBy = null,
         ?string $alias = null,
-        ?QueryBuilder $query = null
+        ?QueryBuilder $query = null,
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
+        $orderBy ??= $this->orderBy;
         $query ??= $this->createQueryBuilder($alias);
         $query->join($alias.'.sphere', 'sphere');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
-    }
-
-    // TODO Sphere as ENUM ?
-    public function sphere(QueryBuilder $query, string $sphere): QueryBuilder
-    {
-        $query->andWhere('sphere.label = :value');
-
-        return $query->setParameter('value', $sphere);
     }
 
     public function searchAttributes(): array
@@ -159,14 +165,10 @@ class PriereRepository extends BaseRepository
         ];
     }
 
-    public function getPersonnages(Priere $priere): QueryBuilder
+    public function sphere(QueryBuilder $query, string $sphere): QueryBuilder
     {
-        /** @var PersonnageRepository $personnageRepository */
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+        $query->andWhere('sphere.label = :value');
 
-        return $personnageRepository->createQueryBuilder('perso')
-            ->innerJoin('perso.prieres', 'p')
-            ->where('p.id = :pid')
-            ->setParameter('pid', $priere->getId());
+        return $query->setParameter('value', $sphere);
     }
 }

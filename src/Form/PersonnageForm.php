@@ -63,7 +63,7 @@ class PersonnageForm extends AbstractType
             ->add('intrigue', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['Oui' => true, 'Non' => false],
-                'label' => 'Participer aux intrigues (aide de camps)',
+                'label' => 'Participer aux intrigues',
             ])
             ->add('sensible', ChoiceType::class, [
                 'required' => true,

@@ -712,9 +712,9 @@ class PersonnageService
             }
 
             // Si aucune n'est valide, on passe au bonus suivant
-            //if (!$this->conditionsService->isAllConditionsValid($personnage, $bonus->getConditions())) {
+            // if (!$this->conditionsService->isAllConditionsValid($personnage, $bonus->getConditions())) {
             //    continue;
-            //}
+            // }
 
             // On récupère les éventuelles données de bonus à donner de type "langue"
             $languesBonus = $bonus->getDataAsList('langue');
@@ -1049,7 +1049,7 @@ class PersonnageService
 
         // trie des competences disponibles
         $iterator = $availableCompetences->getIterator();
-        $iterator->uasort(static fn($a, $b) => $a->getLabel() <=> $b->getLabel());
+        $iterator->uasort(static fn ($a, $b) => $a->getLabel() <=> $b->getLabel());
 
         return new ArrayCollection(iterator_to_array($iterator));
     }
@@ -1361,7 +1361,6 @@ class PersonnageService
             return $this->entityManager->getRepository(Loi::class)->findAll();
         }
 
-
         $lois = new ArrayCollection();
 
         /* old rules
@@ -1571,6 +1570,15 @@ class PersonnageService
             ->getSingleResult();
 
         return $religion && $this->knownReligion($personnage, $religion);
+    }
+
+    public function isKnownLoi(Personnage $personnage, Loi $loi): bool
+    {
+        // We currently only work on the competence level
+        return $personnage->hasCompetenceLevel(
+            CompetenceFamilyType::POLITICAL,
+            LevelType::APPRENTICE,
+        );
     }
 
     public function isMemberOfGroup(
