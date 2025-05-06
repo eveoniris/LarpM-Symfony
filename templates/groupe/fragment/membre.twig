@@ -9,7 +9,7 @@
         {% if canReadPrivate %}
             {% if session.isSuzerin(participant) %}
                 <span>
-                <i class="fa-solid fa-crown text-warning"></i> Suzerin
+                <i class="fa-solid fa-crown text-warning"></i> Suzerain
             </span>
                 {% set hasTitre = true %}
             {% elseif participant.getPersonnage().getId() is defined %}

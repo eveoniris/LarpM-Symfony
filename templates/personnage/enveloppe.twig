@@ -6,7 +6,8 @@
     <div class="print-center">
         <h2>#{{ personnage.id }} - {{ personnage.identity }}</h2>
     </div>
-    <br/>
+    {# <br/>
+
     {% if personnage.user %}
         {% set participant = personnage.user.participants|last %}
         <strong>Personnage Secondaire : </strong>
@@ -15,7 +16,7 @@
         {% else %}
             PAS DE PERSONNAGE SECONDAIRE
         {% endif %}
-    {% endif %}
+    {% endif %} #}
     <br/>
     {% if personnageService.allRenomme(personnage)|default(0) > 4 %}
         <strong>Renommée :</strong> {{ personnageService.allRenomme(personnage)|default(0) }}<br/>

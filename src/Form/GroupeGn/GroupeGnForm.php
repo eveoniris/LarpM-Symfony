@@ -94,15 +94,15 @@ class GroupeGnForm extends AbstractType
 
         $fieldCallback = function (string $child, string $label) use ($groupeGn) {
             return [
-                'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId(
-                ).' - '.$personnage->getNameSurname(),
+                'choice_label' => static fn(Personnage $personnage, $key, $index) => $personnage->getId(
+                    ).' - '.$personnage->getNameSurname(),
                 'autocomplete' => true,
                 'required' => false,
                 'class' => Personnage::class,
                 'placeholder' => 'Choisissez un personnage',
                 'empty_data' => null,
                 // On veut tous les personnages vivant du GN (pas que ceux du groupe)
-                'query_builder' => static fn (PersonnageRepository $personnageRepository,
+                'query_builder' => static fn(PersonnageRepository $personnageRepository,
                 ) => $personnageRepository // TODO? and PID not IN groupeGn titres
                 ->createQueryBuilder('p')
                     ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
@@ -155,7 +155,7 @@ class GroupeGnForm extends AbstractType
         };
 
         $fields = [
-            'suzerin' => 'Suzerin',
+            'suzerin' => 'Suzerain',
             'connetable' => 'Chef de guerre',
             'intendant' => 'Intendant',
             'navigateur' => 'Navigateur',

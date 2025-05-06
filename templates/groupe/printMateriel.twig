@@ -14,13 +14,13 @@
                 <strong>Restauration :</strong> {{ participantHasRestauration.restauration.label }}<br/>
             {% endfor %}
 
-            <strong>Personnage Secondaire : </strong>
+            {#  <strong>Personnage Secondaire : </strong>
             {% if participant.personnageSecondaire %}
                 {{ participant.personnageSecondaire.classe.label }}
             {% else %}
                 PAS DE PERSONNAGE SECONDAIRE
             {% endif %}
-            <br/>
+            <br/> #}
 
             {% if participant.personnage.renomme|default(0) > 4 %}
                 <strong>Renommée :</strong> {{ participant.personnage.renomme|default(0) }}<br/>

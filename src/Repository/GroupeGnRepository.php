@@ -47,7 +47,7 @@ class GroupeGnRepository extends BaseRepository
                 SELECT 
                     CONCAT(
                        case 
-                           when suzerin_id = $pid then 'Suzerin'
+                           when suzerin_id = $pid then 'Suzerain'
                            when connetable_id = $pid then 'Chef de guerre'
                            when intendant_id = $pid then 'Intendant'
                            when navigateur_id = $pid then 'Navigateur'
@@ -106,7 +106,7 @@ class GroupeGnRepository extends BaseRepository
                 DQL,
             );
 
-        return (bool)$query
+        return (bool) $query
             ->setParameter('uid', $user->getId())
             ->setParameter('gid', $groupeGn->getId())
             ->getSingleScalarResult();

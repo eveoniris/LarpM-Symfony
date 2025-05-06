@@ -175,7 +175,7 @@ class GroupeGnController extends AbstractController
 
             $this->addFlash('success', 'Le jeu de domaine a été enregistré.');
 
-            return $this->redirectToRoute('groupe.detail', ['index' => $groupe->getId()]);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
         }
 
         return $this->render('groupeGn/jeudedomaine.twig', [
