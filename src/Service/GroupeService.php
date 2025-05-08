@@ -582,7 +582,7 @@ readonly class GroupeService
         }
 
         if ($groupe->getRichesse() > 0) {
-            $histories[] = ['label' => 'Richesse supplémentaire', 'value' => $groupe->getRichesse()];
+            $histories[] = ['label' => $groupe->getRichesse()." pièces d'argent de richesse supplémentaire"];
         }
 
         return $histories;

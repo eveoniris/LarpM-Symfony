@@ -1,3 +1,8 @@
+{% set useQrCode = false %}
+{% if app.request.get('qrCode') == 1 %}
+    {% set useQrCode = true %}
+{% endif %}
+
 <div class="row border-top-0">
     <div class="col-md-6">
         {% include 'personnage/fragment/information.twig' with {'css' : 'panel'} %}
@@ -5,7 +10,7 @@
 
     <div class="col-md-6">
         {% include 'personnage/fragment/trombinoscope.twig' with {'personnage': personnage, 'participant': participant, 'css': 'panel'} %}
-        {% if qrcode is defined %}
+        {% if useQrCode %}
             {% include 'personnage/fragment/qrcode.twig' with {'personnage': personnage, 'participant': participant} %}
         {% endif %}
         {% include 'personnage/fragment/admin_resume.twig' with {'css' : 'panel'} %}

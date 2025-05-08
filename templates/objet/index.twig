@@ -14,82 +14,89 @@ td {white-space: normal; text-overflow: ellipsis;}
 
 {% block body %}
 
-	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Objets'}]} %}
+    {% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Objets'}]} %}
 
 
-	<div class="well well-sm">
-		<div class="header">
-			<h5>Liste des objets <small>( {{ paginator|length }} )</small></h5>
-		</div>
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Liste des objets <small>( {{ paginator|length }} )</small></h5>
+        </div>
 
-		{% include '_partials/formListSearch.twig' with
-			{
-				'actionPath' : path('item.list'),
-				'buttons' : [
-				{'label': 'Imprimer les photos', 'title': "Imprimer les photos", 'route': path('item.print-csv'), 'icon': 'fa-print', 'target':'_blank'},
-				{'label': 'Imprimer les étiquettes', 'title': "Imprimer les étiquettes", 'route': path('item.print-photo'), 'icon': 'fa-print', 'target':'_blank'},
-				{'label': 'Fichier CSV','title': "Télécharger la liste (CSV)", 'route': path('item.print-all'), 'icon': 'fa-file-csv'}
-			]
-			} %}
-	</div>
+        {% include '_partials/formListSearch.twig' with
+            {
+                'actionPath' : path('item.list'),
+                'buttons' : [
+                {'label': 'Imprimer les photos', 'title': "Imprimer les photos", 'route': path('item.print-photo'), 'icon': 'fa-print', 'target':'_blank'},
+                {'label': 'Imprimer les étiquettes', 'title': "Imprimer les étiquettes", 'route': path('item.print-all'), 'icon': 'fa-print', 'target':'_blank'},
+                {'label': 'Fichier CSV','title': "Télécharger la liste (CSV)", 'route': path('item.print-csv'), 'icon': 'fa-file-csv'}
+            ]
+            } %}
+    </div>
 
-	{% include '_partials/pagination.html.twig' %}
+    {% include '_partials/pagination.html.twig' %}
 
-	<table class="table table-condensed table-striped table-bordered">
-		{% include '_partials/thead.twig' with  { 'route': 'item.list', 'rows': [
-			{'name' : 'Numéro', 'field' : 'numero', 'css' : 'text-center'},
-			{'name' : 'Qualité et identification', 'field': 'numero', 'css' : 'text-center'},
-			{'name' : 'Label', 'field': 'label', 'css' : 'text-center'},
-			{'name' : 'Photo', 'css' : 'text-center'},
-			{'name' : 'Quantité', 'css' : 'text-center'},
-			{'name' : 'Description', 'field': 'description', 'css' : 'text-center'},
-			{'name' : 'Spécial', 'field': 'special', 'css' : 'text-center'},
-			{'name' : 'Groupe', 'css' : 'text-center'},
-			{'name' : 'Personnage', 'css' : 'text-center'},
-			{'name' : 'Actions', 'css' : 'text-center'},
-		]} %}
-		<tbody>
-		{% for item in paginator%}
-			<tr>
-				<td class="text-center align-middle">{{ item.numero|highlight(pagerService.searchValue) }}</td>
-				<td class="text-center align-middle">{{ item.qualident|highlight(pagerService.searchValue) }}</td>
-				<td class="text-center align-middle">{{ item.label|highlight(pagerService.searchValue) }}</td>
-				<td class="text-center align-middle">
-					<div class="hover_img">
-						<a href="{{ path('stockObjet.photo', {'objet': item.objet.id }) }}" target="_blank" rel="noopener noreferrer">Show Image<span>
-								<img src="{{ path('stockObjet.photo', {'objet': item.objet.id, 'miniature': true}) }}" width="200px"  alt=""/>
+    <table class="table table-condensed table-striped table-bordered">
+        {% include '_partials/thead.twig' with  { 'route': 'item.list', 'rows': [
+            {'name' : 'Numéro', 'field' : 'numero', 'css' : 'text-center'},
+            {'name' : 'Qualité et identification', 'field': 'numero', 'css' : 'text-center'},
+            {'name' : 'Label', 'field': 'label', 'css' : 'text-center'},
+            {'name' : 'Photo', 'css' : 'text-center'},
+            {'name' : 'Quantité', 'css' : 'text-center'},
+            {'name' : 'Description', 'field': 'description', 'css' : 'text-center'},
+            {'name' : 'Spécial', 'field': 'special', 'css' : 'text-center'},
+            {'name' : 'Groupe', 'css' : 'text-center'},
+            {'name' : 'Personnage', 'css' : 'text-center'},
+            {'name' : 'Actions', 'css' : 'text-center'},
+        ]} %}
+        <tbody>
+        {% for item in paginator %}
+            <tr>
+                <td class="text-center align-middle">{{ item.numero|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle">{{ item.qualident|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle">{{ item.label|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle">
+                    <div class="hover_img">
+                        <a href="{{ path('stockObjet.photo', {'objet': item.objet.id }) }}" target="_blank"
+                           rel="noopener noreferrer">Show Image<span>
+								<img src="{{ path('stockObjet.photo', {'objet': item.objet.id, 'miniature': true}) }}"
+                                     width="200px" alt=""/>
 								</span>
-						</a>
-					</div>
-				</td>
-				<td class="text-center align-middle">{{ item.quantite }}</td>
-				<td class="align-middle">{{ item.description|markdown_to_html|highlight(pagerService.searchValue) }}</td>
-				<td class="align-middle">{{ item.special|markdown_to_html|highlight(pagerService.searchValue) }}</td>
-				<td class="align-middle">
-					{% for groupe in item.groupes %}
-						<a href="{{ path('groupe.detail', {'groupe':groupe.id}) }}">{{ groupe }}</a><br />
-					{% endfor %}
-				</td>
-				<td class="align-middle">
-					{% for personnage in item.personnages %}
-						<a href="{{ path('personnage.detail', {'personnage':personnage.id}) }}">{{ personnage }}</a><br />
-					{% endfor %}
-				</td>
-				<td class="align-middle">
-					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
-						<div class="btn-group" role="group" aria-label="...">
-							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimer" href="{{ path('item.print', {'item': item.id}) }}"><i class="fa fa-print"></i></a>
-							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('item.detail',{'item':item.id}) }}"><i class="fa fa-eye"></i></a>
-							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('item.update',{'item':item.id}) }}"><i class="fa fa-pencil"></i></a>
-							<a class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('item.delete',{'item':item.id}) }}"><i class="fa fa-eraser"></i></a>
-						</div>
-					</div>
-				</td>
-			</tr>
-		{% endfor %}
-		</tbody>
-	</table>
+                        </a>
+                    </div>
+                </td>
+                <td class="text-center align-middle">{{ item.quantite }}</td>
+                <td class="align-middle">{{ item.description|markdown_to_html|highlight(pagerService.searchValue) }}</td>
+                <td class="align-middle">{{ item.special|markdown_to_html|highlight(pagerService.searchValue) }}</td>
+                <td class="align-middle">
+                    {% for groupe in item.groupes %}
+                        <a href="{{ path('groupe.detail', {'groupe':groupe.id}) }}">{{ groupe }}</a><br/>
+                    {% endfor %}
+                </td>
+                <td class="align-middle">
+                    {% for personnage in item.personnages %}
+                        <a href="{{ path('personnage.detail', {'personnage':personnage.id}) }}">{{ personnage }}</a>
+                        <br/>
+                    {% endfor %}
+                </td>
+                <td class="align-middle">
+                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                        <div class="btn-group" role="group" aria-label="...">
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Imprimer"
+                               href="{{ path('item.print', {'item': item.id}) }}"><i class="fa fa-print"></i></a>
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail"
+                               href="{{ path('item.detail',{'item':item.id}) }}"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier"
+                               href="{{ path('item.update',{'item':item.id}) }}"><i class="fa fa-pencil"></i></a>
+                            <a class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Supprimer"
+                               href="{{ path('item.delete',{'item':item.id}) }}"><i class="fa fa-eraser"></i></a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
-	{% include '_partials/pagination.html.twig' %}
-	
+    {% include '_partials/pagination.html.twig' %}
+
 {% endblock body %}

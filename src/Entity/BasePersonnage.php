@@ -325,265 +325,65 @@ abstract class BasePersonnage
         $this->apprentissageEnseignants = new ArrayCollection();
     }
 
-    /**
-     * Set the value of id.
-     */
-    public function setId(int $id): static
+    public function addApprentissage(PersonnageApprentissage $apprentissage): static
     {
-        $this->id = $id;
+        if (!$this->apprentissages->contains($apprentissage)) {
+            $this->apprentissages->add($apprentissage);
+            $apprentissage->setPersonnage($this);
+        }
 
         return $this;
     }
 
     /**
-     * Get the value of id.
+     * Add Competence entity to collection.
      */
-    public function getId(): ?int
+    public function addCompetence(Competence $competence): static
     {
-        return $this->id ?? null;
-    }
-
-    /**
-     * Set the value of nom.
-     */
-    public function setNom(string $nom): static
-    {
-        $this->nom = $nom;
+        $this->competences[] = $competence;
 
         return $this;
     }
 
     /**
-     * Get the value of nom.
+     * Add Connaissance entity to collection.
      */
-    public function getNom(): string
+    public function addConnaissance(Connaissance $connaissance): static
     {
-        return $this->nom ?? '';
-    }
-
-    /**
-     * Set the value of surnom.
-     */
-    public function setSurnom(?string $surnom): static
-    {
-        $this->surnom = $surnom;
+        $connaissance->addPersonnage($this);
+        $this->connaissances[] = $connaissance;
 
         return $this;
     }
 
     /**
-     * Get the value of surnom.
+     * Add Document entity to collection.
      */
-    public function getSurnom(): string
+    public function addDocument(Document $document): static
     {
-        return $this->surnom ?? '';
-    }
-
-    /**
-     * Set the value of intrigue.
-     */
-    public function setIntrigue(bool $intrigue): static
-    {
-        $this->intrigue = $intrigue;
+        $document->addPersonnage($this);
+        $this->documents[] = $document;
 
         return $this;
     }
 
     /**
-     * Get the value of intrigue.
+     * Add Domaine entity to collection.
      */
-    public function getIntrigue(): bool
+    public function addDomaine(Domaine $domaine): static
     {
-        return $this->intrigue;
-    }
-
-    /**
-     * Set the value of sensible.
-     */
-    public function setSensible(bool $sensible): static
-    {
-        $this->sensible = $sensible;
+        $domaine->addPersonnage($this);
+        $this->domaines[] = $domaine;
 
         return $this;
     }
 
-    /**
-     * Get the value of sensible.
-     */
-    public function getSensible(): ?bool
+    public function addEspece(Espece $espece): static
     {
-        return $this->sensible;
-    }
-
-    /**
-     * Set the value of renomme.
-     */
-    public function setRenomme(int $renomme): static
-    {
-        $this->renomme = $renomme;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of renomme.
-     */
-    public function getRenomme(): int
-    {
-        return $this->renomme;
-    }
-
-    /**
-     * Set the value of photo.
-     */
-    public function setPhoto(string $photo): static
-    {
-        $this->photo = $photo;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of photo.
-     */
-    public function getPhoto(): string
-    {
-        return $this->photo ?? '';
-    }
-
-    /**
-     * Set the value of xp.
-     */
-    public function setXp(int $xp): static
-    {
-        $this->xp = $xp;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of xp.
-     */
-    public function getXp(): int
-    {
-        return $this->xp;
-    }
-
-    /**
-     * Set the value of materiel.
-     */
-    public function setMateriel(string $materiel): static
-    {
-        $this->materiel = $materiel;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of materiel.
-     */
-    public function getMateriel(): string
-    {
-        return $this->materiel ?? '';
-    }
-
-    /**
-     * Set the value of vivant.
-     */
-    public function setVivant(bool $vivant): static
-    {
-        $this->vivant = $vivant;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of vivant.
-     */
-    public function getVivant(): bool
-    {
-        return $this->vivant;
-    }
-
-    /**
-     * Set the value of age_reel.
-     */
-    public function setAgeReel(int $age_reel): static
-    {
-        $this->age_reel = $age_reel;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of age_reel.
-     */
-    public function getAgeReel(): ?int
-    {
-        return $this->age_reel;
-    }
-
-    /**
-     * Set the value of trombineUrl.
-     */
-    public function setTrombineUrl(string $trombineUrl): static
-    {
-        $this->trombineUrl = $trombineUrl;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of trombineUrl.
-     */
-    public function getTrombineUrl(): string
-    {
-        return $this->trombineUrl ?? '';
-    }
-
-    /**
-     * Set the value of richesse.
-     */
-    public function setRichesse(int $richesse): static
-    {
-        $this->richesse = $richesse;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of richesse.
-     */
-    public function getRichesse(): ?int
-    {
-        return $this->richesse ?? 0;
-    }
-
-    /**
-     * Set the value of heroisme.
-     */
-    public function setHeroisme(int $heroisme): static
-    {
-        $this->heroisme = $heroisme;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of heroisme.
-     */
-    public function getHeroisme(): int
-    {
-        // return $this->heroisme;
-        return 0;
-    }
-
-    /**
-     * Set the value of pugilat.
-     */
-    public function setPugilat(int $pugilat): static
-    {
-        $this->pugilat = $pugilat;
+        if (!$this->especes->contains($espece)) {
+            $this->especes->add($espece);
+            $espece->addPersonnage($this);
+        }
 
         return $this;
     }
@@ -599,24 +399,6 @@ abstract class BasePersonnage
     }
 
     /**
-     * Remove ExperienceGain entity from collection (one to many).
-     */
-    public function removeExperienceGain(ExperienceGain $experienceGain): static
-    {
-        $this->experienceGains->removeElement($experienceGain);
-
-        return $this;
-    }
-
-    /**
-     * Get ExperienceGain entity collection (one to many).
-     */
-    public function getExperienceGains(): Collection
-    {
-        return $this->experienceGains;
-    }
-
-    /**
      * Add ExperienceUsage entity to collection (one to many).
      */
     public function addExperienceUsage(ExperienceUsage $experienceUsage): static
@@ -627,24 +409,6 @@ abstract class BasePersonnage
     }
 
     /**
-     * Remove ExperienceUsage entity from collection (one to many).
-     */
-    public function removeExperienceUsage(ExperienceUsage $experienceUsage): static
-    {
-        $this->experienceUsages->removeElement($experienceUsage);
-
-        return $this;
-    }
-
-    /**
-     * Get ExperienceUsage entity collection (one to many).
-     */
-    public function getExperienceUsages(): Collection
-    {
-        return $this->experienceUsages;
-    }
-
-    /**
      * Add HeroismeHistory entity to collection (one to many).
      */
     public function addHeroismeHistory(HeroismeHistory $heroismeHistory): static
@@ -652,560 +416,6 @@ abstract class BasePersonnage
         $this->heroismeHistories[] = $heroismeHistory;
 
         return $this;
-    }
-
-    /**
-     * Remove HeroismeHistory entity from collection (one to many).
-     */
-    public function removeHeroismeHistory(HeroismeHistory $heroismeHistory): static
-    {
-        $this->heroismeHistories->removeElement($heroismeHistory);
-
-        return $this;
-    }
-
-    /**
-     * Get HeroismeHistory entity collection (one to many).
-     */
-    public function getHeroismeHistories(): Collection
-    {
-        return $this->heroismeHistories;
-    }
-
-    /**
-     * Add PugilatHistory entity to collection (one to many).
-     */
-    public function addPugilatHistory(PugilatHistory $pugilatHistory): static
-    {
-        $this->pugilatHistories[] = $pugilatHistory;
-
-        return $this;
-    }
-
-    /**
-     * Remove PugilatHistory entity from collection (one to many).
-     */
-    public function removePugilatHistory(PugilatHistory $pugilatHistory): static
-    {
-        $this->pugilatHistories->removeElement($pugilatHistory);
-
-        return $this;
-    }
-
-    /**
-     * Get PugilatHistory entity collection (one to many).
-     */
-    public function getPugilatHistories(): Collection
-    {
-        return $this->pugilatHistories;
-    }
-
-    /**
-     * Add Membre entity to collection (one to many).
-     */
-    public function addMembre(Membre $membre): static
-    {
-        $this->membres[] = $membre;
-
-        return $this;
-    }
-
-    /**
-     * Remove Membre entity from collection (one to many).
-     */
-    public function removeMembre(Membre $membre): static
-    {
-        $this->membres->removeElement($membre);
-
-        return $this;
-    }
-
-    /**
-     * Get Membre entity collection (one to many).
-     */
-    public function getMembres(): Collection
-    {
-        return $this->membres;
-    }
-
-    /**
-     * Add Participant entity to collection (one to many).
-     */
-    public function addParticipant(Participant $participant): static
-    {
-        $this->participants[] = $participant;
-
-        return $this;
-    }
-
-    /**
-     * Remove Participant entity from collection (one to many).
-     */
-    public function removeParticipant(Participant $participant): static
-    {
-        $this->participants->removeElement($participant);
-
-        return $this;
-    }
-
-    /**
-     * Get Participant entity collection (one to many).
-     */
-    public function getParticipants(): Collection
-    {
-        return $this->participants;
-    }
-
-    /**
-     * Add PersonnageBackground entity to collection (one to many).
-     */
-    public function addPersonnageBackground(PersonnageBackground $personnageBackground): static
-    {
-        $this->personnageBackgrounds[] = $personnageBackground;
-
-        return $this;
-    }
-
-    /**
-     * Remove PersonnageBackground entity from collection (one to many).
-     */
-    public function removePersonnageBackground(PersonnageBackground $personnageBackground): static
-    {
-        $this->personnageBackgrounds->removeElement($personnageBackground);
-
-        return $this;
-    }
-
-    /**
-     * Get PersonnageBackground entity collection (one to many).
-     */
-    public function getPersonnageBackgrounds(): Collection
-    {
-        return $this->personnageBackgrounds;
-    }
-
-    /**
-     * Add PersonnageHasToken entity to collection (one to many).
-     */
-    public function addPersonnageHasToken(PersonnageHasToken $personnageHasToken): static
-    {
-        $this->personnageHasTokens[] = $personnageHasToken;
-
-        return $this;
-    }
-
-    /**
-     * Remove PersonnageHasToken entity from collection (one to many).
-     */
-    public function removePersonnageHasToken(PersonnageHasToken $personnageHasToken): static
-    {
-        $this->personnageHasTokens->removeElement($personnageHasToken);
-
-        return $this;
-    }
-
-    /**
-     * Get PersonnageHasToken entity collection (one to many).
-     */
-    public function getPersonnageHasTokens(): Collection
-    {
-        return $this->personnageHasTokens;
-    }
-
-    /**
-     * Add PersonnageIngredient entity to collection (one to many).
-     */
-    public function addPersonnageIngredient(PersonnageIngredient $personnageIngredient): static
-    {
-        $this->personnageIngredients[] = $personnageIngredient;
-
-        return $this;
-    }
-
-    /**
-     * Remove PersonnageIngredient entity from collection (one to many).
-     */
-    public function removePersonnageIngredient(PersonnageIngredient $personnageIngredient): static
-    {
-        $this->personnageIngredients->removeElement($personnageIngredient);
-
-        return $this;
-    }
-
-    /**
-     * Get PersonnageIngredient entity collection (one to many).
-     */
-    public function getPersonnageIngredients(): Collection
-    {
-        return $this->personnageIngredients;
-    }
-
-    /**
-     * Add PersonnageLangues entity to collection (one to many).
-     */
-    public function addPersonnageLangues(PersonnageLangues $personnageLangues): static
-    {
-        $this->personnageLangues[] = $personnageLangues;
-
-        return $this;
-    }
-
-    /**
-     * Remove PersonnageLangues entity from collection (one to many).
-     */
-    public function removePersonnageLangues(PersonnageLangues $personnageLangues): static
-    {
-        $this->personnageLangues->removeElement($personnageLangues);
-
-        return $this;
-    }
-
-    /**
-     * Get PersonnageLangues entity collection (one to many).
-     */
-    public function getPersonnageLangues(): Collection
-    {
-        return $this->personnageLangues;
-    }
-
-    /**
-     * Add PersonnageRessource entity to collection (one to many).
-     */
-    public function addPersonnageRessource(PersonnageRessource $personnageRessource): static
-    {
-        $this->personnageRessources[] = $personnageRessource;
-
-        return $this;
-    }
-
-    /**
-     * Remove PersonnageRessource entity from collection (one to many).
-     */
-    public function removePersonnageRessource(PersonnageRessource $personnageRessource): static
-    {
-        $this->personnageRessources->removeElement($personnageRessource);
-
-        return $this;
-    }
-
-    /**
-     * Get PersonnageRessource entity collection (one to many).
-     */
-    public function getPersonnageRessources(): Collection
-    {
-        return $this->personnageRessources;
-    }
-
-    /**
-     * Add PersonnageTrigger entity to collection (one to many).
-     */
-    public function addPersonnageTrigger(PersonnageTrigger $personnageTrigger): static
-    {
-        $this->personnageTriggers[] = $personnageTrigger;
-
-        return $this;
-    }
-
-    /**
-     * Remove PersonnageTrigger entity from collection (one to many).
-     */
-    public function removePersonnageTrigger(PersonnageTrigger $personnageTrigger): static
-    {
-        $this->personnageTriggers->removeElement($personnageTrigger);
-
-        return $this;
-    }
-
-    /**
-     * Get PersonnageTrigger entity collection (one to many).
-     */
-    public function getPersonnageTriggers(): Collection
-    {
-        return $this->personnageTriggers;
-    }
-
-    /**
-     * Add PersonnagesReligions entity to collection (one to many).
-     */
-    public function addPersonnagesReligions(PersonnagesReligions $personnagesReligions): static
-    {
-        $this->personnagesReligions[] = $personnagesReligions;
-
-        return $this;
-    }
-
-    /**
-     * Remove PersonnagesReligions entity from collection (one to many).
-     */
-    public function removePersonnagesReligions(PersonnagesReligions $personnagesReligions): static
-    {
-        $this->personnagesReligions->removeElement($personnagesReligions);
-
-        return $this;
-    }
-
-    /**
-     * Get PersonnagesReligions entity collection (one to many).
-     */
-    public function getPersonnagesReligions(): Collection
-    {
-        $iterator = $this->personnagesReligions->getIterator();
-        $iterator->uasort(static function (PersonnagesReligions $a, PersonnagesReligions $b): int {
-            return $a->getReligionLevel() <=> $b->getReligionLevel();
-        });
-
-        return new ArrayCollection(iterator_to_array($iterator));
-        // return $this->personnagesReligions;
-    }
-
-    /**
-     * Add Postulant entity to collection (one to many).
-     */
-    public function addPostulant(Postulant $postulant): static
-    {
-        $this->postulants[] = $postulant;
-
-        return $this;
-    }
-
-    /**
-     * Remove Postulant entity from collection (one to many).
-     */
-    public function removePostulant(Postulant $postulant): static
-    {
-        $this->postulants->removeElement($postulant);
-
-        return $this;
-    }
-
-    /**
-     * Get Postulant entity collection (one to many).
-     */
-    public function getPostulants(): Collection
-    {
-        return $this->postulants;
-    }
-
-    /**
-     * Add RenommeHistory entity to collection (one to many).
-     */
-    public function addRenommeHistory(RenommeHistory $renommeHistory): static
-    {
-        $this->renommeHistories[] = $renommeHistory;
-
-        return $this;
-    }
-
-    /**
-     * Remove RenommeHistory entity from collection (one to many).
-     */
-    public function removeRenommeHistory(RenommeHistory $renommeHistory): static
-    {
-        $this->renommeHistories->removeElement($renommeHistory);
-
-        return $this;
-    }
-
-    /**
-     * Get RenommeHistory entity collection (one to many).
-     */
-    public function getRenommeHistories(): Collection
-    {
-        return $this->renommeHistories;
-    }
-
-    /**
-     * Add SecondaryGroup entity to collection (one to many).
-     */
-    public function addSecondaryGroup(SecondaryGroup $secondaryGroup): static
-    {
-        $this->secondaryGroups[] = $secondaryGroup;
-
-        return $this;
-    }
-
-    /**
-     * Remove SecondaryGroup entity from collection (one to many).
-     */
-    public function removeSecondaryGroup(SecondaryGroup $secondaryGroup): static
-    {
-        $this->secondaryGroups->removeElement($secondaryGroup);
-
-        return $this;
-    }
-
-    /**
-     * Get SecondaryGroup entity collection (one to many).
-     */
-    public function getSecondaryGroups(): Collection
-    {
-        return $this->secondaryGroups;
-    }
-
-    /**
-     * Add User entity to collection (one to many).
-     */
-    public function addUser(User $user): static
-    {
-        $this->users[] = $user;
-
-        return $this;
-    }
-
-    /**
-     * Remove User entity from collection (one to many).
-     */
-    public function removeUser(User $user): static
-    {
-        $this->users->removeElement($user);
-
-        return $this;
-    }
-
-    /**
-     * Get User entity collection (one to many).
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
-
-    /**
-     * Set Groupe entity (many to one).
-     */
-    public function setGroupe(?Groupe $groupe = null): static
-    {
-        $this->groupe = $groupe;
-
-        return $this;
-    }
-
-    /**
-     * Get Groupe entity (many to one).
-     */
-    public function getGroupe(): ?Groupe
-    {
-        return $this->groupe;
-    }
-
-    /**
-     * Set Classe entity (many to one).
-     */
-    public function setClasse(?Classe $classe = null): static
-    {
-        $this->classe = $classe;
-
-        return $this;
-    }
-
-    /**
-     * Get Classe entity (many to one).
-     */
-    public function getClasse(): Classe
-    {
-        return $this->classe;
-    }
-
-    /**
-     * Set Age entity (many to one).
-     */
-    public function setAge(?Age $age = null): static
-    {
-        $this->age = $age;
-
-        return $this;
-    }
-
-    /**
-     * Get Age entity (many to one).
-     */
-    public function getAge(): Age
-    {
-        return $this->age;
-    }
-
-    /**
-     * Set Genre entity (many to one).
-     */
-    public function setGenre(?Genre $genre = null): static
-    {
-        $this->genre = $genre;
-
-        return $this;
-    }
-
-    /**
-     * Get Genre entity (many to one).
-     */
-    public function getGenre(): Genre
-    {
-        return $this->genre;
-    }
-
-    /**
-     * Set Territoire entity (many to one).
-     */
-    public function setTerritoire(?Territoire $territoire = null): static
-    {
-        $this->territoire = $territoire;
-
-        return $this;
-    }
-
-    /**
-     * Get Territoire entity (many to one).
-     */
-    public function getTerritoire(): ?Territoire
-    {
-        return $this->territoire ?? null;
-    }
-
-    /**
-     * Set User entity (many to one).
-     */
-    public function setUser(?User $user = null): static
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get User entity (many to one).
-     */
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    /**
-     * Add Document entity to collection.
-     */
-    public function addDocument(Document $document): static
-    {
-        $document->addPersonnage($this);
-        $this->documents[] = $document;
-
-        return $this;
-    }
-
-    /**
-     * Remove Document entity from collection.
-     */
-    public function removeDocument(Document $document): static
-    {
-        $document->removePersonnage($this);
-        $this->documents->removeElement($document);
-
-        return $this;
-    }
-
-    /**
-     * Get Document entity collection.
-     */
-    public function getDocuments(): Collection
-    {
-        return $this->documents;
     }
 
     /**
@@ -1220,150 +430,123 @@ abstract class BasePersonnage
     }
 
     /**
-     * Remove Item entity from collection.
+     * Add Membre entity to collection (one to many).
      */
-    public function removeItem(Item $item): static
+    public function addMembre(Membre $membre): static
     {
-        $item->removePersonnage($this);
-        $this->items->removeElement($item);
+        $this->membres[] = $membre;
 
         return $this;
     }
 
     /**
-     * Get Item entity collection.
+     * Add Participant entity to collection (one to many).
      */
-    public function getItems(): Collection
+    public function addParticipant(Participant $participant): static
     {
-        return $this->items;
+        $this->participants[] = $participant;
+
+        return $this;
     }
 
-    /**
-     * Add Technologie entity to collection.
-     */
-    public function addTechnologie(Technologie $technologie): static
+    public function addPersonnageApprentissage(PersonnageApprentissage $personnageApprentissage): static
     {
-        $technologie->addPersonnage($this);
-        $this->technologies[] = $technologie;
+        if (!$this->apprentissageEnseignants->contains($personnageApprentissage)) {
+            $this->apprentissageEnseignants->add($personnageApprentissage);
+            $personnageApprentissage->setEnseignant($this);
+        }
 
         return $this;
     }
 
     /**
-     * Remove Technologie entity from collection.
+     * Add PersonnageBackground entity to collection (one to many).
      */
-    public function removeTechnologie(Technologie $technologie): static
+    public function addPersonnageBackground(PersonnageBackground $personnageBackground): static
     {
-        $technologie->removePersonnage($this);
-        $this->technologies->removeElement($technologie);
+        $this->personnageBackgrounds[] = $personnageBackground;
+
+        return $this;
+    }
+
+    public function addPersonnageBonus(PersonnageBonus $personnageBonus): static
+    {
+        if (!$this->personnageBonus->contains($personnageBonus)) {
+            $this->personnageBonus->add($personnageBonus);
+            $personnageBonus->setPersonnage($this);
+        }
 
         return $this;
     }
 
     /**
-     * Get Technologie entity collection.
+     * Add PersonnageHasToken entity to collection (one to many).
      */
-    public function getTechnologies(): Collection
+    public function addPersonnageHasToken(PersonnageHasToken $personnageHasToken): static
     {
-        return $this->technologies;
-    }
-
-    /**
-     * Add Religion entity to collection.
-     */
-    public function addReligion(Religion $religion): static
-    {
-        $religion->addPersonnage($this);
-        $this->religions[] = $religion;
+        $this->personnageHasTokens[] = $personnageHasToken;
 
         return $this;
     }
 
     /**
-     * Remove Religion entity from collection.
+     * Add PersonnageIngredient entity to collection (one to many).
      */
-    public function removeReligion(Religion $religion): static
+    public function addPersonnageIngredient(PersonnageIngredient $personnageIngredient): static
     {
-        $religion->removePersonnage($this);
-        $this->religions->removeElement($religion);
+        $this->personnageIngredients[] = $personnageIngredient;
 
         return $this;
     }
 
     /**
-     * Get Religion entity collection.
+     * Add PersonnageLangues entity to collection (one to many).
      */
-    public function getReligions(): Collection
+    public function addPersonnageLangues(PersonnageLangues $personnageLangues): static
     {
-        return $this->religions;
-    }
-
-    /**
-     * Add Competence entity to collection.
-     */
-    public function addCompetence(Competence $competence): static
-    {
-        $this->competences[] = $competence;
+        $this->personnageLangues[] = $personnageLangues;
 
         return $this;
     }
 
     /**
-     * Remove Competence entity from collection.
+     * Add PersonnageRessource entity to collection (one to many).
      */
-    public function removeCompetence(Competence $competence): static
+    public function addPersonnageRessource(PersonnageRessource $personnageRessource): static
     {
-        $this->competences->removeElement($competence);
+        $this->personnageRessources[] = $personnageRessource;
 
         return $this;
     }
 
     /**
-     * Get Competence entity collection.
+     * Add PersonnageTrigger entity to collection (one to many).
      */
-    /**
-     * @return Collection<Competence>
-     *
-     * @throws \Exception
-     */
-    public function getCompetences(): Collection
+    public function addPersonnageTrigger(PersonnageTrigger $personnageTrigger): static
     {
-        $iterator = $this->competences->getIterator();
-        $iterator->uasort(static function (Competence $a, Competence $b): string {
-            return $a->getCompetenceFamily()?->getLabel() ?? '' <=> $b->getCompetenceFamily()?->getLabel() ?? '';
-        });
-
-        return new ArrayCollection(iterator_to_array($iterator));
-    }
-
-    /**
-     * Add Domaine entity to collection.
-     */
-    public function addDomaine(Domaine $domaine): static
-    {
-        $domaine->addPersonnage($this);
-        $this->domaines[] = $domaine;
+        $this->personnageTriggers[] = $personnageTrigger;
 
         return $this;
     }
 
     /**
-     * Remove Domaine entity from collection.
+     * Add PersonnagesReligions entity to collection (one to many).
      */
-    public function removeDomaine(Domaine $domaine): static
+    public function addPersonnagesReligions(PersonnagesReligions $personnagesReligions): static
     {
-        $domaine->removePersonnage($this);
-        $this->domaines->removeElement($domaine);
+        $this->personnagesReligions[] = $personnagesReligions;
 
         return $this;
     }
 
     /**
-     * Get Domaine entity collection.
+     * Add Postulant entity to collection (one to many).
      */
-    public function getDomaines(): Collection
+    public function addPostulant(Postulant $postulant): static
     {
-        return $this->domaines;
+        $this->postulants[] = $postulant;
+
+        return $this;
     }
 
     /**
@@ -1378,25 +561,6 @@ abstract class BasePersonnage
     }
 
     /**
-     * Remove Potion entity from collection.
-     */
-    public function removePotion(Potion $potion): static
-    {
-        $potion->removePersonnage($this);
-        $this->potions->removeElement($potion);
-
-        return $this;
-    }
-
-    /**
-     * Get Potion entity collection.
-     */
-    public function getPotions(): Collection
-    {
-        return $this->potions;
-    }
-
-    /**
      * Add Priere entity to collection.
      */
     public function addPriere(Priere $priere): static
@@ -1407,21 +571,44 @@ abstract class BasePersonnage
     }
 
     /**
-     * Remove Priere entity from collection.
+     * Add PugilatHistory entity to collection (one to many).
      */
-    public function removePriere(Priere $priere): static
+    public function addPugilatHistory(PugilatHistory $pugilatHistory): static
     {
-        $this->prieres->removeElement($priere);
+        $this->pugilatHistories[] = $pugilatHistory;
 
         return $this;
     }
 
     /**
-     * Get Priere entity collection.
+     * Add Religion entity to collection.
      */
-    public function getPrieres(): Collection
+    public function addReligion(Religion $religion): static
     {
-        return $this->prieres;
+        $religion->addPersonnage($this);
+        $this->religions[] = $religion;
+
+        return $this;
+    }
+
+    /**
+     * Add RenommeHistory entity to collection (one to many).
+     */
+    public function addRenommeHistory(RenommeHistory $renommeHistory): static
+    {
+        $this->renommeHistories[] = $renommeHistory;
+
+        return $this;
+    }
+
+    /**
+     * Add SecondaryGroup entity to collection (one to many).
+     */
+    public function addSecondaryGroup(SecondaryGroup $secondaryGroup): static
+    {
+        $this->secondaryGroups[] = $secondaryGroup;
+
+        return $this;
     }
 
     /**
@@ -1436,183 +623,58 @@ abstract class BasePersonnage
     }
 
     /**
-     * Remove Sort entity from collection.
+     * Add Technologie entity to collection.
      */
-    public function removeSort(Sort $sort): static
+    public function addTechnologie(Technologie $technologie): static
     {
-        $sort->removePersonnage($this);
-        $this->sorts->removeElement($sort);
+        $technologie->addPersonnage($this);
+        $this->technologies[] = $technologie;
 
         return $this;
     }
 
     /**
-     * Get Sort entity collection.
+     * Add User entity to collection (one to many).
      */
-    public function getSorts(): Collection
+    public function addUser(User $user): static
     {
-        return $this->sorts;
-    }
-
-    /**
-     * Add Connaissance entity to collection.
-     */
-    public function addConnaissance(Connaissance $connaissance): static
-    {
-        $connaissance->addPersonnage($this);
-        $this->connaissances[] = $connaissance;
+        $this->users[] = $user;
 
         return $this;
     }
 
     /**
-     * Remove Connaissance entity from collection.
+     * Get Age entity (many to one).
      */
-    public function removeConnaissance(Connaissance $connaissance): static
+    public function getAge(): Age
     {
-        $connaissance->removePersonnage($this);
-        $this->connaissances->removeElement($connaissance);
+        return $this->age;
+    }
+
+    /**
+     * Set Age entity (many to one).
+     */
+    public function setAge(?Age $age = null): static
+    {
+        $this->age = $age;
 
         return $this;
     }
 
     /**
-     * Get Connaissance entity collection.
+     * Get the value of age_reel.
      */
-    public function getConnaissances(): Collection
+    public function getAgeReel(): ?int
     {
-        return $this->connaissances;
+        return $this->age_reel;
     }
 
     /**
-     * Get personnageChronologie entity collection.
+     * Set the value of age_reel.
      */
-    public function getPersonnageChronologie(): Collection
+    public function setAgeReel(int $age_reel): static
     {
-        return $this->personnageChronologie;
-    }
-
-    /**
-     * Get personnageLignee entity collection.
-     */
-    public function getPersonnageLignee(): Collection
-    {
-        return $this->personnageLignee;
-    }
-
-    public function prochaineParticipation(): Participant
-    {
-        $now = new \DateTime();
-        $prochain = null;
-
-        foreach ($this->participants as $p) {
-            if ($now < $p->getGn()->getDateFin() && (null === $prochain || $prochain->getGn()->getDateDebut() > $p->getGn()->getDateDebut())) {
-                $prochain = $p;
-            }
-        }
-
-        return $prochain;
-    }
-
-    public function setPersonnageHasQuestions(Collection $personnageHasQuestions): static
-    {
-        $this->personnageHasQuestions = $personnageHasQuestions;
-
-        return $this;
-    }
-
-    public function getPersonnageHasQuestions(): Collection
-    {
-        return $this->personnageHasQuestions;
-    }
-
-    public function getLangueMateriel(): array
-    {
-        $langueMateriel = [];
-        foreach ($this->getPersonnageLangues() as $langue) {
-            if ($langue->getLangue()->getGroupeLangue()->getId() > 0 && $langue->getLangue()->getGroupeLangue()->getId() < 6) {
-                if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel)) {
-                    $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
-                }
-
-                if (0 === $langue->getLangue()->getDiffusion()) {
-                    $langueMateriel[] = 'Alphabet '.$langue->getLangue()->getLabel();
-                }
-            }
-        }
-
-        sort($langueMateriel);
-
-        return $langueMateriel;
-    }
-
-    public function isBracelet(): bool
-    {
-        return (bool) $this->bracelet;
-    }
-
-    public function isBraceletSetted(): bool
-    {
-        return null !== $this->bracelet;
-    }
-
-    public function setBracelet(?bool $bracelet): static
-    {
-        $this->bracelet = (bool) $bracelet;
-
-        return $this;
-    }
-
-    public function getPersonnageBonus(): ?Collection
-    {
-        return $this->personnageBonus;
-    }
-
-    public function addPersonnageBonus(PersonnageBonus $personnageBonus): static
-    {
-        if (!$this->personnageBonus->contains($personnageBonus)) {
-            $this->personnageBonus->add($personnageBonus);
-            $personnageBonus->setPersonnage($this);
-        }
-
-        return $this;
-    }
-
-    public function removePersonnageBonus(PersonnageBonus $personnageBonus): static
-    {
-        if ($this->personnageBonus->removeElement($personnageBonus)) {
-            // set the owning side to null (unless already changed)
-            if ($personnageBonus->getPersonnage() === $this) {
-                $personnageBonus->setPersonnage(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Espece>
-     */
-    public function getEspeces(): Collection
-    {
-        return $this->especes;
-    }
-
-    public function addEspece(Espece $espece): static
-    {
-        if (!$this->especes->contains($espece)) {
-            $this->especes->add($espece);
-            $espece->addPersonnage($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEspece(Espece $espece): static
-    {
-        if ($this->especes->removeElement($espece)) {
-            $espece->removePersonnage($this);
-        }
+        $this->age_reel = $age_reel;
 
         return $this;
     }
@@ -1636,14 +698,662 @@ abstract class BasePersonnage
         return $apprentissages;
     }
 
-    public function addApprentissage(PersonnageApprentissage $apprentissage): static
+    /**
+     * Get Classe entity (many to one).
+     */
+    public function getClasse(): Classe
     {
-        if (!$this->apprentissages->contains($apprentissage)) {
-            $this->apprentissages->add($apprentissage);
-            $apprentissage->setPersonnage($this);
-        }
+        return $this->classe;
+    }
+
+    /**
+     * Set Classe entity (many to one).
+     */
+    public function setClasse(?Classe $classe = null): static
+    {
+        $this->classe = $classe;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<Competence>
+     *
+     * @throws \Exception
+     */
+    public function getCompetences(): Collection
+    {
+        $iterator = $this->competences->getIterator();
+        $iterator->uasort(static function (Competence $a, Competence $b): string {
+            return $a->getCompetenceFamily()?->getLabel() ?? '' <=> $b->getCompetenceFamily()?->getLabel() ?? '';
+        });
+
+        return new ArrayCollection(iterator_to_array($iterator));
+    }
+
+    /**
+     * Get Connaissance entity collection.
+     */
+    public function getConnaissances(): Collection
+    {
+        return $this->connaissances;
+    }
+
+    /**
+     * Get Document entity collection.
+     */
+    public function getDocuments(): Collection
+    {
+        return $this->documents;
+    }
+
+    /**
+     * Get Domaine entity collection.
+     */
+    public function getDomaines(): Collection
+    {
+        return $this->domaines;
+    }
+
+    /**
+     * @return Collection<int, Espece>
+     */
+    public function getEspeces(): Collection
+    {
+        return $this->especes;
+    }
+
+    /**
+     * Get ExperienceGain entity collection (one to many).
+     */
+    public function getExperienceGains(): Collection
+    {
+        return $this->experienceGains;
+    }
+
+    /**
+     * Get ExperienceUsage entity collection (one to many).
+     */
+    public function getExperienceUsages(): Collection
+    {
+        return $this->experienceUsages;
+    }
+
+    /**
+     * Get Genre entity (many to one).
+     */
+    public function getGenre(): Genre
+    {
+        return $this->genre;
+    }
+
+    /**
+     * Set Genre entity (many to one).
+     */
+    public function setGenre(?Genre $genre = null): static
+    {
+        $this->genre = $genre;
+
+        return $this;
+    }
+
+    /**
+     * Get Groupe entity (many to one).
+     */
+    public function getGroupe(): ?Groupe
+    {
+        return $this->groupe;
+    }
+
+    /**
+     * Set Groupe entity (many to one).
+     */
+    public function setGroupe(?Groupe $groupe = null): static
+    {
+        $this->groupe = $groupe;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of heroisme.
+     */
+    public function getHeroisme(): int
+    {
+        // return $this->heroisme;
+        return 0;
+    }
+
+    /**
+     * Set the value of heroisme.
+     */
+    public function setHeroisme(int $heroisme): static
+    {
+        $this->heroisme = $heroisme;
+
+        return $this;
+    }
+
+    /**
+     * Get HeroismeHistory entity collection (one to many).
+     */
+    public function getHeroismeHistories(): Collection
+    {
+        return $this->heroismeHistories;
+    }
+
+    /**
+     * Get the value of intrigue.
+     */
+    public function getIntrigue(): bool
+    {
+        return $this->intrigue;
+    }
+
+    /**
+     * Set the value of intrigue.
+     */
+    public function setIntrigue(bool $intrigue): static
+    {
+        $this->intrigue = $intrigue;
+
+        return $this;
+    }
+
+    /**
+     * Get Item entity collection.
+     */
+    public function getItems(): Collection
+    {
+        return $this->items;
+    }
+
+    public function getLangueMateriel(): array
+    {
+        $langueMateriel = [];
+        foreach ($this->getPersonnageLangues() as $langue) {
+            if ($langue->getLangue()->getGroupeLangue()->getId() > 0 && $langue->getLangue()->getGroupeLangue()->getId(
+                ) < 6) {
+                if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel)) {
+                    $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
+                }
+
+                if (0 === $langue->getLangue()->getDiffusion()) {
+                    $langueMateriel[] = 'Alphabet '.$langue->getLangue()->getLabel();
+                }
+            }
+        }
+
+        sort($langueMateriel);
+
+        return $langueMateriel;
+    }
+
+    /**
+     * Get PersonnageLangues entity collection (one to many).
+     */
+    public function getPersonnageLangues(): Collection
+    {
+        return $this->personnageLangues;
+    }
+
+    /**
+     * Get the value of id.
+     */
+    public function getId(): ?int
+    {
+        return $this->id ?? null;
+    }
+
+    /**
+     * Set the value of id.
+     */
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of materiel.
+     */
+    public function getMateriel(): string
+    {
+        return $this->materiel ?? '';
+    }
+
+    /**
+     * Set the value of materiel.
+     */
+    public function setMateriel(string $materiel): static
+    {
+        $this->materiel = $materiel;
+
+        return $this;
+    }
+
+    /**
+     * Get Membre entity collection (one to many).
+     */
+    public function getMembres(): Collection
+    {
+        return $this->membres;
+    }
+
+    /**
+     * Get the value of nom.
+     */
+    public function getNom(): string
+    {
+        return $this->nom ?? '';
+    }
+
+    /**
+     * Set the value of nom.
+     */
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    /**
+     * Get Participant entity collection (one to many).
+     */
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    /**
+     * Get PersonnageBackground entity collection (one to many).
+     */
+    public function getPersonnageBackgrounds(): Collection
+    {
+        return $this->personnageBackgrounds;
+    }
+
+    public function getPersonnageBonus(): ?Collection
+    {
+        return $this->personnageBonus;
+    }
+
+    /**
+     * Get personnageChronologie entity collection.
+     */
+    public function getPersonnageChronologie(): Collection
+    {
+        return $this->personnageChronologie;
+    }
+
+    public function getPersonnageHasQuestions(): Collection
+    {
+        return $this->personnageHasQuestions;
+    }
+
+    public function setPersonnageHasQuestions(Collection $personnageHasQuestions): static
+    {
+        $this->personnageHasQuestions = $personnageHasQuestions;
+
+        return $this;
+    }
+
+    /**
+     * Get PersonnageHasToken entity collection (one to many).
+     */
+    public function getPersonnageHasTokens(): Collection
+    {
+        return $this->personnageHasTokens;
+    }
+
+    /**
+     * Get PersonnageIngredient entity collection (one to many).
+     */
+    public function getPersonnageIngredients(): Collection
+    {
+        return $this->personnageIngredients;
+    }
+
+    /**
+     * Get personnageLignee entity collection.
+     */
+    public function getPersonnageLignee(): Collection
+    {
+        return $this->personnageLignee;
+    }
+
+    /**
+     * Get PersonnageRessource entity collection (one to many).
+     */
+    public function getPersonnageRessources(): Collection
+    {
+        return $this->personnageRessources;
+    }
+
+    /**
+     * Get PersonnageTrigger entity collection (one to many).
+     */
+    public function getPersonnageTriggers(): Collection
+    {
+        return $this->personnageTriggers;
+    }
+
+    /**
+     * Get PersonnagesReligions entity collection (one to many).
+     */
+    public function getPersonnagesReligions(): Collection
+    {
+        $iterator = $this->personnagesReligions->getIterator();
+        $iterator->uasort(static function (PersonnagesReligions $a, PersonnagesReligions $b): int {
+            return $a->getReligionLevel() <=> $b->getReligionLevel();
+        });
+
+        return new ArrayCollection(iterator_to_array($iterator));
+        // return $this->personnagesReligions;
+    }
+
+    /**
+     * Get the value of photo.
+     */
+    public function getPhoto(): string
+    {
+        return $this->photo ?? '';
+    }
+
+    /**
+     * Set the value of photo.
+     */
+    public function setPhoto(string $photo): static
+    {
+        $this->photo = $photo;
+
+        return $this;
+    }
+
+    /**
+     * Get Postulant entity collection (one to many).
+     */
+    public function getPostulants(): Collection
+    {
+        return $this->postulants;
+    }
+
+    /**
+     * Get Potion entity collection.
+     */
+    public function getPotions(): Collection
+    {
+        return $this->potions;
+    }
+
+    /**
+     * Get Priere entity collection.
+     */
+    public function getPrieres(): Collection
+    {
+        return $this->prieres;
+    }
+
+    /**
+     * Get PugilatHistory entity collection (one to many).
+     */
+    public function getPugilatHistories(): Collection
+    {
+        return $this->pugilatHistories;
+    }
+
+    /**
+     * Get Religion entity collection.
+     */
+    public function getReligions(): Collection
+    {
+        return $this->religions;
+    }
+
+    /**
+     * Get the value of renomme.
+     */
+    public function getRenomme(): int
+    {
+        return $this->renomme;
+    }
+
+    /**
+     * Set the value of renomme.
+     */
+    public function setRenomme(int $renomme): static
+    {
+        $this->renomme = $renomme;
+
+        return $this;
+    }
+
+    /**
+     * Get RenommeHistory entity collection (one to many).
+     */
+    public function getRenommeHistories(): Collection
+    {
+        return $this->renommeHistories;
+    }
+
+    /**
+     * Get the value of richesse.
+     */
+    public function getRichesse(): ?int
+    {
+        return $this->richesse ?? 0;
+    }
+
+    /**
+     * Set the value of richesse.
+     */
+    public function setRichesse(int $richesse): static
+    {
+        $this->richesse = $richesse;
+
+        return $this;
+    }
+
+    /**
+     * Get SecondaryGroup entity collection (one to many).
+     */
+    public function getSecondaryGroups(): Collection
+    {
+        return $this->secondaryGroups;
+    }
+
+    /**
+     * Get the value of sensible.
+     */
+    public function getSensible(): ?bool
+    {
+        return $this->sensible;
+    }
+
+    /**
+     * Set the value of sensible.
+     */
+    public function setSensible(bool $sensible): static
+    {
+        $this->sensible = $sensible;
+
+        return $this;
+    }
+
+    /**
+     * Get Sort entity collection.
+     */
+    public function getSorts(): Collection
+    {
+        return $this->sorts;
+    }
+
+    /**
+     * Get the value of surnom.
+     */
+    public function getSurnom(): string
+    {
+        return $this->surnom ?? '';
+    }
+
+    /**
+     * Set the value of surnom.
+     */
+    public function setSurnom(?string $surnom): static
+    {
+        $this->surnom = $surnom;
+
+        return $this;
+    }
+
+    /**
+     * Get Technologie entity collection.
+     */
+    public function getTechnologies(): Collection
+    {
+        return $this->technologies;
+    }
+
+    /**
+     * Get Territoire entity (many to one).
+     */
+    public function getTerritoire(): ?Territoire
+    {
+        return $this->territoire ?? null;
+    }
+
+    /**
+     * Set Territoire entity (many to one).
+     */
+    public function setTerritoire(?Territoire $territoire = null): static
+    {
+        $this->territoire = $territoire;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of trombineUrl.
+     */
+    public function getTrombineUrl(): string
+    {
+        return $this->trombineUrl ?? '';
+    }
+
+    /**
+     * Set the value of trombineUrl.
+     */
+    public function setTrombineUrl(string $trombineUrl): static
+    {
+        $this->trombineUrl = $trombineUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get User entity (many to one).
+     */
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    /**
+     * Set User entity (many to one).
+     */
+    public function setUser(?User $user = null): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get User entity collection (one to many).
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    /**
+     * Get the value of vivant.
+     */
+    public function getVivant(): bool
+    {
+        return $this->vivant;
+    }
+
+    /**
+     * Set the value of vivant.
+     */
+    public function setVivant(bool $vivant): static
+    {
+        $this->vivant = $vivant;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of xp.
+     */
+    public function getXp(): int
+    {
+        return $this->xp;
+    }
+
+    /**
+     * Set the value of xp.
+     */
+    public function setXp(int $xp): static
+    {
+        $this->xp = $xp;
+
+        return $this;
+    }
+
+    /**
+     * Get Competence entity collection.
+     */
+
+    /**
+     * @return Collection<int, PersonnageApprentissage>
+     */
+    public function getapprentissageEnseignants(): Collection
+    {
+        return $this->apprentissageEnseignants;
+    }
+
+    public function isBracelet(): bool
+    {
+        return (bool) $this->bracelet;
+    }
+
+    public function isBraceletSetted(): bool
+    {
+        return null !== $this->bracelet;
+    }
+
+    public function isSensibleSetted(): bool
+    {
+        return null !== $this->sensible;
+    }
+
+    public function prochaineParticipation(): Participant
+    {
+        $now = new \DateTime();
+        $prochain = null;
+
+        foreach ($this->participants as $p) {
+            if ($now < $p->getGn()->getDateFin() && (null === $prochain || $prochain->getGn()->getDateDebut(
+                    ) > $p->getGn()->getDateDebut())) {
+                $prochain = $p;
+            }
+        }
+
+        return $prochain;
     }
 
     public function removeApprentissage(PersonnageApprentissage $apprentissage): static
@@ -1659,19 +1369,114 @@ abstract class BasePersonnage
     }
 
     /**
-     * @return Collection<int, PersonnageApprentissage>
+     * Remove Competence entity from collection.
      */
-    public function getapprentissageEnseignants(): Collection
+    public function removeCompetence(Competence $competence): static
     {
-        return $this->apprentissageEnseignants;
+        $this->competences->removeElement($competence);
+
+        return $this;
     }
 
-    public function addPersonnageApprentissage(PersonnageApprentissage $personnageApprentissage): static
+    /**
+     * Remove Connaissance entity from collection.
+     */
+    public function removeConnaissance(Connaissance $connaissance): static
     {
-        if (!$this->apprentissageEnseignants->contains($personnageApprentissage)) {
-            $this->apprentissageEnseignants->add($personnageApprentissage);
-            $personnageApprentissage->setEnseignant($this);
+        $connaissance->removePersonnage($this);
+        $this->connaissances->removeElement($connaissance);
+
+        return $this;
+    }
+
+    /**
+     * Remove Document entity from collection.
+     */
+    public function removeDocument(Document $document): static
+    {
+        $document->removePersonnage($this);
+        $this->documents->removeElement($document);
+
+        return $this;
+    }
+
+    /**
+     * Remove Domaine entity from collection.
+     */
+    public function removeDomaine(Domaine $domaine): static
+    {
+        $domaine->removePersonnage($this);
+        $this->domaines->removeElement($domaine);
+
+        return $this;
+    }
+
+    public function removeEspece(Espece $espece): static
+    {
+        if ($this->especes->removeElement($espece)) {
+            $espece->removePersonnage($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * Remove ExperienceGain entity from collection (one to many).
+     */
+    public function removeExperienceGain(ExperienceGain $experienceGain): static
+    {
+        $this->experienceGains->removeElement($experienceGain);
+
+        return $this;
+    }
+
+    /**
+     * Remove ExperienceUsage entity from collection (one to many).
+     */
+    public function removeExperienceUsage(ExperienceUsage $experienceUsage): static
+    {
+        $this->experienceUsages->removeElement($experienceUsage);
+
+        return $this;
+    }
+
+    /**
+     * Remove HeroismeHistory entity from collection (one to many).
+     */
+    public function removeHeroismeHistory(HeroismeHistory $heroismeHistory): static
+    {
+        $this->heroismeHistories->removeElement($heroismeHistory);
+
+        return $this;
+    }
+
+    /**
+     * Remove Item entity from collection.
+     */
+    public function removeItem(Item $item): static
+    {
+        $item->removePersonnage($this);
+        $this->items->removeElement($item);
+
+        return $this;
+    }
+
+    /**
+     * Remove Membre entity from collection (one to many).
+     */
+    public function removeMembre(Membre $membre): static
+    {
+        $this->membres->removeElement($membre);
+
+        return $this;
+    }
+
+    /**
+     * Remove Participant entity from collection (one to many).
+     */
+    public function removeParticipant(Participant $participant): static
+    {
+        $this->participants->removeElement($participant);
 
         return $this;
     }
@@ -1684,6 +1489,209 @@ abstract class BasePersonnage
                 $personnageApprentissage->setEnseignant(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * Remove PersonnageBackground entity from collection (one to many).
+     */
+    public function removePersonnageBackground(PersonnageBackground $personnageBackground): static
+    {
+        $this->personnageBackgrounds->removeElement($personnageBackground);
+
+        return $this;
+    }
+
+    public function removePersonnageBonus(PersonnageBonus $personnageBonus): static
+    {
+        if ($this->personnageBonus->removeElement($personnageBonus)) {
+            // set the owning side to null (unless already changed)
+            if ($personnageBonus->getPersonnage() === $this) {
+                $personnageBonus->setPersonnage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove PersonnageHasToken entity from collection (one to many).
+     */
+    public function removePersonnageHasToken(PersonnageHasToken $personnageHasToken): static
+    {
+        $this->personnageHasTokens->removeElement($personnageHasToken);
+
+        return $this;
+    }
+
+    /**
+     * Remove PersonnageIngredient entity from collection (one to many).
+     */
+    public function removePersonnageIngredient(PersonnageIngredient $personnageIngredient): static
+    {
+        $this->personnageIngredients->removeElement($personnageIngredient);
+
+        return $this;
+    }
+
+    /**
+     * Remove PersonnageLangues entity from collection (one to many).
+     */
+    public function removePersonnageLangues(PersonnageLangues $personnageLangues): static
+    {
+        $this->personnageLangues->removeElement($personnageLangues);
+
+        return $this;
+    }
+
+    /**
+     * Remove PersonnageRessource entity from collection (one to many).
+     */
+    public function removePersonnageRessource(PersonnageRessource $personnageRessource): static
+    {
+        $this->personnageRessources->removeElement($personnageRessource);
+
+        return $this;
+    }
+
+    /**
+     * Remove PersonnageTrigger entity from collection (one to many).
+     */
+    public function removePersonnageTrigger(PersonnageTrigger $personnageTrigger): static
+    {
+        $this->personnageTriggers->removeElement($personnageTrigger);
+
+        return $this;
+    }
+
+    /**
+     * Remove PersonnagesReligions entity from collection (one to many).
+     */
+    public function removePersonnagesReligions(PersonnagesReligions $personnagesReligions): static
+    {
+        $this->personnagesReligions->removeElement($personnagesReligions);
+
+        return $this;
+    }
+
+    /**
+     * Remove Postulant entity from collection (one to many).
+     */
+    public function removePostulant(Postulant $postulant): static
+    {
+        $this->postulants->removeElement($postulant);
+
+        return $this;
+    }
+
+    /**
+     * Remove Potion entity from collection.
+     */
+    public function removePotion(Potion $potion): static
+    {
+        $potion->removePersonnage($this);
+        $this->potions->removeElement($potion);
+
+        return $this;
+    }
+
+    /**
+     * Remove Priere entity from collection.
+     */
+    public function removePriere(Priere $priere): static
+    {
+        $this->prieres->removeElement($priere);
+
+        return $this;
+    }
+
+    /**
+     * Remove PugilatHistory entity from collection (one to many).
+     */
+    public function removePugilatHistory(PugilatHistory $pugilatHistory): static
+    {
+        $this->pugilatHistories->removeElement($pugilatHistory);
+
+        return $this;
+    }
+
+    /**
+     * Remove Religion entity from collection.
+     */
+    public function removeReligion(Religion $religion): static
+    {
+        $religion->removePersonnage($this);
+        $this->religions->removeElement($religion);
+
+        return $this;
+    }
+
+    /**
+     * Remove RenommeHistory entity from collection (one to many).
+     */
+    public function removeRenommeHistory(RenommeHistory $renommeHistory): static
+    {
+        $this->renommeHistories->removeElement($renommeHistory);
+
+        return $this;
+    }
+
+    /**
+     * Remove SecondaryGroup entity from collection (one to many).
+     */
+    public function removeSecondaryGroup(SecondaryGroup $secondaryGroup): static
+    {
+        $this->secondaryGroups->removeElement($secondaryGroup);
+
+        return $this;
+    }
+
+    /**
+     * Remove Sort entity from collection.
+     */
+    public function removeSort(Sort $sort): static
+    {
+        $sort->removePersonnage($this);
+        $this->sorts->removeElement($sort);
+
+        return $this;
+    }
+
+    /**
+     * Remove Technologie entity from collection.
+     */
+    public function removeTechnologie(Technologie $technologie): static
+    {
+        $technologie->removePersonnage($this);
+        $this->technologies->removeElement($technologie);
+
+        return $this;
+    }
+
+    /**
+     * Remove User entity from collection (one to many).
+     */
+    public function removeUser(User $user): static
+    {
+        $this->users->removeElement($user);
+
+        return $this;
+    }
+
+    public function setBracelet(?bool $bracelet): static
+    {
+        $this->bracelet = (bool) $bracelet;
+
+        return $this;
+    }
+
+    /**
+     * Set the value of pugilat.
+     */
+    public function setPugilat(int $pugilat): static
+    {
+        $this->pugilat = $pugilat;
 
         return $this;
     }

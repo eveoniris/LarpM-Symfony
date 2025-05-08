@@ -67,10 +67,9 @@ class MagieController extends AbstractController
     /**
      * Supprime un domaine de magie.
      */
-    #[Route('/domaine/{domaine}', name: 'domaine.delete', requirements: ['domaine' => Requirement::DIGITS])]
-    public function domaineDeleteAction(
-        #[MapEntity] Domaine $domaine,
-    ): RedirectResponse|Response {
+    #[Route('/domaine/{domaine}/delete', name: 'domaine.delete', requirements: ['domaine' => Requirement::DIGITS])]
+    public function domaineDeleteAction(#[MapEntity] Domaine $domaine): RedirectResponse|Response
+    {
         return $this->genericDelete(
             $domaine,
             title: $this->translator->trans('Supprimer un domaine'),

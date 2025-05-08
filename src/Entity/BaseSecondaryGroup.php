@@ -61,6 +61,9 @@ abstract class BaseSecondaryGroup
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?Personnage $personnage = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $discord = null;
+
     public function __construct()
     {
         $this->intrigueHasGroupeSecondaires = new ArrayCollection();
@@ -294,5 +297,17 @@ abstract class BaseSecondaryGroup
     public function getPersonnage(): ?Personnage
     {
         return $this->personnage;
+    }
+
+    public function getDiscord(): ?string
+    {
+        return $this->discord;
+    }
+
+    public function setDiscord(?string $discord): static
+    {
+        $this->discord = $discord;
+
+        return $this;
     }
 }

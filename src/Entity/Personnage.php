@@ -324,6 +324,11 @@ class Personnage extends BasePersonnage implements \Stringable
         return $backgrounds;
     }
 
+    public function getBaseGroupeGn(): ?BaseGroupeGn
+    {
+        return $this->baseGroupeGn;
+    }
+
     public function getCompetenceLevel(Competence $competence): Level
     {
         return $competence->getLevel();
@@ -1629,6 +1634,23 @@ class Personnage extends BasePersonnage implements \Stringable
     public function removeXp($xp): static
     {
         $this->setXp($this->getXp() - $xp);
+
+        return $this;
+    }
+
+    public function setBaseGroupeGn(?BaseGroupeGn $baseGroupeGn): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($baseGroupeGn === null && $this->baseGroupeGn !== null) {
+            $this->baseGroupeGn->setDiplomate(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($baseGroupeGn !== null && $baseGroupeGn->getDiplomate() !== $this) {
+            $baseGroupeGn->setDiplomate($this);
+        }
+
+        $this->baseGroupeGn = $baseGroupeGn;
 
         return $this;
     }

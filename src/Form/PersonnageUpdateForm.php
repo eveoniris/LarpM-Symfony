@@ -73,6 +73,13 @@ class PersonnageUpdateForm extends AbstractType
             $braceletIcon = '<i class="fa-solid fa-circle-exclamation me-1"></i>';
         }
 
+        $sensibleAttr = [];
+        $sensibleIcon = '';
+        if (false === $personnage->isSensibleSetted()) {
+            $sensibleAttr = ['class' => 'text-danger'];
+            $sensibleIcon = '<i class="fa-solid fa-circle-exclamation me-1"></i>';
+        }
+
         $builder->add('surnom', TextType::class, [
             'required' => false,
             'label' => '',
@@ -85,7 +92,9 @@ class PersonnageUpdateForm extends AbstractType
             ->add('sensible', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['Non' => false, 'Oui' => true],
-                'label' => 'Personnage sensible',
+                'label_attr' => $sensibleAttr,
+                'label_html' => true,
+                'label' => $sensibleIcon.'Personnage sensible',
             ])
             ->add('bracelet', ChoiceType::class, [
                 'required' => true,

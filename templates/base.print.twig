@@ -41,11 +41,27 @@
             text-align: center;
             background-color: lightgreen;
         }
+
+        .noprint {
+            display: block;
+        }
+
+        .toprint {
+            display: none;
+        }
     </style>
 
     <style media="print">
         #info {
             display: none;
+        }
+
+        .noprint {
+            display: none;
+        }
+
+        .toprint {
+            display: block;
         }
 
         #content {

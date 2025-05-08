@@ -19,13 +19,13 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseSecondaryGroupType', 'extended' => 'SecondaryGroupType'])]
 abstract class BaseSecondaryGroupType
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
     protected string $label = '';
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING)]
     protected ?string $description = null;
 
     #[OneToMany(mappedBy: 'secondaryGroupType', targetEntity: SecondaryGroup::class)]
@@ -35,60 +35,6 @@ abstract class BaseSecondaryGroupType
     public function __construct()
     {
         $this->secondaryGroups = new ArrayCollection();
-    }
-
-    /**
-     * Set the value of id.
-     */
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of id.
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set the value of label.
-     */
-    public function setLabel(string $label): static
-    {
-        $this->label = $label;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of label.
-     */
-    public function getLabel(): string
-    {
-        return $this->label ?? '';
-    }
-
-    /**
-     * Set the value of description.
-     */
-    public function setDescription(string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of description.
-     */
-    public function getDescription(): string
-    {
-        return $this->description ?? '';
     }
 
     /**
@@ -102,11 +48,55 @@ abstract class BaseSecondaryGroupType
     }
 
     /**
-     * Remove SecondaryGroup entity from collection (one to many).
+     * Get the value of description.
      */
-    public function removeSecondaryGroup(SecondaryGroup $secondaryGroup): static
+    public function getDescription(): string
     {
-        $this->secondaryGroups->removeElement($secondaryGroup);
+        return $this->description ?? '';
+    }
+
+    /**
+     * Set the value of description.
+     */
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of id.
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set the value of id.
+     */
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of label.
+     */
+    public function getLabel(): string
+    {
+        return $this->label ?? '';
+    }
+
+    /**
+     * Set the value of label.
+     */
+    public function setLabel(string $label): static
+    {
+        $this->label = $label;
 
         return $this;
     }
@@ -117,6 +107,16 @@ abstract class BaseSecondaryGroupType
     public function getSecondaryGroups(): Collection
     {
         return $this->secondaryGroups;
+    }
+
+    /**
+     * Remove SecondaryGroup entity from collection (one to many).
+     */
+    public function removeSecondaryGroup(SecondaryGroup $secondaryGroup): static
+    {
+        $this->secondaryGroups->removeElement($secondaryGroup);
+
+        return $this;
     }
 
     /* public function __sleep()

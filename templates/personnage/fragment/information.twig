@@ -53,6 +53,17 @@
         {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : messageBracelet} %}
     {% endif %}
 
+    {% if personnage.isSensibleSetted == false %}
+        {% set messageSensible %}
+            Vous n'avez pas encore indiqué si vous êtes sensible ou non.
+            Pour savoir si nous devons vous fournir un brassard pour que vous puissiez être identifié comme tel.
+            <br/>
+            <a href="{{ path('personnage.update', {'personnage': personnage.id}) }}#personnage_update_form_sensible">mettre
+                à jour ma préférence</a>
+        {% endset %}
+        {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : messageSensible} %}
+    {% endif %}
+
     {% set especeHtml %}
         <div class="d-flex justify-content-between">
             {% for espece in personnage.especes %}

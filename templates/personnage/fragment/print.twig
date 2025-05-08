@@ -1,17 +1,34 @@
+{% set useQrCode = false %}
+{% if app.request.get('qrCode') == 1 %}
+    {% set useQrCode = true %}
+{% endif %}
+
 <div class="print-center">
     <table>
         <tr>
             <td style="width:33%;">
-                <strong>#{{ personnage.id }}</strong><br/>
-                <strong>{{ personnage.nom }}{% if personnage.surnom %}<small> ({{ personnage.surnom }}
-                        )</small>{% endif %}</strong><br/>
-                Origine : {{ personnage.territoire|default("non définie") }}<br/>
-                {{ personnage.classeName }}, {{ personnage.genre }}, <small>{{ personnage.ageReel|default('x') }}
-                    ans ({{ personnage.age }})</small><br/>
-                {% if personnage.user %}{{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}{% else %}Ce personnage n'est pas lié à un joueur{% endif %}
-                . {% if personnage.intrigue %}participe aux intrigues{% else %}ne participe pas aux intrigues{% endif %}
-                <br/> <strong>Titre : </strong>
-                {{ personnageService.getTitre(participant.personnage, participant.gn) }}
+                {% if useQrCode %}
+                    <div style="float: right;">
+                        <img src="{{ qr_code_data_uri(
+                            absolute_url
+                                (path('personnage.detail', {'personnage': personnage.id})
+                            )
+                        ) }}" width="80px">
+                    </div>
+                {% endif %}
+                <div>
+                    <strong>#{{ personnage.id }}</strong><br/>
+                    <strong>{{ personnage.nom }}{% if personnage.surnom %}<small> ({{ personnage.surnom }}
+                            )</small>{% endif %}</strong><br/>
+                    Origine : {{ personnage.territoire|default("non définie") }}<br/>
+                    {{ personnage.classeName }}, {{ personnage.genre }}, <small>{{ personnage.ageReel|default('x') }}
+                        ans ({{ personnage.age }})</small><br/>
+                    {% if personnage.user %}{{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}{% else %}Ce personnage n'est pas lié à un joueur{% endif %}
+                    . {% if personnage.intrigue %}participe aux intrigues{% else %}ne participe pas aux intrigues{% endif %}
+                    <br/> <strong>Titre : </strong>
+                    {{ personnageService.getTitre(participant.personnage, participant.gn) }}
+
+                </div>
 
             </td>
             <td>

@@ -76,7 +76,7 @@ class GroupeGnForm extends AbstractType
                     'required' => false,
                 ])
                 ->add('sieges', IntegerType::class, [
-                    'label' => "Nombre d'ordres de sieges",
+                    'label' => "Nombre d'armes de sieges",
                     'required' => false,
                 ])
                 ->add('initiative', IntegerType::class, [
@@ -160,6 +160,7 @@ class GroupeGnForm extends AbstractType
             'intendant' => 'Intendant',
             'navigateur' => 'Navigateur',
             'camarilla' => 'Eminence grise',
+            'diplomate' => 'Diplomate',
         ];
 
         foreach ($fields as $field => $label) {
