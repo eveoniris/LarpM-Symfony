@@ -1,147 +1,141 @@
-{% extends "layout_print.twig" %}
+{% extends "base.print.twig" %}
 
 {% block style %}
-<style>
+    <style>
+        div.content {
+            font-size: 0;
+        }
 
-div.content
-{
-font-size: 0;
-}
-.item
-{
-	color: #000;
-	font-weight: bold;
-	width : 400px;
-	padding : 5px 5px 5px 5px; 
-	border: 1px solid #000;
-	display: inline-block;
-	margin:0px;
-	font-size: 10px;
-	height:80px;
-}
+        .item {
+            color: #000;
+            /*font-weight: bold;*/
+            width: 400px;
+            padding: 5px 5px 5px 5px;
+            border: 1px solid #000;
+            display: inline-block;
+            margin: 0;
+            font-size: 10px;
+            height: 80px;
+        }
 
-.item-bleu
-{
-	background-color: DodgerBlue;
-}
-.item-orange
-{
-	background-color: orange;
-}
+        .item_bleu {
+            background-color: DodgerBlue;
+        }
 
-.item-header
-{
-}
-.item-text
-{
-	text-align: center;
-}
-.pull-right {
-  float: right !important;
-}
+        .item_orange {
+            background-color: orange;
+        }
 
-.recto {
-	display: inline-block;
-	border-right: 1px dashed #000;
-	width: 190px;
-	padding-right : 10px;
-}
-.verso {
-	display: inline-block;
-	width: 190px;
-}
+        .item-header {
+        }
 
-img {
-	display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
+        .item-text {
+            text-align: center;
+        }
 
-table {
-	border-collapse: collapse;
-	border: 0px;
-}
-table td {
-	vertical-align : top;
-	width : 200px;
-	padding-right: 10px;
-	padding-left: 10px;
-	border : 0px;
-}
-p {
-margin-top : 0px;
-margin-bottom: 0px;
-}
-span {
-margin: 0px;
-}
+        .pull-right {
+            float: right !important;
+        }
 
-</style>
+        .recto {
+            border-right: 1px dashed #000;
+            font-size: 14px;
+        }
+
+        .verso {
+        }
+
+        .item_left {
+            font-size: 15px;
+        }
+
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            border: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        table th, table td {
+            border: 0;
+            padding: 0;
+            vertical-align: top;
+        }
+
+        table.item_left, .item_left td, .item_left tr {
+            margin: 0;
+            padding: 0;
+        }
+
+        table td {
+            vertical-align: top;
+            width: 200px;
+            padding-right: 10px;
+            padding-left: 10px;
+            border: 0;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        span {
+            margin: 0;
+        }
+
+        .m0 {
+            margin: 0;
+        }
+
+        .p0 {
+            padding: 0;
+        }
+
+        .w33 {
+            width: 33%
+        }
+
+        .text-r {
+            text-align: right
+        }
+
+        .text-c {
+            text-align: center
+        }
+
+        .vam {
+            vertical-align: middle
+        }
+
+
+    </style>
 {% endblock style %}
 
-{% block body %}
-	<h6>BLEU</h6>
-	{% for item in items %}
-		{% if item.couleur == 'bleu' %}
-			{% for i in 1..item.quantite %}
-				<div class="item {% if item.couleur == 'bleu' %}item-bleu{% else %}item-orange{% endif %}">
-					<table>
-						<tr>
-							<td>
-								
-									<div class="item-header">
-										<bold>{{ item.numero }}</bold>
-										<span class="pull-right"><bold>{{ item.quality.numero }}{{ item.identification }}</bold></span>
-									</div>
-									<div class="item-text">
-										{{ item.label }}
-									</div>
-								
-							</td>
-							<td>
-								
-									{{ item.description|markdown_to_html }}
-								
-							</td>
-						</tr>
-					</table>
-					
-					
-				</div>
-			{% endfor %}
-		{% endif %}
-	{% endfor %}
-	
-	<div class="print-page-break"></div>
-	<h6>ORANGE</h6>
-	{% for item in items %}
-		{% if item.couleur != 'bleu' %}
-			{% for i in 1..item.quantite %}
-				<div class="item {% if item.couleur == 'bleu' %}item-bleu{% else %}item-orange{% endif %}">
-					<table>
-						<tr>
-							<td>
-								
-									<div class="item-header">
-										<bold>{{ item.numero }}</bold>
-										<span class="pull-right"><bold>{{ item.quality.numero }}{{ item.identification }}</bold></span>
-									</div>
-									<div class="item-text">
-										{{ item.objet.nom }}
-									</div>
-								
-							</td>
-							<td>
-								
-									{{ item.description|markdown_to_html }}
-								
-							</td>
-						</tr>
-					</table>
-					
-					
-				</div>
-			{% endfor %}
-		{% endif %}
-	{% endfor %}
+{% block content %}
+    <h6>BLEU</h6>
+    {% for item in items %}
+        {% if item.couleur == 'bleu' %}
+            {% for i in 1..item.quantite %}
+                {% include 'objet/fragment/etiquette.twig' with {'item': item} %}
+
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="print-page-break"></div>
+    <h6>ORANGE</h6>
+    {% for item in items %}
+        {% if item.couleur != 'bleu' %}
+            {% for i in 1..item.quantite %}
+                {% include 'objet/fragment/etiquette.twig' with {'item': item} %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
 {% endblock %}

@@ -20,7 +20,8 @@
         } %}
     {% else %}
         <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
-            <a class="btn btn-secondary"  data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ajouter une compétence"
+            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+               title="Ajouter une compétence"
                href="{{ path('personnage.add.competence', {'personnage': personnage.id}) }}"><i
                         class="fa fa-plus"></i> Ajouter</a>
         </div>
@@ -40,7 +41,7 @@
 
             {% if loop.first or currentFamillyId != competence.competenceFamily.id %}
                 <li class="list-group-item">
-                <h5>
+                <h5 class="__{{ competence.competenceFamily.id }}__{{ currentFamillyId }}">
                     {{ competence.competenceFamily.label }}
                     {% if personnage.classe.isFavoriteCompetenceFamily(competence.competenceFamily) %}
                         <i class="fa fa-star text-success" data-toggle="tooltip" data-placement="top"
@@ -55,7 +56,7 @@
                 </h5>
             {% endif %}
 
-            <h6>{{ competence.level.label }}</h6>
+            <h6 class="__{{ competence.competenceFamily.id }}__{{ currentFamillyId }}">{{ competence.level.label }}</h6>
             <div class="list-group-item-text border-top mt-1">{{ competence.description|markdown_to_html }}</div>
             <p class="list-group-item-text">
                 {% if competence.documentUrl %}

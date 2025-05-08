@@ -1,0 +1,57 @@
+{% set type = 'item_orange' %}
+{% if item.couleur == 'bleu' %}
+    {% set type = 'item_bleu' %}
+{% endif %}
+
+{% set useQrCode = false %}
+{% if app.request.get('qrCode') == 1 %}
+    {% set useQrCode = true %}
+{% endif %}
+
+<div class="item {{ type }}">
+    <table>
+        <tr>
+            <td class="recto">
+                <table class="item_left">
+                    <tr>
+                        <td class="w33"><strong>{{ item.numero }}</strong>
+                        </td>
+                        <td>&nbsp;</td>
+                        <td class="w33 text-r">
+                            <strong>{{ item.quality.numero }}{{ item.identification }}</strong></td>
+                    </tr>
+                    <tr>
+                        {% if useQrCode %}
+                            <td class="vam">
+                                {# display with colored background in web render #}
+                                <img class="noprint" src="{{ qr_code_data_uri(
+                                    absolute_url
+                                        (path('item.detail', {'item': item.id})
+                                    ),
+                                    type
+                                ) }}" width="65px">
+                                {# display with white background in print mode #}
+                                <img class="toprint" src="{{ qr_code_data_uri(
+                                    absolute_url
+                                        (path('item.detail', {'item': item.id})
+                                    ),
+                                    'items_white'
+                                ) }}" width="65px">
+                            </td>
+                            <td colspan="2" class="vam text-c">
+                                {{ item.objet.nom }}
+                            </td>
+                        {% else %}
+                            <td colspan="3" class="vam text-c">
+                                {{ item.objet.nom }}
+                            </td>
+                        {% endif %}
+                    </tr>
+                </table>
+            </td>
+            <td class="verso">
+                {{ item.description|markdown_to_html }}
+            </td>
+        </tr>
+    </table>
+</div>

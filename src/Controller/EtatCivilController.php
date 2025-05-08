@@ -2,13 +2,13 @@
 
 namespace App\Controller;
 
-use _PHPStan_c875e8309\Symfony\Component\Finder\Exception\AccessDeniedException;
 use App\Entity\EtatCivil;
 use App\Entity\User;
 use App\Enum\Role;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class EtatCivilController extends AbstractController
@@ -23,13 +23,13 @@ class EtatCivilController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!$user || $user->getEtatCivil()?->getId() !== $etatCivil->getId()) {
+        if (!$user || $user->getEtatCivil()?->getId() !== $etatCivil->getId() || !$this->isGranted(Role::ORGA->value)) {
             throw new AccessDeniedException();
         }
 
         return $this->render(
             'etatCivil/detail.twig',
-            ['etatCivil' => $etatCivil]
+            ['etatCivil' => $etatCivil],
         );
     }
 }

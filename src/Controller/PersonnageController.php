@@ -1079,7 +1079,7 @@ class PersonnageController extends AbstractController
 
         $nomDomaine = $domaine->getLabel();
 
-        $domaine->removePersonnage($personnage);
+        $personnage->removeDomaine($domaine);
 
         $this->entityManager->flush();
 
@@ -2698,7 +2698,7 @@ class PersonnageController extends AbstractController
     public function listAction(Request $request): Response
     {
         // handle the request and return an array containing the parameters for the view
-        $viewParams = $this->getSearchViewParameters($request,'personnage.list');
+        $viewParams = $this->getSearchViewParameters($request, 'personnage.list');
 
         return $this->render('personnage/list.twig', $viewParams);
     }

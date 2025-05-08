@@ -1,9 +1,35 @@
 endroid_qr_code:
-    default:
-        writer: Endroid\QrCode\Writer\PngWriter
-        size: 300
-        margin: 10
-        encoding: 'UTF-8'
-        error_correction_level: 'low'
-        round_block_size_mode: 'margin'
-        validate_result: false
+  default:
+    writer: Endroid\QrCode\Writer\PngWriter
+    size: 300
+    margin: 10
+    encoding: 'UTF-8'
+    error_correction_level: 'low'
+    round_block_size_mode: 'margin'
+    validate_result: false
+  items_white:
+    writer: Endroid\QrCode\Writer\PngWriter
+    size: 70
+    margin: 1
+    encoding: 'UTF-8'
+    error_correction_level: 'low'
+    round_block_size_mode: 'shrink'
+    validate_result: false
+  item_bleu:
+    writer: Endroid\QrCode\Writer\PngWriter
+    backgroundColor: [ 30,144,255,100 ]
+    size: 70
+    margin: 1
+    encoding: 'UTF-8'
+    error_correction_level: 'low'
+    round_block_size_mode: 'shrink'
+    validate_result: false
+  item_orange:
+    writer: Endroid\QrCode\Writer\PngWriter
+    backgroundColor: [ 255,165,0,100 ]
+    size: 70
+    margin: 1
+    encoding: 'UTF-8'
+    error_correction_level: 'low'
+    round_block_size_mode: 'shrink'
+    validate_result: false

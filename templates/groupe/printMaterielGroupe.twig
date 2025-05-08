@@ -88,6 +88,9 @@
 
     <ul>
         <li>Nombre de bateau <strong>{{ session.bateaux }}</strong></li>
+        {% if session.bateauxLocalisation %}
+            <li>Localisation des bateaux: <strong>{{ session.bateauxLocalisation }}</strong></li>
+        {% endif %}
         <li>Nombre d'agent <strong>{{ session.agents }}</strong></li>
         <li>Nombre d'armes de sièges <strong>{{ session.sieges }}</strong></li>
     </ul>

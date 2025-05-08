@@ -90,6 +90,9 @@ abstract class BaseGroupeGn
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Personnage $camarilla = null;
+
+    #[ORM\OneToOne(inversedBy: 'baseGroupeGn', cascade: ['persist', 'remove'])]
+    private ?Personnage $diplomate = null;
     /*
     #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'suzerain_id', referencedColumnName: 'id', nullable: 'false')]
@@ -480,6 +483,18 @@ abstract class BaseGroupeGn
     public function setCamarilla(?Personnage $camarilla): static
     {
         $this->camarilla = $camarilla;
+
+        return $this;
+    }
+
+    public function getDiplomate(): ?Personnage
+    {
+        return $this->diplomate;
+    }
+
+    public function setDiplomate(?Personnage $diplomate): static
+    {
+        $this->diplomate = $diplomate;
 
         return $this;
     }
