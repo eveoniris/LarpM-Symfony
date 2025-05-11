@@ -2,14 +2,16 @@
 
 namespace App\Controller;
 
-use App\Entity\Groupe;
 use App\Entity\Membre;
+use App\Entity\Message;
+use App\Entity\Postulant;
 use App\Entity\SecondaryGroup;
-use App\Entity\User;
 use App\Enum\Role;
 use App\Form\GroupeSecondaire\GroupeSecondaireForm;
 use App\Form\GroupeSecondaire\GroupeSecondaireMaterielForm;
 use App\Form\GroupeSecondaire\GroupeSecondaireNewMembreForm;
+use App\Form\GroupeSecondaire\GroupeSecondairePostulerForm;
+use App\Form\MessageForm;
 use App\Manager\GroupeManager;
 use App\Repository\SecondaryGroupRepository;
 use App\Service\PagerService;
@@ -19,7 +21,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -27,14 +28,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 class GroupeSecondaireController extends AbstractController
 {
-    #[Route('/groupeSecondaire/{groupeSecondaire}/acceptPostulant', name: 'groupeSecondaire.acceptPostulant')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/accept', name: 'groupeSecondaire.postulant.accept')]
     public function acceptPostulantAction(
-        Request $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
+        #[MapEntity] Postulant $postulant,
     ): Response {
         $this->canManageGroup($groupeSecondaire);
 
-        $postulant = $request->get('postulant');
         $personnage = $postulant->getPersonnage();
 
         $membre = new Membre();
@@ -49,7 +49,15 @@ class GroupeSecondaireController extends AbstractController
             $this->entityManager->remove($postulant);
             $this->entityManager->flush();
 
-            // $app['User.mailer']->sendGroupeSecondaireAcceptMessage($personnage->getUser(), $groupeSecondaire);
+            $this->mailer->newMessage(
+                $postulant->getPersonnage()->getUser(),
+                sprintf(
+                    'Votre candidature pour rejoindre le groupe %s a été acceptée',
+                    $groupeSecondaire->getLabel(),
+                ),
+                'Acceptation de votre candidature',
+                $this->getUser(),
+            );
 
             $this->addFlash('success', 'la candidature a été accepté.');
         }
@@ -60,12 +68,89 @@ class GroupeSecondaireController extends AbstractController
         );
     }
 
+    protected function canManageGroup(?SecondaryGroup $secondaryGroup = null): void
+    {
+        $this->hasAccess($secondaryGroup, lowestCan: self::CAN_MANAGE);
+    }
+
+    protected function hasAccess(
+        ?SecondaryGroup $secondaryGroup = null,
+        array $roles = [Role::ROLE_GROUPE_TRANSVERSE],
+        string $lowestCan = self::CAN_READ,
+    ): void {
+        $this->loadAccess($secondaryGroup, $roles);
+        $this->checkHasAccess($roles, fn() => $this->can($lowestCan));
+    }
+
+    protected function loadAccess(
+        ?SecondaryGroup $secondaryGroup = null,
+        array $roles = [Role::ROLE_GROUPE_TRANSVERSE],
+    ): void {
+        $isAdmin = false;
+        foreach ($roles as $role) {
+            if ($this->isGranted($role->value)) {
+                $isAdmin = true;
+            }
+        }
+
+        $isResponsable = false;
+        $isMembre = false;
+        $canReadSecret = false;
+        $canReadPrivate = false;
+        if ($secondaryGroup) {
+            $isResponsable = $this->getPersonnage()?->getId() === $secondaryGroup->getPersonnage()?->getId();
+
+            if (!$isResponsable && !$isAdmin) {
+                /** @var Membre $membre */
+                foreach ($secondaryGroup->getMembres() as $membre) {
+                    if ($membre->getPersonnage()->getId() === $this->getPersonnage()?->getId()) {
+                        $isMembre = true;
+                        $canReadSecret = $membre->getSecret();
+                    }
+                    // No usage for now :
+                    if ($membre->isPrivate()) {
+                        $canReadPrivate = true;
+                    }
+                }
+            }
+        }
+
+        $this->setCan(self::IS_ADMIN, $isAdmin);
+        $this->setCan(self::IS_MEMBRE, $isMembre);
+        $this->setCan(self::CAN_MANAGE, $isResponsable || $isAdmin);
+        $this->setCan(self::CAN_READ_PRIVATE, $isResponsable || $canReadSecret || $isAdmin || $canReadPrivate);
+        $this->setCan(self::CAN_READ_SECRET, $isResponsable || $isAdmin || $canReadSecret);
+        $this->setCan(self::CAN_WRITE, $isResponsable || $isAdmin);
+        $this->setCan(self::CAN_READ, $isMembre || $this->can(self::CAN_READ));
+    }
+
+    /**
+     * Construit le contexte pour la page détail de groupe secondaire (pour les orgas).
+     *
+     * @return array of
+     */
+    public function buildContextDetailTwig(
+        SecondaryGroup $groupeSecondaire,
+        ?array $extraParameters = null,
+    ): array {
+        $result = [
+            'groupeSecondaire' => $groupeSecondaire,
+            'gn' => GroupeManager::getGnActif($this->entityManager),
+        ];
+
+        if (null === $extraParameters) {
+            return $result;
+        }
+
+        return [...$result, ...$extraParameters];
+    }
+
     /**
      * Ajoute un groupe secondaire.
      */
-    #[IsGranted('ROLE_SCENARISTE')]
+    #[IsGranted(Role::ROLE_GROUPE_TRANSVERSE->value)]
     #[Route('/groupeSecondaire/add', name: 'groupeSecondaire.add')]
-    public function adminAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    public function adminAddAction(Request $request): RedirectResponse|Response
     {
         $groupeSecondaire = new SecondaryGroup();
 
@@ -81,11 +166,11 @@ class GroupeSecondaireController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $groupeSecondaire = $form->getData();
-            $entityManager->persist($groupeSecondaire);
-            $entityManager->flush();
+            $this->entityManager->persist($groupeSecondaire);
+            $this->entityManager->flush();
 
             /**
-             * Ajoute le responsable du groupe dans le groupe si il n'y est pas déjà.
+             * Ajoute le responsable du groupe dans le groupe s'il n'y est pas déjà.
              */
             $personnage = $groupeSecondaire->getResponsable();
             if ($personnage && !$groupeSecondaire->isMembre($personnage)) {
@@ -93,13 +178,13 @@ class GroupeSecondaireController extends AbstractController
                 $membre->setPersonnage($personnage);
                 $membre->setSecondaryGroup($groupeSecondaire);
                 $membre->setSecret(false);
-                $entityManager->persist($membre);
-                $entityManager->flush();
+                $this->entityManager->persist($membre);
+                $this->entityManager->flush();
                 $groupeSecondaire->addMembre($membre);
             }
 
-            $entityManager->persist($groupeSecondaire);
-            $entityManager->flush();
+            $this->entityManager->persist($groupeSecondaire);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le groupe secondaire a été ajouté.');
 
@@ -116,165 +201,235 @@ class GroupeSecondaireController extends AbstractController
         ]);
     }
 
+    #[Route('/groupeSecondaire/{groupeSecondaire}/contact', name: 'groupeSecondaire.contact')]
+    public function contactLeaderAction(Request $request, #[MapEntity] SecondaryGroup $groupeSecondaire): Response
+    {
+        $this->loadAccess($groupeSecondaire);
+
+        if ($groupeSecondaire->isSecret() && !$this->can(self::IS_MEMBRE)) {
+            $this->addFlash('error', 'Ce groupe ne peut pas être contacté.');
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        $responsable = $groupeSecondaire->getPersonnage();
+        if (!$responsable) {
+            $this->addFlash('error', 'Ce groupe ne peut pas être contacté.');
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        $personnage = $this->getPersonnage();
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir un personnage actif pour contacter le groupe.');
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        $message = new Message();
+        $message->setTitle('Message pour le responsable du groupe '.$groupeSecondaire->getLabel());
+        $message->setUserRelatedByAuteur($this->getUser());
+        $message->setUserRelatedByDestinataire($responsable->getUser());
+        $message->setCreationDate(new \DateTime('NOW'));
+        $message->setUpdateDate(new \DateTime('NOW'));
+
+        $form = $this->createForm(MessageForm::class, $message)
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre réponse']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $message = $form->getData();
+
+            $this->entityManager->persist($message);
+            $this->entityManager->flush();
+
+            $this->mailer->notify($message);
+
+            $this->addFlash('success', 'Votre message a été envoyé au joueur concerné.');
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        return $this->render('groupeSecondaire/contact.twig', [
+            'groupeSecondaire' => $groupeSecondaire,
+            'personnage' => $personnage,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/groupeSecondaire/{groupeSecondaire}/detail', name: 'groupeSecondaire.detail')]
+    public function detailAction(#[MapEntity] SecondaryGroup $groupeSecondaire): Response
+    {
+        $this->hasAccess($groupeSecondaire);
+
+        if ($groupeSecondaire->isSecret() && !$this->can(self::IS_MEMBRE)) {
+            $this->addFlash('error', "Vous n'êtes pas membres");
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        return $this->render(
+            'groupeSecondaire/detail.twig',
+            $this->buildContextDetailTwig($groupeSecondaire),
+        );
+    }
+
+    #[Route('/groupeSecondaire/{groupeSecondaire}/postuler', name: 'groupeSecondaire.postuler')]
+    public function groupeSecondairePostulerAction(
+        Request $request,
+        #[MapEntity] SecondaryGroup $groupeSecondaire,
+    ): RedirectResponse|Response {
+
+        if ($groupeSecondaire->isSecret()) {
+            $this->addFlash(
+                'error',
+                'Par Crom! On ne postule pas ici ! On est uniquement convié par qui de droit !',
+            );
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        $personnage = $this->getPersonnage();
+
+        if (!$personnage) {
+            $this->addFlash(
+                'error',
+                'Vous devez avoir créé un personnage et le choisir comme personnage actif avant de postuler à un groupe secondaire!',
+            );
+
+            return $this->redirectToRoute('user.detail', ['user' => $this->getUser()?->getId()], 303);
+        }
+
+        /*
+         * Si le joueur est déjà postulant dans ce groupe, refuser la demande
+         */
+        if ($groupeSecondaire->isPostulant($personnage)) {
+            $this->addFlash('error', 'Vous avez déjà postulé dans ce groupe. Inutile d\'en refaire la demande.');
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        /*
+         * Si le joueur est déjà membre de ce groupe, refUser la demande
+         */
+        if ($groupeSecondaire->isMembre($personnage)) {
+            $this->addFlash('error', 'Vous êtes déjà membre de ce groupe. Inutile d\'en refaire la demande.');
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        $form = $this->createForm(GroupeSecondairePostulerForm::class)
+            ->add('postuler', SubmitType::class, ['label' => 'Postuler']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
+            if (empty($data['explanation'])) {
+                $this->addFlash('error', 'Vos devez remplir le champ Explication.');
+            } else {
+                $postulant = new Postulant();
+                $postulant->setPersonnage($personnage);
+                $postulant->setSecondaryGroup($groupeSecondaire);
+                $postulant->setExplanation($data['explanation']);
+                $postulant->setWaiting(false);
+
+                $this->entityManager->persist($postulant);
+                $this->entityManager->flush();
+
+                // envoi d'un mail au chef du groupe secondaire
+                if ($groupeSecondaire->getResponsable()) {
+                    // envoyer une notification au responsable
+                    // TODO NOTIFY $app['notify']->joinGroupeSecondaire($groupeSecondaire->getResponsable(), $groupeSecondaire);
+                }
+
+                $this->addFlash('success', 'Votre candidature a été enregistrée, et transmise au chef de groupe.');
+
+                return $this->redirectToRoute(
+                    'groupeSecondaire.detail',
+                    ['groupeSecondaire' => $groupeSecondaire->getId()],
+                    303,
+                );
+            }
+        }
+
+        return $this->render('groupeSecondaire/postuler.twig', [
+            'groupeSecondaire' => $groupeSecondaire,
+            'personnage' => $personnage,
+            'form' => $form->createView(),
+        ]);
+    }
+
     /**
      * Liste des groupes secondaires (pour les orgas).
      */
     #[Route('/groupeSecondaire', name: 'groupeSecondaire.list')]
-    #[Route('/groupeSecondaire', name: 'groupeSecondaire.list')]
-    #[IsGranted('ROLE_USER')]
-    public function adminListAction(
+    public function listAction(
         Request $request,
         PagerService $pagerService,
         SecondaryGroupRepository $secondaryGroupRepository,
     ): Response {
         $alias = $secondaryGroupRepository->getAlias();
         $queryBuilder = $secondaryGroupRepository->createQueryBuilder($alias);
-        $pagerService->setRequest($request)->setRepository($secondaryGroupRepository)->setLimit(25);
+        $pagerService->setRequest($request)
+            ->setRepository($secondaryGroupRepository)
+            ->setLimit(25);
 
         // If not admin, only groupe where user's personnage are.
-        $isAdmin = $this->isGranted(Role::SCENARISTE->value);
-        if (!$isAdmin) {
+        $isAdmin = $this->hasRoles([Role::ROLE_GROUPE_TRANSVERSE]);
+        $fetchCollection = false;
+        if (!$isAdmin && $personnage = $this->getPersonnage()) {
+            $fetchCollection = true;  // may have issue with OrderBy but paginator will load result without member in (due to leftjoin(member))
             $queryBuilder = $secondaryGroupRepository->visibleForPersonnage(
                 $queryBuilder,
-                array_column(
-                    $this->entityManager->getRepository(User::class)->getPersonnagesIds($this->getUser()),
-                    'id',
-                ),
+                $personnage->getId(),
             );
         }
 
         return $this->render('groupeSecondaire/list.twig', [
             'pagerService' => $pagerService,
-            'isAdmin' => $isAdmin,
-            'paginator' => $secondaryGroupRepository->searchPaginated($pagerService, $queryBuilder),
+            'paginator' => $secondaryGroupRepository->searchPaginated($pagerService, $queryBuilder, $fetchCollection),
         ]);
-    }
-
-    #[Route('/groupeSecondaire/{groupeSecondaire}/secretOff/{membre}', name: 'groupeSecondaire.secret.off')]
-    #[Route('/groupeSecondaire/{groupeSecondaire}/secretOff/{membre}', name: 'groupeSecondaire.secret.off')]
-    public function adminSecretOffAction(
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Membre $membre,
-    ): Response {
-        $this->canManageGroup($groupeSecondaire, $membre);
-
-        $membre->setSecret(false);
-        $this->entityManager->persist($membre);
-        $this->entityManager->flush();
-
-        return $this->render(
-            'groupeSecondaire/detail.twig',
-            $this->buildContextDetailTwig($groupeSecondaire, ['isAdmin' => true]),
-        );
-    }
-
-    /**
-     * Détail d'un groupe secondaire (pour les orgas).
-     */
-    #[IsGranted('ROLE_USER')]
-    #[Route('/groupeSecondaire/{groupeSecondaire}/detail', name: 'groupeSecondaire.detail')]
-    public function detailAction(
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-    ): Response {
-        if (!$this->isGranted(Role::SCENARISTE->value) && !$this->isGranted(Role::ORGA->value)) {
-            throw new AccessDeniedHttpException();
-        }
-        // TODO
-
-        $this->canSeeGroup($groupeSecondaire);
-
-        try {
-            $this->canManageGroup($groupeSecondaire);
-            $canLead = true;
-        } catch (\Exception $e) {
-            $canLead = false;
-        }
-
-        $isAdmin = $this->isGranted(Role::SCENARISTE->value);
-        $canSeeSecret = $this->canSeeSecret($groupeSecondaire);
-
-        return $this->render(
-            'groupeSecondaire/detail.twig',
-            $this->buildContextDetailTwig(
-                $groupeSecondaire,
-                ['isAdmin' => $isAdmin, 'canLead' => $canLead, 'canSeeSecret' => $canSeeSecret],
-            ),
-        );
-    }
-
-    protected function canSeeGroup(?SecondaryGroup $secondaryGroup = null, ?Membre $membre = null): void
-    {
-        try {
-            $this->canManageGroup($secondaryGroup, $membre);
-
-            return;
-        } catch (AccessDeniedException $e) {
-            // may not able to see it.
-        }
-
-        if ($secondaryGroup) {
-            /** @var SecondaryGroupRepository $sgRepository */
-            $sgRepository = $this->entityManager->getRepository(SecondaryGroup::class);
-            $sgRepository->isMember($secondaryGroup, $membre);
-        }
-
-        throw new AccessDeniedException();
-    }
-
-    protected function canSeeSecret(SecondaryGroup $secondaryGroup, ?Membre $membre = null): bool
-    {
-        if ($membre && $membre->getSecret()) {
-            return true;
-        }
-
-        try {
-            $this->canManageGroup($secondaryGroup, $membre);
-
-            return true;
-        } catch (AccessDeniedException $e) {
-        }
-
-        /** @var SecondaryGroupRepository $sgRepository */
-        $sgRepository = $this->entityManager->getRepository(SecondaryGroup::class);
-        $sgRepository->userCanSeeSecret($this->getUser(), $secondaryGroup);
-
-        return false;
-    }
-
-    /**
-     * Construit le contexte pour la page détail de groupe secondaire (pour les orgas).
-     *
-     * @return array of
-     */
-    public function buildContextDetailTwig(
-        SecondaryGroup $groupeSecondaire,
-        ?array $extraParameters = null,
-    ): array {
-        $gnActif = GroupeManager::getGnActif($this->entityManager);
-        if (empty($extraParameters['isAdmin'])) {
-            try {
-                $this->canManageGroup($groupeSecondaire);
-                $extraParameters['isAdmin'] = true;
-            } catch (\Exception $e) {
-                $extraParameters['isAdmin'] = false;
-            }
-        }
-        $result = [
-            'groupeSecondaire' => $groupeSecondaire,
-            'gn' => $gnActif,
-        ];
-
-        if (null === $extraParameters) {
-            return $result;
-        }
-
-        return [...$result, ...$extraParameters];
     }
 
     /**
      * Impression de l'enveloppe du groupe secondaire.
      */
-    #[IsGranted('ROLE_SCENARISTE')]
+    #[IsGranted(Role::ROLE_GROUPE_TRANSVERSE->value)]
     #[Route('/groupeSecondaire/{groupeSecondaire}/print', name: 'groupeSecondaire.materiel.print')]
     public function materielPrintAction(
         Request $request,
@@ -289,7 +444,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Impression de toutes les enveloppes groupe secondaire.
      */
-    #[IsGranted('ROLE_SCENARISTE')]
+    #[IsGranted(Role::ROLE_GROUPE_TRANSVERSE->value)]
     #[Route('/groupeSecondaire/printAll', name: 'groupeSecondaire.materiel.printAll')]
     public function materielPrintAllAction(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -303,7 +458,7 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Mise à jour du matériel necessaire à un groupe secondaire.
      */
-    #[IsGranted('ROLE_SCENARISTE')]
+    #[IsGranted(Role::ROLE_GROUPE_TRANSVERSE->value)]
     #[Route('/groupeSecondaire/{groupeSecondaire}/materielUpdate', name: 'groupeSecondaire.materiel.update')]
     public function materielUpdateAction(
         Request $request,
@@ -335,8 +490,6 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Ajoute un nouveau membre au groupe secondaire.
      */
-    #[IsGranted('ROLE_USER')]
-    #[Route('/groupeSecondaire/{groupeSecondaire}/addMember', name: 'groupeSecondaire.newMembre')]
     #[Route('/groupeSecondaire/{groupeSecondaire}/addMember', name: 'groupeSecondaire.newMembre')]
     public function newMembreAction(
         Request $request,
@@ -385,13 +538,106 @@ class GroupeSecondaireController extends AbstractController
         );
     }
 
-    #[Route('/groupeSecondaire/{groupeSecondaire}/removeMember/{membre}', name: 'groupeSecondaire.member.remove')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/response', name: 'groupeSecondaire.postulant.response')]
+    public function postulantResponseAction(
+        Request $request,
+        #[MapEntity] SecondaryGroup $groupeSecondaire,
+        #[MapEntity] Postulant $postulant,
+    ): RedirectResponse|Response {
+        $this->canManageGroup($groupeSecondaire);
+
+        if (!$destinataire = $postulant->getPersonnage()->getUser()) {
+            $this->addFlash('error', "le personnage n'est pas lié à un utilisateur joignable.");
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        $message = new Message();
+
+        $message->setTitle('Réponse à votre candidature');
+        $message->setUserRelatedByAuteur($this->getUser());
+        $message->setUserRelatedByDestinataire($destinataire);
+        $message->setCreationDate(new \DateTime('NOW'));
+        $message->setUpdateDate(new \DateTime('NOW'));
+
+        $form = $this->createForm(MessageForm::class, $message)
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre réponse']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Message $message */
+            $message = $form->getData();
+            $message->setText(html_entity_decode($message->getText()));
+
+            $this->entityManager->persist($message);
+            $this->entityManager->flush();
+
+            $this->mailer->notify($message);
+
+            $this->addFlash('success', 'Votre message a été envoyé au joueur concerné.');
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        return $this->render('groupeSecondaire/gestion_response.twig', [
+            'groupeSecondaire' => $groupeSecondaire,
+            'postulant' => $postulant,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/wait', name: 'groupeSecondaire.postulant.wait')]
+    public function postulantWaitAction(
+        Request $request,
+        #[MapEntity] SecondaryGroup $groupeSecondaire,
+        #[MapEntity] Postulant $postulant,
+    ): RedirectResponse|Response {
+        $this->canManageGroup($groupeSecondaire);
+
+        $form = $this->createFormBuilder($postulant)
+            ->add('envoyer', SubmitType::class, ['label' => 'Laisser en attente'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $postulant->setWaiting(true);
+            $this->entityManager->persist($postulant);
+            $this->entityManager->flush();
+
+            // NOTIFY $app['notify']->waitGroupeSecondaire($personnage->getUser(), $groupeSecondaire);
+
+            $this->addFlash('success', 'La candidature reste en attente. Un message a été envoyé au joueur concerné.');
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        return $this->render('groupeSecondaire/gestion_wait.twig', [
+            'groupeSecondaire' => $groupeSecondaire,
+            'postulant' => $postulant,
+            'form' => $form->createView(),
+        ]);
+    }
+
     #[Route('/groupeSecondaire/{groupeSecondaire}/removeMember/{membre}', name: 'groupeSecondaire.member.remove')]
     public function removeMembreAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
         #[MapEntity] Membre $membre,
     ): Response {
-        $this->canManageGroup($groupeSecondaire, $membre);
+        $this->canManageGroup($groupeSecondaire);
 
         $this->entityManager->remove($membre);
         $this->entityManager->flush();
@@ -404,14 +650,13 @@ class GroupeSecondaireController extends AbstractController
         );
     }
 
-    #[Route('/groupeSecondaire/{groupeSecondaire}/removePostulant', name: 'groupeSecondaire.removePostulant')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/remove', name: 'groupeSecondaire.postulant.remove')]
     public function removePostulantAction(
         Request $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
+        #[MapEntity] Postulant $postulant,
     ): Response {
         $this->canManageGroup($groupeSecondaire);
-
-        $postulant = $request->get('postulant');
 
         $this->entityManager->remove($postulant);
         $this->entityManager->flush();
@@ -424,13 +669,29 @@ class GroupeSecondaireController extends AbstractController
         );
     }
 
-    #[Route('/groupeSecondaire/{groupeSecondaire}/secretOn/{membre}', name: 'groupeSecondaire.secret.on')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/secretOff/{membre}', name: 'groupeSecondaire.secret.off')]
+    public function secretOffAction(
+        #[MapEntity] SecondaryGroup $groupeSecondaire,
+        #[MapEntity] Membre $membre,
+    ): Response {
+        $this->canManageGroup($groupeSecondaire);
+
+        $membre->setSecret(false);
+        $this->entityManager->persist($membre);
+        $this->entityManager->flush();
+
+        return $this->render(
+            'groupeSecondaire/detail.twig',
+            $this->buildContextDetailTwig($groupeSecondaire),
+        );
+    }
+
     #[Route('/groupeSecondaire/{groupeSecondaire}/secretOn/{membre}', name: 'groupeSecondaire.secret.on')]
     public function secretOnAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
         #[MapEntity] Membre $membre,
     ): Response {
-        $this->canManageGroup($groupeSecondaire, $membre);
+        $this->canManageGroup($groupeSecondaire);
 
         $membre->setSecret(true);
         $this->entityManager->persist($membre);
@@ -443,7 +704,6 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/update', name: 'groupeSecondaire.update')]
-    #[Route('/groupeSecondaire/{groupeSecondaire}/update', name: 'groupeSecondaire.update')]
     public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -451,14 +711,9 @@ class GroupeSecondaireController extends AbstractController
     ): RedirectResponse|Response {
         $this->canManageGroup($groupeSecondaire);
 
-        // TODO form for LEADER
-        if (!$this->isGranted('ROLE_SCENARISTE')) {
-            //   throw new AccessDeniedException();
-        }
-
         $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder', 'attr' => ['class' => 'btn btn-secondary']])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer', 'attr' => ['class' => 'btn btn-secondary']]);
 
         $form->handleRequest($request);
 
@@ -485,8 +740,8 @@ class GroupeSecondaireController extends AbstractController
                  * Retire la candidature du responsable si elle existe
                  */
                 foreach ($groupeSecondaire->getPostulants() as $postulant) {
-                    if ($postulant->getPersonnage() == $personnage) {
-                        $entityManager->remove($postulant);
+                    if ($postulant->getPersonnage()?->getId() === $personnage->getId()) {
+                        $this->entityManager->remove($postulant);
                     }
                 }
                 $entityManager->persist($groupeSecondaire);
@@ -507,27 +762,44 @@ class GroupeSecondaireController extends AbstractController
         ]);
     }
 
-    protected function canManageGroup(?SecondaryGroup $secondaryGroup = null, ?Membre $membre = null): void
+    #[\Deprecated]
+    protected function canSeeGroup(?SecondaryGroup $secondaryGroup = null, ?Membre $membre = null): void
     {
-        // Admin
-        if ($this->isGranted('ROLE_SCENARISTE')) {
+        try {
+            $this->canManageGroup($secondaryGroup, $membre);
+
             return;
+        } catch (AccessDeniedException $e) {
+            // may not able to see it.
         }
 
-        // Leadder from Membre
-        if ($membre && $secondaryGroup && $membre?->getPersonnage()?->getId() === $secondaryGroup?->getPersonnage(
-        )?->getId()) {
-            return;
-        }
-        // Leader from logged
-        if (!$membre && $secondaryGroup) {
-            /** @var SecondaryGroupRepository $secondaryGroupRepository */
-            $secondaryGroupRepository = $this->entityManager->getRepository(SecondaryGroup::class);
-            if ($secondaryGroupRepository->userIsGroupLeader($this->getUser(), $secondaryGroup)) {
-                return;
-            }
+        if ($secondaryGroup) {
+            /** @var SecondaryGroupRepository $sgRepository */
+            $sgRepository = $this->entityManager->getRepository(SecondaryGroup::class);
+            $sgRepository->isMember($secondaryGroup, $membre);
         }
 
         throw new AccessDeniedException();
+    }
+
+    #[\Deprecated]
+    protected function canSeeSecret(SecondaryGroup $secondaryGroup, ?Membre $membre = null): bool
+    {
+        if ($membre && $membre->getSecret()) {
+            return true;
+        }
+
+        try {
+            $this->canManageGroup($secondaryGroup, $membre);
+
+            return true;
+        } catch (AccessDeniedException $e) {
+        }
+
+        /** @var SecondaryGroupRepository $sgRepository */
+        $sgRepository = $this->entityManager->getRepository(SecondaryGroup::class);
+        $sgRepository->userCanSeeSecret($this->getUser(), $secondaryGroup);
+
+        return false;
     }
 }

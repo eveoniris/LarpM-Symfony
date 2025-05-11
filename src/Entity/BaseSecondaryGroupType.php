@@ -19,13 +19,13 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseSecondaryGroupType', 'extended' => 'SecondaryGroupType'])]
 abstract class BaseSecondaryGroupType
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
     protected string $label = '';
 
-    #[Column(type: Types::STRING)]
+    #[Column(type: Types::TEXT)]
     protected ?string $description = null;
 
     #[OneToMany(mappedBy: 'secondaryGroupType', targetEntity: SecondaryGroup::class)]

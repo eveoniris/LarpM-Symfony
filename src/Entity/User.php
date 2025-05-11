@@ -25,18 +25,103 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     public const ROLE_USER = 'ROLE_USER';
     public const ROLE_WARGAME = 'ROLE_WARGAME';
 
-    public static function loadValidatorMetadata(ClassMetadata $metadata): void
+    public function __construct(string $email = '')
     {
-        $metadata->addConstraint(new UniqueEntity([
-            'fields' => ['email'],
-        ]));
+        // @deprecated
+        $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
 
-        // ...
+        $this->email = $email;
+        $this->setCreationDate(new \DateTime('NOW'));
+        parent::__construct();
     }
+
+    public function addCoeur(): static
+    {
+        $coeur = $this->getCoeur();
+        ++$coeur;
+        $this->setCoeur($coeur);
+
+        return $this;
+    }
+
+    /**
+     * Add the given role to the User.
+     *
+     * @param string $role
+     */
+    public function addRole($role): void
+    {
+        $role = strtoupper($role);
+
+        if ('ROLE_USER' === $role) {
+            return;
+        }
+
+        $roles = explode(',', (string) $this->rights);
+
+        if (!$this->hasRole($role)) {
+            $roles[] = $role;
+        }
+
+        $this->rights = implode(',', array_values($roles));
+    }
+
+    /**
+     * Test whether the User has the given role.
+     */
+    public function hasRole(string $role): bool
+    {
+        return in_array(strtoupper($role), $this->getRoles(), true);
+    }
+
+    public function equals(User $User): void
+    {
+    }
+
+    /**
+     * Removes sensitive data from the User.
+     *
+     * This is a no-op, since we never store the plain text credentials in this object.
+     * It's required by UserInterface.
+     */
+    public function eraseCredentials(): void
+    {
+    }
+
+    // @deprecated
 
     public function generateToken(): string
     {
         return bin2hex(random_bytes(18));
+    }
+
+    /**
+     * Retourne l'age du joueur.
+     */
+    public function getAgeJoueur(): int
+    {
+        $etat_civil = $this->getEtatCivil();
+        if (!$etat_civil) {
+            return 33;
+        }
+
+        $naissance = $etat_civil->getDateNaissance();
+        $gn_date = $this->getLastParticipant()->getGn()->getDateDebut();
+        $interval = date_diff($gn_date, $naissance);
+
+        return (int) $interval->format('%y');
+    }
+
+    /**
+     * Retourne le dernier participant de l'utilisateur.
+     */
+    public function getLastParticipant(): ?Participant
+    {
+        if (!$this->getParticipants()->isEmpty()) {
+            return $this->getParticipants()->last();
+        }
+
+        return null;
     }
 
     public static function getAvailableRoles(): array
@@ -71,47 +156,19 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         ];
     }
 
-    public function validatePasswordStrength(string $password): ?string
-    {
-        if (empty($password)) {
-            return "Pas de mot de passe, pas d'accès";
-        }
-
-        if (strlen($password) < 5) {
-            return 'Mot de passe de moins de 5 caractères ? Même un Cimérien fait mieux !';
-        }
-
-        return null;
-    }
-
-    public function __construct(string $email = '')
-    {
-        // @deprecated
-        $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
-
-        $this->email = $email;
-        $this->setCreationDate(new \DateTime('NOW'));
-        parent::__construct();
-    }
-
-    // @deprecated
-    public function addCoeur(): static
-    {
-        $coeur = $this->getCoeur();
-        ++$coeur;
-        $this->setCoeur($coeur);
-
-        return $this;
-    }
-
     /**
-     * @see PasswordAuthenticatedUserInterface
+     * Fourni tous les billets d'un utilisateur.
      */
-    public function getPassword(): string
+    public function getBillets(): Collection
     {
-        // New larp password storage; we keep "password" field's name for the older one
-        // until we fully switch the larp
-        return $this->getPwd() ?? '';
+        $billets = new ArrayCollection();
+        foreach ($this->getParticipants() as $participant) {
+            if ($participant->getBillet()) {
+                $billets[] = $participant->getBillet();
+            }
+        }
+
+        return $billets;
     }
 
     public function setPassword(string $password): static
@@ -123,18 +180,21 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     }
 
     /**
-     * Recherche si l'utilisateur à un événement futur de prévu.
+     * Returns the name, if set, or else "Anonymous {id}".
+     *
+     * @return string
      */
-    public function hasFuturEvent(): bool
+    public function getDisplayName()
     {
-        $now = new \DateTime('NOW');
-        foreach ($this->getParticipants() as $participant) {
-            if ($participant->getGn()->getDateDebut() > $now) {
-                return true;
-            }
-        }
+        return $this->username ?: 'Anonymous '.$this->id;
+    }
 
-        return false;
+    /**
+     * Retourne le nom complet de l'utilisateur (nom prénom).
+     */
+    public function getFullName(): string
+    {
+        return $this->getEtatCivil()->getFullName();
     }
 
     /**
@@ -155,6 +215,56 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     }
 
     /**
+     * Fourni la liste des tous les GN auquel l'utillisateur participe.
+     */
+    public function getGns(): Collection
+    {
+        $gns = new ArrayCollection();
+        foreach ($this->getParticipants() as $participant) {
+            $gns[] = $participant->getGn();
+        }
+
+        return $gns;
+    }
+
+    /**
+     * Fourni la liste des groupes dont l'utilisateur est le scénariste.
+     */
+    public function getGroupeScenariste()
+    {
+        return $this->getGroupeRelatedByScenaristeIds();
+    }
+
+    /**
+     * Username + email.
+     */
+    public function getIdentity(): string
+    {
+        return $this->getUsername().' '.$this->getEmail();
+    }
+
+    public function getLastPersonnage()
+    {
+        $last = null;
+        foreach ($this->getParticipants() as $participant) {
+            if (null != $participant->getPersonnage() && (null == $last || $participant->getId() > $last->getId())) {
+                // On conserve la dernière participation avec un personnage
+                $last = $participant;
+            }
+        }
+
+        return $last?->getPersonnage();
+    }
+
+    /**
+     * Alias vers Username.
+     */
+    public function getName()
+    {
+        return $this->getUsername();
+    }
+
+    /**
      * Fourni les informations de participation à un jeu.
      */
     public function getParticipant(Gn $gn): ?Participant
@@ -169,68 +279,28 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     }
 
     /**
-     * Retourne le dernier participant de l'utilisateur.
+     * @return mixed[]
      */
-    public function getLastParticipant(): ?Participant
+    public function getPersonnagesVivants(): array
     {
-        if (!$this->getParticipants()->isEmpty()) {
-            return $this->getParticipants()->last();
-        }
-
-        return null;
-    }
-
-    /**
-     * Fourni tous les billets d'un utilisateur.
-     */
-    public function getBillets(): Collection
-    {
-        $billets = new ArrayCollection();
-        foreach ($this->getParticipants() as $participant) {
-            if ($participant->getBillet()) {
-                $billets[] = $participant->getBillet();
+        $personnages_vivants = [];
+        foreach ($this->personnages as $personnage) {
+            if ($personnage->getVivant()) {
+                $personnages_vivants[] = $personnage;
             }
         }
 
-        return $billets;
+        return $personnages_vivants;
     }
 
     /**
-     * Fourni la liste des tous les GN auquel l'utillisateur participe.
+     * Recherche si l'utilisateur à un événement futur de prévu.
      */
-    public function getGns(): Collection
+    public function hasFuturEvent(): bool
     {
-        $gns = new ArrayCollection();
+        $now = new \DateTime('NOW');
         foreach ($this->getParticipants() as $participant) {
-            $gns[] = $participant->getGn();
-        }
-
-        return $gns;
-    }
-
-    /**
-     * Alias vers Username.
-     */
-    public function getName()
-    {
-        return $this->getUsername();
-    }
-
-    /**
-     * Username + email.
-     */
-    public function getIdentity(): string
-    {
-        return $this->getUsername().' '.$this->getEmail();
-    }
-
-    /**
-     * Indique si l'utilisateur participe à un GN.
-     */
-    public function takePart(Gn $gn): bool
-    {
-        foreach ($this->getParticipants() as $participant) {
-            if ($participant->getGn() == $gn) {
+            if ($participant->getGn()->getDateDebut() > $now) {
                 return true;
             }
         }
@@ -239,140 +309,24 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     }
 
     /**
-     * Indique si l'utilisateur est membre d'un groupe.
+     * Test whether Username has ever been set (even if it's currently empty).
      */
-    public function isMemberOf(Groupe $groupe)
+    public function hasRealUsername(): bool
     {
-        return $this->getGroupes()->contains($groupe);
+        return !is_null($this->username);
     }
 
     /**
-     * Fourni la liste des groupes dont l'utilisateur est le scénariste.
-     */
-    public function getGroupeScenariste()
-    {
-        return $this->getGroupeRelatedByScenaristeIds();
-    }
-
-    /**
-     * Test whether the User has the given role.
-     */
-    public function hasRole(string $role): bool
-    {
-        return in_array(strtoupper($role), $this->getRoles(), true);
-    }
-
-    /**
-     * Add the given role to the User.
-     *
-     * @param string $role
-     */
-    public function addRole($role): void
-    {
-        $role = strtoupper($role);
-
-        if ('ROLE_USER' === $role) {
-            return;
-        }
-
-        $roles = explode(',', (string) $this->rights);
-
-        if (!$this->hasRole($role)) {
-            $roles[] = $role;
-        }
-
-        $this->rights = implode(',', array_values($roles));
-    }
-
-    /**
-     * Remove the given role from the User.
-     *
-     * @param string $role
-     */
-    public function removeRole($role): void
-    {
-        $roles = explode(',', (string) $this->rights);
-
-        if (false !== $key = array_search(strtoupper($role), $roles, true)) {
-            unset($roles[$key]);
-            $this->rights = implode(',', array_values($roles));
-        }
-    }
-
-    /**
-     * Get the actual Username value that was set,
-     * or null if no Username has been set.
-     * Compare to getUsername, which returns the email if Username is not set.
-     *
-     * @return string|null
-     *
-     * @see getUsername
-     */
-    public function getRealUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * The Symfony Security component stores a serialized User object in the session.
-     * We only need it to store the User ID, because the User provider's refreshUser() method is called on each request
-     * and reloads the User by its ID.
-     *
-     * @see \Serializable::serialize()
-     */
-    public function serialize(): string
-    {
-        return serialize([
-            $this->id,
-        ]);
-    }
-
-    /**
-     * Checks whether the User is enabled.
+     * Checks whether the User's account has expired.
      *
      * Internally, if this method returns false, the authentication system
-     * will throw a DisabledException and prevent login.
+     * will throw an AccountExpiredException and prevent login.
      *
-     * Users are enabled by default.
+     * @return bool true if the User's account is non expired, false otherwise
      *
-     * @return bool true if the User is enabled, false otherwise
-     *
-     * @see DisabledException
+     * @see AccountExpiredException
      */
-    public function isEnabled(): bool
-    {
-        return $this->getIsEnabled();
-    }
-
-    public function setEnabled($isEnabled): static
-    {
-        return $this->setIsEnabled($isEnabled);
-    }
-
-    /**
-     * @param int $ttl password reset request TTL, in seconds
-     */
-    public function isPasswordResetRequestExpired(int $ttl): bool
-    {
-        $timeRequested = $this->getTimePasswordResetRequested();
-        if (0 === $timeRequested) {
-            return true;
-        }
-
-        return $timeRequested + $ttl < time();
-    }
-
-    /**
-     * Checks whether the User's credentials (password) has expired.
-     *
-     * Internally, if this method returns false, the authentication system
-     * will throw a CredentialsExpiredException and prevent login.
-     *
-     * @return bool true if the User's credentials are non expired, false otherwise
-     *
-     * @see CredentialsExpiredException
-     */
-    public function isCredentialsNonExpired(): bool
+    public function isAccountNonExpired(): bool
     {
         return true;
     }
@@ -393,50 +347,113 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     }
 
     /**
-     * Checks whether the User's account has expired.
+     * Checks whether the User's credentials (password) has expired.
      *
      * Internally, if this method returns false, the authentication system
-     * will throw an AccountExpiredException and prevent login.
+     * will throw a CredentialsExpiredException and prevent login.
      *
-     * @return bool true if the User's account is non expired, false otherwise
+     * @return bool true if the User's credentials are non expired, false otherwise
      *
-     * @see AccountExpiredException
+     * @see CredentialsExpiredException
      */
-    public function isAccountNonExpired(): bool
+    public function isCredentialsNonExpired(): bool
     {
         return true;
     }
 
-    public function equals(User $User): void
-    {
-    }
-
     /**
-     * Removes sensitive data from the User.
+     * Checks whether the User is enabled.
      *
-     * This is a no-op, since we never store the plain text credentials in this object.
-     * It's required by UserInterface.
-     */
-    public function eraseCredentials(): void
-    {
-    }
-
-    /**
-     * Returns the name, if set, or else "Anonymous {id}".
+     * Internally, if this method returns false, the authentication system
+     * will throw a DisabledException and prevent login.
      *
-     * @return string
+     * Users are enabled by default.
+     *
+     * @return bool true if the User is enabled, false otherwise
+     *
+     * @see DisabledException
      */
-    public function getDisplayName()
+    public function isEnabled(): bool
     {
-        return $this->username ?: 'Anonymous '.$this->id;
+        return $this->getIsEnabled();
     }
 
     /**
-     * Test whether Username has ever been set (even if it's currently empty).
+     * Indique si l'utilisateur est membre d'un groupe.
      */
-    public function hasRealUsername(): bool
+    public function isMemberOf(Groupe $groupe)
     {
-        return !is_null($this->username);
+        return $this->getGroupes()->contains($groupe);
+    }
+
+    /**
+     * @param int $ttl password reset request TTL, in seconds
+     */
+    public function isPasswordResetRequestExpired(int $ttl): bool
+    {
+        $timeRequested = $this->getTimePasswordResetRequested();
+        if (0 === $timeRequested) {
+            return true;
+        }
+
+        return $timeRequested + $ttl < time();
+    }
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata): void
+    {
+        $metadata->addConstraint(new UniqueEntity([
+            'fields' => ['email'],
+        ]));
+
+        // ...
+    }
+
+    /**
+     * Remove the given role from the User.
+     *
+     * @param string $role
+     */
+    public function removeRole($role): void
+    {
+        $roles = explode(',', (string) $this->rights);
+
+        if (false !== $key = array_search(strtoupper($role), $roles, true)) {
+            unset($roles[$key]);
+            $this->rights = implode(',', array_values($roles));
+        }
+    }
+
+    /**
+     * The Symfony Security component stores a serialized User object in the session.
+     * We only need it to store the User ID, because the User provider's refreshUser() method is called on each request
+     * and reloads the User by its ID.
+     *
+     * @see \Serializable::serialize()
+     */
+    public function serialize(): string
+    {
+        return serialize([
+            $this->id,
+        ]);
+    }
+
+    public function setEnabled($isEnabled): static
+    {
+        return $this->setIsEnabled($isEnabled);
+    }
+
+    /**
+     * Indique si l'utilisateur participe à un GN.
+     */
+    public function takePart(Gn $gn): bool
+    {
+        foreach ($this->getParticipants() as $participant) {
+            if ($participant->getGn() == $gn) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -477,56 +494,40 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         return $errors;
     }
 
-    public function getLastPersonnage()
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
     {
-        $last = null;
-        foreach ($this->getParticipants() as $participant) {
-            if (null != $participant->getPersonnage() && (null == $last || $participant->getId() > $last->getId())) {
-                // On conserve la dernière participation avec un personnage
-                $last = $participant;
-            }
-        }
-
-        return $last?->getPersonnage();
+        // New larp password storage; we keep "password" field's name for the older one
+        // until we fully switch the larp
+        return $this->getPwd() ?? '';
     }
 
     /**
-     * Retourne le nom complet de l'utilisateur (nom prénom).
+     * Get the actual Username value that was set,
+     * or null if no Username has been set.
+     * Compare to getUsername, which returns the email if Username is not set.
+     *
+     * @return string|null
+     *
+     * @see getUsername
      */
-    public function getFullName(): string
+    public function getRealUsername()
     {
-        return $this->getEtatCivil()->getFullName();
+        return $this->username;
     }
 
-    /**
-     * @return mixed[]
-     */
-    public function getPersonnagesVivants(): array
+    public function validatePasswordStrength(string $password): ?string
     {
-        $personnages_vivants = [];
-        foreach ($this->personnages as $personnage) {
-            if ($personnage->getVivant()) {
-                $personnages_vivants[] = $personnage;
-            }
+        if (empty($password)) {
+            return "Pas de mot de passe, pas d'accès";
         }
 
-        return $personnages_vivants;
-    }
-
-    /**
-     * Retourne l'age du joueur.
-     */
-    public function getAgeJoueur(): int
-    {
-        $etat_civil = $this->getEtatCivil();
-        if (!$etat_civil) {
-            return 33;
+        if (strlen($password) < 5) {
+            return 'Mot de passe de moins de 5 caractères ? Même un Cimérien fait mieux !';
         }
 
-        $naissance = $etat_civil->getDateNaissance();
-        $gn_date = $this->getLastParticipant()->getGn()->getDateDebut();
-        $interval = date_diff($gn_date, $naissance);
-
-        return (int) $interval->format('%y');
+        return null;
     }
 }

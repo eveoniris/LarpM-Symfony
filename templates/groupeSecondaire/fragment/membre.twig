@@ -1,0 +1,128 @@
+<div class="card text-bg mb-3">
+
+    <div class="text-center py-2 border-bottom border-2">
+        {% if personnage %}
+            <a href="{{ path('personnage.trombine', {'personnage': personnage.id}) }}">
+                {% if personnage.trombineUrl %}
+                    <img class="media-object w-auto rounded-2 border border-2 border-secondary"
+                         style="max-height:250px;max-width: 250px"
+                         src="{{ path('personnage.trombine', {'personnage' : personnage.id }) }}"
+                         alt=""/>
+                {% else %}
+                    <img class="media-object w-auto rounded-2 border-2  border-secondary"
+                         style="max-height:250px;max-width: 250px"
+                         src="{{ app.request.basepath }}/img/no_trombine.png"/>
+                {% endif %}
+            </a>
+        {% else %}
+            <img class="media-object w-auto rounded-2 border-2 border-secondary"
+                 style="max-height:250px;max-width: 250px"
+                 src="{{ app.request.basepath }}/img/no_trombine.png" alt=""/>
+        {% endif %}
+    </div>
+
+    {% set rankHtml %}
+        {% if personnage.id == groupeSecondaire.responsable.id %}
+            <span><i class="fa-solid fa-user-tie text-warning"></i> Responsable </span>
+        {% elseif membre is defined and membre.secret %}
+            Avancé
+        {% else %}
+            Basique
+        {% endif %}
+    {% endset %}
+
+    {% set surnameHtml %}
+        <div>
+            {% if personnage.vivant == 0 %}
+                <i class="fa-solid fa-skull"
+                   title="Mort"
+                   data-bs-toggle="tooltip"
+                   data-bs-placement="bottom"
+                   data-bs-title="Mort"></i>
+            {% endif %}
+            {% if isAdmin %}
+                <i class="fa fa-eye text-danger" data-toggle="tooltip"
+                   data-placement="top"
+                   title="Lien scénariste"></i>
+                <a href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">
+                    {{ personnage.identityByLabel(gn.getLabel()) }}
+                </a>
+            {% else %}
+                {{ personnage.getPublicName }}
+            {% endif %}
+        </div>
+    {% endset %}
+
+    {% set statutHtml %}
+        {% if personnage.participeTo(gn) %}
+            <span class="text-success">Inscrit à {{ gn.label }}</span><br/>
+        {% else %}
+            <span class="text-warning">Non inscrit à {{ gn.label }}</span>
+        {% endif %}
+    {% endset %}
+
+    {% set accessHtml %}
+        {% if membre is defined %}
+            {% if membre.secret %}
+                <div class="text-danger">Voit les secrets</div>
+                <div>
+                    <a class="btn btn-sm btn-secondary"
+                       href="{{ path('groupeSecondaire.secret.off', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
+                        Retirer
+                    </a>
+                </div>
+            {% else %}
+                <div>Ne voit pas les secrets</div>
+                <div>
+                    <a class="btn btn-sm btn-secondary"
+                       href="{{ path('groupeSecondaire.secret.on', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
+                        Autoriser
+                    </a>
+                </div>
+            {% endif %}
+        {% else %}
+            Complet
+        {% endif %}
+    {% endset %}
+
+    {% set isReligion = groupeSecondaire.responsable.id == personnage.id %}
+    {% set religionHtml %}
+        {% if isReligion %}
+            <ul class="list-group list-group-flush w-100 m-0 p-0">
+                {% for personnageReligion in personnage.personnagesReligions %}
+                    <li class="list-group-item w-100 m-0 p-0 d-flex justify-content-between">
+                        <div>{{ personnageReligion.religion.label }}</div>
+                        <div>
+                            <span class="badge rounded-pill bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            Aucune
+        {% endif %}
+    {% endset %}
+
+    {% set manageHtml %}
+        {% if membre is defined %}
+            <a class="btn btn-sm btn-secondary"
+               href="{{ path('groupeSecondaire.member.remove', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}">
+                Retirer ce membre
+            </a>
+        {% else %}
+            -
+        {% endif %}
+    {% endset %}
+
+    {% include '_partials/listItems.twig'
+        with { 'head' : false, 'items' : [
+        {'title': 'Surnom', 'text': surnameHtml},
+        {'title': 'Religion', 'text': religionHtml, 'visible': isReligion},
+        {'title': 'Statut', 'text': statutHtml },
+        {'title': 'Rang', 'text': rankHtml},
+        {'title': 'Accès', 'text': accessHtml, visible: canManage },
+        {'title': 'Gestion', 'text': manageHtml, visible: canManage, 'css': 'mb-0' },
+    ]
+    } %}
+
+</div>

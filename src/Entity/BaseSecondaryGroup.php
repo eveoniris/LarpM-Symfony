@@ -22,16 +22,16 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseSecondaryGroup', 'extended' => 'SecondaryGroup'])]
 abstract class BaseSecondaryGroup
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
     protected string $label = '';
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description_secrete = null;
 
     #[Column(type: Types::BOOLEAN, nullable: true)]
@@ -53,7 +53,7 @@ abstract class BaseSecondaryGroup
     #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_id', nullable: 'false')]
     protected Collection $postulants;
 
-    #[ManyToOne(targetEntity: SecondaryGroupType::class, inversedBy: 'secondaryGroups')]
+    #[ManyToOne(targetEntity: SecondaryGroupType::class, fetch: 'EAGER', inversedBy: 'secondaryGroups')]
     #[JoinColumn(name: 'secondary_group_type_id', referencedColumnName: 'id', nullable: 'false')]
     protected SecondaryGroupType $secondaryGroupType;
 
@@ -61,122 +61,24 @@ abstract class BaseSecondaryGroup
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
     protected ?Personnage $personnage = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[Column(length: 255, nullable: true)]
     private ?string $discord = null;
+
+    #[Column(nullable: true)]
+    private ?bool $private = null;
+
+    #[ManyToOne(targetEntity: User::class, inversedBy: 'secondaryGroups')]
+    #[JoinColumn(name: 'scenariste_id', referencedColumnName: 'id', options: ['unsigned' => true])]
+    private ?User $scenariste = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $show_discord = null;
 
     public function __construct()
     {
         $this->intrigueHasGroupeSecondaires = new ArrayCollection();
         $this->membres = new ArrayCollection();
         $this->postulants = new ArrayCollection();
-    }
-
-    /**
-     * Set the value of id.
-     */
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of id.
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set the value of label.
-     */
-    public function setLabel(string $label): static
-    {
-        $this->label = $label;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of label.
-     */
-    public function getLabel(): string
-    {
-        return $this->label ?? '';
-    }
-
-    /**
-     * Set the value of description.
-     */
-    public function setDescription(string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of description.
-     */
-    public function getDescription(): string
-    {
-        return $this->description ?? '';
-    }
-
-    /**
-     * Set the value of description_secrete.
-     */
-    public function setDescriptionSecrete(string $description_secrete): static
-    {
-        $this->description_secrete = $description_secrete;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of description_secrete.
-     */
-    public function getDescriptionSecrete(): string
-    {
-        return $this->description_secrete ?? '';
-    }
-
-    /**
-     * Set the value of secret.
-     */
-    public function setSecret(bool $secret): static
-    {
-        $this->secret = $secret;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of secret.
-     */
-    public function getSecret(): bool
-    {
-        return $this->secret ?? false;
-    }
-
-    /**
-     * Set the value of materiel.
-     */
-    public function setMateriel(string $materiel): static
-    {
-        $this->materiel = $materiel;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of materiel.
-     */
-    public function getMateriel(): string
-    {
-        return $this->materiel ?? '';
     }
 
     /**
@@ -190,11 +92,87 @@ abstract class BaseSecondaryGroup
     }
 
     /**
-     * Remove IntrigueHasGroupeSecondaire entity from collection (one to many).
+     * Add Membre entity to collection (one to many).
      */
-    public function removeIntrigueHasGroupeSecondaire(IntrigueHasGroupeSecondaire $intrigueHasGroupeSecondaire): static
+    public function addMembre(Membre $membre): static
     {
-        $this->intrigueHasGroupeSecondaires->removeElement($intrigueHasGroupeSecondaire);
+        $this->membres[] = $membre;
+
+        return $this;
+    }
+
+    /**
+     * Add Postulant entity to collection (one to many).
+     */
+    public function addPostulant(Postulant $postulant): static
+    {
+        $this->postulants[] = $postulant;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of description.
+     */
+    public function getDescription(): string
+    {
+        return $this->description ?? '';
+    }
+
+    /**
+     * Set the value of description.
+     */
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of description_secrete.
+     */
+    public function getDescriptionSecrete(): string
+    {
+        return $this->description_secrete ?? '';
+    }
+
+    /**
+     * Set the value of description_secrete.
+     */
+    public function setDescriptionSecrete(string $description_secrete): static
+    {
+        $this->description_secrete = $description_secrete;
+
+        return $this;
+    }
+
+    public function getDiscord(): ?string
+    {
+        return $this->discord;
+    }
+
+    public function setDiscord(?string $discord): static
+    {
+        $this->discord = $discord;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of id.
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set the value of id.
+     */
+    public function setId(int $id): static
+    {
+        $this->id = $id;
 
         return $this;
     }
@@ -208,11 +186,144 @@ abstract class BaseSecondaryGroup
     }
 
     /**
-     * Add Membre entity to collection (one to many).
+     * Get the value of label.
      */
-    public function addMembre(Membre $membre): static
+    public function getLabel(): string
     {
-        $this->membres[] = $membre;
+        return $this->label ?? '';
+    }
+
+    /**
+     * Set the value of label.
+     */
+    public function setLabel(string $label): static
+    {
+        $this->label = $label;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of materiel.
+     */
+    public function getMateriel(): string
+    {
+        return $this->materiel ?? '';
+    }
+
+    /**
+     * Set the value of materiel.
+     */
+    public function setMateriel(string $materiel): static
+    {
+        $this->materiel = $materiel;
+
+        return $this;
+    }
+
+    /**
+     * Get Membre entity collection (one to many).
+     */
+    public function getMembres(): Collection
+    {
+        return $this->membres;
+    }
+
+    /**
+     * Get Personnage entity (many to one).
+     */
+    public function getPersonnage(): ?Personnage
+    {
+        return $this->personnage;
+    }
+
+    /**
+     * Set Personnage entity (many to one).
+     */
+    public function setPersonnage(?Personnage $personnage = null): static
+    {
+        $this->personnage = $personnage;
+
+        return $this;
+    }
+
+    /**
+     * Get Postulant entity collection (one to many).
+     */
+    public function getPostulants(): Collection
+    {
+        return $this->postulants;
+    }
+
+    public function getScenariste(): ?User
+    {
+        return $this->scenariste;
+    }
+
+    public function setScenariste(?User $scenariste): static
+    {
+        $this->scenariste = $scenariste;
+
+        return $this;
+    }
+
+    /**
+     * Get SecondaryGroupType entity (many to one).
+     */
+    public function getSecondaryGroupType(): SecondaryGroupType
+    {
+        return $this->secondaryGroupType;
+    }
+
+    /**
+     * Set SecondaryGroupType entity (many to one).
+     */
+    public function setSecondaryGroupType(?SecondaryGroupType $secondaryGroupType = null): static
+    {
+        $this->secondaryGroupType = $secondaryGroupType;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of secret.
+     */
+    public function getSecret(): bool
+    {
+        return $this->secret ?? false;
+    }
+
+    /**
+     * Set the value of secret.
+     */
+    public function setSecret(bool $secret): static
+    {
+        $this->secret = $secret;
+
+        return $this;
+    }
+
+    public function isPrivate(): ?bool
+    {
+        return $this->private;
+    }
+
+    public function isSecret(): ?bool
+    {
+        return (bool) $this->secret;
+    }
+
+    public function isShowDiscord(): ?bool
+    {
+        return $this->show_discord;
+    }
+
+    /**
+     * Remove IntrigueHasGroupeSecondaire entity from collection (one to many).
+     */
+    public function removeIntrigueHasGroupeSecondaire(IntrigueHasGroupeSecondaire $intrigueHasGroupeSecondaire): static
+    {
+        $this->intrigueHasGroupeSecondaires->removeElement($intrigueHasGroupeSecondaire);
 
         return $this;
     }
@@ -228,24 +339,6 @@ abstract class BaseSecondaryGroup
     }
 
     /**
-     * Get Membre entity collection (one to many).
-     */
-    public function getMembres(): Collection
-    {
-        return $this->membres;
-    }
-
-    /**
-     * Add Postulant entity to collection (one to many).
-     */
-    public function addPostulant(Postulant $postulant): static
-    {
-        $this->postulants[] = $postulant;
-
-        return $this;
-    }
-
-    /**
      * Remove Postulant entity from collection (one to many).
      */
     public function removePostulant(Postulant $postulant): static
@@ -255,58 +348,16 @@ abstract class BaseSecondaryGroup
         return $this;
     }
 
-    /**
-     * Get Postulant entity collection (one to many).
-     */
-    public function getPostulants(): Collection
+    public function setPrivate(?bool $private): static
     {
-        return $this->postulants;
-    }
-
-    /**
-     * Set SecondaryGroupType entity (many to one).
-     */
-    public function setSecondaryGroupType(?SecondaryGroupType $secondaryGroupType = null): static
-    {
-        $this->secondaryGroupType = $secondaryGroupType;
+        $this->private = $private;
 
         return $this;
     }
 
-    /**
-     * Get SecondaryGroupType entity (many to one).
-     */
-    public function getSecondaryGroupType(): SecondaryGroupType
+    public function setShowDiscord(?bool $show_discord): static
     {
-        return $this->secondaryGroupType;
-    }
-
-    /**
-     * Set Personnage entity (many to one).
-     */
-    public function setPersonnage(?Personnage $personnage = null): static
-    {
-        $this->personnage = $personnage;
-
-        return $this;
-    }
-
-    /**
-     * Get Personnage entity (many to one).
-     */
-    public function getPersonnage(): ?Personnage
-    {
-        return $this->personnage;
-    }
-
-    public function getDiscord(): ?string
-    {
-        return $this->discord;
-    }
-
-    public function setDiscord(?string $discord): static
-    {
-        $this->discord = $discord;
+        $this->show_discord = $show_discord;
 
         return $this;
     }

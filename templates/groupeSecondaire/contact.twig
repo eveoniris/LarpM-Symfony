@@ -8,24 +8,20 @@
         [
             {'name' : 'Liste des groupes secondaires', 'route': path('groupeSecondaire.list') },
             {'name' : "Détail de #{groupeSecondaire.label}", 'route': path('groupeSecondaire.detail', {'groupeSecondaire':groupeSecondaire.id}) },
-            {'name' : "Postuler" },
+            {'name' : "Contacter" },
         ]
     } %}
 
     {% set htmlInfo %}
         <p>
-            Votre nom "<strong>{{ personnage.publicName }}</strong>", sera transmis au responsable du groupe secondaire.
-        </p>
-
-        <p>
-            Dans le cas de groupes religieux, la liste de vos religions (ainsi que vos niveaux de Ferveur associés)
-            sera transmis et visible par responsable du groupe secondaire.
+            Votre nom "<strong>{{ personnage.publicName }}</strong>" et votre identifiant utilisateur (pour réponse),
+            sera transmis au responsable du groupe secondaire.
         </p>
     {% endset %}
     {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : htmlInfo} %}
 
     <div class="well well-sm">
-        <div class="header"><h5>Postuler à {{ groupeSecondaire.label }}</h5></div>
+        <div class="header"><h5>Contacter {{ groupeSecondaire.label }}</h5></div>
         {{ form(form) }}
     </div>
 

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,15 +20,15 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePostulant', 'extended' => 'Postulant'])]
 abstract class BasePostulant
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $date;
+    #[Column(name: 'date', type: Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?DateTime $date;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
+    #[Column(type: Types::TEXT)]
     protected string $explanation;
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    #[Column(type: Types::BOOLEAN, nullable: true)]
     protected bool $waiting;
 
     #[ManyToOne(targetEntity: SecondaryGroup::class, inversedBy: 'postulants')]
@@ -38,47 +40,19 @@ abstract class BasePostulant
     protected Personnage $personnage;
 
     /**
-     * Set the value of id.
-     */
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of id.
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set the value of date.
-     */
-    public function setDate(\DateTime $date): static
-    {
-        $this->date = $date;
-
-        return $this;
-    }
-
-    /**
      * Get the value of date.
      */
-    public function getDate(): ?\DateTime
+    public function getDate(): ?DateTime
     {
         return $this->date;
     }
 
     /**
-     * Set the value of explanation.
+     * Set the value of date.
      */
-    public function setExplanation(string $explanation): static
+    public function setDate(DateTime $date): static
     {
-        $this->explanation = $explanation;
+        $this->date = $date;
 
         return $this;
     }
@@ -92,39 +66,39 @@ abstract class BasePostulant
     }
 
     /**
-     * Set the value of waiting.
+     * Set the value of explanation.
      */
-    public function setWaiting(bool $waiting): static
+    public function setExplanation(string $explanation): static
     {
-        $this->waiting = $waiting;
+        $this->explanation = $explanation;
 
         return $this;
     }
 
     /**
-     * Get the value of waiting.
+     * Get the value of id.
      */
-    public function getWaiting(): bool
+    public function getId(): int
     {
-        return $this->waiting;
+        return $this->id;
     }
 
     /**
-     * Set SecondaryGroup entity (many to one).
+     * Set the value of id.
      */
-    public function setSecondaryGroup(SecondaryGroup $secondaryGroup = null): static
+    public function setId(int $id): static
     {
-        $this->secondaryGroup = $secondaryGroup;
+        $this->id = $id;
 
         return $this;
     }
 
     /**
-     * Get SecondaryGroup entity (many to one).
+     * Get Personnage entity (many to one).
      */
-    public function getSecondaryGroup(): ?SecondaryGroup
+    public function getPersonnage(): Personnage
     {
-        return $this->secondaryGroup;
+        return $this->personnage;
     }
 
     /**
@@ -138,15 +112,39 @@ abstract class BasePostulant
     }
 
     /**
-     * Get Personnage entity (many to one).
+     * Get SecondaryGroup entity (many to one).
      */
-    public function getPersonnage(): Personnage
+    public function getSecondaryGroup(): ?SecondaryGroup
     {
-        return $this->personnage;
+        return $this->secondaryGroup;
     }
 
-    /* public function __sleep()
+    /**
+     * Set SecondaryGroup entity (many to one).
+     */
+    public function setSecondaryGroup(SecondaryGroup $secondaryGroup = null): static
     {
-        return ['id', 'date', 'secondary_group_id', 'personnage_id', 'explanation', 'waiting'];
-    } */
+        $this->secondaryGroup = $secondaryGroup;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of waiting.
+     */
+    public function getWaiting(): bool
+    {
+        return $this->waiting;
+    }
+
+    /**
+     * Set the value of waiting.
+     */
+    public function setWaiting(bool $waiting): static
+    {
+        $this->waiting = $waiting;
+
+        return $this;
+    }
+
 }

@@ -9,27 +9,30 @@ Variables passed to this template:
 
 {# The subject line. #}
 {%- block subject -%}{%- autoescape false -%}
-    Merci de confirmer votre adresse email
+    Nouveau message reçu sur larpmanager
 {%- endautoescape -%}{%- endblock -%}
 
 {# The plain text message. #}
 {%- block body_text -%}{%- autoescape false -%}
 
-    Bienvenue et Merci de rejoindre eveOniris !
-    Une grande aventure vous attends !
+    Vous avez reçu un nouveau message sur le larpmanager:
 
-    S'il vous plait, cliquez sur le lien ci-dessous pour confirmer votre adresse mail :
-    {{ confirmationUrl }}
+    {{ message|striptags }}
+
+    __
+    Vous pouvez y répondre en vous y connectant, en allant dans votre messagerie.
 
 {%- endautoescape -%}{%- endblock -%}
 
 {# The HTML message. Optional. #}
 {%- block body_html -%}
 
-    <h1>Merci de rejoindre eveOniris !</h1>
-    <p>Une grande aventure vous attends !<br/>
-        Merci de cliquer sur le lien ci-dessous pour confirmer votre adresse e-mail</p>
+    Vous avez reçu un nouveau message sur le larpmanager:<br/>
 
-    {% include 'emails/button.twig' with {'linkHref': confirmationUrl, 'linkText': 'Confirmer mon adresse e-mail'} %}
+    {{ message|markdown_to_html }}
+
+    <hr/>
+    Vous pouvez y répondre en vous y connectant, en allant dans votre messagerie.
+
 
 {%- endblock -%}

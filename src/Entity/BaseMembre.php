@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,10 +19,10 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseMembre', 'extended' => 'Membre'])]
 abstract class BaseMembre
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN, nullable: true)]
+    #[Column(type: Types::BOOLEAN, nullable: true)]
     protected bool $secret = false;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'membres')]
@@ -32,15 +33,8 @@ abstract class BaseMembre
     #[JoinColumn(name: 'secondary_group_id', referencedColumnName: 'id', nullable: 'false')]
     protected SecondaryGroup $secondaryGroup;
 
-    /**
-     * Set the value of id.
-     */
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
+    #[ORM\Column(nullable: true)]
+    private ?bool $private = null;
 
     /**
      * Get the value of id.
@@ -51,29 +45,11 @@ abstract class BaseMembre
     }
 
     /**
-     * Set the value of secret.
+     * Set the value of id.
      */
-    public function setSecret(bool $secret): static
+    public function setId(int $id): static
     {
-        $this->secret = $secret;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of secret.
-     */
-    public function getSecret(): bool
-    {
-        return $this->secret;
-    }
-
-    /**
-     * Set Personnage entity (many to one).
-     */
-    public function setPersonnage(Personnage $personnage = null): static
-    {
-        $this->personnage = $personnage;
+        $this->id = $id;
 
         return $this;
     }
@@ -87,11 +63,11 @@ abstract class BaseMembre
     }
 
     /**
-     * Set SecondaryGroup entity (many to one).
+     * Set Personnage entity (many to one).
      */
-    public function setSecondaryGroup(SecondaryGroup $secondaryGroup = null): static
+    public function setPersonnage(?Personnage $personnage = null): static
     {
-        $this->secondaryGroup = $secondaryGroup;
+        $this->personnage = $personnage;
 
         return $this;
     }
@@ -104,8 +80,43 @@ abstract class BaseMembre
         return $this->secondaryGroup;
     }
 
-    /* public function __sleep()
+    /**
+     * Set SecondaryGroup entity (many to one).
+     */
+    public function setSecondaryGroup(?SecondaryGroup $secondaryGroup = null): static
     {
-        return ['id', 'personnage_id', 'secondary_group_id', 'secret'];
-    } */
+        $this->secondaryGroup = $secondaryGroup;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of secret.
+     */
+    public function getSecret(): bool
+    {
+        return $this->secret;
+    }
+
+    /**
+     * Set the value of secret.
+     */
+    public function setSecret(bool $secret): static
+    {
+        $this->secret = $secret;
+
+        return $this;
+    }
+
+    public function isPrivate(): ?bool
+    {
+        return $this->private;
+    }
+
+    public function setPrivate(?bool $private): static
+    {
+        $this->private = $private;
+
+        return $this;
+    }
 }

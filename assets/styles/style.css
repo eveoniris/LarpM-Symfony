@@ -16,6 +16,11 @@
     border-radius: 1em;
 }
 
+.card .header > h5, .card .header > h4, .card .header > h6 {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
 .well {
     min-height: 20px;
     padding: 1em;
@@ -33,23 +38,32 @@
     border-radius: 3px
 }
 
-.item
-{
+.item {
     font-weight: bold;
-    width : 200px;
-    padding : 5px 5px 5px 5px;
+    width: 200px;
+    padding: 5px 5px 5px 5px;
 }
 
 /** EndPage content **/
 
 .pull-right {
-    float:right !important
+    float: right !important
 }
 
 /** Petit tools **/
-.hover_img a { position:relative; }
-.hover_img a span { position:absolute; display:none; z-index:99; }
-.hover_img a:hover span { display:block; }
+.hover_img a {
+    position: relative;
+}
+
+.hover_img a span {
+    position: absolute;
+    display: none;
+    z-index: 99;
+}
+
+.hover_img a:hover span {
+    display: block;
+}
 
 /******* OLDER ******/
 .row {
@@ -67,7 +81,7 @@ html {
 }
 
 body {
-    font-family: "Roboto","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 0.875rem;
     line-height: 1.42857143;
     #color: #888;
@@ -176,11 +190,11 @@ ul.detail li {
     padding: 0 !important;
 }
 
-ul.detail li>div {
+ul.detail li > div {
     padding: 4px;
 }
 
-ul.detail li .head, ul.detail li>strong {
+ul.detail li .head, ul.detail li > strong {
     flex: 0 0 auto;
     width: 16.66667%;
     min-width: 100px;
@@ -307,12 +321,18 @@ table.diplo {
     border-collapse: collapse;
     background-color: #fff;
 }
+
 table.diplo, table.diplo th, table.diplo td {
     border: 1px solid black;
 }
 
-table.diplo tr:hover {background-color: #f5f5f5}
-table.diplo tr:nth-child(even) {background-color: #f2f2f2}
+table.diplo tr:hover {
+    background-color: #f5f5f5
+}
+
+table.diplo tr:nth-child(even) {
+    background-color: #f2f2f2
+}
 
 table.diplo th {
     background-color: #4CAF50;
@@ -324,17 +344,16 @@ th.rotate {
     height: 140px;
     white-space: nowrap;
 }
+
 th.rotate > div {
-    transform:
-        /* Magic Numbers */
-            translate(0px, 51px)
-                /* 45 is really 360 - 45 */
-            rotate(270deg);
+    transform: /* Magic Numbers */ translate(0px, 51px) /* 45 is really 360 - 45 */ rotate(270deg);
     width: 30px;
 }
+
 th.rotate > div > span {
     padding: 5px 10px;
 }
+
 /** END Diplomatie **/
 
 .search input {
@@ -342,5 +361,10 @@ th.rotate > div > span {
     font-size: 1.2em;
 }
 
-.btn-search a, .btn-search button, .btn-search button i { align-items: center !important; }
-.btn-search a, .btn-search button i { font-size: 1.2em; }
+.btn-search a, .btn-search button, .btn-search button i {
+    align-items: center !important;
+}
+
+.btn-search a, .btn-search button i {
+    font-size: 1.2em;
+}

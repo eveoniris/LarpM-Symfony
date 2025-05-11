@@ -18,5 +18,6 @@ enum Role: string
     case SCENARISTE = 'ROLE_SCENARISTE';
     case STOCK = 'ROLE_STOCK';
     case USER = 'ROLE_USER';
+    case ROLE_GROUPE_TRANSVERSE = 'ROLE_GROUPE_TRANSVERSE';
 
 }

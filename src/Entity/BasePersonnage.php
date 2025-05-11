@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\PersonnageRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -13,7 +14,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 
-#[Entity]
+#[Entity(repositoryClass: PersonnageRepository::class)]
 #[ORM\Table(name: 'personnage')]
 #[ORM\Index(columns: ['groupe_id'], name: 'fk_personnage_groupe1_idx')]
 #[ORM\Index(columns: ['classe_id'], name: 'fk_personnage_archetype1_idx')]
@@ -716,6 +717,11 @@ abstract class BasePersonnage
         return $this;
     }
 
+    public function getCompentecesByFamilyLevel(): Collection
+    {
+        return $this->competences;
+    }
+
     /**
      * @return Collection<Competence>
      *
@@ -723,12 +729,45 @@ abstract class BasePersonnage
      */
     public function getCompetences(): Collection
     {
+        $all = new ArrayCollection();
+        $families = [];
+        /** @var Competence $competence */
+        foreach ($this->competences as $competence) {
+            if (!$competence->getCompetenceFamily() || !$competence->getLevel()) {
+                continue;
+            }
+
+            $key = $competence->getCompetenceFamily()->getLabel();
+            $level = $competence->getLevel()->getIndex();
+            $families[$key][$level] = $competence;
+        }
+
+        foreach ($families as &$family) {
+            ksort($family);
+        }
+        unset($family);
+
+        /*
         $iterator = $this->competences->getIterator();
-        $iterator->uasort(static function (Competence $a, Competence $b): string {
-            return $a->getCompetenceFamily()?->getLabel() ?? '' <=> $b->getCompetenceFamily()?->getLabel() ?? '';
+        $iterator->uasort(static function (Competence $a, Competence $b): int {
+            $aC = $a->getCompetenceFamily()?->getLabel().'_'.$a->getLevel()?->getIndex();
+            $bC = $b->getCompetenceFamily()?->getLabel().'_'.$b->getLevel()?->getIndex();
+
+            return $aC <=> $bC;
         });
 
+
         return new ArrayCollection(iterator_to_array($iterator));
+        */
+        ksort($families);
+
+        foreach ($families as $family) {
+            foreach ($family as $competence) {
+                $all->add($competence);
+            }
+        }
+
+        return $all;
     }
 
     /**

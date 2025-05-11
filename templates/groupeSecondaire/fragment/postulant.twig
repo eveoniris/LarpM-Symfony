@@ -1,0 +1,128 @@
+<div class="col-md-6">
+    <div class="list-group mb-3">
+
+        <div class="list-group-item">
+            <div class="text-center">
+                <a href="{{ path('personnage.trombine', {'personnage': postulant.personnage.id}) }}">
+                    {% if postulant.personnage.trombineUrl %}
+                        <img class="media-object w-auto rounded-2 border border-2 border-secondary"
+                             style="max-height:250px;max-width: 250px"
+                             src="{{ path('personnage.trombine', {'personnage' : postulant.personnage.id }) }}"
+                             alt=""/>
+                    {% else %}
+                        <img class="media-object w-auto rounded-2 border-2  border-secondary"
+                             style="max-height:250px;max-width: 250px"
+                             src="{{ app.request.basepath }}/img/no_trombine.png"/>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+
+        <div class="list-group-item">
+            Personnage :
+            {% if isAdmin %}
+                <i class="fa fa-eye text-danger" data-toggle="tooltip"
+                   data-placement="top"
+                   title="Lien scénariste"></i>
+                <a
+                        href="{{ path('personnage.detail', {'personnage':postulant.personnage.id}) }}">{{ postulant.personnage.publicname }}</a>
+            {% else %}
+                {{ postulant.personnage.publicname }}
+            {% endif %}
+        </div>
+
+        {% if groupeSecondaire.secondaryGroupType.isReligion %}
+            <div class="list-group-item">
+                Religions du postulant :
+                <ul class="list-group list-group-flush w-100 m-0 p-0">
+                    {% for personnageReligion in postulant.personnage.personnagesReligions %}
+                        <li class="list-group-item w-100 m-0 p-0 d-flex justify-content-between lh-lg">
+                            <div>{{ personnageReligion.religion.label }}</div>
+                            <div>
+                                <span class="badge rounded-pill bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="list-group-item">
+            Date de la demande
+            : {{ postulant.date|date('Y-m-d') }}
+        </div>
+
+        {% if postulant.waiting %}
+            <div class="list-group-item">
+                Statut :
+                <span class="text-info">
+                                        Mis en attente
+                                    </span>
+            </div>
+        {% endif %}
+
+        {% if not postulant.personnage.participeTo(gn) %}
+            <div class="list-group-item">
+                Inscription :
+                <span class="text-warning">
+                                        <i class="fa fa-warning"></i> Ne participe pas à {{ gn.label }}
+                                    </span>
+            </div>
+        {% endif %}
+
+        {% if isAdmin %}
+            {% if postulant.personnage.groupe %}
+                <div class="list-group-item">
+                    <i class="fa fa-eye text-danger" data-toggle="tooltip"
+                       data-placement="top"
+                       title="Info scénariste"></i>
+                    Groupe :
+                    <a
+                            href="{{ path('groupe.detail', {'groupe': postulant.personnage.groupe.id}) }}">
+                        {{ postulant.personnage.groupe.nom }}
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if postulant.personnage.user %}
+                <div class="list-group-item">
+                    <i class="fa fa-eye text-danger" data-toggle="tooltip"
+                       data-placement="top"
+                       title="Info scénariste"></i>
+                    Utilisateur :
+                    <a
+                            href="{{ path('user.view', {'user': postulant.personnage.user.id}) }}">{{ postulant.personnage.user.username }}</a>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <div class="list-group-item">
+            Message de candidature :<br/>
+            <div class="panel border border-1 rounded-2">
+                {{ postulant.explanation|markdown_to_html }}
+            </div>
+        </div>
+
+        {% if canManage %}
+            <div class="list-group-item">
+                <div class="list-group-item-text d-flex justify-content-around mt-2">
+                    <a class="btn btn-secondary"
+                       href="{{ path('groupeSecondaire.postulant.remove', {'groupeSecondaire': groupeSecondaire.id,'postulant': postulant.id}) }}">
+                        Rejeter</a>
+                    <a class="btn btn-secondary"
+                       href="{{ path('groupeSecondaire.postulant.response', {'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id }) }}">
+                        Répondre</a>
+                    {% if not postulant.waiting %}
+                        <a class="btn btn-secondary"
+                           href="{{ path('groupeSecondaire.postulant.wait', {'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id }) }}">
+                            Mettre en attente</a>
+                    {% endif %}
+                    <a class="btn btn-secondary"
+                       href="{{ path('groupeSecondaire.postulant.accept', {'groupeSecondaire': groupeSecondaire.id,'postulant': postulant.id}) }}">
+                        Accepter</a>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+</div>

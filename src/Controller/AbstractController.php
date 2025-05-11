@@ -41,6 +41,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
 {
     public const IS_ADMIN = 'isAdmin';
+    public const IS_MEMBRE = 'isMembre';
     public const CAN_WRITE = 'canWrite';
     public const CAN_READ = 'canRead';
     public const CAN_READ_PRIVATE = 'canReadPrivate';
@@ -54,6 +55,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         self::CAN_READ_PRIVATE => false,
         self::CAN_READ_SECRET => false,
         self::IS_ADMIN => false,
+        self::IS_MEMBRE => false,
     ];
 
     public function __construct(
@@ -87,7 +89,15 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             unset($c);
         }
 
+        if ($can[self::IS_MEMBRE]) {
+            $can[self::CAN_READ] = true;
+        }
+
         if ($can[self::CAN_WRITE]) {
+            $can[self::CAN_READ] = true;
+        }
+
+        if ($can[self::CAN_READ_PRIVATE]) {
             $can[self::CAN_READ] = true;
         }
 
@@ -153,13 +163,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         // Est un niveau admin suffisant
-        if ($roles) {
-            /** @var Role $role */
-            foreach ($roles as $role) {
-                if ($this->isGranted($role->value)) {
-                    return;
-                }
-            }
+        if ($this->hasRoles($roles)) {
+            return;
         }
 
         if (is_callable($callable) && $callable()) {
@@ -176,6 +181,21 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $user = parent::getUser();
 
         return $user;
+    }
+
+    protected function hasRoles(?array $roles): bool
+    {
+        if (empty($roles)) {
+            return false;
+        }
+
+        foreach ($roles as $role) {
+            if ($this->isGranted($role instanceof Role ? $role->value : $role)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function checkHasPersonnage(?Personnage $personnage = null, ?Participant $participant = null): void
