@@ -4,11 +4,7 @@
 
 {% block body %}
 
-    {% include '_partials/breadcrumb.twig' with {'items' :
-        [
-            {'name' : 'Liste des groupe secondaires' }
-        ]
-    } %}
+    {% include '_partials/breadcrumb.twig' with {'items' :[{'name' : 'Liste des groupe secondaires' }]} %}
 
     <div class="well well-sm">
 
@@ -18,11 +14,11 @@
 
         {% set buttons = [] %}
         {% if isAdmin %}
-        {% set buttons = [
-            {'title': "Ajouter un groupe secondaire", 'route': path('groupeSecondaire.add'), 'icon': 'fa-plus', 'label': 'Ajouter'},
-            {'title': "Ajouter un type de groupe secondaire", 'route': path('groupeSecondaireType.add'), 'icon': 'fa-folder-plus', 'label': 'Nouveau type'},
-            {'title': "Imprimer les enveloppes", 'route': path('groupeSecondaire.materiel.printAll'), 'icon': 'fa-print', 'label': 'Imprimer'}
-        ] %}
+            {% set buttons = [
+                {'title': "Ajouter un groupe secondaire", 'route': path('groupeSecondaire.add'), 'icon': 'fa-plus', 'label': 'Ajouter'},
+                {'title': "Ajouter un type de groupe secondaire", 'route': path('groupeSecondaireType.add'), 'icon': 'fa-folder-plus', 'label': 'Nouveau type'},
+                {'title': "Imprimer les enveloppes", 'route': path('groupeSecondaire.materiel.printAll'), 'icon': 'fa-print', 'label': 'Imprimer'}
+            ] %}
         {% endif %}
         {% include '_partials/formListSearch.twig' with {
             'actionPath' : path('groupeSecondaire.list'),
@@ -30,8 +26,17 @@
         } %}
     </div>
 
-    {% include '_partials/pagination.html.twig' %}
+    {% set discordInfo %}
+        Pour rejoindre un groupe, vous devez postuler et être accepté.<br/>
+        Une fois membre d'un groupe secondaire, si ce dernier ne dispose pas déjà d'un serveur Discord.<br>
+        Vous pouvez :
+        <a href="https://discord.gg/xDYsCpuJnw" target="_blank"><i class="fa-brands fa-discord"></i> rejoindre le
+            discord
+            des groupes secondaire LH7</a>
+    {% endset %}
+    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : discordInfo} %}
 
+    {% include '_partials/pagination.html.twig' %}
     <table class="table table-striped table-bordered table-condensed table-hover">
         {% include '_partials/thead.twig' with  { 'route': 'groupeSecondaire.list', 'rows': [
             {'name' : 'Id', 'field' : 'id', 'css' : 'text-center', 'visible': isAdmin},
@@ -39,27 +44,27 @@
             {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
             {'name' : 'Description', 'css' : 'text-center'},
             {'name' : 'Type', 'css' : 'text-center'},
-            {'name' : 'Membres', 'css' : 'text-center'},
-            {'name' : 'Actions', 'css' : 'text-center', 'visible': isAdmin},
+            {'name' : 'Membres', 'css' : 'text-center', 'visible': isAdmin},
+            {'name' : 'Actions', 'css' : 'text-center'},
         ]} %}
         <tbody>
         {% for groupeSecondaire in paginator %}
             <tr>
                 {% if isAdmin %}
-                <td class="text-center">
-                    <a href="{{ path('groupeSecondaire.update', {'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.id }}
-                </td>
+                    <td class="text-center">
+                        <a href="{{ path('groupeSecondaire.update', {'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.id }}
+                    </td>
 
-                <td>
-                    {% if groupeSecondaire.secret %}
-                        <span class="text-danger">
+                    <td>
+                        {% if groupeSecondaire.secret %}
+                            <span class="text-danger">
                                 <i class="fa fa-user-secret text-danger" data-toggle="tooltip" data-placement="top"
                                    title="Secret"></i>  - Oui
                             </span>
-                    {% else %}
-                        <span class="text-info">Non</span>
-                    {% endif %}
-                </td>
+                        {% else %}
+                            <span class="text-info">Non</span>
+                        {% endif %}
+                    </td>
                 {% endif %}
 
                 <td>
@@ -68,17 +73,17 @@
                 <td>{{ groupeSecondaire.description|markdown_to_html|highlight(pagerService.searchValue) }}</td>
                 <td>{{ groupeSecondaire.secondaryGroupType.label }}</td>
                 <td class="text-center">{{ groupeSecondaire.membres|length }}</td>
-                {% if isAdmin %}
                 <td class="text-center">
                     <div class="d-flex justify-content-center">
-                        {% include '_partials/btnGroup.twig' with {'buttons' :
+
+                        {% include '_partials/btnGroup.twig' with { 'css': 'btn-group-vertical', 'buttons' :
                             [
-                                {'title': 'Modifier le groupe secondaire', 'route':path('groupeSecondaire.update', {'groupeSecondaire':groupeSecondaire.id}), 'icon': 'fa-pencil' }
+                                {'title': 'Modifier le groupe secondaire', 'route':path('groupeSecondaire.update', {'groupeSecondaire':groupeSecondaire.id}), 'icon': 'fa-pencil', 'isAdmin': true, 'label': 'Modifier' },
+                                {'title': 'Postuler pour rejoindre le groupe', 'route':path('groupeSecondaire.postuler', {'groupeSecondaire':groupeSecondaire.id}), 'icon': 'fa-hand-point-up', 'label': 'Postuler' }
                             ]
                         } %}
                     </div>
                 </td>
-                {% endif %}
             </tr>
         {% endfor %}
         </tbody>

@@ -2,13 +2,11 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\OneToMany;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'territoire_guerre')]
@@ -17,25 +15,32 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseTerritoireGuerre', 'extended' => 'TerritoireGuerre'])]
 abstract class BaseTerritoireGuerre
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $puissance;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $puissance_max;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, nullable: true)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $protection = null;
 
-    #[ORM\OneToOne(targetEntity: Territoire::class, inversedBy: 'territoireGuerre')]
-    #[ORM\JoinColumn(name: 'territoire_guerre_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\OneToOne(inversedBy: 'territoireGuerre', targetEntity: Territoire::class)]
     protected Territoire $territoire;
 
     public function __construct()
     {
-        //$this->territoires = new ArrayCollection();
+        // $this->territoires = new ArrayCollection();
+    }
+
+    /**
+     * Get the value of id.
+     */
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     /**
@@ -49,47 +54,11 @@ abstract class BaseTerritoireGuerre
     }
 
     /**
-     * Get the value of id.
+     * Get the value of protection.
      */
-    public function getId(): int
+    public function getProtection(): int
     {
-        return $this->id;
-    }
-
-    /**
-     * Set the value of puissance.
-     */
-    public function setPuissance(int $puissance): static
-    {
-        $this->puissance = $puissance;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of puissance.
-     */
-    public function getPuissance(): int
-    {
-        return $this->puissance;
-    }
-
-    /**
-     * Set the value of puissance_max.
-     */
-    public function setPuissanceMax(int $puissance_max): static
-    {
-        $this->puissance_max = $puissance_max;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of puissance_max.
-     */
-    public function getPuissanceMax(): int
-    {
-        return $this->puissance_max;
+        return $this->protection;
     }
 
     /**
@@ -105,20 +74,37 @@ abstract class BaseTerritoireGuerre
     }
 
     /**
-     * Get the value of protection.
+     * Get the value of puissance.
      */
-    public function getProtection(): int
+    public function getPuissance(): int
     {
-        return $this->protection;
+        return $this->puissance;
     }
 
     /**
-     * Set Territoire entity (one to one).
+     * Set the value of puissance.
      */
-    public function setTerritoire(Territoire $territoire = null): static
+    public function setPuissance(int $puissance): static
     {
-        $territoire?->setTerritoireGuerre($this);
-        $this->territoire = $territoire;
+        $this->puissance = $puissance;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of puissance_max.
+     */
+    public function getPuissanceMax(): int
+    {
+        return $this->puissance_max;
+    }
+
+    /**
+     * Set the value of puissance_max.
+     */
+    public function setPuissanceMax(int $puissance_max): static
+    {
+        $this->puissance_max = $puissance_max;
 
         return $this;
     }
@@ -129,6 +115,17 @@ abstract class BaseTerritoireGuerre
     public function getTerritoire(): Territoire
     {
         return $this->territoire;
+    }
+
+    /**
+     * Set Territoire entity (one to one).
+     */
+    public function setTerritoire(?Territoire $territoire = null): static
+    {
+        $territoire?->setTerritoireGuerre($this);
+        $this->territoire = $territoire;
+
+        return $this;
     }
 
     /* public function __sleep()

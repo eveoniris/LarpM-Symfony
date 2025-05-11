@@ -1150,18 +1150,6 @@ abstract class BaseTerritoire
         return $this;
     }
 
-    public function removeOrigineBonus(OrigineBonus $origineBonus): static
-    {
-        if ($this->originesBonus->removeElement($origineBonus)) {
-            // set the owning side to null (unless already changed)
-            if ($origineBonus->getTerritoire() === $this) {
-                $origineBonus->setTerritoire(null);
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * Get Territoire entity (many to one).
      */
@@ -1176,6 +1164,18 @@ abstract class BaseTerritoire
     public function setTerritoire(?Territoire $territoire = null): static
     {
         $this->territoire = $territoire;
+
+        return $this;
+    }
+
+    public function removeOrigineBonus(OrigineBonus $origineBonus): static
+    {
+        if ($this->originesBonus->removeElement($origineBonus)) {
+            // set the owning side to null (unless already changed)
+            if ($origineBonus->getTerritoire() === $this) {
+                $origineBonus->setTerritoire(null);
+            }
+        }
 
         return $this;
     }

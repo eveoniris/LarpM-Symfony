@@ -21,7 +21,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupeGn', 'extended' => 'GroupeGn'])]
 abstract class BaseGroupeGn
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::BOOLEAN)]
@@ -91,8 +91,9 @@ abstract class BaseGroupeGn
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Personnage $camarilla = null;
 
-    #[ORM\OneToOne(inversedBy: 'baseGroupeGn', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Personnage $diplomate = null;
+
     /*
     #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'suzerain_id', referencedColumnName: 'id', nullable: 'false')]
@@ -105,183 +106,14 @@ abstract class BaseGroupeGn
     }
 
     /**
-     * Set the value of id.
+     * Add GroupeGnOrdre entity to collection.
      */
-    public function setId(int $id): static
+    public function addGroupeGnOrdre(GroupeGnOrdre $groupeGnOrdre): static
     {
-        $this->id = $id;
+        $groupeGnOrdre->addGroupeGn($this);
+        $this->groupeGnOrdres[] = $groupeGnOrdre;
 
         return $this;
-    }
-
-    /**
-     * Get the value of id.
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set the value of free.
-     */
-    public function setFree(bool $free): static
-    {
-        $this->free = $free;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of free.
-     */
-    public function getFree(): ?bool
-    {
-        return $this->free;
-    }
-
-    /**
-     * Set the value of code.
-     */
-    public function setCode(?string $code): static
-    {
-        $this->code = $code;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of code.
-     */
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    /**
-     * Set the value of jeu_maritime.
-     */
-    public function setJeuMaritime(bool $jeu_maritime): static
-    {
-        $this->jeu_maritime = $jeu_maritime;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of jeu_maritime.
-     */
-    public function getJeuMaritime(): ?bool
-    {
-        return $this->jeu_maritime;
-    }
-
-    /**
-     * Set the value of jeu_strategique.
-     */
-    public function setJeuStrategique(bool $jeu_strategique): static
-    {
-        $this->jeu_strategique = $jeu_strategique;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of jeu_strategique.
-     */
-    public function getJeuStrategique(): ?bool
-    {
-        return $this->jeu_strategique;
-    }
-
-    /**
-     * Set the value of place_available.
-     */
-    public function setPlaceAvailable(?int $place_available): GroupeGn
-    {
-        $this->place_available = $place_available ?? 0;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of place_available.
-     */
-    public function getPlaceAvailable(): ?int
-    {
-        return $this->place_available ?? 0;
-    }
-
-    /**
-     * Set the value of agents.
-     */
-    public function setAgents(?int $agents): static
-    {
-        $this->agents = $agents ?? 0;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of agents.
-     */
-    public function getAgents(): int
-    {
-        return $this->agents;
-    }
-
-    /**
-     * Set the value of bateaux.
-     */
-    public function setBateaux(?int $bateaux): static
-    {
-        $this->bateaux = $bateaux ?? 0;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of bateaux.
-     */
-    public function getBateaux(): int
-    {
-        return $this->bateaux;
-    }
-
-    /**
-     * Set the value of sieges.
-     */
-    public function setSieges(?int $sieges): static
-    {
-        $this->sieges = $sieges ?? 0;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of sieges.
-     */
-    public function getSieges(): int
-    {
-        return $this->sieges;
-    }
-
-    /**
-     * Set the value of initiative.
-     */
-    public function setInitiative(int $initiative): static
-    {
-        $this->initiative = $initiative;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of initiative.
-     */
-    public function getInitiative(): int
-    {
-        return $this->initiative;
     }
 
     /**
@@ -295,47 +127,152 @@ abstract class BaseGroupeGn
     }
 
     /**
-     * Remove Participant entity from collection (one to many).
+     * Get the value of agents.
      */
-    public function removeParticipant(Participant $participant): static
+    public function getAgents(): int
     {
-        $this->participants->removeElement($participant);
+        return $this->agents;
+    }
+
+    /**
+     * Set the value of agents.
+     */
+    public function setAgents(?int $agents): static
+    {
+        $this->agents = $agents ?? 0;
 
         return $this;
     }
 
     /**
-     * Get Participant entity collection (one to many).
+     * Get the value of bateaux.
      */
-    public function getParticipants(): Collection
+    public function getBateaux(): int
     {
-        return $this->participants;
+        return $this->bateaux;
     }
 
     /**
-     * Set Groupe entity (many to one).
+     * Set the value of bateaux.
      */
-    public function setGroupe(?Groupe $groupe = null): static
+    public function setBateaux(?int $bateaux): static
     {
-        $this->groupe = $groupe;
+        $this->bateaux = $bateaux ?? 0;
+
+        return $this;
+    }
+
+    public function getBateauxLocalisation(): ?string
+    {
+        return $this->bateaux_localisation;
+    }
+
+    public function setBateauxLocalisation(?string $bateaux_localisation): static
+    {
+        $this->bateaux_localisation = $bateaux_localisation;
+
+        return $this;
+    }
+
+    public function getCamarilla(bool $strict = true): ?Personnage
+    {
+        return $this->camarilla ?? ($strict ? null : $this->getSuzerin($strict));
+    }
+
+    public function setCamarilla(?Personnage $camarilla): static
+    {
+        $this->camarilla = $camarilla;
 
         return $this;
     }
 
     /**
-     * Get Groupe entity (many to one).
+     * Get the value of code.
      */
-    public function getGroupe(): Groupe
+    public function getCode(): ?string
     {
-        return $this->groupe;
+        return $this->code;
     }
 
     /**
-     * Set Gn entity (many to one).
+     * Set the value of code.
      */
-    public function setGn(?Gn $gn = null): static
+    public function setCode(?string $code): static
     {
-        $this->gn = $gn;
+        $this->code = $code;
+
+        return $this;
+    }
+
+    public function getConnetable(bool $strict = true): ?Personnage
+    {
+        return $this->connetable ?? ($strict ? null : $this->getSuzerin($strict));
+    }
+
+    public function setConnetable(?Personnage $connetable): static
+    {
+        $this->connetable = $connetable;
+
+        return $this;
+    }
+
+    public function getSuzerin(bool $strict = true): ?Personnage
+    {
+        // Par défaut le chef de groupe
+        return $this->suzerin ?? ($strict ? null : $this->getParticipant()?->getPersonnage());
+    }
+
+    public function setSuzerin(?Personnage $suzerin): static
+    {
+        $this->suzerin = $suzerin;
+
+        return $this;
+    }
+
+    /**
+     * Get Participant entity (many to one).
+     */
+    public function getParticipant(): ?Participant
+    {
+        return $this->participant;
+    }
+
+    /**
+     * Set Participant entity (many to one).
+     */
+    public function setParticipant(?Participant $participant = null): static
+    {
+        $this->participant = $participant;
+
+        return $this;
+    }
+
+    public function getDiplomate(): ?Personnage
+    {
+        return $this->diplomate;
+    }
+
+    public function setDiplomate(?Personnage $diplomate): static
+    {
+        $this->diplomate = $diplomate;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of free.
+     */
+    public function getFree(): ?bool
+    {
+        return $this->free;
+    }
+
+    /**
+     * Set the value of free.
+     */
+    public function setFree(bool $free): static
+    {
+        $this->free = $free;
 
         return $this;
     }
@@ -349,21 +286,57 @@ abstract class BaseGroupeGn
     }
 
     /**
-     * Set Participant entity (many to one).
+     * Set Gn entity (many to one).
      */
-    public function setParticipant(?Participant $participant = null): static
+    public function setGn(?Gn $gn = null): static
     {
-        $this->participant = $participant;
+        $this->gn = $gn;
 
         return $this;
     }
 
     /**
-     * Get Participant entity (many to one).
+     * Get Groupe entity (many to one).
      */
-    public function getParticipant(): ?Participant
+    public function getGroupe(): Groupe
     {
-        return $this->participant;
+        return $this->groupe;
+    }
+
+    /**
+     * Set Groupe entity (many to one).
+     */
+    public function setGroupe(?Groupe $groupe = null): static
+    {
+        $this->groupe = $groupe;
+
+        return $this;
+    }
+
+    /**
+     * Get GroupeGnOrdre entity collection.
+     */
+    public function getGroupeGnOrdres(): Collection
+    {
+        return $this->groupeGnOrdres;
+    }
+
+    /**
+     * Get the value of id.
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set the value of id.
+     */
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -385,68 +358,19 @@ abstract class BaseGroupeGn
     }*/
 
     /**
-     * Add GroupeGnOrdre entity to collection.
+     * Get the value of initiative.
      */
-    public function addGroupeGnOrdre(GroupeGnOrdre $groupeGnOrdre): static
+    public function getInitiative(): int
     {
-        $groupeGnOrdre->addGroupeGn($this);
-        $this->groupeGnOrdres[] = $groupeGnOrdre;
-
-        return $this;
+        return $this->initiative;
     }
 
     /**
-     * Remove GroupeGnOrdre entity from collection.
+     * Set the value of initiative.
      */
-    public function removeGroupeGnOrdre(GroupeGnOrdre $groupeGnOrdre): static
+    public function setInitiative(int $initiative): static
     {
-        $groupeGnOrdre->removeGroupeGn($this);
-        $this->groupeGnOrdres->removeElement($groupeGnOrdre);
-
-        return $this;
-    }
-
-    /**
-     * Get GroupeGnOrdre entity collection.
-     */
-    public function getGroupeGnOrdres(): Collection
-    {
-        return $this->groupeGnOrdres;
-    }
-
-    public function getBateauxLocalisation(): ?string
-    {
-        return $this->bateaux_localisation;
-    }
-
-    public function setBateauxLocalisation(?string $bateaux_localisation): static
-    {
-        $this->bateaux_localisation = $bateaux_localisation;
-
-        return $this;
-    }
-
-    public function getSuzerin(bool $strict = true): ?Personnage
-    {
-        // Par défaut le chef de groupe
-        return $this->suzerin ?? ($strict ? null : $this->getParticipant()?->getPersonnage());
-    }
-
-    public function setSuzerin(?Personnage $suzerin): static
-    {
-        $this->suzerin = $suzerin;
-
-        return $this;
-    }
-
-    public function getConnetable(bool $strict = true): ?Personnage
-    {
-        return $this->connetable ?? ($strict ? null : $this->getSuzerin($strict));
-    }
-
-    public function setConnetable(?Personnage $connetable): static
-    {
-        $this->connetable = $connetable;
+        $this->initiative = $initiative;
 
         return $this;
     }
@@ -463,6 +387,42 @@ abstract class BaseGroupeGn
         return $this;
     }
 
+    /**
+     * Get the value of jeu_maritime.
+     */
+    public function getJeuMaritime(): ?bool
+    {
+        return $this->jeu_maritime;
+    }
+
+    /**
+     * Set the value of jeu_maritime.
+     */
+    public function setJeuMaritime(bool $jeu_maritime): static
+    {
+        $this->jeu_maritime = $jeu_maritime;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of jeu_strategique.
+     */
+    public function getJeuStrategique(): ?bool
+    {
+        return $this->jeu_strategique;
+    }
+
+    /**
+     * Set the value of jeu_strategique.
+     */
+    public function setJeuStrategique(bool $jeu_strategique): static
+    {
+        $this->jeu_strategique = $jeu_strategique;
+
+        return $this;
+    }
+
     public function getNavigateur(bool $strict = true): ?Personnage
     {
         return $this->navigateur ?? ($strict ? null : $this->getSuzerin($strict));
@@ -475,26 +435,67 @@ abstract class BaseGroupeGn
         return $this;
     }
 
-    public function getCamarilla(bool $strict = true): ?Personnage
+    /**
+     * Get Participant entity collection (one to many).
+     */
+    public function getParticipants(): Collection
     {
-        return $this->camarilla ?? ($strict ? null : $this->getSuzerin($strict));
+        return $this->participants;
     }
 
-    public function setCamarilla(?Personnage $camarilla): static
+    /**
+     * Get the value of place_available.
+     */
+    public function getPlaceAvailable(): ?int
     {
-        $this->camarilla = $camarilla;
+        return $this->place_available ?? 0;
+    }
+
+    /**
+     * Set the value of place_available.
+     */
+    public function setPlaceAvailable(?int $place_available): GroupeGn
+    {
+        $this->place_available = $place_available ?? 0;
 
         return $this;
     }
 
-    public function getDiplomate(): ?Personnage
+    /**
+     * Get the value of sieges.
+     */
+    public function getSieges(): int
     {
-        return $this->diplomate;
+        return $this->sieges;
     }
 
-    public function setDiplomate(?Personnage $diplomate): static
+    /**
+     * Set the value of sieges.
+     */
+    public function setSieges(?int $sieges): static
     {
-        $this->diplomate = $diplomate;
+        $this->sieges = $sieges ?? 0;
+
+        return $this;
+    }
+
+    /**
+     * Remove GroupeGnOrdre entity from collection.
+     */
+    public function removeGroupeGnOrdre(GroupeGnOrdre $groupeGnOrdre): static
+    {
+        $groupeGnOrdre->removeGroupeGn($this);
+        $this->groupeGnOrdres->removeElement($groupeGnOrdre);
+
+        return $this;
+    }
+
+    /**
+     * Remove Participant entity from collection (one to many).
+     */
+    public function removeParticipant(Participant $participant): static
+    {
+        $this->participants->removeElement($participant);
 
         return $this;
     }

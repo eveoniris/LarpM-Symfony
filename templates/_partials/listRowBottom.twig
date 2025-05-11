@@ -1,10 +1,10 @@
 {# ROW #}
-<div class="container bg-body border border-secondary border-top-0 rounded-bottom mb-2 p-0">
+<div class="container bg-body border border-secondary border-top-0 rounded-bottom p-0 {% if css is defined %}{{ css }}{% else %}mb-2{% endif %}">
     <div class="d-flex justify-content-start">
         <div class="align-middle w-25 lh-lg col-sm-3 p-1 text-center bg-body-secondary border-end fw-bold rounded-2 rounded-end-0 rounded-top-0">
             {{ title }}
         </div>
-        <div class="w-100 mx-2 mt-1">
+        <div class="w-100 mx-2 mt-1 lh-lg">
             <div class="d-flex justify-content-between">
                 {% if item.collapse.id is defined %}
                     <div>
@@ -16,7 +16,8 @@
                             aria-expanded="false"
                             title="historique"
                             aria-controls="{{ item.collapse.id }}">
-                        <i class="fa {% if item.collapse.icon is defined %}{{item.collapse.icon}}{% else %}fa-info{% endif %}" aria-hidden="true"></i>
+                        <i class="fa {% if item.collapse.icon is defined %}{{ item.collapse.icon }}{% else %}fa-info{% endif %}"
+                           aria-hidden="true"></i>
                     </button>
                 {% else %}
                     {{ text }}

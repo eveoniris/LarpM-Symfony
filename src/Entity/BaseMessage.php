@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -17,22 +18,22 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseMessage', 'extended' => 'Message'])]
 class BaseMessage
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $title = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $text = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $update_date = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[Column(type: Types::BOOLEAN)]
     protected ?bool $lu = false;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'messageRelatedByAuteurs')]
@@ -104,8 +105,6 @@ class BaseMessage
 
     /**
      * Set the value of creation_date.
-     *
-     * @param \DateTime $creation_date
      */
     public function setCreationDate(\DateTime $creation_date): static
     {
@@ -158,7 +157,7 @@ class BaseMessage
         return $this->lu ?? false;
     }
 
-    public function setUserRelatedByAuteur(User $User = null): static
+    public function setUserRelatedByAuteur(?User $User = null): static
     {
         $this->userRelatedByAuteur = $User;
 
@@ -173,7 +172,7 @@ class BaseMessage
         return $this->userRelatedByAuteur;
     }
 
-    public function setUserRelatedByDestinataire(User $user = null): static
+    public function setUserRelatedByDestinataire(?User $user = null): static
     {
         $this->userRelatedByDestinataire = $user;
 
@@ -184,9 +183,4 @@ class BaseMessage
     {
         return $this->userRelatedByDestinataire;
     }
-
-    /* public function __sleep()
-    {
-        return ['id', 'title', 'text', 'creation_date', 'update_date', 'lu', 'auteur', 'destinataire'];
-    } */
 }

@@ -8,21 +8,26 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class GroupeSecondairePostulerForm extends AbstractType
+class GroupeSecondaireContacterForm extends AbstractType
 {
+    /**
+     * Contruction du formulaire.
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('explanation', TextareaType::class, [
-            'label' => 'Explication (obligatoire)',
+            'label' => 'Message',
             'required' => true,
             'attr' => [
                 'rows' => 9,
                 'class' => 'tinymce',
-                'help' => 'Soyez convaincant, votre explication sera transmise au chef de groupe qui validera (ou pas) votre demande.',
             ],
         ]);
     }
 
+    /**
+     * Définition de l'entité conercné.
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
@@ -37,6 +42,6 @@ class GroupeSecondairePostulerForm extends AbstractType
      */
     public function getName(): string
     {
-        return 'secondaryGroupApply';
+        return 'secondaryGroupContact';
     }
 }

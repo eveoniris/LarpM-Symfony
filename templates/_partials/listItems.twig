@@ -1,3 +1,11 @@
+{% if head is not defined %}
+    {% set head = true %}
+{% endif %}
+
+{% if footer is not defined %}
+    {% set footer = true %}
+{% endif %}
+
 {% for item in items %}
 
     {% set visible = true %}
@@ -5,17 +13,22 @@
         {% set visible = item.visible %}
     {% endif %}
 
+    {% set css = true %}
+    {% if item.css is defined %}
+        {% set css = item.css %}
+    {% endif %}
+
     {% if visible == true %}
-        {% if loop.first %}
-            {% include '_partials/listRowHead.twig' with {'title': item.title, 'text': item.text} %}
+        {% if head and loop.first %}
+            {% include '_partials/listRowHead.twig' with {'title': item.title, 'text': item.text, 'css':css} %}
         {% endif %}
 
-        {% if not loop.first and not loop.last %}
-            {% include '_partials/listRow.twig' with {'title': item.title, 'text': item.text} %}
+        {% if (loop.first and not head) or (loop.last and not footer) or (not loop.first and not loop.last) %}
+            {% include '_partials/listRow.twig' with {'title': item.title, 'text': item.text, 'css':css} %}
         {% endif %}
 
-        {% if loop.last %}
-            {% include '_partials/listRowBottom.twig' with {'title': item.title, 'text': item.text} %}
+        {% if footer and loop.last %}
+            {% include '_partials/listRowBottom.twig' with {'title': item.title, 'text': item.text, 'css':css} %}
         {% endif %}
     {% endif %}
 

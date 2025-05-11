@@ -1,0 +1,83 @@
+{% if canRead and (not groupeSecondaire.private or (groupeSecondaire.private and canManage)) %}
+
+    {% if canManage %}
+        <div class="card mb-2">
+            <div class="card-header d-flex justify-content-between">
+                <h6>Liste des emails des membres du groupe</h6>
+
+                <div class="btn-group">
+                    <a class="btn btn-small btn-secondary" type="button" data-bs-toggle="collapse"
+                       data-bs-placement="bottom" title="Afficher"
+                       data-bs-target="#group_membre_emails_emailsCollapse" aria-expanded="false">
+                        <i class="fa fa-caret-down"></i> Afficher
+                    </a>
+                    <a class="btn btn-small btn-secondary copyToClipBoard" type="button"
+                       data-target="#group_membre_emails" data-bs-toggle="tooltip"
+                       data-bs-placement="bottom" title="Copier">
+                        <i class="fa fa-copy"></i> Copier
+                    </a>
+                </div>
+            </div>
+            <div class="collapse" id="group_membre_emails_emailsCollapse">
+                <div class="card-body" id="group_membre_emails">
+                    {% for membre in groupeSecondaire.membres %}
+                        {{ membre.personnage.user.email }},&nbsp;
+                    {% else %}
+                        {% include '_partials/noResult.twig' %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-2">
+            <div class="card-header d-flex justify-content-between">
+                <h6>Liste des emails des membres du groupe participant à {{ gn.label }}</h6>
+
+                <div class="btn-group">
+                    <a class="btn btn-small btn-secondary" type="button" data-bs-toggle="collapse"
+                       data-bs-placement="bottom" title="Afficher"
+                       data-bs-target="#group_membre_in_gn_emails_emailsCollapse" aria-expanded="false">
+                        <i class="fa fa-caret-down"></i> Afficher
+                    </a>
+                    <a class="btn btn-small btn-secondary copyToClipBoard" type="button"
+                       data-target="#group_membre_in_gn_emails" data-bs-toggle="tooltip"
+                       data-bs-placement="bottom" title="Copier">
+                        <i class="fa fa-copy"></i> Copier
+                    </a>
+                </div>
+            </div>
+            <div class="collapse" id="group_membre_in_gn_emails_emailsCollapse">
+                <div class="card-body" id="group_membre_in_gn_emails">
+                    {% set hasMember = false %}
+                    {% for membre in groupeSecondaire.membres %}
+                        {% if membre.personnage.participeTo(gn) %}
+                            {% set hasMember = true %}
+                            {{ membre.personnage.user.email }},&nbsp&nbsp;
+                        {% endif %}
+                    {% endfor %}
+                    {% if not hasMember %}
+                        {% include '_partials/noResult.twig' %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        {% set leadId = 0 %}
+        {% if groupeSecondaire.personnage %}
+            {% set leadId = groupeSecondaire.personnage.getId %}
+            <div class="col-md-4">
+                {% include 'groupeSecondaire/fragment/membre.twig' with {'groupeSecondaire' :groupeSecondaire, 'personnage': groupeSecondaire.personnage} %}
+            </div>
+        {% endif %}
+
+        {% for membre in groupeSecondaire.membres %}
+            {% if leadId != membre.personnage.getId() %}
+                <div class="col-md-4">
+                    {% include 'groupeSecondaire/fragment/membre.twig' with {'groupeSecondaire': groupeSecondaire, 'membre': membre, 'personnage': membre.personnage} %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Competence;
 use App\Entity\Gn;
 use App\Entity\Participant;
 use App\Entity\Personnage;
@@ -60,6 +61,20 @@ class PersonnageRepository extends BaseRepository
         $qb->andWhere('p.id IN (:ids)')->setParameter('ids', $ids);
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findCompetencesOrdered(Personnage $personnage)
+    {
+        /** @var CompetenceRepository $competenceRepository */
+        $competenceRepository = $this->getEntityManager()->getRepository(Competence::class);
+        $queryBuilder = $competenceRepository->getQueryBuilderFindAllOrderedByLabel()
+            ->select('c')
+            ->join('c.personnages', 'p')
+            ->andWhere('p.id = :pid');
+
+        $queryBuilder->setParameter('pid', $personnage->getId());
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
     /**

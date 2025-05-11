@@ -4,7 +4,7 @@
             {{ title }}
         </div>
         <div class="w-100 mx-2 mt-1">
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between lh-lg">
                 {% if item.collapse.id is defined %}
                     <div>
                         {{ text }}
@@ -15,7 +15,8 @@
                             aria-expanded="false"
                             title="historique"
                             aria-controls="{{ item.collapse.id }}">
-                        <i class="fa {% if item.collapse.icon is defined %}{{item.collapse.icon}}{% else %}fa-info{% endif %}" aria-hidden="true"></i>
+                        <i class="fa {% if item.collapse.icon is defined %}{{ item.collapse.icon }}{% else %}fa-info{% endif %}"
+                           aria-hidden="true"></i>
                     </button>
                 {% else %}
                     {{ text }}

@@ -250,6 +250,10 @@ class PersonnageService
     public function getAllCompetences(Personnage $personnage): Collection
     {
         try {
+            $all = new ArrayCollection(
+                $this->entityManager->getRepository(Personnage::class)
+                    ->findCompetencesOrdered($personnage),
+            );
             $all = $personnage->getCompetences();
         } catch (\Exception $exception) {
             $all = new ArrayCollection();
@@ -1049,7 +1053,7 @@ class PersonnageService
 
         // trie des competences disponibles
         $iterator = $availableCompetences->getIterator();
-        $iterator->uasort(static fn ($a, $b) => $a->getLabel() <=> $b->getLabel());
+        $iterator->uasort(static fn($a, $b) => $a->getLabel() <=> $b->getLabel());
 
         return new ArrayCollection(iterator_to_array($iterator));
     }

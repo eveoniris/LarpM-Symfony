@@ -68,7 +68,7 @@ abstract class BaseUser
     #[Column(name: 'confirmationToken', type: Types::STRING, length: 100, nullable: true)]
     protected ?string $confirmationToken = null;
 
-    #[Column(name: 'timePasswordResetRequested', type: Types::INTEGER, nullable: true, )]
+    #[Column(name: 'timePasswordResetRequested', type: Types::INTEGER, nullable: true,)]
     protected ?int $timePasswordResetRequested = null;
 
     protected ?string $trombineUrl = null;
@@ -179,6 +179,13 @@ abstract class BaseUser
     #[ORM\InverseJoinColumn(name: 'restriction_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $restrictions;
 
+    /**
+     * @var Collection<int, BaseSecondaryGroup>
+     */
+    #[OneToMany(mappedBy: 'scenariste', targetEntity: SecondaryGroup::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'scenariste_id', nullable: 'false')]
+    private Collection $secondaryGroups;
+
     #[OneToMany(mappedBy: 'user', targetEntity: LogAction::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'true')]
     private Collection $logActions;
@@ -194,6 +201,7 @@ abstract class BaseUser
         $this->documents = new ArrayCollection();
         $this->groupeRelatedByScenaristeIds = new ArrayCollection();
         $this->groupeRelatedByResponsableIds = new ArrayCollection();
+        $this->secondaryGroups = new ArrayCollection();
         $this->intrigues = new ArrayCollection();
         $this->intrigueHasModifications = new ArrayCollection();
         $this->messageRelatedByAuteurs = new ArrayCollection();
@@ -211,16 +219,364 @@ abstract class BaseUser
         $this->logActions = new ArrayCollection();
     }
 
-    public function setId(int $id): static
+    public function __toString(): string
     {
-        $this->id = $id;
+        return $this->getUsername();
+    }
+
+    /**
+     * Returns the Username, if not empty, otherwise the email address.
+     *
+     * Email is returned as a fallback because Username is optional,
+     * but the Symfony Security system depends on getUsername() returning a value.
+     * Use getRealUsername() to get the actual Username value.
+     *
+     * This method is required by the UserInterface.
+     *
+     * @return string the Username, if not empty, otherwise the email
+     *
+     * @see getRealUsername
+     */
+    public function getUsername(): string
+    {
+        return $this->username ?: $this->email;
+    }
+
+    public function setUsername(string $username): static
+    {
+        $this->username = $username;
 
         return $this;
     }
 
-    public function getId(): ?int
+    public function addBackground(Background $background): static
     {
-        return $this->id;
+        $this->backgrounds[] = $background;
+
+        return $this;
+    }
+
+    /**
+     * Add Billet entity to collection (one to many).
+     */
+    public function addBillet(Billet $billet): static
+    {
+        $this->billets[] = $billet;
+
+        return $this;
+    }
+
+    /**
+     * Add Debriefing entity to collection (one to many).
+     */
+    public function addDebriefing(Debriefing $debriefing): static
+    {
+        $this->debriefings[] = $debriefing;
+
+        return $this;
+    }
+
+    /**
+     * Add Document entity to collection (one to many).
+     */
+    public function addDocument(Document $document): static
+    {
+        $this->documents[] = $document;
+
+        return $this;
+    }
+
+    /**
+     * Add Groupe entity related by `responsable_id` to collection (one to many).
+     */
+    public function addGroupeRelatedByResponsableId(Groupe $groupe): static
+    {
+        $this->groupeRelatedByResponsableIds[] = $groupe;
+
+        return $this;
+    }
+
+    /**
+     * Add Groupe entity related by `scenariste_id` to collection (one to many).
+     */
+    public function addGroupeRelatedByScenaristeId(Groupe $groupe): static
+    {
+        $this->groupeRelatedByScenaristeIds[] = $groupe;
+
+        return $this;
+    }
+
+    /**
+     * Add Intrigue entity to collection (one to many).
+     */
+    public function addIntrigue(Intrigue $intrigue): static
+    {
+        $this->intrigues[] = $intrigue;
+
+        return $this;
+    }
+
+    /**
+     * Add IntrigueHasModification entity to collection (one to many).
+     */
+    public function addIntrigueHasModification(IntrigueHasModification $intrigueHasModification): static
+    {
+        $this->intrigueHasModifications[] = $intrigueHasModification;
+
+        return $this;
+    }
+
+    public function addLogAction(LogAction $logAction): static
+    {
+        if (!$this->logActions->contains($logAction)) {
+            $this->logActions->add($logAction);
+            $logAction->setUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add Message entity related by `auteur` to collection (one to many).
+     */
+    public function addMessageRelatedByAuteur(Message $message): static
+    {
+        $this->messageRelatedByAuteurs[] = $message;
+
+        return $this;
+    }
+
+    /**
+     * Add Message entity related by `destinataire` to collection (one to many).
+     */
+    public function addMessageRelatedByDestinataire(Message $message): static
+    {
+        $this->messageRelatedByDestinataires[] = $message;
+
+        return $this;
+    }
+
+    /**
+     * Add Notification entity to collection (one to many).
+     */
+    public function addNotification(Notification $notification): static
+    {
+        $this->notifications[] = $notification;
+
+        return $this;
+    }
+
+    /**
+     * Add Objet entity to collection (one to many).
+     */
+    public function addObjet(Objet $objet): static
+    {
+        $this->objets[] = $objet;
+
+        return $this;
+    }
+
+    /**
+     * Add Participant entity to collection (one to many).
+     */
+    public function addParticipant(Participant $participant): static
+    {
+        $this->participants[] = $participant;
+
+        return $this;
+    }
+
+    /**
+     * Add Personnage entity to collection (one to many).
+     */
+    public function addPersonnage(Personnage $personnage): static
+    {
+        $this->personnages[] = $personnage;
+
+        return $this;
+    }
+
+    /**
+     * Add PersonnageBackground entity to collection (one to many).
+     */
+    public function addPersonnageBackground(PersonnageBackground $personnageBackground): static
+    {
+        $this->personnageBackgrounds[] = $personnageBackground;
+
+        return $this;
+    }
+
+    /**
+     * Add Question entity to collection (one to many).
+     */
+    public function addQuestion(Question $question): static
+    {
+        $this->questions->add($question);
+
+        return $this;
+    }
+
+    /**
+     * Add Relecture entity to collection (one to many).
+     */
+    public function addRelecture(Relecture $relecture): static
+    {
+        $this->relectures->add($relecture);
+
+        return $this;
+    }
+
+    public function addRestriction(Restriction $restriction): static
+    {
+        $restriction->addUser($this);
+        $this->restrictions->add($restriction);
+
+        return $this;
+    }
+
+    /**
+     * Add Restriction entity related by `auteur_id` to collection (one to many).
+     */
+    public function addRestrictionRelatedByAuteurId(Restriction $restriction): static
+    {
+        $this->restrictionRelatedByAuteurIds->add($restriction);
+
+        return $this;
+    }
+
+    /**
+     * Add Rumeur entity to collection (one to many).
+     */
+    public function addRumeur(Rumeur $rumeur): static
+    {
+        $this->rumeurs->add($rumeur);
+
+        return $this;
+    }
+
+    public function addSecondaryGroups(BaseSecondaryGroup $secondaryGroups,
+    ): static {
+        if (!$this->secondaryGroups->contains($secondaryGroups)) {
+            $this->secondaryGroups->add($secondaryGroups);
+            $secondaryGroups->setScenariste($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    /**
+     * Get Background entity collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getBackgrounds()
+    {
+        return $this->backgrounds;
+    }
+
+    /**
+     * Get Billet entity collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getBillets()
+    {
+        return $this->billets;
+    }
+
+    /**
+     * Get the value of coeur.
+     *
+     * @return int
+     */
+    public function getCoeur()
+    {
+        return $this->coeur;
+    }
+
+    public function setCoeur($coeur): static
+    {
+        $this->coeur = $coeur;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of confirmationToken.
+     *
+     * @return string
+     */
+    public function getConfirmationToken()
+    {
+        return $this->confirmationToken;
+    }
+
+    /**
+     * Set the value of confirmationToken.
+     *
+     * @param string $confirmationToken
+     */
+    public function setConfirmationToken($confirmationToken): static
+    {
+        $this->confirmationToken = $confirmationToken;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of creation_date.
+     *
+     * @return \DateTime
+     */
+    public function getCreationDate()
+    {
+        return $this->creation_date;
+    }
+
+    /**
+     * Set the value of creation_date.
+     *
+     * @param \DateTime $creation_date
+     */
+    public function setCreationDate($creation_date): static
+    {
+        $this->creation_date = $creation_date;
+
+        return $this;
+    }
+
+    /**
+     * Get Debriefing entity collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getDebriefings()
+    {
+        return $this->debriefings;
+    }
+
+    /**
+     * Get Document entity collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getDocuments()
+    {
+        return $this->documents;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
     }
 
     public function setEmail(string $email): static
@@ -230,37 +586,307 @@ abstract class BaseUser
         return $this;
     }
 
-    public function getEmail(): string
+    public function getEmailContact(): ?string
     {
-        return $this->email;
+        return $this->email_contact;
     }
 
-    /**
-     * @deprecated
-     */
-    public function setSalt($salt): static
+    public function setEmailContact(?string $email_contact): static
     {
-        $this->salt = $salt;
+        $this->email_contact = $email_contact;
+
+        return $this;
+    }
+
+    public function getEtatCivil(): ?EtatCivil
+    {
+        return $this->etatCivil;
+    }
+
+    public function setEtatCivil(EtatCivil $etatCivil): static
+    {
+        $this->etatCivil = $etatCivil;
 
         return $this;
     }
 
     /**
-     * @deprecated
+     * Get Groupe entity related by `responsable_id` collection (one to many).
+     *
+     * @return Collection
      */
-    public function getSalt()
+    public function getGroupeRelatedByResponsableIds()
     {
-        return null;
+        return $this->groupeRelatedByResponsableIds;
     }
 
     /**
-     * A visual identifier that represents this user.
+     * Get Groupe entity related by `scenariste_id` collection (one to many).
      *
-     * @see UserInterface
+     * @return Collection
      */
-    public function getUserIdentifier(): string
+    public function getGroupeRelatedByScenaristeIds()
     {
-        return (string) $this->username;
+        return $this->groupeRelatedByScenaristeIds;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get IntrigueHasModification entity collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getIntrigueHasModifications()
+    {
+        return $this->intrigueHasModifications;
+    }
+
+    /**
+     * Get Intrigue entity collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getIntrigues()
+    {
+        return $this->intrigues;
+    }
+
+    /**
+     * Get the value of isEnabled.
+     *
+     * @return bool
+     */
+    public function getIsEnabled()
+    {
+        return $this->isEnabled;
+    }
+
+    public function setIsEnabled(bool $isEnabled): static
+    {
+        $this->isEnabled = $isEnabled;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of lastConnectionDate.
+     *
+     * @return \DateTime
+     */
+    public function getLastConnectionDate()
+    {
+        return $this->lastConnectionDate;
+    }
+
+    /**
+     * Set the value of lastConnectionDate.
+     *
+     * @param \DateTime $lastConnectionDate
+     */
+    public function setLastConnectionDate($lastConnectionDate): static
+    {
+        $this->lastConnectionDate = $lastConnectionDate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, LogAction>
+     */
+    public function getLogActions(): Collection
+    {
+        return $this->logActions;
+    }
+
+    /**
+     * Get Message entity related by `auteur` collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getMessageRelatedByAuteurs()
+    {
+        return $this->messageRelatedByAuteurs;
+    }
+
+    /**
+     * Get Message entity related by `destinataire` collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getMessageRelatedByDestinataires()
+    {
+        return $this->messageRelatedByDestinataires;
+    }
+
+    /**
+     * Get Notification entity collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getNotifications()
+    {
+        return $this->notifications;
+    }
+
+    /**
+     * Get Objet entity collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getObjets()
+    {
+        return $this->objets;
+    }
+
+    /**
+     * Get Participant entity collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getParticipants()
+    {
+        return $this->participants;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getPersonnage(): ?Personnage
+    {
+        return $this->personnage;
+    }
+
+    public function setPersonnage(?Personnage $personnage = null): static
+    {
+        $this->personnage = $personnage;
+
+        return $this;
+    }
+
+    /**
+     * Get PersonnageBackground entity collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getPersonnageBackgrounds()
+    {
+        return $this->personnageBackgrounds;
+    }
+
+    /**
+     * Get PersonnageSecondaire entity (many to one).
+     */
+    public function getPersonnageSecondaire(): ?PersonnageSecondaire
+    {
+        return $this->personnageSecondaire;
+    }
+
+    /**
+     * Set PersonnageSecondaire entity (many to one).
+     */
+    public function setPersonnageSecondaire(?PersonnageSecondaire $personnageSecondaire = null): static
+    {
+        $this->personnageSecondaire = $personnageSecondaire;
+
+        return $this;
+    }
+
+    /**
+     * Get Personnage entity collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getPersonnages()
+    {
+        return $this->personnages;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPwd(): ?string
+    {
+        return $this->pwd;
+    }
+
+    public function setPwd(string $password): static
+    {
+        $this->pwd = $password;
+
+        return $this;
+    }
+
+    /**
+     * Get Question entity collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getQuestions()
+    {
+        return $this->questions;
+    }
+
+    /**
+     * Get Relecture entity collection (one to many).
+     *
+     * @return Collection
+     */
+    public function getRelectures()
+    {
+        return $this->relectures;
+    }
+
+    /**
+     * Get Restriction entity related by `auteur_id` collection (one to many).
+     */
+    public function getRestrictionRelatedByAuteurIds(): Collection
+    {
+        return $this->restrictionRelatedByAuteurIds;
+    }
+
+    public function getRestrictions(): Collection
+    {
+        return $this->restrictions;
+    }
+
+    /**
+     * Get the value of rights.
+     *
+     * @return string
+     */
+    public function getRights()
+    {
+        return $this->rights;
+    }
+
+    public function setRights($rights): static
+    {
+        $this->rights = $rights;
+
+        return $this;
     }
 
     /**
@@ -283,151 +909,45 @@ abstract class BaseUser
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
-    public function getPassword(): string
+    public function getRumeurs(): Collection
     {
-        return $this->password;
+        return $this->rumeurs;
     }
 
-    public function setPassword(string $password): static
+    /**
+     * @deprecated
+     */
+    public function getSalt()
     {
-        $this->password = $password;
+        return null;
+    }
+
+    /**
+     * @deprecated
+     */
+    public function setSalt($salt): static
+    {
+        $this->salt = $salt;
 
         return $this;
     }
 
     /**
-     * @see PasswordAuthenticatedUserInterface
+     * @return Collection<int, BaseSecondaryGroup>
      */
-    public function getPwd(): ?string
+    public function getSecondaryGroups(): Collection
     {
-        return $this->pwd;
-    }
-
-    public function setPwd(string $password): static
-    {
-        $this->pwd = $password;
-
-        return $this;
-    }
-
-    public function setRights($rights): static
-    {
-        $this->rights = $rights;
-
-        return $this;
-    }
-
-    public function __toString(): string
-    {
-        return $this->getUsername();
+        return $this->secondaryGroups;
     }
 
     /**
-     * @see UserInterface
+     * Get the value of timePasswordResetRequested.
+     *
+     * @return int
      */
-    public function eraseCredentials(): void
+    public function getTimePasswordResetRequested()
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
-    }
-
-    /**
-     * Get the value of rights.
-     *
-     * @return string
-     */
-    public function getRights()
-    {
-        return $this->rights;
-    }
-
-    /**
-     * Set the value of creation_date.
-     *
-     * @param \DateTime $creation_date
-     */
-    public function setCreationDate($creation_date): static
-    {
-        $this->creation_date = $creation_date;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of creation_date.
-     *
-     * @return \DateTime
-     */
-    public function getCreationDate()
-    {
-        return $this->creation_date;
-    }
-
-    public function setUsername(string $username): static
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-    /**
-     * Returns the Username, if not empty, otherwise the email address.
-     *
-     * Email is returned as a fallback because Username is optional,
-     * but the Symfony Security system depends on getUsername() returning a value.
-     * Use getRealUsername() to get the actual Username value.
-     *
-     * This method is required by the UserInterface.
-     *
-     * @return string the Username, if not empty, otherwise the email
-     *
-     * @see getRealUsername
-     */
-    public function getUsername(): string
-    {
-        return $this->username ?: $this->email;
-    }
-
-    public function setIsEnabled(bool $isEnabled): static
-    {
-        $this->isEnabled = $isEnabled;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of isEnabled.
-     *
-     * @return bool
-     */
-    public function getIsEnabled()
-    {
-        return $this->isEnabled;
-    }
-
-    /**
-     * Set the value of confirmationToken.
-     *
-     * @param string $confirmationToken
-     */
-    public function setConfirmationToken($confirmationToken): static
-    {
-        $this->confirmationToken = $confirmationToken;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of confirmationToken.
-     *
-     * @return string
-     */
-    public function getConfirmationToken()
-    {
-        return $this->confirmationToken;
+        return $this->timePasswordResetRequested;
     }
 
     /**
@@ -443,13 +963,13 @@ abstract class BaseUser
     }
 
     /**
-     * Get the value of timePasswordResetRequested.
+     * Get the value of trombineUrl.
      *
-     * @return int
+     * @return string
      */
-    public function getTimePasswordResetRequested()
+    public function getTrombineUrl()
     {
-        return $this->timePasswordResetRequested;
+        return $this->trombineUrl;
     }
 
     /**
@@ -465,84 +985,18 @@ abstract class BaseUser
     }
 
     /**
-     * Get the value of trombineUrl.
+     * A visual identifier that represents this user.
      *
-     * @return string
+     * @see UserInterface
      */
-    public function getTrombineUrl()
+    public function getUserIdentifier(): string
     {
-        return $this->trombineUrl;
-    }
-
-    /**
-     * Set the value of lastConnectionDate.
-     *
-     * @param \DateTime $lastConnectionDate
-     */
-    public function setLastConnectionDate($lastConnectionDate): static
-    {
-        $this->lastConnectionDate = $lastConnectionDate;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of lastConnectionDate.
-     *
-     * @return \DateTime
-     */
-    public function getLastConnectionDate()
-    {
-        return $this->lastConnectionDate;
-    }
-
-    public function setCoeur($coeur): static
-    {
-        $this->coeur = $coeur;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of coeur.
-     *
-     * @return int
-     */
-    public function getCoeur()
-    {
-        return $this->coeur;
-    }
-
-    public function addBackground(Background $background): static
-    {
-        $this->backgrounds[] = $background;
-
-        return $this;
+        return (string) $this->username;
     }
 
     public function removeBackground(Background $background): static
     {
         $this->backgrounds->removeElement($background);
-
-        return $this;
-    }
-
-    /**
-     * Get Background entity collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getBackgrounds()
-    {
-        return $this->backgrounds;
-    }
-
-    /**
-     * Add Billet entity to collection (one to many).
-     */
-    public function addBillet(Billet $billet): static
-    {
-        $this->billets[] = $billet;
 
         return $this;
     }
@@ -558,51 +1012,11 @@ abstract class BaseUser
     }
 
     /**
-     * Get Billet entity collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getBillets()
-    {
-        return $this->billets;
-    }
-
-    /**
-     * Add Debriefing entity to collection (one to many).
-     */
-    public function addDebriefing(Debriefing $debriefing): static
-    {
-        $this->debriefings[] = $debriefing;
-
-        return $this;
-    }
-
-    /**
      * Remove Debriefing entity from collection (one to many).
      */
     public function removeDebriefing(Debriefing $debriefing): static
     {
         $this->debriefings->removeElement($debriefing);
-
-        return $this;
-    }
-
-    /**
-     * Get Debriefing entity collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getDebriefings()
-    {
-        return $this->debriefings;
-    }
-
-    /**
-     * Add Document entity to collection (one to many).
-     */
-    public function addDocument(Document $document): static
-    {
-        $this->documents[] = $document;
 
         return $this;
     }
@@ -618,21 +1032,11 @@ abstract class BaseUser
     }
 
     /**
-     * Get Document entity collection (one to many).
-     *
-     * @return Collection
+     * Remove Groupe entity related by `responsable_id` from collection (one to many).
      */
-    public function getDocuments()
+    public function removeGroupeRelatedByResponsableId(Groupe $groupe): static
     {
-        return $this->documents;
-    }
-
-    /**
-     * Add Groupe entity related by `scenariste_id` to collection (one to many).
-     */
-    public function addGroupeRelatedByScenaristeId(Groupe $groupe): static
-    {
-        $this->groupeRelatedByScenaristeIds[] = $groupe;
+        $this->groupeRelatedByResponsableIds->removeElement($groupe);
 
         return $this;
     }
@@ -648,81 +1052,11 @@ abstract class BaseUser
     }
 
     /**
-     * Get Groupe entity related by `scenariste_id` collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getGroupeRelatedByScenaristeIds()
-    {
-        return $this->groupeRelatedByScenaristeIds;
-    }
-
-    /**
-     * Add Groupe entity related by `responsable_id` to collection (one to many).
-     */
-    public function addGroupeRelatedByResponsableId(Groupe $groupe): static
-    {
-        $this->groupeRelatedByResponsableIds[] = $groupe;
-
-        return $this;
-    }
-
-    /**
-     * Remove Groupe entity related by `responsable_id` from collection (one to many).
-     */
-    public function removeGroupeRelatedByResponsableId(Groupe $groupe): static
-    {
-        $this->groupeRelatedByResponsableIds->removeElement($groupe);
-
-        return $this;
-    }
-
-    /**
-     * Get Groupe entity related by `responsable_id` collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getGroupeRelatedByResponsableIds()
-    {
-        return $this->groupeRelatedByResponsableIds;
-    }
-
-    /**
-     * Add Intrigue entity to collection (one to many).
-     */
-    public function addIntrigue(Intrigue $intrigue): static
-    {
-        $this->intrigues[] = $intrigue;
-
-        return $this;
-    }
-
-    /**
      * Remove Intrigue entity from collection (one to many).
      */
     public function removeIntrigue(Intrigue $intrigue): static
     {
         $this->intrigues->removeElement($intrigue);
-
-        return $this;
-    }
-
-    /**
-     * Get Intrigue entity collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getIntrigues()
-    {
-        return $this->intrigues;
-    }
-
-    /**
-     * Add IntrigueHasModification entity to collection (one to many).
-     */
-    public function addIntrigueHasModification(IntrigueHasModification $intrigueHasModification): static
-    {
-        $this->intrigueHasModifications[] = $intrigueHasModification;
 
         return $this;
     }
@@ -737,22 +1071,12 @@ abstract class BaseUser
         return $this;
     }
 
-    /**
-     * Get IntrigueHasModification entity collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getIntrigueHasModifications()
+    public function removeLogAction(LogAction $logAction): static
     {
-        return $this->intrigueHasModifications;
-    }
-
-    /**
-     * Add Message entity related by `auteur` to collection (one to many).
-     */
-    public function addMessageRelatedByAuteur(Message $message): static
-    {
-        $this->messageRelatedByAuteurs[] = $message;
+        // set the owning side to null (unless already changed)
+        if ($this->logActions->removeElement($logAction) && $logAction->getUser() === $this) {
+            $logAction->setUser(null);
+        }
 
         return $this;
     }
@@ -768,51 +1092,11 @@ abstract class BaseUser
     }
 
     /**
-     * Get Message entity related by `auteur` collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getMessageRelatedByAuteurs()
-    {
-        return $this->messageRelatedByAuteurs;
-    }
-
-    /**
-     * Add Message entity related by `destinataire` to collection (one to many).
-     */
-    public function addMessageRelatedByDestinataire(Message $message): static
-    {
-        $this->messageRelatedByDestinataires[] = $message;
-
-        return $this;
-    }
-
-    /**
      * Remove Message entity related by `destinataire` from collection (one to many).
      */
     public function removeMessageRelatedByDestinataire(Message $message): static
     {
         $this->messageRelatedByDestinataires->removeElement($message);
-
-        return $this;
-    }
-
-    /**
-     * Get Message entity related by `destinataire` collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getMessageRelatedByDestinataires()
-    {
-        return $this->messageRelatedByDestinataires;
-    }
-
-    /**
-     * Add Notification entity to collection (one to many).
-     */
-    public function addNotification(Notification $notification): static
-    {
-        $this->notifications[] = $notification;
 
         return $this;
     }
@@ -828,51 +1112,11 @@ abstract class BaseUser
     }
 
     /**
-     * Get Notification entity collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getNotifications()
-    {
-        return $this->notifications;
-    }
-
-    /**
-     * Add Objet entity to collection (one to many).
-     */
-    public function addObjet(Objet $objet): static
-    {
-        $this->objets[] = $objet;
-
-        return $this;
-    }
-
-    /**
      * Remove Objet entity from collection (one to many).
      */
     public function removeObjet(Objet $objet): static
     {
         $this->objets->removeElement($objet);
-
-        return $this;
-    }
-
-    /**
-     * Get Objet entity collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getObjets()
-    {
-        return $this->objets;
-    }
-
-    /**
-     * Add Participant entity to collection (one to many).
-     */
-    public function addParticipant(Participant $participant): static
-    {
-        $this->participants[] = $participant;
 
         return $this;
     }
@@ -888,51 +1132,11 @@ abstract class BaseUser
     }
 
     /**
-     * Get Participant entity collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getParticipants()
-    {
-        return $this->participants;
-    }
-
-    /**
-     * Add Personnage entity to collection (one to many).
-     */
-    public function addPersonnage(Personnage $personnage): static
-    {
-        $this->personnages[] = $personnage;
-
-        return $this;
-    }
-
-    /**
      * Remove Personnage entity from collection (one to many).
      */
     public function removePersonnage(Personnage $personnage): static
     {
         $this->personnages->removeElement($personnage);
-
-        return $this;
-    }
-
-    /**
-     * Get Personnage entity collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getPersonnages()
-    {
-        return $this->personnages;
-    }
-
-    /**
-     * Add PersonnageBackground entity to collection (one to many).
-     */
-    public function addPersonnageBackground(PersonnageBackground $personnageBackground): static
-    {
-        $this->personnageBackgrounds[] = $personnageBackground;
 
         return $this;
     }
@@ -948,51 +1152,11 @@ abstract class BaseUser
     }
 
     /**
-     * Get PersonnageBackground entity collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getPersonnageBackgrounds()
-    {
-        return $this->personnageBackgrounds;
-    }
-
-    /**
-     * Add Question entity to collection (one to many).
-     */
-    public function addQuestion(Question $question): static
-    {
-        $this->questions->add($question);
-
-        return $this;
-    }
-
-    /**
      * Remove Question entity from collection (one to many).
      */
     public function removeQuestion(Question $question): static
     {
         $this->questions->removeElement($question);
-
-        return $this;
-    }
-
-    /**
-     * Get Question entity collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getQuestions()
-    {
-        return $this->questions;
-    }
-
-    /**
-     * Add Relecture entity to collection (one to many).
-     */
-    public function addRelecture(Relecture $relecture): static
-    {
-        $this->relectures->add($relecture);
 
         return $this;
     }
@@ -1007,22 +1171,10 @@ abstract class BaseUser
         return $this;
     }
 
-    /**
-     * Get Relecture entity collection (one to many).
-     *
-     * @return Collection
-     */
-    public function getRelectures()
+    public function removeRestriction(Restriction $restriction): static
     {
-        return $this->relectures;
-    }
-
-    /**
-     * Add Restriction entity related by `auteur_id` to collection (one to many).
-     */
-    public function addRestrictionRelatedByAuteurId(Restriction $restriction): static
-    {
-        $this->restrictionRelatedByAuteurIds->add($restriction);
+        $restriction->removeUser($this);
+        $this->restrictions->removeElement($restriction);
 
         return $this;
     }
@@ -1037,24 +1189,6 @@ abstract class BaseUser
         return $this;
     }
 
-    /**
-     * Get Restriction entity related by `auteur_id` collection (one to many).
-     */
-    public function getRestrictionRelatedByAuteurIds(): Collection
-    {
-        return $this->restrictionRelatedByAuteurIds;
-    }
-
-    /**
-     * Add Rumeur entity to collection (one to many).
-     */
-    public function addRumeur(Rumeur $rumeur): static
-    {
-        $this->rumeurs->add($rumeur);
-
-        return $this;
-    }
-
     public function removeRumeur(Rumeur $rumeur): static
     {
         $this->rumeurs->removeElement($rumeur);
@@ -1062,110 +1196,14 @@ abstract class BaseUser
         return $this;
     }
 
-    public function getRumeurs(): Collection
-    {
-        return $this->rumeurs;
-    }
-
-    public function setEtatCivil(EtatCivil $etatCivil): static
-    {
-        $this->etatCivil = $etatCivil;
-
-        return $this;
-    }
-
-    public function getEtatCivil(): ?EtatCivil
-    {
-        return $this->etatCivil;
-    }
-
-    /**
-     * Set PersonnageSecondaire entity (many to one).
-     */
-    public function setPersonnageSecondaire(?PersonnageSecondaire $personnageSecondaire = null): static
-    {
-        $this->personnageSecondaire = $personnageSecondaire;
-
-        return $this;
-    }
-
-    /**
-     * Get PersonnageSecondaire entity (many to one).
-     */
-    public function getPersonnageSecondaire(): ?PersonnageSecondaire
-    {
-        return $this->personnageSecondaire;
-    }
-
-    public function setPersonnage(?Personnage $personnage = null): static
-    {
-        $this->personnage = $personnage;
-
-        return $this;
-    }
-
-    public function getPersonnage(): ?Personnage
-    {
-        return $this->personnage;
-    }
-
-    public function addRestriction(Restriction $restriction): static
-    {
-        $restriction->addUser($this);
-        $this->restrictions->add($restriction);
-
-        return $this;
-    }
-
-    public function removeRestriction(Restriction $restriction): static
-    {
-        $restriction->removeUser($this);
-        $this->restrictions->removeElement($restriction);
-
-        return $this;
-    }
-
-    public function getRestrictions(): Collection
-    {
-        return $this->restrictions;
-    }
-
-    /**
-     * @return Collection<int, LogAction>
-     */
-    public function getLogActions(): Collection
-    {
-        return $this->logActions;
-    }
-
-    public function addLogAction(LogAction $logAction): static
-    {
-        if (!$this->logActions->contains($logAction)) {
-            $this->logActions->add($logAction);
-            $logAction->setUser($this);
+    public function removeSecondaryGroups(BaseSecondaryGroup $secondaryGroups,
+    ): static {
+        if ($this->secondaryGroups->removeElement($secondaryGroups)) {
+            // set the owning side to null (unless already changed)
+            if ($secondaryGroups->getScenariste() === $this) {
+                $secondaryGroups->setScenariste(null);
+            }
         }
-
-        return $this;
-    }
-
-    public function removeLogAction(LogAction $logAction): static
-    {
-        // set the owning side to null (unless already changed)
-        if ($this->logActions->removeElement($logAction) && $logAction->getUser() === $this) {
-            $logAction->setUser(null);
-        }
-
-        return $this;
-    }
-
-    public function getEmailContact(): ?string
-    {
-        return $this->email_contact;
-    }
-
-    public function setEmailContact(?string $email_contact): static
-    {
-        $this->email_contact = $email_contact;
 
         return $this;
     }

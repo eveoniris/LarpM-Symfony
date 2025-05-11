@@ -24,6 +24,25 @@ class SecondaryGroupRepository extends BaseRepository
     }
 
     /**
+     * Compte les groupes secondaires correspondants aux critères de recherche.
+     */
+    #[Deprecated]
+    public function findCount(array $criteria = [])
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select($qb->expr()->count('g'));
+        $qb->from(SecondaryGroup::class, 'g');
+
+        foreach ($criteria as $critere) {
+            $qb->andWhere('?1');
+            $qb->setParameter(1, $critere);
+        }
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
      * Trouve les groupes secondaires correspondants aux critères de recherche.
      *
      * @param unknown $limit
@@ -48,23 +67,36 @@ class SecondaryGroupRepository extends BaseRepository
         return $qb->getQuery();
     }
 
-    /**
-     * Compte les groupes secondaires correspondants aux critères de recherche.
-     */
-    #[Deprecated]
-    public function findCount(array $criteria = [])
+    public function getPersonnages(SecondaryGroup $secondaryGroup): QueryBuilder
     {
-        $qb = $this->getEntityManager()->createQueryBuilder();
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
-        $qb->select($qb->expr()->count('g'));
-        $qb->from(SecondaryGroup::class, 'g');
+        return $personnageRepository->createQueryBuilder('perso')
+            ->innerJoin('perso.secondaryGroups', 'sg')
+            ->where('sg.id = :sgid')
+            ->setParameter('sgid', $secondaryGroup->getId());
+    }
 
-        foreach ($criteria as $critere) {
-            $qb->andWhere('?1');
-            $qb->setParameter(1, $critere);
-        }
+    // TODO inner join personnage from member
+    public function isMember(
+        SecondaryGroup $secondaryGroup,
+        ?Membre $membre = null,
+        ?Personnage $personnage = null,
+    ): bool {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                SELECT max(m.id) FROM App\Entity\membre m 
+                WHERE (m.personnage = :pid OR m.id = :mid) AND m.secondaryGroup = :sgid
+                DQL,
+            );
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return (bool) $query
+            ->setParameter('pid', $personnage?->getId())
+            ->setParameter('mid', $membre?->getId())
+            ->setParameter('sgid', $secondaryGroup->getId())
+            ->getSingleScalarResult();
     }
 
     public function search(
@@ -76,16 +108,19 @@ class SecondaryGroupRepository extends BaseRepository
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $orderBy ??= $this->orderBy;
+        $query ??= $this->createQueryBuilder($alias);
+        $query->join($alias.'.secondaryGroupType', 'sgtype');
+        $query->select($this->alias, 'sgtype');
 
         if ('secret' === $attributes) {
-            $query ??= $this->createQueryBuilder($alias)
-                ->orderBy($orderBy->getSort(), $orderBy->getOrderBy());
+            $query->orderBy($orderBy->getSort(), $orderBy->getOrderBy());
 
             return $this->secret(
                 $query,
-                filter_var($search, FILTER_VALIDATE_BOOLEAN)
+                filter_var($search, FILTER_VALIDATE_BOOLEAN),
             );
         }
+
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
@@ -99,87 +134,6 @@ class SecondaryGroupRepository extends BaseRepository
         }
 
         return $query->setParameter('value', $secret);
-    }
-
-    public function visibleForUser(User $user): QueryBuilder
-    {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                SELECT DISTINCT sg
-                FROM App\Entity\User u 
-                INNER JOIN App\Entity\Personnage p
-                LEFT JOIN App\Entity\SecondaryGroup sg
-                LEFT JOIN App\Entity\membre m
-                WHERE u.id = :uid AND (sg.id IS NOT NULL OR m.id IS NOT NULL)
-                DQL
-            );
-
-        return $query->setParameter('uid', $user->getId())->getScalarResult();
-    }
-
-    public function userIsGroupLeader(UserInterface|User $user, SecondaryGroup $secondaryGroup): bool
-    {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                SELECT MAX(sg) as exists
-                FROM App\Entity\User u 
-                INNER JOIN u.personnages as p
-                INNER JOIN p.secondaryGroups as sg
-                WHERE u.id = :uid AND sg.id = :sgid
-                DQL
-            );
-
-        return (bool) $query
-            ->setParameter('uid', $user->getId())
-            ->setParameter('sgid', $secondaryGroup->getId())
-            ->getSingleScalarResult();
-
-    }
-
-    public function userCanSeeSecret(UserInterface|User $user, SecondaryGroup $secondaryGroup): bool
-    {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                SELECT MAX(sg) as exists
-                FROM App\Entity\User u 
-                INNER JOIN u.personnages as p
-                INNER JOIN p.secondaryGroups as sg
-                INNER JOIN sg.membres as m
-                WHERE u.id = :uid AND sg.id = :sgid AND m.secret = 1
-                DQL
-            );
-
-        return (bool) $query
-            ->setParameter('uid', $user->getId())
-            ->setParameter('sgid', $secondaryGroup->getId())
-            ->getSingleScalarResult();
-
-    }
-
-    public function isMember(SecondaryGroup $secondaryGroup, ?Membre $membre = null, ?Personnage $personnage = null): bool
-    {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                SELECT max(m.id) FROM App\Entity\membre m 
-                WHERE (m.personnage = :pid OR m.id = :mid) AND m.secondaryGroup = :sgid
-                DQL
-            );
-
-        return (bool) $query
-            ->setParameter('pid', $personnage?->getId())
-            ->setParameter('mid', $membre?->getId())
-            ->setParameter('sgid', $secondaryGroup->getId())
-            ->getSingleScalarResult();
-    }
-
-    public function visibleForPersonnage(QueryBuilder $queryBuilder, array $personnagesIds): QueryBuilder
-    {
-        return $queryBuilder->andWhere($this->alias.'.personnage_id IN (:personnagesIds)')
-                ->setParameter('personnagesIds', $personnagesIds);
     }
 
     public function searchAttributes(): array
@@ -204,6 +158,10 @@ class SecondaryGroupRepository extends BaseRepository
                 OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
                 OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
             ],
+            $alias.'.secret' => [
+                OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC],
+            ],
             $alias.'.description' => [
                 OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
                 OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
@@ -222,17 +180,75 @@ class SecondaryGroupRepository extends BaseRepository
             'description_secrete' => $this->translator->trans('Description secrète', domain: 'repository'),
             'description' => $this->translator->trans('Description', domain: 'repository'),
             'label' => $this->translator->trans('Nom', domain: 'repository'),
+            'secret' => $this->translator->trans('Secret', domain: 'repository'),
         ];
     }
 
-    public function getPersonnages(SecondaryGroup $secondaryGroup): QueryBuilder
+    public function userCanSeeSecret(UserInterface|User $user, SecondaryGroup $secondaryGroup): bool
     {
-        /** @var PersonnageRepository $personnageRepository */
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                SELECT MAX(sg) as exists
+                FROM App\Entity\User u 
+                INNER JOIN u.personnages as p
+                INNER JOIN p.secondaryGroups as sg
+                INNER JOIN sg.membres as m
+                WHERE u.id = :uid AND sg.id = :sgid AND m.secret = 1
+                DQL,
+            );
 
-        return $personnageRepository->createQueryBuilder('perso')
-            ->innerJoin('perso.secondaryGroups', 'sg')
-            ->where('sg.id = :sgid')
-            ->setParameter('sgid', $secondaryGroup->getId());
+        return (bool) $query
+            ->setParameter('uid', $user->getId())
+            ->setParameter('sgid', $secondaryGroup->getId())
+            ->getSingleScalarResult();
+
+    }
+
+    public function userIsGroupLeader(UserInterface|User $user, SecondaryGroup $secondaryGroup): bool
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                SELECT MAX(sg) as exists
+                FROM App\Entity\User u 
+                INNER JOIN u.personnages as p
+                INNER JOIN p.secondaryGroups as sg
+                WHERE u.id = :uid AND sg.id = :sgid
+                DQL,
+            );
+
+        return (bool) $query
+            ->setParameter('uid', $user->getId())
+            ->setParameter('sgid', $secondaryGroup->getId())
+            ->getSingleScalarResult();
+
+    }
+
+    public function visibleForPersonnage(QueryBuilder $queryBuilder, int $personnagesId): QueryBuilder
+    {
+        return $queryBuilder->leftjoin($this->alias.'.membres', 'm')
+            ->orWhere(
+                $this->alias.'.secret = 1 AND ('.$this->alias.'.personnage = :personnageId OR m.personnage = :personnageId)',
+            )
+            ->orWhere($this->alias.'.secret IS NULL OR '.$this->alias.'.secret = false')
+            ->setParameter('personnageId', $personnagesId);
+    }
+
+    public function visibleForUser(User $user): QueryBuilder
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                SELECT DISTINCT sg
+                FROM App\Entity\User u 
+                INNER JOIN App\Entity\Personnage p
+                LEFT JOIN App\Entity\SecondaryGroup sg
+                LEFT JOIN App\Entity\membre m
+                WHERE u.id = :uid AND (sg.id IS NOT NULL OR m.id IS NOT NULL)
+                DQL,
+            );
+
+        return $query->setParameter('uid', $user->getId())->getScalarResult();
     }
 }

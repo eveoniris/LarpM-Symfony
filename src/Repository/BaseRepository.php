@@ -61,30 +61,237 @@ abstract class BaseRepository extends ServiceEntityRepository
         return strtolower(str_replace(['App\Repository\\', 'Repository'], ['', ''], static::class));
     }
 
-    public function getColumnNames(): array
-    {
-        return $this->getEntityManager()
-            ->getClassMetadata(static::getEntityClass())
-            ->getColumnNames();
-    }
-
-    public function getFieldNames(): array
-    {
-        return $this->getEntityManager()
-            ->getClassMetadata(static::getEntityClass())
-            ->getFieldNames();
-    }
-
-    public function hasField(string $field): bool
-    {
-        return $this->getEntityManager()
-            ->getClassMetadata(static::getEntityClass())
-            ->hasField($field);
-    }
-
     public function findAll(): array
     {
         return $this->findBy([], ['label' => 'ASC']);
+    }
+
+    public function findIterable(
+        Query|QueryBuilder|null $query = null,
+        int $batchSize = 100,
+        ?string $alias = null,
+        string $iterableMode = self::ITERATE_EXPORT_HEADER,
+    ): \Generator {
+        $alias ??= static::getEntityAlias();
+        $query ??= $this->createQueryBuilder($alias);
+        $this->addOrderBy($query);
+        if ($query instanceof QueryBuilder) {
+            $query = $query->getQuery();
+        }
+
+        $i = 0;
+        $hydratationMode = static::ITERATE_ARRAY === $iterableMode ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT;
+        /** @var Entity $iterable */
+        foreach ($query->toIterable(hydrationMode: $hydratationMode) as $iterable) {
+            if (
+                \in_array($iterableMode, [static::ITERATE_EXPORT, static::ITERATE_EXPORT_HEADER], true)
+                && method_exists($iterable, 'getExportValue')
+            ) {
+                if (static::ITERATE_EXPORT_HEADER === $iterableMode) {
+                    yield array_keys($iterable->getExportValue());
+                }
+                yield $iterable->getExportValue();
+                continue;
+            }
+
+            yield $iterable;
+
+            if (0 === ++$i % $batchSize) {
+                flush();
+                $this->entityManager->flush();
+                $this->entityManager->clear();
+            }
+        }
+
+        flush();
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+    }
+
+    public function addOrderBy(
+        Query|QueryBuilder|null $query = null,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+    ): Query|QueryBuilder {
+        $orderBy ??= $this->orderBy;
+        $alias ??= static::getEntityAlias();
+        $query ??= $this->createQueryBuilder($alias);
+        if (
+            $orderBy->getOrderBy()
+            && $this->isAllowedAttribute($orderBy->getOrderBy(), $this->sortAttributes($alias))
+        ) {
+            $by = $orderBy->getOrderBy();
+            if (!str_contains($by, '.')) {
+                $by = $alias.'.'.$by;
+            }
+            $query->orderBy($by, $orderBy->getSort());
+        } else {
+            $asAttributes = $this->searchAttributesAs($alias);
+            foreach ($this->sortAttributes($alias) as $sortDefinitions) {
+                $attributeSort = $sortDefinitions[$orderBy->getSort()];
+                $query->addOrderBy(key($attributeSort), current($attributeSort));
+
+                // handle aliased fields
+                if (isset($asAttributes[key($attributeSort)])) {
+                    $query->addSelect(
+                        $asAttributes[key($attributeSort)].' AS '.key($attributeSort),
+                    );
+                }
+            }
+        }
+
+        return $query;
+    }
+
+    public function isAllowedAttribute(string $aliased, array $list): bool
+    {
+        $attribute = strtolower($this->getAttributeName($aliased));
+
+        if (self::SEARCH_ALL === $attribute) {
+            return true;
+        }
+
+        foreach ($list as $keyAttribute => $item) {
+            // From simple sort
+            if (strtolower($attribute) === strtolower($keyAttribute)) {
+                return true;
+            }
+
+            // From simple search
+            if (
+                is_string($item)
+                && (strtolower($attribute) === strtolower($item)
+                    || strtolower($attribute) === strtolower($this->getAttributeName($item))
+                    || (str_contains(strtolower($item), strtolower($attribute)) && str_contains(
+                            strtolower($item),
+                            strtolower($this->getAttributeName($item)),
+                        ))
+                )
+            ) {
+                return true;
+            }
+            // isAllowedAttribute(foreach) > keyAttribute:5/item:classe.nom as classe/attribute:nom/aliased:classe.nom/getAttributeName:nom as classe
+
+            // from aliased
+            if (strtolower($aliased) === strtolower($keyAttribute)) {
+                return true;
+            }
+
+            // not from extended sort
+            if (!is_array($item)) {
+                continue;
+            }
+
+            if (strtolower($attribute) === strtolower($this->getAttributeName(key($item[OrderBy::ASC])))) {
+                return true;
+            }
+
+            if (strtolower($attribute) === strtolower($this->getAttributeName(key($item[OrderBy::DESC])))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get an aliased attribute and return field name
+     * exemple :
+     * "table.attribute_name AS UserId" will return "attribute_name"
+     * "table.attribute_name" will return "attribute_name"
+     * "attribute_name As UserId" will return "attribute_name"
+     * "attribute_name" will return "attribute_name".
+     */
+    public function getAttributeName(string $aliased): string
+    {
+        $upper = strtoupper($aliased);
+        $asPos = strrpos($upper, ' AS ');
+        $dotPos = strrpos($upper, '.') ?? 0;
+        $len = strlen($aliased);
+        $subOffset = $dotPos ? $dotPos + 1 : 0;
+        $subLength = $asPos ? $len - $asPos + 5 : null;
+
+        return trim(substr($aliased, $subOffset, $subLength));
+    }
+
+    public function sortAttributes(?string $alias = null): array
+    {
+        $alias ??= $this->alias;
+
+        return [
+            'id' => [OrderBy::ASC => [$alias.'.id' => OrderBy::ASC], OrderBy::DESC => [$alias.'.id' => OrderBy::DESC]],
+        ];
+    }
+
+    /**
+     * Return all alias of searchAttributes
+     * Alias is the key, Atribute is the value.
+     */
+    public function searchAttributesAs(?string $alias = null): array
+    {
+        $asAttributes = [];
+
+        foreach ($this->searchAttributes($alias) as $attribute) {
+            if (!$this->isAs($attribute)) {
+                continue;
+            }
+
+            $asAttributes[$this->getAttributeAsName($attribute)] = $this->getAttributeWhereName($attribute);
+        }
+
+        return $asAttributes;
+    }
+
+    public function searchAttributes(): array
+    {
+        return [
+            self::SEARCH_ALL,
+        ];
+    }
+
+    public function isAs(string $attribute): bool
+    {
+        return str_contains(strtoupper($attribute), ' AS ');
+    }
+
+    /**
+     * Get an attribute or an aliased attribute and return the alias
+     * Exemple :
+     * "table.attribute_name AS UserId" will return "UserId"
+     * "table.attribute_name" will return "attribute_name"
+     * "attribute_name As UserId" will return "UserId"
+     * "attribute_name" will return "attribute_name".
+     */
+    public function getAttributeAsName(string $aliased): ?string
+    {
+        $upper = strtoupper($aliased);
+        $asPos = strrpos($upper, ' AS ');
+        if (false !== $asPos) {
+            return trim(substr($aliased, $asPos + 4));
+        }
+
+        $dotPos = strrpos($upper, '.');
+        if (false !== $dotPos) {
+            return trim(substr($aliased, $dotPos + 1));
+        }
+
+        return trim($aliased);
+    }
+
+    /**
+     * Get an attribute or an aliased attribute and return the attribute with path without alias
+     * Exemple :
+     * "table.attribute_name AS UserId" will return "table.attribute_name"
+     * "table.attribute_name" will return "table.attribute_name"
+     * "attribute_name As UserId" will return "attribute_name"
+     * "attribute_name" will return "attribute_name".
+     */
+    public function getAttributeWhereName(string $aliased): string
+    {
+        $upper = strtoupper($aliased);
+        $asPos = strrpos($upper, ' AS ');
+
+        return trim(substr($aliased, 0, $asPos > 0 ? $asPos : null));
     }
 
     #[Deprecated]
@@ -141,6 +348,20 @@ abstract class BaseRepository extends ServiceEntityRepository
         return new Paginator($query);
     }
 
+    public function getColumnNames(): array
+    {
+        return $this->getEntityManager()
+            ->getClassMetadata(static::getEntityClass())
+            ->getColumnNames();
+    }
+
+    public function getFieldNames(): array
+    {
+        return $this->getEntityManager()
+            ->getClassMetadata(static::getEntityClass())
+            ->getFieldNames();
+    }
+
     public function getPaginator(
         ?QueryBuilder $qb = null,
         int $limit = 25,
@@ -172,76 +393,11 @@ abstract class BaseRepository extends ServiceEntityRepository
         return new Paginator($qb);
     }
 
-    public function findIterable(
-        Query|QueryBuilder|null $query = null,
-        int $batchSize = 100,
-        ?string $alias = null,
-        string $iterableMode = self::ITERATE_EXPORT_HEADER,
-    ): \Generator {
-        $alias ??= static::getEntityAlias();
-        $query ??= $this->createQueryBuilder($alias);
-        $this->addOrderBy($query);
-        if ($query instanceof QueryBuilder) {
-            $query = $query->getQuery();
-        }
-
-        $i = 0;
-        $hydratationMode = static::ITERATE_ARRAY === $iterableMode ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT;
-        /** @var Entity $iterable */
-        foreach ($query->toIterable(hydrationMode: $hydratationMode) as $iterable) {
-            if (
-                \in_array($iterableMode, [static::ITERATE_EXPORT, static::ITERATE_EXPORT_HEADER], true)
-                && method_exists($iterable, 'getExportValue')
-            ) {
-                if (static::ITERATE_EXPORT_HEADER === $iterableMode) {
-                    yield array_keys($iterable->getExportValue());
-                }
-                yield $iterable->getExportValue();
-                continue;
-            }
-
-            yield $iterable;
-
-            if (0 === ++$i % $batchSize) {
-                flush();
-                $this->entityManager->flush();
-                $this->entityManager->clear();
-            }
-        }
-
-        flush();
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-    }
-
-    public function getAlias(): string
+    public function hasField(string $field): bool
     {
-        return $this->alias;
-    }
-
-    public function setAlias(string $alias): self
-    {
-        $this->alias = $alias;
-
-        return $this;
-    }
-
-    public function searchPaginated(PagerService $pageRequest, ?QueryBuilder $queryBuilder = null): Paginator
-    {
-        $query = $this->search(
-            $pageRequest->getSearchValue(),
-            $pageRequest->getSearchType(),
-            $pageRequest->getOrderBy(),
-            $this->getAlias(),
-            $queryBuilder
-        )->getQuery();
-        //  $query->setHydrationMode(Query::HYDRATE_SCALAR);
-
-        return $this->findPaginatedQuery(
-            $query,
-            $pageRequest->getLimit(),
-            $pageRequest->getPage()
-        );
+        return $this->getEntityManager()
+            ->getClassMetadata(static::getEntityClass())
+            ->hasField($field);
     }
 
     /**
@@ -258,25 +414,34 @@ abstract class BaseRepository extends ServiceEntityRepository
         return !$this->getEntityManager()->getMetadataFactory()->isTransient($class);
     }
 
-    public function findPaginatedQuery(
-        Query $query,
-        ?int $limit = null,
-        $offset = null,
+    public function searchPaginated(
+        PagerService $pageRequest,
+        ?QueryBuilder $queryBuilder = null,
+        bool $fetchJoinCollection = false,
     ): Paginator {
-        $limit = min(100, max(1, $limit));
-        $offset = max(1, $offset);
+        $query = $this->search(
+            $pageRequest->getSearchValue(),
+            $pageRequest->getSearchType(),
+            $pageRequest->getOrderBy(),
+            $this->getAlias(),
+            $queryBuilder,
+        )->getQuery();
 
-        $query->setMaxResults($limit)
-            ->setFirstResult(($offset - 1) * $limit);
+        //  $query->setHydrationMode(Query::HYDRATE_SCALAR);
 
-        return new Paginator($query, false);
+        return $this->findPaginatedQuery(
+            $query,
+            $pageRequest->getLimit(),
+            $pageRequest->getPage(),
+            $fetchJoinCollection,
+        );
     }
 
     /**
-     * @param mixed             $search     a value to filter results who's "like" it
+     * @param mixed $search a value to filter results who's "like" it
      * @param string|array|null $attributes Entity's attributes to search on
-     * @param OrderBy|null      $orderBy    custom orderBy if not from the Request
-     * @param string|null       $alias      the query alias for a specific one
+     * @param OrderBy|null $orderBy custom orderBy if not from the Request
+     * @param string|null $alias the query alias for a specific one
      */
     public function search(
         mixed $search = null,
@@ -351,196 +516,31 @@ abstract class BaseRepository extends ServiceEntityRepository
         return $asOne ? $query->setParameter('value', '%'.$search.'%') : $query;
     }
 
-    public function addOrderBy(
-        Query|QueryBuilder|null $query = null,
-        ?OrderBy $orderBy = null,
-        ?string $alias = null,
-    ): Query|QueryBuilder {
-        $orderBy ??= $this->orderBy;
-        $alias ??= static::getEntityAlias();
-        $query ??= $this->createQueryBuilder($alias);
-        if (
-            $orderBy->getOrderBy()
-            && $this->isAllowedAttribute($orderBy->getOrderBy(), $this->sortAttributes($alias))
-        ) {
-            $by = $orderBy->getOrderBy();
-            if (!str_contains($by, '.')) {
-                $by = $alias.'.'.$by;
-            }
-            $query->orderBy($by, $orderBy->getSort());
-        } else {
-            $asAttributes = $this->searchAttributesAs($alias);
-            foreach ($this->sortAttributes($alias) as $sortDefinitions) {
-                $attributeSort = $sortDefinitions[$orderBy->getSort()];
-                $query->addOrderBy(key($attributeSort), current($attributeSort));
-
-                // handle aliased fields
-                if (isset($asAttributes[key($attributeSort)])) {
-                    $query->addSelect(
-                        $asAttributes[key($attributeSort)].' AS '.key($attributeSort)
-                    );
-                }
-            }
-        }
-
-        return $query;
+    public function getAlias(): string
+    {
+        return $this->alias;
     }
 
-    public function isAs(string $attribute): bool
+    public function setAlias(string $alias): self
     {
-        return str_contains(strtoupper($attribute), ' AS ');
+        $this->alias = $alias;
+
+        return $this;
     }
 
-    public function isAllowedAttribute(string $aliased, array $list): bool
-    {
-        $attribute = strtolower($this->getAttributeName($aliased));
+    public function findPaginatedQuery(
+        Query $query,
+        ?int $limit = null,
+        $offset = null,
+        bool $fetchJoinCollection = false,
+    ): Paginator {
+        $limit = min(100, max(1, $limit));
+        $offset = max(1, $offset);
 
-        if (self::SEARCH_ALL === $attribute) {
-            return true;
-        }
+        $query->setMaxResults($limit)
+            ->setFirstResult(($offset - 1) * $limit);
 
-        foreach ($list as $keyAttribute => $item) {
-            // From simple sort
-            if (strtolower($attribute) === strtolower($keyAttribute)) {
-                return true;
-            }
-
-            // From simple search
-            if (
-                is_string($item)
-                && (strtolower($attribute) === strtolower($item)
-                    || strtolower($attribute) === strtolower($this->getAttributeName($item))
-                    || (str_contains(strtolower($item), strtolower($attribute)) && str_contains(strtolower($item), strtolower($this->getAttributeName($item))))
-                )
-            ) {
-                return true;
-            }
-            // isAllowedAttribute(foreach) > keyAttribute:5/item:classe.nom as classe/attribute:nom/aliased:classe.nom/getAttributeName:nom as classe
-
-            // from aliased
-            if (strtolower($aliased) === strtolower($keyAttribute)) {
-                return true;
-            }
-
-            // not from extended sort
-            if (!is_array($item)) {
-                continue;
-            }
-
-            if (strtolower($attribute) === strtolower($this->getAttributeName(key($item[OrderBy::ASC])))) {
-                return true;
-            }
-
-            if (strtolower($attribute) === strtolower($this->getAttributeName(key($item[OrderBy::DESC])))) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Get an aliased attribute and return field name
-     * exemple :
-     * "table.attribute_name AS UserId" will return "attribute_name"
-     * "table.attribute_name" will return "attribute_name"
-     * "attribute_name As UserId" will return "attribute_name"
-     * "attribute_name" will return "attribute_name".
-     */
-    public function getAttributeName(string $aliased): string
-    {
-        $upper = strtoupper($aliased);
-        $asPos = strrpos($upper, ' AS ');
-        $dotPos = strrpos($upper, '.') ?? 0;
-        $len = strlen($aliased);
-        $subOffset = $dotPos ? $dotPos + 1 : 0;
-        $subLength = $asPos ? $len - $asPos + 5 : null;
-
-        return trim(substr($aliased, $subOffset, $subLength));
-    }
-
-    /**
-     * Get an attribute or an aliased attribute and return the alias
-     * Exemple :
-     * "table.attribute_name AS UserId" will return "UserId"
-     * "table.attribute_name" will return "attribute_name"
-     * "attribute_name As UserId" will return "UserId"
-     * "attribute_name" will return "attribute_name".
-     */
-    public function getAttributeAsName(string $aliased): ?string
-    {
-        $upper = strtoupper($aliased);
-        $asPos = strrpos($upper, ' AS ');
-        if (false !== $asPos) {
-            return trim(substr($aliased, $asPos + 4));
-        }
-
-        $dotPos = strrpos($upper, '.');
-        if (false !== $dotPos) {
-            return trim(substr($aliased, $dotPos + 1));
-        }
-
-        return trim($aliased);
-    }
-
-    /**
-     * Get an attribute or an aliased attribute and return the attribute with path without alias
-     * Exemple :
-     * "table.attribute_name AS UserId" will return "table.attribute_name"
-     * "table.attribute_name" will return "table.attribute_name"
-     * "attribute_name As UserId" will return "attribute_name"
-     * "attribute_name" will return "attribute_name".
-     */
-    public function getAttributeWhereName(string $aliased): string
-    {
-        $upper = strtoupper($aliased);
-        $asPos = strrpos($upper, ' AS ');
-
-        return trim(substr($aliased, 0, $asPos > 0 ? $asPos : null));
-    }
-
-    public function sortAttributes(?string $alias = null): array
-    {
-        $alias ??= $this->alias;
-
-        return [
-            'id' => [OrderBy::ASC => [$alias.'.id' => OrderBy::ASC], OrderBy::DESC => [$alias.'.id' => OrderBy::DESC]],
-        ];
-    }
-
-    public function searchAttributes(): array
-    {
-        return [
-            self::SEARCH_ALL,
-        ];
-    }
-
-    /**
-     * Return all alias of searchAttributes
-     * Alias is the key, Atribute is the value.
-     */
-    public function searchAttributesAs(?string $alias = null): array
-    {
-        $asAttributes = [];
-
-        foreach ($this->searchAttributes($alias) as $attribute) {
-            if (!$this->isAs($attribute)) {
-                continue;
-            }
-
-            $asAttributes[$this->getAttributeAsName($attribute)] = $this->getAttributeWhereName($attribute);
-        }
-
-        return $asAttributes;
-    }
-
-    public function translateAttributes(): array
-    {
-        return [
-            self::SEARCH_ALL => $this->translator->trans('Tout critère', domain: 'repository'),
-            self::SEARCH_NOONE => $this->translator->trans('Aucun', domain: 'repository'),
-            'id' => $this->translator->trans('Id', domain: 'repository'),
-        ];
+        return new Paginator($query, $fetchJoinCollection);
     }
 
     public function translateAttribute(string $attribute): string
@@ -560,5 +560,14 @@ abstract class BaseRepository extends ServiceEntityRepository
         }
 
         return $this->translateAttributes()[$attribute] ?? $attribute;
+    }
+
+    public function translateAttributes(): array
+    {
+        return [
+            self::SEARCH_ALL => $this->translator->trans('Tout critère', domain: 'repository'),
+            self::SEARCH_NOONE => $this->translator->trans('Aucun', domain: 'repository'),
+            'id' => $this->translator->trans('Id', domain: 'repository'),
+        ];
     }
 }

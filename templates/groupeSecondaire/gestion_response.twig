@@ -4,21 +4,18 @@
 
 {% block body %}
 
-    <ol class="breadcrumb">
-        <li><a href="{{ path('homepage') }}">Accueil</a></li>
-        <li><a href="{{ path('gn.detail', {'gn' : participant.gn.id}) }}">{{ participant.gn.label }}</a></li>
-        <li><a href="{{ path('gn.personnage', {'gn': participant.gn.id}) }}">{{ participant.personnage.nom }}</a></li>
-        <li>
-            <a href="{{ path("participant.groupeSecondaire.detail", {'participant': participant.id, 'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.label }}</a>
-        </li>
-        <li class="active">Répondre à un postulant</li>
-    </ol>
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des groupes secondaires', 'route': path('groupeSecondaire.list') },
+            {'name' : "Détail de #{groupeSecondaire.label}", 'route': path('groupeSecondaire.detail', {'groupeSecondaire':groupeSecondaire.id}) },
+            {'name' : "Répondre à un postulant " ~ postulant.personnage.publicName },
+        ]
+    } %}
 
-
-    <div class="well bs-component">
+    <div class="well well-sm bs-component">
         {{ form_start(form) }}
-        <fieldset>
-            <legend>Répondre à un postulant</legend>
+        <div>
+            <div class="header"><h5>Répondre à un postulant</h5></div>
 
             <div class="list-group">
                 <div class="list-group-item">
@@ -31,12 +28,11 @@
                 </div>
             </div>
 
-
+            <br/>
             <p>Le message suivant sera envoyé au postulant</p>
 
             {{ form(form) }}
-        </fieldset>
-        {{ form_end(form) }}
-    </div>
 
+        </div>
+    </div>
 {% endblock body %}
