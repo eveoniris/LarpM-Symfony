@@ -30,6 +30,7 @@ use App\Entity\Religion;
 use App\Entity\RenommeHistory;
 use App\Entity\Ressource;
 use App\Entity\Sort;
+use App\Entity\Technologie;
 use App\Entity\User;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
@@ -38,6 +39,7 @@ use App\Enum\LevelType;
 use App\Enum\Role;
 use App\Form\PersonnageFindForm;
 use App\Repository\ReligionRepository;
+use App\Repository\TechnologieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -1188,7 +1190,8 @@ class PersonnageService
     ): ArrayCollection {
         $availableTechnologies = new ArrayCollection();
 
-        $repo = $this->app['orm.em']->getRepository('\LarpManager\Entities\Technologie');
+        /** @var TechnologieRepository $repo */
+        $repo = $this->entityManager->getRepository(Technologie::class);
         $technologies = $repo->findPublicOrderedByLabel();
 
         foreach ($technologies as $technologie) {

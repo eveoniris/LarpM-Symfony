@@ -4446,7 +4446,7 @@ class ParticipantController extends AbstractController
         Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
-        // TODO USER has perso
+
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
@@ -4459,15 +4459,14 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $technologies = $app['personnage.manager']->getAvailableTechnologies($personnage);
+        $technologies = $this->personnageService->getAvailableTechnologies($personnage);
 
-        $form = $this->createFormBuilder($participant)
-            ->add('technologies', 'entity', [
+        $form = $this->createFormBuilder()
+            ->add('technologies', ChoiceType::class, [
                 'required' => true,
                 'label' => 'Choisissez votre technologie',
                 'multiple' => false,
                 'expanded' => true,
-                'class' => Technologie::class,
                 'choices' => $technologies,
                 'choice_label' => 'label',
             ])
@@ -4482,17 +4481,21 @@ class ParticipantController extends AbstractController
 
             // Ajout de la technologie au personnage
             $personnage->addTechnologie($technologie);
-            $entityManager->persist($personnage);
+            $this->entityManager->persist($personnage);
 
             // suppression du trigger
             $trigger = $personnage->getTrigger('TECHNOLOGIE');
-            $entityManager->remove($trigger);
+            $this->entityManager->remove($trigger);
 
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+            return $this->redirectToRoute(
+                'personnage.detail',
+                ['personnage' => $personnage->getId(), 'participant' => $participant->getId(), 'tab' => 'competence'],
+                303,
+            );
         }
 
         return $this->render('personnage/technologie.twig', [

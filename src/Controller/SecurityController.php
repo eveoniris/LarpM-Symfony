@@ -17,6 +17,12 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
+    #[Route(path: '/access_denied', name: 'access_denied')]
+    public function denied(): Response
+    {
+        return $this->render('security/denied.html.twig');
+    }
+
     #[Route(path: '/login', name: 'app_login')]
     public function login(
         AuthenticationUtils $authenticationUtils,
@@ -33,13 +39,13 @@ class SecurityController extends AbstractController
         if ($user = $userRepository->findOneBy(['email' => $authenticationUtils->getLastUsername(), 'pwd' => null])) {
             $this->sendRenewMail($user, $entityManager, $mailer, $params, $userRepository);
             $error['messageKey'] = "Migration de compte: Vous devez renouveler votre mot de passe. les instructions pour réinitialiser votre mot de passe vous ont été envoyés.<br />
-                          Si vous ne recevez pas de mail d'içi quelques minutes, vérifiez votre dossier spam ou poubelle.<br />
+                          Si vous ne recevez pas de mail d'ici quelques minutes, vérifiez votre dossier spam ou poubelle.<br />
 		                  L'expéditeur est ".$params->get('fromEmailAddress');
             $error['messageData'] = [];
 
             return $this->render(
                 'security/login.html.twig',
-                ['last_username' => $user->getUsername(), 'error' => $error]
+                ['last_username' => $user->getUsername(), 'error' => $error],
             );
         }
 
@@ -50,18 +56,6 @@ class SecurityController extends AbstractController
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
-    }
-
-    #[Route(path: '/logout', name: 'app_logout')]
-    public function logout(): void
-    {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
-    }
-
-    #[Route(path: '/access_denied', name: 'access_denied')]
-    public function denied(): Response
-    {
-        return $this->render('security/denied.html.twig');
     }
 
     protected function sendRenewMail(
@@ -82,7 +76,7 @@ class SecurityController extends AbstractController
         $url = $this->generateUrl(
             'user.reset-password',
             ['token' => $user->getConfirmationToken()],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            UrlGeneratorInterface::ABSOLUTE_URL,
         );
         $resetExpireAt = Carbon::createFromTimestamp($user->getTimePasswordResetRequested())
             ->addSeconds($params->get('passwordTokenTTL'))
@@ -94,7 +88,7 @@ class SecurityController extends AbstractController
         $subject = $this->renderBlock(
             'user/email/renewPassword.twig',
             'subject',
-            $context
+            $context,
         ) ?: 'Renouvellement de mot de passe';
         $textBody = $this->renderBlock('user/email/renewPassword.twig', 'body_text', $context);
         $context['subject'] = $subject;
@@ -107,5 +101,13 @@ class SecurityController extends AbstractController
             ->htmlTemplate('user/email/renewPassword.twig')
             ->context($context);
         $mailer->send($email);
+    }
+
+    #[Route(path: '/logout', name: 'app_logout')]
+    public function logout(): void
+    {
+        throw new \LogicException(
+            'This method can be blank - it will be intercepted by the logout key on your firewall.',
+        );
     }
 }

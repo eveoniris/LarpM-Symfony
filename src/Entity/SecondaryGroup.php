@@ -13,22 +13,22 @@ class SecondaryGroup extends BaseSecondaryGroup implements \Stringable
         return $this->getLabel();
     }
 
+    public function getActifs(Gn $gn): int
+    {
+        $count_actifs = 0;
+        foreach ($this->getMembres() as $membre) {
+            $count_actifs += (int) $membre->getPersonnage()->participeTo($gn);
+        }
+
+        return $count_actifs;
+    }
+
     /**
      * Fourni le personnage responsable du groupe.
      */
     public function getResponsable()
     {
         return $this->getPersonnage();
-    }
-
-    /**
-     * Défini le personnage responsable du groupe.
-     */
-    public function setResponsable(Personnage $personnage): static
-    {
-        $this->setPersonnage($personnage);
-
-        return $this;
     }
 
     /**
@@ -59,13 +59,18 @@ class SecondaryGroup extends BaseSecondaryGroup implements \Stringable
         return false;
     }
 
-    public function getActifs(Gn $gn): int
+    public function isReligion(): bool
     {
-        $count_actifs = 0;
-        foreach ($this->getMembres() as $membre) {
-            $count_actifs += (int) $membre->getPersonnage()->participeTo($gn);
-        }
+        return $this->secondaryGroupType->isReligion();
+    }
 
-        return $count_actifs;
+    /**
+     * Défini le personnage responsable du groupe.
+     */
+    public function setResponsable(Personnage $personnage): static
+    {
+        $this->setPersonnage($personnage);
+
+        return $this;
     }
 }
