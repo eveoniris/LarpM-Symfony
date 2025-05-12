@@ -85,7 +85,7 @@
         {% endif %}
     {% endset %}
 
-    {% set isReligion = groupeSecondaire.responsable.id == personnage.id %}
+    {% set isReligion = groupeSecondaire.isReligion %}
     {% set religionHtml %}
         {% if isReligion %}
             <ul class="list-group list-group-flush w-100 m-0 p-0">

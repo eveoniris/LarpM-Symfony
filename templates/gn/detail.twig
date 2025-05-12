@@ -104,15 +104,18 @@
                                     <td>
                                         <div class="btn-toolbar" role="toolbar">
                                             <div class="btn-group" role="group">
-                                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip"
+                                                   data-bs-placement="bottom"
                                                    title="Liste"
                                                    href="{{ path('billet.participants', {'billet': billet.id}) }}"><i
                                                             class="fa fa-users" aria-hidden="true"></i></a>
-                                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip"
+                                                   data-bs-placement="bottom"
                                                    title="Modifier"
                                                    href="{{ path('billet.update',{'billet':billet.id}) }}"><i
                                                             class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip"
+                                                   data-bs-placement="bottom"
                                                    title="Supprimer"
                                                    href="{{ path('billet.delete',{'billet':billet.id}) }}"><i
                                                             class="fa fa-eraser"></i></a>
@@ -303,9 +306,11 @@
                             {% endif %}
                             <li>
                                 <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}"><i
-                                            class="fa fa-pencil" aria-hidden="true"></i> Modifier votre personnage secondaire</a></li>
+                                            class="fa fa-pencil" aria-hidden="true"></i> Modifier votre personnage
+                                    secondaire</a></li>
                             {% if participant.session %}
-                                <li><a href="{{ path('participant.background', {'participant': participant.id}) }}"><i
+                                <li>
+                                    <a href="{{ path('personnage.detail', {'personnage': participant.personnage.id, 'tab': 'biographie'}) }}"><i
                                                 class="fa fa-book" aria-hidden="true"></i> Votre background</a></li>
                             {% endif %}
                         </ul>
@@ -334,8 +339,9 @@
                             {% if participant.personnage %}
                                 {% for membre in participant.personnage.membres %}
                                     <li class="list-group-item">{% if membre.secondaryGroup.secret %}
-                                        <i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
-                                                                                                        title="Secret"></i> Secret -
+                                        <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Secret"></i> Secret -
                                         {% endif %}<a
                                                 href="{{ path('participant.groupeSecondaire.detail', {'participant': participant.id, 'groupeSecondaire': membre.secondaryGroup.id}) }}">{{ membre.secondaryGroup }}</a>
                                     </li>

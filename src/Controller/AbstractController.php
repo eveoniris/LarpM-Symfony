@@ -655,6 +655,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         if (!file_exists($filename) && method_exists($entity, 'getOldV1Document')) {
             $filename = $entity->getOldV1Document();
         }
+        dump($filename);
 
         if (!$documentUrl || !file_exists($filename)) {
             throw new NotFoundHttpException("Le document n'existe pas".$filename);

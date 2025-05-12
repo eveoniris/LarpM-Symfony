@@ -105,9 +105,33 @@ trait EntityFileUploadTrait
         return $this;
     }
 
+    public function getFilename(): ?string
+    {
+        return $this->filename ?? null;
+    }
+
+    public function setFilename(?string $filename): static
+    {
+        $this->filename = $filename;
+
+        return $this;
+    }
+
+    public function getFilenameMaxLength(): ?int
+    {
+        return $this->filenameMaxLength ?? null;
+    }
+
+    public function setFilenameMaxLength(?int $filenameMaxLength): static
+    {
+        $this->filenameMaxLength = $filenameMaxLength;
+
+        return $this;
+    }
+
     #[NoReturn] public function getOldV1Document(?string $projectDir = null): string
     {
-        dd($this->getDocumentFilePath($projectDir, true), $this->getDocumentUrl());
+        dump($this->getDocumentFilePath($projectDir, true), $this->getDocumentUrl());
 
 
         return $this->getDocumentFilePath($projectDir, true).$this->getDocumentUrl();
@@ -148,30 +172,6 @@ trait EntityFileUploadTrait
     public function setFile(UploadedFile $file): self
     {
         $this->file = $file;
-
-        return $this;
-    }
-
-    public function getFilename(): ?string
-    {
-        return $this->filename ?? null;
-    }
-
-    public function setFilename(?string $filename): static
-    {
-        $this->filename = $filename;
-
-        return $this;
-    }
-
-    public function getFilenameMaxLength(): ?int
-    {
-        return $this->filenameMaxLength ?? null;
-    }
-
-    public function setFilenameMaxLength(?int $filenameMaxLength): static
-    {
-        $this->filenameMaxLength = $filenameMaxLength;
 
         return $this;
     }

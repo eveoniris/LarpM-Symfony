@@ -4,8 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Technologie;
 use App\Entity\TechnologiesRessources;
-use App\Enum\DocumentType;
-use App\Enum\FolderType;
 use App\Enum\Role;
 use App\Form\Technologie\TechnologieForm;
 use App\Form\Technologie\TechnologiesRessourcesForm;
@@ -16,6 +14,7 @@ use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -144,10 +143,23 @@ class TechnologieController extends AbstractController
      * Détail d'une technologie.
      */
     #[Route('/{technologie}/detail', name: 'detail', requirements: ['technologie' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function detailAction(#[MapEntity] Technologie $technologie): Response
     {
-        // TODO for user ?
+        $this->checkHasAccess(
+            [Role::ORGA, Role::REGLE, Role::SCENARISTE],
+            function () use ($technologie) {
+                $personnage = $this->getPersonnage();
+                $this->checkHasPersonnage($personnage);
+
+                if ($personnage && !$personnage->isKnownTechnologie($technologie)) {
+                    $this->addFlash('error', 'Vous ne connaissez pas cette technologie !');
+
+                    return $this->redirectToRoute('homepage');
+                }
+
+                return false;
+            },
+        );
 
         return $this->render('technologie\detail.twig', [
             'technologie' => $technologie,
@@ -158,9 +170,24 @@ class TechnologieController extends AbstractController
      * Obtenir le document lié a une technologie.
      */
     #[Route('/{technologie}/document', name: 'document', requirements: ['technologie' => Requirement::DIGITS])]
-    public function getTechnologieDocumentAction(#[MapEntity] Technologie $technologie)
+    public function getTechnologieDocumentAction(#[MapEntity] Technologie $technologie): BinaryFileResponse
     {
-        // TODO know technologies
+        $this->checkHasAccess(
+            [Role::ORGA, Role::REGLE, Role::SCENARISTE],
+            function () use ($technologie) {
+                $personnage = $this->getPersonnage();
+                $this->checkHasPersonnage($personnage);
+
+                if ($personnage && !$personnage->isKnownTechnologie($technologie)) {
+                    $this->addFlash('error', 'Vous ne connaissez pas cette technologie !');
+
+                    return $this->redirectToRoute('homepage');
+                }
+
+                return false;
+            },
+        );
+
         return $this->sendDocument($technologie);
     }
 
